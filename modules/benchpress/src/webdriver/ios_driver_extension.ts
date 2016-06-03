@@ -1,4 +1,3 @@
-import {bind, provide, Provider} from '@angular/core/src/di';
 import {Json, isPresent, isBlank, RegExpWrapper, StringWrapper} from '@angular/facade';
 import {BaseException, WrappedException} from '@angular/facade';
 
@@ -7,7 +6,7 @@ import {WebDriverAdapter} from '../web_driver_adapter';
 
 export class IOsDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
 
   constructor(private _driver: WebDriverAdapter) { super(); }
 
@@ -121,6 +120,5 @@ function createMarkEndEvent(name, time) {
 }
 
 var _PROVIDERS = [
-  bind(IOsDriverExtension)
-      .toFactory((driver) => new IOsDriverExtension(driver), [WebDriverAdapter])
+  {provide: IOsDriverExtension, useFactory: (driver) => new IOsDriverExtension(driver), deps: [WebDriverAdapter]}
 ];

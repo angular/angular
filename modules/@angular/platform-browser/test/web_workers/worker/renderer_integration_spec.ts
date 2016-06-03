@@ -86,9 +86,9 @@ export function main() {
       testUiInjector.applicationProviders = TEST_BROWSER_APPLICATION_PROVIDERS;
       testUiInjector.addProviders([
         Serializer,
-        provide(RenderStore, {useValue: uiRenderStore}),
-        provide(DomRootRenderer, {useClass: DomRootRenderer_}),
-        provide(RootRenderer, {useExisting: DomRootRenderer})
+        {provide: RenderStore, useValue: uiRenderStore},
+        {provide: DomRootRenderer, useClass: DomRootRenderer_},
+        {provide: RootRenderer, useExisting: DomRootRenderer}
       ]);
       uiInjector = testUiInjector.createInjector();
       var uiSerializer = uiInjector.get(Serializer);
@@ -96,16 +96,16 @@ export function main() {
       workerRenderStore = new RenderStore();
       return [
         Serializer,
-        provide(CompilerConfig, {useValue: new CompilerConfig(true, true, false)}),
-        provide(RenderStore, {useValue: workerRenderStore}),
-        provide(RootRenderer,
-                {
-                  useFactory: (workerSerializer) => {
-                    return createWorkerRenderer(workerSerializer, uiSerializer, domRootRenderer,
-                                                uiRenderStore, workerRenderStore);
-                  },
-                  deps: [Serializer]
-                })
+        {provide: CompilerConfig, useValue: new CompilerConfig(true, true, false)},
+        {provide: RenderStore, useValue: workerRenderStore},
+        {
+          provide: RootRenderer,
+          useFactory: (workerSerializer) => {
+            return createWorkerRenderer(workerSerializer, uiSerializer, domRootRenderer,
+                                        uiRenderStore, workerRenderStore);
+          },
+          deps: [Serializer]
+        }
       ];
     });
 

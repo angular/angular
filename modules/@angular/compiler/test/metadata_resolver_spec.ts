@@ -29,11 +29,9 @@ import {
   AfterViewInit,
   AfterViewChecked,
   SimpleChanges,
-  provide
 } from '@angular/core';
 
 import {TEST_PROVIDERS} from './test_bindings';
-import {MODULE_SUFFIX} from '@angular/compiler/src/util';
 import {PLATFORM_DIRECTIVES} from '@angular/core/src/platform_directives_and_pipes';
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 
@@ -92,7 +90,7 @@ export function main() {
 
       describe("platform directives", () => {
         beforeEachProviders(
-            () => [provide(PLATFORM_DIRECTIVES, {useValue: [ADirective], multi: true})]);
+            () => [{provide: PLATFORM_DIRECTIVES, useValue: [ADirective], multi: true}]);
 
         it('should include platform directives when available',
            inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {

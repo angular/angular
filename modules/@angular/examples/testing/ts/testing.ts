@@ -8,7 +8,6 @@ import {
   beforeEachProviders,
   inject
 } from '@angular/core/testing/testing_internal';
-import {provide} from '@angular/core';
 
 var db: any;
 class MyService {}
@@ -70,7 +69,7 @@ describe('some component', () => {
 
 // #docregion beforeEachProviders
 describe('some component', () => {
-  beforeEachProviders(() => [provide(MyService, {useClass: MyMockService})]);
+  beforeEachProviders(() => [{provide: MyService, useClass: MyMockService}]);
   it('uses MyService', inject([MyService], (service: MyMockService) => {
                                                // service is an instance of MyMockService.
                                            }));

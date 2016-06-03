@@ -1,4 +1,4 @@
-import {bind, provide, Provider, Injector, OpaqueToken} from '@angular/core/src/di';
+import {Injector, OpaqueToken} from '@angular/core/src/di';
 
 import {isBlank, isPresent} from '@angular/facade';
 import {BaseException, WrappedException} from '@angular/facade';
@@ -11,26 +11,29 @@ import {Options} from './common_options';
  * Needs one implementation for every supported Browser.
  */
 export abstract class WebDriverExtension {
-  static bindTo(childTokens: any[]): Provider[] {
+  static bindTo(childTokens: any[]): any[] {
     var res = [
-      bind(_CHILDREN)
-          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
-                     [Injector]),
-      bind(WebDriverExtension)
-          .toFactory(
-              (children: WebDriverExtension[], capabilities) => {
-                var delegate;
-                children.forEach(extension => {
-                  if (extension.supports(capabilities)) {
-                    delegate = extension;
-                  }
-                });
-                if (isBlank(delegate)) {
-                  throw new BaseException('Could not find a delegate for given capabilities!');
-                }
-                return delegate;
-              },
-              [_CHILDREN, Options.CAPABILITIES])
+      {
+        provide: _CHILDREN,
+        useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
+        deps: [Injector]
+      },
+      {
+        provide: WebDriverExtension,
+        useFactory: (children:WebDriverExtension[], capabilities) => {
+          var delegate;
+          children.forEach(extension => {
+            if (extension.supports(capabilities)) {
+              delegate = extension;
+            }
+          });
+          if (isBlank(delegate)) {
+            throw new BaseException('Could not find a delegate for given capabilities!');
+          }
+          return delegate;
+        },
+        deps: [_CHILDREN, Options.CAPABILITIES]
+      }
     ];
     return res;
   }

@@ -13,7 +13,7 @@ import {AbstractControl} from '../model';
  * ```typescript
  * @Directive({
  *   selector: '[custom-validator]',
- *   providers: [provide(NG_VALIDATORS, {useExisting: CustomValidatorDirective, multi: true})]
+ *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
  * })
  * class CustomValidatorDirective implements Validator {
  *   validate(c: Control): {[key: string]: any} {

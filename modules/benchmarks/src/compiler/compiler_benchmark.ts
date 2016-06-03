@@ -10,9 +10,6 @@ import {
   Component,
   Directive,
   ViewContainerRef,
-  bind,
-  provide,
-  Provider,
   ViewMetadata
 } from '@angular/core';
 
@@ -20,19 +17,19 @@ import {CompilerConfig, ViewResolver} from '@angular/compiler';
 
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
-function _createBindings(): Provider[] {
+function _createBindings(): any[] {
   var multiplyTemplatesBy = getIntParameter('elements');
   return [
-    provide(ViewResolver,
-            {
-              useFactory: () => new MultiplyViewResolver(
+    {
+      provide: ViewResolver,
+      useFactory: () => new MultiplyViewResolver(
                               multiplyTemplatesBy,
                               [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
-              deps: []
-            }),
+      deps: []
+    },
     // Use interpretative mode as Dart does not support JIT and
     // we want to be able to compare the numbers between JS and Dart
-    provide(CompilerConfig, {useValue: new CompilerConfig(false, false, false)})
+    {provide: CompilerConfig, useValue: new CompilerConfig(false, false, false)}
   ];
 }
 

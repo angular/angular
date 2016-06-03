@@ -17,7 +17,7 @@ export const ROUTER_PROVIDERS_COMMON: any[] = /*@ts2dart_const*/[
     deps: /*@ts2dart_const*/
         [ApplicationRef, ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location],
   },
-  /*@ts2dart_Provider*/ {provide: RouteSegment, useFactory: (r) => r.routeTree.root, deps: [Router]}
+  /*@ts2dart_Provider*/ {provide: RouteSegment, useFactory: routeSegmentFactory, deps: [Router]}
 ];
 
 function routerFactory(app: ApplicationRef, componentResolver: ComponentResolver,
@@ -31,4 +31,8 @@ function routerFactory(app: ApplicationRef, componentResolver: ComponentResolver
                           routerOutletMap, location);
   app.registerDisposeListener(() => router.dispose());
   return router;
+}
+
+function routeSegmentFactory(router: Router): RouteSegment {
+  return router.routeTree.root;
 }

@@ -71,9 +71,9 @@ export function main() {
 
     beforeEach(() => {
       let injector = ReflectiveInjector.resolveAndCreate([
-        provide(ResponseOptions, {useClass: BaseResponseOptions}),
-        provide(BrowserJsonp, {useClass: MockBrowserJsonp}),
-        provide(JSONPBackend, {useClass: JSONPBackend_})
+        {provide: ResponseOptions, useClass: BaseResponseOptions},
+        {provide: BrowserJsonp, useClass: MockBrowserJsonp},
+        {provide: JSONPBackend, useClass: JSONPBackend_}
       ]);
       backend = injector.get(JSONPBackend);
       let base = new BaseRequestOptions();

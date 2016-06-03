@@ -10,14 +10,14 @@ import {
   xit,
 } from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 
-import {Component, Injectable, provide} from '@angular/core';
+import {Component, Injectable} from '@angular/core';
 import {NgPlural, NgPluralCase, NgLocalization} from '@angular/common';
 
 export function main() {
   describe('switch', () => {
-    beforeEachProviders(() => [provide(NgLocalization, {useClass: TestLocalizationMap})]);
+    beforeEachProviders(() => [{provide: NgLocalization, useClass: TestLocalizationMap}]);
 
     it('should display the template according to the exact value',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

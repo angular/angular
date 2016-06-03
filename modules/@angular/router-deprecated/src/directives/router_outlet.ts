@@ -58,9 +58,9 @@ export class RouterOutlet implements OnDestroy {
     var childRouter = this._parentRouter.childRouter(componentType);
 
     var providers = ReflectiveInjector.resolve([
-      provide(RouteData, {useValue: nextInstruction.routeData}),
-      provide(RouteParams, {useValue: new RouteParams(nextInstruction.params)}),
-      provide(routerMod.Router, {useValue: childRouter})
+      {provide: RouteData, useValue: nextInstruction.routeData},
+      {provide: RouteParams, useValue: new RouteParams(nextInstruction.params)},
+      {provide: routerMod.Router, useValue: childRouter}
     ]);
     this._componentRef =
         this._loader.loadNextToLocation(componentType, this._viewContainerRef, providers);

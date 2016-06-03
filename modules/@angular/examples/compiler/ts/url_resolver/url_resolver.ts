@@ -15,5 +15,5 @@ class MyUrlResolver extends UrlResolver {
   }
 }
 
-bootstrap(MyApp, [provide(UrlResolver, {useClass: MyUrlResolver})]);
+bootstrap(MyApp, [{provide: UrlResolver, useClass: MyUrlResolver}]);
 // #enddocregion

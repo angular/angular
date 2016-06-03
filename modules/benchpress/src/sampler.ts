@@ -1,6 +1,5 @@
 import {isPresent, isBlank, Date, DateWrapper} from '@angular/facade';
 import {PromiseWrapper} from '@angular/facade';
-import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
 
 import {Metric} from './metric';
 import {Validator} from './validator';
@@ -20,7 +19,7 @@ import {MeasureValues} from './measure_values';
  */
 export class Sampler {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
 
   _driver: WebDriverAdapter;
   _metric: Metric;
@@ -95,26 +94,28 @@ export class SampleState {
 }
 
 var _PROVIDERS = [
-  bind(Sampler)
-      .toFactory((driver, metric, reporter, validator, prepare, execute, now) => new Sampler({
-                   driver: driver,
-                   reporter: reporter,
-                   validator: validator,
-                   metric: metric,
-                   // TODO(tbosch): DI right now does not support null/undefined objects
-                   // Mostly because the cache would have to be initialized with a
-                   // special null object, which is expensive.
-                   prepare: prepare !== false ? prepare : null,
-                   execute: execute,
-                   now: now
-                 }),
-                 [
-                   WebDriverAdapter,
-                   Metric,
-                   Reporter,
-                   Validator,
-                   Options.PREPARE,
-                   Options.EXECUTE,
-                   Options.NOW
-                 ])
+  {
+    provide: Sampler,
+    useFactory: (driver, metric, reporter, validator, prepare, execute, now) => new Sampler({
+      driver: driver,
+      reporter: reporter,
+      validator: validator,
+      metric: metric,
+      // TODO(tbosch): DI right now does not support null/undefined objects
+      // Mostly because the cache would have to be initialized with a
+      // special null object, which is expensive.
+      prepare: prepare !== false ? prepare : null,
+      execute: execute,
+      now: now
+    }),
+    deps: [
+      WebDriverAdapter,
+      Metric,
+      Reporter,
+      Validator,
+      Options.PREPARE,
+      Options.EXECUTE,
+      Options.NOW
+    ]
+  }
 ];

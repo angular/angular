@@ -259,7 +259,7 @@ class _ActivateSegments {
   private activateNewSegments(outletMap: RouterOutletMap, curr: RouteSegment, prev: RouteSegment,
                               outlet: RouterOutlet): Object {
     let resolved = ReflectiveInjector.resolve(
-        [provide(RouterOutletMap, {useValue: outletMap}), provide(RouteSegment, {useValue: curr})]);
+        [{provide: RouterOutletMap, useValue: outletMap}, {provide: RouteSegment, useValue: curr}]);
     let ref = outlet.activate(routeSegmentComponentFactory(curr), resolved, outletMap);
     if (hasLifecycleHook("routerOnActivate", ref.instance)) {
       ref.instance.routerOnActivate(curr, prev, this.currTree, this.prevTree);

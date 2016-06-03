@@ -49,7 +49,7 @@ export abstract class NgLocalization { abstract getPluralCategory(value: any): s
  *
  * @Component({
  *    selector: 'app',
- *    providers: [provide(NgLocalization, {useClass: MyLocalization})]
+ *    providers: [{provide: NgLocalization, useClass: MyLocalization}]
  * })
  * @View({
  *   template: `

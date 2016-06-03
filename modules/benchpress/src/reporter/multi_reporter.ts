@@ -1,16 +1,18 @@
-import {bind, provide, Provider, Injector, OpaqueToken} from '@angular/core/src/di';
+import {Injector, OpaqueToken} from '@angular/core/src/di';
 import {PromiseWrapper} from '@angular/facade';
 
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 
 export class MultiReporter extends Reporter {
-  static createBindings(childTokens: any[]): Provider[] {
+  static createBindings(childTokens: any[]): any[] {
     return [
-      bind(_CHILDREN)
-          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
-                     [Injector]),
-      bind(MultiReporter).toFactory(children => new MultiReporter(children), [_CHILDREN])
+      {
+        provide: _CHILDREN,
+        useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
+        deps: [Injector],
+      },
+      {provide: MultiReporter, useFactory: children => new MultiReporter(children), deps: [_CHILDREN]}
     ];
   }
 

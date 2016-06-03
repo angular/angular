@@ -14,8 +14,6 @@ import {isBlank, isPresent, Date, DateWrapper} from '@angular/facade';
 import {
   SampleState,
   Reporter,
-  bind,
-  provide,
   ReflectiveInjector,
   ConsoleReporter,
   SampleDescription,
@@ -38,12 +36,11 @@ export function main() {
       }
       var bindings = [
         ConsoleReporter.PROVIDERS,
-        provide(SampleDescription,
-                {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
-        bind(ConsoleReporter.PRINT).toValue((line) => log.push(line))
+        {provide: SampleDescription, useValue: new SampleDescription(sampleId, descriptions, metrics)},
+        {provide: ConsoleReporter.PRINT, useValue: (line) => log.push(line)}
       ];
       if (isPresent(columnWidth)) {
-        bindings.push(bind(ConsoleReporter.COLUMN_WIDTH).toValue(columnWidth));
+        bindings.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue(columnWidth)};
       }
       reporter = ReflectiveInjector.resolveAndCreate(bindings).get(ConsoleReporter);
     }

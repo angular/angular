@@ -32,8 +32,8 @@ export function main() {
       return new CachedXHR();
     }
     beforeEachProviders(() => [
-      provide(UrlResolver, {useClass: TestUrlResolver}),
-      provide(XHR, {useFactory: createCachedXHR})
+      {provide: UrlResolver, useClass: TestUrlResolver},
+      {provide: XHR, useFactory: createCachedXHR}
     ]);
 
     it('should throw exception if $templateCache is not found', () => {

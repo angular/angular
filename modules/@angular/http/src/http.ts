@@ -82,11 +82,11 @@ function mergeOptions(defaultOpts: BaseRequestOptions, providedOpts: RequestOpti
  * var injector = Injector.resolveAndCreate([
  *   BaseRequestOptions,
  *   MockBackend,
- *   provide(Http, {useFactory:
+ *   {provide: Http, useFactory:
  *       function(backend, defaultOptions) {
  *         return new Http(backend, defaultOptions);
  *       },
- *       deps: [MockBackend, BaseRequestOptions]})
+ *       deps: [MockBackend, BaseRequestOptions]}
  * ]);
  * var http = injector.get(Http);
  * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));

@@ -15,10 +15,11 @@ main() {
       await driver
           .get('http://localhost:8002/playground/src/benchpress/index.html');
 
-      var bindings = [
-        bind(WebDriverAdapter)
-            .toFactory(() => new AsyncWebDriverAdapter(driver), [])
-      ];
+      var bindings = [{
+        provide: WebDriverAdapter,
+        useFactory: () => new AsyncWebDriverAdapter(driver),
+        deps: []
+      }];
       runner = new Runner(bindings);
     });
 

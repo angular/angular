@@ -15,15 +15,11 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {
-  Type,
   isPresent,
-  assertionsEnabled,
-  isJsObject,
-  global,
   stringify,
   isBlank,
 } from '../../src/facade/lang';
-import {BaseException, WrappedException} from '../../src/facade/exceptions';
+import {BaseException} from '../../src/facade/exceptions';
 import {
   PromiseWrapper,
   EventEmitter,
@@ -33,10 +29,7 @@ import {
 
 import {
   Injector,
-  bind,
-  provide,
   Injectable,
-  Provider,
   forwardRef,
   OpaqueToken,
   Inject,
@@ -91,13 +84,13 @@ export function main() {
   } else {
     describe('jit', () => {
       beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, true)})]);
+          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, true)}]);
       declareTests(true);
     });
 
     describe('no jit', () => {
       beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, false)})]);
+          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, false)}]);
       declareTests(false);
     });
   }
@@ -106,7 +99,7 @@ export function main() {
 function declareTests(isJit: boolean) {
   describe('integration tests', function() {
 
-    beforeEachProviders(() => [provide(ANCHOR_ELEMENT, {useValue: el('<div></div>')})]);
+    beforeEachProviders(() => [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]);
 
     describe('react to record changes', function() {
       it('should consume text node changes',
@@ -1714,7 +1707,7 @@ function declareTests(isJit: boolean) {
 
     describe('logging property updates', () => {
       beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, true, isJit)})]);
+          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, true, isJit)}]);
 
       it('should reflect property values as attributes',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -1947,7 +1940,7 @@ class DynamicViewport {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
 
-    var injector = ReflectiveInjector.resolveAndCreate([provide(MyService, {useValue: myService})],
+    var injector = ReflectiveInjector.resolveAndCreate([{ provide: MyService, useValue: myService}],
                                                        vc.injector);
     this.done = compiler.resolveComponent(ChildCompUsingService)
                     .then((componentFactory) => vc.createComponent(componentFactory, 0, injector));
@@ -2436,13 +2429,10 @@ function createParentBus(peb) {
 @Component({
   selector: 'parent-providing-event-bus',
   providers: [
-    new Provider(EventBus,
-                 {useFactory: createParentBus, deps: [[EventBus, new SkipSelfMetadata()]]})
+    {provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelfMetadata()]]}
   ],
   directives: [forwardRef(() => ChildConsumingEventBus)],
-  template: `
-    <child-consuming-event-bus></child-consuming-event-bus>
-  `
+  template: `<child-consuming-event-bus></child-consuming-event-bus>`
 })
 class ParentProvidingEventBus {
   bus: EventBus;

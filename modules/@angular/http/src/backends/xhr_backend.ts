@@ -171,9 +171,9 @@ export class CookieXSRFStrategy implements XSRFStrategy {
  * @Component({
  *   viewProviders: [
  *     HTTP_PROVIDERS,
- *     provide(Http, {useFactory: (backend, options) => {
+ *     {provide: Http, useFactory: (backend, options) => {
  *       return new Http(backend, options);
- *     }, deps: [MyNodeBackend, BaseRequestOptions]})]
+ *     }, deps: [MyNodeBackend, BaseRequestOptions]}]
  * })
  * class MyComponent {
  *   constructor(http:Http) {

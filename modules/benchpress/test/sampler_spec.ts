@@ -20,8 +20,6 @@ import {
   Validator,
   Metric,
   Reporter,
-  bind,
-  provide,
   ReflectiveInjector,
   Options,
   MeasureValues
@@ -54,15 +52,15 @@ export function main() {
       var providers = [
         Options.DEFAULT_PROVIDERS,
         Sampler.PROVIDERS,
-        provide(Metric, {useValue: metric}),
-        provide(Reporter, {useValue: reporter}),
-        provide(WebDriverAdapter, {useValue: driver}),
-        bind(Options.EXECUTE).toValue(execute),
-        provide(Validator, {useValue: validator}),
-        bind(Options.NOW).toValue(() => DateWrapper.fromMillis(time++))
+        {provide: Metric, useValue: metric},
+        {provide: Reporter, useValue: reporter},
+        {provide: WebDriverAdapter, useValue: driver},
+        {provide: Options.EXECUTE, useValue: execute},
+        {provide: Validator, useValue: validator},
+        {provide: Options.NOW, useValue: () => DateWrapper.fromMillis(time++)}
       ];
       if (isPresent(prepare)) {
-        providers.push(bind(Options.PREPARE).toValue(prepare));
+        providers.push({provide: Options.PREPARE, useValue: prepare});
       }
 
       sampler = ReflectiveInjector.resolveAndCreate(providers).get(Sampler);

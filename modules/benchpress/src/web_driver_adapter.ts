@@ -1,4 +1,3 @@
-import {bind, provide, Provider} from '@angular/core/src/di';
 import {BaseException, WrappedException} from '@angular/facade';
 import {Map} from '@angular/facade';
 
@@ -8,8 +7,8 @@ import {Map} from '@angular/facade';
  * Needs one implementation for every supported WebDriver client.
  */
 export abstract class WebDriverAdapter {
-  static bindTo(delegateToken): Provider[] {
-    return [bind(WebDriverAdapter).toFactory((delegate) => delegate, [delegateToken])];
+  static bindTo(delegateToken): any[] {
+    return [{provide: WebDriverAdapter, useFactory: (delegate) => delegate, deps: [delegateToken]}];
   }
 
   waitFor(callback: Function): Promise<any> { throw new BaseException('NYI'); }

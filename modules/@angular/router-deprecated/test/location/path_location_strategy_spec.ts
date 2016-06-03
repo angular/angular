@@ -24,7 +24,7 @@ export function main() {
 
     beforeEachProviders(() => [
       PathLocationStrategy,
-      provide(PlatformLocation, {useFactory: makeSpyPlatformLocation})
+      {provide: PlatformLocation, useFactory: makeSpyPlatformLocation}
     ]);
 
     it('should throw without a base element or APP_BASE_HREF', () => {
@@ -67,7 +67,7 @@ export function main() {
     });
 
     describe('with APP_BASE_HREF with neither leading nor trailing slash', () => {
-      beforeEachProviders(() => [provide(APP_BASE_HREF, {useValue: 'app'})]);
+      beforeEachProviders(() => [{provide: APP_BASE_HREF, useValue: 'app'}]);
 
       beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl, ls) => {
         platformLocation = pl;
@@ -100,7 +100,7 @@ export function main() {
     });
 
     describe('with APP_BASE_HREF with leading slash', () => {
-      beforeEachProviders(() => [provide(APP_BASE_HREF, {useValue: '/app'})]);
+      beforeEachProviders(() => [{provide: APP_BASE_HREF, useValue: '/app'}]);
 
       beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl, ls) => {
         platformLocation = pl;
@@ -133,7 +133,7 @@ export function main() {
     });
 
     describe('with APP_BASE_HREF with both leading and trailing slash', () => {
-      beforeEachProviders(() => [provide(APP_BASE_HREF, {useValue: '/app/'})]);
+      beforeEachProviders(() => [{provide: APP_BASE_HREF, useValue: '/app/'}]);
 
       beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl, ls) => {
         platformLocation = pl;

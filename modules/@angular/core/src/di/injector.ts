@@ -20,7 +20,7 @@ export abstract class Injector {
    *
    * ```typescript
    * var injector = ReflectiveInjector.resolveAndCreate([
-   *   provide("validToken", {useValue: "Value"})
+   *   {provide: "validToken", useValue: "Value"}
    * ]);
    * expect(injector.get("validToken")).toEqual("Value");
    * expect(() => injector.get("invalidToken")).toThrowError();

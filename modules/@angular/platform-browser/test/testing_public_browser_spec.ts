@@ -120,7 +120,7 @@ export function main() {
 
     describe('using the test injector with the inject helper', () => {
       describe('setting up Providers', () => {
-        beforeEachProviders(() => [bind(FancyService).toValue(new FancyService())]);
+        beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
 
         it('provides a real XHR instance',
            inject([XHR], (xhr) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));

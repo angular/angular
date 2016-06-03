@@ -112,7 +112,7 @@ export function main() {
     function flushMessages(fn: () => void) { TimerWrapper.setTimeout(fn, 50); }
 
     it("should buffer messages and wait for the zone to exit before sending",
-       withProviders(() => [provide(NgZone, {useClass: MockNgZone})])
+       withProviders(() => [{provide: NgZone, useClass: MockNgZone}])
            .inject([AsyncTestCompleter, NgZone],
                    (async, zone: MockNgZone) => {
                      bus = createConnectedMessageBus();

@@ -756,7 +756,7 @@ export function main() {
       it('should export ng2 instance to ng1', inject([AsyncTestCompleter], (async) => {
            var adapter = new UpgradeAdapter();
            var module = angular.module('myExample', []);
-           adapter.addProvider(provide(SomeToken, {useValue: 'correct_value'}));
+           adapter.addProvider({provide: SomeToken, useValue: 'correct_value'});
            module.factory('someToken', adapter.downgradeNg2Provider(SomeToken));
            adapter.bootstrap(html('<div>'), ['myExample'])
                .ready((ref) => {

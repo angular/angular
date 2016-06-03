@@ -34,7 +34,7 @@ export function main() {
 
     beforeEach(() => {
       var injector = ReflectiveInjector.resolveAndCreate(
-          [provide(ResponseOptions, {useClass: BaseResponseOptions}), MockBackend]);
+          [{provide: ResponseOptions, useClass: BaseResponseOptions}, MockBackend]);
       backend = injector.get(MockBackend);
       var base = new BaseRequestOptions();
       sampleRequest1 = new Request(base.merge(new RequestOptions({url: 'https://google.com'})));

@@ -32,16 +32,16 @@ import {SpyLocation, MockLocationStrategy} from '@angular/common/testing';
 export function main() {
   describe('RouterLink', () => {
     beforeEachProviders(() => [
-      provide(RouterUrlSerializer, {useClass: DefaultRouterUrlSerializer}),
+      {provide: RouterUrlSerializer, useClass: DefaultRouterUrlSerializer},
       RouterOutletMap,
-      provide(Location, {useClass: SpyLocation}),
-      provide(LocationStrategy, {useClass: MockLocationStrategy}),
-      provide(Router,
-              {
-                useFactory: (resolver, urlParser, outletMap, location) => new Router(
-                                "RootComponent", RootCmp, resolver, urlParser, outletMap, location),
-                deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
-              })
+      {provide: Location, useClass: SpyLocation},
+      {provide: LocationStrategy, useClass: MockLocationStrategy},
+      {
+        provide: Router,
+        useFactory: (resolver, urlParser, outletMap, location) => new Router(
+                     "RootComponent", RootCmp, resolver, urlParser, outletMap, location),
+        deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
+      }
     ]);
 
     describe("routerLink=", () => {

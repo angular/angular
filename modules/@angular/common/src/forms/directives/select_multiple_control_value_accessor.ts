@@ -6,7 +6,6 @@ import {
   Optional, 
   Host, 
   OnDestroy, 
-  Provider, 
   forwardRef
 } from "@angular/core";
 import {

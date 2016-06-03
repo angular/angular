@@ -1,10 +1,9 @@
 import {ROUTER_PROVIDERS_COMMON} from './router_providers_common';
-import {Provider} from '@angular/core';
 import {BrowserPlatformLocation} from '@angular/platform-browser';
 import {PlatformLocation} from '@angular/common';
 
 /**
- * A list of {@link Provider}s. To use the router, you must add this to your application.
+ * A list of providers. To use the router, you must add this to your application.
  *
  * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
  *

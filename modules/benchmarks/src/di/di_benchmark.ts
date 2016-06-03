@@ -1,4 +1,4 @@
-import {Injectable, ReflectiveInjector, ReflectiveKey, bind, provide} from '@angular/core';
+import {Injectable, ReflectiveInjector, ReflectiveKey} from '@angular/core';
 import {reflector} from '@angular/core/src/reflection/reflection';
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {getIntParameter, bindAction, microBenchmark} from '@angular/testing/src/benchmark_util';
@@ -27,7 +27,7 @@ export function main() {
                           .resolveAndCreateChild([])
                           .resolveAndCreateChild([]);
 
-  var variousProviders = [A, provide(B, {useClass: C}), [D, [E]], provide(F, {useValue: 6})];
+  var variousProviders = [A, {provide: B, useClass: C}, [D, [E]], {provide: F, useValue: 6}];
 
   var variousProvidersResolved = ReflectiveInjector.resolve(variousProviders);
 

@@ -1,4 +1,4 @@
-import {Component, provide} from '@angular/core';
+import {Component} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser';
 import {RouteConfig, Route, ROUTER_PROVIDERS, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
@@ -39,5 +39,5 @@ class AppCmp {
 
 export function main() {
   bootstrap(AppCmp,
-            [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
+            [ROUTER_PROVIDERS, {provide: LocationStrategy, useClass: HashLocationStrategy}]);
 }

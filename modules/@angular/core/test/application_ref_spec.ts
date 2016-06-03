@@ -20,7 +20,6 @@ import {
 } from '@angular/core/src/application_ref';
 import {
   Injector,
-  Provider,
   APP_INITIALIZER,
   Component,
   ReflectiveInjector,
@@ -63,8 +62,7 @@ export function main() {
             APPLICATION_CORE_PROVIDERS,
             {provide: Console, useValue: new _MockConsole()},
             {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
-            new Provider(ComponentResolver,
-                         {useValue: new _MockComponentResolver(someCompFactory)}),
+            {provide: ComponentResolver, useValue: new _MockComponentResolver(someCompFactory)},
             providers
           ],
           platform.injector);
@@ -125,8 +123,7 @@ export function main() {
       it("should throw if an APP_INITIIALIZER is not yet resolved",
          inject([Injector], (injector) => {
            var app = createApplication([
-             new Provider(APP_INITIALIZER,
-                          {useValue: () => PromiseWrapper.completer().promise, multi: true})
+             {provide: APP_INITIALIZER, useValue: () => PromiseWrapper.completer().promise, multi: true}
            ]);
            expect(() => app.bootstrap(someCompFactory))
                .toThrowError(

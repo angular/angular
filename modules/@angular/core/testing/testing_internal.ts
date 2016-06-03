@@ -92,8 +92,8 @@ export function beforeEach(fn: Function): void {
  * Example:
  *
  *   beforeEachProviders(() => [
- *     provide(Compiler, {useClass: MockCompiler}),
- *     provide(SomeToken, {useValue: myValue}),
+ *     {provide: Compiler, useClass: MockCompiler},
+ *     {provide: SomeToken, useValue: myValue},
  *   ]);
  */
 export function beforeEachProviders(fn): void {
@@ -121,13 +121,14 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
   var timeOut = Math.max(globalTimeOut, testTimeOut);
 
   jsmFn(name, (done) => {
-    var completerProvider = provide(AsyncTestCompleter, {
+    var completerProvider = {
+      provide: AsyncTestCompleter,
       useFactory: () => {
         // Mark the test as async when an AsyncTestCompleter is injected in an it()
         if (!inIt) throw new Error('AsyncTestCompleter can only be injected in an "it()"');
         return new AsyncTestCompleter();
       }
-    });
+    };
     testInjector.addProviders([completerProvider]);
     runner.run();
 

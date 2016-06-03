@@ -1,7 +1,7 @@
 import {DateWrapper, isPresent, isBlank, Json} from '@angular/facade';
 import {PromiseWrapper} from '@angular/facade';
 
-import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
+import {OpaqueToken} from '@angular/core/src/di';
 
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
@@ -15,7 +15,7 @@ export class JsonFileReporter extends Reporter {
   // TODO(tbosch): use static values when our transpiler supports them
   static get PATH(): OpaqueToken { return _PATH; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
 
   _writeFile: Function;
   _path: string;
@@ -48,9 +48,11 @@ export class JsonFileReporter extends Reporter {
 
 var _PATH = new OpaqueToken('JsonFileReporter.path');
 var _PROVIDERS = [
-  bind(JsonFileReporter)
-      .toFactory((sampleDescription, path, writeFile, now) =>
+  {
+    provide: JsonFileReporter,
+    useFactory: (sampleDescription, path, writeFile, now) =>
                      new JsonFileReporter(sampleDescription, path, writeFile, now),
-                 [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]),
-  provide(_PATH, {useValue: '.'})
+    deps: [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]
+  },
+  {provide: _PATH, useValue: '.'}
 ];

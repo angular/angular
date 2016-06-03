@@ -1,4 +1,4 @@
-import {Injector, bind, provide, Provider, ReflectiveInjector} from '@angular/core';
+import {ReflectiveInjector} from '@angular/core';
 import {isPresent, isBlank} from '@angular/facade';
 import {PromiseWrapper} from '@angular/facade';
 
@@ -25,8 +25,8 @@ import {Options} from './common_options';
  * It provides defaults, creates the injector and calls the sampler.
  */
 export class Runner {
-  private _defaultProviders: Provider[];
-  constructor(defaultProviders: Provider[] = null) {
+  private _defaultProviders: any[];
+  constructor(defaultProviders: any[] = null) {
     if (isBlank(defaultProviders)) {
       defaultProviders = [];
     }
@@ -39,14 +39,14 @@ export class Runner {
     var sampleProviders = [
       _DEFAULT_PROVIDERS,
       this._defaultProviders,
-      bind(Options.SAMPLE_ID).toValue(id),
-      bind(Options.EXECUTE).toValue(execute)
+      {provide: Options.SAMPLE_ID, useValue: id},
+      {provide: Options.EXECUTE, useValue: execute}
     ];
     if (isPresent(prepare)) {
-      sampleProviders.push(bind(Options.PREPARE).toValue(prepare));
+      sampleProviders.push({provide: Options.PREPARE, useValue: prepare});
     }
     if (isPresent(microMetrics)) {
-      sampleProviders.push(bind(Options.MICRO_METRICS).toValue(microMetrics));
+      sampleProviders.push({provide: Options.MICRO_METRICS, useValue: microMetrics});
     }
     if (isPresent(providers)) {
       sampleProviders.push(providers);
@@ -68,9 +68,9 @@ export class Runner {
           // injectors are handled better.
           var injector = ReflectiveInjector.resolveAndCreate([
             sampleProviders,
-            bind(Options.CAPABILITIES).toValue(capabilities),
-            bind(Options.USER_AGENT).toValue(userAgent),
-            provide(WebDriverAdapter, {useValue: adapter})
+            {provide: Options.CAPABILITIES, useValue: capabilities},
+            {provide: Options.USER_AGENT, useValue: userAgent},
+            {provide: WebDriverAdapter, useValue: adapter}
           ]);
 
           var sampler = injector.get(Sampler);

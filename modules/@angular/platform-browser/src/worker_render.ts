@@ -102,17 +102,8 @@ export const WORKER_RENDER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | 
       Testability,
       EventManager,
       WebWorkerInstance,
-      {
-        provide: APP_INITIALIZER,
-        useFactory: (injector => () => initWebWorkerApplication(injector)),
-        multi: true,
-        deps: [Injector]
-      },
-      {
-        provide: MessageBus,
-        useFactory: (instance) => instance.bus,
-        deps: [WebWorkerInstance]
-      }
+      { provide: APP_INITIALIZER, useFactory: initWebWorkerAppFn, multi: true, deps: [Injector] },
+      { provide: MessageBus, useFactory: messageBusFactory, deps: [WebWorkerInstance] }
     ];
 
 export function initializeGenericWorkerRenderer(injector: Injector) {
@@ -142,6 +133,10 @@ export function bootstrapRender(
   return PromiseWrapper.resolve(app.get(ApplicationRef));
 }
 
+function messageBusFactory(instance: WebWorkerInstance): MessageBus {
+  return instance.bus;
+}
+
 function initWebWorkerRenderPlatform(): void {
   BrowserDomAdapter.makeCurrent();
   wtfInit();
@@ -163,19 +158,21 @@ function _document(): any {
   return getDOM().defaultDoc();
 }
 
-function initWebWorkerApplication(injector: Injector): void {
-  var scriptUri: string;
-  try {
-    scriptUri = injector.get(WORKER_SCRIPT);
-  } catch (e) {
-    throw new BaseException(
-      "You must provide your WebWorker's initialization script with the WORKER_SCRIPT token");
-  }
+function initWebWorkerAppFn(injector: Injector): () => void {
+  return () => {
+    var scriptUri: string;
+    try {
+      scriptUri = injector.get(WORKER_SCRIPT);
+    } catch (e) {
+      throw new BaseException(
+        "You must provide your WebWorker's initialization script with the WORKER_SCRIPT token");
+    }
 
-  let instance = injector.get(WebWorkerInstance);
-  spawnWebWorker(scriptUri, instance);
+    let instance = injector.get(WebWorkerInstance);
+    spawnWebWorker(scriptUri, instance);
 
-  initializeGenericWorkerRenderer(injector);
+    initializeGenericWorkerRenderer(injector);
+  };
 }
 
 /**

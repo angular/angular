@@ -7,7 +7,6 @@ import {
   Host,
   SkipSelf,
   forwardRef,
-  Provider,
   Self
 } from '@angular/core';
 import {ControlContainer} from './control_container';

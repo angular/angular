@@ -42,7 +42,7 @@ import {UrlChangeListener, PlatformLocation} from './platform_location';
  *
  * bootstrap(AppCmp, [
  *   ROUTER_PROVIDERS,
- *   provide(LocationStrategy, {useClass: HashLocationStrategy})
+ *   {provide: LocationStrategy, useClass: HashLocationStrategy}
  * ]);
  * ```
  *

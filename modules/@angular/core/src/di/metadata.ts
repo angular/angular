@@ -17,7 +17,7 @@ import {stringify} from '../facade/lang';
  * }
  *
  * var injector = Injector.resolveAndCreate([
- *  provide("MyEngine", {useClass: Engine}),
+ *  {provide: "MyEngine", useClass: Engine},
  *  Car
  * ]);
  *

@@ -13,7 +13,7 @@ export class TestInjector {
 
   private _injector: ReflectiveInjector = null;
 
-  private _providers: Array<Type | Provider | any[]> = [];
+  private _providers: Array<Type | Provider | any[] | any> = [];
 
   reset() {
     this._injector = null;
@@ -21,11 +21,11 @@ export class TestInjector {
     this._instantiated = false;
   }
 
-  platformProviders: Array<Type | Provider | any[]> = [];
+  platformProviders: Array<Type | Provider | any[] | any> = [];
 
-  applicationProviders: Array<Type | Provider | any[]> = [];
+  applicationProviders: Array<Type | Provider | any[] | any> = [];
 
-  addProviders(providers: Array<Type | Provider | any[]>) {
+  addProviders(providers: Array<Type | Provider | any[] | any>) {
     if (this._instantiated) {
       throw new BaseException('Cannot add providers after test injector is instantiated');
     }

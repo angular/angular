@@ -1,5 +1,5 @@
 import {bootstrap} from '@angular/platform-browser';
-import {Component, Directive, Host, forwardRef, Provider, Injectable} from '@angular/core';
+import {Component, Injectable} from '@angular/core';
 import {NgIf, NgFor, FORM_DIRECTIVES} from '@angular/common';
 
 /**

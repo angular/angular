@@ -109,7 +109,7 @@ export class UpgradeAdapter {
   /* @internal */
   private downgradedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
   /* @internal */
-  private providers: Array<Type | Provider | any[]> = [];
+  private providers: Array<Type | Provider | any[] | any> = [];
 
   /**
    * Allows Angular v2 Component to be used from AngularJS v1.
@@ -295,9 +295,8 @@ export class UpgradeAdapter {
                               [
                                 BROWSER_APP_PROVIDERS,
                                 BROWSER_APP_COMPILER_PROVIDERS,
-                                provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
-                                provide(NG1_COMPILE,
-                                        {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
+                                {provide: NG1_INJECTOR, useFactory: () => ng1Injector},
+                                {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)},
                                 this.providers
                               ],
                               platformRef.injector)
@@ -449,7 +448,7 @@ export class UpgradeAdapter {
    * adapter.bootstrap(document.body, ['myExample']);
    *```
    */
-  public addProvider(provider: Type | Provider | any[]): void { this.providers.push(provider); }
+  public addProvider(provider: Type | Provider | any[] | any): void { this.providers.push(provider); }
 
   /**
    * Allows AngularJS v1 service to be accessible from Angular v2.
@@ -485,10 +484,11 @@ export class UpgradeAdapter {
    */
   public upgradeNg1Provider(name: string, options?: {asToken: any}) {
     var token = options && options.asToken || name;
-    this.providers.push(provide(token, {
+    this.providers.push({
+      provide: token,
       useFactory: (ng1Injector: angular.IInjectorService) => ng1Injector.get(name),
       deps: [NG1_INJECTOR]
-    }));
+    });
   }
 
   /**

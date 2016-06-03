@@ -27,7 +27,7 @@ export function main() {
   const RESULT = 20;
   const ID = "methodId";
 
-  beforeEachProviders(() => [Serializer, provide(ON_WEB_WORKER, {useValue: true}), RenderStore]);
+  beforeEachProviders(() => [Serializer, {provide: ON_WEB_WORKER, useValue: true}, RenderStore]);
 
   describe("UIMessageBroker", () => {
     var messageBuses;

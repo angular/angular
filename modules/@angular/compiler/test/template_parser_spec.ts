@@ -10,7 +10,6 @@ import {
   inject,
   beforeEachProviders
 } from '@angular/core/testing/testing_internal';
-import {provide} from '@angular/core';
 import {SecurityContext} from '../core_private';
 
 import {Console} from '@angular/core/src/console';
@@ -63,9 +62,10 @@ var expressionUnparser = new Unparser();
 var someModuleUrl = 'package:someModule';
 
 var MOCK_SCHEMA_REGISTRY = [
-  provide(
-      ElementSchemaRegistry,
-      {useValue: new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'})})
+  {
+    provide: ElementSchemaRegistry,
+    useValue: new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'})
+  }
 ];
 
 let zeConsole = console;
@@ -80,7 +80,7 @@ export function main() {
   function commonBeforeEach() {
     beforeEachProviders(() => {
       console = new ArrayConsole();
-      return [provide(Console, {useValue: console})];
+      return [{provide: Console, useValue: console}];
     });
     beforeEach(inject([TemplateParser], (parser) => {
       var component = CompileDirectiveMetadata.create({
@@ -108,7 +108,7 @@ export function main() {
     beforeEachProviders(() => [TEST_PROVIDERS, MOCK_SCHEMA_REGISTRY]);
 
     beforeEachProviders(
-        () => [provide(TEMPLATE_TRANSFORMS, {useValue: new FooAstTransformer(), multi: true})]);
+        () => [{provide: TEMPLATE_TRANSFORMS, useValue: new FooAstTransformer(), multi: true}]);
 
     describe('single', () => {
       commonBeforeEach();
@@ -118,7 +118,7 @@ export function main() {
 
     describe('multiple', () => {
       beforeEachProviders(
-          () => [provide(TEMPLATE_TRANSFORMS, {useValue: new BarAstTransformer(), multi: true})]);
+          () => [{provide: TEMPLATE_TRANSFORMS, useValue: new BarAstTransformer(), multi: true}]);
 
       commonBeforeEach();
       it('should compose transformers',
@@ -131,7 +131,7 @@ export function main() {
     // Uses the actual DomElementSchemaRegistry.
     beforeEachProviders(
         () =>
-            [TEST_PROVIDERS, provide(ElementSchemaRegistry, {useClass: DomElementSchemaRegistry})]);
+            [TEST_PROVIDERS, {provide: ElementSchemaRegistry, useClass: DomElementSchemaRegistry}]);
 
     commonBeforeEach();
 

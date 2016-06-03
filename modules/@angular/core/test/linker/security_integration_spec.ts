@@ -28,13 +28,13 @@ export function main() {
   } else {
     describe('jit', () => {
       beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, true)})]);
+          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, true)}]);
       declareTests(true);
     });
 
     describe('no jit', () => {
       beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, false)})]);
+          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, false)}]);
       declareTests(false);
     });
   }
@@ -63,7 +63,7 @@ function itAsync(msg: string,
 function declareTests(isJit: boolean) {
   describe('security integration tests', function() {
 
-    beforeEachProviders(() => [provide(ANCHOR_ELEMENT, {useValue: el('<div></div>')})]);
+    beforeEachProviders(() => [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]);
 
     let originalLog: (msg: any) => any;
     beforeEach(() => {

@@ -113,7 +113,7 @@ export function main() {
       getDOM().appendChild(el, lightDom);
       getDOM().setText(lightDom, 'loading');
       testProviders =
-          [provide(DOCUMENT, {useValue: fakeDoc}), provide(Console, {useClass: DummyConsole})];
+          [{provide: DOCUMENT, useValue: fakeDoc}, {provide: Console, useClass: DummyConsole}];
     });
 
     afterEach(disposePlatform);
@@ -123,7 +123,7 @@ export function main() {
       var exceptionHandler = new ExceptionHandler(logger, false);
       expect(
           () => bootstrap(HelloRootDirectiveIsNotCmp,
-                          [testProviders, provide(ExceptionHandler, {useValue: exceptionHandler})]))
+                          [testProviders, {provide: ExceptionHandler, useValue: exceptionHandler}]))
           .toThrowError(
               `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
       expect(logger.res.join("")).toContain("Could not compile");
@@ -134,7 +134,7 @@ export function main() {
          var exceptionHandler = new ExceptionHandler(logger, false);
 
          var refPromise =
-             bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
+             bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
          PromiseWrapper.then(refPromise, null, (reason) => {
            expect(reason.message).toContain('The selector "hello-app" did not match any elements');
            async.done();
@@ -150,7 +150,7 @@ export function main() {
            var exceptionHandler = new ExceptionHandler(logger, false);
 
            var refPromise =
-               bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
+               bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
            PromiseWrapper.then(refPromise, null, (reason: any) => {
              expect(reason.message)
                  .toContain('The selector "hello-app" did not match any elements');
@@ -164,7 +164,7 @@ export function main() {
            var exceptionHandler = new ExceptionHandler(logger, false);
 
            var refPromise =
-               bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
+               bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
            PromiseWrapper.then(refPromise, null, (reason) => {
              expect(logger.res.join(""))
                  .toContain('The selector "hello-app" did not match any elements');
@@ -225,7 +225,7 @@ export function main() {
     it("should make the provided bindings available to the application component",
        inject([AsyncTestCompleter], (async) => {
          var refPromise = bootstrap(
-             HelloRootCmp3, [testProviders, provide("appBinding", {useValue: "BoundValue"})]);
+             HelloRootCmp3, [testProviders, {provide: "appBinding", useValue: "BoundValue"}]);
 
          refPromise.then((ref) => {
            expect(ref.instance.appBinding).toEqual("BoundValue");
@@ -246,16 +246,16 @@ export function main() {
     it("should run platform initializers", inject([Log], (log: Log) => {
          let p = createPlatform(ReflectiveInjector.resolveAndCreate([
            BROWSER_PLATFORM_PROVIDERS,
-           provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init1"), multi: true}),
-           provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init2"), multi: true})
+           {provide: PLATFORM_INITIALIZER, useValue: log.fn("platform_init1"), multi: true},
+           {provide: PLATFORM_INITIALIZER, useValue: log.fn("platform_init2"), multi: true}
          ]));
          expect(log.result()).toEqual("platform_init1; platform_init2");
          log.clear();
          var a = ReflectiveInjector.resolveAndCreate(
              [
                BROWSER_APP_PROVIDERS,
-               provide(APP_INITIALIZER, {useValue: log.fn("app_init1"), multi: true}),
-               provide(APP_INITIALIZER, {useValue: log.fn("app_init2"), multi: true})
+               {provide: APP_INITIALIZER, useValue: log.fn("app_init1"), multi: true},
+               {provide: APP_INITIALIZER, useValue: log.fn("app_init2"), multi: true}
              ],
              p.injector);
          a.get(ApplicationRef);

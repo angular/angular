@@ -25,7 +25,7 @@ export function main() {
   describe('Compiler', () => {
     var someCompFactory;
 
-    beforeEachProviders(() => [provide(ComponentResolver, {useClass: ReflectorComponentResolver})]);
+    beforeEachProviders(() => [{provide: ComponentResolver, useClass: ReflectorComponentResolver}]);
 
     beforeEach(inject([ComponentResolver], (_compiler) => {
       someCompFactory = new ComponentFactory(null, null, null);

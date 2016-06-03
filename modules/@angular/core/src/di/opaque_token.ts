@@ -7,7 +7,7 @@
  * var t = new OpaqueToken("value");
  *
  * var injector = Injector.resolveAndCreate([
- *   provide(t, {useValue: "bindingValue"})
+ *   {provide: t, useValue: "bindingValue"}
  * ]);
  *
  * expect(injector.get(t)).toEqual("bindingValue");

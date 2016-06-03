@@ -48,9 +48,9 @@ export function main() {
 
     beforeEachProviders(() => [
       RouteRegistry,
-      provide(Location, {useClass: SpyLocation}),
-      provide(ROUTER_PRIMARY_COMPONENT, {useValue: MyComp7}),
-      provide(Router, {useClass: RootRouter}),
+      {provide: Location, useClass: SpyLocation},
+      {provide: ROUTER_PRIMARY_COMPONENT, useValue: MyComp7},
+      {provide: Router, useClass: RootRouter},
     ]);
 
     beforeEach(inject([TestComponentBuilder, Router, Location],

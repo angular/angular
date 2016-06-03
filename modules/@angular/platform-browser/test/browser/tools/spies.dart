@@ -16,7 +16,7 @@ class SpyComponentRef extends SpyObject implements ComponentRef<dynamic> {
 
   SpyComponentRef() {
     this.injector = ReflectiveInjector
-        .resolveAndCreate([bind(ApplicationRef).toClass(SpyApplicationRef)]);
+        .resolveAndCreate([{provide: ApplicationRef, useClass: SpyApplicationRef}]);
   }
 }
 

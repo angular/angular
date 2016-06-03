@@ -1,6 +1,6 @@
 import {bootstrap} from '@angular/platform-browser';
 import {NgIf} from '@angular/common';
-import {Component, Directive, ViewContainerRef, bind, provide, Provider} from '@angular/core';
+import {Component} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {reflector} from '@angular/core/src/reflection/reflection';
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
@@ -15,7 +15,7 @@ import {
 } from '@angular/testing/src/benchmark_util';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
-function createBindings(): Provider[] {
+function createBindings(): any[] {
   return [];
 }
 

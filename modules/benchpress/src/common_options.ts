@@ -1,8 +1,8 @@
-import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
+import {OpaqueToken} from '@angular/core/src/di';
 import {DateWrapper} from '@angular/facade';
 
 export class Options {
-  static get DEFAULT_PROVIDERS(): Provider[] { return _DEFAULT_PROVIDERS; }
+  static get DEFAULT_PROVIDERS(): any[] { return _DEFAULT_PROVIDERS; }
   // TODO(tbosch): use static initializer when our transpiler supports it
   static get SAMPLE_ID() { return _SAMPLE_ID; }
   // TODO(tbosch): use static initializer when our transpiler supports it
@@ -49,14 +49,13 @@ var _REQUEST_COUNT = new OpaqueToken('Options.requestCount');
 var _CAPTURE_FRAMES = new OpaqueToken('Options.frameCapture');
 
 var _DEFAULT_PROVIDERS = [
-  bind(_DEFAULT_DESCRIPTION)
-      .toValue({}),
-  provide(_SAMPLE_DESCRIPTION, {useValue: {}}),
-  provide(_FORCE_GC, {useValue: false}),
-  provide(_PREPARE, {useValue: false}),
-  provide(_MICRO_METRICS, {useValue: {}}),
-  provide(_NOW, {useValue: () => DateWrapper.now()}),
-  provide(_RECEIVED_DATA, {useValue: false}),
-  provide(_REQUEST_COUNT, {useValue: false}),
-  provide(_CAPTURE_FRAMES, {useValue: false})
+  {provide: _DEFAULT_DESCRIPTION, useValue: {}},
+  {provide: _SAMPLE_DESCRIPTION, useValue: {}},
+  {provide: _FORCE_GC, useValue: false},
+  {provide: _PREPARE, useValue: false},
+  {provide: _MICRO_METRICS, useValue: {}},
+  {provide: _NOW, useValue: () => DateWrapper.now()},
+  {provide: _RECEIVED_DATA, useValue: false},
+  {provide: _REQUEST_COUNT, useValue: false},
+  {provide: _CAPTURE_FRAMES, useValue: false}
 ];

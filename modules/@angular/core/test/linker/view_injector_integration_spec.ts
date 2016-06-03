@@ -287,7 +287,7 @@ export function main() {
     // On CJS fakeAsync is not supported...
     if (!getDOM().supportsDOMEvents()) return;
 
-    beforeEachProviders(() => [provide("appService", {useValue: 'appService'})]);
+    beforeEachProviders(() => [{provide: "appService", useValue: 'appService'}]);
 
     beforeEach(inject([TestComponentBuilder], (_tcb) => { tcb = _tcb; }));
 
@@ -308,14 +308,14 @@ export function main() {
 
       it('should support useValue with different values', fakeAsync(() => {
            var el = createComp('', tcb.overrideProviders(TestComp, [
-             provide('numLiteral', {useValue: 0}),
-             provide('boolLiteral', {useValue: true}),
-             provide('strLiteral', {useValue: 'a'}),
-             provide('null', {useValue: null}),
-             provide('array', {useValue: [1]}),
-             provide('map', {useValue: {'a': 1}}),
-             provide('instance', {useValue: new TestValue('a')}),
-             provide('nested', {useValue: [{'a': [1]}, new TestValue('b')]}),
+             {provide:'numLiteral', useValue: 0},
+             {provide: 'boolLiteral', useValue: true},
+             {provide: 'strLiteral', useValue: 'a'},
+             {provide: 'null', useValue: null},
+             {provide: 'array', useValue: [1]},
+             {provide: 'map', useValue: {'a': 1}},
+             {provide: 'instance', useValue: new TestValue('a')},
+             {provide: 'nested', useValue: [{'a': [1]}, new TestValue('b')]},
            ]));
            expect(el.inject('numLiteral')).toBe(0);
            expect(el.inject('boolLiteral')).toBe(true);
@@ -331,19 +331,19 @@ export function main() {
            var el = createComp('<div simpleDirective><span someOtherDirective></span></div>',
                                tcb.overrideProviders(
                                       SimpleDirective,
-                                      [provide('injectable1', {useValue: 'injectable1'})])
+                                      [{provide: 'injectable1', useValue: 'injectable1'}])
                                    .overrideProviders(SomeOtherDirective, [
-                                     provide('injectable1', {useValue: 'new-injectable1'}),
-                                     provide('injectable2',
-                                             {
-                                               useFactory: (val) => `${val}-injectable2`,
-                                               deps: [
-                                                 [
-                                                   new InjectMetadata('injectable1'),
-                                                   new SkipSelfMetadata()
-                                                 ]
-                                               ]
-                                             })
+                                     {provide: 'injectable1', useValue: 'new-injectable1'},
+                                     {
+                                       provide: 'injectable2',
+                                       useFactory: (val) => `${val}-injectable2`,
+                                       deps: [
+                                         [
+                                           new InjectMetadata('injectable1'),
+                                           new SkipSelfMetadata()
+                                         ]
+                                       ]
+                                     }
                                    ]));
            expect(el.children[0].children[0].inject('injectable2'))
                .toEqual('injectable1-injectable2');
@@ -351,9 +351,8 @@ export function main() {
 
       it("should instantiate providers that have dependencies", fakeAsync(() => {
            var providers = [
-             provide('injectable1', {useValue: 'injectable1'}),
-             provide('injectable2',
-                     {useFactory: (val) => `${val}-injectable2`, deps: ['injectable1']})
+             {provide: 'injectable1', useValue: 'injectable1'},
+             {provide: 'injectable2', useFactory: (val) => `${val}-injectable2`, deps: ['injectable1']}
            ];
            var el = createComp('<div simpleDirective></div>',
                                tcb.overrideProviders(SimpleDirective, providers));
@@ -362,9 +361,8 @@ export function main() {
 
       it("should instantiate viewProviders that have dependencies", fakeAsync(() => {
            var viewProviders = [
-             provide('injectable1', {useValue: 'injectable1'}),
-             provide('injectable2',
-                     {useFactory: (val) => `${val}-injectable2`, deps: ['injectable1']})
+             {provide: 'injectable1', useValue: 'injectable1'},
+             {provide: 'injectable2', useFactory: (val) => `${val}-injectable2`, deps: ['injectable1']}
            ];
 
            var el = createComp('<div simpleComponent></div>',
@@ -376,14 +374,14 @@ export function main() {
            var el =
                createComp('<div needsServiceComponent></div>',
                           tcb.overrideViewProviders(NeedsServiceComponent,
-                                                    [provide('service', {useValue: 'service'})]));
+                                                    [{provide: 'service', useValue: 'service'}]));
            expect(el.children[0].inject(NeedsServiceComponent).service).toEqual('service');
          }));
 
       it("should instantiate multi providers", fakeAsync(() => {
            var providers = [
-             provide('injectable1', {useValue: 'injectable11', multi: true}),
-             provide('injectable1', {useValue: 'injectable12', multi: true})
+             {provide: 'injectable1', useValue: 'injectable11', multi: true},
+             {provide: 'injectable1', useValue: 'injectable12', multi: true}
            ];
            var el = createComp('<div simpleDirective></div>',
                                tcb.overrideProviders(SimpleDirective, providers));
@@ -395,7 +393,7 @@ export function main() {
            var el = createComp(
                '<div simpleDirective></div>',
                tcb.overrideProviders(SimpleDirective,
-                                     [provide('service', {useFactory: () => created = true})]));
+                                     [{provide: 'service', useFactory: () => created = true}]));
 
            expect(created).toBe(false);
 
@@ -409,7 +407,7 @@ export function main() {
            var el = createComp(
                '<div simpleComponent></div>',
                tcb.overrideViewProviders(SimpleComponent,
-                                         [provide('service', {useFactory: () => created = true})]));
+                                         [{provide: 'service', useFactory: () => created = true}]));
 
            expect(created).toBe(false);
 
@@ -423,7 +421,7 @@ export function main() {
            expect(() =>
                       createComp('<div simpleComponent needsService></div>',
                                  tcb.overrideViewProviders(
-                                     SimpleComponent, [provide("service", {useValue: "service"})])))
+                                     SimpleComponent, [{provide: "service", useValue: "service"}])))
                .toThrowError(containsRegexp(`No provider for service!`));
          }));
 
@@ -432,7 +430,7 @@ export function main() {
            var el =
                createComp('<div simpleDirective><div needsService></div></div>',
                           tcb.overrideProviders(SimpleDirective,
-                                                [provide('service', {useValue: 'parentService'})]));
+                                                [{provide: 'service', useValue: 'parentService'}]));
            expect(el.children[0].children[0].inject(NeedsService).service).toEqual('parentService');
          }));
 
@@ -441,7 +439,7 @@ export function main() {
            var el = createComp(
                '<div simpleDirective><template [ngIf]="true"><div *ngIf="true" needsService></div></template></div>',
                tcb.overrideProviders(SimpleDirective,
-                                     [provide('service', {useValue: 'parentService'})]));
+                                     [{provide: 'service', useValue: 'parentService'}]));
            expect(el.children[0].children[0].inject(NeedsService).service).toEqual('parentService');
          }));
 
@@ -450,7 +448,7 @@ export function main() {
                createComp('<div simpleComponent></div>',
                           tcb.overrideTemplate(SimpleComponent, '<div needsService></div>')
                               .overrideProviders(SimpleComponent,
-                                                 [provide('service', {useValue: 'hostService'})]));
+                                                 [{provide: 'service', useValue: 'hostService'}]));
            expect(el.children[0].children[0].inject(NeedsService).service).toEqual('hostService');
          }));
 
@@ -460,7 +458,7 @@ export function main() {
                '<div simpleComponent></div>',
                tcb.overrideTemplate(SimpleComponent, '<div needsService></div>')
                    .overrideViewProviders(SimpleComponent,
-                                          [provide('service', {useValue: 'hostService'})]));
+                                          [{provide: 'service', useValue: 'hostService'}]));
            expect(el.children[0].children[0].inject(NeedsService).service).toEqual('hostService');
          }));
 
@@ -470,7 +468,7 @@ export function main() {
                '<div simpleComponent></div>',
                tcb.overrideTemplate(SimpleComponent, '<div *ngIf="true" needsService></div>')
                    .overrideViewProviders(SimpleComponent,
-                                          [provide('service', {useValue: 'hostService'})]));
+                                          [{provide: 'service', useValue: 'hostService'}]));
            expect(el.children[0].children[0].inject(NeedsService).service).toEqual('hostService');
          }));
 
@@ -492,7 +490,7 @@ export function main() {
            expect(() => createComp(
                       '<div simpleComponent></div>',
                       tcb.overrideProviders(SimpleComponent,
-                                            [provide('service', {useValue: 'hostService'})])
+                                            [{provide: 'service', useValue: 'hostService'}])
                           .overrideTemplate(SimpleComponent, '<div needsServiceFromHost><div>')))
                .toThrowError(
                    `Template parse errors:\nNo provider for service ("[ERROR ->]<div needsServiceFromHost><div>"): SimpleComponent@0:0`);
@@ -504,7 +502,7 @@ export function main() {
            expect(() => createComp(
                       '<div simpleComponent someOtherDirective></div>',
                       tcb.overrideProviders(SomeOtherDirective,
-                                            [provide('service', {useValue: 'hostService'})])
+                                            [{provide: 'service', useValue: 'hostService'}])
                           .overrideTemplate(SimpleComponent, '<div needsServiceFromHost><div>')))
                .toThrowError(
                    `Template parse errors:\nNo provider for service ("[ERROR ->]<div needsServiceFromHost><div>"): SimpleComponent@0:0`);
@@ -652,7 +650,7 @@ export function main() {
       it('should instantiate pipes that have dependencies', fakeAsync(() => {
            var el = createComp(
                '<div [simpleDirective]="true | pipeNeedsService"></div>',
-               tcb.overrideProviders(TestComp, [provide('service', {useValue: 'pipeService'})]));
+               tcb.overrideProviders(TestComp, [{provide: 'service', useValue: 'pipeService'}]));
            expect(el.children[0].inject(SimpleDirective).value.service).toEqual('pipeService');
          }));
 

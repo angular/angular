@@ -134,7 +134,7 @@ export function main() {
 
   describe('using the test injector with the inject helper', () => {
     describe('setting up Providers', () => {
-      beforeEachProviders(() => [provide(FancyService, {useValue: new FancyService()})]);
+      beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
 
       it('should use set up providers',
          inject([FancyService], (service) => { expect(service.value).toEqual('real value'); }));
@@ -185,12 +185,12 @@ export function main() {
 
     describe('per test providers', () => {
       it('should allow per test providers',
-         withProviders(() => [provide(FancyService, {useValue: new FancyService()})])
+         withProviders(() => [{provide: FancyService, useValue: new FancyService()}])
              .inject([FancyService],
                      (service) => { expect(service.value).toEqual('real value'); }));
 
       it('should return value from inject', () => {
-        let retval = withProviders(() => [provide(FancyService, {useValue: new FancyService()})])
+        let retval = withProviders(() => [{provide: FancyService, useValue: new FancyService()}])
                          .inject([FancyService], (service) => {
                            expect(service.value).toEqual('real value');
                            return 10;
@@ -265,7 +265,7 @@ export function main() {
     });
 
     describe('using beforeEachProviders', () => {
-      beforeEachProviders(() => [provide(FancyService, {useValue: new FancyService()})]);
+      beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
 
       beforeEach(
           inject([FancyService], (service) => { expect(service.value).toEqual('real value'); }));
@@ -275,7 +275,7 @@ export function main() {
         it('should fail when the injector has already been used', () => {
           patchJasmineBeforeEach();
           expect(() => {
-            beforeEachProviders(() => [provide(FancyService, {useValue: new FancyService()})]);
+            beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
           })
               .toThrowError('beforeEachProviders was called after the injector had been used ' +
                             'in a beforeEach or it block. This invalidates the test injector');
@@ -364,7 +364,7 @@ export function main() {
     it('should override a provider',
        async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         tcb.overrideProviders(TestProvidersComp, [provide(FancyService, {useClass: MockFancyService})])
+         tcb.overrideProviders(TestProvidersComp, [{provide: FancyService, useClass: MockFancyService}])
              .createAsync(TestProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -378,7 +378,7 @@ export function main() {
        async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
          tcb.overrideViewProviders(TestViewProvidersComp,
-                                   [provide(FancyService, {useClass: MockFancyService})])
+                                   [{provide: FancyService, useClass: MockFancyService}])
              .createAsync(TestViewProvidersComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();

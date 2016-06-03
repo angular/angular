@@ -1,4 +1,4 @@
-import {Component, Injectable, provide, ComponentRef} from '@angular/core';
+import {Component, Injectable, ComponentRef} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser';
 import {
   OnDeactivate,
@@ -57,7 +57,7 @@ export class AppCmp {
 
 export function main(): Promise<ComponentRef<AppCmp>> {
   return bootstrap(AppCmp, [
-    provide(APP_BASE_HREF, {useValue: '/@angular/examples/router/ts/on_deactivate'}),
+    {provide: APP_BASE_HREF, useValue: '/@angular/examples/router/ts/on_deactivate'},
     LogService
   ]);
 }

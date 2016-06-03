@@ -9,7 +9,7 @@ import {
 } from '@angular/facade';
 import {BaseException, WrappedException} from '@angular/facade';
 import {ListWrapper, StringMapWrapper} from '@angular/facade';
-import {bind, provide, Provider, OpaqueToken} from '@angular/core/src/di';
+import {OpaqueToken} from '@angular/core/src/di';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {Metric} from '../metric';
@@ -20,7 +20,7 @@ import {Options} from '../common_options';
  */
 export class PerflogMetric extends Metric {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get SET_TIMEOUT(): OpaqueToken { return _SET_TIMEOUT; }
 
@@ -364,19 +364,21 @@ var _MARK_NAME_FRAME_CAPUTRE = 'frameCapture';
 var _FRAME_TIME_SMOOTH_THRESHOLD = 17;
 
 var _PROVIDERS = [
-  bind(PerflogMetric)
-      .toFactory(
-          (driverExtension, setTimeout, microMetrics, forceGc, captureFrames, receivedData,
-           requestCount) => new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc,
-                                              captureFrames, receivedData, requestCount),
-          [
-            WebDriverExtension,
-            _SET_TIMEOUT,
-            Options.MICRO_METRICS,
-            Options.FORCE_GC,
-            Options.CAPTURE_FRAMES,
-            Options.RECEIVED_DATA,
-            Options.REQUEST_COUNT
-          ]),
-  provide(_SET_TIMEOUT, {useValue: (fn, millis) => TimerWrapper.setTimeout(fn, millis)})
+  {
+    provide: PerflogMetric,
+    useFactory:
+      (driverExtension, setTimeout, microMetrics, forceGc, captureFrames, receivedData,
+       requestCount) => new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc,
+        captureFrames, receivedData, requestCount),
+    deps: [
+      WebDriverExtension,
+      _SET_TIMEOUT,
+      Options.MICRO_METRICS,
+      Options.FORCE_GC,
+      Options.CAPTURE_FRAMES,
+      Options.RECEIVED_DATA,
+      Options.REQUEST_COUNT
+    ]
+  },
+  {provide: _SET_TIMEOUT, useValue: (fn, millis) => TimerWrapper.setTimeout(fn, millis)}
 ];

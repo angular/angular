@@ -24,7 +24,7 @@ export function main() {
       locationStrategy = new MockLocationStrategy();
       locationStrategy.internalBaseHref = baseHref;
       let injector = ReflectiveInjector.resolveAndCreate(
-          [Location, provide(LocationStrategy, {useValue: locationStrategy}), provider]);
+          [Location, {provide: LocationStrategy, useValue: locationStrategy}, provider]);
       return location = injector.get(Location);
     }
 

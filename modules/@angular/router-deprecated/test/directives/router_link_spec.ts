@@ -37,8 +37,8 @@ export function main() {
     var tcb: TestComponentBuilder;
 
     beforeEachProviders(() => [
-      provide(Location, {useValue: makeDummyLocation()}),
-      provide(Router, {useValue: makeDummyRouter()})
+      {provide: Location, useValue: makeDummyLocation()},
+      {provide: Router, useValue: makeDummyRouter()}
     ]);
 
     beforeEach(inject([TestComponentBuilder], (tcBuilder) => { tcb = tcBuilder; }));

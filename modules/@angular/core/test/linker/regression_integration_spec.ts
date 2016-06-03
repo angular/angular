@@ -34,13 +34,13 @@ export function main() {
   } else {
     describe('jit', () => {
       beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, true)})]);
+          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, true)}]);
       declareTests(true);
     });
 
     describe('no jit', () => {
       beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, false)})]);
+          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, false)}]);
       declareTests(false);
     });
   }
@@ -51,7 +51,7 @@ function declareTests(isJit: boolean) {
   describe('regressions', () => {
 
     describe('platform pipes', () => {
-      beforeEachProviders(() => [provide(PLATFORM_PIPES, {useValue: [PlatformPipe], multi: true})]);
+      beforeEachProviders(() => [{provide: PLATFORM_PIPES, useValue: [PlatformPipe], multi: true}]);
 
       it('should overwrite them by custom pipes',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -106,7 +106,7 @@ function declareTests(isJit: boolean) {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var token = new OpaqueToken('a.b');
            var tokenValue = 1;
-           createInjector(tcb, [provide(token, {useValue: tokenValue})])
+           createInjector(tcb, [{provide: token, useValue: tokenValue}])
                .then((injector: Injector) => {
                  expect(injector.get(token)).toEqual(tokenValue);
                  async.done();
@@ -117,7 +117,7 @@ function declareTests(isJit: boolean) {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var token = 'a.b';
            var tokenValue = 1;
-           createInjector(tcb, [provide(token, {useValue: tokenValue})])
+           createInjector(tcb, [{provide: token, useValue: tokenValue}])
                .then((injector: Injector) => {
                  expect(injector.get(token)).toEqual(tokenValue);
                  async.done();
@@ -128,7 +128,7 @@ function declareTests(isJit: boolean) {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var token = () => true;
            var tokenValue = 1;
-           createInjector(tcb, [provide(token, {useValue: tokenValue})])
+           createInjector(tcb, [{provide: token, useValue: tokenValue}])
                .then((injector: Injector) => {
                  expect(injector.get(token)).toEqual(tokenValue);
                  async.done();
@@ -143,7 +143,7 @@ function declareTests(isJit: boolean) {
            var tokenValue2 = {'a': 1};
            createInjector(
                tcb,
-               [provide(token1, {useValue: tokenValue1}), provide(token2, {useValue: tokenValue2})])
+               [{provide: token1, useValue: tokenValue1}, {provide: token2, useValue: tokenValue2}])
                .then((injector: Injector) => {
                  expect(injector.get(token1)).toEqual(tokenValue1);
                  expect(injector.get(token2)).toEqual(tokenValue2);

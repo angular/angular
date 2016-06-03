@@ -1,4 +1,4 @@
-import {Component, provide, ComponentRef} from '@angular/core';
+import {Component, ComponentRef} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser';
 import {
   RouteConfig,
@@ -53,5 +53,5 @@ export class AppCmp {
 
 export function main(): Promise<ComponentRef<AppCmp>> {
   return bootstrap(AppCmp,
-                   [provide(APP_BASE_HREF, {useValue: '/@angular/examples/router/ts/reuse'})]);
+                   [{provide: APP_BASE_HREF, useValue: '/@angular/examples/router/ts/reuse'}]);
 }

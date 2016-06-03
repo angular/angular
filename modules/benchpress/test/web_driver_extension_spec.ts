@@ -14,14 +14,14 @@ import {
 import {isPresent, StringWrapper} from '@angular/facade';
 import {PromiseWrapper} from '@angular/facade';
 
-import {WebDriverExtension, bind, provide, ReflectiveInjector, Options} from 'benchpress/common';
+import {WebDriverExtension, ReflectiveInjector, Options} from 'benchpress/common';
 
 export function main() {
   function createExtension(ids: any[], caps) {
     return PromiseWrapper.wrap(() => {
       return ReflectiveInjector.resolveAndCreate([
-                                 ids.map(id => provide(id, {useValue: new MockExtension(id)})),
-                                 bind(Options.CAPABILITIES).toValue(caps),
+                                 ids.map((id) => { return {provide: id, useValue: new MockExtension(id)}}),
+                                 {provide: Options.CAPABILITIES, useValue: caps},
                                  WebDriverExtension.bindTo(ids)
                                ])
           .get(WebDriverExtension);

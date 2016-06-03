@@ -29,9 +29,9 @@ export function main() {
 
     beforeEachProviders(() => [
       RouteRegistry,
-      provide(Location, {useClass: SpyLocation}),
-      provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp}),
-      provide(Router, {useClass: RootRouter})
+      {provide: Location, useClass: SpyLocation},
+      {provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp},
+      {provide: Router, useClass: RootRouter}
     ]);
 
 

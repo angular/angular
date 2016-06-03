@@ -125,7 +125,7 @@ export function main() {
     beforeEachProviders(() => [
       RenderLog,
       DirectiveLog,
-      provide(RootRenderer, {useClass: LoggingRootRenderer}),
+      {provide: RootRenderer, useClass: LoggingRootRenderer},
       TEST_PROVIDERS,
     ]);
 

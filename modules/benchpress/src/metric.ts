@@ -1,12 +1,11 @@
-import {bind, provide, Provider} from '@angular/core/src/di';
 import {BaseException, WrappedException} from '@angular/facade';
 
 /**
  * A metric is measures values
  */
 export abstract class Metric {
-  static bindTo(delegateToken): Provider[] {
-    return [bind(Metric).toFactory((delegate) => delegate, [delegateToken])];
+  static bindTo(delegateToken): any[] {
+    return [{provide: Metric, useFactory: (delegate) => delegate, deps: [delegateToken]}];
   }
 
   /**

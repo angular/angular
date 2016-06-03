@@ -21,7 +21,7 @@ import {OpaqueToken} from './di';
  *   ...
  * }
  *
- * bootstrap(MyComponent, [provide(PLATFORM_DIRECTIVES, {useValue: [OtherDirective], multi:true})]);
+ * bootstrap(MyComponent, [{provide: PLATFORM_DIRECTIVES, useValue: [OtherDirective], multi:true}]);
  * ```
  * @stable
  */
@@ -48,7 +48,7 @@ export const PLATFORM_DIRECTIVES: OpaqueToken =
  *   ...
  * }
  *
- * bootstrap(MyComponent, [provide(PLATFORM_PIPES, {useValue: [OtherPipe], multi:true})]);
+ * bootstrap(MyComponent, [{provide: PLATFORM_PIPES, useValue: [OtherPipe], multi:true}]);
  * ```
  * @stable
  */

@@ -1,4 +1,4 @@
-import {ApplicationRef, Provider} from '@angular/core';
+import {ApplicationRef} from '@angular/core';
 import {LocationStrategy, PathLocationStrategy, Location} from '@angular/common';
 import {Router, RootRouter} from './router';
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './route_registry';

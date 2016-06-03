@@ -17,8 +17,6 @@ import {DateWrapper} from '@angular/facade';
 import {
   Reporter,
   MultiReporter,
-  bind,
-  provide,
   ReflectiveInjector,
   MeasureValues
 } from 'benchpress/common';
@@ -26,7 +24,7 @@ import {
 export function main() {
   function createReporters(ids: any[]) {
     var r = ReflectiveInjector.resolveAndCreate([
-                                ids.map(id => provide(id, {useValue: new MockReporter(id)})),
+                                ids.map(id => { return {provide: id, useValue: new MockReporter(id)}}),
                                 MultiReporter.createBindings(ids)
                               ])
                 .get(MultiReporter);

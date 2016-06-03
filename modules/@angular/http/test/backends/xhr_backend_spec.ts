@@ -94,9 +94,11 @@ export function main() {
 
     beforeEachProviders(
         () =>
-            [provide(ResponseOptions, {useClass: BaseResponseOptions}),
-             provide(BrowserXhr, {useClass: MockBrowserXHR}), XHRBackend,
-             provide(XSRFStrategy, {useValue: new CookieXSRFStrategy()}),
+            [
+              {provide: ResponseOptions, useClass: BaseResponseOptions},
+              {provide: BrowserXhr, useClass: MockBrowserXHR},
+              XHRBackend,
+              {provide: XSRFStrategy, useValue: new CookieXSRFStrategy()},
     ]);
 
     beforeEach(inject([XHRBackend], (be: XHRBackend) => {
@@ -112,7 +114,7 @@ export function main() {
       class NoopXsrfStrategy implements XSRFStrategy {
         configureRequest(req: Request) {}
       }
-      beforeEachProviders(() => [provide(XSRFStrategy, {useClass: NoopXsrfStrategy})]);
+      beforeEachProviders(() => [{provide: XSRFStrategy, useClass: NoopXsrfStrategy}]);
 
       it('succeeds',
          () => { expect(() => backend.createConnection(sampleRequest)).not.toThrow(); });
@@ -135,8 +137,7 @@ export function main() {
 
         describe('configuration', () => {
           beforeEachProviders(
-              () => [provide(
-                  XSRFStrategy, {useValue: new CookieXSRFStrategy('my cookie', 'X-MY-HEADER')})]);
+              () => [{provide: XSRFStrategy, useValue: new CookieXSRFStrategy('my cookie', 'X-MY-HEADER')}]);
 
           it('uses the configured names', () => {
             getDOM().setCookie('my cookie', 'XSRF value');

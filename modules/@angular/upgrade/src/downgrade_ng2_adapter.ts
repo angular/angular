@@ -39,7 +39,7 @@ export class DowngradeNg2ComponentAdapter {
 
   bootstrapNg2() {
     var childInjector = ReflectiveInjector.resolveAndCreate(
-        [provide(NG1_SCOPE, {useValue: this.componentScope})], this.parentInjector);
+        [{provide: NG1_SCOPE, useValue: this.componentScope}], this.parentInjector);
     this.contentInsertionPoint = document.createComment('ng1 insertion point');
 
     this.componentRef =

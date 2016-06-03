@@ -15,8 +15,6 @@ import {
   Validator,
   SizeValidator,
   ReflectiveInjector,
-  bind,
-  provide,
   MeasureValues
 } from 'benchpress/common';
 
@@ -27,7 +25,7 @@ export function main() {
     function createValidator(size) {
       validator = ReflectiveInjector.resolveAndCreate([
                                       SizeValidator.PROVIDERS,
-                                      provide(SizeValidator.SAMPLE_SIZE).toValue(size)
+                                      {provide: SizeValidator.SAMPLE_SIZE, useValue: size}
                                     ])
                       .get(SizeValidator);
     }

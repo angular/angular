@@ -63,5 +63,5 @@ export class AppCmp {
 
 export function main(): Promise<ComponentRef<AppCmp>> {
   return bootstrap(
-      AppCmp, [provide(APP_BASE_HREF, {useValue: '/@angular/examples/router/ts/can_deactivate'})]);
+      AppCmp, [{provide: APP_BASE_HREF, useValue: '/@angular/examples/router/ts/can_deactivate'}]);
 }

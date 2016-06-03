@@ -1,11 +1,6 @@
 import {bootstrap} from '@angular/platform-browser';
 import {
   Component,
-  Directive,
-  ViewContainerRef,
-  bind,
-  provide,
-  Provider,
   enableProdMode
 } from '@angular/core';
 import {NgIf} from '@angular/common';
@@ -23,7 +18,7 @@ import {
 } from '@angular/testing/src/benchmark_util';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
-function createProviders(): Provider[] {
+function createProviders(): any[] {
   return [];
 }
 

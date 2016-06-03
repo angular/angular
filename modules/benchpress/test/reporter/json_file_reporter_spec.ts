@@ -15,8 +15,6 @@ import {DateWrapper, Json, RegExpWrapper, isPresent} from '@angular/facade';
 import {PromiseWrapper} from '@angular/facade';
 
 import {
-  bind,
-  provide,
   ReflectiveInjector,
   SampleDescription,
   MeasureValues,
@@ -33,15 +31,16 @@ export function main() {
     function createReporter({sampleId, descriptions, metrics, path}) {
       var bindings = [
         JsonFileReporter.PROVIDERS,
-        provide(SampleDescription,
-                {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
-        bind(JsonFileReporter.PATH).toValue(path),
-        bind(Options.NOW).toValue(() => DateWrapper.fromMillis(1234)),
-        bind(Options.WRITE_FILE)
-            .toValue((filename, content) => {
-              loggedFile = {'filename': filename, 'content': content};
-              return PromiseWrapper.resolve(null);
-            })
+        {provide: SampleDescription, useValue: new SampleDescription(sampleId, descriptions, metrics)},
+        {provide: JsonFileReporter.PATH, useValue(path)},
+        {provide: Options.NOW, useValue: () => DateWrapper.fromMillis(1234)},
+        {
+          provide: Options.WRITE_FILE,
+          useValue: (filename, content) => {
+            loggedFile = {'filename': filename, 'content': content};
+            return PromiseWrapper.resolve(null);
+          }
+        }
       ];
       return ReflectiveInjector.resolveAndCreate(bindings).get(JsonFileReporter);
     }

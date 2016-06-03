@@ -8,7 +8,7 @@ import {
   windowProfileEnd
 } from '@angular/testing/src/benchmark_util';
 import {bootstrap} from '@angular/platform-browser';
-import {Component, Directive, bind, provide} from '@angular/core';
+import {Component} from '@angular/core';
 import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
@@ -24,9 +24,9 @@ export const LARGETABLE_COLS = 'LargetableComponent.cols';
 
 function _createBindings() {
   return [
-    provide(BENCHMARK_TYPE, {useValue: getStringParameter('benchmarkType')}),
-    provide(LARGETABLE_ROWS, {useValue: getIntParameter('rows')}),
-    provide(LARGETABLE_COLS, {useValue: getIntParameter('columns')})
+    {provide: BENCHMARK_TYPE, useValue: getStringParameter('benchmarkType')},
+    {provide: LARGETABLE_ROWS, useValue: getIntParameter('rows')},
+    {provide: LARGETABLE_COLS, {useValue: getIntParameter('columns')},
   ];
 }
 

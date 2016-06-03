@@ -1,4 +1,3 @@
-import {bind, provide, Provider} from '@angular/core/src/di';
 import {ListWrapper, StringMapWrapper} from '@angular/facade';
 import {
   Json,
@@ -23,7 +22,7 @@ import {Options} from '../common_options';
  */
 export class ChromeDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
 
   private _majorChromeVersion: number;
 
@@ -247,7 +246,9 @@ function normalizeEvent(chromeEvent: {[key: string]: any},
 }
 
 var _PROVIDERS = [
-  bind(ChromeDriverExtension)
-      .toFactory((driver, userAgent) => new ChromeDriverExtension(driver, userAgent),
-                 [WebDriverAdapter, Options.USER_AGENT])
+  {
+    provide: ChromeDriverExtension,
+    useFactory: (driver, userAgent) => new ChromeDriverExtension(driver, userAgent),
+    deps: [WebDriverAdapter, Options.USER_AGENT]
+  }
 ];

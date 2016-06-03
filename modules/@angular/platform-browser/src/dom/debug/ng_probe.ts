@@ -1,7 +1,6 @@
 import {
   DebugNode,
   getDebugNode,
-  Provider,
   RootRenderer,
   NgZone,
   ApplicationRef

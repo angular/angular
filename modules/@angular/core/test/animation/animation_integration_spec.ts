@@ -24,9 +24,9 @@ import {
 
 import {isPresent, isArray, IS_DART} from '../../src/facade/lang';
 
-import {provide, Component} from '../../index';
+import {Component} from '../../index';
 
-import {NgIf, NgFor, AsyncPipe} from '@angular/common';
+import {NgIf} from '@angular/common';
 
 import {CompilerConfig} from '@angular/compiler';
 import {AnimationDriver} from '../../src/animation/animation_driver';
@@ -41,13 +41,13 @@ export function main() {
   } else {
     describe('jit', () => {
       beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, true)})]);
+          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, true)}]);
       declareTests();
     });
 
     describe('no jit', () => {
       beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, false)})]);
+          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, false)}]);
       declareTests();
     });
   }
@@ -55,7 +55,7 @@ export function main() {
 
 function declareTests() {
   describe('animation tests', function() {
-    beforeEachProviders(() => [provide(AnimationDriver, {useClass: MockAnimationDriver})]);
+    beforeEachProviders(() => [{provide: AnimationDriver, useClass: MockAnimationDriver}]);
 
     var makeAnimationCmp = (tcb: TestComponentBuilder, tpl: string, animationEntry: AnimationEntryMetadata|AnimationEntryMetadata[], callback = null) => {
       var entries = isArray(animationEntry)

@@ -15,8 +15,6 @@ import {
   Sampler,
   SampleDescription,
   Validator,
-  bind,
-  provide,
   ReflectiveInjector,
   Injector,
   Metric,
@@ -38,15 +36,17 @@ export function main() {
       }
       runner = new Runner([
         defaultBindings,
-        bind(Sampler).toFactory(
-            (_injector) => {
-              injector = _injector;
-              return new MockSampler();
-            },
-            [Injector]),
-        bind(Metric).toFactory(() => new MockMetric(), []),
-        bind(Validator).toFactory(() => new MockValidator(), []),
-        bind(WebDriverAdapter).toFactory(() => new MockWebDriverAdapter(), [])
+        {
+          provide: Sampler,
+          useFactory: (_injector) => {
+            injector = _injector;
+            return new MockSampler();
+          },
+          deps: [Injector]
+        },
+        { provide: Metric, useFactory: () => new MockMetric(), deps: []},
+        { provide: Validator, useFactory: () => new MockValidator(), deps: []},
+        { provide: WebDriverAdapter, useFactory: () => new MockWebDriverAdapter(), deps: []}
       ]);
       return runner;
     }
@@ -62,8 +62,8 @@ export function main() {
        }));
 
     it('should merge SampleDescription.description', inject([AsyncTestCompleter], (async) => {
-         createRunner([bind(Options.DEFAULT_DESCRIPTION).toValue({'a': 1})])
-             .sample({id: 'someId', providers: [bind(Options.SAMPLE_DESCRIPTION).toValue({'b': 2})]})
+         createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
+             .sample({id: 'someId', providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {'b': 2}}]})
              .then((_) => injector.get(SampleDescription))
              .then((desc) => {
                expect(desc.description)
@@ -115,16 +115,10 @@ export function main() {
        }));
 
     it('should overwrite bindings per sample call', inject([AsyncTestCompleter], (async) => {
-         createRunner([
-           bind(Options.DEFAULT_DESCRIPTION)
-               .toValue({'a': 1}),
-         ])
+         createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
              .sample({
                id: 'someId',
-               providers: [
-                 bind(Options.DEFAULT_DESCRIPTION)
-                     .toValue({'a': 2}),
-               ]
+               providers: [{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 2}}]
              })
              .then((_) => injector.get(SampleDescription))
              .then((desc) => {

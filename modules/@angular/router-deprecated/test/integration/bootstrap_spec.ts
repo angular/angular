@@ -50,8 +50,8 @@ export function main() {
   describe('router bootstrap', () => {
     beforeEachProviders(() => [
       ROUTER_PROVIDERS,
-      provide(LocationStrategy, {useClass: MockLocationStrategy}),
-      provide(ApplicationRef, {useClass: MockApplicationRef})
+      {provide: LocationStrategy, useClass: MockLocationStrategy},
+      {provide: ApplicationRef, useClass: MockApplicationRef}
     ]);
 
     // do not refactor out the `bootstrap` functionality. We still want to
@@ -64,10 +64,10 @@ export function main() {
          bootstrap(AppCmp,
                    [
                      ROUTER_PROVIDERS,
-                     provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp}),
-                     provide(LocationStrategy, {useClass: MockLocationStrategy}),
-                     provide(DOCUMENT, {useValue: fakeDoc}),
-                     provide(Console, {useClass: DummyConsole})
+                     {provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp},
+                     {provide: LocationStrategy, useClass: MockLocationStrategy},
+                     {provide: DOCUMENT, useValue: fakeDoc},
+                     {provide: Console, useClass: DummyConsole}
                    ])
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
@@ -80,7 +80,7 @@ export function main() {
        }));
 
     describe('broken app', () => {
-      beforeEachProviders(() => [provide(ROUTER_PRIMARY_COMPONENT, {useValue: BrokenAppCmp})]);
+      beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: BrokenAppCmp}]);
 
       it('should rethrow exceptions from component constructors',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -95,7 +95,7 @@ export function main() {
     });
 
     describe('back button app', () => {
-      beforeEachProviders(() => [provide(ROUTER_PRIMARY_COMPONENT, {useValue: HierarchyAppCmp})]);
+      beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp}]);
 
       it('should change the url without pushing a new history state for back navigations',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -146,7 +146,7 @@ export function main() {
 
     describe('hierarchical app', () => {
       beforeEachProviders(
-          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {useValue: HierarchyAppCmp})]; });
+          () => { return [{provide: ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp}]; });
 
       it('should bootstrap an app with a hierarchy',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -167,7 +167,7 @@ export function main() {
 
       // TODO(btford): mock out level lower than LocationStrategy once that level exists
       xdescribe('custom app base ref', () => {
-        beforeEachProviders(() => { return [provide(APP_BASE_HREF, {useValue: '/my/app'})]; });
+        beforeEachProviders(() => { return [{provide: APP_BASE_HREF, useValue: '/my/app'}]; });
         it('should bootstrap',
            inject([AsyncTestCompleter, TestComponentBuilder],
                   (async, tcb: TestComponentBuilder) => {
@@ -191,7 +191,7 @@ export function main() {
 
     describe('querystring params app', () => {
       beforeEachProviders(
-          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {useValue: QueryStringAppCmp})]; });
+          () => { return [{provide: ROUTER_PRIMARY_COMPONENT, useValue: QueryStringAppCmp}]; });
 
       it('should recognize and return querystring params with the injected RouteParams',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -217,7 +217,7 @@ export function main() {
     describe('activate event on outlet', () => {
       let tcb: TestComponentBuilder = null;
 
-      beforeEachProviders(() => [provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp})]);
+      beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp}]);
 
       beforeEach(inject([TestComponentBuilder],
                         (testComponentBuilder) => { tcb = testComponentBuilder; }));

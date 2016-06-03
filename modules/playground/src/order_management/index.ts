@@ -1,10 +1,6 @@
 import {bootstrap} from '@angular/platform-browser';
 import {
   Component,
-  Directive,
-  Host,
-  forwardRef,
-  Provider,
   EventEmitter,
   Injectable,
   Input,

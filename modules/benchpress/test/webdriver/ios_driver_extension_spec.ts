@@ -19,8 +19,6 @@ import {
   IOsDriverExtension,
   WebDriverAdapter,
   ReflectiveInjector,
-  bind,
-  provide
 } from 'benchpress/common';
 
 import {TraceEventFactory} from '../trace_event_factory';
@@ -39,8 +37,7 @@ export function main() {
       log = [];
       extension = ReflectiveInjector.resolveAndCreate([
                                       IOsDriverExtension.PROVIDERS,
-                                      provide(WebDriverAdapter,
-                                              {useValue: new MockDriverAdapter(log, perfRecords)})
+                                      {provide: WebDriverAdapter, useValue: new MockDriverAdapter(log, perfRecords)}
                                     ])
                       .get(IOsDriverExtension);
       return extension;

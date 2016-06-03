@@ -36,16 +36,16 @@ import {getDOM} from '../platform_browser_private';
 export function main() {
   describe('navigation', () => {
     beforeEachProviders(() => [
-      provide(RouterUrlSerializer, {useClass: DefaultRouterUrlSerializer}),
+      {provide: RouterUrlSerializer, useClass: DefaultRouterUrlSerializer},
       RouterOutletMap,
-      provide(Location, {useClass: SpyLocation}),
-      provide(RouteSegment, {useFactory: (r) => r.routeTree.root, deps: [Router]}),
-      provide(Router,
-              {
-                useFactory: (resolver, urlParser, outletMap, location) => new Router(
-                                "RootComponent", RootCmp, resolver, urlParser, outletMap, location),
-                deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
-              })
+      {provide: Location, useClass: SpyLocation},
+      {provide: RouteSegment, useFactory: (r) => r.routeTree.root, deps: [Router]},
+      {
+        provide: Router,
+        useFactory: (resolver, urlParser, outletMap, location) => new Router(
+                        "RootComponent", RootCmp, resolver, urlParser, outletMap, location),
+        deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
+      }
     ]);
 
     it('should update location when navigating',

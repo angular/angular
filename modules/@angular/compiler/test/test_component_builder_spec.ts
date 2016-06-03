@@ -18,7 +18,6 @@ import {
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {
   Injectable,
-  provide,
   Component,
   Input,
   ViewMetadata,
@@ -290,7 +289,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideProviders(TestBindingsComp,
-                               [provide(FancyService, {useClass: MockFancyService})])
+                               [{provide: FancyService, useClass: MockFancyService}])
              .createAsync(TestBindingsComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -305,7 +304,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideViewProviders(TestViewBindingsComp,
-                                   [provide(FancyService, {useClass: MockFancyService})])
+                                   [{provide: FancyService, useClass: MockFancyService}])
              .createAsync(TestViewBindingsComp)
              .then((componentFixture) => {
                componentFixture.detectChanges();
@@ -337,7 +336,7 @@ export function main() {
                   }));
 
         it('should auto detect changes if ComponentFixtureAutoDetect is provided as true',
-           withProviders(() => [provide(ComponentFixtureAutoDetect, {useValue: true})])
+           withProviders(() => [{provide: ComponentFixtureAutoDetect, useValue: true}])
                .inject([TestComponentBuilder, AsyncTestCompleter],
                        (tcb: TestComponentBuilder, async) => {
 
@@ -551,7 +550,7 @@ export function main() {
                   }));
 
         describe('No NgZone', () => {
-          beforeEachProviders(() => [provide(ComponentFixtureNoNgZone, {useValue: true})]);
+          beforeEachProviders(() => [{provide: ComponentFixtureNoNgZone, useValue: true}]);
 
           it('calling autoDetectChanges raises an error', () => {
             inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,

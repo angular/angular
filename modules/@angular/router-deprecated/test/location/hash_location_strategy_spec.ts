@@ -20,7 +20,7 @@ export function main() {
     var locationStrategy: HashLocationStrategy;
 
     beforeEachProviders(
-        () => [HashLocationStrategy, provide(PlatformLocation, {useClass: SpyPlatformLocation})]);
+        () => [HashLocationStrategy, {provide: PlatformLocation, useClass: SpyPlatformLocation}]);
 
     describe('without APP_BASE_HREF', () => {
       beforeEach(inject([PlatformLocation, HashLocationStrategy], (pl, ls) => {
@@ -61,7 +61,7 @@ export function main() {
     });
 
     describe('with APP_BASE_HREF with neither leading nor trailing slash', () => {
-      beforeEachProviders(() => [provide(APP_BASE_HREF, {useValue: 'app'})]);
+      beforeEachProviders(() => [{provide: APP_BASE_HREF, useValue: 'app'}]);
 
       beforeEach(inject([PlatformLocation, HashLocationStrategy], (pl, ls) => {
         platformLocation = pl;
@@ -94,7 +94,7 @@ export function main() {
     });
 
     describe('with APP_BASE_HREF with leading slash', () => {
-      beforeEachProviders(() => [provide(APP_BASE_HREF, {useValue: '/app'})]);
+      beforeEachProviders(() => [{provide: APP_BASE_HREF, useValue: '/app'}]);
 
       beforeEach(inject([PlatformLocation, HashLocationStrategy], (pl, ls) => {
         platformLocation = pl;
@@ -127,7 +127,7 @@ export function main() {
     });
 
     describe('with APP_BASE_HREF with both leading and trailing slash', () => {
-      beforeEachProviders(() => [provide(APP_BASE_HREF, {useValue: '/app/'})]);
+      beforeEachProviders(() => [{provide: APP_BASE_HREF, useValue: '/app/'}]);
 
       beforeEach(inject([PlatformLocation, HashLocationStrategy], (pl, ls) => {
         platformLocation = pl;

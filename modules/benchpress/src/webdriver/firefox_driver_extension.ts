@@ -1,10 +1,9 @@
-import {bind, provide, Provider} from '@angular/core/src/di';
 import {isPresent, StringWrapper} from '@angular/facade';
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
 export class FirefoxDriverExtension extends WebDriverExtension {
-  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
 
   private _profilerStarted: boolean;
 
@@ -43,6 +42,9 @@ export class FirefoxDriverExtension extends WebDriverExtension {
 }
 
 var _PROVIDERS = [
-  bind(FirefoxDriverExtension)
-      .toFactory((driver) => new FirefoxDriverExtension(driver), [WebDriverAdapter])
+  {
+    provide: FirefoxDriverExtension,
+    useFactory: (driver) => new FirefoxDriverExtension(driver),
+    deps: [WebDriverAdapter]
+  }
 ];

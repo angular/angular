@@ -10,12 +10,12 @@ import {
   xit,
 } from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {Metric, MultiMetric, bind, provide, ReflectiveInjector} from 'benchpress/common';
+import {Metric, MultiMetric, ReflectiveInjector} from 'benchpress/common';
 
 export function main() {
   function createMetric(ids: any[]) {
     var m = ReflectiveInjector.resolveAndCreate([
-                                ids.map(id => provide(id, {useValue: new MockMetric(id)})),
+                                ids.map(id => {return {provide: id, useValue: new MockMetric(id)}}),
                                 MultiMetric.createBindings(ids)
                               ])
                 .get(MultiMetric);

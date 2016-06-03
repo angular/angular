@@ -8,15 +8,11 @@ import {WebWorkerPlatformLocation} from './platform_location';
  */
 export const WORKER_APP_LOCATION_PROVIDERS = [
   {provide: PlatformLocation, useClass: WebWorkerPlatformLocation},
-  {
-    provide: APP_INITIALIZER,
-    useFactory: (platformLocation: WebWorkerPlatformLocation, zone: NgZone) => () =>
-                    initWorkerLocation(platformLocation, zone),
-    multi: true,
-    deps: [PlatformLocation, NgZone]
-  }
+  {provide: APP_INITIALIZER, useFactory: appInitFnFactory, multi: true, deps: [PlatformLocation, NgZone]}
 ];
 
-function initWorkerLocation(platformLocation: WebWorkerPlatformLocation, zone: NgZone): Promise<boolean> {
-  return zone.runGuarded(() => platformLocation.init());
+function appInitFnFactory(platformLocation: WebWorkerPlatformLocation, zone: NgZone): () => Promise<boolean> {
+  return () => {
+    return zone.runGuarded(() => platformLocation.init());
+  };
 }

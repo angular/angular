@@ -110,7 +110,7 @@ export {URLSearchParams} from './src/url_search_params';
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
+ * bootstrap(App, [HTTP_PROVIDERS, {provide: RequestOptions, useClass: MyOptions}])
  *   .catch(err => console.error(err));
  * ```
  *
@@ -130,7 +130,7 @@ export {URLSearchParams} from './src/url_search_params';
  * var injector = Injector.resolveAndCreate([
  *   HTTP_PROVIDERS,
  *   MockBackend,
- *   provide(XHRBackend, {useExisting: MockBackend})
+ *   {provide: XHRBackend, useExisting: MockBackend}
  * ]);
  * var http = injector.get(Http);
  * var backend = injector.get(MockBackend);
@@ -174,26 +174,25 @@ export {URLSearchParams} from './src/url_search_params';
  *
  * bootstrap(
  *     App,
- *     [HTTP_PROVIDERS, provide(XSRFStrategy,
- *         {useValue: new CookieXSRFStrategy('MY-XSRF-COOKIE-NAME', 'X-MY-XSRF-HEADER-NAME')})])
+ *     [HTTP_PROVIDERS, {provide: XSRFStrategy,
+ *         useValue: new CookieXSRFStrategy('MY-XSRF-COOKIE-NAME', 'X-MY-XSRF-HEADER-NAME')}])
  *   .catch(err => console.error(err));
  * ```
  */
 export const HTTP_PROVIDERS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
   // issue: https://github.com/angular/angular/issues/3183
-  provide(Http,
-          {
-            useFactory: (xhrBackend: XHRBackend, requestOptions: RequestOptions) =>
-                            new Http(xhrBackend, requestOptions),
-            deps: [XHRBackend, RequestOptions]
-          }),
+  { provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions]},
   BrowserXhr,
-  provide(RequestOptions, {useClass: BaseRequestOptions}),
-  provide(ResponseOptions, {useClass: BaseResponseOptions}),
+  {provide: RequestOptions, useClass: BaseRequestOptions},
+  {provide: ResponseOptions, useClass: BaseResponseOptions},
   XHRBackend,
-  provide(XSRFStrategy, {useValue: new CookieXSRFStrategy()}),
+  {provide: XSRFStrategy, useValue: new CookieXSRFStrategy()},
 ];
+
+function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions): Http {
+  return new Http(xhrBackend, requestOptions);
+}
 
 /**
  * See {@link HTTP_PROVIDERS} instead.
@@ -267,7 +266,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [JSONP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
+ * bootstrap(App, [JSONP_PROVIDERS, {provide: RequestOptions, useClass: MyOptions}])
  *   .catch(err => console.error(err));
  * ```
  *
@@ -285,7 +284,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * var injector = Injector.resolveAndCreate([
  *   JSONP_PROVIDERS,
  *   MockBackend,
- *   provide(JSONPBackend, {useExisting: MockBackend})
+ *   {provide: JSONPBackend, useExisting: MockBackend}
  * ]);
  * var jsonp = injector.get(Jsonp);
  * var backend = injector.get(MockBackend);
@@ -312,17 +311,17 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
 export const JSONP_PROVIDERS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
   // issue: https://github.com/angular/angular/issues/3183
-  provide(Jsonp,
-          {
-            useFactory: (jsonpBackend: JSONPBackend, requestOptions: RequestOptions) =>
-                            new Jsonp(jsonpBackend, requestOptions),
-            deps: [JSONPBackend, RequestOptions]
-          }),
+  {provide: Jsonp, useFactory: jsonpFactory, deps: [JSONPBackend, RequestOptions]},
   BrowserJsonp,
-  provide(RequestOptions, {useClass: BaseRequestOptions}),
-  provide(ResponseOptions, {useClass: BaseResponseOptions}),
-  provide(JSONPBackend, {useClass: JSONPBackend_})
+  {provide: RequestOptions, useClass: BaseRequestOptions},
+  {provide: ResponseOptions, useClass: BaseResponseOptions},
+  {provide: JSONPBackend, useClass: JSONPBackend_},
 ];
+
+function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: RequestOptions) {
+  return new Jsonp(jsonpBackend, requestOptions);
+}
+
 
 /**
  * See {@link JSONP_PROVIDERS} instead.

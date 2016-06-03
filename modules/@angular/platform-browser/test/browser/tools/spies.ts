@@ -12,7 +12,7 @@ export class SpyComponentRef extends SpyObject {
   constructor() {
     super();
     this.injector = ReflectiveInjector.resolveAndCreate(
-        [provide(ApplicationRef, {useClass: SpyApplicationRef})]);
+        [{provide: ApplicationRef, useClass: SpyApplicationRef}]);
   }
 }
 

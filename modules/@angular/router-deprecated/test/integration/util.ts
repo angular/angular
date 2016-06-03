@@ -42,9 +42,9 @@ export function compile(
 
 export var TEST_ROUTER_PROVIDERS: any[] = [
   RouteRegistry,
-  provide(Location, {useClass: SpyLocation}),
-  provide(ROUTER_PRIMARY_COMPONENT, {useValue: RootCmp}),
-  provide(Router, {useClass: RootRouter})
+  {provide: Location, useClass: SpyLocation},
+  {provide: ROUTER_PRIMARY_COMPONENT, useValue: RootCmp},
+  {provide: Router, useClass: RootRouter}
 ];
 
 export function clickOnElement(anchorEl) {

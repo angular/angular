@@ -35,7 +35,6 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {ListWrapper} from '../../src/facade/collection';
 import {ObservableWrapper, TimerWrapper} from '../../src/facade/async';
 import {PromiseWrapper} from '../../src/facade/promise';
-import {browserDetection} from '@angular/platform-browser/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing';
 
 export function main() {
@@ -1547,8 +1546,7 @@ class LoginIsEmptyValidator {
 @Directive({
   selector: '[uniq-login-validator]',
   providers: [
-    new Provider(NG_ASYNC_VALIDATORS,
-                 {useExisting: forwardRef(() => UniqLoginValidator), multi: true})
+    {provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => UniqLoginValidator), multi: true}
   ]
 })
 class UniqLoginValidator implements Validator {
