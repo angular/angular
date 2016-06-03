@@ -26,6 +26,12 @@ import {forkJoin} from 'rxjs/observable/forkJoin';
 
 export interface NavigationExtras { relativeTo?: ActivatedRoute; queryParameters?: Params; fragment?: string; }
 
+export class NavigationStart { constructor(public id:number, public url:UrlTree) {} }
+export class NavigationEnd { constructor(public id:number, public url:UrlTree) {} }
+export class NavigationCancel { constructor(public id:number, public url:UrlTree) {} }
+export class NavigationError { constructor(public id:number, public url:UrlTree, public error:any) {} }
+export type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError;
+
 /**
  * The `Router` is responsible for mapping URLs to components.
  */
@@ -34,12 +40,14 @@ export class Router {
   private currentRouterState: RouterState;
   private config: RouterConfig;
   private locationSubscription: Subscription;
+  private routerEvents: Subject<Event>;
   private navigationId: number = 0;
 
   /**
    * @internal
    */
   constructor(private rootComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location, private injector: Injector) {
+    this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
     this.currentRouterState = createEmptyState(rootComponentType);
     this.setUpLocationChangeListener();
@@ -58,6 +66,10 @@ export class Router {
    */
   get urlTree(): UrlTree {
     return this.currentUrlTree;
+  }
+
+  get events(): Observable<Event> {
+    return this.routerEvents;
   }
 
   /**
@@ -160,6 +172,7 @@ export class Router {
 
   private scheduleNavigation(url: UrlTree, pop: boolean):Promise<boolean> {
     const id = ++ this.navigationId;
+    this.routerEvents.next(new NavigationStart(id, url));
     return Promise.resolve().then((_) => this.runNavigate(url, false, id));
   }
 
@@ -171,6 +184,7 @@ export class Router {
 
   private runNavigate(url: UrlTree, pop: boolean, id: number):Promise<boolean> {
     if (id !== this.navigationId) {
+      this.routerEvents.next(new NavigationCancel(id, url));
       return Promise.resolve(false);
     }
 
@@ -190,7 +204,8 @@ export class Router {
 
       }).forEach((shouldActivate) => {
         if (!shouldActivate || id !== this.navigationId) {
-          return;
+          this.routerEvents.next(new NavigationCancel(id, url));
+          return Promise.resolve(false);
         }
 
         new ActivateRoutes(state, this.currentRouterState).activate(this.outletMap);
@@ -200,7 +215,14 @@ export class Router {
         if (!pop) {
           this.location.go(this.urlSerializer.serialize(url));
         }
-      }).then(() => resolvePromise(true), e => rejectPromise(e));
+      }).then(() => {
+        this.routerEvents.next(new NavigationEnd(id, url));
+        resolvePromise(true);
+
+      }, e => {
+        this.routerEvents.next(new NavigationError(id, url, e));
+        rejectPromise(e);
+      });
     });
   }
 }
