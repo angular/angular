@@ -74,6 +74,27 @@ describe('MdProgressCircular', () => {
         done();
       });
   });
+
+  it('should clean up the indeterminate animation when the element is destroyed',
+    (done: () => void) => {
+      let template = `<md-progress-circle
+                        mode="indeterminate"
+                        *ngIf="!isHidden"></md-progress-circle>`;
+
+      builder
+        .overrideTemplate(TestApp, template)
+        .createAsync(TestApp)
+        .then((fixture) => {
+          fixture.detectChanges();
+          let progressElement = getChildDebugElement(fixture.debugElement, 'md-progress-circle');
+          expect(progressElement.componentInstance.interdeterminateInterval).toBeTruthy();
+
+          fixture.debugElement.componentInstance.isHidden = true;
+          fixture.detectChanges();
+          expect(progressElement.componentInstance.interdeterminateInterval).toBeFalsy();
+          done();
+        });
+    });
 });
 
 

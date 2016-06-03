@@ -3,6 +3,7 @@ import {
   HostBinding,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
+  OnDestroy,
   Input
 } from '@angular/core';
 
@@ -41,12 +42,22 @@ type EasingFn = (currentTime: number, startValue: number,
   styleUrls: ['progress-circle.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdProgressCircle {
+export class MdProgressCircle implements OnDestroy {
   /** The id of the last requested animation. */
   private _lastAnimationId: number = 0;
 
   /** The id of the indeterminate interval. */
   private _interdeterminateInterval: number;
+
+  /** @internal */
+  get interdeterminateInterval() {
+    return this._interdeterminateInterval;
+  }
+  /** @internal */
+  set interdeterminateInterval(interval: number) {
+    clearInterval(this._interdeterminateInterval);
+    this._interdeterminateInterval = interval;
+  }
 
   /** The current path value, representing the progres circle. */
   private _currentPath: string;
@@ -58,6 +69,11 @@ export class MdProgressCircle {
     // Mark for check as our ChangeDetectionStrategy is OnPush, when changes come from within the
     // component, change detection must be called for.
     this._changeDetectorRef.markForCheck();
+  }
+
+  /** Clean up any animations that were running. */
+  ngOnDestroy() {
+    this._cleanupIndeterminateAnimation();
   }
 
   /**
@@ -162,8 +178,8 @@ export class MdProgressCircle {
       end = -temp;
     };
 
-    if (!this._interdeterminateInterval) {
-      this._interdeterminateInterval = setInterval(
+    if (!this.interdeterminateInterval) {
+      this.interdeterminateInterval = setInterval(
         animate, duration + 50, 0, false);
       animate();
     }
@@ -174,10 +190,7 @@ export class MdProgressCircle {
    * Removes interval, ending the animation.
    */
   private _cleanupIndeterminateAnimation() {
-    if (this._interdeterminateInterval) {
-      clearInterval(this._interdeterminateInterval);
-      this._interdeterminateInterval = null;
-    }
+    this.interdeterminateInterval = null;
   }
 }
 
@@ -219,7 +232,7 @@ function clamp(v: number) {
  * Returns the current timestamp either based on the performance global or a date object.
  */
 function now() {
-  if (typeof performance !== 'undefined') {
+  if (typeof performance !== 'undefined' && performance.now) {
     return performance.now();
   }
   return Date.now();
