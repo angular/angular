@@ -122,8 +122,19 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return (<any>typeOrFunc).parameters;
     }
 
+    var ownParamAnnotations;
+    var ownParamTypes;
+    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+      ownParamAnnotations = this._reflect.getOwnMetadata('parameters', typeOrFunc);
+      ownParamTypes = this._reflect.getOwnMetadata('design:paramtypes', typeOrFunc);
+    } else {
+      ownParamTypes = ownParamAnnotations = null;
+    }
+
     // API of tsickle for lowering decorators to properties on the class.
-    if (isPresent((<any>typeOrFunc).ctorParameters)) {
+    if (isPresent((<any>typeOrFunc).ctorParameters)
+      && !isPresent(ownParamAnnotations)
+      && !isPresent(ownParamTypes)) {
       let ctorParameters = (<any>typeOrFunc).ctorParameters;
       let paramTypes = ctorParameters.map(ctorParam => ctorParam && ctorParam.type);
       let paramAnnotations = ctorParameters.map(
@@ -139,6 +150,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
         return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
       }
     }
+
     // The array has to be filled with `undefined` because holes would be skipped by `some`
     let parameters = new Array((<any>typeOrFunc.length));
     parameters.fill(undefined);
@@ -155,8 +167,15 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return annotations;
     }
 
+    var ownAnnotations;
+    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+      ownAnnotations = this._reflect.getOwnMetadata('annotations', typeOrFunc);
+    } else {
+      ownAnnotations = null;
+    }
+
     // API of tsickle for lowering decorators to properties on the class.
-    if (isPresent((<any>typeOrFunc).decorators)) {
+    if (isPresent((<any>typeOrFunc).decorators) && !isPresent(ownAnnotations)) {
       return convertTsickleDecoratorIntoMetadata((<any>typeOrFunc).decorators);
     }
 
@@ -178,8 +197,15 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return propMetadata;
     }
 
+    var ownPropMetadata;
+    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+      ownPropMetadata = this._reflect.getOwnMetadata('propMetadata', typeOrFunc);
+    } else {
+      ownPropMetadata = null;
+    }
+
     // API of tsickle for lowering decorators to properties on the class.
-    if (isPresent((<any>typeOrFunc).propDecorators)) {
+    if (isPresent((<any>typeOrFunc).propDecorators) && !isPresent(ownPropMetadata)) {
       let propDecorators = (<any>typeOrFunc).propDecorators;
       let propMetadata = <{[key: string]: any[]}>{};
       Object.keys(propDecorators)

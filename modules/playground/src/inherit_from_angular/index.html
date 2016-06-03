@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <title>Extending Angular</title>
+<body>
+  <my-app>
+    Loading...
+  </my-app>
+
+  <script src='/all/playground/vendor/es6-shim.js'></script>;
+  <script src='/all/playground/vendor/zone.js'></script>;
+  <script src='/all/playground/vendor/long-stack-trace-zone.js'></script>;
+  <script src='/all/playground/vendor/system.src.js'></script>;
+  <script src='/all/playground/vendor/Reflect.js'></script>;
+  <script src='/all/playground/vendor/rxjs/bundles/Rx.js'></script>;
+  <script src='/all/playground/vendor/typescript.js'></script>;
+  <script type="text/javascript">
+
+      System.config({
+        transpiler: 'typescript',
+        typescriptOptions: {
+          emitDecoratorMetadata: true
+        },
+        map: {
+          'index': 'index.ts',
+          '@angular/core': '/packages-dist/core/bundles/core.umd.js',
+          '@angular/common': '/packages-dist/common/bundles/common.umd.js',
+          '@angular/compiler': '/packages-dist/compiler/bundles/compiler.umd.js',
+          '@angular/platform-browser': '/packages-dist/platform-browser/bundles/platform-browser.umd.js',
+          '@angular/http': '/packages-dist/http/bundles/http.umd.js',
+          '@angular/upgrade': '/packages-dist/upgrade/bundles/upgrade.umd.js',
+          '@angular/router': '/packages-dist/router/bundles/router.umd.js',
+          '@angular/router-deprecated': '/packages-dist/router-deprecated/bundles/router-deprecated.umd.js',
+          '@angular/core/src/facade': '/all/@angular/core/src/facade',
+          'rxjs': location.pathname.replace(/\w+\.html$/i, '') + 'rxjs'
+        },
+        packages: {
+          'app': {defaultExtension: 'js'},
+          '@angular/core/src/facade': {defaultExtension: 'js'}
+        }
+      });
+
+      System.import('index').then(function(m) { m.main(); }, console.error.bind(console));
+
+  </script>
+
+</body>
+</html>
