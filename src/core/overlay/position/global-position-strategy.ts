@@ -103,7 +103,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
 
     applyCssTransform(element, `${tranlateX} ${translateY}`);
 
-    return Promise.resolve();
+    return Promise.resolve(null);
   }
 
   /** Reduce a list of translate values to a string that can be used in the transform property */

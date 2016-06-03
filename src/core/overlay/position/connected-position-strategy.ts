@@ -68,14 +68,14 @@ export class ConnectedPositionStrategy implements PositionStrategy {
       // If the overlay in the calculated position fits on-screen, put it there and we're done.
       if (this._willOverlayFitWithinViewport(overlayPoint, overlayRect, viewportRect)) {
         this._setElementPosition(element, overlayPoint);
-        return Promise.resolve();
+        return Promise.resolve(null);
       }
     }
 
     // TODO(jelbourn): fallback behavior for when none of the preferred positions fit on-screen.
     // For now, just stick it in the first position and let it go off-screen.
     this._setElementPosition(element, firstOverlayPoint);
-    return Promise.resolve();
+    return Promise.resolve(null);
   }
 
   withFallbackPosition(

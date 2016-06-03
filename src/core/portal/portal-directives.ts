@@ -90,7 +90,7 @@ export class PortalHostDirective extends BasePortalHost {
 
   /** Detatches the currently attached Portal (if there is one) and attaches the given Portal. */
   private _replaceAttachedPortal(p: Portal<any>): void {
-    let maybeDetach = this.hasAttached() ? this.detach() : Promise.resolve();
+    let maybeDetach = this.hasAttached() ? this.detach() : Promise.resolve(null);
 
     maybeDetach.then(() => {
       if (p != null) {
