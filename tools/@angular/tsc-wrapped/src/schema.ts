@@ -191,7 +191,30 @@ export function isMetadataSymbolicSelectExpression(value: any):
 
 export interface MetadataError {
   __symbolic: 'error';
+
+  /**
+   * This message should be short and relatively discriptive and should be fixed once it is created.
+   * If the reader doesn't recognize the message, it will display the message unmodified. If the
+   * reader recognizes the error message is it free to use substitute message the is more
+   * descriptive and/or localized.
+   */
   message: string;
+
+  /**
+   * The line number of the error in the .ts file the metadata was created for.
+   */
+  line?: number;
+
+  /**
+   * The number of utf8 code-units from the beginning of the file of the error.
+   */
+  character?: number;
+
+  /**
+   * Context information that can be used to generate a more descriptive error message. The content
+   * of the context is dependent on the error message.
+   */
+  context?: {[name: string]: string};
 }
 export function isMetadataError(value: any): value is MetadataError {
   return value && value.__symbolic === 'error';

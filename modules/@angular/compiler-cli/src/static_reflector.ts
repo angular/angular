@@ -30,7 +30,7 @@ import {
   keyframes
 } from "@angular/core";
 import {ReflectorReader} from "./core_private";
- 
+
 const SUPPORTED_SCHEMA_VERSION = 1;
 
 /**
@@ -390,7 +390,11 @@ export class StaticReflector implements ReflectorReader {
                 return context;
               }
              case "error":
-              throw new Error(expression['message']);
+              let message = produceErrorMessage(expression);
+              if (expression['line']) {
+                message = `${message} (position ${expression['line']}:${expression['character']} in the original .ts file)`;
+              }
+              throw new Error(message);
           }
           return null;
         }
@@ -399,7 +403,11 @@ export class StaticReflector implements ReflectorReader {
       return null;
     }
 
-    return simplify(value);
+    try {
+      return simplify(value);
+    } catch(e) {
+      throw new Error(`${e.message}, resolving symbol ${context.name} in ${context.filePath}`);
+    }
   }
 
   /**
@@ -431,6 +439,33 @@ export class StaticReflector implements ReflectorReader {
     }
     return result;
   }
+
+}
+
+function expandedMessage(error: any): string {
+  switch (error.message) {
+    case 'Reference to non-exported class':
+      if (error.context && error.context.className) {
+        return `Reference to a non-exported class ${error.context.className}`;
+      }
+      break;
+    case 'Variable not initialized':
+      return 'Only initialized variables and constants can be referenced';
+    case 'Destructuring not supported':
+      return 'Referencing an exported destructured variable or constant is not supported';
+    case 'Could not resolve type':
+      if (error.context && error.context.typeName) {
+        return `Could not resolve type ${error.context.typeName}`;
+      }
+      break;
+    case 'Function call not supported':
+      return 'Function calls are not supported. Consider replacing the function or lambda with a reference to an exported function';
+  }
+  return error.message;
+}
+
+function produceErrorMessage(error: any): string {
+  return `Error encountered resolving symbol values statically. ${expandedMessage(error)}`;
 }
 
 function mapStringMap(input: {[key: string]: any},

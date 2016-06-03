@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 
-import {Evaluator, ImportMetadata, ImportSpecifierMetadata, isPrimitive} from './evaluator';
+import {Evaluator, ImportMetadata, ImportSpecifierMetadata, errorSymbol, isPrimitive} from './evaluator';
 import {ClassMetadata, ConstructorMetadata, ModuleMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, isMetadataError, isMetadataSymbolicReferenceExpression, VERSION} from './schema';
 import {Symbols} from './symbols';
 
@@ -23,6 +23,11 @@ export class MetadataCollector {
       return <MetadataSymbolicExpression>evaluator.evaluateNode(decoratorNode.expression);
     }
 
+    function errorSym(
+        message: string, node?: ts.Node, context?: {[name: string]: string}): MetadataError {
+      return errorSymbol(message, node, context, sourceFile);
+    }
+
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
       let result: ClassMetadata = {__symbolic: 'class'};
 
@@ -37,7 +42,7 @@ export class MetadataCollector {
         if (isMetadataError(result) || isMetadataSymbolicReferenceExpression(result)) {
           return result;
         } else {
-          return {__symbolic: 'error', message: 'Symbol reference expected'};
+          return errorSym('Symbol reference expected', node);
         }
       }
 
@@ -128,8 +133,7 @@ export class MetadataCollector {
             locals.define(className, {__symbolic: 'reference', name: className});
           } else {
             locals.define(
-                className,
-                {__symbolic: 'error', message: `Reference to non-exported class ${className}`});
+                className, errorSym('Reference to non-exported class', node, {className}));
           }
           break;
       }
@@ -156,10 +160,7 @@ export class MetadataCollector {
               if (variableDeclaration.initializer) {
                 varValue = evaluator.evaluateNode(variableDeclaration.initializer);
               } else {
-                varValue = {
-                  __symbolic: 'error',
-                  message: 'Only intialized variables and constants can be referenced statically'
-                };
+                varValue = errorSym('Variable not initialized', nameNode);
               }
               if (variableStatement.flags & ts.NodeFlags.Export ||
                   variableDeclaration.flags & ts.NodeFlags.Export) {
@@ -175,14 +176,11 @@ export class MetadataCollector {
               //   or
               // var [<identifier>[, <identifier}+] = <expression>;
               // are not supported.
-              let varValue = {
-                __symbolc: 'error',
-                message: 'Destructuring declarations cannot be referenced statically'
-              };
               const report = (nameNode: ts.Node) => {
                 switch (nameNode.kind) {
                   case ts.SyntaxKind.Identifier:
                     const name = <ts.Identifier>nameNode;
+                    const varValue = errorSym('Destructuring not supported', nameNode);
                     locals.define(name.text, varValue);
                     if (node.flags & ts.NodeFlags.Export) {
                       if (!metadata) metadata = {};
