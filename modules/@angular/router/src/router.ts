@@ -26,10 +26,26 @@ import {forkJoin} from 'rxjs/observable/forkJoin';
 
 export interface NavigationExtras { relativeTo?: ActivatedRoute; queryParameters?: Params; fragment?: string; }
 
+/**
+ * An event triggered when a navigation starts
+ */
 export class NavigationStart { constructor(public id:number, public url:UrlTree) {} }
+
+/**
+ * An event triggered when a navigation ends successfully
+ */
 export class NavigationEnd { constructor(public id:number, public url:UrlTree) {} }
+
+/**
+ * An event triggered when a navigation is canceled
+ */
 export class NavigationCancel { constructor(public id:number, public url:UrlTree) {} }
+
+/**
+ * An event triggered when a navigation fails due to unexpected error
+ */
 export class NavigationError { constructor(public id:number, public url:UrlTree, public error:any) {} }
+
 export type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError;
 
 /**
@@ -68,12 +84,20 @@ export class Router {
     return this.currentUrlTree;
   }
 
+  /**
+   * Returns an observable of route events
+   */
   get events(): Observable<Event> {
     return this.routerEvents;
   }
 
   /**
    * Navigate based on the provided url. This navigation is always absolute.
+   *
+   * Returns a promise that:
+   * - is resolved with 'true' when navigation succeeds
+   * - is resolved with 'false' when navigation fails
+   * - is rejected when an error happens
    *
    * ### Usage
    *
@@ -149,6 +173,11 @@ export class Router {
   /**
    * Navigate based on the provided array of commands and a starting point.
    * If no starting route is provided, the navigation is absolute.
+   *
+   * Returns a promise that:
+   * - is resolved with 'true' when navigation succeeds
+   * - is resolved with 'false' when navigation fails
+   * - is rejected when an error happens
    *
    * ### Usage
    *
