@@ -61,7 +61,8 @@ export class NodeReflectorHost implements StaticReflectorHost, ImportGenerator {
       fs.writeFileSync(importedFile, '');
     }
 
-    const parts = importedFile.replace(EXT, '').split(path.sep).filter(p => !!p);
+    const importModuleName = importedFile.replace(EXT, '');
+    const parts = importModuleName.split(path.sep).filter(p => !!p);
 
     for (let index = parts.length - 1; index >= 0; index--) {
       let candidate = parts.slice(index, parts.length).join(path.sep);
@@ -72,6 +73,13 @@ export class NodeReflectorHost implements StaticReflectorHost, ImportGenerator {
         return candidate;
       }
     }
+
+    // Try a relative import
+    let candidate = path.relative(path.dirname(containingFile), importModuleName);
+    if (this.resolve(candidate, containingFile) === importedFile) {
+      return candidate;
+    }
+
     throw new Error(
         `Unable to find any resolvable import for ${importedFile} relative to ${containingFile}`);
   }
