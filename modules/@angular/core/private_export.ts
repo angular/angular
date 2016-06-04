@@ -110,7 +110,7 @@ export declare namespace __core_private_types__ {
   export var AnimationGroupPlayer: typeof AnimationGroupPlayer_;
   export type AnimationKeyframe = AnimationKeyframe_;
   export var AnimationKeyframe: typeof AnimationKeyframe_;
-  export var balanceAnimationStyles: typeof animationUtils.balanceAnimationStyles;
+  export var prepareFinalAnimationStyles: typeof animationUtils.prepareFinalAnimationStyles;
   export var balanceAnimationKeyframes: typeof animationUtils.balanceAnimationKeyframes;
   export var flattenStyles: typeof animationUtils.flattenStyles;
   export var clearStyles: typeof animationUtils.clearStyles;
@@ -181,7 +181,7 @@ export var __core_private__ = {
   AnimationSequencePlayer: AnimationSequencePlayer_,
   AnimationGroupPlayer: AnimationGroupPlayer_,
   AnimationKeyframe: AnimationKeyframe_,
-  balanceAnimationStyles: animationUtils.balanceAnimationStyles,
+  prepareFinalAnimationStyles: animationUtils.prepareFinalAnimationStyles,
   balanceAnimationKeyframes: animationUtils.balanceAnimationKeyframes,
   flattenStyles: animationUtils.flattenStyles,
   clearStyles: animationUtils.clearStyles,

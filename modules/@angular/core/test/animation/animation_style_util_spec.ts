@@ -14,27 +14,36 @@ import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject
 export function main() {
   describe('Animation Style Utils', function() {
 
-    describe('balanceAnimationStyles', () => {
+    describe('prepareFinalAnimationStyles', () => {
       it('should set all non-shared styles to the provided null value between the two sets of styles',
          () => {
            var styles = {opacity: 0, color: 'red'};
            var newStyles = {background: 'red'};
            var flag = '*';
-           var result = animationUtils.balanceAnimationStyles(styles, newStyles, flag);
+           var result = animationUtils.prepareFinalAnimationStyles(styles, newStyles, flag);
            expect(result).toEqual({opacity: flag, color: flag, background: 'red'})
          });
 
       it('should handle an empty set of styles', () => {
         var value = '*';
 
-        expect(animationUtils.balanceAnimationStyles({}, {opacity: '0'}, value)).toEqual({
+        expect(animationUtils.prepareFinalAnimationStyles({}, {opacity: '0'}, value)).toEqual({
           opacity: '0'
         });
 
-        expect(animationUtils.balanceAnimationStyles({opacity: '0'}, {}, value)).toEqual({
+        expect(animationUtils.prepareFinalAnimationStyles({opacity: '0'}, {}, value)).toEqual({
           opacity: value
         });
       });
+
+      it('should set all AUTO styles to the null value', () => {
+        var styles = {opacity: 0};
+        var newStyles = {color: '*', border: '*'};
+        var flag = '*';
+        var result = animationUtils.prepareFinalAnimationStyles(styles, newStyles, null);
+        expect(result).toEqual({opacity: null, color: null, border: null})
+      });
+
     });
 
     describe('balanceAnimationKeyframes', () => {
@@ -91,12 +100,9 @@ export function main() {
 
     describe('clearStyles', () => {
       it('should set all the style values to "null"', () => {
-        var styles = {'opacity': 0, 'width': 100, 'color': 'red'};
-        var expectedResult = {
-          'opacity': null as number,
-          'width': null as number,
-          'color': null as string
-        };
+        var styles: {[key: string]: string | number} = {'opacity': 0, 'width': 100, 'color': 'red'};
+        var expectedResult: {[key: string]:
+                                 string | number} = {'opacity': null, 'width': null, 'color': null};
         expect(animationUtils.clearStyles(styles)).toEqual(expectedResult);
       });
 
