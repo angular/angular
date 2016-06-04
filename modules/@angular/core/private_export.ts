@@ -39,6 +39,7 @@ import {AnimationStyles as AnimationStyles_} from './src/animation/animation_sty
 import * as animationUtils from './src/animation/animation_style_util';
 import {
   ANY_STATE as ANY_STATE_,
+  DEFAULT_STATE as DEFAULT_STATE_,
   EMPTY_STATE as EMPTY_STATE_,
   FILL_STYLE_FLAG as FILL_STYLE_FLAG_
 } from './src/animation/animation_constants';
@@ -130,6 +131,7 @@ export declare namespace __core_private_types__ {
   export type AnimationStyles = AnimationStyles_;
   export var AnimationStyles: typeof AnimationStyles_;
   export var ANY_STATE: typeof ANY_STATE_;
+  export var DEFAULT_STATE: typeof DEFAULT_STATE_;
   export var EMPTY_STATE: typeof EMPTY_STATE_;
   export var FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_;
 }
@@ -199,6 +201,7 @@ export var __core_private__ = {
   collectAndResolveStyles: animationUtils.collectAndResolveStyles,
   AnimationStyles: AnimationStyles_,
   ANY_STATE: ANY_STATE_,
+  DEFAULT_STATE: DEFAULT_STATE_,
   EMPTY_STATE: EMPTY_STATE_,
   FILL_STYLE_FLAG: FILL_STYLE_FLAG_
 };
