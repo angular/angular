@@ -292,6 +292,10 @@ export function style(tokens: string|{[key: string]: string | number}|Array<stri
  * of the application anymore (e.g. when an `ngIf` evaluates to false then the state of the associated element
  * is void).
  *
+ * #### The `*` (default) state
+ *
+ * The `*` state (when styled) is a fallback state that will be used if
+ * the state that is being animated is not declared within the trigger.
  *
  * ### Usage
  *

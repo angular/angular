@@ -77,6 +77,7 @@ export var AnimationKeyframe: typeof t.AnimationKeyframe = r.AnimationKeyframe;
 export type AnimationStyles = t.AnimationStyles;
 export var AnimationStyles: typeof t.AnimationStyles = r.AnimationStyles;
 export var ANY_STATE = r.ANY_STATE;
+export var DEFAULT_STATE = r.DEFAULT_STATE;
 export var EMPTY_STATE = r.EMPTY_STATE;
 export var FILL_STYLE_FLAG = r.FILL_STYLE_FLAG;
 export var balanceAnimationStyles: typeof t.balanceAnimationStyles = r.balanceAnimationStyles;
