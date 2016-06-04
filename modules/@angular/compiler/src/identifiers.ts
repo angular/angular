@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, Injector, QueryList, RenderComponentType, Renderer, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 
-import {AnimationGroupPlayer as AnimationGroupPlayer_, AnimationKeyframe as AnimationKeyframe_, AnimationSequencePlayer as AnimationSequencePlayer_, AnimationStyles as AnimationStyles_, AppElement, AppView, ChangeDetectorState, DebugAppView, DebugContext, EMPTY_ARRAY, EMPTY_MAP, NoOpAnimationPlayer as NoOpAnimationPlayer_, SecurityContext, StaticNodeDebugInfo, TemplateRef_, ValueUnwrapper, ViewType, ViewUtils, balanceAnimationKeyframes as impBalanceAnimationKeyframes, balanceAnimationStyles as impBalanceAnimationStyles, castByValue, checkBinding, clearStyles as impClearStyles, collectAndResolveStyles as impCollectAndResolveStyles, devModeEqual, flattenNestedViewRenderNodes, interpolate, pureProxy1, pureProxy10, pureProxy2, pureProxy3, pureProxy4, pureProxy5, pureProxy6, pureProxy7, pureProxy8, pureProxy9, renderStyles as impRenderStyles, uninitialized} from '../core_private';
+import {AnimationGroupPlayer as AnimationGroupPlayer_, AnimationKeyframe as AnimationKeyframe_, AnimationSequencePlayer as AnimationSequencePlayer_, AnimationStyles as AnimationStyles_, AppElement, AppView, ChangeDetectorState, DebugAppView, DebugContext, EMPTY_ARRAY, EMPTY_MAP, NoOpAnimationPlayer as NoOpAnimationPlayer_, SecurityContext, StaticNodeDebugInfo, TemplateRef_, ValueUnwrapper, ViewType, ViewUtils, balanceAnimationKeyframes as impBalanceAnimationKeyframes, castByValue, checkBinding, clearStyles as impClearStyles, collectAndResolveStyles as impCollectAndResolveStyles, devModeEqual, flattenNestedViewRenderNodes, interpolate, prepareFinalAnimationStyles as impBalanceAnimationStyles, pureProxy1, pureProxy10, pureProxy2, pureProxy3, pureProxy4, pureProxy5, pureProxy6, pureProxy7, pureProxy8, pureProxy9, renderStyles as impRenderStyles, uninitialized} from '../core_private';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 import {assetUrl} from './util';
@@ -195,8 +195,8 @@ export class Identifiers {
     moduleUrl: assetUrl('core', 'animation/animation_sequence_player'),
     runtime: impAnimationSequencePlayer
   });
-  static balanceAnimationStyles = new CompileIdentifierMetadata({
-    name: 'balanceAnimationStyles',
+  static prepareFinalAnimationStyles = new CompileIdentifierMetadata({
+    name: 'prepareFinalAnimationStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
     runtime: impBalanceAnimationStyles
   });

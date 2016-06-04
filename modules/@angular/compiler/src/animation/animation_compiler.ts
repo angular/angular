@@ -68,7 +68,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
   }
 
   visitAnimationStyles(ast: AnimationStylesAst, context: _AnimationBuilderContext): o.Expression {
-    var stylesArr: any[] /** TODO #9100 */ = [];
+    var stylesArr: any[] = [];
     if (context.isExpectingFirstStyleStep) {
       stylesArr.push(_ANIMATION_START_STATE_STYLES_VAR);
       context.isExpectingFirstStyleStep = false;
@@ -117,9 +117,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
   }
 
   /** @internal */
-  _callAnimateMethod(
-      ast: AnimationStepAst, startingStylesExpr: any /** TODO #9100 */,
-      keyframesExpr: any /** TODO #9100 */) {
+  _callAnimateMethod(ast: AnimationStepAst, startingStylesExpr: any, keyframesExpr: any) {
     return _ANIMATION_FACTORY_RENDERER_VAR.callMethod('animate', [
       _ANIMATION_FACTORY_ELEMENT_VAR, startingStylesExpr, keyframesExpr, o.literal(ast.duration),
       o.literal(ast.delay), o.literal(ast.easing)
@@ -141,11 +139,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
   visitAnimationStateDeclaration(
       ast: AnimationStateDeclarationAst, context: _AnimationBuilderContext): void {
     var flatStyles: {[key: string]: string | number} = {};
-    _getStylesArray(ast).forEach((entry: any /** TODO #9100 */) => {
-      StringMapWrapper.forEach(
-          entry, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
-            flatStyles[key] = value;
-          });
+    _getStylesArray(ast).forEach(entry => {
+      StringMapWrapper.forEach(entry, (value: string, key: string) => { flatStyles[key] = value; });
     });
     context.stateMap.registerState(ast.stateName, flatStyles);
   }
@@ -160,7 +155,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
     context.isExpectingFirstStyleStep = true;
 
-    var stateChangePreconditions: any[] /** TODO #9100 */ = [];
+    var stateChangePreconditions: o.Expression[] = [];
 
     ast.stateChanges.forEach(stateChange => {
       stateChangePreconditions.push(
@@ -192,7 +187,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     // this should always be defined even if the user overrides it
     context.stateMap.registerState(DEFAULT_STATE, {});
 
-    var statements: any[] /** TODO #9100 */ = [];
+    var statements: o.Statement[] = [];
     statements.push(_ANIMATION_FACTORY_VIEW_VAR
                         .callMethod(
                             'cancelActiveAnimation',
@@ -201,6 +196,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
                               _ANIMATION_NEXT_STATE_VAR.equals(o.literal(EMPTY_STATE))
                             ])
                         .toStmt());
+
 
     statements.push(_ANIMATION_COLLECTED_STYLES.set(EMPTY_MAP).toDeclStmt());
     statements.push(_ANIMATION_PLAYER_VAR.set(o.NULL_EXPR).toDeclStmt());
@@ -224,7 +220,6 @@ class _AnimationBuilder implements AnimationAstVisitor {
     statements.push(new o.IfStmt(
         _ANIMATION_END_STATE_STYLES_VAR.equals(o.NULL_EXPR),
         [_ANIMATION_END_STATE_STYLES_VAR.set(_ANIMATION_DEFAULT_STATE_VAR).toStmt()]));
-
 
     var RENDER_STYLES_FN = o.importExpr(Identifiers.renderStyles);
 
@@ -259,7 +254,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
                     [], [RENDER_STYLES_FN
                              .callFn([
                                _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-                               o.importExpr(Identifiers.balanceAnimationStyles).callFn([
+                               o.importExpr(Identifiers.prepareFinalAnimationStyles).callFn([
                                  _ANIMATION_START_STATE_STYLES_VAR, _ANIMATION_END_STATE_STYLES_VAR
                                ])
                              ])
@@ -292,17 +287,15 @@ class _AnimationBuilder implements AnimationAstVisitor {
     var fnStatement = ast.visit(this, context).toDeclStmt(this._fnVarName);
     var fnVariable = o.variable(this._fnVarName);
 
-    var lookupMap: any[] /** TODO #9100 */ = [];
+    var lookupMap: any[] = [];
     StringMapWrapper.forEach(
-        context.stateMap.states,
-        (value: any /** TODO #9100 */, stateName: any /** TODO #9100 */) => {
+        context.stateMap.states, (value: {[key: string]: string}, stateName: string) => {
           var variableValue = EMPTY_MAP;
           if (isPresent(value)) {
-            let styleMap: any[] /** TODO #9100 */ = [];
-            StringMapWrapper.forEach(
-                value, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
-                  styleMap.push([key, o.literal(value)]);
-                });
+            let styleMap: any[] = [];
+            StringMapWrapper.forEach(value, (value: string, key: string) => {
+              styleMap.push([key, o.literal(value)]);
+            });
             variableValue = o.literalMap(styleMap);
           }
           lookupMap.push([stateName, variableValue]);
@@ -356,6 +349,6 @@ function _isEndStateAnimateStep(step: AnimationAst): boolean {
   return false;
 }
 
-function _getStylesArray(obj: any) {
+function _getStylesArray(obj: any): {[key: string]: any}[] {
   return obj.styles.styles;
 }

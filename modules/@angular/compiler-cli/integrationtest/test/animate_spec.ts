@@ -4,7 +4,7 @@ require('zone.js/dist/zone-node.js');
 require('zone.js/dist/long-stack-trace-zone.js');
 
 import {AnimateCmpNgFactory} from '../src/animate.ngfactory';
-import {AUTO_STYLE, ReflectiveInjector, DebugElement, getDebugNode} from '@angular/core';
+import {ReflectiveInjector, DebugElement, getDebugNode} from '@angular/core';
 import {browserPlatform, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 
 describe('template codegen output', () => {
@@ -26,7 +26,7 @@ describe('template codegen output', () => {
     comp.changeDetectorRef.detectChanges();
 
     setTimeout(() => {
-      expect(targetDebugElement.styles['height']).toEqual(AUTO_STYLE);
+      expect(targetDebugElement.styles['height']).toEqual(null);
       expect(targetDebugElement.styles['borderColor']).toEqual('green');
       expect(targetDebugElement.styles['color']).toEqual('green');
 
@@ -54,7 +54,7 @@ describe('template codegen output', () => {
     comp.changeDetectorRef.detectChanges();
 
     setTimeout(() => {
-      expect(targetDebugElement.styles['height']).toEqual(AUTO_STYLE);
+      expect(targetDebugElement.styles['height']).toEqual(null);
       expect(targetDebugElement.styles['borderColor']).toEqual('black');
       expect(targetDebugElement.styles['color']).toEqual('black');
 
@@ -62,7 +62,7 @@ describe('template codegen output', () => {
       comp.changeDetectorRef.detectChanges();
 
       setTimeout(() => {
-        expect(targetDebugElement.styles['height']).not.toEqual(AUTO_STYLE);
+        expect(targetDebugElement.styles['height']).not.toEqual(null);
         expect(targetDebugElement.styles['borderColor']).not.toEqual('grey');
         expect(targetDebugElement.styles['color']).not.toEqual('grey');
         done();
