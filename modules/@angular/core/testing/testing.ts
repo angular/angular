@@ -86,7 +86,7 @@ jsmBeforeEach(() => { testInjector.reset(); });
  *
  * {@example testing/ts/testing.ts region='beforeEachProviders'}
  */
-export function beforeEachProviders(fn): void {
+export function beforeEachProviders(fn: () => Array<any>): void {
   jsmBeforeEach(() => {
     var providers = fn();
     if (!providers) return;
