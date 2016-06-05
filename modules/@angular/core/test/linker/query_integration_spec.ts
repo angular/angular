@@ -11,7 +11,7 @@ import {
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {isPresent} from '../../src/facade/lang';
+import {isPresent, stringify} from '../../src/facade/lang';
 import {ObservableWrapper} from '../../src/facade/async';
 
 import {
@@ -259,6 +259,17 @@ export function main() {
                  view.detectChanges();
                  expect(asNativeElements(view.debugElement.children)).toHaveText('2|3d|2d|');
 
+                 async.done();
+               });
+         }));
+
+      it('should throw with descriptive error when query selectors are not present',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideTemplate(MyCompBroken0, '<has-null-query-condition></has-null-query-condition>')
+               .createAsync(MyCompBroken0)
+               .catch((e) => {
+                  expect(e.message).toEqual(
+                 `Can't construct a query for the property "errorTrigger" of "${stringify(HasNullQueryCondition)}" since the query selector wasn't defined.`);   
                  async.done();
                });
          }));
@@ -1086,6 +1097,11 @@ class NeedsViewContainerWithRead {
   createView() { this.vc.createEmbeddedView(this.template); }
 }
 
+@Component({selector: 'has-null-query-condition', template: '<div></div>'})
+class HasNullQueryCondition {
+  @ContentChildren(null) errorTrigger;
+}
+
 @Component({
   selector: 'my-comp',
   directives: [
@@ -1127,4 +1143,13 @@ class MyComp0 {
     this.shouldShow = false;
     this.list = ['1d', '2d', '3d'];
   }
+}
+
+@Component({
+  selector: 'my-comp',
+  directives: [HasNullQueryCondition],
+  template: ''
+})
+@Injectable()
+class MyCompBroken0 {
 }
