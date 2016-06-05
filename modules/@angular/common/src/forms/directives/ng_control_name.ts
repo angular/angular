@@ -50,7 +50,7 @@ export const controlNameBinding: any =
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *        <form #f="ngForm" (submit)='onLogIn(f.value)'>
- *          Login <input type='text' ngControl='login' #l="form">
+ *          Login <input type='text' ngControl='login' #l="ngForm">
  *          <div *ngIf="!l.valid">Login is invalid</div>
  *
  *          Password <input type='password' ngControl='password'>
