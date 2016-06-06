@@ -80,6 +80,11 @@ export class MdButton {
   removeKeyboardFocus() {
     this.isKeyboardFocused = false;
   }
+
+  /** TODO(hansl): e2e test this function. */
+  focus() {
+    this.elementRef.nativeElement.focus();
+  }
 }
 
 @Component({
