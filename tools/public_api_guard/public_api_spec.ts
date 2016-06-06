@@ -664,7 +664,7 @@ const CORE_TESTING = [
   'TestInjector.reset():any',
   'async(fn:Function):Function',
   'beforeEach(fn:Function):void',
-  'beforeEachProviders(fn:any):void',
+  'beforeEachProviders(fn:() => Array<any>):void',
   'clearPendingTimers():void',
   'containsRegexp(input:string):RegExp',
   'discardPeriodicTasks():void',
