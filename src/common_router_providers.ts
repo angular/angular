@@ -3,7 +3,7 @@ import { UrlSerializer, DefaultUrlSerializer } from './url_serializer';
 import { ActivatedRoute } from './router_state';
 import { Router } from './router';
 import { RouterConfig } from './config';
-import { ComponentResolver, ApplicationRef, Injector } from '@angular/core';
+import { ComponentResolver, ApplicationRef, Injector, APP_INITIALIZER } from '@angular/core';
 import { LocationStrategy, PathLocationStrategy, Location } from '@angular/common';
 
 /**
@@ -46,5 +46,8 @@ export function provideRouter(config: RouterConfig):any[] {
 
     RouterOutletMap,
     {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
+    
+    // Trigger initial navigation
+    {provide: APP_INITIALIZER, multi: true, useFactory: (router: Router) => router.initialNavigation(), deps: [Router]},
   ];
 }
