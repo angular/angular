@@ -60,6 +60,8 @@ export class Request {
   private contentType: ContentType;
   /** Enable use credentials */
   withCredentials: boolean;
+  /** Timeout in milliseconds */
+  timeout: number;
   constructor(requestOptions: RequestArgs) {
     // TODO: assert that url is present
     let url = requestOptions.url;
@@ -83,6 +85,7 @@ export class Request {
     // TODO(jeffbcross): implement behavior
     this.headers = new Headers(requestOptions.headers);
     this.withCredentials = requestOptions.withCredentials;
+    this.timeout = requestOptions.timeout;
   }
 
 

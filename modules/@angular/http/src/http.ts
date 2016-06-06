@@ -24,7 +24,8 @@ function mergeOptions(defaultOpts: BaseRequestOptions, providedOpts: RequestOpti
       search: providedOpts.search,
       headers: providedOpts.headers,
       body: providedOpts.body,
-      withCredentials: providedOpts.withCredentials
+      withCredentials: providedOpts.withCredentials,
+      timeout: providedOpts.timeout
     }));
   }
   if (isPresent(method)) {

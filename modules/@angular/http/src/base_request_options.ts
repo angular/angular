@@ -56,7 +56,11 @@ export class RequestOptions {
    * Enable use credentials for a {@link Request}.
    */
   withCredentials: boolean;
-  constructor({method, headers, body, url, search, withCredentials}: RequestOptionsArgs = {}) {
+  /**
+   * Timeout in milliseconds for a {@link Request}.
+   */
+  timeout: number;
+  constructor({method, headers, body, url, search, withCredentials, timeout}: RequestOptionsArgs = {}) {
     this.method = isPresent(method) ? normalizeMethodName(method) : null;
     this.headers = isPresent(headers) ? headers : null;
     this.body = isPresent(body) ? body : null;
@@ -65,6 +69,7 @@ export class RequestOptions {
                                                           <URLSearchParams>(search)) :
                                       null;
     this.withCredentials = isPresent(withCredentials) ? withCredentials : null;
+    this.timeout = isPresent(timeout) ? timeout : null;
   }
 
   /**
@@ -104,7 +109,10 @@ export class RequestOptions {
                   this.search,
       withCredentials: isPresent(options) && isPresent(options.withCredentials) ?
                            options.withCredentials :
-                           this.withCredentials
+                           this.withCredentials,
+      timeout: isPresent(options) && isPresent(options.timeout) ?
+                  options.timeout :
+                  this.timeout
     });
   }
 }

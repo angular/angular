@@ -46,6 +46,7 @@ class MockBrowserXHR extends BrowserXhr {
   responseURL: string;
   statusText: string;
   withCredentials: boolean;
+  timeout: number;
 
   constructor() {
     super();
@@ -599,6 +600,23 @@ export function main() {
                                  });
 
            existingXHRs[0].setResponseHeaders(responseHeaders);
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should set timeout when defined in request options',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var statusCode = 200;
+           sampleRequest.timeout = 2000;
+           var mockXhr = new MockBrowserXHR();
+           var connection =
+               new XHRConnection(sampleRequest, mockXhr, new ResponseOptions({status: statusCode}));
+
+           connection.response.subscribe((res: Response) => {
+             expect(existingXHRs[0].timeout).toEqual(2000);
+             async.done();
+           });
+
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));
