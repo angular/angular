@@ -36,8 +36,11 @@ describe("Integration", () => {
       {provide: Location, useClass: SpyLocation},
       {
         provide: Router,
-        useFactory: (resolver, urlSerializer, outletMap, location, injector) =>
-          new Router(RootCmp, resolver, urlSerializer, outletMap, location, injector, config),
+        useFactory: (resolver, urlSerializer, outletMap, location, injector) => {
+          const r = new Router(RootCmp, resolver, urlSerializer, outletMap, location, injector, config);
+          r.initialNavigation();
+          return r;
+        },
         deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
       },
       {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
@@ -389,6 +392,32 @@ describe("Integration", () => {
         advance(fixture);
         expect(fixture.debugElement.nativeElement).toHaveText('link');
       })));
+
+    it("should support query params and fragments",
+      fakeAsync(inject([Router, Location, TestComponentBuilder], (router, location, tcb) => {
+        router.resetConfig([
+          { path: 'team/:id', component: TeamCmp, children: [
+            { path: 'link', component: LinkWithQueryParamsAndFragment },
+            { path: 'simple', component: SimpleCmp }
+          ] }
+        ]);
+
+        const fixture = tcb.createFakeAsync(RootCmp);
+        advance(fixture);
+
+        router.navigateByUrl('/team/22/link');
+        advance(fixture);
+
+        const native = fixture.debugElement.nativeElement.querySelector("a");
+        expect(native.getAttribute("href")).toEqual("/team/22/simple?q=1#f");
+        native.click();
+        advance(fixture);
+
+        expect(fixture.debugElement.nativeElement)
+          .toHaveText('team 22 { simple, right:  }');
+
+        expect(location.path()).toEqual('/team/22/simple?q=1#f');
+      })));
   });
 
   describe("guards", () => {
@@ -602,6 +631,13 @@ class AbsoluteLinkCmp {}
   directives: ROUTER_DIRECTIVES
 })
 class RelativeLinkCmp {}
+
+@Component({
+  selector: 'link-cmp',
+  template: `<a [routerLink]="['../simple']" [queryParams]="{q: '1'}" fragment="f">link</a>`,
+  directives: ROUTER_DIRECTIVES
+})
+class LinkWithQueryParamsAndFragment {}
 
 @Component({
   selector: 'simple-cmp',

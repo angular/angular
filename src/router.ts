@@ -193,7 +193,7 @@ export class Router {
   navigate(commands: any[], extras: NavigationExtras = {}): Promise<boolean> {
     return this.scheduleNavigation(this.createUrlTree(commands, extras), false);
   }
-
+  
   /**
    * Serializes a {@link UrlTree} into a string.
    */
