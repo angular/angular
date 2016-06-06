@@ -13,7 +13,7 @@ export function recognize(rootComponentType: Type, config: RouterConfig, url: Ur
   try {
     const match = new MatchResult(rootComponentType, config, [url.root], {}, url._root.children, [], PRIMARY_OUTLET, null, url.root);
     const roots = constructActivatedRoute(match);
-    const res = new RouterStateSnapshot(roots[0], url.queryParameters, url.fragment);
+    const res = new RouterStateSnapshot(roots[0], url.queryParams, url.fragment);
     return new Observable<RouterStateSnapshot>(obs => {
       obs.next(res);
       obs.complete();

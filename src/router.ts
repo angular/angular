@@ -24,7 +24,7 @@ import 'rxjs/add/operator/concatMap';
 import {of} from 'rxjs/observable/of';
 import {forkJoin} from 'rxjs/observable/forkJoin';
 
-export interface NavigationExtras { relativeTo?: ActivatedRoute; queryParameters?: Params; fragment?: string; }
+export interface NavigationExtras { relativeTo?: ActivatedRoute; queryParams?: Params; fragment?: string; }
 
 /**
  * An event triggered when a navigation starts
@@ -169,9 +169,9 @@ export class Router {
    * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
    * ```
    */
-  createUrlTree(commands: any[], {relativeTo, queryParameters, fragment}: NavigationExtras = {}): UrlTree {
+  createUrlTree(commands: any[], {relativeTo, queryParams, fragment}: NavigationExtras = {}): UrlTree {
     const a = relativeTo ? relativeTo : this.routerState.root;
-    return createUrlTree(a, this.currentUrlTree, commands, queryParameters, fragment);
+    return createUrlTree(a, this.currentUrlTree, commands, queryParams, fragment);
   }
 
 
@@ -193,7 +193,7 @@ export class Router {
   navigate(commands: any[], extras: NavigationExtras = {}): Promise<boolean> {
     return this.scheduleNavigation(this.createUrlTree(commands, extras), false);
   }
-  
+
   /**
    * Serializes a {@link UrlTree} into a string.
    */

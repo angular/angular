@@ -28,7 +28,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
 
   serialize(tree: UrlTree): string { 
     const node = serializeUrlTreeNode(tree._root);
-    const query = serializeQueryParams(tree.queryParameters);
+    const query = serializeQueryParams(tree.queryParams);
     const fragment = tree.fragment !== null ? `#${tree.fragment}` : '';
     return `${node}${query}${fragment}`;
   }

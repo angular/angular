@@ -143,19 +143,19 @@ describe('createUrlTree', () => {
   it("should set query params", () => {
     const p = serializer.parse("/");
     const t = create(p.root, p, [], {a: 'hey'});
-    expect(t.queryParameters).toEqual({a: 'hey'});
+    expect(t.queryParams).toEqual({a: 'hey'});
   });
 
   it("should stringify query params", () => {
     const p = serializer.parse("/");
     const t = create(p.root, p, [], <any>{a: 1});
-    expect(t.queryParameters).toEqual({a: '1'});
+    expect(t.queryParams).toEqual({a: '1'});
   });
 
   it("should reuse old query params when given undefined", () => {
     const p = serializer.parse("/?a=1");
     const t = create(p.root, p, [], undefined);
-    expect(t.queryParameters).toEqual({a: '1'});
+    expect(t.queryParams).toEqual({a: '1'});
   });
 
   it("should set fragment", () => {
@@ -171,12 +171,12 @@ describe('createUrlTree', () => {
   });
 });
 
-function create(start: UrlSegment | null, tree: UrlTree, commands: any[], queryParameters?: Params, fragment?: string) {
+function create(start: UrlSegment | null, tree: UrlTree, commands: any[], queryParams?: Params, fragment?: string) {
   if (!start) {
     expect(start).toBeDefined();
   }
   const s = new ActivatedRouteSnapshot([], <any>{}, PRIMARY_OUTLET, "someComponent", null, <any>start);
   const a = new ActivatedRoute(new BehaviorSubject(null), new BehaviorSubject(null), PRIMARY_OUTLET, "someComponent", s);
   advanceActivatedRoute(a);
-  return createUrlTree(a, tree, commands, queryParameters, fragment);
+  return createUrlTree(a, tree, commands, queryParams, fragment);
 }

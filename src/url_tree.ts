@@ -13,7 +13,7 @@ export class UrlTree extends Tree<UrlSegment> {
   /**
    * @internal
    */
-  constructor(root: TreeNode<UrlSegment>, public queryParameters: {[key: string]: string}, public fragment: string | null) {
+  constructor(root: TreeNode<UrlSegment>, public queryParams: {[key: string]: string}, public fragment: string | null) {
     super(root);
   }
 }
