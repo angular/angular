@@ -2,13 +2,11 @@
 @import 'default-theme';
 
 $md-tab-bar-height: 48px !default;
-$md-tab-content-min-height: 200px !default;
 
 :host {
   display: flex;
   flex-direction: column;
   font-family: $md-font-family;
-  min-height: $md-tab-bar-height + $md-tab-content-min-height;
 }
 
 /** The top section of the view; contains the tab labels */
