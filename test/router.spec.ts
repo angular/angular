@@ -21,6 +21,7 @@ import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, Activated
  RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, RouterConfig } from '../src/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
+import {of} from 'rxjs/observable/of';
 
 describe("Integration", () => {
 
@@ -458,6 +459,28 @@ describe("Integration", () => {
             expect(location.path()).toEqual('/team/22');
           })));
       });
+
+      describe("should work when returns an observable", () => {
+        beforeEachProviders(() => [
+          {provide: 'CanActivate', useValue: (a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
+            return of(false);
+          }}
+        ]);
+
+        it('works',
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+            router.resetConfig([
+              { path: 'team/:id', component: TeamCmp, canActivate: ['CanActivate'] }
+            ]);
+
+            const fixture = tcb.createFakeAsync(RootCmp);
+            advance(fixture);
+
+            router.navigateByUrl('/team/22');
+            advance(fixture);
+            expect(location.path()).toEqual('');
+          })));
+       });
     });
 
     describe("CanDeactivate", () => {
@@ -515,10 +538,39 @@ describe("Integration", () => {
 
             router.navigateByUrl('/team/22');
             advance(fixture);
-
             expect(location.path()).toEqual('/team/22');
+
+            router.navigateByUrl('/team/33');
+            advance(fixture);
+            expect(location.path()).toEqual('/team/33');
           })));
       });
+    });
+
+    describe("should work when returns an observable", () => {
+      beforeEachProviders(() => [
+        {provide: 'CanDeactivate', useValue: (c:TeamCmp, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
+          return of(false);
+        }}
+      ]);
+
+      it('works',
+        fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+          router.resetConfig([
+            { path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivate'] }
+          ]);
+
+          const fixture = tcb.createFakeAsync(RootCmp);
+          advance(fixture);
+
+          router.navigateByUrl('/team/22');
+          advance(fixture);
+          expect(location.path()).toEqual('/team/22');
+
+          router.navigateByUrl('/team/33');
+          advance(fixture);
+          expect(location.path()).toEqual('/team/22');
+        })));
     });
   });
 });
