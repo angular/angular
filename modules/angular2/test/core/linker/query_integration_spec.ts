@@ -136,6 +136,28 @@ export function main() {
                });
          }));
 
+      it('should set static view and content children already after the constructor call',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template =
+               '<needs-static-content-view-child #q><div text="contentFoo"></div></needs-static-content-view-child>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 var q: NeedsStaticContentAndViewChild =
+                     view.debugElement.children[0].getLocal('q');
+                 expect(q.contentChild.text).toBeFalsy();
+                 expect(q.viewChild.text).toBeFalsy();
+
+                 view.detectChanges();
+
+                 expect(q.contentChild.text).toEqual('contentFoo');
+                 expect(q.viewChild.text).toEqual('viewFoo');
+
+                 async.done();
+               });
+         }));
+
       it('should contain the first view child accross embedded views',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-view-child #q></needs-view-child>';
@@ -850,6 +872,19 @@ class NeedsViewChild implements AfterViewInit,
   ngAfterViewChecked() { this.log.push(["check", isPresent(this.child) ? this.child.text : null]); }
 }
 
+@Component({
+  selector: 'needs-static-content-view-child',
+  template: `
+    <div text="viewFoo"></div>
+  `,
+  directives: [TextDirective]
+})
+class NeedsStaticContentAndViewChild {
+  @ContentChild(TextDirective) contentChild: TextDirective;
+
+  @ViewChild(TextDirective) viewChild: TextDirective;
+}
+
 @Directive({selector: '[dir]'})
 @Injectable()
 class InertDirective {
@@ -1074,6 +1109,7 @@ class NeedsViewContainerWithRead {
     NeedsContentChildren,
     NeedsViewChildren,
     NeedsViewChild,
+    NeedsStaticContentAndViewChild,
     NeedsContentChild,
     NeedsTpl,
     TextDirective,

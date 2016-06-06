@@ -230,7 +230,8 @@ export class CompileElement extends CompileNode {
 
     this._queries.values().forEach(
         (queries) =>
-            queries.forEach((query) => query.afterChildren(this.view.updateContentQueriesMethod)));
+            queries.forEach((query) => query.afterChildren(this.view.createMethod,
+                                                           this.view.updateContentQueriesMethod)));
   }
 
   addContentNode(ngContentIndex: number, nodeExpr: o.Expression) {
