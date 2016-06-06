@@ -63,8 +63,14 @@ export class Router {
    */
   constructor(private rootComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location, private injector: Injector, private config: RouterConfig) {
     this.routerEvents = new Subject<Event>();
-    this.currentUrlTree = createEmptyUrlTree();
-    this.currentRouterState = createEmptyState(rootComponentType);
+    this.currentUrlTree = createEmptyUrlTree()
+    this.currentRouterState = createEmptyState(this.rootComponentType);
+  }
+
+  /**
+   * @internal
+   */
+  initialNavigation():void {
     this.setUpLocationChangeListener();
     this.navigateByUrl(this.location.path());
   }
