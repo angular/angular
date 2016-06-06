@@ -7,6 +7,8 @@ import { RouterConfig, Route } from './config';
 import { Type } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
+class CannotRecognize {}
+
 export function recognize(rootComponentType: Type, config: RouterConfig, url: UrlTree): Observable<RouterStateSnapshot> {
   try {
     const match = new MatchResult(rootComponentType, config, [url.root], {}, url._root.children, [], PRIMARY_OUTLET, null, url.root);
@@ -17,7 +19,11 @@ export function recognize(rootComponentType: Type, config: RouterConfig, url: Ur
       obs.complete();
     });
   } catch(e) {
-    return new Observable<RouterStateSnapshot>(obs => obs.error(e));
+    if (e instanceof CannotRecognize) {
+      return new Observable<RouterStateSnapshot>(obs => obs.error(new Error("Cannot match any routes")));
+    } else {
+      return new Observable<RouterStateSnapshot>(obs => obs.error(e));
+    }
   }
 }
 
@@ -49,12 +55,21 @@ function createActivatedRouteSnapshot(match: MatchResult): ActivatedRouteSnapsho
 }
 
 function recognizeOne(config: Route[], url: TreeNode<UrlSegment>): TreeNode<ActivatedRouteSnapshot>[] {
-  const m = match(config, url);
-  const primary = constructActivatedRoute(m);
-  const secondary = recognizeMany(config, m.secondary);
-  const res = primary.concat(secondary);
-  checkOutletNameUniqueness(res);
-  return res;
+  const matches = match(config, url);
+  for(let match of matches) {
+    try {
+      const primary = constructActivatedRoute(match);
+      const secondary = recognizeMany(config, match.secondary);
+      const res = primary.concat(secondary);
+      checkOutletNameUniqueness(res);
+      return res;
+    } catch (e) {
+      if (! (e instanceof CannotRecognize)) {
+        throw e;
+      }
+    }
+  }
+  throw new CannotRecognize();
 }
 
 function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): TreeNode<ActivatedRouteSnapshot>[] {
@@ -71,35 +86,29 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): T
   return nodes;
 }
 
-function match(config: Route[], url: TreeNode<UrlSegment>): MatchResult {
-  const m = matchNonIndex(config, url);
-  if (m) return m;
-
-  const mIndex = matchIndex(config, [url], url.value);
-  if (mIndex) return mIndex;
-
-  const availableRoutes = config.map(r => {
-    const outlet = !r.outlet ? '' : `${r.outlet}:`;
-    return `'${outlet}${r.path}'`;
-  }).join(", ");
-  throw new Error(
-    `Cannot match any routes. Current segment: '${url.value}'. Available routes: [${availableRoutes}].`);
+function match(config: Route[], url: TreeNode<UrlSegment>): MatchResult[] {
+  const res = [];
+  for (let r of config) {
+    if (r.index) {
+      res.push(createIndexMatch(r, [url], url.value));
+    } else {
+      const m = matchWithParts(r, url);
+      if (m) res.push(m);
+    }
+  }
+  return res;
 }
 
-function matchNonIndex(config: Route[], url: TreeNode<UrlSegment>): MatchResult | null {
-  for (let r of config) {
-    let m = matchWithParts(r, url);
-    if (m) return m;
-  }
-  return null;
+function createIndexMatch(r: Route, leftOverUrls:TreeNode<UrlSegment>[], lastUrlSegment:UrlSegment): MatchResult {
+  const outlet = r.outlet ? r.outlet : PRIMARY_OUTLET;
+  const children = r.children ? r.children : [];
+  return new MatchResult(r.component, children, [], lastUrlSegment.parameters, leftOverUrls, [], outlet, r, lastUrlSegment);
 }
 
 function matchIndex(config: Route[], leftOverUrls: TreeNode<UrlSegment>[], lastUrlSegment: UrlSegment): MatchResult | null {
   for (let r of config) {
     if (r.index) {
-      const outlet = r.outlet ? r.outlet : PRIMARY_OUTLET;
-      const children = r.children ? r.children : [];
-      return new MatchResult(r.component, children, [], lastUrlSegment.parameters, leftOverUrls, [], outlet, r, lastUrlSegment);
+      return createIndexMatch(r, leftOverUrls, lastUrlSegment);
     }
   }
   return null;

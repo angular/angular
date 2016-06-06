@@ -17,19 +17,6 @@ describe('recognize', () => {
     });
   });
 
-  it('should handle position args', () => {
-    recognize(RootComponent, [
-      {
-        path: 'a/:id', component: ComponentA, children: [
-          { path: 'b/:id', component: ComponentB}
-        ]
-      }
-    ], tree("a/paramA/b/paramB")).forEach(s => {
-      checkActivatedRoute(s.root, "", {}, RootComponent);
-      checkActivatedRoute(s.firstChild(s.root), "a/paramA", {id: 'paramA'}, ComponentA);
-      checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "b/paramB", {id: 'paramB'}, ComponentB);
-    });
-  });
 
   it('should support secondary routes', () => {
     recognize(RootComponent, [
@@ -41,6 +28,25 @@ describe('recognize', () => {
       checkActivatedRoute(c[0], "a", {}, ComponentA);
       checkActivatedRoute(c[1], "b", {}, ComponentB, 'left');
       checkActivatedRoute(c[2], "c", {}, ComponentC, 'right');
+    });
+  });
+
+  it('should match routes in the depth first order', () => {
+    recognize(RootComponent, [
+      {path: 'a', component: ComponentA, children: [{path: ':id', component: ComponentB}]},
+      {path: 'a/:id', component: ComponentC}
+    ], tree("a/paramA")).forEach(s => {
+      checkActivatedRoute(s.root, "", {}, RootComponent);
+      checkActivatedRoute(s.firstChild(s.root), "a", {}, ComponentA);
+      checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "paramA", {id: 'paramA'}, ComponentB);
+    });
+
+    recognize(RootComponent, [
+      {path: 'a', component: ComponentA},
+      {path: 'a/:id', component: ComponentC}
+    ], tree("a/paramA")).forEach(s => {
+      checkActivatedRoute(s.root, "", {}, RootComponent);
+      checkActivatedRoute(s.firstChild(s.root), "a/paramA", {id: 'paramA'}, ComponentC);
     });
   });
 
