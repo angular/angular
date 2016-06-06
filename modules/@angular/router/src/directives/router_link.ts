@@ -2,7 +2,8 @@ import {
   Directive,
   HostListener,
   HostBinding,
-  Input
+  Input,
+  OnChanges
 } from '@angular/core';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
@@ -33,9 +34,11 @@ import {ActivatedRoute} from '../router_state';
  * And if the segment begins with `../`, the router will go up one level.
  */
 @Directive({selector: '[routerLink]'})
-export class RouterLink {
+export class RouterLink implements OnChanges {
   @Input() target: string;
   private commands: any[] = [];
+  @Input() queryParams: {[k:string]:any};
+  @Input() fragment: string;
 
   // the url displayed on the anchor element.
   @HostBinding() href: string;
@@ -48,25 +51,36 @@ export class RouterLink {
   @Input()
   set routerLink(data: any[] | string) {
     if (Array.isArray(data)) {
-      this.commands = data;
+      this.commands = <any>data;
     } else {
       this.commands = [data];
     }
+  }
+
+  ngOnChanges(changes:{}):any {
     this.updateTargetUrlAndHref();
   }
-  
+
   @HostListener("click")
   onClick(): boolean {
     // If no target, or if target is _self, prevent default browser behavior
     if (!(typeof this.target === "string") || this.target == '_self') {
-      this.router.navigate(this.commands, {relativeTo: this.route});
+      this.router.navigate(this.commands, {
+        relativeTo: this.route,
+        queryParameters: this.queryParams,
+        fragment: this.fragment
+      });
       return false;
     }
     return true;
   }
 
   private updateTargetUrlAndHref(): void {
-    const tree = this.router.createUrlTree(this.commands, {relativeTo: this.route});
+    const tree = this.router.createUrlTree(this.commands, {
+      relativeTo: this.route,
+      queryParameters: this.queryParams,
+      fragment: this.fragment
+    });
     if (tree) {
       this.href = this.router.serializeUrl(tree);
     }
