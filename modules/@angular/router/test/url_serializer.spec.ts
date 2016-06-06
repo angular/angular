@@ -86,12 +86,12 @@ describe('url serializer', () => {
 
   it("should parse query params", () => {
     const tree = url.parse("/one?a=1&b=2");
-    expect(tree.queryParameters).toEqual({a: '1', b: '2'});
+    expect(tree.queryParams).toEqual({a: '1', b: '2'});
   });
 
   it("should parse key only query params", () => {
     const tree = url.parse("/one?a");
-    expect(tree.queryParameters).toEqual({a: 'true'});
+    expect(tree.queryParams).toEqual({a: 'true'});
   });
 
   it("should serializer query params", () => {
