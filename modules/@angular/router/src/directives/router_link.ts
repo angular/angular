@@ -67,7 +67,7 @@ export class RouterLink implements OnChanges {
     if (!(typeof this.target === "string") || this.target == '_self') {
       this.router.navigate(this.commands, {
         relativeTo: this.route,
-        queryParameters: this.queryParams,
+        queryParams: this.queryParams,
         fragment: this.fragment
       });
       return false;
@@ -78,7 +78,7 @@ export class RouterLink implements OnChanges {
   private updateTargetUrlAndHref(): void {
     const tree = this.router.createUrlTree(this.commands, {
       relativeTo: this.route,
-      queryParameters: this.queryParams,
+      queryParams: this.queryParams,
       fragment: this.fragment
     });
     if (tree) {

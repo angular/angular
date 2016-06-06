@@ -5,14 +5,14 @@ import { RouterState, ActivatedRoute } from './router_state';
 import { Params, PRIMARY_OUTLET } from './shared';
 
 export function createUrlTree(route: ActivatedRoute, urlTree: UrlTree, commands: any[], 
-                              queryParameters: Params | undefined, fragment: string | undefined): UrlTree {
+                              queryParams: Params | undefined, fragment: string | undefined): UrlTree {
   if (commands.length === 0) {
-    return tree(urlTree._root, urlTree, queryParameters, fragment);
+    return tree(urlTree._root, urlTree, queryParams, fragment);
   }
 
   const normalizedCommands = normalizeCommands(commands);
   if (navigateToRoot(normalizedCommands)) {
-    return tree(new TreeNode<UrlSegment>(urlTree.root, []), urlTree, queryParameters, fragment);
+    return tree(new TreeNode<UrlSegment>(urlTree.root, []), urlTree, queryParams, fragment);
   }
 
   const startingNode = findStartingNode(normalizedCommands, urlTree, route);
@@ -21,11 +21,11 @@ export function createUrlTree(route: ActivatedRoute, urlTree: UrlTree, commands:
       [];
   const newRoot = constructNewTree(urlTree._root, startingNode, updated);
 
-  return tree(newRoot, urlTree, queryParameters, fragment);
+  return tree(newRoot, urlTree, queryParams, fragment);
 }
 
-function tree(root: TreeNode<UrlSegment>, urlTree: UrlTree, queryParameters: Params | undefined, fragment: string | undefined): UrlTree {
-  const q = queryParameters ? stringify(queryParameters) : urlTree.queryParameters;
+function tree(root: TreeNode<UrlSegment>, urlTree: UrlTree, queryParams: Params | undefined, fragment: string | undefined): UrlTree {
+  const q = queryParams ? stringify(queryParams) : urlTree.queryParams;
   const f = fragment ? fragment : urlTree.fragment;
   return new UrlTree(root, q, f);
 }
