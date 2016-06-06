@@ -86,7 +86,15 @@ $md-slide-toggle-margin: 16px !default;
   }
 }
 
-// The label is our root container for the slide-toggle / switch indicator and label text.
+// The content element is responsible for the users content.
+// It will apply the given typography styles and align at the end of the slide-toggle.
+.md-slide-toggle-content {
+  font-size: $md-body-font-size-base;
+  font-family: $md-font-family;
+  font-weight: 500;
+}
+
+// The label element is our root container for the slide-toggle / switch indicator and label text.
 // It has to be a label, to support accessibility for the visual hidden input.
 .md-slide-toggle-label {
   display: flex;
