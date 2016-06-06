@@ -34,7 +34,7 @@ import {
 
 import {Parse5DomAdapter} from '@angular/platform-server';
 
-import {NodeReflectorHost} from './reflector_host';
+import {ReflectorHost} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 
 
@@ -49,7 +49,7 @@ class Extractor {
               private program: ts.Program, public host: ts.CompilerHost,
               private staticReflector: StaticReflector, private resolver: CompileMetadataResolver,
               private compiler: compiler.OfflineCompiler,
-              private reflectorHost: NodeReflectorHost, private _extractor: MessageExtractor) {}
+              private reflectorHost: ReflectorHost, private _extractor: MessageExtractor) {}
 
   private extractCmpMessages(metadatas: compiler.CompileDirectiveMetadata[]): Promise<ExtractionResult> {
     if (!metadatas || !metadatas.length) {
@@ -151,7 +151,7 @@ class Extractor {
                 compilerHost: ts.CompilerHost): Extractor {
     const xhr: compiler.XHR = {get: (s: string) => Promise.resolve(compilerHost.readFile(s))};
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
-    const reflectorHost = new NodeReflectorHost(program, compilerHost, options);
+    const reflectorHost = new ReflectorHost(program, compilerHost, options);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser = new HtmlParser();
