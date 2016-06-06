@@ -320,9 +320,9 @@ class GuardChecks {
     return forkJoin(canActivate.map(c => {
       const guard = this.injector.get(c);
       if (guard.canActivate) {
-        return of(guard.canActivate(future, this.future));
+        return wrapIntoObservable(guard.canActivate(future, this.future));
       } else {
-        return of(guard(future, this.future));
+        return wrapIntoObservable(guard(future, this.future));
       }
     })).map(and);
   }
@@ -333,11 +333,19 @@ class GuardChecks {
     return forkJoin(canDeactivate.map(c => {
       const guard = this.injector.get(c);
       if (guard.canDeactivate) {
-        return of(guard.canDeactivate(component, curr, this.curr));
+        return wrapIntoObservable(guard.canDeactivate(component, curr, this.curr));
       } else {
-        return of(guard(component, curr, this.curr));
+        return wrapIntoObservable(guard(component, curr, this.curr));
       }
     })).map(and);
+  }
+}
+
+function wrapIntoObservable<T>(value: T | Observable<T>): Observable<T> {
+  if (value instanceof Observable) {
+    return value;
+  } else {
+    return of(value);
   }
 }
 
