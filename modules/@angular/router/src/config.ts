@@ -7,7 +7,7 @@ export interface Route {
   path?: string;
   component: Type | string;
   outlet?: string;
-  canActivate?: any[],
-  canDeactivate?: any[],
+  canActivate?: any[];
+  canDeactivate?: any[];
   children?: Route[];
 }

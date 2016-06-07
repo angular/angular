@@ -63,7 +63,7 @@ export class Router {
    */
   constructor(private rootComponentType:Type, private resolver: ComponentResolver, private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap, private location: Location, private injector: Injector, private config: RouterConfig) {
     this.routerEvents = new Subject<Event>();
-    this.currentUrlTree = createEmptyUrlTree()
+    this.currentUrlTree = createEmptyUrlTree();
     this.currentRouterState = createEmptyState(this.rootComponentType);
   }
 
@@ -275,7 +275,7 @@ class GuardChecks {
     if (this.checks.length === 0) return of(true);
     return forkJoin(this.checks.map(s => {
       if (s instanceof CanActivate) {
-        return this.runCanActivate(s.route)
+        return this.runCanActivate(s.route);
       } else if (s instanceof CanDeactivate) {
         return this.runCanDeactivate(s.component, s.route);
       } else {
@@ -316,7 +316,7 @@ class GuardChecks {
   private deactivateOutletAndItChildren(route: ActivatedRouteSnapshot, outlet: RouterOutlet): void {
     if (outlet && outlet.isActivated) {
       forEach(outlet.outletMap._outlets, (v, k) => this.deactivateOutletAndItChildren(v, outlet.outletMap._outlets[k]));
-      this.checks.push(new CanDeactivate(outlet.component, route))
+      this.checks.push(new CanDeactivate(outlet.component, route));
     }
   }
 
