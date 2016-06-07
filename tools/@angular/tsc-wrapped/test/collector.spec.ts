@@ -33,6 +33,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
+      version: 1,
       metadata: {
         HeroDetailComponent: {
           __symbolic: 'class',
@@ -73,6 +74,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
+      version: 1,
       metadata: {
         AppComponent: {
           __symbolic: 'class',
@@ -126,6 +128,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
+      version: 1,
       metadata: {
         HEROES: [
           {'id': 11, 'name': 'Mr. Nice'}, {'id': 12, 'name': 'Narco'},
@@ -206,26 +209,37 @@ describe('Collector', () => {
     let metadata = collector.getMetadata(unsupported1);
     expect(metadata).toEqual({
       __symbolic: 'module',
+      version: 1,
       metadata: {
         a: {
-          __symbolc: 'error',
-          message: 'Destructuring declarations cannot be referenced statically'
+          __symbolic: 'error',
+          message: 'Destructuring declarations cannot be referenced statically',
+          line: 1,
+          character: 16
         },
         b: {
-          __symbolc: 'error',
-          message: 'Destructuring declarations cannot be referenced statically'
+          __symbolic: 'error',
+          message: 'Destructuring declarations cannot be referenced statically',
+          line: 1,
+          character: 18
         },
         c: {
-          __symbolc: 'error',
-          message: 'Destructuring declarations cannot be referenced statically'
+          __symbolic: 'error',
+          message: 'Destructuring declarations cannot be referenced statically',
+          line: 2,
+          character: 16
         },
         d: {
-          __symbolc: 'error',
-          message: 'Destructuring declarations cannot be referenced statically'
+          __symbolic: 'error',
+          message: 'Destructuring declarations cannot be referenced statically',
+          line: 2,
+          character: 18
         },
         e: {
           __symbolic: 'error',
-          message: 'Only intialized variables and constants can be referenced statically'
+          message: 'Only intialized variables and constants can be referenced statically',
+          line: 3,
+          character: 14
         }
       }
     });
@@ -237,8 +251,12 @@ describe('Collector', () => {
     let barClass = <ClassMetadata>metadata.metadata['Bar'];
     let ctor = <ConstructorMetadata>barClass.members['__ctor__'][0];
     let parameter = ctor.parameters[0];
-    expect(parameter).toEqual(
-        {__symbolic: 'error', message: 'Reference to non-exported class Foo'});
+    expect(parameter).toEqual({
+      __symbolic: 'error',
+      message: 'Reference to non-exported class Foo',
+      line: 1,
+      character: 45
+    });
   });
 });
 
