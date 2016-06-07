@@ -10,6 +10,7 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 import {MD_TABS_DIRECTIVES, MdTabGroup} from './tabs';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
+import {Observable} from 'rxjs/Observable';
 
 describe('MdTabGroup', () => {
   let builder: TestComponentBuilder;
@@ -86,6 +87,26 @@ describe('MdTabGroup', () => {
     });
   });
 
+  describe('async tabs', () => {
+    beforeEach(async(() => {
+      builder.createAsync(AsyncTabsTestApp).then(f => fixture = f);
+    }));
+
+    it('should show tabs when they are available', async(() => {
+      let labels = fixture.debugElement.queryAll(By.css('.md-tab-label'));
+
+      expect(labels.length).toBe(0);
+
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        labels = fixture.debugElement.queryAll(By.css('.md-tab-label'));
+        expect(labels.length).toBe(2);
+      });
+    }));
+  });
+
   /**
    * Checks that the `selectedIndex` has been updated; checks that the label and body have the
    * `md-active` class
@@ -129,4 +150,31 @@ describe('MdTabGroup', () => {
 })
 class SimpleTabsTestApp {
   selectedIndex: number = 1;
+}
+
+@Component({
+  selector: 'test-app',
+  template: `
+    <md-tab-group class="tab-group">
+      <md-tab *ngFor="let tab of tabs | async">
+        <template md-tab-label>{{ tab.label }}</template>
+        <template md-tab-content>{{ tab.content }}</template>
+      </md-tab>
+   </md-tab-group>
+  `,
+  directives: [MD_TABS_DIRECTIVES]
+})
+class AsyncTabsTestApp {
+  private _tabs = [
+    { label: 'one', content: 'one' },
+    { label: 'two', content: 'two' }
+  ];
+
+  tabs: Observable<any>;
+
+  constructor() {
+    this.tabs = Observable.create((observer: any) => {
+      requestAnimationFrame(() => observer.next(this._tabs));
+    });
+  }
 }

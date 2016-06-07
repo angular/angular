@@ -27,7 +27,7 @@ export class MdInkBar {
    * @returns {string}
    */
   private _getLeftPosition(element: HTMLElement): string {
-    return element.offsetLeft + 'px';
+    return element ? element.offsetLeft + 'px' : '0';
   }
 
   /**
@@ -36,6 +36,6 @@ export class MdInkBar {
    * @returns {string}
    */
   private _getElementWidth(element: HTMLElement): string {
-    return element.offsetWidth + 'px';
+    return element ? element.offsetWidth + 'px' : '0';
   }
 }
