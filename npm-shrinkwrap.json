@@ -8293,9 +8293,8 @@
       }
     },
     "tsickle": {
-      "version": "0.1.2",
-      "from": "tsickle@0.1.2",
-      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.1.2.tgz",
+      "version": "0.1.4",
+      "from": "tsickle@0.1.4",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
