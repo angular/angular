@@ -9,5 +9,5 @@ export {NgFor} from './directives/ng_for';
 export {NgIf} from './directives/ng_if';
 export {NgLocalization, NgPlural, NgPluralCase} from './directives/ng_plural';
 export {NgStyle} from './directives/ng_style';
-export {NgSwitch, NgSwitchDefault, NgSwitchWhen} from './directives/ng_switch';
+export {NgSwitch, NgSwitchCase, NgSwitchDefault} from './directives/ng_switch';
 export {NgTemplateOutlet} from './directives/ng_template_outlet';
