@@ -26,6 +26,19 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual("/a/11/d(right:c)");
   });
 
+  it("should support updating secondary segments", () => {
+    const p = serializer.parse("/a(right:b)");
+    const t = create(p.root, p, ["right:c", 11, 'd']);
+    expect(t.children(t.root)[1].outlet).toEqual("right");
+    expect(serializer.serialize(t)).toEqual("/a(right:c/11/d)");
+  });
+
+  it("should support updating secondary segments (nested case)", () => {
+    const p = serializer.parse("/a/b(right:c)");
+    const t = create(p.root, p, ["a", "right:d", 11, 'e']);
+    expect(serializer.serialize(t)).toEqual("/a/b(right:d/11/e)");
+  });
+  
   it('should update matrix parameters', () => {
     const p = serializer.parse("/a;aa=11");
     const t = create(p.root, p, ["/a", {aa: 22, bb: 33}]);
