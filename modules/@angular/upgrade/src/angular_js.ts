@@ -26,6 +26,7 @@ export interface IRootScopeService {
   $apply(): any;
   $apply(exp: string): any;
   $apply(exp: Function): any;
+  $evalAsync(): any;
   $$childTail: IScope;
   $$childHead: IScope;
   $$nextSibling: IScope;
