@@ -11,6 +11,7 @@
     "build": "rm -rf dist; tsc",
     "build_npm": "rm -rf dist && tsc -p tsconfig.publish.es5.json && tsc -p tsconfig.publish.es6.json",
     "postbuild_npm": "cp package.json README.md dist/ && npm run rewrite_npm_package",
+    "postinstall": "typings install",
     "rewrite_npm_package": "node --harmony_destructuring tools/rewrite-published-package.js",
     "build_bundle": "cp -r src router && tsc typings/index.d.ts src/router.ts --rootDir . --module system -t es5 --outFile dist/bundles/router.js  --moduleResolution node --emitDecoratorMetadata --experimentalDecorators",
     "lint": "tslint \"src/**/*.ts\"",
