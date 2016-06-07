@@ -6,7 +6,7 @@ import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 
 import {AUTO_STYLE} from '@angular/core';
-import {ANY_STATE, EMPTY_STATE} from '../../core_private';
+import {DEFAULT_STATE, ANY_STATE, EMPTY_STATE} from '../../core_private';
 
 import {
   AnimationParseError,
@@ -64,6 +64,7 @@ export class AnimationCompiler {
 }
 
 var _ANIMATION_FACTORY_ELEMENT_VAR = o.variable('element');
+var _ANIMATION_DEFAULT_STATE_VAR = o.variable('defaultStateStyles');
 var _ANIMATION_FACTORY_VIEW_VAR = o.variable('view');
 var _ANIMATION_FACTORY_RENDERER_VAR = _ANIMATION_FACTORY_VIEW_VAR.prop('renderer');
 var _ANIMATION_CURRENT_STATE_VAR = o.variable('currentState');
@@ -212,6 +213,9 @@ class _AnimationBuilder implements AnimationAstVisitor {
     //visit each of the declarations first to build the context state map
     ast.stateDeclarations.forEach(def => def.visit(this, context));
 
+    //this should always be defined even if the user overrides it
+    context.stateMap.registerState(DEFAULT_STATE, {});
+
     var statements = [];
     statements.push(
       _ANIMATION_FACTORY_VIEW_VAR.callMethod('cancelActiveAnimation', [
@@ -224,13 +228,18 @@ class _AnimationBuilder implements AnimationAstVisitor {
     statements.push(_ANIMATION_PLAYER_VAR.set(o.NULL_EXPR).toDeclStmt());
 
     statements.push(
+      _ANIMATION_DEFAULT_STATE_VAR.set(
+        this._statesMapVar.key(o.literal(DEFAULT_STATE))
+      ).toDeclStmt());
+
+    statements.push(
       _ANIMATION_START_STATE_STYLES_VAR.set(
         this._statesMapVar.key(_ANIMATION_CURRENT_STATE_VAR)
       ).toDeclStmt());
 
     statements.push(
       new o.IfStmt(_ANIMATION_START_STATE_STYLES_VAR.equals(o.NULL_EXPR), [
-        _ANIMATION_START_STATE_STYLES_VAR.set(EMPTY_MAP).toStmt()
+        _ANIMATION_START_STATE_STYLES_VAR.set(_ANIMATION_DEFAULT_STATE_VAR).toStmt()
       ]));
 
     statements.push(
@@ -240,7 +249,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
     statements.push(
       new o.IfStmt(_ANIMATION_END_STATE_STYLES_VAR.equals(o.NULL_EXPR), [
-        _ANIMATION_END_STATE_STYLES_VAR.set(EMPTY_MAP).toStmt()
+        _ANIMATION_END_STATE_STYLES_VAR.set(_ANIMATION_DEFAULT_STATE_VAR).toStmt()
       ]));
 
 

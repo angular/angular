@@ -25,6 +25,7 @@ import {
 import {isPresent, isArray, IS_DART} from '../../src/facade/lang';
 
 import {Component} from '../../index';
+import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 
 import {NgIf} from '@angular/common';
 
@@ -699,6 +700,57 @@ function declareTests() {
                      player.finish();
 
                      expect(getDOM().getStyle(node, 'top')).toEqual('100px');
+                   });
+             })));
+
+      it('should animate to and retain the default animation state styles once the animation is complete if defined',
+         inject([TestComponentBuilder, AnimationDriver], fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
+                    makeAnimationCmp(tcb, '<div class="target" @status="exp"></div>', [
+                        trigger('status', [
+                          state(DEFAULT_STATE, style({ "background": 'grey' })),
+                          state('green', style({ "background": 'green' })),
+                          state('red', style({ "background": 'red' })),
+                          transition('* => *', [ animate(1000) ])
+                        ])
+                    ], (fixture) => {
+                     tick();
+
+                     var cmp = fixture.debugElement.componentInstance;
+                     var node = getDOM().querySelector(fixture.debugElement.nativeElement, '.target');
+                     cmp.exp = 'green';
+                     fixture.detectChanges();
+                     flushMicrotasks();
+
+                     var animation = driver.log.pop();
+                     var keyframes = animation['keyframeLookup'];
+                     expect(keyframes[1]).toEqual([1, {'background': 'green' }]);
+
+                     cmp.exp = 'blue';
+                     fixture.detectChanges();
+                     flushMicrotasks();
+
+                     animation = driver.log.pop();
+                     keyframes = animation['keyframeLookup'];
+                     expect(keyframes[0]).toEqual([0, {'background': 'green' }]);
+                     expect(keyframes[1]).toEqual([1, {'background': 'grey' }]);
+
+                     cmp.exp = 'red';
+                     fixture.detectChanges();
+                     flushMicrotasks();
+
+                     animation = driver.log.pop();
+                     keyframes = animation['keyframeLookup'];
+                     expect(keyframes[0]).toEqual([0, {'background': 'grey' }]);
+                     expect(keyframes[1]).toEqual([1, {'background': 'red' }]);
+
+                     cmp.exp = 'orange';
+                     fixture.detectChanges();
+                     flushMicrotasks();
+
+                     animation = driver.log.pop();
+                     keyframes = animation['keyframeLookup'];
+                     expect(keyframes[0]).toEqual([0, {'background': 'red' }]);
+                     expect(keyframes[1]).toEqual([1, {'background': 'grey' }]);
                    });
              })));
 

@@ -1,19 +1,21 @@
-import {Component, trigger, state, animate, transition, style} from '@angular/core';
+import {AUTO_STYLE, Component, trigger, state, animate, transition, style} from '@angular/core';
 
 @Component({
   selector: "animate-cmp",
   animations: [
     trigger('openClose', [
+      state("*", style({ height: AUTO_STYLE, color: 'black', borderColor: 'black' })),
       state('closed, void',
         style({ height:"0px", color: "maroon", borderColor: "maroon" })),
       state('open',
-        style({ height:"*", borderColor:"green", color:"green" })),
+        style({ height: AUTO_STYLE, borderColor:"green", color:"green" })),
       transition("* => *", animate(500))
     ])
   ],
   template: `
     <button (click)="setAsOpen()">Open</button>
     <button (click)="setAsClosed()">Closed</button>
+    <button (click)="setAsSomethingElse()">Something Else</button>
     <hr />
     <div @openClose="stateExpression">
       Look at this box
@@ -24,6 +26,9 @@ export class AnimateCmp {
   stateExpression:string;
   constructor() {
     this.setAsClosed();
+  }
+  setAsSomethingElse() {
+    this.stateExpression = 'something';
   }
   setAsOpen() {
     this.stateExpression = 'open';
