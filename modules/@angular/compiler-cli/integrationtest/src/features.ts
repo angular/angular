@@ -1,5 +1,5 @@
 import {Component, Inject, OpaqueToken} from '@angular/core';
-import {NgIf} from '@angular/common';
+import * as common from '@angular/common';
 
 export const SOME_OPAQUE_TOKEN = new OpaqueToken('opaqueToken');
 
@@ -9,7 +9,7 @@ export const SOME_OPAQUE_TOKEN = new OpaqueToken('opaqueToken');
   providers: [
     {provide: 'strToken', useValue: 'strValue'},
     {provide: SOME_OPAQUE_TOKEN, useValue: 10},
-    {provide: 'reference', useValue: NgIf},
+    {provide: 'reference', useValue: common.NgIf},
     {provide: 'complexToken', useValue: {a: 1, b: ['test', SOME_OPAQUE_TOKEN]}},
   ]
 })
@@ -23,7 +23,7 @@ export class CompWithProviders {
     <input #a>{{a.value}}
     <div *ngIf="true">{{a.value}}</div>
   `,
-  directives: [NgIf]
+  directives: [common.NgIf]
 })
 export class CompWithReferences {
 }

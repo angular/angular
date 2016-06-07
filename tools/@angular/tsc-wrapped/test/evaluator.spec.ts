@@ -156,31 +156,29 @@ describe('Evaluator', () => {
       character: 10
     });
     let fDecl = findVar(errors, 'f');
-    expect(evaluator.evaluateNode(fDecl.initializer)).toEqual({
-      __symbolic: 'error',
-      message:
-          'Functions cannot be evaluated statically; consider replacing with a reference to an exported function',
-      line: 6,
-      character: 11
-    });
+    expect(evaluator.evaluateNode(fDecl.initializer))
+        .toEqual(
+            {__symbolic: 'error', message: 'Function call not supported', line: 6, character: 11});
     let eDecl = findVar(errors, 'e');
     expect(evaluator.evaluateNode(eDecl.type)).toEqual({
       __symbolic: 'error',
-      message: 'Could not resolve type NotFound',
+      message: 'Could not resolve type',
       line: 7,
-      character: 10
+      character: 10,
+      context: {typeName: 'NotFound'}
     });
     let sDecl = findVar(errors, 's');
     expect(evaluator.evaluateNode(sDecl.initializer)).toEqual({
       __symbolic: 'error',
-      message: 'Name expected a string or an identifier but received "1"',
+      message: 'Name expected',
       line: 8,
-      character: 13
+      character: 13,
+      context: {received: '1'}
     });
     let tDecl = findVar(errors, 't');
     expect(evaluator.evaluateNode(tDecl.initializer)).toEqual({
       __symbolic: 'error',
-      message: 'Expression form not supported statically',
+      message: 'Expression form not supported',
       line: 9,
       character: 11
     });
