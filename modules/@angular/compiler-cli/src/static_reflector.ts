@@ -2,6 +2,8 @@ import {
   AttributeMetadata,
   DirectiveMetadata,
   ComponentMetadata,
+  InjectorMetadata,
+  ProviderPropertyMetadata,
   ContentChildrenMetadata,
   ContentChildMetadata,
   InputMetadata,
@@ -244,6 +246,10 @@ export class StaticReflector implements ReflectorReader {
                                         DirectiveMetadata);
     this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Component'),
                                         ComponentMetadata);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'InjectorConfig'),
+                                        InjectorMetadata);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Provides'),
+                                        ProviderPropertyMetadata);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
     this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'HostMetadata'),

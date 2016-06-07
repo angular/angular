@@ -461,3 +461,49 @@ export class ViewChildMetadata extends ViewQueryMetadata {
     super(_selector, {descendants: true, first: true, read: read});
   }
 }
+
+/**
+ * Defines an injectable whose value is given by a property on an InjectorConfig class.
+ *
+ * ### Example
+ *
+ * ```
+ * @InjectorConfig()
+ * class MyConfig {
+ *   @Provides(SomeToken)
+ *   someProp: string = 'Hello world';
+ * }
+ * ```
+ * @ts2dart_const
+ * @experimental
+ */
+export class ProviderPropertyMetadata {
+  constructor(public token: any, {multi = false}: {multi?: boolean} = {}) {}
+}
+
+/**
+ * Defines an injector config from which an injector can be generated.
+ *
+ * ### Example
+ *
+ * ```
+ * @InjectorConfig({
+ *   providers: [SomeService]
+ * })
+ * class MyConfig {}
+ *
+ * ```
+ * @ts2dart_const
+ * @experimental
+ */
+export class InjectorMetadata {
+  private _providers: any[];
+
+  constructor({providers = []}:{providers?: any[]} = {}) {
+    this._providers = providers;
+  }
+
+  get providers(): any[] {
+    return this._providers;
+  }
+}

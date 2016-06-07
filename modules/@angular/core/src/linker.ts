@@ -9,3 +9,4 @@ export {EmbeddedViewRef, ViewRef} from './linker/view_ref';
 export {ViewContainerRef} from './linker/view_container_ref';
 export {ComponentRef, ComponentFactory} from './linker/component_factory';
 export {ExpressionChangedAfterItHasBeenCheckedException} from './linker/exceptions';
+export {InjectorFactory} from './linker/injector_factory';

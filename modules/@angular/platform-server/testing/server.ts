@@ -6,11 +6,12 @@ import {
   APPLICATION_COMMON_PROVIDERS,
   RootRenderer
 } from '@angular/core';
-import {DirectiveResolver, ViewResolver, XHR, COMPILER_PROVIDERS} from '@angular/compiler';
+import {DirectiveResolver, ViewResolver, InjectorResolver, XHR, COMPILER_PROVIDERS} from '@angular/compiler';
 import {
   TestComponentBuilder,
   MockDirectiveResolver,
   MockViewResolver,
+  MockInjectorResolver,
   TestComponentRenderer
 } from '@angular/compiler/testing';
 import {Parse5DomAdapter} from '../index';
@@ -79,6 +80,7 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       DomSharedStylesHost,
       ELEMENT_PROBE_PROVIDERS,
       /* @ts2dart_Provider */ {provide: DirectiveResolver, useClass: MockDirectiveResolver},
+      /* @ts2dart_Provider */ {provide: InjectorResolver, useClass: MockInjectorResolver},
       /* @ts2dart_Provider */ {provide: ViewResolver, useClass: MockViewResolver},
       Log,
       /* @ts2dart_Provider */ {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},

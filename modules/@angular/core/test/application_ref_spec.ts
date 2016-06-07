@@ -31,13 +31,14 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {BaseException} from '../src/facade/exceptions';
+import {BaseException, unimplemented} from '../src/facade/exceptions';
 import {PromiseWrapper, PromiseCompleter, TimerWrapper} from '../src/facade/async';
 import {
   ComponentFactory,
   ComponentRef_,
   ComponentRef
 } from '@angular/core/src/linker/component_factory';
+import {InjectorFactory} from '@angular/core/src/linker/injector_factory';
 import {ExceptionHandler} from '../src/facade/exception_handler';
 
 export function main() {
@@ -159,6 +160,15 @@ class _MockComponentResolver implements ComponentResolver {
   resolveComponent(type: Type): Promise<ComponentFactory<any>> {
     return PromiseWrapper.resolve(this._compFactory);
   }
+
+  createInjectorFactory(config: Type, extraProviders?: any[]): InjectorFactory<any> {
+    return unimplemented();
+  }
+
+  loadInjectorFactory(configTypeModule: string): Promise<InjectorFactory<any>> {
+    return unimplemented();
+  }
+
   clearCache() {}
 }
 

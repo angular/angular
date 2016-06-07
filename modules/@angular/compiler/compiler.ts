@@ -16,6 +16,7 @@ export {
   ViewResolver,
   DirectiveResolver,
   PipeResolver,
+  InjectorResolver,
   SourceModule,
   NormalizedComponentWithViewDirectives,
   OfflineCompiler,
@@ -31,6 +32,7 @@ export {
   CompileQueryMetadata,
   CompileTemplateMetadata,
   CompileDirectiveMetadata,
+  CompileInjectorMetadata,
   CompilePipeMetadata
 } from './src/compiler';
 

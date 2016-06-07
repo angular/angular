@@ -1,6 +1,7 @@
 import { ComponentResolver } from './component_resolver';
 import { Type, isString, global } from '../facade/lang';
 import { ComponentFactory } from './component_factory';
+import { InjectorFactory } from '../linker/injector_factory';
 
 /**
  * Component resolver that can load components lazily
@@ -16,6 +17,15 @@ export class SystemJsComponentResolver implements ComponentResolver {
     } else {
       return this._resolver.resolveComponent(<Type>componentType);
     }
+  }
+
+  createInjectorFactory(config: Type, extraProviders?: any[]): InjectorFactory<any> {
+    return this._resolver.createInjectorFactory(config, extraProviders);
+  }
+
+  loadInjectorFactory(configTypeModule: string): Promise<InjectorFactory<any>> {
+    return (<any>global).System.import(configTypeModule).then(module =>
+      this._resolver.resolveComponent(module.default));
   }
 
   clearCache() {}

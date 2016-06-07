@@ -15,7 +15,8 @@ import {
   StaticSymbol
 } from '@angular/compiler-cli/src/static_reflector';
 
-import {transition, sequence, group, trigger, state, style, animate, keyframes} from '@angular/core';
+import {transition, sequence, group, trigger, state, style, animate, keyframes,
+  InjectorMetadata, ProviderPropertyMetadata} from '@angular/core';
 
 describe('StaticReflector', () => {
   let noContext = new StaticSymbol('', '');
@@ -261,6 +262,51 @@ describe('StaticReflector', () => {
     expect(simplify(new StaticSymbol('/src/cases', ''),
                     ({__symbolic: "reference", module: "./extern", name: "nonExisting"})))
         .toEqual(host.getStaticSymbol('/src/extern.d.ts', 'nonExisting'));
+  });
+
+  describe('decorator conversion', () => {
+    it('should convert InjectorConfig decorator', () => {
+      expect(simplify(new StaticSymbol('/src/cases', ''),
+                      {
+                        __symbolic: "call",
+                        expression: {
+                          __symbolic: "reference",
+                          module: 'angular2/src/core/metadata',
+                          name: 'InjectorConfig'
+                        },
+                        arguments: [{
+                          providers: [{
+                            __symbolic: "reference",
+                            module: './extern',
+                            name: 'SomeService'
+                          }]
+                        }]
+                      }))
+          .toEqual(new InjectorMetadata({providers: [host.getStaticSymbol('/src/extern.d.ts', 'SomeService')]}));
+    });
+
+    it('should convert Provides decorator', () => {
+      expect(simplify(new StaticSymbol('/src/cases', ''),
+                      {
+                        __symbolic: "call",
+                        expression: {
+                          __symbolic: "reference",
+                          module: 'angular2/src/core/metadata',
+                          name: 'Provides'
+                        },
+                        arguments: [
+                          {
+                            __symbolic: "reference",
+                            module: './extern',
+                            name: 'SomeToken'
+                          },
+                          {
+                            multi: true
+                          }
+                        ]
+                      }))
+          .toEqual(new ProviderPropertyMetadata(host.getStaticSymbol('/src/extern.d.ts', 'SomeToken'), {multi: true}));
+    });
   });
 });
 

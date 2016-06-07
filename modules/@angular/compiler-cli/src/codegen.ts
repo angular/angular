@@ -19,6 +19,7 @@ import {
   DomElementSchemaRegistry,
   StyleCompiler,
   ViewCompiler,
+  InjectorCompiler,
   TypeScriptEmitter
 } from './compiler_private';
 
@@ -44,7 +45,10 @@ export class CodeGenerator {
               private compiler: compiler.OfflineCompiler,
               private reflectorHost: NodeReflectorHost) {}
 
-  private generateSource(metadatas: compiler.CompileDirectiveMetadata[]) {
+  private generateSource(components: compiler.CompileDirectiveMetadata[], injectorConfigs: compiler.CompileInjectorMetadata[]) {
+    if (components.length ===0 && injectorConfigs.length === 0) {
+      return null;
+    }
     const normalize = (metadata: compiler.CompileDirectiveMetadata) => {
       const directiveType = metadata.type.runtime;
       const directives = this.resolver.getViewDirectivesMetadata(directiveType);
@@ -55,38 +59,41 @@ export class CodeGenerator {
                                                                       normalizedDirectives, pipes);
           });
     };
-    return Promise.all(metadatas.map(normalize))
+    return Promise.all(components.map(normalize))
         .then(normalizedCompWithDirectives =>
-                  this.compiler.compileTemplates(normalizedCompWithDirectives));
+                  this.compiler.compile(normalizedCompWithDirectives, injectorConfigs));
   }
 
-  private readComponents(absSourcePath: string) {
-    const result: Promise<compiler.CompileDirectiveMetadata>[] = [];
+  private readComponents(absSourcePath: string):Promise<{components: compiler.CompileDirectiveMetadata[], injectors: compiler.CompileInjectorMetadata[]}> {
     const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
     if (!moduleMetadata) {
       console.log(`WARNING: no metadata found for ${absSourcePath}`);
-      return result;
+      return Promise.resolve({components: [], injectors: []});
     }
     const metadata = moduleMetadata['metadata'];
     const symbols = metadata && Object.keys(metadata);
     if (!symbols || !symbols.length) {
-      return result;
+      return Promise.resolve({components: [], injectors: []});
     }
+    const components: compiler.CompileDirectiveMetadata[] = [];
+    const injectorConfigs: compiler.CompileInjectorMetadata[] = [];
     for (const symbol of symbols) {
       if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
         // Ignore symbols that are only included to record error information.
         continue;
       }
       const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
-      let directive: compiler.CompileDirectiveMetadata;
-      directive = this.resolver.maybeGetDirectiveMetadata(<any>staticType);
-
-      if (!directive || !directive.isComponent) {
-        continue;
+      let directive = this.resolver.maybeGetDirectiveMetadata(<any>staticType);
+      let injector = this.resolver.maybeGetInjectorMetadata(<any>staticType);
+      if (directive && directive.isComponent) {
+        components.push(directive);
+      } else if (injector) {
+        injectorConfigs.push(injector);
       }
-      result.push(this.compiler.normalizeDirectiveMetadata(directive));
     }
-    return result;
+    return Promise.all(components.map(comp => this.compiler.normalizeDirectiveMetadata(comp))).then( (normalizedComps) =>
+      Promise.resolve({components: normalizedComps, injectors: injectorConfigs})
+    );
   }
 
   // Write codegen in a directory structure matching the sources.
@@ -122,12 +129,9 @@ export class CodeGenerator {
 
     let stylesheetPromises: Promise<any>[] = [];
     const generateOneFile = (absSourcePath: string) =>
-        Promise.all(this.readComponents(absSourcePath))
-            .then((metadatas: compiler.CompileDirectiveMetadata[]) => {
-              if (!metadatas || !metadatas.length) {
-                return;
-              }
-              metadatas.forEach((metadata) => {
+        this.readComponents(absSourcePath)
+            .then(({components, injectors}) => {
+              components.forEach((metadata) => {
                 let stylesheetPaths = metadata && metadata.template && metadata.template.styleUrls;
                 if (stylesheetPaths) {
                   stylesheetPaths.forEach((path) => {
@@ -136,7 +140,7 @@ export class CodeGenerator {
                   });
                 }
               });
-              return this.generateSource(metadatas);
+              return this.generateSource(components, injectors);
             })
             .then(generated => {
               if (generated) {
@@ -170,10 +174,11 @@ export class CodeGenerator {
     const offlineCompiler = new compiler.OfflineCompiler(
         normalizer, tmplParser, new StyleCompiler(urlResolver),
         new ViewCompiler(new compiler.CompilerConfig(true, true, true)),
+        new InjectorCompiler(),
         new TypeScriptEmitter(reflectorHost), xhr);
     const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        new compiler.ViewResolver(staticReflector), null, null, staticReflector);
+        new compiler.ViewResolver(staticReflector), new compiler.InjectorResolver(staticReflector), null, null, staticReflector);
 
     return new CodeGenerator(options, program, compilerHost, staticReflector, resolver,
                              offlineCompiler, reflectorHost);

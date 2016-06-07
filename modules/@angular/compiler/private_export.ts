@@ -10,6 +10,7 @@ import * as template_parser from './src/template_parser';
 import * as dom_element_schema_registry from './src/schema/dom_element_schema_registry';
 import * as style_compiler from './src/style_compiler';
 import * as view_compiler from './src/view_compiler/view_compiler';
+import * as injector_compiler from './src/view_compiler/injector_compiler';
 import * as ts_emitter from './src/output/ts_emitter';
 
 export namespace __compiler_private__ {
@@ -68,6 +69,9 @@ export namespace __compiler_private__ {
 
   export type ViewCompiler = view_compiler.ViewCompiler;
   export var ViewCompiler = view_compiler.ViewCompiler;
+
+  export type InjectorCompiler = injector_compiler.InjectorCompiler;
+  export var InjectorCompiler = injector_compiler.InjectorCompiler;
 
   export type TypeScriptEmitter = ts_emitter.TypeScriptEmitter;
   export var TypeScriptEmitter = ts_emitter.TypeScriptEmitter;

@@ -40,9 +40,10 @@ import {
 import {StringMapWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import * as cpl from './compile_metadata';
-import {DirectiveResolver} from './directive_resolver';
+import {DirectiveResolver, NoDirectiveAnnotationError} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ViewResolver} from './view_resolver';
+import {InjectorResolver, NoInjectorAnnotationError} from './injector_resolver';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {MODULE_SUFFIX, sanitizeIdentifier, ValueTransformer, visitValue} from './util';
 import {assertArrayOfStrings} from './assertions';
@@ -60,6 +61,7 @@ export class CompileMetadataResolver {
 
   constructor(private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
               private _viewResolver: ViewResolver,
+              private _injectorResolver: InjectorResolver,
               @Optional() @Inject(PLATFORM_DIRECTIVES) private _platformDirectives: Type[],
               @Optional() @Inject(PLATFORM_PIPES) private _platformPipes: Type[],
               _reflector?: ReflectorReader) {
@@ -194,28 +196,28 @@ export class CompileMetadataResolver {
     try {
       return this.getDirectiveMetadata(someType);
     } catch (e) {
-      if (e.message.indexOf('No Directive annotation') !== -1) {
+      if (e instanceof NoDirectiveAnnotationError) {
         return null;
       }
       throw e;
     }
   }
 
-  getTypeMetadata(type: Type, moduleUrl: string): cpl.CompileTypeMetadata {
+  getTypeMetadata(type: Type, moduleUrl: string, deps: cpl.CompileDiDependencyMetadata[] = null): cpl.CompileTypeMetadata {
     return new cpl.CompileTypeMetadata({
       name: this.sanitizeTokenName(type),
       moduleUrl: moduleUrl,
       runtime: type,
-      diDeps: this.getDependenciesMetadata(type, null)
+      diDeps: this.getDependenciesMetadata(type, deps)
     });
   }
 
-  getFactoryMetadata(factory: Function, moduleUrl: string): cpl.CompileFactoryMetadata {
+  getFactoryMetadata(factory: Function, moduleUrl: string, deps: cpl.CompileDiDependencyMetadata[]): cpl.CompileFactoryMetadata {
     return new cpl.CompileFactoryMetadata({
       name: this.sanitizeTokenName(factory),
       moduleUrl: moduleUrl,
       runtime: factory,
-      diDeps: this.getDependenciesMetadata(factory, null)
+      diDeps: deps
     });
   }
 
@@ -266,7 +268,9 @@ export class CompileMetadataResolver {
     }
     return params.map((param) => {
       if (isBlank(param)) {
-        return null;
+        throw new BaseException(`Cannot resolve all parameters for '${stringify(typeOrFunc)}'(?). ` +
+                'Make sure that all the parameters are decorated with Inject or have valid type annotations ' +
+                `and that '${stringify(typeOrFunc)}' is decorated with Injectable.`);
       }
       let isAttribute = false;
       let isHost = false;
@@ -349,32 +353,39 @@ export class CompileMetadataResolver {
         return this.getProviderMetadata(provider);
       } else if (isProviderLiteral(provider)) {
         return this.getProviderMetadata(createProvider(provider));
-      } else {
+      } else if (isValidType(provider)) {
         return this.getTypeMetadata(provider, staticTypeModuleUrl(provider));
+      } else {
+        throw new BaseException(`Invalid provider - only instances of Provider and Type are allowed, got: ${stringify(provider)}`);
       }
     });
   }
 
   getProviderMetadata(provider: Provider): cpl.CompileProviderMetadata {
-    var compileDeps;
+    var compileDeps: cpl.CompileDiDependencyMetadata[];
+    var useClass;
+    var useFactory;
     if (isPresent(provider.useClass)) {
-      compileDeps = this.getDependenciesMetadata(provider.useClass, provider.dependencies);
+      useClass = resolveForwardRef(provider.useClass);
+      compileDeps = this.getDependenciesMetadata(useClass, provider.dependencies);
     } else if (isPresent(provider.useFactory)) {
-      compileDeps = this.getDependenciesMetadata(provider.useFactory, provider.dependencies);
+      useFactory = resolveForwardRef(provider.useFactory);
+      compileDeps = this.getDependenciesMetadata(useFactory, provider.dependencies);
     }
     return new cpl.CompileProviderMetadata({
       token: this.getTokenMetadata(provider.token),
       useClass:
-          isPresent(provider.useClass) ?
-              this.getTypeMetadata(provider.useClass, staticTypeModuleUrl(provider.useClass)) :
+          isPresent(useClass) ?
+              this.getTypeMetadata(useClass, staticTypeModuleUrl(useClass), compileDeps) :
               null,
       useValue: convertToCompileValue(provider.useValue),
-      useFactory: isPresent(provider.useFactory) ?
-                      this.getFactoryMetadata(provider.useFactory,
-                                              staticTypeModuleUrl(provider.useFactory)) :
+      useFactory: isPresent(useFactory) ?
+                      this.getFactoryMetadata(useFactory,
+                                              staticTypeModuleUrl(useFactory), compileDeps) :
                       null,
       useExisting: isPresent(provider.useExisting) ? this.getTokenMetadata(provider.useExisting) :
                                                      null,
+      useProperty: provider.useProperty,
       deps: compileDeps,
       multi: provider.multi
     });
@@ -409,6 +420,34 @@ export class CompileMetadataResolver {
       read: isPresent(q.read) ? this.getTokenMetadata(q.read) : null
     });
   }
+
+  getInjectorMetadata(config: Type, extraProviders: any[]): cpl.CompileInjectorMetadata {
+    var meta = this._injectorResolver.resolve(config);
+    var providers = this.getProvidersMetadata(meta.providers);
+    if (isPresent(extraProviders)) {
+      providers = providers.concat(this.getProvidersMetadata(extraProviders));
+    }
+    return new cpl.CompileInjectorMetadata({
+      type: this.getTypeMetadata(config, staticTypeModuleUrl(config)),
+      providers: providers
+    });
+  }
+
+  /**
+   * @param someType a symbol which may or may not be a directive type
+   * @returns {cpl.CompileInjectorMetadata} if possible, otherwise null.
+   */
+  maybeGetInjectorMetadata(someType: Type): cpl.CompileInjectorMetadata {
+    try {
+      return this.getInjectorMetadata(someType, []);
+    } catch (e) {
+      if (e instanceof NoInjectorAnnotationError) {
+        return null;
+      }
+      throw e;
+    }
+  }
+
 }
 
 function flattenDirectives(view: ViewMetadata, platformDirectives: any[]): Type[] {

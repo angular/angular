@@ -1,13 +1,16 @@
-import {isPresent, isBlank} from '../facade/lang';
-import {BaseException} from '../facade/exceptions';
+import {isPresent, isBlank} from '../../src/facade/lang';
+import {BaseException} from '../../src/facade/exceptions';
+import {StringMapWrapper} from '../../src/facade/collection';
 
 import * as o from '../output/output_ast';
 import {
   CompileTokenMetadata,
   CompileDirectiveMetadata,
+  CompileIdentifierMetadata
 } from '../compile_metadata';
 import {CompileView} from './compile_view';
 import {Identifiers} from '../identifiers';
+import {ValueTransformer, visitValue} from '../util';
 
 export function getPropertyInView(property: o.Expression, callingView: CompileView,
                                   definedView: CompileView): o.Expression {
@@ -95,4 +98,31 @@ export function createPureProxy(fn: o.Expression, argCount: number, pureProxyPro
   }
   view.createMethod.addStmt(
       o.THIS_EXPR.prop(pureProxyProp.name).set(o.importExpr(pureProxyId).callFn([fn])).toStmt());
+}
+
+
+export function convertValueToOutputAst(value: any): o.Expression {
+  return visitValue(value, new _ValueOutputAstTransformer(), null);
+}
+
+class _ValueOutputAstTransformer extends ValueTransformer {
+  visitArray(arr: any[], context: any): o.Expression {
+    return o.literalArr(arr.map(value => visitValue(value, this, context)));
+  }
+  visitStringMap(map: {[key: string]: any}, context: any): o.Expression {
+    var entries = [];
+    StringMapWrapper.forEach(
+        map, (value, key) => { entries.push([key, visitValue(value, this, context)]); });
+    return o.literalMap(entries);
+  }
+  visitPrimitive(value: any, context: any): o.Expression { return o.literal(value); }
+  visitOther(value: any, context: any): o.Expression {
+    if (value instanceof CompileIdentifierMetadata) {
+      return o.importExpr(value);
+    } else if (value instanceof o.Expression) {
+      return value;
+    } else {
+      throw new BaseException(`Illegal state: Don't now how to compile value ${value}`);
+    }
+  }
 }

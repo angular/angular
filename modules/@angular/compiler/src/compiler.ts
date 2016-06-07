@@ -13,6 +13,7 @@ export * from './xhr';
 export {ViewResolver} from './view_resolver';
 export {DirectiveResolver} from './directive_resolver';
 export {PipeResolver} from './pipe_resolver';
+export {InjectorResolver} from './injector_resolver';
 
 import {TemplateParser} from './template_parser';
 import {HtmlParser} from './html_parser';
@@ -20,6 +21,7 @@ import {DirectiveNormalizer} from './directive_normalizer';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {StyleCompiler} from './style_compiler';
 import {ViewCompiler} from './view_compiler/view_compiler';
+import {InjectorCompiler} from './view_compiler/injector_compiler';
 import {CompilerConfig} from './config';
 import {RuntimeCompiler} from './runtime_compiler';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
@@ -30,6 +32,7 @@ import {Lexer} from './expression_parser/lexer';
 import {ViewResolver} from './view_resolver';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
+import {InjectorResolver} from './injector_resolver';
 
 function _createCompilerConfig() {
   return new CompilerConfig(assertionsEnabled(), false, true);
@@ -51,6 +54,7 @@ export const COMPILER_PROVIDERS: Array<any | Type | {[k: string]: any} | any[]> 
       StyleCompiler,
       ViewCompiler,
       /*@ts2dart_Provider*/ {provide: CompilerConfig, useFactory: _createCompilerConfig, deps: []},
+      InjectorCompiler,
       RuntimeCompiler,
       /*@ts2dart_Provider*/ {provide: ComponentResolver, useExisting: RuntimeCompiler},
       DomElementSchemaRegistry,
@@ -58,5 +62,6 @@ export const COMPILER_PROVIDERS: Array<any | Type | {[k: string]: any} | any[]> 
       UrlResolver,
       ViewResolver,
       DirectiveResolver,
-      PipeResolver
+      PipeResolver,
+      InjectorResolver
     ];

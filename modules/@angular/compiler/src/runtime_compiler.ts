@@ -1,4 +1,4 @@
-import {Injectable, ComponentFactory, ComponentResolver} from '@angular/core';
+import {Injectable, ComponentFactory, ComponentResolver, InjectorFactory} from '@angular/core';
 
 import {
   IS_DART,
@@ -6,7 +6,7 @@ import {
   isBlank,
   isString
 } from '../src/facade/lang';
-import {BaseException} from '../src/facade/exceptions';
+import {BaseException, unimplemented} from '../src/facade/exceptions';
 import {
   ListWrapper,
 } from '../src/facade/collection';
@@ -22,6 +22,7 @@ import {
 } from './template_ast';
 import {StyleCompiler, StylesCompileDependency, StylesCompileResult} from './style_compiler';
 import {ViewCompiler} from './view_compiler/view_compiler';
+import {InjectorCompiler} from './view_compiler/injector_compiler';
 import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {CompileMetadataResolver} from './metadata_resolver';
@@ -30,6 +31,7 @@ import * as ir from './output/output_ast';
 import {jitStatements} from './output/output_jit';
 import {interpretStatements} from './output/output_interpreter';
 import {InterpretiveAppViewInstanceFactory} from './output/interpretive_view';
+import {InterpretiveInjectorInstanceFactory} from './output/interpretative_injector';
 import {XHR} from './xhr';
 
 /**
@@ -48,7 +50,26 @@ export class RuntimeCompiler implements ComponentResolver {
               private _templateNormalizer: DirectiveNormalizer,
               private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
               private _viewCompiler: ViewCompiler, private _xhr: XHR,
+              private _injectorCompiler: InjectorCompiler,
               private _genConfig: CompilerConfig) {}
+
+  createInjectorFactory(config: Type, extraProviders: any[] = []): InjectorFactory<any> {
+    var injectorMeta = this._metadataResolver.getInjectorMetadata(config, extraProviders);
+    var compileResult = this._injectorCompiler.compileInjector(injectorMeta);
+    var factory: any;
+    if (IS_DART || !this._genConfig.useJit) {
+      factory = interpretStatements(compileResult.statements, compileResult.injectorFactoryVar,
+                                    new InterpretiveInjectorInstanceFactory());
+    } else {
+      factory = jitStatements(`${injectorMeta.type.name}.ngfactory.js`, compileResult.statements,
+                              compileResult.injectorFactoryVar);
+    }
+    return factory;
+  }
+
+  loadInjectorFactory(configTypeModule: string): Promise<InjectorFactory<any>> {
+    return unimplemented();
+  }
 
   resolveComponent(component: Type|string): Promise<ComponentFactory<any>> {
     if (isString(component)) {

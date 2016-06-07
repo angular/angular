@@ -9,7 +9,8 @@ import {
   Injector,
   QueryList,
   ViewEncapsulation,
-  TemplateRef
+  TemplateRef,
+  InjectorFactory
 } from '@angular/core';
 import {
   AppElement,
@@ -50,7 +51,8 @@ import {
   clearStyles as impClearStyles,
   collectAndResolveStyles as impCollectAndResolveStyles,
   renderStyles as impRenderStyles,
-  SecurityContext
+  SecurityContext,
+  CodegenInjector
 } from '../core_private';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
@@ -77,6 +79,8 @@ var impTemplateRef = TemplateRef;
 var impTemplateRef_ = TemplateRef_;
 var impValueUnwrapper = ValueUnwrapper;
 var impInjector = Injector;
+var impCodegenInjector = CodegenInjector;
+var impInjectorFactory = InjectorFactory;
 var impViewEncapsulation = ViewEncapsulation;
 var impViewType = ViewType;
 var impChangeDetectionStrategy = ChangeDetectionStrategy;
@@ -145,6 +149,10 @@ export class Identifiers {
       {name: 'ValueUnwrapper', moduleUrl: CD_MODULE_URL, runtime: impValueUnwrapper});
   static Injector = new CompileIdentifierMetadata(
       {name: 'Injector', moduleUrl: assetUrl('core', 'di/injector'), runtime: impInjector});
+  static InjectorFactory = new CompileIdentifierMetadata(
+      {name: 'InjectorFactory', moduleUrl: assetUrl('core', 'linker/injector_factory'), runtime: impInjectorFactory});
+  static CodegenInjector = new CompileIdentifierMetadata(
+      {name: 'CodegenInjector', moduleUrl: assetUrl('core', 'linker/injector_factory'), runtime: impCodegenInjector});
   static ViewEncapsulation = new CompileIdentifierMetadata({
     name: 'ViewEncapsulation',
     moduleUrl: assetUrl('core', 'metadata/view'),
