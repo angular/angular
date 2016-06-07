@@ -8,7 +8,7 @@ import NgOptions from './options';
 import {MetadataWriterHost, TsickleHost} from './compiler_host';
 
 export type CodegenExtension = (ngOptions: NgOptions, program: ts.Program, host: ts.CompilerHost) =>
-    Promise<any>;
+    Promise<void>;
 
 export function main(project: string, basePath?: string, codegen?: CodegenExtension): Promise<any> {
   try {
@@ -32,11 +32,13 @@ export function main(project: string, basePath?: string, codegen?: CodegenExtens
       codegen = () => Promise.resolve(null);
     }
     return codegen(ngOptions, program, host).then(() => {
-      tsc.typeCheck(host, program);
+      // Create a new program since codegen files were created after making the old program
+      const newProgram = ts.createProgram(parsed.fileNames, parsed.options, host, program);
+      tsc.typeCheck(host, newProgram);
 
       // Emit *.js with Decorators lowered to Annotations, and also *.js.map
-      const tsicklePreProcessor = new TsickleHost(host);
-      tsc.emit(tsicklePreProcessor, program);
+      const tsicklePreProcessor = new TsickleHost(host, newProgram);
+      tsc.emit(tsicklePreProcessor, newProgram);
 
       if (!ngOptions.skipMetadataEmit) {
         // Emit *.metadata.json and *.d.ts
@@ -44,8 +46,8 @@ export function main(project: string, basePath?: string, codegen?: CodegenExtens
         // decorators which we want to read or document.
         // Do this emit second since TypeScript will create missing directories for us
         // in the standard emit.
-        const metadataWriter = new MetadataWriterHost(host, program);
-        tsc.emit(metadataWriter, program);
+        const metadataWriter = new MetadataWriterHost(host, newProgram);
+        tsc.emit(metadataWriter, newProgram);
       }
     });
   } catch (e) {

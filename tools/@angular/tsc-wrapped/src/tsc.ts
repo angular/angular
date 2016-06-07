@@ -79,10 +79,7 @@ export class Tsc implements CompilerInterface {
     return {parsed: this.parsed, ngOptions: this.ngOptions};
   }
 
-  typeCheck(compilerHost: ts.CompilerHost, oldProgram: ts.Program): void {
-    // Create a new program since codegen files were created after making the old program
-    const program =
-        ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost, oldProgram);
+  typeCheck(compilerHost: ts.CompilerHost, program: ts.Program): void {
     debug('Checking global diagnostics...');
     check(program.getGlobalDiagnostics());
 

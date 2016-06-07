@@ -21,11 +21,6 @@ tmp
 *.js.deps
 *.js.map
 
-# Files created by the template compiler
-**/*.ngfactory.ts
-**/*.css.ts
-**/*.css.shim.ts
-
 # Include when developing application packages.
 pubspec.lock
 .c9

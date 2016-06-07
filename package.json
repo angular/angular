@@ -107,7 +107,7 @@
     "through2": "^0.6.5",
     "ts-api-guardian": "0.0.3",
     "ts2dart": "^0.9.10",
-    "tsickle": "0.1.2",
+    "tsickle": "^0.1.4",
     "tslint": "^3.10.0-dev.2",
     "typescript": "^1.9.0-dev.20160409",
     "universal-analytics": "^0.3.9",
