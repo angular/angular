@@ -12,7 +12,9 @@
     "build_npm": "rm -rf dist && tsc -p tsconfig.publish.es5.json && tsc -p tsconfig.publish.es6.json",
     "postbuild_npm": "cp package.json README.md dist/ && npm run rewrite_npm_package",
     "rewrite_npm_package": "node --harmony_destructuring tools/rewrite-published-package.js",
-    "build_bundle": "cp -r src router && tsc typings/index.d.ts src/router.ts --rootDir . --module system -t es5 --outFile dist/bundles/router.js  --moduleResolution node --emitDecoratorMetadata --experimentalDecorators"
+    "build_bundle": "cp -r src router && tsc typings/index.d.ts src/router.ts --rootDir . --module system -t es5 --outFile dist/bundles/router.js  --moduleResolution node --emitDecoratorMetadata --experimentalDecorators",
+    "lint": "tslint \"src/**/*.ts\"",
+    "format": "clang-format -style=file -i --glob=src/**/*.ts"
   },
   "keywords": [
     "angular2",
@@ -62,7 +64,10 @@
     "tsd": "^0.6.5",
     "typescript": "^1.9.0-dev.20160409",
     "typings": "^1.0.4",
-    "zone.js": "^0.6.6"
+    "zone.js": "^0.6.6",
+    "clang-format": "^1.0.35",
+    "tslint": "^3.6.0",
+    "codelyzer": "0.0.14"
   },
   "typings": "build/src/index.d.ts"
 }

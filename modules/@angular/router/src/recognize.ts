@@ -2,7 +2,7 @@ import { UrlTree, UrlSegment } from './url_tree';
 import { flatten, first, merge } from './utils/collection';
 import { TreeNode } from './utils/tree';
 import { RouterStateSnapshot, ActivatedRouteSnapshot } from './router_state';
-import { Params, PRIMARY_OUTLET } from './shared';
+import { PRIMARY_OUTLET } from './shared';
 import { RouterConfig, Route } from './config';
 import { Type } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
@@ -35,7 +35,7 @@ function constructActivatedRoute(match: MatchResult): TreeNode<ActivatedRouteSna
   children.sort((a, b) => {
     if (a.value.outlet === PRIMARY_OUTLET) return -1;
     if (b.value.outlet === PRIMARY_OUTLET) return 1;
-    return a.value.outlet.localeCompare(b.value.outlet)
+    return a.value.outlet.localeCompare(b.value.outlet);
   });
   return [new TreeNode<ActivatedRouteSnapshot>(activatedRoute, children)];
 }
