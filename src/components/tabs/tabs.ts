@@ -64,7 +64,7 @@ export class MdTabGroup {
    * ViewChildren references are ready.
    */
   private get _currentLabelWrapper(): HTMLElement {
-    return this._labelWrappers && this._labelWrappers.toArray()[this.selectedIndex]
+    return this._labelWrappers && this._labelWrappers.length
         ? this._labelWrappers.toArray()[this.selectedIndex].elementRef.nativeElement
         : null;
   }
