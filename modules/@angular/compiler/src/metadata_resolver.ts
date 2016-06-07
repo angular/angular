@@ -260,11 +260,12 @@ export class CompileMetadataResolver {
 
   getDependenciesMetadata(typeOrFunc: Type | Function,
                           dependencies: any[]): cpl.CompileDiDependencyMetadata[] {
+    let hasUnknownDeps = false;
     let params = isPresent(dependencies) ? dependencies : this._reflector.parameters(typeOrFunc);
     if (isBlank(params)) {
       params = [];
     }
-    return params.map((param) => {
+    let dependenciesMetadata: cpl.CompileDiDependencyMetadata[] = params.map((param) => {
       if (isBlank(param)) {
         return null;
       }
@@ -306,6 +307,7 @@ export class CompileMetadataResolver {
         token = param;
       }
       if (isBlank(token)) {
+        hasUnknownDeps = true;
         return null;
       }
       return new cpl.CompileDiDependencyMetadata({
@@ -320,6 +322,15 @@ export class CompileMetadataResolver {
       });
 
     });
+
+    if (hasUnknownDeps) {
+      let depsTokens = dependenciesMetadata.map((dep) => {
+        return dep ? stringify(dep.token) : '?';
+      }).join(', ');
+      throw new BaseException(`Can't resolve all parameters for ${stringify(typeOrFunc)}: (${depsTokens}).`);
+    }
+
+    return dependenciesMetadata;
   }
 
   getTokenMetadata(token: any): cpl.CompileTokenMetadata {
