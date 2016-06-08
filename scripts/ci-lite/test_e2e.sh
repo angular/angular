@@ -23,6 +23,7 @@ echo 'travis_fold:end:test.buildPackages'
 
 
 ./scripts/ci-lite/offline_compiler_test.sh
+./tools/typings-test/test.sh
 
 echo 'travis_fold:start:test.e2e.localChrome'
 cd dist/
