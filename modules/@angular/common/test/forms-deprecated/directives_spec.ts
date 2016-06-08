@@ -38,7 +38,7 @@ import {
 } from '@angular/common';
 
 
-import {selectValueAccessor, composeValidators} from '@angular/common/src/forms/directives/shared';
+import {selectValueAccessor, composeValidators} from '@angular/common/src/forms-deprecated/directives/shared';
 import {TimerWrapper} from '../../src/facade/async';
 import {PromiseWrapper} from '../../src/facade/promise';
 import {SimpleChange} from '@angular/core/src/change_detection';

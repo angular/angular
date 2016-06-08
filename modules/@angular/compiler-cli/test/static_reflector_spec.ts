@@ -326,7 +326,7 @@ class MockReflectorHost implements StaticReflectorHost {
 
   getMetadataFor(moduleId: string): any {
     let data: {[key: string]: any} = {
-      '/tmp/angular2/src/common/forms/directives.d.ts': [{
+      '/tmp/angular2/src/common/forms-deprecated/directives.d.ts': [{
         "__symbolic": "module",
         "version": 1,
         "metadata": {
@@ -424,7 +424,7 @@ class MockReflectorHost implements StaticReflectorHost {
                       {
                         "__symbolic": "reference",
                         "name": "FORM_DIRECTIVES",
-                        "module": "angular2/src/common/forms/directives"
+                        "module": "angular2/src/common/forms-deprecated/directives"
                       }
                     ],
                     "animations": [{

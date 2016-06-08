@@ -1,5 +1,5 @@
 import {Type} from '@angular/core';
-import {FORM_DIRECTIVES} from './forms';
+import {FORM_DIRECTIVES} from './forms-deprecated';
 import {CORE_DIRECTIVES} from './directives';
 
 /**
