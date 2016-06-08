@@ -89,6 +89,24 @@ export function main() {
     });
 
     if (getDOM().supportsDOMEvents()) {
+      ddescribe('replayable observable interface with array of results', () => {
+        it('should fire callback with initial values and then changes', fakeAsync(() => {
+             const methods = {
+               subscribe(results: any[]) { expect(results).toEqual(queryList.toArray()); }
+             };
+             spyOn(methods, 'subscribe').and.callThrough();
+
+             ObservableWrapper.subscribe(queryList.changes, methods.subscribe);
+             queryList.reset(['1', '2', '3']);
+
+             expect((methods.subscribe as any).calls.count()).toEqual(2);
+
+             // Replay: a fresh subscribe should immediately give the latest results
+             ObservableWrapper.subscribe(queryList.changes, methods.subscribe);
+             expect((methods.subscribe as any).calls.count()).toEqual(3);
+           }));
+      });
+
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
              var fires = 0;

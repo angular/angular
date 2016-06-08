@@ -411,15 +411,20 @@ export function main() {
                    '</needs-query>';
 
                tcb.overrideTemplate(MyComp0, template).createAsync(MyComp0).then((view) => {
+                 var last = false;
                  var q = view.debugElement.children[0].references['q'];
                  view.detectChanges();
 
                  ObservableWrapper.subscribe(q.query.changes, (_) => {
-                   expect(q.query.first.text).toEqual('1');
-                   expect(q.query.last.text).toEqual('2');
-                   async.done();
+                   if (!last) {
+                     expect(q.query.last.text).toEqual('1');
+                   } else {
+                     expect(q.query.last.text).toEqual('2');
+                     async.done();
+                   }
                  });
 
+                 last = true;
                  view.debugElement.componentInstance.shouldShow = true;
                  view.detectChanges();
                });
