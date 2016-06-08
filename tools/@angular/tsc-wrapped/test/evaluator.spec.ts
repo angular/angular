@@ -48,8 +48,14 @@ describe('Evaluator', () => {
 
   it('should be able to fold expressions with foldable references', () => {
     var expressions = program.getSourceFile('expressions.ts');
+    symbols.define('someName', 'some-name');
+    symbols.define('someBool', true);
+    symbols.define('one', 1);
+    symbols.define('two', 2);
     expect(evaluator.isFoldable(findVar(expressions, 'three').initializer)).toBeTruthy();
     expect(evaluator.isFoldable(findVar(expressions, 'four').initializer)).toBeTruthy();
+    symbols.define('three', 3);
+    symbols.define('four', 4);
     expect(evaluator.isFoldable(findVar(expressions, 'obj').initializer)).toBeTruthy();
     expect(evaluator.isFoldable(findVar(expressions, 'arr').initializer)).toBeTruthy();
   });
@@ -183,6 +189,21 @@ describe('Evaluator', () => {
       character: 11
     });
   });
+
+  it('should be able to fold an array spread', () => {
+    let expressions = program.getSourceFile('expressions.ts');
+    symbols.define('arr', [1, 2, 3, 4]);
+    let arrSpread = findVar(expressions, 'arrSpread');
+    expect(evaluator.evaluateNode(arrSpread.initializer)).toEqual([0, 1, 2, 3, 4, 5]);
+  });
+
+  it('should be able to produce a spread expression', () => {
+    let expressions = program.getSourceFile('expressions.ts');
+    let arrSpreadRef = findVar(expressions, 'arrSpreadRef');
+    expect(evaluator.evaluateNode(arrSpreadRef.initializer)).toEqual([
+      0, {__symbolic: 'spread', expression: {__symbolic: 'reference', name: 'arrImport'}}, 5
+    ]);
+  });
 });
 
 const FILES: Directory = {
@@ -201,8 +222,11 @@ const FILES: Directory = {
     export var someBool = true;
     export var one = 1;
     export var two = 2;
+    export var arrImport = [1, 2, 3, 4];
   `,
   'expressions.ts': `
+    import {arrImport} from './consts';
+
     export var someName = 'some-name';
     export var someBool = true;
     export var one = 1;
@@ -235,6 +259,10 @@ const FILES: Directory = {
     export var bShiftLeft = 1 << 2;              // 0x04
     export var bShiftRight = -1 >> 2;            // -1
     export var bShiftRightU = -1 >>> 2;          // 0x3fffffff
+
+    export var arrSpread = [0, ...arr, 5];
+
+    export var arrSpreadRef = [0, ...arrImport, 5];
 
     export var recursiveA = recursiveB;
     export var recursiveB = recursiveA;

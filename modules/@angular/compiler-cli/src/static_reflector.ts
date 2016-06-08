@@ -32,6 +32,7 @@ export interface StaticReflectorHost {
     coreDecorators: string,
     diDecorators: string,
     diMetadata: string,
+    diOpaqueToken: string,
     animationMetadata: string,
     provider: string
   };
@@ -56,6 +57,7 @@ export class StaticReflector implements ReflectorReader {
   private parameterCache = new Map<StaticSymbol, any[]>();
   private metadataCache = new Map<string, {[key: string]: any}>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
+  private opaqueToken: StaticSymbol;
 
   constructor(private host: StaticReflectorHost) { this.initializeConversionMap(); }
 
@@ -177,8 +179,9 @@ export class StaticReflector implements ReflectorReader {
   }
 
   private initializeConversionMap(): void {
-    const {coreDecorators, diDecorators, diMetadata, animationMetadata, provider} =
+    const {coreDecorators, diDecorators, diMetadata, diOpaqueToken, animationMetadata, provider} =
         this.host.angularImportLocations();
+    this.opaqueToken = this.host.findDeclaration(diOpaqueToken, 'OpaqueToken');
     this.registerDecoratorOrConstructor(this.host.findDeclaration(provider, 'Provider'), Provider);
 
     this.registerDecoratorOrConstructor(
@@ -245,147 +248,231 @@ export class StaticReflector implements ReflectorReader {
   /** @internal */
   public simplify(context: StaticSymbol, value: any): any {
     let _this = this;
+    let scope = BindingScope.empty;
+    let calling = new Map<StaticSymbol, boolean>();
 
-    function simplify(expression: any): any {
-      if (isPrimitive(expression)) {
-        return expression;
-      }
-      if (expression instanceof Array) {
-        let result: any[] = [];
-        for (let item of (<any>expression)) {
-          result.push(simplify(item));
+    function simplifyInContext(context: StaticSymbol, value: any): any {
+      function resolveReference(expression: any): StaticSymbol {
+        let staticSymbol: StaticSymbol;
+        if (expression['module']) {
+          staticSymbol = _this.host.findDeclaration(
+              expression['module'], expression['name'], context.filePath);
+        } else {
+          staticSymbol = _this.host.getStaticSymbol(context.filePath, expression['name']);
         }
-        return result;
+        return staticSymbol;
       }
-      if (expression) {
-        if (expression['__symbolic']) {
-          let staticSymbol: StaticSymbol;
-          switch (expression['__symbolic']) {
-            case 'binop':
-              let left = simplify(expression['left']);
-              let right = simplify(expression['right']);
-              switch (expression['operator']) {
-                case '&&':
-                  return left && right;
-                case '||':
-                  return left || right;
-                case '|':
-                  return left | right;
-                case '^':
-                  return left ^ right;
-                case '&':
-                  return left & right;
-                case '==':
-                  return left == right;
-                case '!=':
-                  return left != right;
-                case '===':
-                  return left === right;
-                case '!==':
-                  return left !== right;
-                case '<':
-                  return left < right;
-                case '>':
-                  return left > right;
-                case '<=':
-                  return left <= right;
-                case '>=':
-                  return left >= right;
-                case '<<':
-                  return left << right;
-                case '>>':
-                  return left >> right;
-                case '+':
-                  return left + right;
-                case '-':
-                  return left - right;
-                case '*':
-                  return left * right;
-                case '/':
-                  return left / right;
-                case '%':
-                  return left % right;
+
+      function isOpaqueToken(value: any): boolean {
+        if (value && value.__symbolic === 'new' && value.expression) {
+          let target = value.expression;
+          if (target.__symbolic == 'reference') {
+            return sameSymbol(resolveReference(target), _this.opaqueToken);
+          }
+        }
+        return false;
+      }
+
+      function simplifyCall(expression: any) {
+        if (expression['__symbolic'] == 'call') {
+          let target = expression['expression'];
+          let targetFunction = simplify(target);
+          if (targetFunction['__symbolic'] == 'function') {
+            if (calling.get(targetFunction)) {
+              throw new Error('Recursion not supported');
+            }
+            calling.set(targetFunction, true);
+            let value = targetFunction['value'];
+            if (value) {
+              // Determine the arguments
+              let args = (expression['arguments'] || []).map((arg: any) => simplify(arg));
+              let parameters: string[] = targetFunction['parameters'];
+              let functionScope = BindingScope.build();
+              for (let i = 0; i < parameters.length; i++) {
+                functionScope.define(parameters[i], args[i]);
               }
-              return null;
-            case 'pre':
-              let operand = simplify(expression['operand']);
-              switch (expression['operator']) {
-                case '+':
-                  return operand;
-                case '-':
-                  return -operand;
-                case '!':
-                  return !operand;
-                case '~':
-                  return ~operand;
-              }
-              return null;
-            case 'index':
-              let indexTarget = simplify(expression['expression']);
-              let index = simplify(expression['index']);
-              if (indexTarget && isPrimitive(index)) return indexTarget[index];
-              return null;
-            case 'select':
-              let selectTarget = simplify(expression['expression']);
-              let member = simplify(expression['member']);
-              if (selectTarget && isPrimitive(member)) return selectTarget[member];
-              return null;
-            case 'reference':
-              if (expression['module']) {
-                staticSymbol = _this.host.findDeclaration(
-                    expression['module'], expression['name'], context.filePath);
-              } else {
-                staticSymbol = _this.host.getStaticSymbol(context.filePath, expression['name']);
-              }
-              let result = staticSymbol;
-              let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
-              let declarationValue =
-                  moduleMetadata ? moduleMetadata['metadata'][staticSymbol.name] : null;
-              if (declarationValue) {
-                result = _this.simplify(staticSymbol, declarationValue);
+              let oldScope = scope;
+              let result: any;
+              try {
+                scope = functionScope.done();
+                result = simplify(value);
+              } finally {
+                scope = oldScope;
               }
               return result;
-            case 'class':
-              return context;
-            case 'new':
-            case 'call':
-              let target = expression['expression'];
-              if (target['module']) {
-                staticSymbol =
-                    _this.host.findDeclaration(target['module'], target['name'], context.filePath);
-              } else {
-                staticSymbol = _this.host.getStaticSymbol(context.filePath, target['name']);
-              }
-              let converter = _this.conversionMap.get(staticSymbol);
-              if (converter) {
-                let args = expression['arguments'];
-                if (!args) {
-                  args = [];
-                }
-                return converter(context, args);
-              } else {
-                return context;
-              }
-            case 'error':
-              let message = produceErrorMessage(expression);
-              if (expression['line']) {
-                message =
-                    `${message} (position ${expression['line']}:${expression['character']} in the original .ts file)`;
-              }
-              throw new Error(message);
+            }
+            calling.delete(targetFunction);
           }
-          return null;
         }
-        return mapStringMap(expression, (value, name) => simplify(value));
+
+        return simplify({__symbolic: 'error', message: 'Function call not supported'});
       }
-      return null;
+
+      function simplify(expression: any): any {
+        if (isPrimitive(expression)) {
+          return expression;
+        }
+        if (expression instanceof Array) {
+          let result: any[] = [];
+          for (let item of (<any>expression)) {
+            // Check for a spread expression
+            if (item && item.__symbolic === 'spread') {
+              let spreadArray = simplify(item.expression);
+              if (Array.isArray(spreadArray)) {
+                for (let spreadItem of spreadArray) {
+                  result.push(spreadItem);
+                }
+                continue;
+              }
+            }
+            result.push(simplify(item));
+          }
+          return result;
+        }
+        if (expression) {
+          if (expression['__symbolic']) {
+            let staticSymbol: StaticSymbol;
+            switch (expression['__symbolic']) {
+              case 'binop':
+                let left = simplify(expression['left']);
+                let right = simplify(expression['right']);
+                switch (expression['operator']) {
+                  case '&&':
+                    return left && right;
+                  case '||':
+                    return left || right;
+                  case '|':
+                    return left | right;
+                  case '^':
+                    return left ^ right;
+                  case '&':
+                    return left & right;
+                  case '==':
+                    return left == right;
+                  case '!=':
+                    return left != right;
+                  case '===':
+                    return left === right;
+                  case '!==':
+                    return left !== right;
+                  case '<':
+                    return left < right;
+                  case '>':
+                    return left > right;
+                  case '<=':
+                    return left <= right;
+                  case '>=':
+                    return left >= right;
+                  case '<<':
+                    return left << right;
+                  case '>>':
+                    return left >> right;
+                  case '+':
+                    return left + right;
+                  case '-':
+                    return left - right;
+                  case '*':
+                    return left * right;
+                  case '/':
+                    return left / right;
+                  case '%':
+                    return left % right;
+                }
+                return null;
+              case 'pre':
+                let operand = simplify(expression['operand']);
+                switch (expression['operator']) {
+                  case '+':
+                    return operand;
+                  case '-':
+                    return -operand;
+                  case '!':
+                    return !operand;
+                  case '~':
+                    return ~operand;
+                }
+                return null;
+              case 'index':
+                let indexTarget = simplify(expression['expression']);
+                let index = simplify(expression['index']);
+                if (indexTarget && isPrimitive(index)) return indexTarget[index];
+                return null;
+              case 'select':
+                let selectTarget = simplify(expression['expression']);
+                let member = simplify(expression['member']);
+                if (selectTarget && isPrimitive(member)) return selectTarget[member];
+                return null;
+              case 'reference':
+                if (!expression.module) {
+                  let name: string = expression['name'];
+                  let localValue = scope.resolve(name);
+                  if (localValue != BindingScope.missing) {
+                    return localValue;
+                  }
+                }
+                staticSymbol = resolveReference(expression);
+                let result: any = staticSymbol;
+                let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
+                let declarationValue =
+                    moduleMetadata ? moduleMetadata['metadata'][staticSymbol.name] : null;
+                if (declarationValue) {
+                  if (isOpaqueToken(declarationValue)) {
+                    // If the referenced symbol is initalized by a new OpaqueToken we can keep the
+                    // reference to the symbol.
+                    return staticSymbol;
+                  }
+                  result = simplifyInContext(staticSymbol, declarationValue);
+                }
+                return result;
+              case 'class':
+                return context;
+              case 'function':
+                return expression;
+              case 'new':
+              case 'call':
+                // Determine if the function is a built-in conversion
+                let target = expression['expression'];
+                if (target['module']) {
+                  staticSymbol = _this.host.findDeclaration(
+                      target['module'], target['name'], context.filePath);
+                } else {
+                  staticSymbol = _this.host.getStaticSymbol(context.filePath, target['name']);
+                }
+                let converter = _this.conversionMap.get(staticSymbol);
+                if (converter) {
+                  let args = expression['arguments'];
+                  if (!args) {
+                    args = [];
+                  }
+                  return converter(context, args);
+                }
+
+                // Determine if the function is one we can simplify.
+                return simplifyCall(expression);
+
+              case 'error':
+                let message = produceErrorMessage(expression);
+                if (expression['line']) {
+                  message =
+                      `${message} (position ${expression['line']}:${expression['character']} in the original .ts file)`;
+                }
+                throw new Error(message);
+            }
+            return null;
+          }
+          return mapStringMap(expression, (value, name) => simplify(value));
+        }
+        return null;
+      }
+
+      try {
+        return simplify(value);
+      } catch (e) {
+        throw new Error(`${e.message}, resolving symbol ${context.name} in ${context.filePath}`);
+      }
     }
 
-    try {
-      return simplify(value);
-    } catch (e) {
-      throw new Error(`${e.message}, resolving symbol ${context.name} in ${context.filePath}`);
-    }
+    return simplifyInContext(context, value);
   }
 
   /**
@@ -459,4 +546,41 @@ function mapStringMap(input: {[key: string]: any}, transform: (value: any, key: 
 
 function isPrimitive(o: any): boolean {
   return o === null || (typeof o !== 'function' && typeof o !== 'object');
+}
+
+interface BindingScopeBuilder {
+  define(name: string, value: any): BindingScopeBuilder;
+  done(): BindingScope;
+}
+
+abstract class BindingScope {
+  abstract resolve(name: string): any;
+  public static missing = {};
+  public static empty: BindingScope = {resolve: name => BindingScope.missing};
+
+  public static build(): BindingScopeBuilder {
+    let current = new Map<string, any>();
+    let parent: BindingScope = undefined;
+    return {
+      define: function(name, value) {
+        current.set(name, value);
+        return this;
+      },
+      done: function() {
+        return current.size > 0 ? new PopulatedScope(current) : BindingScope.empty;
+      }
+    };
+  }
+}
+
+class PopulatedScope extends BindingScope {
+  constructor(private bindings: Map<string, any>) { super(); }
+
+  resolve(name: string): any {
+    return this.bindings.has(name) ? this.bindings.get(name) : BindingScope.missing;
+  }
+}
+
+function sameSymbol(a: StaticSymbol, b: StaticSymbol): boolean {
+  return a === b || (a.name == b.name && a.filePath == b.filePath);
 }

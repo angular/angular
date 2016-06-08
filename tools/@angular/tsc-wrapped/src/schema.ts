@@ -61,6 +61,15 @@ export function isConstructorMetadata(value: any): value is ConstructorMetadata 
   return value && value.__symbolic === 'constructor';
 }
 
+export interface FunctionMetadata {
+  __symbolic: 'function';
+  parameters: string[];
+  result: MetadataValue;
+}
+export function isFunctionMetadata(value: any): value is FunctionMetadata {
+  return value && value.__symbolic === 'function';
+}
+
 export type MetadataValue = string | number | boolean | MetadataObject | MetadataArray |
     MetadataSymbolicExpression | MetadataError;
 
@@ -69,7 +78,7 @@ export interface MetadataObject { [name: string]: MetadataValue; }
 export interface MetadataArray { [name: number]: MetadataValue; }
 
 export interface MetadataSymbolicExpression {
-  __symbolic: 'binary'|'call'|'index'|'new'|'pre'|'reference'|'select'
+  __symbolic: 'binary'|'call'|'index'|'new'|'pre'|'reference'|'select'|'spread'
 }
 export function isMetadataSymbolicExpression(value: any): value is MetadataSymbolicExpression {
   if (value) {
@@ -81,6 +90,7 @@ export function isMetadataSymbolicExpression(value: any): value is MetadataSymbo
       case 'pre':
       case 'reference':
       case 'select':
+      case 'spread':
         return true;
     }
   }
@@ -188,6 +198,15 @@ export interface MetadataSymbolicSelectExpression extends MetadataSymbolicExpres
 export function isMetadataSymbolicSelectExpression(value: any):
     value is MetadataSymbolicSelectExpression {
   return value && value.__symbolic === 'select';
+}
+
+export interface MetadataSymbolicSpreadExpression extends MetadataSymbolicExpression {
+  __symbolic: 'spread';
+  expression: MetadataValue;
+}
+export function isMetadataSymbolicSpreadExpression(value: any):
+    value is MetadataSymbolicSpreadExpression {
+  return value && value.__symbolic === 'spread';
 }
 
 export interface MetadataError {

@@ -293,6 +293,41 @@ describe('StaticReflector', () => {
                ({__symbolic: 'reference', module: './extern', name: 'nonExisting'})))
         .toEqual(host.getStaticSymbol('/src/extern.d.ts', 'nonExisting'));
   });
+
+  it('should simplify values initialized with a function call', () => {
+    expect(simplify(new StaticSymbol('/tmp/src/function-reference.ts', ''), {
+      __symbolic: 'reference',
+      name: 'one'
+    })).toEqual(['some-value']);
+    expect(simplify(new StaticSymbol('/tmp/src/function-reference.ts', ''), {
+      __symbolic: 'reference',
+      name: 'two'
+    })).toEqual(2);
+  });
+
+  it('should error on direct recursive calls', () => {
+    expect(
+        () => simplify(
+            new StaticSymbol('/tmp/src/function-reference.ts', ''),
+            {__symbolic: 'reference', name: 'recursion'}))
+        .toThrow(new Error(
+            'Recursion not supported, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
+  });
+
+  it('should error on indirect recursive calls', () => {
+    expect(
+        () => simplify(
+            new StaticSymbol('/tmp/src/function-reference.ts', ''),
+            {__symbolic: 'reference', name: 'indirectRecursion'}))
+        .toThrow(new Error(
+            'Recursion not supported, resolving symbol indirectRecursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
+  });
+  it('should simplify a spread expression', () => {
+    expect(simplify(new StaticSymbol('/tmp/src/spread.ts', ''), {
+      __symbolic: 'reference',
+      name: 'spread'
+    })).toEqual([0, 1, 2, 3, 4, 5]);
+  });
 });
 
 class MockReflectorHost implements StaticReflectorHost {
@@ -303,6 +338,7 @@ class MockReflectorHost implements StaticReflectorHost {
       coreDecorators: 'angular2/src/core/metadata',
       diDecorators: 'angular2/src/core/di/decorators',
       diMetadata: 'angular2/src/core/di/metadata',
+      diOpaqueToken: 'angular2/src/core/di/opaque_token',
       animationMetadata: 'angular2/src/core/animation/metadata',
       provider: 'angular2/src/core/di/provider'
     };
@@ -623,6 +659,138 @@ class MockReflectorHost implements StaticReflectorHost {
             line: 12,
             character: 33
           }
+        }
+      },
+      '/tmp/src/function-declaration.d.ts': {
+        __symbolic: 'module',
+        version: 1,
+        metadata: {
+          one: {
+            __symbolic: 'function',
+            parameters: ['a'],
+            value: [
+              {__symbolic: 'reference', name: 'a'}
+            ]
+          },
+          add: {
+            __symbolic: 'function',
+            parameters: ['a','b'],
+            value: {
+              __symbolic: 'binop',
+              operator: '+',
+              left: {__symbolic: 'reference', name: 'a'},
+              right: {__symbolic: 'reference', name: 'b'}
+            }
+          }
+        }
+      },
+      '/tmp/src/function-reference.ts': {
+        __symbolic: 'module',
+        version: 1,
+        metadata: {
+          one: {
+            __symbolic: 'call',
+            expression: {
+              __symbolic: 'reference',
+              module: './function-declaration',
+              name: 'one'
+            },
+            arguments: ['some-value']
+          },
+          two: {
+            __symbolic: 'call',
+            expression: {
+              __symbolic: 'reference',
+              module: './function-declaration',
+              name: 'add'
+            },
+            arguments: [1, 1]
+          },
+          recursion: {
+            __symbolic: 'call',
+            expression: {
+              __symbolic: 'reference',
+              module: './function-recursive',
+              name: 'recursive'
+            },
+            arguments: [1]
+          },
+          indirectRecursion: {
+            __symbolic: 'call',
+            expression: {
+              __symbolic: 'reference',
+              module: './function-recursive',
+              name: 'indirectRecursion1'
+            },
+            arguments: [1]
+          }
+        }
+      },
+      '/tmp/src/function-recursive.d.ts': {
+        __symbolic: 'modules',
+        version: 1,
+        metadata: {
+          recursive: {
+            __symbolic: 'function',
+            parameters: ['a'],
+            value: {
+              __symbolic: 'call',
+              expression: {
+                __symbolic: 'reference',
+                module: './function-recursive',
+                name: 'recursive',
+              },
+              arguments: [
+                {
+                  __symbolic: 'reference',
+                  name: 'a'
+                }
+              ]
+            }
+          },
+          indirectRecursion1: {
+            __symbolic: 'function',
+            parameters: ['a'],
+            value: {
+              __symbolic: 'call',
+              expression: {
+                __symbolic: 'reference',
+                module: './function-recursive',
+                name: 'indirectRecursion2',
+              },
+              arguments: [
+                {
+                  __symbolic: 'reference',
+                  name: 'a'
+                }
+              ]
+            }
+          },
+          indirectRecursion2: {
+            __symbolic: 'function',
+            parameters: ['a'],
+            value: {
+              __symbolic: 'call',
+              expression: {
+                __symbolic: 'reference',
+                module: './function-recursive',
+                name: 'indirectRecursion1',
+              },
+              arguments: [
+                {
+                  __symbolic: 'reference',
+                  name: 'a'
+                }
+              ]
+            }
+          }
+        },
+      },
+      '/tmp/src/spread.ts': {
+        __symbolic: 'module',
+        version: 1,
+        metadata: {
+          spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]
         }
       }
     };

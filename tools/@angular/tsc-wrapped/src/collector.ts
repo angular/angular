@@ -152,6 +152,30 @@ export class MetadataCollector {
           }
           // Otherwise don't record metadata for the class.
           break;
+        case ts.SyntaxKind.FunctionDeclaration:
+          // Record functions that return a single value. Record the parameter
+          // names substitution will be performed by the StaticReflector.
+          if (node.flags & ts.NodeFlags.Export) {
+            const functionDeclaration = <ts.FunctionDeclaration>node;
+            const functionName = functionDeclaration.name.text;
+            const functionBody = functionDeclaration.body;
+            if (functionBody && functionBody.statements.length == 1) {
+              const statement = functionBody.statements[0];
+              if (statement.kind === ts.SyntaxKind.ReturnStatement) {
+                const returnStatement = <ts.ReturnStatement>statement;
+                if (returnStatement.expression) {
+                  if (!metadata) metadata = {};
+                  metadata[functionName] = {
+                    __symbolic: 'function',
+                    parameters: namesOf(functionDeclaration.parameters),
+                    value: evaluator.evaluateNode(returnStatement.expression)
+                  };
+                }
+              }
+            }
+          }
+          // Otherwise don't record the function.
+          break;
         case ts.SyntaxKind.VariableStatement:
           const variableStatement = <ts.VariableStatement>node;
           for (let variableDeclaration of variableStatement.declarationList.declarations) {
@@ -208,4 +232,27 @@ export class MetadataCollector {
 
     return metadata && {__symbolic: 'module', version: VERSION, metadata};
   }
+}
+
+// Collect parameter names from a function.
+function namesOf(parameters: ts.NodeArray<ts.ParameterDeclaration>): string[] {
+  let result: string[] = [];
+
+  function addNamesOf(name: ts.Identifier | ts.BindingPattern) {
+    if (name.kind == ts.SyntaxKind.Identifier) {
+      const identifier = <ts.Identifier>name;
+      result.push(identifier.text);
+    } else {
+      const bindingPattern = <ts.BindingPattern>name;
+      for (let element of bindingPattern.elements) {
+        addNamesOf(element.name);
+      }
+    }
+  }
+
+  for (let parameter of parameters) {
+    addNamesOf(parameter.name);
+  }
+
+  return result;
 }

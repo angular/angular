@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 
-import {MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression} from './schema';
+import {MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
 import {Symbols} from './symbols';
 
 function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): boolean {
@@ -187,7 +187,7 @@ export class Evaluator {
         case ts.SyntaxKind.Identifier:
           let identifier = <ts.Identifier>node;
           let reference = this.symbols.resolve(identifier.text);
-          if (isPrimitive(reference)) {
+          if (reference !== undefined && isPrimitive(reference)) {
             return true;
           }
           break;
@@ -207,14 +207,17 @@ export class Evaluator {
         let obj: {[name: string]: any} = {};
         ts.forEachChild(node, child => {
           switch (child.kind) {
+            case ts.SyntaxKind.ShorthandPropertyAssignment:
             case ts.SyntaxKind.PropertyAssignment:
-              const assignment = <ts.PropertyAssignment>child;
+              const assignment = <ts.PropertyAssignment|ts.ShorthandPropertyAssignment>child;
               const propertyName = this.nameOf(assignment.name);
               if (isMetadataError(propertyName)) {
                 error = propertyName;
                 return true;
               }
-              const propertyValue = this.evaluateNode(assignment.initializer);
+              const propertyValue = isPropertyAssignment(assignment) ?
+                  this.evaluateNode(assignment.initializer) :
+                  {__symbolic: 'reference', name: propertyName};
               if (isMetadataError(propertyValue)) {
                 error = propertyValue;
                 return true;  // Stop the forEachChild.
@@ -229,14 +232,31 @@ export class Evaluator {
         let arr: MetadataValue[] = [];
         ts.forEachChild(node, child => {
           const value = this.evaluateNode(child);
+
+          // Check for error
           if (isMetadataError(value)) {
             error = value;
             return true;  // Stop the forEachChild.
           }
+
+          // Handle spread expressions
+          if (isMetadataSymbolicSpreadExpression(value)) {
+            if (Array.isArray(value.expression)) {
+              for (let spreadValue of value.expression) {
+                arr.push(spreadValue);
+              }
+              return;
+            }
+          }
+
           arr.push(value);
         });
         if (error) return error;
         return arr;
+      case ts.SyntaxKind.SpreadElementExpression:
+        let spread = <ts.SpreadElementExpression>node;
+        let spreadExpression = this.evaluateNode(spread.expression);
+        return {__symbolic: 'spread', expression: spreadExpression};
       case ts.SyntaxKind.CallExpression:
         const callExpression = <ts.CallExpression>node;
         if (isCallOf(callExpression, 'forwardRef') && callExpression.arguments.length === 1) {
@@ -296,7 +316,7 @@ export class Evaluator {
         if (isMetadataError(member)) {
           return member;
         }
-        if (this.isFoldable(propertyAccessExpression.expression))
+        if (expression && this.isFoldable(propertyAccessExpression.expression))
           return (<any>expression)[<string>member];
         if (isMetadataModuleReferenceExpression(expression)) {
           // A select into a module refrence and be converted into a reference to the symbol
@@ -494,4 +514,8 @@ export class Evaluator {
     }
     return errorSymbol('Expression form not supported', node);
   }
+}
+
+function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
+  return node.kind == ts.SyntaxKind.PropertyAssignment;
 }
