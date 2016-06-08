@@ -2587,9 +2587,9 @@
       "resolved": "https://registry.npmjs.org/cipher-base/-/cipher-base-1.0.2.tgz"
     },
     "clang-format": {
-      "version": "1.0.39",
-      "from": "clang-format@1.0.39",
-      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.39.tgz",
+      "version": "1.0.41",
+      "from": "clang-format@1.0.41",
+      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.41.tgz",
       "dependencies": {
         "async": {
           "version": "1.5.2",

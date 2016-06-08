@@ -1653,7 +1653,7 @@
       "version": "1.0.2"
     },
     "clang-format": {
-      "version": "1.0.39",
+      "version": "1.0.41",
       "dependencies": {
         "async": {
           "version": "1.5.2"
