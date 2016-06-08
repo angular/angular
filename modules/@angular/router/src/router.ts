@@ -14,6 +14,7 @@ import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {of } from 'rxjs/observable/of';
 
+import {applyRedirects} from './apply_redirects';
 import {RouterConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
@@ -235,8 +236,14 @@ export class Router {
     }
 
     return new Promise((resolvePromise, rejectPromise) => {
+      let updatedUrl;
       let state;
-      recognize(this.rootComponentType, this.config, url)
+      applyRedirects(url, this.config)
+          .mergeMap(u => {
+            updatedUrl = u;
+            return recognize(this.rootComponentType, this.config, updatedUrl);
+          })
+
           .mergeMap((newRouterStateSnapshot) => {
             return resolve(this.resolver, newRouterStateSnapshot);
 
@@ -265,7 +272,7 @@ export class Router {
             this.currentUrlTree = url;
             this.currentRouterState = state;
             if (!pop) {
-              this.location.go(this.urlSerializer.serialize(url));
+              this.location.go(this.urlSerializer.serialize(updatedUrl));
             }
           })
           .then(
