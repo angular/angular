@@ -21,7 +21,10 @@ export class HasCustomDecorator {
 }
 
 // Verify that custom decorators have metadata collected, eg Ionic
-export function Page(c: any): (f: Function) => void {return c;}
+export function Page(c: any): (f: Function) => void {
+  return c;
+}
 
 @Page({template: 'Ionic template'})
-export class AnIonicPage {}
+export class AnIonicPage {
+}

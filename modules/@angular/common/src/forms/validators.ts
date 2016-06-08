@@ -1,10 +1,13 @@
 import {OpaqueToken} from '@angular/core';
-import {isBlank, isPresent, isString} from '../facade/lang';
-import {PromiseWrapper} from '../facade/promise';
+
 import {ObservableWrapper} from '../facade/async';
 import {StringMapWrapper} from '../facade/collection';
+import {isBlank, isPresent, isString} from '../facade/lang';
+import {PromiseWrapper} from '../facade/promise';
+
+import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import * as modelModule from './model';
-import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
+
 
 /**
  * Providers for validators to be used for {@link Control}s in a form.
@@ -16,7 +19,7 @@ import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
  * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
  * @experimental
  */
-export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken("NgValidators");
+export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('NgValidators');
 
 /**
  * Providers for asynchronous validators to be used for {@link Control}s
@@ -29,7 +32,7 @@ export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken("Ng
  * @experimental
  */
 export const NG_ASYNC_VALIDATORS: OpaqueToken =
-    /*@ts2dart_const*/ new OpaqueToken("NgAsyncValidators");
+    /*@ts2dart_const*/ new OpaqueToken('NgAsyncValidators');
 
 /**
  * Provides a set of validators used by form controls.
@@ -50,9 +53,9 @@ export class Validators {
    * Validator that requires controls to have a non-empty value.
    */
   static required(control: modelModule.AbstractControl): {[key: string]: boolean} {
-    return isBlank(control.value) || (isString(control.value) && control.value == "") ?
-               {"required": true} :
-               null;
+    return isBlank(control.value) || (isString(control.value) && control.value == '') ?
+        {'required': true} :
+        null;
   }
 
   /**
@@ -63,8 +66,8 @@ export class Validators {
       if (isPresent(Validators.required(control))) return null;
       var v: string = control.value;
       return v.length < minLength ?
-                 {"minlength": {"requiredLength": minLength, "actualLength": v.length}} :
-                 null;
+          {'minlength': {'requiredLength': minLength, 'actualLength': v.length}} :
+          null;
     };
   }
 
@@ -76,8 +79,8 @@ export class Validators {
       if (isPresent(Validators.required(control))) return null;
       var v: string = control.value;
       return v.length > maxLength ?
-                 {"maxlength": {"requiredLength": maxLength, "actualLength": v.length}} :
-                 null;
+          {'maxlength': {'requiredLength': maxLength, 'actualLength': v.length}} :
+          null;
     };
   }
 
@@ -90,7 +93,7 @@ export class Validators {
       let regex = new RegExp(`^${pattern}$`);
       let v: string = control.value;
       return regex.test(v) ? null :
-                             {"pattern": {"requiredPattern": `^${pattern}$`, "actualValue": v}};
+                             {'pattern': {'requiredPattern': `^${pattern}$`, 'actualValue': v}};
     };
   }
 
@@ -129,13 +132,13 @@ function _convertToPromise(obj: any): any {
   return PromiseWrapper.isPromise(obj) ? obj : ObservableWrapper.toPromise(obj);
 }
 
-function _executeValidators(control: modelModule.AbstractControl,
-                            validators: ValidatorFn[]): any[] {
+function _executeValidators(
+    control: modelModule.AbstractControl, validators: ValidatorFn[]): any[] {
   return validators.map(v => v(control));
 }
 
-function _executeAsyncValidators(control: modelModule.AbstractControl,
-                                 validators: AsyncValidatorFn[]): any[] {
+function _executeAsyncValidators(
+    control: modelModule.AbstractControl, validators: AsyncValidatorFn[]): any[] {
   return validators.map(v => v(control));
 }
 

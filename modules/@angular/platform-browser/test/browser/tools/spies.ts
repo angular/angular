@@ -1,7 +1,8 @@
-import {SpyObject} from '@angular/core/testing/testing_internal';
 import {ReflectiveInjector, provide} from '@angular/core';
-import {global} from '../../../src/facade/lang';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
+import {SpyObject} from '@angular/core/testing/testing_internal';
+
+import {global} from '../../../src/facade/lang';
 
 export class SpyApplicationRef extends SpyObject {
   constructor() { super(ApplicationRef_); }

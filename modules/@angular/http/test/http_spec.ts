@@ -1,35 +1,11 @@
-import {
-  afterEach,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from '@angular/core/testing/testing_internal';
+import {Injector, ReflectiveInjector, provide} from '@angular/core';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {Injector, provide, ReflectiveInjector} from '@angular/core';
-import {MockBackend, MockConnection} from '../testing/mock_backend';
-import {
-  BaseRequestOptions,
-  ConnectionBackend,
-  Request,
-  RequestMethod,
-  RequestOptions,
-  Response,
-  ResponseOptions,
-  URLSearchParams,
-  JSONP_PROVIDERS,
-  HTTP_PROVIDERS,
-  XHRBackend,
-  JSONPBackend,
-  Http,
-  Jsonp
-} from '../http';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+
+import {BaseRequestOptions, ConnectionBackend, HTTP_PROVIDERS, Http, JSONPBackend, JSONP_PROVIDERS, Jsonp, Request, RequestMethod, RequestOptions, Response, ResponseOptions, URLSearchParams, XHRBackend} from '../http';
+import {MockBackend, MockConnection} from '../testing/mock_backend';
 
 export function main() {
   describe('injectables', () => {
@@ -49,9 +25,7 @@ export function main() {
          ]);
 
          childInjector = parentInjector.resolveAndCreateChild([
-           HTTP_PROVIDERS,
-           JSONP_PROVIDERS,
-           {provide: XHRBackend, useClass: MockBackend},
+           HTTP_PROVIDERS, JSONP_PROVIDERS, {provide: XHRBackend, useClass: MockBackend},
            {provide: JSONPBackend, useClass: MockBackend}
          ]);
 
@@ -95,9 +69,7 @@ export function main() {
     var jsonp: Jsonp;
     beforeEach(() => {
       injector = ReflectiveInjector.resolveAndCreate([
-        BaseRequestOptions,
-        MockBackend,
-        {
+        BaseRequestOptions, MockBackend, {
           provide: Http,
           useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
             return new Http(backend, defaultOptions);
@@ -154,11 +126,10 @@ export function main() {
         it('should perform a get request for given url if only passed a string',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
-             http.request('http://basic.connection')
-                 .subscribe((res: Response) => {
-                   expect(res.text()).toBe('base response');
-                   async.done();
-                 });
+             http.request('http://basic.connection').subscribe((res: Response) => {
+               expect(res.text()).toBe('base response');
+               async.done();
+             });
            }));
 
         it('should perform a post request for given url if options include a method',
@@ -168,11 +139,10 @@ export function main() {
                c.mockRespond(baseResponse);
              });
              let requestOptions = new RequestOptions({method: RequestMethod.Post});
-             http.request('http://basic.connection', requestOptions)
-                 .subscribe((res: Response) => {
-                   expect(res.text()).toBe('base response');
-                   async.done();
-                 });
+             http.request('http://basic.connection', requestOptions).subscribe((res: Response) => {
+               expect(res.text()).toBe('base response');
+               async.done();
+             });
            }));
 
         it('should perform a post request for given url if options include a method',
@@ -182,30 +152,32 @@ export function main() {
                c.mockRespond(baseResponse);
              });
              let requestOptions = {method: RequestMethod.Post};
-             http.request('http://basic.connection', requestOptions)
-                 .subscribe((res: Response) => {
-                   expect(res.text()).toBe('base response');
-                   async.done();
-                 });
+             http.request('http://basic.connection', requestOptions).subscribe((res: Response) => {
+               expect(res.text()).toBe('base response');
+               async.done();
+             });
            }));
 
         it('should perform a get request and complete the response',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
              http.request('http://basic.connection')
-                 .subscribe((res: Response) => { expect(res.text()).toBe('base response'); }, null,
-                            () => { async.done(); });
+                 .subscribe(
+                     (res: Response) => { expect(res.text()).toBe('base response'); }, null,
+                     () => { async.done(); });
            }));
 
         it('should perform multiple get requests and complete the responses',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
 
+             http.request('http://basic.connection').subscribe((res: Response) => {
+               expect(res.text()).toBe('base response');
+             });
              http.request('http://basic.connection')
-                 .subscribe((res: Response) => { expect(res.text()).toBe('base response'); });
-             http.request('http://basic.connection')
-                 .subscribe((res: Response) => { expect(res.text()).toBe('base response'); }, null,
-                            () => { async.done(); });
+                 .subscribe(
+                     (res: Response) => { expect(res.text()).toBe('base response'); }, null,
+                     () => { async.done(); });
            }));
 
         it('should throw if url is not a string or Request', () => {
@@ -371,9 +343,8 @@ export function main() {
         it('should allow case insensitive strings for method names', () => {
           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
             backend.connections.subscribe((c: MockConnection) => {
-              expect(c.request.method)
-                  .toBe(RequestMethod.Post)
-                      c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+              expect(c.request.method).toBe(RequestMethod.Post)
+              c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
               async.done();
             });
             http.request(

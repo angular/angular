@@ -1,23 +1,9 @@
-import {
-  Directive,
-  Renderer,
-  forwardRef,
-  ElementRef,
-  Input,
-  Host,
-  OnDestroy,
-  Optional
-} from '@angular/core';
-import {
-  StringWrapper,
-  isPrimitive,
-  isPresent,
-  isBlank,
-  looseIdentical
-} from '../../facade/lang';
-import {MapWrapper} from '../../facade/collection';
+import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer, forwardRef} from '@angular/core';
 
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
+import {MapWrapper} from '../../facade/collection';
+import {StringWrapper, isBlank, isPresent, isPrimitive, looseIdentical} from '../../facade/lang';
+
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
   provide: NG_VALUE_ACCESSOR,
@@ -27,12 +13,12 @@ export const SELECT_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider
 
 function _buildValueString(id: string, value: any): string {
   if (isBlank(id)) return `${value}`;
-  if (!isPrimitive(value)) value = "Object";
+  if (!isPrimitive(value)) value = 'Object';
   return StringWrapper.slice(`${id}: ${value}`, 0, 50);
 }
 
 function _extractId(valueString: string): string {
-  return valueString.split(":")[0];
+  return valueString.split(':')[0];
 }
 
 /**
@@ -112,8 +98,9 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 export class NgSelectOption implements OnDestroy {
   id: string;
 
-  constructor(private _element: ElementRef, private _renderer: Renderer,
-              @Optional() @Host() private _select: SelectControlValueAccessor) {
+  constructor(
+      private _element: ElementRef, private _renderer: Renderer,
+      @Optional() @Host() private _select: SelectControlValueAccessor) {
     if (isPresent(this._select)) this.id = this._select._registerOption();
   }
 

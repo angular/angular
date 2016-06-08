@@ -1,13 +1,7 @@
-import {isBlank} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
-import {
-  isListLikeIterable,
-  iterateListLike,
-  Map,
-  MapWrapper,
-  StringMapWrapper,
-  ListWrapper,
-} from '../src/facade/collection';
+import {isBlank} from '../src/facade/lang';
+
+import {isListLikeIterable, iterateListLike, Map, MapWrapper, StringMapWrapper, ListWrapper,} from '../src/facade/collection';
 
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
@@ -38,7 +32,7 @@ import {
 export class Headers {
   /** @internal */
   _headersMap: Map<string, string[]>;
-  constructor(headers?: Headers | {[key: string]: any}) {
+  constructor(headers?: Headers|{[key: string]: any}) {
     if (headers instanceof Headers) {
       this._headersMap = (<Headers>headers)._headersMap;
       return;
@@ -104,7 +98,7 @@ export class Headers {
   /**
    * Sets or overrides header value for given name.
    */
-  set(header: string, value: string | string[]): void {
+  set(header: string, value: string|string[]): void {
     var list: string[] = [];
 
     if (isListLikeIterable(value)) {
@@ -130,7 +124,8 @@ export class Headers {
     this._headersMap.forEach((values: string[], name: string) => {
       let list: any[] /** TODO #9100 */ = [];
 
-      iterateListLike(values, (val: any /** TODO #9100 */) => list = ListWrapper.concat(list, val.split(',')));
+      iterateListLike(
+          values, (val: any /** TODO #9100 */) => list = ListWrapper.concat(list, val.split(',')));
 
       (serializableHeaders as any /** TODO #9100 */)[name] = list;
     });

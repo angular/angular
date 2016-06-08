@@ -1,9 +1,10 @@
-import {StaticReflectorHost, StaticSymbol} from './static_reflector';
-import * as ts from 'typescript';
 import {AngularCompilerOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
-import {ImportGenerator, AssetUrl} from './compiler_private';
+import * as ts from 'typescript';
+
+import {AssetUrl, ImportGenerator} from './compiler_private';
+import {StaticReflectorHost, StaticSymbol} from './static_reflector';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
@@ -17,9 +18,9 @@ export interface ReflectorHostContext {
 export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   private metadataCollector = new MetadataCollector();
   private context: ReflectorHostContext;
-  constructor(private program: ts.Program, private compilerHost: ts.CompilerHost,
-              private options: AngularCompilerOptions,
-              context?: ReflectorHostContext) {
+  constructor(
+      private program: ts.Program, private compilerHost: ts.CompilerHost,
+      private options: AngularCompilerOptions, context?: ReflectorHostContext) {
     this.context = context || new NodeReflectorHostContext();
   }
 
@@ -94,11 +95,12 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
         `Unable to find any resolvable import for ${importedFile} relative to ${containingFile}`);
   }
 
-  findDeclaration(module: string, symbolName: string, containingFile: string,
-                  containingModule?: string): StaticSymbol {
+  findDeclaration(
+      module: string, symbolName: string, containingFile: string,
+      containingModule?: string): StaticSymbol {
     if (!containingFile || !containingFile.length) {
-      if (module.indexOf(".") === 0) {
-        throw new Error("Resolution of relative paths requires a containing file.");
+      if (module.indexOf('.') === 0) {
+        throw new Error('Resolution of relative paths requires a containing file.');
       }
       // Any containing file gives the same result for absolute imports
       containingFile = path.join(this.options.basePath, 'index.ts');
@@ -195,15 +197,9 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
 }
 
 export class NodeReflectorHostContext implements ReflectorHostContext {
-  exists(fileName: string): boolean {
-    return fs.existsSync(fileName);
-  }
+  exists(fileName: string): boolean { return fs.existsSync(fileName); }
 
-  read(fileName: string): string {
-    return fs.readFileSync(fileName, 'utf8');
-  }
+  read(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
 
-  write(fileName: string, data: string): void {
-    fs.writeFileSync(fileName, data, 'utf8');
-  }
+  write(fileName: string, data: string): void { fs.writeFileSync(fileName, data, 'utf8'); }
 }

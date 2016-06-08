@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
 
-import {SecurityContext, SanitizationService} from '../../core_private';
+import {SanitizationService, SecurityContext} from '../../core_private';
 
 import {sanitizeHtml} from './html_sanitizer';
-import {sanitizeUrl} from './url_sanitizer';
 import {sanitizeStyle} from './style_sanitizer';
+import {sanitizeUrl} from './url_sanitizer';
 
 export {SecurityContext};
+
 
 /** Marker interface for a value that's safe to use in a particular context. */
 export interface SafeValue {}

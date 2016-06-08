@@ -10,10 +10,10 @@ let serializer = require('@angular/compiler/src/i18n/xmb_serializer.js');
 import * as fs from 'fs';
 import * as path from 'path';
 
-describe("template i18n extraction output", () => {
+describe('template i18n extraction output', () => {
   const outDir = '';
 
-  it("should extract i18n messages", () => {
+  it('should extract i18n messages', () => {
     const xmbOutput = path.join(outDir, 'messages.xmb');
     expect(fs.existsSync(xmbOutput)).toBeTruthy();
     const xmb = fs.readFileSync(xmbOutput, {encoding: 'utf-8'});

@@ -1,17 +1,7 @@
-import {
-  beforeEach,
-  afterEach,
-  describe,
-  ddescribe,
-  expect,
-  inject,
-  it,
-  iit,
-  AsyncTestCompleter
-} from "@angular/core/testing/testing_internal";
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {parseCookieValue} from "../../src/browser/browser_adapter";
+import {parseCookieValue} from '../../src/browser/browser_adapter';
 
 export function main() {
   describe('cookies', () => {

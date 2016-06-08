@@ -3,69 +3,19 @@
  * to be used by the decorator versions of these annotations.
  */
 
-export {
-  QueryMetadata,
-  ContentChildrenMetadata,
-  ContentChildMetadata,
-  ViewChildrenMetadata,
-  ViewQueryMetadata,
-  ViewChildMetadata,
-  AttributeMetadata
-} from './metadata/di';
-
-export {
-  ComponentMetadata,
-  DirectiveMetadata,
-  PipeMetadata,
-  InputMetadata,
-  OutputMetadata,
-  HostBindingMetadata,
-  HostListenerMetadata
-} from './metadata/directives';
-
-export {ViewMetadata, ViewEncapsulation} from './metadata/view';
-
-export {
-  AfterContentInit,
-  AfterContentChecked,
-  AfterViewInit,
-  AfterViewChecked,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  DoCheck
-} from './metadata/lifecycle_hooks';
-
-import {
-  QueryMetadata,
-  ContentChildrenMetadata,
-  ContentChildMetadata,
-  ViewChildrenMetadata,
-  ViewChildMetadata,
-  ViewQueryMetadata,
-  AttributeMetadata
-} from './metadata/di';
-
-import {
-  ComponentMetadata,
-  DirectiveMetadata,
-  PipeMetadata,
-  InputMetadata,
-  OutputMetadata,
-  HostBindingMetadata,
-  HostListenerMetadata
-} from './metadata/directives';
-
-import {ViewMetadata, ViewEncapsulation} from './metadata/view';
-import {AnimationEntryMetadata} from './animation/metadata';
 import {ChangeDetectionStrategy} from '../src/change_detection/change_detection';
 
-import {
-  makeDecorator,
-  makeParamDecorator,
-  makePropDecorator,
-  TypeDecorator,
-} from './util/decorators';
+import {AnimationEntryMetadata} from './animation/metadata';
+import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
+import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
+import {ViewEncapsulation, ViewMetadata} from './metadata/view';
+
+export {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
+export {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
+export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from './metadata/lifecycle_hooks';
+export {ViewEncapsulation, ViewMetadata} from './metadata/view';
+
+import {makeDecorator, makeParamDecorator, makePropDecorator, TypeDecorator,} from './util/decorators';
 import {Type} from '../src/facade/lang';
 
 /**
@@ -87,8 +37,8 @@ export interface ComponentDecorator extends TypeDecorator {
   View(obj: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type | any[]>,
-    pipes?: Array<Type | any[]>,
+    directives?: Array<Type|any[]>,
+    pipes?: Array<Type|any[]>,
     renderer?: string,
     styles?: string[],
     styleUrls?: string[],
@@ -108,8 +58,8 @@ export interface ViewDecorator extends TypeDecorator {
   View(obj: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type | any[]>,
-    pipes?: Array<Type | any[]>,
+    directives?: Array<Type|any[]>,
+    pipes?: Array<Type|any[]>,
     renderer?: string,
     styles?: string[],
     styleUrls?: string[],
@@ -223,8 +173,8 @@ export interface ComponentMetadataFactory {
     styleUrls?: string[],
     styles?: string[],
     animations?: AnimationEntryMetadata[],
-    directives?: Array<Type | any[]>,
-    pipes?: Array<Type | any[]>,
+    directives?: Array<Type|any[]>,
+    pipes?: Array<Type|any[]>,
     encapsulation?: ViewEncapsulation
   }): ComponentDecorator;
   new (obj: {
@@ -245,8 +195,8 @@ export interface ComponentMetadataFactory {
     styleUrls?: string[],
     styles?: string[],
     animations?: AnimationEntryMetadata[],
-    directives?: Array<Type | any[]>,
-    pipes?: Array<Type | any[]>,
+    directives?: Array<Type|any[]>,
+    pipes?: Array<Type|any[]>,
     encapsulation?: ViewEncapsulation
   }): ComponentMetadata;
 }
@@ -297,8 +247,8 @@ export interface ViewMetadataFactory {
   (obj: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type | any[]>,
-    pipes?: Array<Type | any[]>,
+    directives?: Array<Type|any[]>,
+    pipes?: Array<Type|any[]>,
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],
@@ -307,8 +257,8 @@ export interface ViewMetadataFactory {
   new (obj: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type | any[]>,
-    pipes?: Array<Type | any[]>,
+    directives?: Array<Type|any[]>,
+    pipes?: Array<Type|any[]>,
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],
@@ -400,10 +350,10 @@ export interface AttributeMetadataFactory {
  * @deprecated
  */
 export interface QueryMetadataFactory {
-  (selector: Type | string,
+  (selector: Type|string,
    {descendants, read}?: {descendants?: boolean, read?: any}): ParameterDecorator;
-  new (selector: Type | string,
-       {descendants, read}?: {descendants?: boolean, read?: any}): QueryMetadata;
+  new (selector: Type|string, {descendants, read}?: {descendants?: boolean, read?: any}):
+      QueryMetadata;
 }
 
 /**
@@ -411,9 +361,9 @@ export interface QueryMetadataFactory {
  * @stable
  */
 export interface ContentChildrenMetadataFactory {
-  (selector: Type | string, {descendants, read}?: {descendants?: boolean, read?: any}): any;
-  new (selector: Type | string,
-       {descendants, read}?: {descendants?: boolean, read?: any}): ContentChildrenMetadata;
+  (selector: Type|string, {descendants, read}?: {descendants?: boolean, read?: any}): any;
+  new (selector: Type|string, {descendants, read}?: {descendants?: boolean, read?: any}):
+      ContentChildrenMetadata;
 }
 
 /**
@@ -421,8 +371,8 @@ export interface ContentChildrenMetadataFactory {
  * @stable
  */
 export interface ContentChildMetadataFactory {
-  (selector: Type | string, {read}?: {read?: any}): any;
-  new (selector: Type | string, {read}?: {read?: any}): ContentChildMetadataFactory;
+  (selector: Type|string, {read}?: {read?: any}): any;
+  new (selector: Type|string, {read}?: {read?: any}): ContentChildMetadataFactory;
 }
 
 /**
@@ -430,8 +380,8 @@ export interface ContentChildMetadataFactory {
  * @stable
  */
 export interface ViewChildrenMetadataFactory {
-  (selector: Type | string, {read}?: {read?: any}): any;
-  new (selector: Type | string, {read}?: {read?: any}): ViewChildrenMetadata;
+  (selector: Type|string, {read}?: {read?: any}): any;
+  new (selector: Type|string, {read}?: {read?: any}): ViewChildrenMetadata;
 }
 
 /**
@@ -439,8 +389,8 @@ export interface ViewChildrenMetadataFactory {
  * @stable
  */
 export interface ViewChildMetadataFactory {
-  (selector: Type | string, {read}?: {read?: any}): any;
-  new (selector: Type | string, {read}?: {read?: any}): ViewChildMetadataFactory;
+  (selector: Type|string, {read}?: {read?: any}): any;
+  new (selector: Type|string, {read}?: {read?: any}): ViewChildMetadataFactory;
 }
 
 

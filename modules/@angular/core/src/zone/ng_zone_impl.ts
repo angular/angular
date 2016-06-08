@@ -45,7 +45,7 @@ export class NgZoneImpl {
       }
       this.inner = this.inner.fork({
         name: 'angular',
-        properties:<any>{'isAngularZone': true},
+        properties: <any>{'isAngularZone': true},
         onInvokeTask: (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task,
                        applyThis: any, applyArgs: any): any => {
           try {

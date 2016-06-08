@@ -1,12 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {MockXHR} from '@angular/compiler/testing';
 import {PromiseWrapper} from '../src/facade/async';
@@ -18,7 +10,9 @@ export function main() {
 
     beforeEach(() => { xhr = new MockXHR(); });
 
-    function expectResponse(request: Promise<string>, url: string, response: string, done: any /** TODO #9100 */ = null) {
+    function expectResponse(
+        request: Promise<string>, url: string, response: string,
+        done: any /** TODO #9100 */ = null) {
       function onResponse(text: string): string {
         if (response === null) {
           throw `Unexpected response ${url} -> ${text}`;
@@ -42,7 +36,8 @@ export function main() {
       PromiseWrapper.then(request, onResponse, onError);
     }
 
-    it('should return a response from the definitions', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should return a response from the definitions',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response = 'bar';
          xhr.when(url, response);
@@ -50,7 +45,8 @@ export function main() {
          xhr.flush();
        }));
 
-    it('should return an error from the definitions', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should return an error from the definitions',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response: any /** TODO #9100 */ = null;
          xhr.when(url, response);
@@ -58,7 +54,8 @@ export function main() {
          xhr.flush();
        }));
 
-    it('should return a response from the expectations', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should return a response from the expectations',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response = 'bar';
          xhr.expect(url, response);
@@ -66,7 +63,8 @@ export function main() {
          xhr.flush();
        }));
 
-    it('should return an error from the expectations', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should return an error from the expectations',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response: any /** TODO #9100 */ = null;
          xhr.expect(url, response);
@@ -83,7 +81,8 @@ export function main() {
       expect(() => { xhr.flush(); }).toThrowError('Unexpected request /foo');
     });
 
-    it('should return expectations before definitions', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should return expectations before definitions',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          xhr.when(url, 'when');
          xhr.expect(url, 'expect');

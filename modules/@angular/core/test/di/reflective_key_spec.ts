@@ -1,8 +1,8 @@
-import {describe, iit, it, expect, beforeEach} from '@angular/core/testing';
-import {ReflectiveKey, KeyRegistry} from '@angular/core/src/di/reflective_key';
+import {KeyRegistry, ReflectiveKey} from '@angular/core/src/di/reflective_key';
+import {beforeEach, describe, expect, iit, it} from '@angular/core/testing';
 
 export function main() {
-  describe("key", function() {
+  describe('key', function() {
     var registry: KeyRegistry;
 
     beforeEach(function() { registry = new KeyRegistry(); });

@@ -1,19 +1,11 @@
-import {
-  OnInit,
-  OnDestroy,
-  Directive,
-  Optional,
-  Inject,
-  Host,
-  SkipSelf,
-  forwardRef,
-  Self
-} from '@angular/core';
-import {ControlContainer} from './control_container';
-import {controlPath, composeValidators, composeAsyncValidators} from './shared';
+import {Directive, Host, Inject, OnDestroy, OnInit, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
+
 import {ControlGroup} from '../model';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+
+import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
-import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {composeAsyncValidators, composeValidators, controlPath} from './shared';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
 export const controlGroupProvider: any =
@@ -79,9 +71,10 @@ export class NgControlGroup extends ControlContainer implements OnInit,
   /** @internal */
   _parent: ControlContainer;
 
-  constructor(@Host() @SkipSelf() parent: ControlContainer,
-              @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+  constructor(
+      @Host() @SkipSelf() parent: ControlContainer,
+      @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
     this._parent = parent;
   }

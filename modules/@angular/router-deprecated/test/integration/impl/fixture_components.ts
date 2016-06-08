@@ -1,16 +1,9 @@
-import {Component, ComponentRef, ViewContainerRef, ViewChild} from '@angular/core';
-import {
-  AsyncRoute,
-  Route,
-  Redirect,
-  RouteConfig,
-  RouteParams,
-  RouteData,
-  ROUTER_DIRECTIVES
-} from '@angular/router-deprecated';
+import {Component, ComponentRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {DynamicComponentLoader} from '@angular/core/src/linker/dynamic_component_loader';
+import {AsyncRoute, ROUTER_DIRECTIVES, Redirect, Route, RouteConfig, RouteData, RouteParams} from '@angular/router-deprecated';
+
 import {PromiseWrapper} from '../../../src/facade/async';
 import {isPresent} from '../../../src/facade/lang';
-import {DynamicComponentLoader} from '@angular/core/src/linker/dynamic_component_loader';
 
 @Component({selector: 'goodbye-cmp', template: `{{farewell}}`})
 export class GoodbyeCmp {
@@ -153,8 +146,8 @@ export class DynamicLoaderCmp {
       this._componentRef.destroy();
       this._componentRef = null;
     }
-    return this._dynamicComponentLoader.loadNextToLocation(DynamicallyLoadedComponent,
-                                                           this.viewport)
+    return this._dynamicComponentLoader
+        .loadNextToLocation(DynamicallyLoadedComponent, this.viewport)
         .then((cmp) => { this._componentRef = cmp; });
   }
 }

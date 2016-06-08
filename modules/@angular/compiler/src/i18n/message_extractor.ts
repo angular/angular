@@ -1,19 +1,14 @@
-import {HtmlParser} from "../html_parser";
-import {ParseError} from "../parse_util";
-import {HtmlAst, HtmlElementAst} from "../html_ast";
-import {isPresent} from "../facade/lang";
-import {StringMapWrapper} from "../facade/collection";
-import {Parser} from "../expression_parser/parser";
-import {Message, id} from "./message";
-import {expandNodes} from "./expander";
-import {
-  I18nError,
-  Part,
-  I18N_ATTR_PREFIX,
-  partition,
-  messageFromI18nAttribute,
-  messageFromAttribute
-} from "./shared";
+import {Parser} from '../expression_parser/parser';
+import {StringMapWrapper} from '../facade/collection';
+import {isPresent} from '../facade/lang';
+import {HtmlAst, HtmlElementAst} from '../html_ast';
+import {HtmlParser} from '../html_parser';
+import {ParseError} from '../parse_util';
+
+import {expandNodes} from './expander';
+import {Message, id} from './message';
+import {I18N_ATTR_PREFIX, I18nError, Part, messageFromAttribute, messageFromI18nAttribute, partition} from './shared';
+
 
 /**
  * All messages extracted from a template.
@@ -106,8 +101,9 @@ export class MessageExtractor {
   messages: Message[];
   errors: ParseError[];
 
-  constructor(private _htmlParser: HtmlParser, private _parser: Parser,
-              private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
+  constructor(
+      private _htmlParser: HtmlParser, private _parser: Parser, private _implicitTags: string[],
+      private _implicitAttrs: {[k: string]: string[]}) {}
 
   extract(template: string, sourceUrl: string): ExtractionResult {
     this.messages = [];

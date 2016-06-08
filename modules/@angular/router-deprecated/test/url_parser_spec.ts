@@ -1,12 +1,4 @@
-import {
-  describe,
-  it,
-  iit,
-  ddescribe,
-  expect,
-  inject,
-  beforeEach,
-} from '@angular/core/testing/testing_internal';
+import {describe, it, iit, ddescribe, expect, inject, beforeEach,} from '@angular/core/testing/testing_internal';
 
 import {UrlParser, Url} from '../src/url_parser';
 

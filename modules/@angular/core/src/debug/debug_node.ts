@@ -1,6 +1,6 @@
-import {isPresent} from '../facade/lang';
-import {Predicate, ListWrapper, MapWrapper} from '../facade/collection';
 import {Injector} from '../di';
+import {ListWrapper, MapWrapper, Predicate} from '../facade/collection';
+import {isPresent} from '../facade/lang';
 import {RenderDebugInfo} from '../render/api';
 
 export class EventListener { constructor(public name: string, public callback: Function){}; }
@@ -146,8 +146,8 @@ export function asNativeElements(debugEls: DebugElement[]): any {
   return debugEls.map((el) => el.nativeElement);
 }
 
-function _queryElementChildren(element: DebugElement, predicate: Predicate<DebugElement>,
-                               matches: DebugElement[]) {
+function _queryElementChildren(
+    element: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[]) {
   element.childNodes.forEach(node => {
     if (node instanceof DebugElement) {
       if (predicate(node)) {
@@ -158,8 +158,8 @@ function _queryElementChildren(element: DebugElement, predicate: Predicate<Debug
   });
 }
 
-function _queryNodeChildren(parentNode: DebugNode, predicate: Predicate<DebugNode>,
-                            matches: DebugNode[]) {
+function _queryNodeChildren(
+    parentNode: DebugNode, predicate: Predicate<DebugNode>, matches: DebugNode[]) {
   if (parentNode instanceof DebugElement) {
     parentNode.childNodes.forEach(node => {
       if (predicate(node)) {

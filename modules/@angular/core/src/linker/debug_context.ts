@@ -1,19 +1,23 @@
-import {isPresent, isBlank} from '../facade/lang';
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {Injector} from '../di';
-import {ViewType} from './view_type';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {isBlank, isPresent} from '../facade/lang';
 import {RenderDebugInfo} from '../render/api';
+
 import {DebugAppView} from './view';
+import {ViewType} from './view_type';
+
 
 /* @ts2dart_const */
 export class StaticNodeDebugInfo {
-  constructor(public providerTokens: any[], public componentToken: any,
-              public refTokens: {[key: string]: any}) {}
+  constructor(
+      public providerTokens: any[], public componentToken: any,
+      public refTokens: {[key: string]: any}) {}
 }
 
 export class DebugContext implements RenderDebugInfo {
-  constructor(private _view: DebugAppView<any>, private _nodeIndex: number, private _tplRow: number,
-              private _tplCol: number) {}
+  constructor(
+      private _view: DebugAppView<any>, private _nodeIndex: number, private _tplRow: number,
+      private _tplCol: number) {}
 
   private get _staticNodeInfo(): StaticNodeDebugInfo {
     return isPresent(this._nodeIndex) ? this._view.staticNodeDebugInfos[this._nodeIndex] : null;
@@ -34,8 +38,8 @@ export class DebugContext implements RenderDebugInfo {
       componentView = <DebugAppView<any>>componentView.declarationAppElement.parentView;
     }
     return isPresent(componentView.declarationAppElement) ?
-               componentView.declarationAppElement.nativeElement :
-               null;
+        componentView.declarationAppElement.nativeElement :
+        null;
   }
   get injector(): Injector { return this._view.injector(this._nodeIndex); }
   get renderNode(): any {
@@ -57,15 +61,17 @@ export class DebugContext implements RenderDebugInfo {
     var staticNodeInfo = this._staticNodeInfo;
     if (isPresent(staticNodeInfo)) {
       var refs = staticNodeInfo.refTokens;
-      StringMapWrapper.forEach(refs, (refToken: any /** TODO #9100 */, refName: any /** TODO #9100 */) => {
-        var varValue: any /** TODO #9100 */;
-        if (isBlank(refToken)) {
-          varValue = isPresent(this._view.allNodes) ? this._view.allNodes[this._nodeIndex] : null;
-        } else {
-          varValue = this._view.injectorGet(refToken, this._nodeIndex, null);
-        }
-        varValues[refName] = varValue;
-      });
+      StringMapWrapper.forEach(
+          refs, (refToken: any /** TODO #9100 */, refName: any /** TODO #9100 */) => {
+            var varValue: any /** TODO #9100 */;
+            if (isBlank(refToken)) {
+              varValue =
+                  isPresent(this._view.allNodes) ? this._view.allNodes[this._nodeIndex] : null;
+            } else {
+              varValue = this._view.injectorGet(refToken, this._nodeIndex, null);
+            }
+            varValues[refName] = varValue;
+          });
     }
     return varValues;
   }

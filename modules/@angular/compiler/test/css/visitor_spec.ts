@@ -1,41 +1,9 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from '@angular/core/testing/testing_internal';
-
-import {NumberWrapper, StringWrapper, isPresent} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
-
-import {
-  CssToken,
-  CssParser,
-  CssParseError,
-  BlockType,
-  CssAST,
-  CssSelectorRuleAST,
-  CssKeyframeRuleAST,
-  CssKeyframeDefinitionAST,
-  CssBlockDefinitionRuleAST,
-  CssMediaQueryRuleAST,
-  CssBlockRuleAST,
-  CssInlineRuleAST,
-  CssStyleValueAST,
-  CssSelectorAST,
-  CssDefinitionAST,
-  CssStyleSheetAST,
-  CssRuleAST,
-  CssBlockAST,
-  CssASTVisitor,
-  CssUnknownTokenListAST
-} from '@angular/compiler/src/css/parser';
-
 import {CssLexer} from '@angular/compiler/src/css/lexer';
+import {BlockType, CssAST, CssASTVisitor, CssBlockAST, CssBlockDefinitionRuleAST, CssBlockRuleAST, CssDefinitionAST, CssInlineRuleAST, CssKeyframeDefinitionAST, CssKeyframeRuleAST, CssMediaQueryRuleAST, CssParseError, CssParser, CssRuleAST, CssSelectorAST, CssSelectorRuleAST, CssStyleSheetAST, CssStyleValueAST, CssToken, CssUnknownTokenListAST} from '@angular/compiler/src/css/parser';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+
+import {BaseException} from '../../src/facade/exceptions';
+import {NumberWrapper, StringWrapper, isPresent} from '../../src/facade/lang';
 
 function _assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9100 */) {
   for (var i = 0; i < tokens.length; i++) {
@@ -46,56 +14,59 @@ function _assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9
 class MyVisitor implements CssASTVisitor {
   captures: {[key: string]: any[]} = {};
 
-  _capture(method: any /** TODO #9100 */, ast: any /** TODO #9100 */, context: any /** TODO #9100 */) {
+  _capture(
+      method: any /** TODO #9100 */, ast: any /** TODO #9100 */, context: any /** TODO #9100 */) {
     this.captures[method] = isPresent(this.captures[method]) ? this.captures[method] : [];
     this.captures[method].push([ast, context]);
   }
 
   constructor(ast: CssStyleSheetAST, context?: any) { ast.visit(this, context); }
 
-  visitCssValue(ast: any /** TODO #9100 */, context?: any): void { this._capture("visitCssValue", ast, context); }
+  visitCssValue(ast: any /** TODO #9100 */, context?: any): void {
+    this._capture('visitCssValue', ast, context);
+  }
 
   visitInlineCssRule(ast: any /** TODO #9100 */, context?: any): void {
-    this._capture("visitInlineCssRule", ast, context);
+    this._capture('visitInlineCssRule', ast, context);
   }
 
   visitCssKeyframeRule(ast: CssKeyframeRuleAST, context?: any): void {
-    this._capture("visitCssKeyframeRule", ast, context);
+    this._capture('visitCssKeyframeRule', ast, context);
     ast.block.visit(this, context);
   }
 
   visitCssKeyframeDefinition(ast: CssKeyframeDefinitionAST, context?: any): void {
-    this._capture("visitCssKeyframeDefinition", ast, context);
+    this._capture('visitCssKeyframeDefinition', ast, context);
     ast.block.visit(this, context);
   }
 
   visitCssMediaQueryRule(ast: CssMediaQueryRuleAST, context?: any): void {
-    this._capture("visitCssMediaQueryRule", ast, context);
+    this._capture('visitCssMediaQueryRule', ast, context);
     ast.block.visit(this, context);
   }
 
   visitCssSelectorRule(ast: CssSelectorRuleAST, context?: any): void {
-    this._capture("visitCssSelectorRule", ast, context);
+    this._capture('visitCssSelectorRule', ast, context);
     ast.selectors.forEach((selAST: CssSelectorAST) => { selAST.visit(this, context); });
     ast.block.visit(this, context);
   }
 
   visitCssSelector(ast: CssSelectorAST, context?: any): void {
-    this._capture("visitCssSelector", ast, context);
+    this._capture('visitCssSelector', ast, context);
   }
 
   visitCssDefinition(ast: CssDefinitionAST, context?: any): void {
-    this._capture("visitCssDefinition", ast, context);
+    this._capture('visitCssDefinition', ast, context);
     ast.value.visit(this, context);
   }
 
   visitCssBlock(ast: CssBlockAST, context?: any): void {
-    this._capture("visitCssBlock", ast, context);
+    this._capture('visitCssBlock', ast, context);
     ast.entries.forEach((entryAST: CssAST) => { entryAST.visit(this, context); });
   }
 
   visitCssStyleSheet(ast: CssStyleSheetAST, context?: any): void {
-    this._capture("visitCssStyleSheet", ast, context);
+    this._capture('visitCssStyleSheet', ast, context);
     ast.rules.forEach((ruleAST: CssRuleAST) => { ruleAST.visit(this, context); });
   }
 
@@ -208,7 +179,7 @@ export function main() {
       expect(captures.length).toEqual(1);
 
       var query1 = <CssMediaQueryRuleAST>captures[0][0];
-      _assertTokens(query1.query, ["all", "and", "(", "max-width", "100", "px", ")"]);
+      _assertTokens(query1.query, ['all', 'and', '(', 'max-width', '100', 'px', ')']);
       expect(query1.block.entries.length).toEqual(1);
     });
 

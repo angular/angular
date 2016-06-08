@@ -1,6 +1,9 @@
-import {PipeTransform, Pipe} from '@angular/core';
-import {isString, isBlank} from '../facade/lang';
+import {Pipe, PipeTransform} from '@angular/core';
+
+import {isBlank, isString} from '../facade/lang';
+
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+
 
 /**
  * Transforms text to lowercase.

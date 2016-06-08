@@ -1,19 +1,11 @@
-import {isPresent} from '../facade/lang';
-import {Renderer, RootRenderer, RenderComponentType, RenderDebugInfo} from '../render/api';
-import {
-  DebugNode,
-  DebugElement,
-  EventListener,
-  getDebugNode,
-  indexDebugNode,
-  removeDebugNodeFromIndex
-} from './debug_node';
-
 import {StringMapWrapper} from '../../src/facade/collection';
-
 import {AnimationKeyframe} from '../animation/animation_keyframe';
-import {AnimationStyles} from '../animation/animation_styles';
 import {AnimationPlayer} from '../animation/animation_player';
+import {AnimationStyles} from '../animation/animation_styles';
+import {isPresent} from '../facade/lang';
+import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
+
+import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from './debug_node';
 
 export class DebugDomRootRenderer implements RootRenderer {
   constructor(private _delegate: RootRenderer) {}
@@ -26,7 +18,7 @@ export class DebugDomRootRenderer implements RootRenderer {
 export class DebugDomRenderer implements Renderer {
   constructor(private _delegate: Renderer) {}
 
-  selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugInfo): any {
+  selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any {
     var nativeEl = this._delegate.selectRootElement(selectorOrNode, debugInfo);
     var debugEl = new DebugElement(nativeEl, null, debugInfo);
     indexDebugNode(debugEl);
@@ -148,7 +140,9 @@ export class DebugDomRenderer implements Renderer {
 
   setText(renderNode: any, text: string) { this._delegate.setText(renderNode, text); }
 
-  animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer {
+  animate(
+      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
+      duration: number, delay: number, easing: string): AnimationPlayer {
     return this._delegate.animate(element, startingStyles, keyframes, duration, delay, easing);
   }
 }

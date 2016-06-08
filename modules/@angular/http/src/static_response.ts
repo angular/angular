@@ -1,9 +1,11 @@
-import {ResponseType} from './enums';
-import {isString, Json} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
-import {Headers} from './headers';
+import {Json, isString} from '../src/facade/lang';
+
 import {ResponseOptions} from './base_response_options';
+import {ResponseType} from './enums';
+import {Headers} from './headers';
 import {isJsObject} from './http_utils';
+
 
 /**
  * Creates `Response` instances from provided values.
@@ -72,7 +74,7 @@ export class Response {
    */
   headers: Headers;
   // TODO: Support ArrayBuffer, JSON, FormData, Blob
-  private _body: string | Object;
+  private _body: string|Object;
   constructor(responseOptions: ResponseOptions) {
     this._body = responseOptions.body;
     this.status = responseOptions.status;
@@ -93,7 +95,7 @@ export class Response {
    * Attempts to return body as parsed `JSON` object, or raises an exception.
    */
   json(): any {
-    var jsonResponse: string | Object;
+    var jsonResponse: string|Object;
     if (isJsObject(this._body)) {
       jsonResponse = this._body;
     } else if (isString(this._body)) {

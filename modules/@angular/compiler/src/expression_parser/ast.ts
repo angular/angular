@@ -2,7 +2,7 @@ import {ListWrapper} from '../facade/collection';
 
 export class AST {
   visit(visitor: AstVisitor, context: any = null): any { return null; }
-  toString(): string { return "AST"; }
+  toString(): string { return 'AST'; }
 }
 
 /**
@@ -23,7 +23,7 @@ export class Quote extends AST {
     super();
   }
   visit(visitor: AstVisitor, context: any = null): any { return visitor.visitQuote(this, context); }
-  toString(): string { return "Quote"; }
+  toString(): string { return 'Quote'; }
 }
 
 export class EmptyExpr extends AST {
@@ -163,8 +163,9 @@ export class ASTWithSource extends AST {
 }
 
 export class TemplateBinding {
-  constructor(public key: string, public keyIsVar: boolean, public name: string,
-              public expression: ASTWithSource) {}
+  constructor(
+      public key: string, public keyIsVar: boolean, public name: string,
+      public expression: ASTWithSource) {}
 }
 
 export interface AstVisitor {
@@ -316,8 +317,8 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitConditional(ast: Conditional, context: any): AST {
-    return new Conditional(ast.condition.visit(this), ast.trueExp.visit(this),
-                           ast.falseExp.visit(this));
+    return new Conditional(
+        ast.condition.visit(this), ast.trueExp.visit(this), ast.falseExp.visit(this));
   }
 
   visitPipe(ast: BindingPipe, context: any): AST {

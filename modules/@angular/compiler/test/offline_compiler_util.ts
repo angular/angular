@@ -1,31 +1,22 @@
-import {print, isPresent, IS_DART} from '../src/facade/lang';
-import {OutputEmitter} from '@angular/compiler/src/output/abstract_emitter';
-import {Console} from '../core_private';
-
-import {
-  OfflineCompiler,
-  NormalizedComponentWithViewDirectives,
-  SourceModule
-} from '@angular/compiler/src/offline_compiler';
-import {TemplateParser} from '@angular/compiler/src/template_parser';
-import {Parser} from '@angular/compiler/src/expression_parser/parser';
-import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-import {HtmlParser} from '@angular/compiler/src/html_parser';
-import {StyleCompiler} from '@angular/compiler/src/style_compiler';
-import {ViewCompiler} from '@angular/compiler/src/view_compiler/view_compiler';
-import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
+import {CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
 import {CompilerConfig} from '@angular/compiler/src/config';
-import {createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
-import {MockSchemaRegistry} from '../testing/schema_registry_mock';
-import {MODULE_SUFFIX} from '@angular/compiler/src/util';
-import {MockXHR} from '../testing/xhr_mock';
+import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
+import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
+import {Parser} from '@angular/compiler/src/expression_parser/parser';
+import {HtmlParser} from '@angular/compiler/src/html_parser';
+import {NormalizedComponentWithViewDirectives, OfflineCompiler, SourceModule} from '@angular/compiler/src/offline_compiler';
+import {OutputEmitter} from '@angular/compiler/src/output/abstract_emitter';
 import {ImportGenerator} from '@angular/compiler/src/output/path_util';
+import {StyleCompiler} from '@angular/compiler/src/style_compiler';
+import {TemplateParser} from '@angular/compiler/src/template_parser';
+import {createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
+import {MODULE_SUFFIX} from '@angular/compiler/src/util';
+import {ViewCompiler} from '@angular/compiler/src/view_compiler/view_compiler';
 
-import {
-  CompileDirectiveMetadata,
-  CompileTypeMetadata,
-  CompileTemplateMetadata
-} from '@angular/compiler/src/compile_metadata';
+import {Console} from '../core_private';
+import {IS_DART, isPresent, print} from '../src/facade/lang';
+import {MockSchemaRegistry} from '../testing/schema_registry_mock';
+import {MockXHR} from '../testing/xhr_mock';
 
 
 export class CompA { user: string; }
@@ -50,16 +41,18 @@ function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCo
   xhr.when(`${THIS_MODULE_PATH}/offline_compiler_compa.html`, 'Hello World {{user}}!');
   var htmlParser = new HtmlParser();
   var config = new CompilerConfig(true, true, true);
-  var normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, new CompilerConfig(true, true, true));
+  var normalizer =
+      new DirectiveNormalizer(xhr, urlResolver, htmlParser, new CompilerConfig(true, true, true));
   return new OfflineCompiler(
-      normalizer, new TemplateParser(new Parser(new Lexer()), new MockSchemaRegistry({}, {}),
-                                     htmlParser, new Console(), []),
+      normalizer,
+      new TemplateParser(
+          new Parser(new Lexer()), new MockSchemaRegistry({}, {}), htmlParser, new Console(), []),
       new StyleCompiler(urlResolver), new ViewCompiler(new CompilerConfig(true, true, true)),
       emitter, xhr);
 }
 
-export function compileComp(emitter: OutputEmitter,
-                            comp: CompileDirectiveMetadata): Promise<string> {
+export function compileComp(
+    emitter: OutputEmitter, comp: CompileDirectiveMetadata): Promise<string> {
   var xhr = new MockXHR();
   var compiler = _createOfflineCompiler(xhr, emitter);
   var result = compiler.normalizeDirectiveMetadata(comp).then((normComp) => {

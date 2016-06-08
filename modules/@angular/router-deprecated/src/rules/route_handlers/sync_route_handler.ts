@@ -1,7 +1,8 @@
 import {PromiseWrapper} from '../../facade/async';
-import {isPresent, Type} from '../../facade/lang';
+import {Type, isPresent} from '../../facade/lang';
+import {BLANK_ROUTE_DATA, RouteData} from '../../instruction';
+
 import {RouteHandler} from './route_handler';
-import {RouteData, BLANK_ROUTE_DATA} from '../../instruction';
 
 
 export class SyncRouteHandler implements RouteHandler {

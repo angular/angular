@@ -1,6 +1,6 @@
-import {ReflectiveInjector, Provider, PLATFORM_INITIALIZER, Type} from '../index';
-import {BaseException} from '../src/facade/exceptions';
+import {PLATFORM_INITIALIZER, Provider, ReflectiveInjector, Type} from '../index';
 import {ListWrapper} from '../src/facade/collection';
+import {BaseException} from '../src/facade/exceptions';
 import {FunctionWrapper, isPresent} from '../src/facade/lang';
 
 import {async} from './async';
@@ -13,7 +13,7 @@ export class TestInjector {
 
   private _injector: ReflectiveInjector = null;
 
-  private _providers: Array<Type | Provider | any[] | any> = [];
+  private _providers: Array<Type|Provider|any[]|any> = [];
 
   reset() {
     this._injector = null;
@@ -21,11 +21,11 @@ export class TestInjector {
     this._instantiated = false;
   }
 
-  platformProviders: Array<Type | Provider | any[] | any> = [];
+  platformProviders: Array<Type|Provider|any[]|any> = [];
 
-  applicationProviders: Array<Type | Provider | any[] | any> = [];
+  applicationProviders: Array<Type|Provider|any[]|any> = [];
 
-  addProviders(providers: Array<Type | Provider | any[] | any>) {
+  addProviders(providers: Array<Type|Provider|any[]|any>) {
     if (this._instantiated) {
       throw new BaseException('Cannot add providers after test injector is instantiated');
     }
@@ -76,8 +76,9 @@ export function getTestInjector() {
  * Test Providers for individual platforms are available from
  * 'angular2/platform/testing/<platform_name>'.
  */
-export function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>,
-                                     applicationProviders: Array<Type | Provider | any[]>) {
+export function setBaseTestProviders(
+    platformProviders: Array<Type|Provider|any[]>,
+    applicationProviders: Array<Type|Provider|any[]>) {
   var testInjector = getTestInjector();
   if (testInjector.platformProviders.length > 0 || testInjector.applicationProviders.length > 0) {
     throw new BaseException('Cannot set base providers because it has already been called');

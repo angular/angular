@@ -1,10 +1,11 @@
-import {isBlank, isPresent} from '../facade/lang';
-import {BaseException} from '../facade/exceptions';
-import * as o from '../output/output_ast';
-import {CompileView} from './compile_view';
 import {CompilePipeMetadata} from '../compile_metadata';
+import {BaseException} from '../facade/exceptions';
+import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers, identifierToken} from '../identifiers';
-import {injectFromViewParentInjector, createPureProxy, getPropertyInView} from './util';
+import * as o from '../output/output_ast';
+
+import {CompileView} from './compile_view';
+import {createPureProxy, getPropertyInView, injectFromViewParentInjector} from './util';
 
 class _PurePipeProxy {
   constructor(public view: CompileView, public instance: o.ReadPropExpr, public argCount: number) {}
@@ -55,9 +56,10 @@ export class CompilePipe {
     this._purePipeProxies.forEach((purePipeProxy) => {
       var pipeInstanceSeenFromPureProxy =
           getPropertyInView(this.instance, purePipeProxy.view, this.view);
-      createPureProxy(pipeInstanceSeenFromPureProxy.prop('transform')
-                          .callMethod(o.BuiltinMethod.bind, [pipeInstanceSeenFromPureProxy]),
-                      purePipeProxy.argCount, purePipeProxy.instance, purePipeProxy.view);
+      createPureProxy(
+          pipeInstanceSeenFromPureProxy.prop('transform')
+              .callMethod(o.BuiltinMethod.bind, [pipeInstanceSeenFromPureProxy]),
+          purePipeProxy.argCount, purePipeProxy.instance, purePipeProxy.view);
     });
   }
 

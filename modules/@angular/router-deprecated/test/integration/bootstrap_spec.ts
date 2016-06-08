@@ -1,15 +1,4 @@
-import {
-  beforeEach,
-  beforeEachProviders,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xdescribe,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 
@@ -20,21 +9,10 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Console} from '@angular/core/src/console';
 import {provide} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {
-  RouteConfig,
-  Route,
-  Redirect,
-  AuxRoute
-} from '../../src/route_config/route_config_decorator';
+import {RouteConfig, Route, Redirect, AuxRoute} from '../../src/route_config/route_config_decorator';
 import {PromiseWrapper} from '../../src/facade/async';
 import {BaseException, WrappedException} from '../../src/facade/exceptions';
-import {
-  ROUTER_PROVIDERS,
-  ROUTER_PRIMARY_COMPONENT,
-  RouteParams,
-  Router,
-  ROUTER_DIRECTIVES
-} from '@angular/router-deprecated';
+import {ROUTER_PROVIDERS, ROUTER_PRIMARY_COMPONENT, RouteParams, Router, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
 
 import {MockLocationStrategy} from '@angular/common/testing';
 import {ApplicationRef} from '@angular/core/src/application_ref';
@@ -48,60 +26,60 @@ class DummyConsole implements Console {
 
 export function main() {
   describe('router bootstrap', () => {
-    beforeEachProviders(() => [
-      ROUTER_PROVIDERS,
-      {provide: LocationStrategy, useClass: MockLocationStrategy},
-      {provide: ApplicationRef, useClass: MockApplicationRef}
-    ]);
+    beforeEachProviders(
+        () => [ROUTER_PROVIDERS, {provide: LocationStrategy, useClass: MockLocationStrategy}, {
+          provide: ApplicationRef,
+          useClass: MockApplicationRef
+        }]);
 
     // do not refactor out the `bootstrap` functionality. We still want to
     // keep this test around so we can ensure that bootstrap a router works
-    it('should bootstrap a simple app', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should bootstrap a simple app',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var fakeDoc = getDOM().createHtmlDocument();
          var el = getDOM().createElement('app-cmp', fakeDoc);
          getDOM().appendChild(fakeDoc.body, el);
 
-         bootstrap(AppCmp,
-                   [
-                     ROUTER_PROVIDERS,
-                     {provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp},
-                     {provide: LocationStrategy, useClass: MockLocationStrategy},
-                     {provide: DOCUMENT, useValue: fakeDoc},
-                     {provide: Console, useClass: DummyConsole}
-                   ])
-             .then((applicationRef) => {
-               var router = applicationRef.instance.router;
-               router.subscribe((_: any /** TODO #9100 */) => {
-                 expect(el).toHaveText('outer { hello }');
-                 expect(applicationRef.instance.location.path()).toEqual('');
-                 async.done();
-               });
-             });
+         bootstrap(AppCmp, [
+           ROUTER_PROVIDERS, {provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp},
+           {provide: LocationStrategy, useClass: MockLocationStrategy},
+           {provide: DOCUMENT, useValue: fakeDoc}, {provide: Console, useClass: DummyConsole}
+         ]).then((applicationRef) => {
+           var router = applicationRef.instance.router;
+           router.subscribe((_: any /** TODO #9100 */) => {
+             expect(el).toHaveText('outer { hello }');
+             expect(applicationRef.instance.location.path()).toEqual('');
+             async.done();
+           });
+         });
        }));
 
     describe('broken app', () => {
       beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: BrokenAppCmp}]);
 
       it('should rethrow exceptions from component constructors',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
-           tcb.createAsync(AppCmp).then((fixture) => {
-             var router = fixture.debugElement.componentInstance.router;
-             PromiseWrapper.catchError(router.navigateByUrl('/cause-error'), (error) => {
-               expect(error).toContainError('oops!');
-               async.done();
-             });
-           });
-         }));
+         inject(
+             [AsyncTestCompleter, TestComponentBuilder],
+             (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
+               tcb.createAsync(AppCmp).then((fixture) => {
+                 var router = fixture.debugElement.componentInstance.router;
+                 PromiseWrapper.catchError(router.navigateByUrl('/cause-error'), (error) => {
+                   expect(error).toContainError('oops!');
+                   async.done();
+                 });
+               });
+             }));
     });
 
     describe('back button app', () => {
       beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp}]);
 
       it('should change the url without pushing a new history state for back navigations',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
+         inject(
+             [AsyncTestCompleter, TestComponentBuilder],
+             (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
 
-           tcb.createAsync(HierarchyAppCmp)
-               .then((fixture) => {
+               tcb.createAsync(HierarchyAppCmp).then((fixture) => {
                  var router = fixture.debugElement.componentInstance.router;
                  var position = 0;
                  var flipped = false;
@@ -141,7 +119,8 @@ export function main() {
 
                  router.navigateByUrl(history[0][0]);
                });
-         }), 1000);
+             }),
+         1000);
     });
 
     describe('hierarchical app', () => {
@@ -149,10 +128,11 @@ export function main() {
           () => { return [{provide: ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp}]; });
 
       it('should bootstrap an app with a hierarchy',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
+         inject(
+             [AsyncTestCompleter, TestComponentBuilder],
+             (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
 
-           tcb.createAsync(HierarchyAppCmp)
-               .then((fixture) => {
+               tcb.createAsync(HierarchyAppCmp).then((fixture) => {
                  var router = fixture.debugElement.componentInstance.router;
                  router.subscribe((_: any /** TODO #9100 */) => {
                    expect(fixture.debugElement.nativeElement)
@@ -163,28 +143,28 @@ export function main() {
                  });
                  router.navigateByUrl('/parent/child');
                });
-         }));
+             }));
 
       // TODO(btford): mock out level lower than LocationStrategy once that level exists
       xdescribe('custom app base ref', () => {
         beforeEachProviders(() => { return [{provide: APP_BASE_HREF, useValue: '/my/app'}]; });
         it('should bootstrap',
-           inject([AsyncTestCompleter, TestComponentBuilder],
-                  (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
+           inject(
+               [AsyncTestCompleter, TestComponentBuilder],
+               (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
 
-                    tcb.createAsync(HierarchyAppCmp)
-                        .then((fixture) => {
-                          var router = fixture.debugElement.componentInstance.router;
-                          router.subscribe((_: any /** TODO #9100 */) => {
-                            expect(fixture.debugElement.nativeElement)
-                                .toHaveText('root { parent { hello } }');
-                            expect(fixture.debugElement.componentInstance.location.path())
-                                .toEqual('/my/app/parent/child');
-                            async.done();
-                          });
-                          router.navigateByUrl('/parent/child');
-                        });
-                  }));
+                 tcb.createAsync(HierarchyAppCmp).then((fixture) => {
+                   var router = fixture.debugElement.componentInstance.router;
+                   router.subscribe((_: any /** TODO #9100 */) => {
+                     expect(fixture.debugElement.nativeElement)
+                         .toHaveText('root { parent { hello } }');
+                     expect(fixture.debugElement.componentInstance.location.path())
+                         .toEqual('/my/app/parent/child');
+                     async.done();
+                   });
+                   router.navigateByUrl('/parent/child');
+                 });
+               }));
       });
     });
 
@@ -194,9 +174,10 @@ export function main() {
           () => { return [{provide: ROUTER_PRIMARY_COMPONENT, useValue: QueryStringAppCmp}]; });
 
       it('should recognize and return querystring params with the injected RouteParams',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
-           tcb.createAsync(QueryStringAppCmp)
-               .then((fixture) => {
+         inject(
+             [AsyncTestCompleter, TestComponentBuilder],
+             (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
+               tcb.createAsync(QueryStringAppCmp).then((fixture) => {
                  var router = fixture.debugElement.componentInstance.router;
                  router.subscribe((_: any /** TODO #9100 */) => {
                    fixture.detectChanges();
@@ -211,7 +192,7 @@ export function main() {
                  router.navigateByUrl('/qs?q=search-for-something');
                  fixture.detectChanges();
                });
-         }));
+             }));
     });
 
     describe('activate event on outlet', () => {
@@ -219,29 +200,29 @@ export function main() {
 
       beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp}]);
 
-      beforeEach(inject([TestComponentBuilder],
-                        (testComponentBuilder: any /** TODO #9100 */) => { tcb = testComponentBuilder; }));
+      beforeEach(inject([TestComponentBuilder], (testComponentBuilder: any /** TODO #9100 */) => {
+        tcb = testComponentBuilder;
+      }));
 
       it('should get a reference and pass data to components loaded inside of outlets',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           tcb.createAsync(AppWithOutletListeners)
-               .then(fixture => {
-                 let appInstance = fixture.debugElement.componentInstance;
-                 let router = appInstance.router;
+           tcb.createAsync(AppWithOutletListeners).then(fixture => {
+             let appInstance = fixture.debugElement.componentInstance;
+             let router = appInstance.router;
 
-                 router.subscribe((_: any /** TODO #9100 */) => {
-                   fixture.detectChanges();
+             router.subscribe((_: any /** TODO #9100 */) => {
+               fixture.detectChanges();
 
-                   expect(appInstance.helloCmp).toBeAnInstanceOf(HelloCmp);
-                   expect(appInstance.helloCmp.message).toBe('Ahoy');
+               expect(appInstance.helloCmp).toBeAnInstanceOf(HelloCmp);
+               expect(appInstance.helloCmp.message).toBe('Ahoy');
 
-                   async.done();
-                 });
+               async.done();
+             });
 
-                 // TODO(juliemr): This isn't necessary for the test to pass - figure
-                 // out what's going on.
-                 // router.navigateByUrl('/rainbow(pony)');
-               });
+             // TODO(juliemr): This isn't necessary for the test to pass - figure
+             // out what's going on.
+             // router.navigateByUrl('/rainbow(pony)');
+           });
          }));
     });
   });
@@ -341,7 +322,7 @@ class QueryStringAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 
-@Component({selector: 'oops-cmp', template: "oh no"})
+@Component({selector: 'oops-cmp', template: 'oh no'})
 class BrokenCmp {
   constructor() { throw new BaseException('oops!'); }
 }

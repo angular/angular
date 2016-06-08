@@ -1,27 +1,20 @@
+import {AUTO_STYLE, BaseException} from '@angular/core';
+
+import {AnimationDriver, AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
-import {isPresent, isNumber, StringWrapper} from '../facade/lang';
-import {BaseException, AUTO_STYLE} from '@angular/core';
-
-import {
-  AnimationDriver,
-  AnimationPlayer,
-  NoOpAnimationPlayer,
-  AnimationKeyframe,
-  AnimationStyles
-} from '../../core_private';
-
-import {WebAnimationsPlayer} from './web_animations_player';
+import {StringWrapper, isNumber, isPresent} from '../facade/lang';
 
 import {getDOM} from './dom_adapter';
+import {WebAnimationsPlayer} from './web_animations_player';
 
 export class WebAnimationsDriver implements AnimationDriver {
-  animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number,
-          easing: string): AnimationPlayer {
-
+  animate(
+      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
+      duration: number, delay: number, easing: string): AnimationPlayer {
     var anyElm = <any>element;
 
     var formattedSteps: any[] /** TODO #9100 */ = [];
-    var startingStyleLookup: {[key: string]: string|number}= {};
+    var startingStyleLookup: {[key: string]: string | number} = {};
     if (isPresent(startingStyles) && startingStyles.styles.length > 0) {
       startingStyleLookup = _populateStyles(anyElm, startingStyles, {});
       startingStyleLookup['offset'] = 0;
@@ -52,20 +45,22 @@ export class WebAnimationsDriver implements AnimationDriver {
   }
 }
 
-function _populateStyles(element: any, styles: AnimationStyles, defaultStyles: {[key: string]: string|number}) {
+function _populateStyles(
+    element: any, styles: AnimationStyles, defaultStyles: {[key: string]: string | number}) {
   var data = {};
   styles.styles.forEach((entry) => {
     StringMapWrapper.forEach(entry, (val: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-      (data as any /** TODO #9100 */)[prop] = val == AUTO_STYLE
-          ? _computeStyle(element, prop)
-          : val.toString() + _resolveStyleUnit(val, prop);
+      (data as any /** TODO #9100 */)[prop] = val == AUTO_STYLE ?
+          _computeStyle(element, prop) :
+          val.toString() + _resolveStyleUnit(val, prop);
     });
   });
-  StringMapWrapper.forEach(defaultStyles, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-    if (!isPresent((data as any /** TODO #9100 */)[prop])) {
-      (data as any /** TODO #9100 */)[prop] = value;
-    }
-  });
+  StringMapWrapper.forEach(
+      defaultStyles, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
+        if (!isPresent((data as any /** TODO #9100 */)[prop])) {
+          (data as any /** TODO #9100 */)[prop] = value;
+        }
+      });
   return data;
 }
 

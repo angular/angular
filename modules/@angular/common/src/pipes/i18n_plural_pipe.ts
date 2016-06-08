@@ -1,5 +1,7 @@
-import {PipeTransform, Pipe} from '@angular/core';
-import {isStringMap, StringWrapper, isPresent, RegExpWrapper} from '../facade/lang';
+import {Pipe, PipeTransform} from '@angular/core';
+
+import {RegExpWrapper, StringWrapper, isPresent, isStringMap} from '../facade/lang';
+
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 var interpolationExp: RegExp = RegExpWrapper.create('#');

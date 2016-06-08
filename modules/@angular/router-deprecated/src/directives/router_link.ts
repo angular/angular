@@ -1,8 +1,10 @@
-import {Directive} from '@angular/core';
 import {Location} from '@angular/common';
+import {Directive} from '@angular/core';
+
 import {isString} from '../facade/lang';
-import {Router} from '../router';
 import {Instruction} from '../instruction';
+import {Router} from '../router';
+
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.

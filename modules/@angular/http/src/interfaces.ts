@@ -21,9 +21,7 @@ export abstract class Connection {
 }
 
 /** An XSRFStrategy configures XSRF protection (e.g. via headers) on an HTTP request. */
-export abstract class XSRFStrategy {
-  abstract configureRequest(req: Request): void;
-}
+export abstract class XSRFStrategy { abstract configureRequest(req: Request): void; }
 
 /**
  * Interface for options to construct a RequestOptions, based on
@@ -31,8 +29,8 @@ export abstract class XSRFStrategy {
  */
 export interface RequestOptionsArgs {
   url?: string;
-  method?: string | RequestMethod;
-  search?: string | URLSearchParams;
+  method?: string|RequestMethod;
+  search?: string|URLSearchParams;
   headers?: Headers;
   body?: any;
   withCredentials?: boolean;
@@ -49,10 +47,7 @@ export interface RequestArgs extends RequestOptionsArgs { url: string; }
  */
 export type ResponseOptionsArgs = {
   // TODO: Support Blob, ArrayBuffer, JSON
-  body?: string | Object | FormData;
-  status?: number;
-  statusText?: string;
-  headers?: Headers;
+  body?: string | Object | FormData; status?: number; statusText?: string; headers?: Headers;
   type?: ResponseType;
   url?: string;
 }

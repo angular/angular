@@ -1,20 +1,15 @@
-import * as o from './output_ast';
-import {isPresent, isBlank, isArray} from '../facade/lang';
-import {BaseException} from '../facade/exceptions';
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {
-  OutputEmitter,
-  EmitterVisitorContext,
-  AbstractEmitterVisitor,
-  CATCH_ERROR_VAR,
-  CATCH_STACK_VAR
-} from './abstract_emitter';
+import {BaseException} from '../facade/exceptions';
+import {isArray, isBlank, isPresent} from '../facade/lang';
+
+import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
+import * as o from './output_ast';
 import {ImportGenerator} from './path_util';
 
 var _debugModuleUrl = 'asset://debug/lib';
 
-export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type |
-                                           any[]): string {
+export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type | any[]):
+    string {
   var converter = new _TsEmitterVisitor(_debugModuleUrl);
   var ctx = EmitterVisitorContext.createRoot([]);
   var asts: any[];
@@ -197,10 +192,10 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(`} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
-    var catchStmts = [
-      <o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack'))
-          .toDeclStmt(null, [o.StmtModifier.Final])
-    ].concat(stmt.catchStmts);
+    var catchStmts =
+        [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
+          o.StmtModifier.Final
+        ])].concat(stmt.catchStmts);
     this.visitAllStatements(catchStmts, ctx);
     ctx.decIndent();
     ctx.println(`}`);
@@ -277,8 +272,8 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }, params, ctx, ',');
   }
 
-  private _visitIdentifier(value: CompileIdentifierMetadata, typeParams: o.Type[],
-                           ctx: EmitterVisitorContext): void {
+  private _visitIdentifier(
+      value: CompileIdentifierMetadata, typeParams: o.Type[], ctx: EmitterVisitorContext): void {
     if (isBlank(value.name)) {
       throw new BaseException(`Internal error: unknown identifier ${value}`);
     }
@@ -293,7 +288,8 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.print(value.name);
     if (isPresent(typeParams) && typeParams.length > 0) {
       ctx.print(`<`);
-      this.visitAllObjects((type: any /** TODO #9100 */) => type.visitType(this, ctx), typeParams, ctx, ',');
+      this.visitAllObjects(
+          (type: any /** TODO #9100 */) => type.visitType(this, ctx), typeParams, ctx, ',');
       ctx.print(`>`);
     }
   }

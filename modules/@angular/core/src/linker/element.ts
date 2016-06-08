@@ -1,15 +1,14 @@
-import {isPresent} from '../facade/lang';
+import {Injector} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
+import {isPresent} from '../facade/lang';
 
-import {AppView} from './view';
-import {ViewType} from './view_type';
 import {ElementRef} from './element_ref';
-
-import {ViewContainerRef_} from './view_container_ref';
-
 import {QueryList} from './query_list';
-import {Injector} from '../di/injector';
+import {AppView} from './view';
+import {ViewContainerRef_} from './view_container_ref';
+import {ViewType} from './view_type';
+
 
 /**
  * An AppElement is created for elements that have a ViewContainerRef,
@@ -23,15 +22,16 @@ export class AppElement {
   public component: any;
   public componentConstructorViewQueries: QueryList<any>[];
 
-  constructor(public index: number, public parentIndex: number, public parentView: AppView<any>,
-              public nativeElement: any) {}
+  constructor(
+      public index: number, public parentIndex: number, public parentView: AppView<any>,
+      public nativeElement: any) {}
 
   get elementRef(): ElementRef { return new ElementRef(this.nativeElement); }
 
   get vcRef(): ViewContainerRef_ { return new ViewContainerRef_(this); }
 
-  initComponent(component: any, componentConstructorViewQueries: QueryList<any>[],
-                view: AppView<any>) {
+  initComponent(
+      component: any, componentConstructorViewQueries: QueryList<any>[], view: AppView<any>) {
     this.component = component;
     this.componentConstructorViewQueries = componentConstructorViewQueries;
     this.componentView = view;

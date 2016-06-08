@@ -1,15 +1,11 @@
 import {Type} from '../src/facade/lang';
-import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
+
 import {APPLICATION_CORE_PROVIDERS} from './application_ref';
-import {
-  IterableDiffers,
-  defaultIterableDiffers,
-  KeyValueDiffers,
-  defaultKeyValueDiffers
-} from './change_detection/change_detection';
-import {ViewUtils} from './linker/view_utils';
+import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
+import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
 import {ComponentResolver, ReflectorComponentResolver} from './linker/component_resolver';
 import {DynamicComponentLoader, DynamicComponentLoader_} from './linker/dynamic_component_loader';
+import {ViewUtils} from './linker/view_utils';
 
 let __unused: Type;  // avoid unused import when Type union types are erased
 
@@ -18,7 +14,7 @@ let __unused: Type;  // avoid unused import when Type union types are erased
  * application, regardless of the platform it runs onto.
  * @stable
  */
-export const APPLICATION_COMMON_PROVIDERS: Array<Type | {[k: string]: any} | any[]> =
+export const APPLICATION_COMMON_PROVIDERS: Array<Type|{[k: string]: any}|any[]> =
     /*@ts2dart_const*/[
       APPLICATION_CORE_PROVIDERS,
       /* @ts2dart_Provider */ {provide: ComponentResolver, useClass: ReflectorComponentResolver},
@@ -26,5 +22,5 @@ export const APPLICATION_COMMON_PROVIDERS: Array<Type | {[k: string]: any} | any
       ViewUtils,
       /* @ts2dart_Provider */ {provide: IterableDiffers, useValue: defaultIterableDiffers},
       /* @ts2dart_Provider */ {provide: KeyValueDiffers, useValue: defaultKeyValueDiffers},
-      /* @ts2dart_Provider */ {provide: DynamicComponentLoader, useClass: DynamicComponentLoader_}
+      /* @ts2dart_Provider */ {provide: DynamicComponentLoader, useClass: DynamicComponentLoader_},
     ];

@@ -3,36 +3,8 @@
  * @description
  * Starting point to import all compiler APIs.
  */
+export {COMPILER_PROVIDERS, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileFactoryMetadata, CompileIdentifierMetadata, CompileMetadataWithIdentifier, CompileMetadataWithType, CompilePipeMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, CompilerConfig, DEFAULT_PACKAGE_URL_PROVIDER, DirectiveResolver, NormalizedComponentWithViewDirectives, OfflineCompiler, PipeResolver, RenderTypes, RuntimeCompiler, SourceModule, TEMPLATE_TRANSFORMS, UrlResolver, ViewResolver, XHR, createOfflineCompileUrlResolver} from './src/compiler';
 export {ElementSchemaRegistry} from './src/schema/element_schema_registry';
-export {
-  COMPILER_PROVIDERS,
-  TEMPLATE_TRANSFORMS,
-  CompilerConfig,
-  RenderTypes,
-  UrlResolver,
-  DEFAULT_PACKAGE_URL_PROVIDER,
-  createOfflineCompileUrlResolver,
-  XHR,
-  ViewResolver,
-  DirectiveResolver,
-  PipeResolver,
-  SourceModule,
-  NormalizedComponentWithViewDirectives,
-  OfflineCompiler,
-  RuntimeCompiler,
-  CompileMetadataWithIdentifier,
-  CompileMetadataWithType,
-  CompileIdentifierMetadata,
-  CompileDiDependencyMetadata,
-  CompileProviderMetadata,
-  CompileFactoryMetadata,
-  CompileTokenMetadata,
-  CompileTypeMetadata,
-  CompileQueryMetadata,
-  CompileTemplateMetadata,
-  CompileDirectiveMetadata,
-  CompilePipeMetadata
-} from './src/compiler';
 
 export * from './src/template_ast';
 export * from './private_export';

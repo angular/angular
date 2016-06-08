@@ -1,9 +1,11 @@
-import {Injectable, Inject, Optional} from '@angular/core';
+import {Inject, Injectable, Optional} from '@angular/core';
+
 import {isPresent} from '../facade/lang';
 
-import {LocationStrategy, APP_BASE_HREF} from './location_strategy';
 import {Location} from './location';
-import {UrlChangeListener, PlatformLocation} from './platform_location';
+import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
+import {PlatformLocation, UrlChangeListener} from './platform_location';
+
 
 
 /**
@@ -51,8 +53,9 @@ import {UrlChangeListener, PlatformLocation} from './platform_location';
 @Injectable()
 export class HashLocationStrategy extends LocationStrategy {
   private _baseHref: string = '';
-  constructor(private _platformLocation: PlatformLocation,
-              @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
+  constructor(
+      private _platformLocation: PlatformLocation,
+      @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
     super();
     if (isPresent(_baseHref)) {
       this._baseHref = _baseHref;

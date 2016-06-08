@@ -1,16 +1,7 @@
-import {HtmlParser, HtmlParseTreeResult, HtmlTreeError} from '@angular/compiler/src/html_parser';
-import {
-  HtmlAst,
-  HtmlAstVisitor,
-  HtmlElementAst,
-  HtmlAttrAst,
-  HtmlTextAst,
-  HtmlCommentAst,
-  HtmlExpansionAst,
-  HtmlExpansionCaseAst,
-  htmlVisitAll
-} from '@angular/compiler/src/html_ast';
+import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '@angular/compiler/src/html_ast';
+import {HtmlParseTreeResult, HtmlParser, HtmlTreeError} from '@angular/compiler/src/html_parser';
 import {ParseError, ParseLocation} from '@angular/compiler/src/parse_util';
+
 import {BaseException} from '../src/facade/exceptions';
 
 export function humanizeDom(parseResult: HtmlParseTreeResult): any[] {

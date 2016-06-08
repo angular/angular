@@ -1,16 +1,18 @@
-import {isBlank} from '../src/facade/lang';
-import {unimplemented} from '../src/facade/exceptions';
-import {Identifiers} from './identifiers';
-import {CompileIdentifierMetadata} from './compile_metadata';
 import {ViewEncapsulation} from '@angular/core';
+
+import {unimplemented} from '../src/facade/exceptions';
+import {isBlank} from '../src/facade/lang';
+
+import {CompileIdentifierMetadata} from './compile_metadata';
+import {Identifiers} from './identifiers';
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
   public defaultEncapsulation: ViewEncapsulation;
 
-  constructor(public genDebugInfo: boolean, public logBindingUpdate: boolean,
-              public useJit: boolean, renderTypes: RenderTypes = null,
-              defaultEncapsulation: ViewEncapsulation = null) {
+  constructor(
+      public genDebugInfo: boolean, public logBindingUpdate: boolean, public useJit: boolean,
+      renderTypes: RenderTypes = null, defaultEncapsulation: ViewEncapsulation = null) {
     if (isBlank(renderTypes)) {
       renderTypes = new DefaultRenderTypes();
     }

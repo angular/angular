@@ -1,6 +1,6 @@
 import {StringMapWrapper} from '../src/facade/collection';
-import {isPresent, isBlank, RegExpWrapper} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
+import {RegExpWrapper, isBlank, isPresent} from '../src/facade/lang';
 
 export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
   var paramsArray: any[] /** TODO #9100 */ = [];
@@ -8,7 +8,9 @@ export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string
     return [];
   }
   StringMapWrapper.forEach(
-      urlParams, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => { paramsArray.push((value === true) ? key : key + '=' + value); });
+      urlParams, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
+        paramsArray.push((value === true) ? key : key + '=' + value);
+      });
   return paramsArray;
 }
 
@@ -21,9 +23,9 @@ export function serializeParams(urlParams: {[key: string]: any}, joiner = '&'): 
  * This class represents a parsed URL
  */
 export class Url {
-  constructor(public path: string, public child: Url = null,
-              public auxiliary: Url[] = /*@ts2dart_const*/[],
-              public params: {[key: string]: any} = /*@ts2dart_const*/ {}) {}
+  constructor(
+      public path: string, public child: Url = null, public auxiliary: Url[] = /*@ts2dart_const*/[],
+      public params: {[key: string]: any} = /*@ts2dart_const*/ {}) {}
 
   toString(): string {
     return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
@@ -34,8 +36,8 @@ export class Url {
   /** @internal */
   _auxToString(): string {
     return this.auxiliary.length > 0 ?
-               ('(' + this.auxiliary.map(sibling => sibling.toString()).join('//') + ')') :
-               '';
+        ('(' + this.auxiliary.map(sibling => sibling.toString()).join('//') + ')') :
+        '';
   }
 
   private _matrixParamsToString(): string {
@@ -51,8 +53,9 @@ export class Url {
 }
 
 export class RootUrl extends Url {
-  constructor(path: string, child: Url = null, auxiliary: Url[] = /*@ts2dart_const*/[],
-              params: {[key: string]: any} = null) {
+  constructor(
+      path: string, child: Url = null, auxiliary: Url[] = /*@ts2dart_const*/[],
+      params: {[key: string]: any} = null) {
     super(path, child, auxiliary, params);
   }
 

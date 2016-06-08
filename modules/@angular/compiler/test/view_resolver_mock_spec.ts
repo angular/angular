@@ -1,11 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  it,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, it,} from '@angular/core/testing/testing_internal';
 
 import {stringify} from '../src/facade/lang';
 import {MockViewResolver} from '../testing';

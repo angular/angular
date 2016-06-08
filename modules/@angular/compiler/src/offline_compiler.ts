@@ -1,23 +1,16 @@
 import {ComponentFactory} from '@angular/core';
 
-import {
-  CompileDirectiveMetadata,
-  CompileIdentifierMetadata,
-  CompilePipeMetadata,
-  createHostComponentMeta
-} from './compile_metadata';
-
-import {BaseException} from './facade/exceptions';
-import {ListWrapper} from './facade/collection';
-import {StyleCompiler, StylesCompileResult} from './style_compiler';
-import {ViewCompiler, ViewCompileResult} from './view_compiler/view_compiler';
-import {TemplateParser} from './template_parser';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
+import {ListWrapper} from './facade/collection';
+import {BaseException} from './facade/exceptions';
 import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
-import {XHR} from './xhr';
-
+import {StyleCompiler, StylesCompileResult} from './style_compiler';
+import {TemplateParser} from './template_parser';
 import {assetUrl} from './util';
+import {ViewCompileResult, ViewCompiler} from './view_compiler/view_compiler';
+import {XHR} from './xhr';
 
 var _COMPONENT_FACTORY_IDENTIFIER = new CompileIdentifierMetadata({
   name: 'ComponentFactory',
@@ -34,15 +27,16 @@ export class StyleSheetSourceWithImports {
 }
 
 export class NormalizedComponentWithViewDirectives {
-  constructor(public component: CompileDirectiveMetadata,
-              public directives: CompileDirectiveMetadata[], public pipes: CompilePipeMetadata[]) {}
+  constructor(
+      public component: CompileDirectiveMetadata, public directives: CompileDirectiveMetadata[],
+      public pipes: CompilePipeMetadata[]) {}
 }
 
 export class OfflineCompiler {
-  constructor(private _directiveNormalizer: DirectiveNormalizer,
-              private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
-              private _viewCompiler: ViewCompiler, private _outputEmitter: OutputEmitter,
-              private _xhr: XHR) {}
+  constructor(
+      private _directiveNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
+      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
+      private _outputEmitter: OutputEmitter, private _xhr: XHR) {}
 
   normalizeDirectiveMetadata(directive: CompileDirectiveMetadata):
       Promise<CompileDirectiveMetadata> {
@@ -59,8 +53,8 @@ export class OfflineCompiler {
     components.forEach(componentWithDirs => {
       var compMeta = <CompileDirectiveMetadata>componentWithDirs.component;
       _assertComponent(compMeta);
-      var compViewFactoryVar = this._compileComponent(compMeta, componentWithDirs.directives,
-                                                      componentWithDirs.pipes, statements);
+      var compViewFactoryVar = this._compileComponent(
+          compMeta, componentWithDirs.directives, componentWithDirs.pipes, statements);
       exportedVars.push(compViewFactoryVar);
 
       var hostMeta = createHostComponentMeta(compMeta.type, compMeta.selector);
@@ -71,56 +65,56 @@ export class OfflineCompiler {
               .set(o.importExpr(_COMPONENT_FACTORY_IDENTIFIER, [o.importType(compMeta.type)])
                        .instantiate(
                            [
-                             o.literal(compMeta.selector),
-                             o.variable(hostViewFactoryVar),
+                             o.literal(compMeta.selector), o.variable(hostViewFactoryVar),
                              o.importExpr(compMeta.type)
                            ],
-                           o.importType(_COMPONENT_FACTORY_IDENTIFIER,
-                                        [o.importType(compMeta.type)], [o.TypeModifier.Const])))
+                           o.importType(
+                               _COMPONENT_FACTORY_IDENTIFIER, [o.importType(compMeta.type)],
+                               [o.TypeModifier.Const])))
               .toDeclStmt(null, [o.StmtModifier.Final]));
       exportedVars.push(compFactoryVar);
     });
     return this._codegenSourceModule(moduleUrl, statements, exportedVars);
   }
 
-  loadAndCompileStylesheet(stylesheetUrl: string, shim: boolean,
-                           suffix: string): Promise<StyleSheetSourceWithImports> {
-    return this._xhr.get(stylesheetUrl)
-        .then((cssText) => {
-          var compileResult = this._styleCompiler.compileStylesheet(stylesheetUrl, cssText, shim);
-          var importedUrls: any[] /** TODO #9100 */ = [];
-          compileResult.dependencies.forEach((dep) => {
-            importedUrls.push(dep.moduleUrl);
-            dep.valuePlaceholder.moduleUrl = _stylesModuleUrl(dep.moduleUrl, dep.isShimmed, suffix);
-          });
-          return new StyleSheetSourceWithImports(
-              this._codgenStyles(stylesheetUrl, shim, suffix, compileResult), importedUrls);
-        });
+  loadAndCompileStylesheet(stylesheetUrl: string, shim: boolean, suffix: string):
+      Promise<StyleSheetSourceWithImports> {
+    return this._xhr.get(stylesheetUrl).then((cssText) => {
+      var compileResult = this._styleCompiler.compileStylesheet(stylesheetUrl, cssText, shim);
+      var importedUrls: any[] /** TODO #9100 */ = [];
+      compileResult.dependencies.forEach((dep) => {
+        importedUrls.push(dep.moduleUrl);
+        dep.valuePlaceholder.moduleUrl = _stylesModuleUrl(dep.moduleUrl, dep.isShimmed, suffix);
+      });
+      return new StyleSheetSourceWithImports(
+          this._codgenStyles(stylesheetUrl, shim, suffix, compileResult), importedUrls);
+    });
   }
 
-  private _compileComponent(compMeta: CompileDirectiveMetadata,
-                            directives: CompileDirectiveMetadata[], pipes: CompilePipeMetadata[],
-                            targetStatements: o.Statement[]): string {
+  private _compileComponent(
+      compMeta: CompileDirectiveMetadata, directives: CompileDirectiveMetadata[],
+      pipes: CompilePipeMetadata[], targetStatements: o.Statement[]): string {
     var styleResult = this._styleCompiler.compileComponent(compMeta);
-    var parsedTemplate = this._templateParser.parse(compMeta, compMeta.template.template,
-                                                    directives, pipes, compMeta.type.name);
-    var viewResult = this._viewCompiler.compileComponent(compMeta, parsedTemplate,
-                                                         o.variable(styleResult.stylesVar), pipes);
-    ListWrapper.addAll(targetStatements,
-                       _resolveStyleStatements(compMeta.type.moduleUrl, styleResult));
+    var parsedTemplate = this._templateParser.parse(
+        compMeta, compMeta.template.template, directives, pipes, compMeta.type.name);
+    var viewResult = this._viewCompiler.compileComponent(
+        compMeta, parsedTemplate, o.variable(styleResult.stylesVar), pipes);
+    ListWrapper.addAll(
+        targetStatements, _resolveStyleStatements(compMeta.type.moduleUrl, styleResult));
     ListWrapper.addAll(targetStatements, _resolveViewStatements(viewResult));
     return viewResult.viewFactoryVar;
   }
 
-  private _codgenStyles(inputUrl: string, shim: boolean, suffix: string,
-                        stylesCompileResult: StylesCompileResult): SourceModule {
-    return this._codegenSourceModule(_stylesModuleUrl(inputUrl, shim, suffix),
-                                     stylesCompileResult.statements,
-                                     [stylesCompileResult.stylesVar]);
+  private _codgenStyles(
+      inputUrl: string, shim: boolean, suffix: string,
+      stylesCompileResult: StylesCompileResult): SourceModule {
+    return this._codegenSourceModule(
+        _stylesModuleUrl(inputUrl, shim, suffix), stylesCompileResult.statements,
+        [stylesCompileResult.stylesVar]);
   }
 
-  private _codegenSourceModule(moduleUrl: string, statements: o.Statement[],
-                               exportedVars: string[]): SourceModule {
+  private _codegenSourceModule(
+      moduleUrl: string, statements: o.Statement[], exportedVars: string[]): SourceModule {
     return new SourceModule(
         moduleUrl, this._outputEmitter.emitStatements(moduleUrl, statements, exportedVars));
   }
@@ -133,8 +127,8 @@ function _resolveViewStatements(compileResult: ViewCompileResult): o.Statement[]
 }
 
 
-function _resolveStyleStatements(containingModuleUrl: string,
-                                 compileResult: StylesCompileResult): o.Statement[] {
+function _resolveStyleStatements(
+    containingModuleUrl: string, compileResult: StylesCompileResult): o.Statement[] {
   var containingSuffix = _splitSuffix(containingModuleUrl)[1];
   compileResult.dependencies.forEach((dep) => {
     dep.valuePlaceholder.moduleUrl =

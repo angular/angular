@@ -10,39 +10,32 @@
  * Forms providers are not included in default providers; you must import these providers
  * explicitly.
  */
-export {AbstractControl, Control, ControlGroup, ControlArray} from './forms/model';
+import {Type} from '@angular/core';
 
+import {RadioControlRegistry} from './forms/directives/radio_control_value_accessor';
+import {FormBuilder} from './forms/form_builder';
+
+export {FORM_DIRECTIVES, RadioButtonState} from './forms/directives';
 export {AbstractControlDirective} from './forms/directives/abstract_control_directive';
-export {Form} from './forms/directives/form_interface';
+export {CheckboxControlValueAccessor} from './forms/directives/checkbox_value_accessor';
 export {ControlContainer} from './forms/directives/control_container';
-export {NgControlName} from './forms/directives/ng_control_name';
-export {NgFormControl} from './forms/directives/ng_form_control';
-export {NgModel} from './forms/directives/ng_model';
-export {NgControl} from './forms/directives/ng_control';
-export {NgControlGroup} from './forms/directives/ng_control_group';
-export {NgFormModel} from './forms/directives/ng_form_model';
-export {NgForm} from './forms/directives/ng_form';
 export {ControlValueAccessor, NG_VALUE_ACCESSOR} from './forms/directives/control_value_accessor';
 export {DefaultValueAccessor} from './forms/directives/default_value_accessor';
+export {Form} from './forms/directives/form_interface';
+export {NgControl} from './forms/directives/ng_control';
+export {NgControlGroup} from './forms/directives/ng_control_group';
+export {NgControlName} from './forms/directives/ng_control_name';
 export {NgControlStatus} from './forms/directives/ng_control_status';
-export {CheckboxControlValueAccessor} from './forms/directives/checkbox_value_accessor';
-export {
-  NgSelectOption,
-  SelectControlValueAccessor
-} from './forms/directives/select_control_value_accessor';
-export {FORM_DIRECTIVES, RadioButtonState} from './forms/directives';
-export {NG_VALIDATORS, NG_ASYNC_VALIDATORS, Validators} from './forms/validators';
-export {
-  RequiredValidator,
-  MinLengthValidator,
-  MaxLengthValidator,
-  PatternValidator,
-  Validator
-} from './forms/directives/validators';
+export {NgForm} from './forms/directives/ng_form';
+export {NgFormControl} from './forms/directives/ng_form_control';
+export {NgFormModel} from './forms/directives/ng_form_model';
+export {NgModel} from './forms/directives/ng_model';
+export {NgSelectOption, SelectControlValueAccessor} from './forms/directives/select_control_value_accessor';
+export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator, Validator} from './forms/directives/validators';
 export {FormBuilder} from './forms/form_builder';
-import {FormBuilder} from './forms/form_builder';
-import {RadioControlRegistry} from './forms/directives/radio_control_value_accessor';
-import {Type} from '@angular/core';
+export {AbstractControl, Control, ControlArray, ControlGroup} from './forms/model';
+export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './forms/validators';
+
 
 /**
  * Shorthand set of providers used for building Angular forms.

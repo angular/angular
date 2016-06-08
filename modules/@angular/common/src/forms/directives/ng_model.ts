@@ -1,25 +1,13 @@
-import {
-  OnChanges,
-  SimpleChanges,
-  Directive,
-  forwardRef,
-  Inject,
-  Optional,
-  Self
-} from '@angular/core';
+import {Directive, Inject, OnChanges, Optional, Self, SimpleChanges, forwardRef} from '@angular/core';
+
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {Control} from '../model';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
-import {Control} from '../model';
-import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
-import {
-  setUpControl,
-  isPropertyUpdated,
-  selectValueAccessor,
-  composeValidators,
-  composeAsyncValidators
-} from './shared';
-import {ValidatorFn, AsyncValidatorFn} from './validators';
+import {composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
+import {AsyncValidatorFn, ValidatorFn} from './validators';
 
 export const formControlBinding: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
@@ -70,33 +58,35 @@ export class NgModel extends NgControl implements OnChanges {
               @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[],
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
-    super();
-    this.valueAccessor = selectValueAccessor(this, valueAccessors);
-  }
+                super();
+                this.valueAccessor = selectValueAccessor(this, valueAccessors);
+              }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (!this._added) {
-      setUpControl(this._control, this);
-      this._control.updateValueAndValidity({emitEvent: false});
-      this._added = true;
-    }
+              ngOnChanges(changes: SimpleChanges) {
+                if (!this._added) {
+                  setUpControl(this._control, this);
+                  this._control.updateValueAndValidity({emitEvent: false});
+                  this._added = true;
+                }
 
-    if (isPropertyUpdated(changes, this.viewModel)) {
-      this._control.updateValue(this.model);
-      this.viewModel = this.model;
-    }
-  }
+                if (isPropertyUpdated(changes, this.viewModel)) {
+                  this._control.updateValue(this.model);
+                  this.viewModel = this.model;
+                }
+              }
 
-  get control(): Control { return this._control; }
+              get control(): Control { return this._control; }
 
-  get path(): string[] { return []; }
+              get path(): string[] { return []; }
 
-  get validator(): ValidatorFn { return composeValidators(this._validators); }
+              get validator(): ValidatorFn { return composeValidators(this._validators); }
 
-  get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
+              get asyncValidator(): AsyncValidatorFn {
+                return composeAsyncValidators(this._asyncValidators);
+              }
 
-  viewToModelUpdate(newValue: any): void {
-    this.viewModel = newValue;
-    ObservableWrapper.callEmit(this.update, newValue);
-  }
+              viewToModelUpdate(newValue: any): void {
+                this.viewModel = newValue;
+                ObservableWrapper.callEmit(this.update, newValue);
+              }
 }

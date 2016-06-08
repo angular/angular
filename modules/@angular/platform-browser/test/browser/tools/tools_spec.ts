@@ -1,16 +1,6 @@
-import {
-  afterEach,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {disableDebugTools, enableDebugTools} from '@angular/platform-browser';
 
-import {enableDebugTools, disableDebugTools} from '@angular/platform-browser';
 import {SpyComponentRef, callNgProfilerTimeChangeDetection} from './spies';
 
 export function main() {

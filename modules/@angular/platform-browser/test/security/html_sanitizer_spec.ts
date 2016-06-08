@@ -24,8 +24,9 @@ export function main() {
     t.it('serializes self closing elements', () => {
       t.expect(sanitizeHtml('<p>Hello <br> World</p>')).toEqual('<p>Hello <br> World</p>');
     });
-    t.it('supports namespaced elements',
-         () => { t.expect(sanitizeHtml('a<my:hr/><my:div>b</my:div>c')).toEqual('abc'); });
+    t.it('supports namespaced elements', () => {
+      t.expect(sanitizeHtml('a<my:hr/><my:div>b</my:div>c')).toEqual('abc');
+    });
     t.it('supports namespaced attributes', () => {
       t.expect(sanitizeHtml('<a xlink:href="something">t</a>'))
           .toEqual('<a xlink:href="something">t</a>');
@@ -34,8 +35,9 @@ export function main() {
           .toEqual('<a xlink:href="unsafe:javascript:foo()">t</a>');
     });
 
-    t.it('supports sanitizing plain text',
-         () => { t.expect(sanitizeHtml('Hello, World')).toEqual('Hello, World'); });
+    t.it('supports sanitizing plain text', () => {
+      t.expect(sanitizeHtml('Hello, World')).toEqual('Hello, World');
+    });
     t.it('ignores non-element, non-attribute nodes', () => {
       t.expect(sanitizeHtml('<!-- comments? -->no.')).toEqual('no.');
       t.expect(sanitizeHtml('<?pi nodes?>no.')).toEqual('no.');
@@ -49,36 +51,25 @@ export function main() {
     });
     t.describe('should strip dangerous elements', () => {
       let dangerousTags = [
-        'frameset',
-        'form',
-        'param',
-        'object',
-        'embed',
-        'textarea',
-        'input',
-        'button',
-        'option',
-        'select',
-        'script',
-        'style',
-        'link',
-        'base',
-        'basefont'
+        'frameset', 'form', 'param', 'object', 'embed', 'textarea', 'input', 'button', 'option',
+        'select', 'script', 'style', 'link', 'base', 'basefont'
       ];
 
       for (let tag of dangerousTags) {
-        t.it(`${tag}`,
-             () => { t.expect(sanitizeHtml(`<${tag}>evil!</${tag}>`)).toEqual('evil!'); });
+        t.it(
+            `${tag}`, () => { t.expect(sanitizeHtml(`<${tag}>evil!</${tag}>`)).toEqual('evil!'); });
       }
-      t.it(`swallows frame entirely`,
-           () => { t.expect(sanitizeHtml(`<frame>evil!</frame>`)).not.toContain('<frame>'); });
+      t.it(`swallows frame entirely`, () => {
+        t.expect(sanitizeHtml(`<frame>evil!</frame>`)).not.toContain('<frame>');
+      });
     });
     t.describe('should strip dangerous attributes', () => {
       let dangerousAttrs = ['id', 'name', 'style'];
 
       for (let attr of dangerousAttrs) {
-        t.it(`${attr}`,
-             () => { t.expect(sanitizeHtml(`<a ${attr}="x">evil!</a>`)).toEqual('<a>evil!</a>'); });
+        t.it(`${attr}`, () => {
+          t.expect(sanitizeHtml(`<a ${attr}="x">evil!</a>`)).toEqual('<a>evil!</a>');
+        });
       }
     });
 

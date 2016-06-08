@@ -2,11 +2,11 @@
  * Public Test Library for unit testing Angular2 Applications. Uses the
  * Jasmine framework.
  */
-import {inject, async, injectAsync, TestInjector, getTestInjector} from './test_injector';
-
 import {isPromise} from '../src/facade/lang';
 
-export {inject, async, injectAsync} from './test_injector';
+import {TestInjector, async, getTestInjector, inject, injectAsync} from './test_injector';
+
+export {async, inject, injectAsync} from './test_injector';
 
 declare var global: any /** TODO #9100 */;
 
@@ -93,9 +93,10 @@ export function beforeEachProviders(fn: () => Array<any>): void {
     try {
       testInjector.addProviders(providers);
     } catch (e) {
-      throw new Error('beforeEachProviders was called after the injector had ' +
-                      'been used in a beforeEach or it block. This invalidates the ' +
-                      'test injector');
+      throw new Error(
+          'beforeEachProviders was called after the injector had ' +
+          'been used in a beforeEach or it block. This invalidates the ' +
+          'test injector');
     }
   });
 }

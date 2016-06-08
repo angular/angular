@@ -2,30 +2,17 @@
  * Transform template html and css into executable code.
  * Intended to be used in a build step.
  */
-import * as ts from 'typescript';
-import * as path from 'path';
-import {AngularCompilerOptions} from '@angular/tsc-wrapped';
-
 import * as compiler from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
-import {StaticReflector} from './static_reflector';
-import {
-  CompileMetadataResolver,
-  HtmlParser,
-  DirectiveNormalizer,
-  Lexer,
-  Parser,
-  TemplateParser,
-  DomElementSchemaRegistry,
-  StyleCompiler,
-  ViewCompiler,
-  TypeScriptEmitter
-} from './compiler_private';
-
 import {Parse5DomAdapter} from '@angular/platform-server';
+import {AngularCompilerOptions} from '@angular/tsc-wrapped';
+import * as path from 'path';
+import * as ts from 'typescript';
 
+import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './compiler_private';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
+import {StaticReflector} from './static_reflector';
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 
@@ -38,11 +25,11 @@ const PREAMBLE = `/**
 `;
 
 export class CodeGenerator {
-  constructor(private options: AngularCompilerOptions,
-              private program: ts.Program, public host: ts.CompilerHost,
-              private staticReflector: StaticReflector, private resolver: CompileMetadataResolver,
-              private compiler: compiler.OfflineCompiler,
-              private reflectorHost: ReflectorHost) {}
+  constructor(
+      private options: AngularCompilerOptions, private program: ts.Program,
+      public host: ts.CompilerHost, private staticReflector: StaticReflector,
+      private resolver: CompileMetadataResolver, private compiler: compiler.OfflineCompiler,
+      private reflectorHost: ReflectorHost) {}
 
   private generateSource(metadatas: compiler.CompileDirectiveMetadata[]) {
     const normalize = (metadata: compiler.CompileDirectiveMetadata) => {
@@ -51,13 +38,14 @@ export class CodeGenerator {
       return Promise.all(directives.map(d => this.compiler.normalizeDirectiveMetadata(d)))
           .then(normalizedDirectives => {
             const pipes = this.resolver.getViewPipesMetadata(directiveType);
-            return new compiler.NormalizedComponentWithViewDirectives(metadata,
-                                                                      normalizedDirectives, pipes);
+            return new compiler.NormalizedComponentWithViewDirectives(
+                metadata, normalizedDirectives, pipes);
           });
     };
     return Promise.all(metadatas.map(normalize))
-        .then(normalizedCompWithDirectives =>
-                  this.compiler.compileTemplates(normalizedCompWithDirectives));
+        .then(
+            normalizedCompWithDirectives =>
+                this.compiler.compileTemplates(normalizedCompWithDirectives));
   }
 
   private readComponents(absSourcePath: string) {
@@ -142,8 +130,8 @@ export class CodeGenerator {
               if (generated) {
                 const sourceFile = this.program.getSourceFile(absSourcePath);
                 const emitPath = this.calculateEmitPath(generated.moduleUrl);
-                this.host.writeFile(emitPath, PREAMBLE + generated.source, false, () => {},
-                                    [sourceFile]);
+                this.host.writeFile(
+                    emitPath, PREAMBLE + generated.source, false, () => {}, [sourceFile]);
               }
             })
             .catch((e) => { console.error(e.stack); });
@@ -154,9 +142,9 @@ export class CodeGenerator {
     return Promise.all(stylesheetPromises.concat(compPromises));
   }
 
-  static create(options: AngularCompilerOptions, program: ts.Program,
-                compilerHost: ts.CompilerHost,
-                reflectorHostContext?: ReflectorHostContext): CodeGenerator {
+  static create(
+      options: AngularCompilerOptions, program: ts.Program, compilerHost: ts.CompilerHost,
+      reflectorHostContext?: ReflectorHostContext): CodeGenerator {
     const xhr: compiler.XHR = {get: (s: string) => Promise.resolve(compilerHost.readFile(s))};
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
     const reflectorHost = new ReflectorHost(program, compilerHost, options, reflectorHostContext);
@@ -166,8 +154,9 @@ export class CodeGenerator {
     const config = new compiler.CompilerConfig(true, true, true);
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const parser = new Parser(new Lexer());
-    const tmplParser = new TemplateParser(parser, new DomElementSchemaRegistry(), htmlParser,
-                                          /*console*/ null, []);
+    const tmplParser = new TemplateParser(
+        parser, new DomElementSchemaRegistry(), htmlParser,
+        /*console*/ null, []);
     const offlineCompiler = new compiler.OfflineCompiler(
         normalizer, tmplParser, new StyleCompiler(urlResolver),
         new ViewCompiler(new compiler.CompilerConfig(true, true, true)),
@@ -176,7 +165,7 @@ export class CodeGenerator {
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), null, null, staticReflector);
 
-    return new CodeGenerator(options, program, compilerHost, staticReflector, resolver,
-                             offlineCompiler, reflectorHost);
+    return new CodeGenerator(
+        options, program, compilerHost, staticReflector, resolver, offlineCompiler, reflectorHost);
   }
 }

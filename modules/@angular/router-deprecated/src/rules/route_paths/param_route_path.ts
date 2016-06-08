@@ -1,9 +1,11 @@
-import {RegExpWrapper, StringWrapper, isPresent, isBlank} from '../../facade/lang';
-import {BaseException} from '../../facade/exceptions';
 import {StringMapWrapper} from '../../facade/collection';
+import {BaseException} from '../../facade/exceptions';
+import {RegExpWrapper, StringWrapper, isBlank, isPresent} from '../../facade/lang';
+import {RootUrl, Url, convertUrlParamsToArray} from '../../url_parser';
 import {TouchMap, normalizeString} from '../../utils';
-import {Url, RootUrl, convertUrlParamsToArray} from '../../url_parser';
-import {RoutePath, GeneratedUrl, MatchedUrl} from './route_path';
+
+import {GeneratedUrl, MatchedUrl, RoutePath} from './route_path';
+
 
 
 /**
@@ -119,7 +121,8 @@ export class ParamRoutePath implements RoutePath {
       if (isPresent(currentUrlSegment)) {
         // the star segment consumes all of the remaining URL, including matrix params
         if (pathSegment instanceof StarPathSegment) {
-          (positionalParams as any /** TODO #9100 */)[pathSegment.name] = currentUrlSegment.toString();
+          (positionalParams as any /** TODO #9100 */)[pathSegment.name] =
+              currentUrlSegment.toString();
           captured.push(currentUrlSegment.toString());
           nextUrlSegment = null;
           break;
@@ -128,7 +131,8 @@ export class ParamRoutePath implements RoutePath {
         captured.push(currentUrlSegment.path);
 
         if (pathSegment instanceof DynamicPathSegment) {
-          (positionalParams as any /** TODO #9100 */)[pathSegment.name] = decodeDynamicSegment(currentUrlSegment.path);
+          (positionalParams as any /** TODO #9100 */)[pathSegment.name] =
+              decodeDynamicSegment(currentUrlSegment.path);
         } else if (!pathSegment.match(currentUrlSegment.path)) {
           return null;
         }
@@ -190,7 +194,7 @@ export class ParamRoutePath implements RoutePath {
   private _parsePathString(routePath: string) {
     // normalize route as not starting with a "/". Recognition will
     // also normalize.
-    if (routePath.startsWith("/")) {
+    if (routePath.startsWith('/')) {
       routePath = routePath.substring(1);
     }
 
@@ -230,7 +234,8 @@ export class ParamRoutePath implements RoutePath {
     // The code below uses place values to combine the different types of segments into a single
     // string that we can sort later. Each static segment is marked as a specificity of "2," each
     // dynamic segment is worth "1" specificity, and stars are worth "0" specificity.
-    var i: any /** TODO #9100 */, length = this._segments.length, specificity: any /** TODO #9100 */;
+    var i: any /** TODO #9100 */, length = this._segments.length,
+                                  specificity: any /** TODO #9100 */;
     if (length == 0) {
       // a single slash (or "empty segment" is as specific as a static segment
       specificity += '2';

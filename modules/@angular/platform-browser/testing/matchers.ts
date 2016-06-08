@@ -1,6 +1,7 @@
 import {getDOM} from '../src/dom/dom_adapter';
-import {global, isString} from '../src/facade/lang';
 import {StringMapWrapper} from '../src/facade/collection';
+import {global, isString} from '../src/facade/lang';
+
 
 /**
  * Jasmine matchers that check Angular specific conditions.
@@ -133,7 +134,9 @@ _global.beforeEach(function() {
         if (actual instanceof Map) {
           var pass = actual.size === expected.size;
           if (pass) {
-            actual.forEach((v: any /** TODO #???? */, k: any /** TODO #???? */) => { pass = pass && util.equals(v, expected.get(k)); });
+            actual.forEach((v: any /** TODO #???? */, k: any /** TODO #???? */) => {
+              pass = pass && util.equals(v, expected.get(k));
+            });
           }
           return pass;
         } else {
@@ -200,9 +203,10 @@ _global.beforeEach(function() {
             allPassed = getDOM().hasStyle(actual, styles);
           } else {
             allPassed = !StringMapWrapper.isEmpty(styles);
-            StringMapWrapper.forEach(styles, (style: any /** TODO #???? */, prop: any /** TODO #???? */) => {
-              allPassed = allPassed && getDOM().hasStyle(actual, prop, style);
-            });
+            StringMapWrapper.forEach(
+                styles, (style: any /** TODO #???? */, prop: any /** TODO #???? */) => {
+                  allPassed = allPassed && getDOM().hasStyle(actual, prop, style);
+                });
           }
 
           return {
@@ -236,7 +240,7 @@ _global.beforeEach(function() {
             actual();
             return {
               pass: false,
-              get message() { return "Was expected to throw, but did not throw"; }
+              get message() { return 'Was expected to throw, but did not throw'; }
             };
           } catch (e) {
             var errorMessage = e.toString();
@@ -266,7 +270,8 @@ _global.beforeEach(function() {
 
     toImplement: function() {
       return {
-        compare: function(actualObject: any /** TODO #???? */, expectedInterface: any /** TODO #???? */) {
+        compare: function(
+            actualObject: any /** TODO #???? */, expectedInterface: any /** TODO #???? */) {
           var objProps = Object.keys(actualObject.constructor.prototype);
           var intProps = Object.keys(expectedInterface.prototype);
 
@@ -279,7 +284,7 @@ _global.beforeEach(function() {
             pass: missedMethods.length == 0,
             get message() {
               return 'Expected ' + actualObject + ' to have the following methods: ' +
-                     missedMethods.join(", ");
+                  missedMethods.join(', ');
             }
           };
         }
@@ -295,7 +300,7 @@ function elementText(n: any /** TODO #???? */): any /** TODO #???? */ {
   };
 
   if (n instanceof Array) {
-    return n.map(elementText).join("");
+    return n.map(elementText).join('');
   }
 
   if (getDOM().isCommentNode(n)) {

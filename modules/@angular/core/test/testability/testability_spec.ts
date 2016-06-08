@@ -1,15 +1,5 @@
 import {Injectable} from '@angular/core/src/di';
-import {
-  inject,
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  xdescribe,
-  expect,
-  beforeEach,
-} from '@angular/core/testing/testing_internal';
+import {inject, describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
 import {Testability} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';

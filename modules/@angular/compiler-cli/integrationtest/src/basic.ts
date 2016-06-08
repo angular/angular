@@ -1,5 +1,6 @@
+import {FORM_DIRECTIVES, NgFor, NgIf} from '@angular/common';
 import {Component, Inject} from '@angular/core';
-import {FORM_DIRECTIVES, NgIf, NgFor} from '@angular/common';
+
 import {MyComp} from './a/multiple_components';
 
 @Component({

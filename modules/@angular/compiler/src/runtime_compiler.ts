@@ -1,25 +1,12 @@
-import {Injectable, ComponentFactory, ComponentResolver} from '@angular/core';
+import {ComponentFactory, ComponentResolver, Injectable} from '@angular/core';
 
-import {
-  IS_DART,
-  Type,
-  isBlank,
-  isString
-} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
-import {
-  ListWrapper,
-} from '../src/facade/collection';
+import {IS_DART, Type, isBlank, isString} from '../src/facade/lang';
+
+import {ListWrapper,} from '../src/facade/collection';
 import {PromiseWrapper} from '../src/facade/async';
-import {
-  createHostComponentMeta,
-  CompileDirectiveMetadata,
-  CompilePipeMetadata,
-  CompileIdentifierMetadata
-} from './compile_metadata';
-import {
-  TemplateAst,
-} from './template_ast';
+import {createHostComponentMeta, CompileDirectiveMetadata, CompilePipeMetadata, CompileIdentifierMetadata} from './compile_metadata';
+import {TemplateAst,} from './template_ast';
 import {StyleCompiler, StylesCompileDependency, StylesCompileResult} from './style_compiler';
 import {ViewCompiler} from './view_compiler/view_compiler';
 import {TemplateParser} from './template_parser';
@@ -44,15 +31,16 @@ export class RuntimeCompiler implements ComponentResolver {
   private _compiledTemplateCache = new Map<any, CompiledTemplate>();
   private _compiledTemplateDone = new Map<any, Promise<CompiledTemplate>>();
 
-  constructor(private _metadataResolver: CompileMetadataResolver,
-              private _templateNormalizer: DirectiveNormalizer,
-              private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
-              private _viewCompiler: ViewCompiler, private _xhr: XHR,
-              private _genConfig: CompilerConfig) {}
+  constructor(
+      private _metadataResolver: CompileMetadataResolver,
+      private _templateNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
+      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler, private _xhr: XHR,
+      private _genConfig: CompilerConfig) {}
 
   resolveComponent(component: Type|string): Promise<ComponentFactory<any>> {
     if (isString(component)) {
-      return PromiseWrapper.reject(new BaseException(`Cannot resolve component using '${component}'.`), null);
+      return PromiseWrapper.reject(
+          new BaseException(`Cannot resolve component using '${component}'.`), null);
     }
 
     let componentType = <Type>component;
@@ -69,8 +57,9 @@ export class RuntimeCompiler implements ComponentResolver {
       this._loadAndCompileComponent(hostCacheKey, hostMeta, [compMeta], [], []);
     }
     return this._compiledTemplateDone.get(hostCacheKey)
-        .then((compiledTemplate: CompiledTemplate) => new ComponentFactory(
-                  compMeta.selector, compiledTemplate.viewFactory, componentType));
+        .then(
+            (compiledTemplate: CompiledTemplate) => new ComponentFactory(
+                compMeta.selector, compiledTemplate.viewFactory, componentType));
   }
 
   clearCache() {
@@ -81,29 +70,29 @@ export class RuntimeCompiler implements ComponentResolver {
   }
 
 
-  private _loadAndCompileComponent(cacheKey: any, compMeta: CompileDirectiveMetadata,
-                                   viewDirectives: CompileDirectiveMetadata[],
-                                   pipes: CompilePipeMetadata[],
-                                   compilingComponentsPath: any[]): CompiledTemplate {
+  private _loadAndCompileComponent(
+      cacheKey: any, compMeta: CompileDirectiveMetadata, viewDirectives: CompileDirectiveMetadata[],
+      pipes: CompilePipeMetadata[], compilingComponentsPath: any[]): CompiledTemplate {
     var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
     var done = this._compiledTemplateDone.get(cacheKey);
     if (isBlank(compiledTemplate)) {
       compiledTemplate = new CompiledTemplate();
       this._compiledTemplateCache.set(cacheKey, compiledTemplate);
       done =
-          PromiseWrapper.all(
-                            [<any>this._compileComponentStyles(compMeta)].concat(viewDirectives.map(
-                                dirMeta => this._templateNormalizer.normalizeDirective(dirMeta))))
+          PromiseWrapper
+              .all([<any>this._compileComponentStyles(compMeta)].concat(viewDirectives.map(
+                  dirMeta => this._templateNormalizer.normalizeDirective(dirMeta))))
               .then((stylesAndNormalizedViewDirMetas: any[]) => {
                 var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
                 var styles = stylesAndNormalizedViewDirMetas[0];
-                var parsedTemplate =
-                    this._templateParser.parse(compMeta, compMeta.template.template,
-                                               normalizedViewDirMetas, pipes, compMeta.type.name);
+                var parsedTemplate = this._templateParser.parse(
+                    compMeta, compMeta.template.template, normalizedViewDirMetas, pipes,
+                    compMeta.type.name);
 
                 var childPromises: any[] /** TODO #9100 */ = [];
-                compiledTemplate.init(this._compileComponent(compMeta, parsedTemplate, styles,
-                                                             pipes, compilingComponentsPath, childPromises));
+                compiledTemplate.init(this._compileComponent(
+                    compMeta, parsedTemplate, styles, pipes, compilingComponentsPath,
+                    childPromises));
                 return PromiseWrapper.all(childPromises).then((_) => { return compiledTemplate; });
               });
       this._compiledTemplateDone.set(cacheKey, done);
@@ -111,11 +100,10 @@ export class RuntimeCompiler implements ComponentResolver {
     return compiledTemplate;
   }
 
-  private _compileComponent(compMeta: CompileDirectiveMetadata, parsedTemplate: TemplateAst[],
-                            styles: string[],
-                            pipes: CompilePipeMetadata[],
-                            compilingComponentsPath: any[],
-                            childPromises: Promise<any>[]): Function {
+  private _compileComponent(
+      compMeta: CompileDirectiveMetadata, parsedTemplate: TemplateAst[], styles: string[],
+      pipes: CompilePipeMetadata[], compilingComponentsPath: any[],
+      childPromises: Promise<any>[]): Function {
     var compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate,
         new ir.ExternalExpr(new CompileIdentifierMetadata({runtime: styles})), pipes);
@@ -130,9 +118,9 @@ export class RuntimeCompiler implements ComponentResolver {
       var childIsRecursive = ListWrapper.contains(childCompilingComponentsPath, childCacheKey);
       childCompilingComponentsPath.push(childCacheKey);
 
-      var childComp =
-          this._loadAndCompileComponent(dep.comp.type.runtime, dep.comp, childViewDirectives,
-                                        childViewPipes, childCompilingComponentsPath);
+      var childComp = this._loadAndCompileComponent(
+          dep.comp.type.runtime, dep.comp, childViewDirectives, childViewPipes,
+          childCompilingComponentsPath);
       dep.factoryPlaceholder.runtime = childComp.proxyViewFactory;
       dep.factoryPlaceholder.name = `viewFactory_${dep.comp.type.name}`;
       if (!childIsRecursive) {
@@ -142,11 +130,13 @@ export class RuntimeCompiler implements ComponentResolver {
     });
     var factory: any /** TODO #9100 */;
     if (IS_DART || !this._genConfig.useJit) {
-      factory = interpretStatements(compileResult.statements, compileResult.viewFactoryVar,
-                                    new InterpretiveAppViewInstanceFactory());
+      factory = interpretStatements(
+          compileResult.statements, compileResult.viewFactoryVar,
+          new InterpretiveAppViewInstanceFactory());
     } else {
-      factory = jitStatements(`${compMeta.type.name}.template.js`, compileResult.statements,
-                              compileResult.viewFactoryVar);
+      factory = jitStatements(
+          `${compMeta.type.name}.template.js`, compileResult.statements,
+          compileResult.viewFactoryVar);
     }
     return factory;
   }
@@ -156,8 +146,8 @@ export class RuntimeCompiler implements ComponentResolver {
     return this._resolveStylesCompileResult(compMeta.type.name, compileResult);
   }
 
-  private _resolveStylesCompileResult(sourceUrl: string,
-                                      result: StylesCompileResult): Promise<string[]> {
+  private _resolveStylesCompileResult(sourceUrl: string, result: StylesCompileResult):
+      Promise<string[]> {
     var promises = result.dependencies.map((dep) => this._loadStylesheetDep(dep));
     return PromiseWrapper.all(promises)
         .then((cssTexts) => {
@@ -179,8 +169,8 @@ export class RuntimeCompiler implements ComponentResolver {
             dep.valuePlaceholder.name = `importedStyles${i}`;
           }
           if (IS_DART || !this._genConfig.useJit) {
-            return interpretStatements(result.statements, result.stylesVar,
-                                       new InterpretiveAppViewInstanceFactory());
+            return interpretStatements(
+                result.statements, result.stylesVar, new InterpretiveAppViewInstanceFactory());
           } else {
             return jitStatements(`${sourceUrl}.css.js`, result.statements, result.stylesVar);
           }
@@ -202,8 +192,9 @@ class CompiledTemplate {
   viewFactory: Function = null;
   proxyViewFactory: Function;
   constructor() {
-    this.proxyViewFactory = (viewUtils: any /** TODO #9100 */, childInjector: any /** TODO #9100 */, contextEl: any /** TODO #9100 */) =>
-        this.viewFactory(viewUtils, childInjector, contextEl);
+    this.proxyViewFactory =
+        (viewUtils: any /** TODO #9100 */, childInjector: any /** TODO #9100 */,
+         contextEl: any /** TODO #9100 */) => this.viewFactory(viewUtils, childInjector, contextEl);
   }
 
   init(viewFactory: Function) { this.viewFactory = viewFactory; }

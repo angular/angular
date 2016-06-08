@@ -1,22 +1,6 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from '../../testing/testing_internal';
-
-import {
-  fakeAsync,
-  flushMicrotasks
-} from '../../testing';
-
-import {NoOpAnimationPlayer, AnimationPlayer} from '../../src/animation/animation_player';
+import {AnimationPlayer, NoOpAnimationPlayer} from '../../src/animation/animation_player';
+import {fakeAsync, flushMicrotasks} from '../../testing';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {
   describe('NoOpAnimationPlayer', function() {

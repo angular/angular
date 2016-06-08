@@ -1,25 +1,24 @@
-import {isPresent, isBlank} from '../facade/lang';
-import {ListWrapper} from '../facade/collection';
-
-import * as o from '../output/output_ast';
-import {Identifiers} from '../identifiers';
-
 import {CompileQueryMetadata, CompileTokenMap} from '../compile_metadata';
+import {ListWrapper} from '../facade/collection';
+import {isBlank, isPresent} from '../facade/lang';
+import {Identifiers} from '../identifiers';
+import * as o from '../output/output_ast';
 
-import {CompileView} from './compile_view';
 import {CompileElement} from './compile_element';
 import {CompileMethod} from './compile_method';
+import {CompileView} from './compile_view';
 import {getPropertyInView} from './util';
 
 class ViewQueryValues {
-  constructor(public view: CompileView, public values: Array<o.Expression | ViewQueryValues>) {}
+  constructor(public view: CompileView, public values: Array<o.Expression|ViewQueryValues>) {}
 }
 
 export class CompileQuery {
   private _values: ViewQueryValues;
 
-  constructor(public meta: CompileQueryMetadata, public queryList: o.Expression,
-              public ownerDirectiveExpression: o.Expression, public view: CompileView) {
+  constructor(
+      public meta: CompileQueryMetadata, public queryList: o.Expression,
+      public ownerDirectiveExpression: o.Expression, public view: CompileView) {
     this._values = new ViewQueryValues(view, []);
   }
 
@@ -83,28 +82,30 @@ export class CompileQuery {
 function createQueryValues(viewValues: ViewQueryValues): o.Expression[] {
   return ListWrapper.flatten(viewValues.values.map((entry) => {
     if (entry instanceof ViewQueryValues) {
-      return mapNestedViews(entry.view.declarationElement.appElement, entry.view,
-                            createQueryValues(entry));
+      return mapNestedViews(
+          entry.view.declarationElement.appElement, entry.view, createQueryValues(entry));
     } else {
       return <o.Expression>entry;
     }
   }));
 }
 
-function mapNestedViews(declarationAppElement: o.Expression, view: CompileView,
-                        expressions: o.Expression[]): o.Expression {
+function mapNestedViews(
+    declarationAppElement: o.Expression, view: CompileView,
+    expressions: o.Expression[]): o.Expression {
   var adjustedExpressions: o.Expression[] = expressions.map((expr) => {
     return o.replaceVarInExpression(o.THIS_EXPR.name, o.variable('nestedView'), expr);
   });
   return declarationAppElement.callMethod('mapNestedViews', [
-    o.variable(view.className),
-    o.fn([new o.FnParam('nestedView', view.classType)],
-         [new o.ReturnStatement(o.literalArr(adjustedExpressions))])
+    o.variable(view.className), o.fn(
+                                    [new o.FnParam('nestedView', view.classType)],
+                                    [new o.ReturnStatement(o.literalArr(adjustedExpressions))])
   ]);
 }
 
-export function createQueryList(query: CompileQueryMetadata, directiveInstance: o.Expression,
-                                propertyName: string, compileView: CompileView): o.Expression {
+export function createQueryList(
+    query: CompileQueryMetadata, directiveInstance: o.Expression, propertyName: string,
+    compileView: CompileView): o.Expression {
   compileView.fields.push(new o.ClassField(propertyName, o.importType(Identifiers.QueryList)));
   var expr = o.THIS_EXPR.prop(propertyName);
   compileView.createMethod.addStmt(o.THIS_EXPR.prop(propertyName)

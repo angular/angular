@@ -1,40 +1,24 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from '@angular/core/testing/testing_internal';
-import {
-  bind,
-  provide,
-  forwardRef,
-  resolveForwardRef,
-  Component,
-  Directive,
-  Inject,
-  Query,
-  QueryList
-} from '@angular/core';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {NgFor} from '@angular/common';
-import {Type} from '../src/facade/lang';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {Component, Directive, Inject, Query, QueryList, bind, forwardRef, provide, resolveForwardRef} from '@angular/core';
 import {asNativeElements} from '@angular/core';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+
+import {Type} from '../src/facade/lang';
 
 export function main() {
-  describe("forwardRef integration", function() {
+  describe('forwardRef integration', function() {
     it('should instantiate components which are declared using forwardRef',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-         tcb.createAsync(App).then((tc) => {
-           tc.detectChanges();
-           expect(asNativeElements(tc.debugElement.children)).toHaveText('frame(lock)');
-           async.done();
-         });
-       }));
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             tcb.createAsync(App).then((tc) => {
+               tc.detectChanges();
+               expect(asNativeElements(tc.debugElement.children)).toHaveText('frame(lock)');
+               async.done();
+             });
+           }));
   });
 }
 
@@ -56,8 +40,9 @@ class Door {
   locks: QueryList<Lock>;
   frame: Frame;
 
-  constructor(@Query(forwardRef(() => Lock)) locks: QueryList<Lock>,
-              @Inject(forwardRef(() => Frame)) frame: Frame) {
+  constructor(
+      @Query(forwardRef(() => Lock)) locks: QueryList<Lock>,
+      @Inject(forwardRef(() => Frame)) frame: Frame) {
     this.frame = frame;
     this.locks = locks;
   }

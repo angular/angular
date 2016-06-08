@@ -1,5 +1,5 @@
-import {bootstrap} from '@angular/platform-browser';
 import {NG_VALIDATORS} from '@angular/common';
+import {bootstrap} from '@angular/platform-browser';
 
 let MyApp: Function = null;
 let myValidator: any = null;

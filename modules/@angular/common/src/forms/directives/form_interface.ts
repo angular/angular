@@ -1,6 +1,8 @@
+import {Control, ControlGroup} from '../model';
+
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
-import {Control, ControlGroup} from '../model';
+
 
 /**
  * An interface that {@link NgFormModel} and {@link NgForm} implement.

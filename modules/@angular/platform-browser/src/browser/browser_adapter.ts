@@ -1,7 +1,8 @@
-import {ListWrapper} from '../facade/collection';
-import {isBlank, isPresent, isFunction, global, setValueOnPath, DateWrapper} from '../facade/lang';
-import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 import {setRootDomAdapter} from '../dom/dom_adapter';
+import {ListWrapper} from '../facade/collection';
+import {DateWrapper, global, isBlank, isFunction, isPresent, setValueOnPath} from '../facade/lang';
+
+import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
 var _attrToPropMap = {
   'class': 'className',
@@ -58,7 +59,7 @@ var _chromeNumKeyPadMap = {
  */
 /* tslint:disable:requireParameterType */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
-  parse(templateHtml: string) { throw new Error("parse not implemented"); }
+  parse(templateHtml: string) { throw new Error('parse not implemented'); }
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
   hasProperty(element: any /** TODO #9100 */, name: string): boolean { return name in element; }
   setProperty(el: /*element*/ any, name: string, value: any) { el[name] = value; }
@@ -96,10 +97,18 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   get attrToPropMap(): any { return _attrToPropMap; }
 
   query(selector: string): any { return document.querySelector(selector); }
-  querySelector(el: any /** TODO #9100 */, selector: string): HTMLElement { return el.querySelector(selector); }
-  querySelectorAll(el: any /** TODO #9100 */, selector: string): any[] { return el.querySelectorAll(selector); }
-  on(el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */) { el.addEventListener(evt, listener, false); }
-  onAndCancel(el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */): Function {
+  querySelector(el: any /** TODO #9100 */, selector: string): HTMLElement {
+    return el.querySelector(selector);
+  }
+  querySelectorAll(el: any /** TODO #9100 */, selector: string): any[] {
+    return el.querySelectorAll(selector);
+  }
+  on(el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */) {
+    el.addEventListener(evt, listener, false);
+  }
+  onAndCancel(
+      el: any /** TODO #9100 */, evt: any /** TODO #9100 */,
+      listener: any /** TODO #9100 */): Function {
     el.addEventListener(evt, listener, false);
     // Needed to follow Dart's subscription semantic, until fix of
     // https://code.google.com/p/dart/issues/detail?id=17406
@@ -132,7 +141,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   nodeValue(node: Node): string { return node.nodeValue; }
   type(node: HTMLInputElement): string { return node.type; }
   content(node: Node): Node {
-    if (this.hasProperty(node, "content")) {
+    if (this.hasProperty(node, 'content')) {
       return (<any>node).content;
     } else {
       return node;
@@ -157,16 +166,24 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   appendChild(el: any /** TODO #9100 */, node: any /** TODO #9100 */) { el.appendChild(node); }
   removeChild(el: any /** TODO #9100 */, node: any /** TODO #9100 */) { el.removeChild(node); }
-  replaceChild(el: Node, newChild: any /** TODO #9100 */, oldChild: any /** TODO #9100 */) { el.replaceChild(newChild, oldChild); }
+  replaceChild(el: Node, newChild: any /** TODO #9100 */, oldChild: any /** TODO #9100 */) {
+    el.replaceChild(newChild, oldChild);
+  }
   remove(node: any /** TODO #9100 */): Node {
     if (node.parentNode) {
       node.parentNode.removeChild(node);
     }
     return node;
   }
-  insertBefore(el: any /** TODO #9100 */, node: any /** TODO #9100 */) { el.parentNode.insertBefore(node, el); }
-  insertAllBefore(el: any /** TODO #9100 */, nodes: any /** TODO #9100 */) { nodes.forEach((n: any /** TODO #9100 */) => el.parentNode.insertBefore(n, el)); }
-  insertAfter(el: any /** TODO #9100 */, node: any /** TODO #9100 */) { el.parentNode.insertBefore(node, el.nextSibling); }
+  insertBefore(el: any /** TODO #9100 */, node: any /** TODO #9100 */) {
+    el.parentNode.insertBefore(node, el);
+  }
+  insertAllBefore(el: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
+    nodes.forEach((n: any /** TODO #9100 */) => el.parentNode.insertBefore(n, el));
+  }
+  insertAfter(el: any /** TODO #9100 */, node: any /** TODO #9100 */) {
+    el.parentNode.insertBefore(node, el.nextSibling);
+  }
   setInnerHTML(el: any /** TODO #9100 */, value: any /** TODO #9100 */) { el.innerHTML = value; }
   getText(el: any /** TODO #9100 */): string { return el.textContent; }
   // TODO(vicb): removed Element type because it does not support StyleElement
@@ -181,8 +198,13 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     t.innerHTML = html;
     return t;
   }
-  createElement(tagName: any /** TODO #9100 */, doc = document): HTMLElement { return doc.createElement(tagName); }
-  createElementNS(ns: any /** TODO #9100 */, tagName: any /** TODO #9100 */, doc = document): Element { return doc.createElementNS(ns, tagName); }
+  createElement(tagName: any /** TODO #9100 */, doc = document): HTMLElement {
+    return doc.createElement(tagName);
+  }
+  createElementNS(ns: any /** TODO #9100 */, tagName: any /** TODO #9100 */, doc = document):
+      Element {
+    return doc.createElementNS(ns, tagName);
+  }
   createTextNode(text: string, doc = document): Text { return doc.createTextNode(text); }
   createScriptTag(attrName: string, attrValue: string, doc = document): HTMLScriptElement {
     var el = <HTMLScriptElement>doc.createElement('SCRIPT');
@@ -204,15 +226,25 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getElementsByTagName(element: any /** TODO #9100 */, name: string): HTMLElement[] {
     return element.getElementsByTagName(name);
   }
-  classList(element: any /** TODO #9100 */): any[] { return <any[]>Array.prototype.slice.call(element.classList, 0); }
+  classList(element: any /** TODO #9100 */): any[] {
+    return <any[]>Array.prototype.slice.call(element.classList, 0);
+  }
   addClass(element: any /** TODO #9100 */, className: string) { element.classList.add(className); }
-  removeClass(element: any /** TODO #9100 */, className: string) { element.classList.remove(className); }
-  hasClass(element: any /** TODO #9100 */, className: string): boolean { return element.classList.contains(className); }
+  removeClass(element: any /** TODO #9100 */, className: string) {
+    element.classList.remove(className);
+  }
+  hasClass(element: any /** TODO #9100 */, className: string): boolean {
+    return element.classList.contains(className);
+  }
   setStyle(element: any /** TODO #9100 */, styleName: string, styleValue: string) {
     element.style[styleName] = styleValue;
   }
-  removeStyle(element: any /** TODO #9100 */, stylename: string) { element.style[stylename] = null; }
-  getStyle(element: any /** TODO #9100 */, stylename: string): string { return element.style[stylename]; }
+  removeStyle(element: any /** TODO #9100 */, stylename: string) {
+    element.style[stylename] = null;
+  }
+  getStyle(element: any /** TODO #9100 */, stylename: string): string {
+    return element.style[stylename];
+  }
   hasStyle(element: any /** TODO #9100 */, styleName: string, styleValue: string = null): boolean {
     var value = this.getStyle(element, styleName) || '';
     return styleValue ? value == styleValue : value.length > 0;
@@ -227,21 +259,33 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return res;
   }
-  hasAttribute(element: any /** TODO #9100 */, attribute: string): boolean { return element.hasAttribute(attribute); }
+  hasAttribute(element: any /** TODO #9100 */, attribute: string): boolean {
+    return element.hasAttribute(attribute);
+  }
   hasAttributeNS(element: any /** TODO #9100 */, ns: string, attribute: string): boolean {
     return element.hasAttributeNS(ns, attribute);
   }
-  getAttribute(element: any /** TODO #9100 */, attribute: string): string { return element.getAttribute(attribute); }
+  getAttribute(element: any /** TODO #9100 */, attribute: string): string {
+    return element.getAttribute(attribute);
+  }
   getAttributeNS(element: any /** TODO #9100 */, ns: string, name: string): string {
     return element.getAttributeNS(ns, name);
   }
-  setAttribute(element: any /** TODO #9100 */, name: string, value: string) { element.setAttribute(name, value); }
+  setAttribute(element: any /** TODO #9100 */, name: string, value: string) {
+    element.setAttribute(name, value);
+  }
   setAttributeNS(element: any /** TODO #9100 */, ns: string, name: string, value: string) {
     element.setAttributeNS(ns, name, value);
   }
-  removeAttribute(element: any /** TODO #9100 */, attribute: string) { element.removeAttribute(attribute); }
-  removeAttributeNS(element: any /** TODO #9100 */, ns: string, name: string) { element.removeAttributeNS(ns, name); }
-  templateAwareRoot(el: any /** TODO #9100 */): any { return this.isTemplateElement(el) ? this.content(el) : el; }
+  removeAttribute(element: any /** TODO #9100 */, attribute: string) {
+    element.removeAttribute(attribute);
+  }
+  removeAttributeNS(element: any /** TODO #9100 */, ns: string, name: string) {
+    element.removeAttributeNS(ns, name);
+  }
+  templateAwareRoot(el: any /** TODO #9100 */): any {
+    return this.isTemplateElement(el) ? this.content(el) : el;
+  }
   createHtmlDocument(): HTMLDocument {
     return document.implementation.createHTMLDocument('fakeTitle');
   }
@@ -269,12 +313,14 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return matches;
   }
   isTemplateElement(el: any): boolean {
-    return el instanceof HTMLElement && el.nodeName == "TEMPLATE";
+    return el instanceof HTMLElement && el.nodeName == 'TEMPLATE';
   }
   isTextNode(node: Node): boolean { return node.nodeType === Node.TEXT_NODE; }
   isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
-  hasShadowRoot(node: any /** TODO #9100 */): boolean { return node instanceof HTMLElement && isPresent(node.shadowRoot); }
+  hasShadowRoot(node: any /** TODO #9100 */): boolean {
+    return node instanceof HTMLElement && isPresent(node.shadowRoot);
+  }
   isShadowRoot(node: any /** TODO #9100 */): boolean { return node instanceof DocumentFragment; }
   importIntoDoc(node: Node): any {
     var toImport = node;
@@ -312,11 +358,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return key;
   }
   getGlobalEventTarget(target: string): EventTarget {
-    if (target == "window") {
+    if (target == 'window') {
       return window;
-    } else if (target == "document") {
+    } else if (target == 'document') {
       return document;
-    } else if (target == "body") {
+    } else if (target == 'body') {
       return document.body;
     }
   }
@@ -334,13 +380,19 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setData(element: any /** TODO #9100 */, name: string, value: string) {
     this.setAttribute(element, 'data-' + name, value);
   }
-  getData(element: any /** TODO #9100 */, name: string): string { return this.getAttribute(element, 'data-' + name); }
+  getData(element: any /** TODO #9100 */, name: string): string {
+    return this.getAttribute(element, 'data-' + name);
+  }
   getComputedStyle(element: any /** TODO #9100 */): any { return getComputedStyle(element); }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
-  requestAnimationFrame(callback: any /** TODO #9100 */): number { return window.requestAnimationFrame(callback); }
+  requestAnimationFrame(callback: any /** TODO #9100 */): number {
+    return window.requestAnimationFrame(callback);
+  }
   cancelAnimationFrame(id: number) { window.cancelAnimationFrame(id); }
-  supportsWebAnimation(): boolean { return isFunction((document as any /** TODO #9100 */).body['animate']); }
+  supportsWebAnimation(): boolean {
+    return isFunction((document as any /** TODO #9100 */).body['animate']);
+  }
   performanceNow(): number {
     // performance.now() is not available in all browsers, see
     // http://caniuse.com/#search=performance.now
@@ -353,9 +405,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   supportsCookies(): boolean { return true; }
 
-  getCookie(name: string): string {
-    return parseCookieValue(document.cookie, name);
-  }
+  getCookie(name: string): string { return parseCookieValue(document.cookie, name); }
 
   setCookie(name: string, value: string) {
     // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does
@@ -380,7 +430,7 @@ function getBaseElementHref(): string {
 var urlParsingNode: any /** TODO #9100 */ = null;
 function relativePath(url: any /** TODO #9100 */): string {
   if (isBlank(urlParsingNode)) {
-    urlParsingNode = document.createElement("a");
+    urlParsingNode = document.createElement('a');
   }
   urlParsingNode.setAttribute('href', url);
   return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :

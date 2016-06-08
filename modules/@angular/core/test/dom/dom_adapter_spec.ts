@@ -1,14 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-  beforeEachProviders,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit, beforeEachProviders,} from '@angular/core/testing/testing_internal';
 
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {el, stringifyElement} from '@angular/platform-browser/testing';

@@ -1,5 +1,6 @@
+import {MaxLengthValidator, MinLengthValidator} from '@angular/common';
 import {Component} from '@angular/core';
-import {MinLengthValidator, MaxLengthValidator} from '@angular/common';
+
 
 // #docregion min
 @Component({

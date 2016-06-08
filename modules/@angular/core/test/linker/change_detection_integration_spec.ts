@@ -1,36 +1,14 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  inject,
-  beforeEachProviders
-} from '@angular/core/testing/testing_internal';
-import {
-  fakeAsync,
-  flushMicrotasks,
-  Log,
-  tick,
-} from '@angular/core/testing';
+import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+
+import {fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
-import {
-  isBlank,
-  NumberWrapper,
-} from '../../src/facade/lang';
+import {isBlank, NumberWrapper,} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
 import {StringMapWrapper} from '../../src/facade/collection';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {
-  PipeTransform,
-  ChangeDetectionStrategy,
-  WrappedValue,
-} from '@angular/core/src/change_detection/change_detection';
+import {PipeTransform, ChangeDetectionStrategy, WrappedValue,} from '@angular/core/src/change_detection/change_detection';
 
 import {OnDestroy} from '@angular/core/src/metadata/lifecycle_hooks';
 
@@ -38,31 +16,7 @@ import {IS_DART, Type} from '../../src/facade/lang';
 import {EventEmitter, ObservableWrapper} from '../../src/facade/async';
 
 
-import {
-  Component,
-  DebugElement,
-  Directive,
-  TemplateRef,
-  ChangeDetectorRef,
-  ViewContainerRef,
-  Input,
-  Output,
-  forwardRef,
-  ViewMetadata,
-  Pipe,
-  RootRenderer,
-  Renderer,
-  RenderComponentType,
-  Injectable,
-  provide,
-  OnInit,
-  DoCheck,
-  OnChanges,
-  AfterContentInit,
-  AfterContentChecked,
-  AfterViewInit,
-  AfterViewChecked
-} from '@angular/core';
+import {Component, DebugElement, Directive, TemplateRef, ChangeDetectorRef, ViewContainerRef, Input, Output, forwardRef, ViewMetadata, Pipe, RootRenderer, Renderer, RenderComponentType, Injectable, provide, OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked} from '@angular/core';
 import {NgFor} from '@angular/common';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {AsyncPipe} from '@angular/common';
@@ -79,15 +33,16 @@ export function main() {
   var renderLog: RenderLog;
   var directiveLog: DirectiveLog;
 
-  function createCompFixture(template: string, compType: Type = TestComponent,
-                             _tcb: TestComponentBuilder = null): ComponentFixture<any> {
+  function createCompFixture(
+      template: string, compType: Type = TestComponent,
+      _tcb: TestComponentBuilder = null): ComponentFixture<any> {
     if (isBlank(_tcb)) {
       _tcb = tcb;
     }
-    return _tcb.overrideView(
-                   compType,
-                   new ViewMetadata(
-                       {template: template, directives: ALL_DIRECTIVES, pipes: ALL_PIPES}))
+    return _tcb
+        .overrideView(
+            compType,
+            new ViewMetadata({template: template, directives: ALL_DIRECTIVES, pipes: ALL_PIPES}))
         .createFakeAsync(compType);
   }
 
@@ -96,14 +51,14 @@ export function main() {
     return nodes.map(node => node.inject(dirType));
   }
 
-  function _bindSimpleProp(bindAttr: string,
-                           compType: Type = TestComponent): ComponentFixture<any> {
+  function _bindSimpleProp(
+      bindAttr: string, compType: Type = TestComponent): ComponentFixture<any> {
     var template = `<div ${bindAttr}></div>`;
     return createCompFixture(template, compType);
   }
 
-  function _bindSimpleValue(expression: any,
-                            compType: Type = TestComponent): ComponentFixture<any> {
+  function _bindSimpleValue(
+      expression: any, compType: Type = TestComponent): ComponentFixture<any> {
     return _bindSimpleProp(`[someProp]='${expression}'`, compType);
   }
 
@@ -117,21 +72,22 @@ export function main() {
     // On CJS fakeAsync is not supported...
     if (!getDOM().supportsDOMEvents()) return;
 
-    beforeEachProviders(() => [
-      RenderLog,
-      DirectiveLog,
-      {provide: RootRenderer, useClass: LoggingRootRenderer},
-      TEST_PROVIDERS,
+    beforeEachProviders(
+        () =>
+            [RenderLog, DirectiveLog, {provide: RootRenderer, useClass: LoggingRootRenderer},
+             TEST_PROVIDERS,
     ]);
 
-    beforeEach(inject([TestComponentBuilder, ElementSchemaRegistry, RenderLog, DirectiveLog],
-                      (_tcb: TestComponentBuilder, _elSchema: MockSchemaRegistry, _renderLog: RenderLog, _directiveLog: DirectiveLog) => {
-                        tcb = _tcb;
-                        elSchema = _elSchema;
-                        renderLog = _renderLog;
-                        directiveLog = _directiveLog;
-                        elSchema.existingProperties['someProp'] = true;
-                      }));
+    beforeEach(inject(
+        [TestComponentBuilder, ElementSchemaRegistry, RenderLog, DirectiveLog],
+        (_tcb: TestComponentBuilder, _elSchema: MockSchemaRegistry, _renderLog: RenderLog,
+         _directiveLog: DirectiveLog) => {
+          tcb = _tcb;
+          elSchema = _elSchema;
+          renderLog = _renderLog;
+          directiveLog = _directiveLog;
+          elSchema.existingProperties['someProp'] = true;
+        }));
 
     describe('expressions', () => {
 
@@ -530,11 +486,13 @@ export function main() {
              // change from some value -> some other value
              ctx.componentInstance.name = 'bart';
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['null state:0', 'bob state:1', 'bart state:2']);
+             expect(renderLog.loggedValues).toEqual([
+               'null state:0', 'bob state:1', 'bart state:2'
+             ]);
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['null state:0', 'bob state:1', 'bart state:2']);
+             expect(renderLog.loggedValues).toEqual([
+               'null state:0', 'bob state:1', 'bart state:2'
+             ]);
 
            }));
 
@@ -548,15 +506,18 @@ export function main() {
              ctx.componentInstance.age = 10;
              ctx.componentInstance.address = new Address('mtv');
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3']);
+             expect(renderLog.loggedValues).toEqual([
+               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+             ]);
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3']);
+             expect(renderLog.loggedValues).toEqual([
+               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+             ]);
              ctx.componentInstance.age = 11;
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4']);
+             expect(renderLog.loggedValues).toEqual([
+               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
+             ]);
            }));
 
         it('should call impure pipes on each change detection run', fakeAsync(() => {
@@ -599,7 +560,7 @@ export function main() {
 
         it('should throw when trying to assign to a local', fakeAsync(() => {
              expect(() => {_bindSimpleProp('(event)="$event=1"')})
-                 .toThrowError(new RegExp("Cannot assign to a reference or variable!"));
+                 .toThrowError(new RegExp('Cannot assign to a reference or variable!'));
            }));
 
         it('should support short-circuiting', fakeAsync(() => {
@@ -625,10 +586,9 @@ export function main() {
 
       describe('reading directives', () => {
         it('should read directive properties', fakeAsync(() => {
-             var ctx =
-                 createCompFixture(
-                     '<div testDirective [a]="42" ref-dir="testDirective" [someProp]="dir.a"></div>')
-                     ctx.detectChanges(false);
+             var ctx = createCompFixture(
+                 '<div testDirective [a]="42" ref-dir="testDirective" [someProp]="dir.a"></div>')
+             ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual([42]);
            }));
       });
@@ -661,8 +621,9 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngOnInit', 'ngOnChanges']))
-                 .toEqual(['dir.ngOnChanges', 'dir.ngOnInit']);
+             expect(directiveLog.filter(['ngOnInit', 'ngOnChanges'])).toEqual([
+               'dir.ngOnChanges', 'dir.ngOnInit'
+             ]);
              directiveLog.clear();
 
              ctx.detectChanges(false);
@@ -710,7 +671,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new BaseException("Second detectChanges() should not have run detection.");
+               throw new BaseException('Second detectChanges() should not have run detection.');
              }
              expect(directiveLog.filter(['ngOnInit'])).toEqual([]);
            }));
@@ -721,8 +682,9 @@ export function main() {
              var ctx = createCompFixture('<div testDirective="dir"></div>');
 
              ctx.detectChanges(false);
-             expect(directiveLog.filter(['ngDoCheck', 'ngOnInit']))
-                 .toEqual(['dir.ngOnInit', 'dir.ngDoCheck']);
+             expect(directiveLog.filter(['ngDoCheck', 'ngOnInit'])).toEqual([
+               'dir.ngOnInit', 'dir.ngDoCheck'
+             ]);
            }));
 
         it('should be called on every detectChanges run, except for checkNoChanges',
@@ -755,15 +717,10 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngDoCheck', 'ngAfterContentInit']))
-                 .toEqual([
-                   'parent.ngDoCheck',
-                   'contentChild.ngDoCheck',
-                   'contentChild.ngAfterContentInit',
-                   'parent.ngAfterContentInit',
-                   'viewChild.ngDoCheck',
-                   'viewChild.ngAfterContentInit'
-                 ]);
+             expect(directiveLog.filter(['ngDoCheck', 'ngAfterContentInit'])).toEqual([
+               'parent.ngDoCheck', 'contentChild.ngDoCheck', 'contentChild.ngAfterContentInit',
+               'parent.ngAfterContentInit', 'viewChild.ngDoCheck', 'viewChild.ngAfterContentInit'
+             ]);
            }));
 
         it('should only be called only once', fakeAsync(() => {
@@ -771,8 +728,9 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterContentInit']))
-                 .toEqual(['dir.ngAfterContentInit']);
+             expect(directiveLog.filter(['ngAfterContentInit'])).toEqual([
+               'dir.ngAfterContentInit'
+             ]);
 
              // reset directives
              directiveLog.clear();
@@ -801,8 +759,9 @@ export function main() {
              }
              expect(errored).toBe(true);
 
-             expect(directiveLog.filter(['ngAfterContentInit']))
-                 .toEqual(['dir.ngAfterContentInit']);
+             expect(directiveLog.filter(['ngAfterContentInit'])).toEqual([
+               'dir.ngAfterContentInit'
+             ]);
              directiveLog.clear();
 
              // Second change detection also fails, but this time ngAfterContentInit should not be
@@ -810,7 +769,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new BaseException("Second detectChanges() should not have run detection.");
+               throw new BaseException('Second detectChanges() should not have run detection.');
              }
              expect(directiveLog.filter(['ngAfterContentInit'])).toEqual([]);
            }));
@@ -823,15 +782,11 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngDoCheck', 'ngAfterContentChecked']))
-                 .toEqual([
-                   'parent.ngDoCheck',
-                   'contentChild.ngDoCheck',
-                   'contentChild.ngAfterContentChecked',
-                   'parent.ngAfterContentChecked',
-                   'viewChild.ngDoCheck',
-                   'viewChild.ngAfterContentChecked'
-                 ]);
+             expect(directiveLog.filter(['ngDoCheck', 'ngAfterContentChecked'])).toEqual([
+               'parent.ngDoCheck', 'contentChild.ngDoCheck', 'contentChild.ngAfterContentChecked',
+               'parent.ngAfterContentChecked', 'viewChild.ngDoCheck',
+               'viewChild.ngAfterContentChecked'
+             ]);
            }));
 
         it('should be called on every detectChanges run, except for checkNoChanges',
@@ -840,8 +795,9 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterContentChecked']))
-                 .toEqual(['dir.ngAfterContentChecked']);
+             expect(directiveLog.filter(['ngAfterContentChecked'])).toEqual([
+               'dir.ngAfterContentChecked'
+             ]);
 
              // reset directives
              directiveLog.clear();
@@ -854,8 +810,9 @@ export function main() {
              // re-verify that changes are still detected
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterContentChecked']))
-                 .toEqual(['dir.ngAfterContentChecked']);
+             expect(directiveLog.filter(['ngAfterContentChecked'])).toEqual([
+               'dir.ngAfterContentChecked'
+             ]);
            }));
 
         it('should be called in reverse order so the child is always notified before the parent',
@@ -865,8 +822,9 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterContentChecked']))
-                 .toEqual(['child.ngAfterContentChecked', 'parent.ngAfterContentChecked']);
+             expect(directiveLog.filter(['ngAfterContentChecked'])).toEqual([
+               'child.ngAfterContentChecked', 'parent.ngAfterContentChecked'
+             ]);
            }));
       });
 
@@ -877,15 +835,10 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngDoCheck', 'ngAfterViewInit']))
-                 .toEqual([
-                   'parent.ngDoCheck',
-                   'contentChild.ngDoCheck',
-                   'contentChild.ngAfterViewInit',
-                   'viewChild.ngDoCheck',
-                   'viewChild.ngAfterViewInit',
-                   'parent.ngAfterViewInit'
-                 ]);
+             expect(directiveLog.filter(['ngDoCheck', 'ngAfterViewInit'])).toEqual([
+               'parent.ngDoCheck', 'contentChild.ngDoCheck', 'contentChild.ngAfterViewInit',
+               'viewChild.ngDoCheck', 'viewChild.ngAfterViewInit', 'parent.ngAfterViewInit'
+             ]);
            }));
 
         it('should only be called only once', fakeAsync(() => {
@@ -930,7 +883,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new BaseException("Second detectChanges() should not have run detection.");
+               throw new BaseException('Second detectChanges() should not have run detection.');
              }
              expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
            }));
@@ -942,15 +895,10 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngDoCheck', 'ngAfterViewChecked']))
-                 .toEqual([
-                   'parent.ngDoCheck',
-                   'contentChild.ngDoCheck',
-                   'contentChild.ngAfterViewChecked',
-                   'viewChild.ngDoCheck',
-                   'viewChild.ngAfterViewChecked',
-                   'parent.ngAfterViewChecked'
-                 ]);
+             expect(directiveLog.filter(['ngDoCheck', 'ngAfterViewChecked'])).toEqual([
+               'parent.ngDoCheck', 'contentChild.ngDoCheck', 'contentChild.ngAfterViewChecked',
+               'viewChild.ngDoCheck', 'viewChild.ngAfterViewChecked', 'parent.ngAfterViewChecked'
+             ]);
            }));
 
         it('should be called on every detectChanges run, except for checkNoChanges',
@@ -959,8 +907,9 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterViewChecked']))
-                 .toEqual(['dir.ngAfterViewChecked']);
+             expect(directiveLog.filter(['ngAfterViewChecked'])).toEqual([
+               'dir.ngAfterViewChecked'
+             ]);
 
              // reset directives
              directiveLog.clear();
@@ -973,8 +922,9 @@ export function main() {
              // re-verify that changes are still detected
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterViewChecked']))
-                 .toEqual(['dir.ngAfterViewChecked']);
+             expect(directiveLog.filter(['ngAfterViewChecked'])).toEqual([
+               'dir.ngAfterViewChecked'
+             ]);
            }));
 
         it('should be called in reverse order so the child is always notified before the parent',
@@ -984,8 +934,9 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterViewChecked']))
-                 .toEqual(['child.ngAfterViewChecked', 'parent.ngAfterViewChecked']);
+             expect(directiveLog.filter(['ngAfterViewChecked'])).toEqual([
+               'child.ngAfterViewChecked', 'parent.ngAfterViewChecked'
+             ]);
            }));
       });
 
@@ -1000,18 +951,19 @@ export function main() {
            }));
 
         it('should be called after processing the content and view children', fakeAsync(() => {
-            var ctx = createCompFixture(
-                '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
-                '<other-cmp></other-cmp></div>',
-                TestComponent,
-                tcb.overrideTemplate(AnotherComponent, '<div testDirective="viewChild"></div>'));
+             var ctx = createCompFixture(
+                 '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
+                     '<other-cmp></other-cmp></div>',
+                 TestComponent,
+                 tcb.overrideTemplate(AnotherComponent, '<div testDirective="viewChild"></div>'));
 
              ctx.detectChanges(false);
              ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy']))
-                 .toEqual(
-                     ['contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy', 'viewChild.ngOnDestroy', 'parent.ngOnDestroy']);
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy', 'viewChild.ngOnDestroy',
+               'parent.ngOnDestroy'
+             ]);
            }));
 
         it('should be called in reverse order so the child is always notified before the parent',
@@ -1022,8 +974,9 @@ export function main() {
              ctx.detectChanges(false);
              ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy']))
-                 .toEqual(['child.ngOnDestroy', 'parent.ngOnDestroy']);
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'child.ngOnDestroy', 'parent.ngOnDestroy'
+             ]);
            }));
 
         it('should call ngOnDestory on pipes', fakeAsync(() => {
@@ -1032,8 +985,9 @@ export function main() {
              ctx.detectChanges(false);
              ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy']))
-                 .toEqual(['pipeWithOnDestroy.ngOnDestroy']);
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'pipeWithOnDestroy.ngOnDestroy'
+             ]);
            }));
       });
 
@@ -1095,27 +1049,17 @@ export function main() {
 }
 
 const ALL_DIRECTIVES = /*@ts2dart_const*/[
-  forwardRef(() => TestDirective),
-  forwardRef(() => TestComponent),
-  forwardRef(() => AnotherComponent),
-  forwardRef(() => TestLocals),
-  forwardRef(() => CompWithRef),
-  forwardRef(() => EmitterDirective),
-  forwardRef(() => PushComp),
-  forwardRef(() => OrderCheckDirective2),
-  forwardRef(() => OrderCheckDirective0),
-  forwardRef(() => OrderCheckDirective1),
-  NgFor
+  forwardRef(() => TestDirective), forwardRef(() => TestComponent),
+  forwardRef(() => AnotherComponent), forwardRef(() => TestLocals), forwardRef(() => CompWithRef),
+  forwardRef(() => EmitterDirective), forwardRef(() => PushComp),
+  forwardRef(() => OrderCheckDirective2), forwardRef(() => OrderCheckDirective0),
+  forwardRef(() => OrderCheckDirective1), NgFor
 ];
 
 const ALL_PIPES = /*@ts2dart_const*/[
-  forwardRef(() => CountingPipe),
-  forwardRef(() => CountingImpurePipe),
-  forwardRef(() => MultiArgPipe),
-  forwardRef(() => PipeWithOnDestroy),
-  forwardRef(() => IdentityPipe),
-  forwardRef(() => WrappedPipe),
-  AsyncPipe
+  forwardRef(() => CountingPipe), forwardRef(() => CountingImpurePipe),
+  forwardRef(() => MultiArgPipe), forwardRef(() => PipeWithOnDestroy),
+  forwardRef(() => IdentityPipe), forwardRef(() => WrappedPipe), AsyncPipe
 ];
 
 @Injectable()
@@ -1213,7 +1157,11 @@ class WrappedPipe implements PipeTransform {
 
 @Pipe({name: 'multiArgPipe'})
 class MultiArgPipe implements PipeTransform {
-  transform(value: any /** TODO #9100 */, arg1: any /** TODO #9100 */, arg2: any /** TODO #9100 */, arg3 = 'default') { return `${value} ${arg1} ${arg2} ${arg3}`; }
+  transform(
+      value: any /** TODO #9100 */, arg1: any /** TODO #9100 */, arg2: any /** TODO #9100 */,
+      arg3 = 'default') {
+    return `${value} ${arg1} ${arg2} ${arg3}`;
+  }
 }
 
 @Component({selector: 'test-cmp', template: '', directives: ALL_DIRECTIVES, pipes: ALL_PIPES})
@@ -1292,7 +1240,9 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
   ngOnChanges(changes: any /** TODO #9100 */) {
     this.log.add(this.name, 'ngOnChanges');
     var r = {};
-    StringMapWrapper.forEach(changes, (c: any /** TODO #9100 */, key: any /** TODO #9100 */) => (r as any /** TODO #9100 */)[key] = c.currentValue);
+    StringMapWrapper.forEach(
+        changes, (c: any /** TODO #9100 */, key: any /** TODO #9100 */) =>
+                     (r as any /** TODO #9100 */)[key] = c.currentValue);
     this.changes = r;
     if (this.throwOn == 'ngOnChanges') {
       throw new BaseException('Boom!');

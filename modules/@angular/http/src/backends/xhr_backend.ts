@@ -1,17 +1,18 @@
 import {Injectable} from '@angular/core';
 import {__platform_browser_private__} from '@angular/platform-browser';
-
-import {ConnectionBackend, Connection, XSRFStrategy} from '../interfaces';
-import {ReadyState, RequestMethod, ResponseType, ContentType} from '../enums';
-import {Request} from '../static_request';
-import {Response} from '../static_response';
-import {Headers} from '../headers';
-import {ResponseOptions} from '../base_response_options';
-import {BrowserXhr} from './browser_xhr';
-import {isPresent, isString} from '../facade/lang';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
-import {isSuccess, getResponseURL} from '../http_utils';
+
+import {ResponseOptions} from '../base_response_options';
+import {ContentType, ReadyState, RequestMethod, ResponseType} from '../enums';
+import {isPresent, isString} from '../facade/lang';
+import {Headers} from '../headers';
+import {getResponseURL, isSuccess} from '../http_utils';
+import {Connection, ConnectionBackend, XSRFStrategy} from '../interfaces';
+import {Request} from '../static_request';
+import {Response} from '../static_response';
+
+import {BrowserXhr} from './browser_xhr';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 

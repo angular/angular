@@ -1,8 +1,9 @@
 import {ListWrapper} from '../facade/collection';
-import {stringify, isBlank} from '../facade/lang';
 import {BaseException, WrappedException} from '../facade/exceptions';
-import {ReflectiveKey} from './reflective_key';
+import {isBlank, stringify} from '../facade/lang';
+
 import {ReflectiveInjector} from './reflective_injector';
+import {ReflectiveKey} from './reflective_key';
 
 function findFirstClosedCycle(keys: any[]): any[] {
   var res: any[] /** TODO #9100 */ = [];
@@ -21,9 +22,9 @@ function constructResolvingPath(keys: any[]): string {
   if (keys.length > 1) {
     var reversed = findFirstClosedCycle(ListWrapper.reversed(keys));
     var tokenStrs = reversed.map(k => stringify(k.token));
-    return " (" + tokenStrs.join(' -> ') + ")";
+    return ' (' + tokenStrs.join(' -> ') + ')';
   } else {
-    return "";
+    return '';
   }
 }
 
@@ -45,9 +46,9 @@ export class AbstractProviderError extends BaseException {
   /** @internal */
   constructResolvingMessage: Function;
 
-  constructor(injector: ReflectiveInjector, key: ReflectiveKey,
-              constructResolvingMessage: Function) {
-    super("DI Exception");
+  constructor(
+      injector: ReflectiveInjector, key: ReflectiveKey, constructResolvingMessage: Function) {
+    super('DI Exception');
     this.keys = [key];
     this.injectors = [injector];
     this.constructResolvingMessage = constructResolvingMessage;
@@ -146,8 +147,10 @@ export class InstantiationError extends WrappedException {
   /** @internal */
   injectors: ReflectiveInjector[];
 
-  constructor(injector: ReflectiveInjector, originalException: any /** TODO #9100 */, originalStack: any /** TODO #9100 */, key: ReflectiveKey) {
-    super("DI Exception", originalException, originalStack, null);
+  constructor(
+      injector: ReflectiveInjector, originalException: any /** TODO #9100 */,
+      originalStack: any /** TODO #9100 */, key: ReflectiveKey) {
+    super('DI Exception', originalException, originalStack, null);
     this.keys = [key];
     this.injectors = [injector];
   }
@@ -228,10 +231,10 @@ export class NoAnnotationError extends BaseException {
         signature.push(parameter.map(stringify).join(' '));
       }
     }
-    return "Cannot resolve all parameters for '" + stringify(typeOrFunc) + "'(" +
-           signature.join(', ') + "). " +
-           "Make sure that all the parameters are decorated with Inject or have valid type annotations and that '" +
-           stringify(typeOrFunc) + "' is decorated with Injectable.";
+    return 'Cannot resolve all parameters for \'' + stringify(typeOrFunc) + '\'(' +
+        signature.join(', ') + '). ' +
+        'Make sure that all the parameters are decorated with Inject or have valid type annotations and that \'' +
+        stringify(typeOrFunc) + '\' is decorated with Injectable.';
   }
 }
 
@@ -268,7 +271,8 @@ export class OutOfBoundsError extends BaseException {
  */
 export class MixingMultiProvidersWithRegularProvidersError extends BaseException {
   constructor(provider1: any /** TODO #9100 */, provider2: any /** TODO #9100 */) {
-    super("Cannot mix multi providers and regular providers, got: " + provider1.toString() + " " +
-          provider2.toString());
+    super(
+        'Cannot mix multi providers and regular providers, got: ' + provider1.toString() + ' ' +
+        provider2.toString());
   }
 }

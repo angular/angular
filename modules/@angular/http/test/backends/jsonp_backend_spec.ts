@@ -1,23 +1,8 @@
-import {
-  afterEach,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
 import {ObservableWrapper} from '../../src/facade/async';
 import {BrowserJsonp} from '../../src/backends/browser_jsonp';
-import {
-  JSONPConnection,
-  JSONPConnection_,
-  JSONPBackend,
-  JSONPBackend_
-} from '../../src/backends/jsonp_backend';
+import {JSONPConnection, JSONPConnection_, JSONPBackend, JSONPBackend_} from '../../src/backends/jsonp_backend';
 import {provide, Injector, ReflectiveInjector} from '@angular/core';
 import {isPresent, StringWrapper} from '../../src/facade/lang';
 import {TimerWrapper} from '../../src/facade/async';
@@ -92,8 +77,9 @@ export function main() {
     describe('JSONPConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp(),
-                                                 new ResponseOptions({type: ResponseType.Error}));
+           let connection = new JSONPConnection_(
+               sampleRequest, new MockBrowserJsonp(),
+               new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(res => {
              expect(res.type).toBe(ResponseType.Error);
              async.done();
@@ -130,7 +116,7 @@ export function main() {
            let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
            connection.response.subscribe(
                res => {
-                 expect("response listener called").toBe(false);
+                 expect('response listener called').toBe(false);
                  async.done();
                },
                err => {
@@ -147,7 +133,7 @@ export function main() {
 
            connection.response.subscribe(
                res => {
-                 expect("response listener called").toBe(false);
+                 expect('response listener called').toBe(false);
                  async.done();
                },
                err => {
@@ -155,7 +141,7 @@ export function main() {
                  async.done();
                });
 
-           existingScripts[0].dispatchEvent('error', ({message: "Oops!"}));
+           existingScripts[0].dispatchEvent('error', ({message: 'Oops!'}));
          }));
 
       it('should throw if request method is not GET', () => {

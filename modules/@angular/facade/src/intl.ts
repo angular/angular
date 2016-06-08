@@ -5,15 +5,16 @@ export enum NumberFormatStyle {
 }
 
 export class NumberFormatter {
-  static format(num: number, locale: string, style: NumberFormatStyle,
-                {minimumIntegerDigits = 1, minimumFractionDigits = 0, maximumFractionDigits = 3,
-                 currency, currencyAsSymbol = false}: {
-                  minimumIntegerDigits?: number,
-                  minimumFractionDigits?: number,
-                  maximumFractionDigits?: number,
-                  currency?: string,
-                  currencyAsSymbol?: boolean
-                } = {}): string {
+  static format(
+      num: number, locale: string, style: NumberFormatStyle,
+      {minimumIntegerDigits = 1, minimumFractionDigits = 0, maximumFractionDigits = 3, currency,
+       currencyAsSymbol = false}: {
+        minimumIntegerDigits?: number,
+        minimumFractionDigits?: number,
+        maximumFractionDigits?: number,
+        currency?: string,
+        currencyAsSymbol?: boolean
+      } = {}): string {
     var intlOptions: Intl.NumberFormatOptions = {
       minimumIntegerDigits: minimumIntegerDigits,
       minimumFractionDigits: minimumFractionDigits,
@@ -40,16 +41,11 @@ var PATTERN_ALIASES = {
     digitCondition('second', 1),
   ])),
   yMdjm: datePartGetterFactory(combine([
-    digitCondition('year', 1),
-    digitCondition('month', 1),
-    digitCondition('day', 1),
-    digitCondition('hour', 1),
-    digitCondition('minute', 1)
+    digitCondition('year', 1), digitCondition('month', 1), digitCondition('day', 1),
+    digitCondition('hour', 1), digitCondition('minute', 1)
   ])),
   yMMMMEEEEd: datePartGetterFactory(combine([
-    digitCondition('year', 1),
-    nameCondition('month', 4),
-    nameCondition('weekday', 4),
+    digitCondition('year', 1), nameCondition('month', 4), nameCondition('weekday', 4),
     digitCondition('day', 1)
   ])),
   yMMMMd: datePartGetterFactory(
@@ -115,8 +111,8 @@ function hourClockExtracter(inner: (date: Date, locale: string) => string): (
   };
 }
 
-function hourExtracter(inner: (date: Date, locale: string) => string): (date: Date,
-                                                                        locale: string) => string {
+function hourExtracter(inner: (date: Date, locale: string) => string): (
+    date: Date, locale: string) => string {
   return function(date: Date, locale: string): string {
     var result = inner(date, locale);
 
@@ -124,8 +120,8 @@ function hourExtracter(inner: (date: Date, locale: string) => string): (date: Da
   };
 }
 
-function hour12Modify(options: Intl.DateTimeFormatOptions,
-                      value: boolean): Intl.DateTimeFormatOptions {
+function hour12Modify(
+    options: Intl.DateTimeFormatOptions, value: boolean): Intl.DateTimeFormatOptions {
   options.hour12 = value;
   return options;
 }
@@ -191,14 +187,16 @@ function dateFormatter(format: string, date: Date, locale: string): string {
   parts.forEach(part => {
     fn = (DATE_FORMATS as any /** TODO #9100 */)[part];
     text += fn ? fn(date, locale) :
-                 part === "''" ? "'" : part.replace(/(^'|'$)/g, '').replace(/''/g, "'");
+                 part === '\'\'' ? '\'' : part.replace(/(^'|'$)/g, '').replace(/''/g, '\'');
   });
 
   return text;
 }
 
 var slice = [].slice;
-function concat(array1: any /** TODO #9100 */, array2: any /** TODO #9100 */, index: any /** TODO #9100 */): string[] {
+function concat(
+    array1: any /** TODO #9100 */, array2: any /** TODO #9100 */,
+    index: any /** TODO #9100 */): string[] {
   return array1.concat(slice.call(array2, index));
 }
 

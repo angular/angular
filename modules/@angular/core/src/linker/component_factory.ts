@@ -1,11 +1,13 @@
-import {Type, isPresent, isBlank} from '../facade/lang';
-import {unimplemented} from '../facade/exceptions';
-import {ElementRef} from './element_ref';
-import {ViewRef, ViewRef_} from './view_ref';
-import {AppElement} from './element';
-import {ViewUtils} from './view_utils';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
+import {unimplemented} from '../facade/exceptions';
+import {Type, isBlank, isPresent} from '../facade/lang';
+
+import {AppElement} from './element';
+import {ElementRef} from './element_ref';
+import {ViewRef, ViewRef_} from './view_ref';
+import {ViewUtils} from './view_utils';
+
 
 /**
  * Represents an instance of a Component created via a {@link ComponentFactory}.
@@ -77,16 +79,17 @@ export class ComponentRef_<C> extends ComponentRef<C> {
  */
 const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
 export class ComponentFactory<C> {
-  constructor(public selector: string, private _viewFactory: Function,
-              private _componentType: Type) {}
+  constructor(
+      public selector: string, private _viewFactory: Function, private _componentType: Type) {}
 
   get componentType(): Type { return this._componentType; }
 
   /**
    * Creates a new component.
    */
-  create(injector: Injector, projectableNodes: any[][] = null,
-         rootSelectorOrNode: string | any = null): ComponentRef<C> {
+  create(
+      injector: Injector, projectableNodes: any[][] = null,
+      rootSelectorOrNode: string|any = null): ComponentRef<C> {
     var vu: ViewUtils = injector.get(ViewUtils);
     if (isBlank(projectableNodes)) {
       projectableNodes = [];

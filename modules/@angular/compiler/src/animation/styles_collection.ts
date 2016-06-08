@@ -1,10 +1,10 @@
-import {isPresent} from '../facade/lang';
 import {ListWrapper} from '../facade/collection';
+import {isPresent} from '../facade/lang';
 
 export class StylesCollectionEntry {
-  constructor(public time: number, public value: string | number) {}
+  constructor(public time: number, public value: string|number) {}
 
-  matches(time: number, value: string | number): boolean {
+  matches(time: number, value: string|number): boolean {
     return time == this.time && value == this.value;
   }
 }
@@ -12,7 +12,7 @@ export class StylesCollectionEntry {
 export class StylesCollection {
   styles: {[key: string]: StylesCollectionEntry[]} = {};
 
-  insertAtTime(property: string, time: number, value: string | number) {
+  insertAtTime(property: string, time: number, value: string|number) {
     var tuple = new StylesCollectionEntry(time, value);
     var entries = this.styles[property];
     if (!isPresent(entries)) {

@@ -1,32 +1,14 @@
-import {
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  beforeEachProviders,
-  it,
-  xit
-} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-
-import {provide, Component, Injector, Inject} from '@angular/core';
 import {Location} from '@angular/common';
+import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
+import {Component, Inject, Injector, provide} from '@angular/core';
+import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {RouteData, RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';
+
 import {PromiseWrapper, TimerWrapper} from '../../src/facade/async';
+import {AsyncRoute, AuxRoute, Redirect, Route, RouteConfig} from '../../src/route_config/route_config_decorator';
 
-import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from '@angular/router-deprecated';
-import {
-  RouteConfig,
-  Route,
-  AuxRoute,
-  AsyncRoute,
-  Redirect
-} from '../../src/route_config/route_config_decorator';
-
-import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from './util';
+import {RootCmp, TEST_ROUTER_PROVIDERS, compile} from './util';
 
 var cmpInstanceCount: any /** TODO #9100 */;
 var childCmpInstanceCount: any /** TODO #9100 */;
@@ -40,12 +22,14 @@ export function main() {
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
 
-    beforeEach(inject([TestComponentBuilder, Router], (tcBuilder: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
-      tcb = tcBuilder;
-      rtr = router;
-      childCmpInstanceCount = 0;
-      cmpInstanceCount = 0;
-    }));
+    beforeEach(inject(
+        [TestComponentBuilder, Router],
+        (tcBuilder: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
+          tcb = tcBuilder;
+          rtr = router;
+          childCmpInstanceCount = 0;
+          cmpInstanceCount = 0;
+        }));
 
     it('should work in a simple case', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
@@ -78,7 +62,8 @@ export function main() {
              });
        }));
 
-    it('should navigate to child routes', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should navigate to child routes',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb, 'outer { <router-outlet></router-outlet> }')
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
@@ -105,20 +90,24 @@ export function main() {
        }));
 
     it('should navigate to child routes when the root component has an empty path',
-       inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
-         compile(tcb, 'outer { <router-outlet></router-outlet> }')
-             .then((rtc) => {fixture = rtc})
-             .then((_) => rtr.config([new Route({path: '/...', component: ParentCmp})]))
-             .then((_) => rtr.navigateByUrl('/b'))
-             .then((_) => {
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
-               expect(location.urlChanges).toEqual(['/b']);
-               async.done();
-             });
-       }));
+       inject(
+           [AsyncTestCompleter, Location],
+           (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
+             compile(tcb, 'outer { <router-outlet></router-outlet> }')
+                 .then((rtc) => {fixture = rtc})
+                 .then((_) => rtr.config([new Route({path: '/...', component: ParentCmp})]))
+                 .then((_) => rtr.navigateByUrl('/b'))
+                 .then((_) => {
+                   fixture.detectChanges();
+                   expect(fixture.debugElement.nativeElement)
+                       .toHaveText('outer { inner { hello } }');
+                   expect(location.urlChanges).toEqual(['/b']);
+                   async.done();
+                 });
+           }));
 
-    it('should navigate to child routes of async routes', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should navigate to child routes of async routes',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb, 'outer { <router-outlet></router-outlet> }')
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new AsyncRoute({path: '/a/...', loader: parentLoader})]))
@@ -132,21 +121,24 @@ export function main() {
 
 
     it('should replace state when normalized paths are equal',
-       inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
-         compile(tcb)
-             .then((rtc) => {fixture = rtc})
-             .then((_) => location.setInitialPath("/test/"))
-             .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
-             .then((_) => rtr.navigateByUrl('/test'))
-             .then((_) => {
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('hello');
-               expect(location.urlChanges).toEqual(['replace: /test']);
-               async.done();
-             });
-       }));
+       inject(
+           [AsyncTestCompleter, Location],
+           (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
+             compile(tcb)
+                 .then((rtc) => {fixture = rtc})
+                 .then((_) => location.setInitialPath('/test/'))
+                 .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
+                 .then((_) => rtr.navigateByUrl('/test'))
+                 .then((_) => {
+                   fixture.detectChanges();
+                   expect(fixture.debugElement.nativeElement).toHaveText('hello');
+                   expect(location.urlChanges).toEqual(['replace: /test']);
+                   async.done();
+                 });
+           }));
 
-    it('should reuse common parent components', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should reuse common parent components',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/team/:id/...', component: TeamCmp})]))
@@ -188,12 +180,12 @@ export function main() {
              });
        }));
 
-    it('should inject route data into component', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should inject route data into component',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
-             .then((_) => rtr.config([
-               new Route({path: '/route-data', component: RouteDataCmp, data: {isAdmin: true}})
-             ]))
+             .then((_) => rtr.config([new Route(
+                       {path: '/route-data', component: RouteDataCmp, data: {isAdmin: true}})]))
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                fixture.detectChanges();
@@ -206,10 +198,8 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
-             .then((_) => rtr.config([
-               new AsyncRoute(
-                   {path: '/route-data', loader: asyncRouteDataCmp, data: {isAdmin: true}})
-             ]))
+             .then((_) => rtr.config([new AsyncRoute(
+                       {path: '/route-data', loader: asyncRouteDataCmp, data: {isAdmin: true}})]))
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                fixture.detectChanges();
@@ -222,8 +212,8 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
-             .then((_) => rtr.config(
-                       [new Route({path: '/route-data-default', component: RouteDataCmp})]))
+             .then((_) => rtr.config([new Route(
+                       {path: '/route-data-default', component: RouteDataCmp})]))
              .then((_) => rtr.navigateByUrl('/route-data-default'))
              .then((_) => {
                fixture.detectChanges();

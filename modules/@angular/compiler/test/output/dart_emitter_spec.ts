@@ -1,13 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 
 import {isBlank} from '../../src/facade/lang';
 import {DartEmitter} from '@angular/compiler/src/output/dart_emitter';
@@ -52,8 +43,9 @@ export function main() {
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt())).toEqual(`var someVar = 1;`);
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(null, [o.StmtModifier.Final])))
           .toEqual(`final someVar = 1;`);
-      expect(emitStmt(someVar.set(o.literal(1, new o.BuiltinType(o.BuiltinTypeName.Int,
-                                                                 [o.TypeModifier.Const])))
+      expect(emitStmt(someVar
+                          .set(o.literal(
+                              1, new o.BuiltinType(o.BuiltinTypeName.Int, [o.TypeModifier.Const])))
                           .toDeclStmt(null, [o.StmtModifier.Final])))
           .toEqual(`const int someVar = 1;`);
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(), ['someVar']))
@@ -123,8 +115,9 @@ export function main() {
 
     it('should support external identifiers', () => {
       expect(emitStmt(o.importExpr(sameModuleIdentifier).toStmt())).toEqual('someLocalId;');
-      expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt()))
-          .toEqual([`import 'someOtherPath' as import0;`, `import0.someExternalId;`].join('\n'));
+      expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
+        `import 'someOtherPath' as import0;`, `import0.someExternalId;`
+      ].join('\n'));
     });
 
     it('should support operators', () => {
@@ -155,40 +148,42 @@ export function main() {
 
     it('should support function expressions', () => {
       expect(emitStmt(o.fn([], []).toStmt())).toEqual(['() {', '};'].join('\n'));
-      expect(emitStmt(o.fn([new o.FnParam('param1', o.INT_TYPE)], []).toStmt()))
-          .toEqual(['(int param1) {', '};'].join('\n'));
+      expect(emitStmt(o.fn([new o.FnParam('param1', o.INT_TYPE)], []).toStmt())).toEqual([
+        '(int param1) {', '};'
+      ].join('\n'));
     });
 
     it('should support function statements', () => {
-      expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], [])))
-          .toEqual(['void someFn() {', '}'].join('\n'));
-      expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], [new o.ReturnStatement(o.literal(1))],
-                                                o.INT_TYPE)))
+      expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], [
+      ]))).toEqual(['void someFn() {', '}'].join('\n'));
+      expect(emitStmt(new o.DeclareFunctionStmt(
+                 'someFn', [], [new o.ReturnStatement(o.literal(1))], o.INT_TYPE)))
           .toEqual(['int someFn() {', '  return 1;', '}'].join('\n'));
-      expect(
-          emitStmt(new o.DeclareFunctionStmt('someFn', [new o.FnParam('param1', o.INT_TYPE)], [])))
-          .toEqual(['void someFn(int param1) {', '}'].join('\n'));
+      expect(emitStmt(new o.DeclareFunctionStmt('someFn', [new o.FnParam('param1', o.INT_TYPE)], [
+      ]))).toEqual(['void someFn(int param1) {', '}'].join('\n'));
     });
 
-    it('should support comments',
-       () => { expect(emitStmt(new o.CommentStmt('a\nb'))).toEqual(['// a', '// b'].join('\n')); });
+    it('should support comments', () => {
+      expect(emitStmt(new o.CommentStmt('a\nb'))).toEqual(['// a', '// b'].join('\n'));
+    });
 
     it('should support if stmt', () => {
       var trueCase = o.variable('trueCase').callFn([]).toStmt();
       var falseCase = o.variable('falseCase').callFn([]).toStmt();
-      expect(emitStmt(new o.IfStmt(o.variable('cond'), [trueCase])))
-          .toEqual(['if (cond) { trueCase(); }'].join('\n'));
-      expect(emitStmt(new o.IfStmt(o.variable('cond'), [trueCase], [falseCase])))
-          .toEqual(['if (cond) {', '  trueCase();', '} else {', '  falseCase();', '}'].join('\n'));
+      expect(emitStmt(new o.IfStmt(o.variable('cond'), [trueCase]))).toEqual([
+        'if (cond) { trueCase(); }'
+      ].join('\n'));
+      expect(emitStmt(new o.IfStmt(o.variable('cond'), [trueCase], [falseCase]))).toEqual([
+        'if (cond) {', '  trueCase();', '} else {', '  falseCase();', '}'
+      ].join('\n'));
     });
 
     it('should support try/catch', () => {
       var bodyStmt = o.variable('body').callFn([]).toStmt();
       var catchStmt = o.variable('catchFn').callFn([o.CATCH_ERROR_VAR, o.CATCH_STACK_VAR]).toStmt();
-      expect(emitStmt(new o.TryCatchStmt([bodyStmt], [catchStmt])))
-          .toEqual(
-              ['try {', '  body();', '} catch (error, stack) {', '  catchFn(error,stack);', '}']
-                  .join('\n'));
+      expect(emitStmt(new o.TryCatchStmt([bodyStmt], [catchStmt]))).toEqual([
+        'try {', '  body();', '} catch (error, stack) {', '  catchFn(error,stack);', '}'
+      ].join('\n'));
     });
 
     it('should support support throwing',
@@ -200,11 +195,10 @@ export function main() {
       beforeEach(() => { callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt(); });
 
       it('should support declaring classes', () => {
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null, [])))
-            .toEqual(['class SomeClass {', '}'].join('\n'));
-        expect(
-            emitStmt(new o.ClassStmt('SomeClass', o.variable('SomeSuperClass'), [], [], null, [])))
-            .toEqual(['class SomeClass extends SomeSuperClass {', '}'].join('\n'));
+        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null, [
+        ]))).toEqual(['class SomeClass {', '}'].join('\n'));
+        expect(emitStmt(new o.ClassStmt('SomeClass', o.variable('SomeSuperClass'), [], [], null, [
+        ]))).toEqual(['class SomeClass extends SomeSuperClass {', '}'].join('\n'));
       });
 
       it('should support declaring constructors', () => {
@@ -216,23 +210,23 @@ export function main() {
                    'SomeClass', null, [], [],
                    new o.ClassMethod(null, [new o.FnParam('someParam', o.INT_TYPE)], []), [])))
             .toEqual(['class SomeClass {', '  SomeClass(int someParam) {', '  }', '}'].join('\n'));
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [],
-                                        new o.ClassMethod(null, [], [superCall]), [])))
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null, [], [], new o.ClassMethod(null, [], [superCall]), [])))
             .toEqual(
                 ['class SomeClass {', '  SomeClass(): super(someParam) {', '  }', '}'].join('\n'));
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [],
-                                        new o.ClassMethod(null, [], [callSomeMethod]), [])))
-            .toEqual(
-                ['class SomeClass {', '  SomeClass() {', '    this.someMethod();', '  }', '}'].join(
-                    '\n'));
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null, [], [], new o.ClassMethod(null, [], [callSomeMethod]), [])))
+            .toEqual([
+              'class SomeClass {', '  SomeClass() {', '    this.someMethod();', '  }', '}'
+            ].join('\n'));
       });
 
       it('should support declaring fields', () => {
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [new o.ClassField('someField')], [],
-                                        null, [])))
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null, [new o.ClassField('someField')], [], null, [])))
             .toEqual(['class SomeClass {', '  var someField;', '}'].join('\n'));
-        expect(emitStmt(new o.ClassStmt('SomeClass', null,
-                                        [new o.ClassField('someField', o.INT_TYPE)], [], null, [])))
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null, [new o.ClassField('someField', o.INT_TYPE)], [], null, [])))
             .toEqual(['class SomeClass {', '  int someField;', '}'].join('\n'));
         expect(
             emitStmt(new o.ClassStmt(
@@ -242,39 +236,40 @@ export function main() {
       });
 
       it('should support declaring getters', () => {
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [],
-                                        [new o.ClassGetter('someGetter', [])], null, [])))
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null, [], [new o.ClassGetter('someGetter', [])], null, [])))
             .toEqual(['class SomeClass {', '  get someGetter {', '  }', '}'].join('\n'));
-        expect(
-            emitStmt(new o.ClassStmt('SomeClass', null, [],
-                                     [new o.ClassGetter('someGetter', [], o.INT_TYPE)], null, [])))
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null, [], [new o.ClassGetter('someGetter', [], o.INT_TYPE)], null,
+                   [])))
             .toEqual(['class SomeClass {', '  int get someGetter {', '  }', '}'].join('\n'));
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [],
-                                        [new o.ClassGetter('someGetter', [callSomeMethod])], null,
-                                        [])))
-            .toEqual(
-                ['class SomeClass {', '  get someGetter {', '    this.someMethod();', '  }', '}']
-                    .join('\n'));
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null, [], [new o.ClassGetter('someGetter', [callSomeMethod])], null,
+                   [])))
+            .toEqual([
+              'class SomeClass {', '  get someGetter {', '    this.someMethod();', '  }', '}'
+            ].join('\n'));
       });
 
       it('should support methods', () => {
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null,
-                                        [new o.ClassMethod('someMethod', [], [])])))
-            .toEqual(['class SomeClass {', '  void someMethod() {', '  }', '}'].join('\n'));
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null,
-                                        [new o.ClassMethod('someMethod', [], [], o.INT_TYPE)])))
-            .toEqual(['class SomeClass {', '  int someMethod() {', '  }', '}'].join('\n'));
+        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null, [
+          new o.ClassMethod('someMethod', [], [])
+        ]))).toEqual(['class SomeClass {', '  void someMethod() {', '  }', '}'].join('\n'));
+        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null, [
+          new o.ClassMethod('someMethod', [], [], o.INT_TYPE)
+        ]))).toEqual(['class SomeClass {', '  int someMethod() {', '  }', '}'].join('\n'));
         expect(
             emitStmt(new o.ClassStmt(
                 'SomeClass', null, [], [], null,
                 [new o.ClassMethod('someMethod', [new o.FnParam('someParam', o.INT_TYPE)], [])])))
             .toEqual(
                 ['class SomeClass {', '  void someMethod(int someParam) {', '  }', '}'].join('\n'));
-        expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null,
-                                        [new o.ClassMethod('someMethod', [], [callSomeMethod])])))
-            .toEqual(
-                ['class SomeClass {', '  void someMethod() {', '    this.someMethod();', '  }', '}']
-                    .join('\n'));
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null, [], [], null,
+                   [new o.ClassMethod('someMethod', [], [callSomeMethod])])))
+            .toEqual([
+              'class SomeClass {', '  void someMethod() {', '    this.someMethod();', '  }', '}'
+            ].join('\n'));
       });
     });
 
@@ -292,9 +287,9 @@ export function main() {
       var writeVarExpr = o.variable('a').set(o.NULL_EXPR);
       expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(sameModuleIdentifier))))
           .toEqual('someLocalId a = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(externalModuleIdentifier))))
-          .toEqual([`import 'someOtherPath' as import0;`, `import0.someExternalId a = null;`].join(
-              '\n'));
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(externalModuleIdentifier)))).toEqual([
+        `import 'someOtherPath' as import0;`, `import0.someExternalId a = null;`
+      ].join('\n'));
     });
 
     it('should support combined types', () => {

@@ -1,7 +1,8 @@
 import {ApplicationRef, ComponentRef} from '@angular/core';
-import {isPresent, NumberWrapper} from '../../facade/lang';
-import {window} from '../../facade/browser';
+
 import {getDOM} from '../../dom/dom_adapter';
+import {window} from '../../facade/browser';
+import {NumberWrapper, isPresent} from '../../facade/lang';
 
 
 export class ChangeDetectionPerfRecord {

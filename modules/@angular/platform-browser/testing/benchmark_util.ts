@@ -1,7 +1,7 @@
 import {BrowserDomAdapter} from '../src/browser/browser_adapter';
 import {document, window} from '../src/facade/browser';
-import {NumberWrapper, isBlank} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
+import {NumberWrapper, isBlank} from '../src/facade/lang';
 
 var DOM = new BrowserDomAdapter();
 
@@ -35,7 +35,9 @@ export function bindAction(selector: string, callback: Function) {
   DOM.on(el, 'click', function(_: any /** TODO #9100 */) { callback(); });
 }
 
-export function microBenchmark(name: any /** TODO #9100 */, iterationCount: any /** TODO #9100 */, callback: any /** TODO #9100 */) {
+export function microBenchmark(
+    name: any /** TODO #9100 */, iterationCount: any /** TODO #9100 */,
+    callback: any /** TODO #9100 */) {
   var durationName = `${name}/${iterationCount}`;
   window.console.time(durationName);
   callback();
