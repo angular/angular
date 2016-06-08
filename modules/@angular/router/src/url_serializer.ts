@@ -1,6 +1,7 @@
-import { UrlTree, UrlSegment } from './url_tree';
-import { PRIMARY_OUTLET } from './shared';
-import { TreeNode } from './utils/tree';
+import {PRIMARY_OUTLET} from './shared';
+import {UrlSegment, UrlTree} from './url_tree';
+import {TreeNode} from './utils/tree';
+
 
 /**
  * Defines a way to serialize/deserialize a url tree.
@@ -26,7 +27,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
     return new UrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
   }
 
-  serialize(tree: UrlTree): string { 
+  serialize(tree: UrlTree): string {
     const node = serializeUrlTreeNode(tree._root);
     const query = serializeQueryParams(tree.queryParams);
     const fragment = tree.fragment !== null ? `#${tree.fragment}` : '';
@@ -41,7 +42,8 @@ function serializeUrlTreeNode(node: TreeNode<UrlSegment>): string {
 function serializeUrlTreeNodes(nodes: TreeNode<UrlSegment>[]): string {
   const primary = serializeSegment(nodes[0].value);
   const secondaryNodes = nodes.slice(1);
-  const secondary = secondaryNodes.length > 0 ? `(${secondaryNodes.map(serializeUrlTreeNode).join("//")})` : "";
+  const secondary =
+      secondaryNodes.length > 0 ? `(${secondaryNodes.map(serializeUrlTreeNode).join("//")})` : '';
   const children = serializeChildren(nodes[0]);
   return `${primary}${secondary}${children}`;
 }
@@ -50,7 +52,7 @@ function serializeChildren(node: TreeNode<UrlSegment>): string {
   if (node.children.length > 0) {
     return `/${serializeUrlTreeNodes(node.children)}`;
   } else {
-    return "";
+    return '';
   }
 }
 
@@ -60,16 +62,18 @@ export function serializeSegment(segment: UrlSegment): string {
 }
 
 function serializeParams(params: {[key: string]: string}): string {
-  return pairs(params).map(p => `;${p.first}=${p.second}`).join("");
+  return pairs(params).map(p => `;${p.first}=${p.second}`).join('');
 }
 
 function serializeQueryParams(params: {[key: string]: string}): string {
   const strs = pairs(params).map(p => `${p.first}=${p.second}`);
-  return strs.length > 0 ? `?${strs.join("&")}` : "";
+  return strs.length > 0 ? `?${strs.join("&")}` : '';
 }
 
-class Pair<A,B> { constructor(public first:A, public second:B) {} }
-function pairs<T>(obj: {[key: string]: T}):Pair<string,T>[] {
+class Pair<A, B> {
+  constructor(public first: A, public second: B) {}
+}
+function pairs<T>(obj: {[key: string]: T}): Pair<string, T>[] {
   const res = [];
   for (let prop in obj) {
     if (obj.hasOwnProperty(prop)) {
@@ -106,7 +110,7 @@ class UrlParser {
   }
 
   parseRootSegment(): TreeNode<UrlSegment> {
-    if (this.remaining  == '' || this.remaining == '/') {
+    if (this.remaining == '' || this.remaining == '/') {
       return new TreeNode<UrlSegment>(new UrlSegment('', {}, PRIMARY_OUTLET), []);
     } else {
       const segments = this.parseSegments(false);
@@ -126,17 +130,17 @@ class UrlParser {
 
     let outletName;
     if (hasOutletName) {
-      if (path.indexOf(":") === -1) {
-        throw new Error("Not outlet name is provided");
+      if (path.indexOf(':') === -1) {
+        throw new Error('Not outlet name is provided');
       }
-      if (path.indexOf(":") > -1 && hasOutletName) {
-        let parts = path.split(":");
+      if (path.indexOf(':') > -1 && hasOutletName) {
+        let parts = path.split(':');
         outletName = parts[0];
         path = parts[1];
       }
     } else {
-      if (path.indexOf(":") > -1) {
-        throw new Error("Not outlet name is allowed");
+      if (path.indexOf(':') > -1) {
+        throw new Error('Not outlet name is allowed');
       }
       outletName = PRIMARY_OUTLET;
     }
@@ -175,7 +179,7 @@ class UrlParser {
     return params;
   }
 
-  parseFragment(): string | null {
+  parseFragment(): string|null {
     if (this.peekStartsWith('#')) {
       return this.remaining.substring(1);
     } else {
@@ -198,7 +202,7 @@ class UrlParser {
       return;
     }
     this.capture(key);
-    var value: any = "true";
+    var value: any = 'true';
     if (this.peekStartsWith('=')) {
       this.capture('=');
       var valueMatch = matchUrlSegment(this.remaining);
@@ -217,7 +221,7 @@ class UrlParser {
       return;
     }
     this.capture(key);
-    var value: any = "true";
+    var value: any = 'true';
     if (this.peekStartsWith('=')) {
       this.capture('=');
       var valueMatch = matchUrlQueryParamValue(this.remaining);

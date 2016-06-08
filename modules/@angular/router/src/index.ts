@@ -1,14 +1,14 @@
-export { Router, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from './router';
-export { UrlSerializer, DefaultUrlSerializer } from './url_serializer';
-export { RouterState, ActivatedRoute, RouterStateSnapshot, ActivatedRouteSnapshot } from './router_state';
-export { UrlTree, UrlSegment} from './url_tree';
-export { RouterOutletMap } from './router_outlet_map';
-export { RouterConfig, Route } from './config';
-export { Params, PRIMARY_OUTLET } from './shared';
-export { provideRouter } from './router_providers';
-export { CanActivate, CanDeactivate } from './interfaces';
+import {RouterLink} from './directives/router_link';
+import {RouterOutlet} from './directives/router_outlet';
 
-import { RouterOutlet } from './directives/router_outlet';
-import { RouterLink } from './directives/router_link';
+export {Route, RouterConfig} from './config';
+export {CanActivate, CanDeactivate} from './interfaces';
+export {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from './router';
+export {RouterOutletMap} from './router_outlet_map';
+export {provideRouter} from './router_providers';
+export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
+export {PRIMARY_OUTLET, Params} from './shared';
+export {DefaultUrlSerializer, UrlSerializer} from './url_serializer';
+export {UrlSegment, UrlTree} from './url_tree';
 
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
