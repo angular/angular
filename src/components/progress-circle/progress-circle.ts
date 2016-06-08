@@ -35,8 +35,8 @@ type EasingFn = (currentTime: number, startValue: number,
   selector: 'md-progress-circle',
   host: {
     'role': 'progressbar',
-    'aria-valuemin': '0',
-    'aria-valuemax': '100',
+    '[attr.aria-valuemin]': 'ariaValueMin',
+    '[attr.aria-valuemax]': 'ariaValueMax',
   },
   templateUrl: 'progress-circle.html',
   styleUrls: ['progress-circle.css'],
@@ -48,6 +48,22 @@ export class MdProgressCircle implements OnDestroy {
 
   /** The id of the indeterminate interval. */
   private _interdeterminateInterval: number;
+
+  /**
+   * Values for aria max and min are only defined as numbers when in a determinate mode.  We do this
+   * because voiceover does not report the progress indicator as indeterminate if the aria min
+   * and/or max value are number values.
+   *
+   * @internal
+   */
+  get ariaValueMin() {
+    return this.mode == 'determinate' ? 0 : null;
+  }
+
+  /** @internal */
+  get ariaValueMax() {
+    return this.mode == 'determinate' ? 100 : null;
+  }
 
   /** @internal */
   get interdeterminateInterval() {
@@ -79,19 +95,21 @@ export class MdProgressCircle implements OnDestroy {
   /**
    * Value of the progress circle.
    *
-   * Input:number, defaults to 0.
+   * Input:number
    * _value is bound to the host as the attribute aria-valuenow.
    */
-  private _value: number = 0;
+  private _value: number;
   @Input()
   @HostBinding('attr.aria-valuenow')
   get value() {
-    return this._value;
+    if (this.mode == 'determinate') {
+      return this._value;
+    }
   }
   set value(v: number) {
-    if (v) {
+    if (v && this.mode == 'determinate') {
       let newValue = clamp(v);
-      this._animateCircle(this.value, newValue, linearEase, DURATION_DETERMINATE, 0);
+      this._animateCircle((this.value || 0), newValue, linearEase, DURATION_DETERMINATE, 0);
       this._value = newValue;
     }
   }
@@ -206,6 +224,7 @@ export class MdProgressCircle implements OnDestroy {
   selector: 'md-spinner',
   host: {
     'role': 'progressbar',
+    'mode': 'indeterminate',
   },
   templateUrl: 'progress-circle.html',
   styleUrls: ['progress-circle.css'],
