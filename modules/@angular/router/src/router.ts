@@ -23,9 +23,6 @@ import {
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {DEFAULT_OUTLET_NAME} from './constants';
 
-/**
- * @internal
- */
 export class RouterOutletMap {
   /** @internal */
   _outlets: {[name: string]: RouterOutlet} = {};
