@@ -1,7 +1,9 @@
-import { RouterConfig } from './config';
-import * as common from './common_router_providers';
-import {BrowserPlatformLocation} from '@angular/platform-browser';
 import {PlatformLocation} from '@angular/common';
+import {BrowserPlatformLocation} from '@angular/platform-browser';
+
+import * as common from './common_router_providers';
+import {RouterConfig} from './config';
+
 
 /**
  * A list of {@link Provider}s. To use the router, you must add this to your application.
@@ -13,7 +15,7 @@ import {PlatformLocation} from '@angular/common';
  * class AppCmp {
  *   // ...
  * }
- * 
+ *
  * const router = [
  *   {path: '/home', component: Home}
  * ];
@@ -21,9 +23,8 @@ import {PlatformLocation} from '@angular/common';
  * bootstrap(AppCmp, [provideRouter(router)]);
  * ```
  */
-export function provideRouter(config: RouterConfig):any[] {
+export function provideRouter(config: RouterConfig): any[] {
   return [
-    {provide: PlatformLocation, useClass: BrowserPlatformLocation},
-    ...common.provideRouter(config)
+    {provide: PlatformLocation, useClass: BrowserPlatformLocation}, ...common.provideRouter(config)
   ];
 }

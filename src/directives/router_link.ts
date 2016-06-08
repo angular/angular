@@ -1,12 +1,8 @@
-import {
-  Directive,
-  HostListener,
-  HostBinding,
-  Input,
-  OnChanges
-} from '@angular/core';
+import {Directive, HostBinding, HostListener, Input, OnChanges} from '@angular/core';
+
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
+
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -37,7 +33,7 @@ import {ActivatedRoute} from '../router_state';
 export class RouterLink implements OnChanges {
   @Input() target: string;
   private commands: any[] = [];
-  @Input() queryParams: {[k:string]:any};
+  @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
 
   // the url displayed on the anchor element.
@@ -49,7 +45,7 @@ export class RouterLink implements OnChanges {
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   @Input()
-  set routerLink(data: any[] | string) {
+  set routerLink(data: any[]|string) {
     if (Array.isArray(data)) {
       this.commands = <any>data;
     } else {
@@ -57,30 +53,24 @@ export class RouterLink implements OnChanges {
     }
   }
 
-  ngOnChanges(changes:{}):any {
-    this.updateTargetUrlAndHref();
-  }
+  ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
 
-  @HostListener("click")
+  @HostListener('click')
   onClick(): boolean {
     // If no target, or if target is _self, prevent default browser behavior
-    if (!(typeof this.target === "string") || this.target == '_self') {
-      this.router.navigate(this.commands, {
-        relativeTo: this.route,
-        queryParams: this.queryParams,
-        fragment: this.fragment
-      });
+    if (!(typeof this.target === 'string') || this.target == '_self') {
+      this.router.navigate(
+          this.commands,
+          {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
       return false;
     }
     return true;
   }
 
   private updateTargetUrlAndHref(): void {
-    const tree = this.router.createUrlTree(this.commands, {
-      relativeTo: this.route,
-      queryParams: this.queryParams,
-      fragment: this.fragment
-    });
+    const tree = this.router.createUrlTree(
+        this.commands,
+        {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
     if (tree) {
       this.href = this.router.serializeUrl(tree);
     }

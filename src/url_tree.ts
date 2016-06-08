@@ -1,9 +1,10 @@
-import { Tree, TreeNode } from './utils/tree';
-import { shallowEqual } from './utils/collection';
-import { PRIMARY_OUTLET } from './shared';
+import {PRIMARY_OUTLET} from './shared';
+import {shallowEqual} from './utils/collection';
+import {Tree, TreeNode} from './utils/tree';
 
 export function createEmptyUrlTree() {
-  return new UrlTree(new TreeNode<UrlSegment>(new UrlSegment("", {}, PRIMARY_OUTLET), []), {}, null);
+  return new UrlTree(
+      new TreeNode<UrlSegment>(new UrlSegment('', {}, PRIMARY_OUTLET), []), {}, null);
 }
 
 /**
@@ -13,7 +14,9 @@ export class UrlTree extends Tree<UrlSegment> {
   /**
    * @internal
    */
-  constructor(root: TreeNode<UrlSegment>, public queryParams: {[key: string]: string}, public fragment: string | null) {
+  constructor(
+      root: TreeNode<UrlSegment>, public queryParams: {[key: string]: string},
+      public fragment: string|null) {
     super(root);
   }
 }
@@ -22,7 +25,8 @@ export class UrlSegment {
   /**
    * @internal
    */
-  constructor(public path: string, public parameters: {[key: string]: string}, public outlet: string) {}
+  constructor(
+      public path: string, public parameters: {[key: string]: string}, public outlet: string) {}
 
   toString() {
     const params = [];

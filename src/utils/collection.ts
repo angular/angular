@@ -1,4 +1,4 @@
-export function shallowEqual(a: {[x:string]:any}, b: {[x:string]:any}): boolean {
+export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): boolean {
   var k1 = Object.keys(a);
   var k2 = Object.keys(b);
   if (k1.length != k2.length) {
@@ -24,12 +24,12 @@ export function flatten<T>(a: T[][]): T[] {
   return target;
 }
 
-export function first<T>(a: T[]): T | null {
+export function first<T>(a: T[]): T|null {
   return a.length > 0 ? a[0] : null;
 }
 
 export function and(bools: boolean[]): boolean {
-  return bools.reduce((a,b) => a && b, true);
+  return bools.reduce((a, b) => a && b, true);
 }
 
 export function merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
@@ -50,7 +50,8 @@ export function merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key:
   return m;
 }
 
-export function forEach<K, V>(map: {[key: string]: V}, callback: /*(V, K) => void*/ Function): void {
+export function forEach<K, V>(
+    map: {[key: string]: V}, callback: /*(V, K) => void*/ Function): void {
   for (var prop in map) {
     if (map.hasOwnProperty(prop)) {
       callback(map[prop], prop);

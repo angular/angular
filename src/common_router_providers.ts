@@ -1,10 +1,12 @@
-import { RouterOutletMap } from './router_outlet_map';
-import { UrlSerializer, DefaultUrlSerializer } from './url_serializer';
-import { ActivatedRoute } from './router_state';
-import { Router } from './router';
-import { RouterConfig } from './config';
-import { ComponentResolver, ApplicationRef, Injector, APP_INITIALIZER } from '@angular/core';
-import { LocationStrategy, PathLocationStrategy, Location } from '@angular/common';
+import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
+import {APP_INITIALIZER, ApplicationRef, ComponentResolver, Injector} from '@angular/core';
+
+import {RouterConfig} from './config';
+import {Router} from './router';
+import {RouterOutletMap} from './router_outlet_map';
+import {ActivatedRoute} from './router_state';
+import {DefaultUrlSerializer, UrlSerializer} from './url_serializer';
+
 
 /**
  * A list of {@link Provider}s. To use the router, you must add this to your application.
@@ -24,7 +26,7 @@ import { LocationStrategy, PathLocationStrategy, Location } from '@angular/commo
  * bootstrap(AppCmp, [provideRouter(router)]);
  * ```
  */
-export function provideRouter(config: RouterConfig):any[] {
+export function provideRouter(config: RouterConfig): any[] {
   return [
     Location,
     {provide: LocationStrategy, useClass: PathLocationStrategy},
@@ -34,20 +36,27 @@ export function provideRouter(config: RouterConfig):any[] {
       provide: Router,
       useFactory: (ref, resolver, urlSerializer, outletMap, location, injector) => {
         if (ref.componentTypes.length == 0) {
-          throw new Error("Bootstrap at least one component before injecting Router.");
+          throw new Error('Bootstrap at least one component before injecting Router.');
         }
         const componentType = ref.componentTypes[0];
-        const r = new Router(componentType, resolver, urlSerializer, outletMap, location, injector, config);
+        const r = new Router(
+            componentType, resolver, urlSerializer, outletMap, location, injector, config);
         ref.registerDisposeListener(() => r.dispose());
         return r;
       },
-      deps: [ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
+      deps:
+          [ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
     },
 
     RouterOutletMap,
     {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
-    
+
     // Trigger initial navigation
-    {provide: APP_INITIALIZER, multi: true, useFactory: (router: Router) => router.initialNavigation(), deps: [Router]},
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory: (router: Router) => router.initialNavigation(),
+      deps: [Router]
+    },
   ];
 }
