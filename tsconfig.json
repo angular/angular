@@ -16,6 +16,7 @@
   "files": [
     "src/index.ts",
     "src/router.ts",
+    "src/apply_redirects.ts",
     "src/recognize.ts",
     "src/resolve.ts",
     "src/create_router_state.ts",
@@ -35,6 +36,7 @@
     "src/utils/collection.ts",
     "test/utils/tree.spec.ts",
     "test/url_serializer.spec.ts",
+    "test/apply_redirects.spec.ts",
     "test/recognize.spec.ts",
     "test/create_router_state.spec.ts",
     "test/create_url_tree.spec.ts",

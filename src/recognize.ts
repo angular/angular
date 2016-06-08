@@ -1,11 +1,13 @@
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import {of } from 'rxjs/observable/of';
 
+import {match} from './apply_redirects';
 import {Route, RouterConfig} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlTree} from './url_tree';
-import {first, flatten, merge} from './utils/collection';
+import {first, flatten, forEach, merge} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 class CannotRecognize {}
@@ -17,11 +19,7 @@ export function recognize(
         rootComponentType, config, [url.root], {}, url._root.children, [], PRIMARY_OUTLET, null,
         url.root);
     const roots = constructActivatedRoute(match);
-    const res = new RouterStateSnapshot(roots[0], url.queryParams, url.fragment);
-    return new Observable<RouterStateSnapshot>(obs => {
-      obs.next(res);
-      obs.complete();
-    });
+    return of (new RouterStateSnapshot(roots[0], url.queryParams, url.fragment));
   } catch (e) {
     if (e instanceof CannotRecognize) {
       return new Observable<RouterStateSnapshot>(
@@ -66,7 +64,7 @@ function createActivatedRouteSnapshot(match: MatchResult): ActivatedRouteSnapsho
 
 function recognizeOne(
     config: Route[], url: TreeNode<UrlSegment>): TreeNode<ActivatedRouteSnapshot>[] {
-  const matches = match(config, url);
+  const matches = matchNode(config, url);
   for (let match of matches) {
     try {
       const primary = constructActivatedRoute(match);
@@ -98,7 +96,7 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]):
   return nodes;
 }
 
-function match(config: Route[], url: TreeNode<UrlSegment>): MatchResult[] {
+function matchNode(config: Route[], url: TreeNode<UrlSegment>): MatchResult[] {
   const res = [];
   for (let r of config) {
     if (r.index) {
@@ -148,43 +146,14 @@ function matchWithParts(route: Route, url: TreeNode<UrlSegment>): MatchResult|nu
         route.component, [], consumedUrl, last.parameters, [], [], PRIMARY_OUTLET, route, last);
   }
 
-  const parts = path.split('/');
-  const positionalParams = {};
-  const consumedUrlSegments = [];
-
-  let lastParent: TreeNode<UrlSegment>|null = null;
-  let lastSegment: TreeNode<UrlSegment>|null = null;
-
-  let current: TreeNode<UrlSegment>|null = url;
-  for (let i = 0; i < parts.length; ++i) {
-    if (!current) return null;
-
-    const p = parts[i];
-    const isLastSegment = i === parts.length - 1;
-    const isLastParent = i === parts.length - 2;
-    const isPosParam = p.startsWith(':');
-
-    if (!isPosParam && p != current.value.path) return null;
-    if (isLastSegment) {
-      lastSegment = current;
-    }
-    if (isLastParent) {
-      lastParent = current;
-    }
-
-    if (isPosParam) {
-      positionalParams[p.substring(1)] = current.value.path;
-    }
-
-    consumedUrlSegments.push(current.value);
-
-    current = first(current.children);
-  }
-
-  if (!lastSegment) throw 'Cannot be reached';
+  const m = match(route, url);
+  if (!m) return null;
+  const {consumedUrlSegments, lastSegment, lastParent, positionalParamSegments} = m;
 
   const p = lastSegment.value.parameters;
-  const parameters = <{[key: string]: string}>merge(p, positionalParams);
+  const posParams = {};
+  forEach(positionalParamSegments, (v, k) => { posParams[k] = v.path; });
+  const parameters = <{[key: string]: string}>merge(p, posParams);
   const secondarySubtrees = lastParent ? lastParent.children.slice(1) : [];
   const children = route.children ? route.children : [];
   const outlet = route.outlet ? route.outlet : PRIMARY_OUTLET;

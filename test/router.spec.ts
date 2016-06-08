@@ -420,6 +420,23 @@ describe("Integration", () => {
       })));
   });
 
+  describe("redirects", () => {
+    it("should work", fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      router.resetConfig([
+        { path: '/old/team/:id', redirectTo: 'team/:id' },
+        { path: '/team/:id', component: TeamCmp }
+      ]);
+
+      const fixture = tcb.createFakeAsync(RootCmp);
+      advance(fixture);
+
+      router.navigateByUrl('old/team/22');
+      advance(fixture);
+
+      expect(location.path()).toEqual('/team/22');
+    })));
+  });
+
   describe("guards", () => {
     describe("CanActivate", () => {
       describe("should not activate a route when CanActivate returns false", () => {
