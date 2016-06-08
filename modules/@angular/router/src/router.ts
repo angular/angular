@@ -3,13 +3,15 @@ import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/concatMap';
+import 'rxjs/add/operator/every';
+import 'rxjs/add/operator/mergeAll';
+import 'rxjs/add/observable/from';
 
 import {Location} from '@angular/common';
 import {ComponentResolver, Injector, ReflectiveInjector, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {forkJoin} from 'rxjs/observable/forkJoin';
 import {of } from 'rxjs/observable/of';
 
 import {RouterConfig} from './config';
@@ -23,7 +25,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot
 import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlSerializer} from './url_serializer';
 import {UrlTree, createEmptyUrlTree} from './url_tree';
-import {and, forEach, shallowEqual} from './utils/collection';
+import {forEach, shallowEqual} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 export interface NavigationExtras {
@@ -298,16 +300,18 @@ class GuardChecks {
     const currRoot = this.curr ? this.curr._root : null;
     this.traverseChildRoutes(futureRoot, currRoot, parentOutletMap);
     if (this.checks.length === 0) return of (true);
-    return forkJoin(this.checks.map(s => {
-             if (s instanceof CanActivate) {
-               return this.runCanActivate(s.route);
-             } else if (s instanceof CanDeactivate) {
-               return this.runCanDeactivate(s.component, s.route);
-             } else {
-               throw new Error('Cannot be reached');
-             }
-           }))
-        .map(and);
+    return Observable.from(this.checks)
+        .map(s => {
+          if (s instanceof CanActivate) {
+            return this.runCanActivate(s.route);
+          } else if (s instanceof CanDeactivate) {
+            return this.runCanDeactivate(s.component, s.route);
+          } else {
+            throw new Error('Cannot be reached');
+          }
+        })
+        .mergeAll()
+        .every(result => result === true);
   }
 
   private traverseChildRoutes(
@@ -352,29 +356,33 @@ class GuardChecks {
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
     const canActivate = future._routeConfig ? future._routeConfig.canActivate : null;
     if (!canActivate || canActivate.length === 0) return of (true);
-    return forkJoin(canActivate.map(c => {
-             const guard = this.injector.get(c);
-             if (guard.canActivate) {
-               return wrapIntoObservable(guard.canActivate(future, this.future));
-             } else {
-               return wrapIntoObservable(guard(future, this.future));
-             }
-           }))
-        .map(and);
+    return Observable.from(canActivate)
+        .map(c => {
+          const guard = this.injector.get(c);
+          if (guard.canActivate) {
+            return wrapIntoObservable(guard.canActivate(future, this.future));
+          } else {
+            return wrapIntoObservable(guard(future, this.future));
+          }
+        })
+        .mergeAll()
+        .every(result => result === true);
   }
 
   private runCanDeactivate(component: Object, curr: ActivatedRouteSnapshot): Observable<boolean> {
     const canDeactivate = curr._routeConfig ? curr._routeConfig.canDeactivate : null;
     if (!canDeactivate || canDeactivate.length === 0) return of (true);
-    return forkJoin(canDeactivate.map(c => {
-             const guard = this.injector.get(c);
-             if (guard.canDeactivate) {
-               return wrapIntoObservable(guard.canDeactivate(component, curr, this.curr));
-             } else {
-               return wrapIntoObservable(guard(component, curr, this.curr));
-             }
-           }))
-        .map(and);
+    return Observable.from(canDeactivate)
+        .map(c => {
+          const guard = this.injector.get(c);
+          if (guard.canDeactivate) {
+            return wrapIntoObservable(guard.canDeactivate(component, curr, this.curr));
+          } else {
+            return wrapIntoObservable(guard(component, curr, this.curr));
+          }
+        })
+        .mergeAll()
+        .every(result => result === true);
   }
 }
 
