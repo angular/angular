@@ -41,6 +41,7 @@ var specFiles: any =
                        '@angular/platform-browser/**',
                        '@angular/core/test/zone/**',
                        '@angular/core/test/fake_async_spec.*',
+                       '@angular/common/test/forms/**',
                        '@angular/common/test/forms-deprecated/**',
                        '@angular/router/test/route_config/route_config_spec.*',
                        '@angular/router/test/integration/bootstrap_spec.*',
