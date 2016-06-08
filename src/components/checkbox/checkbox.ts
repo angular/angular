@@ -127,7 +127,7 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
 
   private _indeterminate: boolean = false;
 
-  private _changeSubscription: {unsubscribe: () => any} = null;
+  private _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
 
   hasFocus: boolean = false;
 
@@ -195,11 +195,8 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
    * Implemented as part of ControlValueAccessor.
    * TODO: internal
    */
-  registerOnChange(fn: any) {
-    if (this._changeSubscription) {
-      this._changeSubscription.unsubscribe();
-    }
-    this._changeSubscription = <{unsubscribe: () => any}>this.change.subscribe(fn);
+  registerOnChange(fn: (value: any) => void) {
+    this._controlValueAccessorChangeFn = fn;
   }
 
   /**
@@ -236,6 +233,7 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
     event.source = this;
     event.checked = this.checked;
 
+    this._controlValueAccessorChangeFn(this.checked);
     this.change.emit(event);
   }
 

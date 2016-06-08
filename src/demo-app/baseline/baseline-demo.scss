@@ -1,0 +1,30 @@
+@import 'default-theme';
+@import 'variables';
+
+.demo-basic {
+  padding: 0;
+}
+.demo-basic md-card-content {
+  padding: 16px;
+}
+.demo-full-width {
+  width: 100%;
+}
+
+.demo-icons {
+  font-size: 100%;
+  height: inherit;
+  vertical-align: top;
+  width: inherit;
+}
+
+.demo-transform {
+  transition: color $swift-ease-out-duration $swift-ease-out-timing-function;
+}
+.demo-primary {
+  color: md-color($md-primary);
+}
+
+.demo-card {
+  margin: 16px;
+}

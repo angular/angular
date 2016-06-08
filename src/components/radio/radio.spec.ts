@@ -75,6 +75,22 @@ describe('MdRadio', () => {
       expect(radioInstances[0].checked).toBe(false);
     });
 
+    it('should set alignment based on the group alignment', () => {
+      testComponent.alignment = 'end';
+      fixture.detectChanges();
+
+      for (let radio of radioInstances) {
+        expect(radio.align).toBe('end');
+      }
+
+      testComponent.alignment = 'start';
+      fixture.detectChanges();
+
+      for (let radio of radioInstances) {
+        expect(radio.align).toBe('start');
+      }
+    });
+
     it('should disable each individual radio when the group is disabled', () => {
       testComponent.isGroupDisabled = true;
       fixture.detectChanges();
@@ -452,7 +468,10 @@ describe('MdRadio', () => {
 @Component({
   directives: [MD_RADIO_DIRECTIVES],
   template: `
-  <md-radio-group [disabled]="isGroupDisabled" [value]="groupValue" name="test-name">
+  <md-radio-group [disabled]="isGroupDisabled"
+                  [align]="alignment"
+                  [value]="groupValue"
+                  name="test-name">
     <md-radio-button value="fire">Charmander</md-radio-button>
     <md-radio-button value="water">Squirtle</md-radio-button>
     <md-radio-button value="leaf">Bulbasaur</md-radio-button>
@@ -460,6 +479,7 @@ describe('MdRadio', () => {
   `
 })
 class RadiosInsideRadioGroup {
+  alignment: string;
   isGroupDisabled: boolean = false;
   groupValue: string = null;
 }

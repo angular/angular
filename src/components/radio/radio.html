@@ -20,7 +20,7 @@
           (blur)="onInputBlur()" />
 
   <!-- The label content for radio control. -->
-  <div class="md-radio-label-content">
+  <div class="md-radio-label-content" [class.md-radio-align-end]="align == 'end'">
     <ng-content></ng-content>
   </div>
 </label>

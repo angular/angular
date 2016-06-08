@@ -108,6 +108,8 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     this._updateRadioButtonNames();
   }
 
+  @Input() align: 'start' | 'end';
+
   @Input()
   get disabled(): boolean {
     return this._disabled;
@@ -331,6 +333,17 @@ export class MdRadioButton implements OnInit {
       }
       this._value = value;
     }
+  }
+
+  private _align: 'start' | 'end';
+
+  @Input()
+  get align(): 'start' | 'end' {
+    return this._align || (this.radioGroup != null && this.radioGroup.align) || 'start';
+  }
+
+  set align(value: 'start' | 'end') {
+    this._align = value;
   }
 
   @HostBinding('class.md-radio-disabled')

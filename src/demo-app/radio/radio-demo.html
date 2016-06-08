@@ -12,7 +12,10 @@
       Disable buttons
     </button>
   </div>
-  <md-radio-group name="my_options" [disabled]="isDisabled">
+  <div>
+    <span><md-checkbox [(ngModel)]="isAlignEnd">Align end</md-checkbox></span>
+  </div>
+  <md-radio-group name="my_options" [disabled]="isDisabled" [align]="isAlignEnd ? 'end' : 'start'">
     <md-radio-button value="option_1">Option 1</md-radio-button>
     <md-radio-button value="option_2">Option 2</md-radio-button>
     <md-radio-button value="option_3">Option 3</md-radio-button>
