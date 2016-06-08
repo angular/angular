@@ -1,6 +1,6 @@
-@import "variables";
-@import "default-theme";
-@import "list-shared";
+@import 'variables';
+@import 'default-theme';
+@import 'list-shared';
 
 $md-list-side-padding: 16px;
 $md-list-avatar-size: 40px;
@@ -99,7 +99,7 @@ based on whether the list is in dense mode.
   }
 }
 
-md-list, md-nav-list  {
+md-list, md-nav-list {
   padding-top: $md-list-top-padding;
   display: block;
 

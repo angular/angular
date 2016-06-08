@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 /**
  * A collection of mixins and CSS classes that can be used to apply elevation to a material
@@ -139,10 +139,10 @@ $md-elevation-transition-timing-function: $md-fast-out-slow-in-timing-function;
  */
 @mixin md-elevation($zValue) {
   @if type-of($zValue) != number or not unitless($zValue) {
-    @error "$zValue must be a unitless number";
+    @error '$zValue must be a unitless number';
   }
   @if $zValue < 0 or $zValue > 24 {
-    @error "$zValue must be between 0 and 24";
+    @error '$zValue must be between 0 and 24';
   }
 
   #{$md-elevation-property}: #{map-get($_umbra-elevation-map, $zValue)},

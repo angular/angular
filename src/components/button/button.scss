@@ -1,7 +1,7 @@
 // TODO(jelbourn): Measure perf benefits for translate3d and will-change.
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
 
-@import "button-base";
+@import 'button-base';
 
 // TODO(kara): Replace attribute selectors with class selectors when possible
 [md-button] {
@@ -23,7 +23,7 @@
 }
 
 [md-mini-fab] {
-  @include md-fab($md-mini-fab-size, $md-mini-fab-padding)
+  @include md-fab($md-mini-fab-size, $md-mini-fab-padding);
 }
 
 [md-icon-button] {

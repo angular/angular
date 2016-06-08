@@ -7,7 +7,7 @@
   position: relative;
 
   // Use a transform to create a new stacking context.
-  transform: translate3D(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 /**
@@ -31,7 +31,7 @@
  * `overflow: hidden;` because it doesn't cut off contents.
  */
 @mixin md-clearfix {
-  &:before, &:after {
+  &::before, &::after {
     content: '';
     clear: both;
     display: table;
@@ -57,8 +57,8 @@
     pointer-events: none;
     position: absolute;
     top: 50%;
-    transform: translate(-50%,-50%);
-    transition: opacity ease 0.28s, background-color ease 0.28s;
+    transform: translate(-50%, -50%);
+    transition: opacity ease 280ms, background-color ease 280ms;
     width: 48px;
   }
 

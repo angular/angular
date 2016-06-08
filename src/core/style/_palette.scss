@@ -332,7 +332,7 @@ $md-light-theme-background: (
   status-bar: map_get($md-grey, 300),
   app-bar:    map_get($md-grey, 100),
   background: map_get($md-grey, 50),
-  hover:             rgba(black, 0.04), // TODO(kara): check style with Material Design UX
+  hover:      rgba(black, 0.04), // TODO(kara): check style with Material Design UX
   card:       white,
   dialog:     white,
   disabled-button:   rgba(black, 0.12)
@@ -343,10 +343,10 @@ $md-dark-theme-background: (
   status-bar: black,
   app-bar:    map_get($md-grey, 900),
   background: #303030,
-  hover:             rgba(white, 0.04), // TODO(kara): check style with Material Design UX
+  hover:      rgba(white, 0.04), // TODO(kara): check style with Material Design UX
   card:       map_get($md-grey, 800),
   dialog:     map_get($md-grey, 800),
-  disabled-button:   rgba(white, 0.12)
+  disabled-button: rgba(white, 0.12)
 );
 
 // Foreground palette for light themes.
@@ -369,11 +369,11 @@ $md-dark-theme-foreground: (
   base:            white,
   divider:         rgba(white, 0.12),
   dividers:        rgba(white, 0.12),
-  disabled:        rgba(white, 0.30),
-  disabled-button: rgba(white,0.30),
-  disabled-text:   rgba(white, 0.30),
-  hint-text:       rgba(white, 0.30),
-  secondary-text:  rgba(white, 0.70),
+  disabled:        rgba(white, 0.3),
+  disabled-button: rgba(white, 0.3),
+  disabled-text:   rgba(white, 0.3),
+  hint-text:       rgba(white, 0.3),
+  secondary-text:  rgba(white, 0.7),
   icon:            white,
   icons:           white,
   text:            white

@@ -17,9 +17,9 @@ $md-input-underline-focused-color: md-color($md-primary);
 
 // Gradient for showing the dashed line when the input is disabled.
 $md-input-underline-disabled-background-image: linear-gradient(to right,
-        rgba(0,0,0,0.26) 0%, rgba(0,0,0,0.26) 33%, transparent 0%);
+        rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0.26) 33%, transparent 0%);
 
-/** 
+/**
  * Undo the red box-shadow glow added by Firefox on invalid inputs.
  * See https://developer.mozilla.org/en-US/docs/Web/CSS/:-moz-ui-invalid
  */
@@ -214,7 +214,7 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
 
 
 // RTL support.
-:host-context([dir="rtl"]) {
+:host-context([dir='rtl']) {
   text-align: right;
 
   .md-input-placeholder {

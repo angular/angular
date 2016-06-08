@@ -4,7 +4,7 @@
   flex-flow: row wrap;
 
   md-list, md-nav-list {
-    border: 1px solid rgba(0,0,0,0.12);
+    border: 1px solid rgba(0, 0, 0, 0.12);
     width: 350px;
     margin: 20px 20px 0 0;
 
@@ -14,12 +14,12 @@
   }
 
   md-icon {
-    color: rgba(0,0,0,0.12);
+    color: rgba(0, 0, 0, 0.12);
   }
 
   [md-list-icon] {
     color: white;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
   }
 }
 

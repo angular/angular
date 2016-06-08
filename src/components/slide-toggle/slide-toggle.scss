@@ -1,9 +1,9 @@
-@import "variables";
-@import "mixins";
-@import "elevation";
+@import 'variables';
+@import 'mixins';
+@import 'elevation';
 
 //TODO(): remove the default theme.
-@import "default-theme";
+@import 'default-theme';
 
 $md-slide-toggle-width: 36px !default;
 $md-slide-toggle-height: 24px !default;
@@ -176,5 +176,5 @@ $md-slide-toggle-margin: 16px !default;
 .md-slide-toggle-thumb {
   transition: $swift-linear;
   transition-property: background-color;
-  transition-delay: 0.05s;
+  transition-delay: 50ms;
 }

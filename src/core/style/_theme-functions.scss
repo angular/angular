@@ -34,8 +34,8 @@
   // For each hue in the palette, add a "-contrast" color to the map.
   @each $hue, $color in $color-map {
     $result: map_merge($result, (
-      "#{$hue}-contrast": md-contrast($color-map, $hue, $contrast-color-map)
-    ))
+      '#{$hue}-contrast': md-contrast($color-map, $hue, $contrast-color-map)
+    ));
   }
 
   @return $result;
@@ -50,7 +50,7 @@
   // If hueKey is a number between zero and one, then it actually contains an
   // opacity value, so recall this function with the default hue and that given opacity.
   @if type-of($hue-key) == number and $hue-key >= 0 and $hue-key <= 1 {
-    @return md-color($color-map, default, $hue-key)
+    @return md-color($color-map, default, $hue-key);
   }
 
   $color: map-get($color-map, $hue-key);

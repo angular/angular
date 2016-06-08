@@ -1,7 +1,7 @@
-@import "default-theme";
-@import "mixins";
-@import "variables";
-@import "elevation";
+@import 'default-theme';
+@import 'mixins';
+@import 'variables';
+@import 'elevation';
 
 
 // We use invert() here to have the darken the background color expected to be used. If the
@@ -139,7 +139,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
 }
 
 
-:host-context([dir="rtl"]) {
+:host-context([dir='rtl']) {
   > md-sidenav {
     @include md-sidenav-transition(0, 100%);
 

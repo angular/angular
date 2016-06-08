@@ -1,10 +1,10 @@
 
-@import "variables";
-@import "elevation";
+@import 'variables';
+@import 'elevation';
 
 // TODO(jelbourn): This goes away.
-@import "default-theme";
-@import "button-theme";
+@import 'default-theme';
+@import 'button-theme';
 
 // Flat and raised button standards
 $md-button-padding: 0 16px !default;

@@ -1,6 +1,6 @@
-@import "default-theme";
-@import "variables";
-@import "mixins";
+@import 'default-theme';
+@import 'variables';
+@import 'mixins';
 
 $md-radio-size: $md-toggle-size !default;
 
@@ -38,7 +38,7 @@ md-radio-button {
   left: 0;
   position: absolute;
   top: 0;
-  transition: border-color ease 0.28s;
+  transition: border-color ease 280ms;
   width: $md-radio-size;
 
   .md-radio-checked & {
@@ -59,7 +59,7 @@ md-radio-button {
   left: 0;
   position: absolute;
   top: 0;
-  transition: transform ease 0.28s, background-color ease 0.28s;
+  transition: transform ease 280ms, background-color ease 280ms;
   transform: scale(0);
   width: $md-radio-size;
 

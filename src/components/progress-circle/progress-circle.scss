@@ -1,16 +1,16 @@
-@import "variables";
+@import 'variables';
 
-@import "default-theme";
+@import 'default-theme';
 
 /* Animation Durations */
-$md-progress-circle-duration : 5.25s !default;
-$md-progress-circle-constant-rotate-duration : $md-progress-circle-duration * 0.55 !default;
-$md-progress-circle-sporadic-rotate-duration : $md-progress-circle-duration !default;
+$md-progress-circle-duration: 5250ms !default;
+$md-progress-circle-constant-rotate-duration: $md-progress-circle-duration * 0.55 !default;
+$md-progress-circle-sporadic-rotate-duration: $md-progress-circle-duration !default;
 
 /** Component sizing */
 $md-progress-circle-stroke-width: 10px !default;
 // Height and weight of the viewport for md-progress-circle.
-$md-progress-circle-viewport-size : 100px !default;
+$md-progress-circle-viewport-size: 100px !default;
 
 
 :host {
@@ -38,17 +38,17 @@ $md-progress-circle-viewport-size : 100px !default;
     stroke-width: $md-progress-circle-stroke-width;
   }
 
-  &[color="accent"] path {
+  &[color='accent'] path {
     stroke: md-color($md-accent, 600);
   }
 
 
-  &[color="warn"] path {
+  &[color='warn'] path {
     stroke: md-color($md-warn, 600);
   }
 
 
-  &[mode="indeterminate"] {
+  &[mode='indeterminate'] {
     animation-duration: $md-progress-circle-sporadic-rotate-duration,
                         $md-progress-circle-constant-rotate-duration;
     animation-name: md-progress-circle-sporadic-rotate,

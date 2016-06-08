@@ -2,11 +2,11 @@
 
 
 // Typography
-$md-body-font-size-base: rem(1.400) !default;
+$md-body-font-size-base: rem(1.4) !default;
 $md-font-family: Roboto, 'Helvetica Neue', sans-serif !default;
 
 // Media queries
-$md-xsmall: "max-width: 600px";
+$md-xsmall: 'max-width: 600px';
 
 // z-index master list
 $z-index-fab: 20 !default;
@@ -24,24 +24,24 @@ $md-toggle-size: 20px !default;
 // TODO(jelbourn): all of these need to be revisited
 
 // The default animation curves used by material design.
-$md-linear-out-slow-in-timing-function: cubic-bezier(0.0, 0.0, 0.2, 0.1) !default;
-$md-fast-out-slow-in-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1) !default;
-$md-fast-out-linear-in-timing-function: cubic-bezier(0.4, 0.0, 1, 1) !default;
+$md-linear-out-slow-in-timing-function: cubic-bezier(0, 0, 0.2, 0.1) !default;
+$md-fast-out-slow-in-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !default;
+$md-fast-out-linear-in-timing-function: cubic-bezier(0.4, 0, 1, 1) !default;
 
 $ease-in-out-curve-function: cubic-bezier(0.35, 0, 0.25, 1) !default;
 
-$swift-ease-out-duration: 0.4s !default;
+$swift-ease-out-duration: 400ms !default;
 $swift-ease-out-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
 $swift-ease-out: all $swift-ease-out-duration $swift-ease-out-timing-function !default;
 
-$swift-ease-in-duration: 0.3s !default;
+$swift-ease-in-duration: 300ms !default;
 $swift-ease-in-timing-function: cubic-bezier(0.55, 0, 0.55, 0.2) !default;
 $swift-ease-in: all $swift-ease-in-duration $swift-ease-in-timing-function !default;
 
-$swift-ease-in-out-duration: 0.5s !default;
+$swift-ease-in-out-duration: 500ms !default;
 $swift-ease-in-out-timing-function: $ease-in-out-curve-function !default;
 $swift-ease-in-out: all $swift-ease-in-out-duration $swift-ease-in-out-timing-function !default;
 
-$swift-linear-duration: 0.08s !default;
+$swift-linear-duration: 80ms !default;
 $swift-linear-timing-function: linear !default;
 $swift-linear: all $swift-linear-duration $swift-linear-timing-function !default;
