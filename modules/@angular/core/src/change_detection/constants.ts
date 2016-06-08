@@ -21,7 +21,7 @@ export enum ChangeDetectorState {
    * or calling a directive lifecycle method and is now in an inconsistent state. Change
    * detectors in this state will no longer detect changes.
    */
-  Errored
+  Errored,
 }
 
 
@@ -75,7 +75,7 @@ export var CHANGE_DETECTION_STRATEGY_VALUES = [
   ChangeDetectionStrategy.CheckAlways,
   ChangeDetectionStrategy.Detached,
   ChangeDetectionStrategy.OnPush,
-  ChangeDetectionStrategy.Default
+  ChangeDetectionStrategy.Default,
 ];
 
 /**
@@ -84,7 +84,7 @@ export var CHANGE_DETECTION_STRATEGY_VALUES = [
 export var CHANGE_DETECTOR_STATE_VALUES = [
   ChangeDetectorState.NeverChecked,
   ChangeDetectorState.CheckedBefore,
-  ChangeDetectorState.Errored
+  ChangeDetectorState.Errored,
 ];
 
 export function isDefaultChangeDetectionStrategy(

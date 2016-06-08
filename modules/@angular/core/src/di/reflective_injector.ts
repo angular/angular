@@ -872,7 +872,10 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   }
 
   get displayName(): string {
-    return `ReflectiveInjector(providers: [${_mapProviders(this, (b: ResolvedReflectiveProvider) => ` "${b.key.displayName}" `).join(", ")}])`;
+    const providers =
+        _mapProviders(this, (b: ResolvedReflectiveProvider) => ' "' + b.key.displayName + '" ')
+            .join(', ');
+    return `ReflectiveInjector(providers: [${providers}])`;
   }
 
   toString(): string { return this.displayName; }

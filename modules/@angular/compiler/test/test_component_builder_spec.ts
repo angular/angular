@@ -30,7 +30,7 @@ import {PromiseWrapper} from '../src/facade/promise';
 import {dispatchEvent} from "@angular/platform-browser/testing";
 import {
   withProviders
-} from "@angular/core/testing/test_injector"
+} from "@angular/core/testing/test_injector";
 
     @Component({
       selector: 'child-comp',

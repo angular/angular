@@ -622,7 +622,7 @@ export function main() {
       it("should work", () => {
         expect((<ReflectiveInjector_>ReflectiveInjector.resolveAndCreate([Engine, BrokenEngine]))
                    .displayName)
-            .toEqual('ReflectiveInjector(providers: [ "Engine" ,  "BrokenEngine" ])');
+            .toEqual('ReflectiveInjector(providers: [ \'Engine\' ,  \'BrokenEngine\' ])');
       });
     });
   });

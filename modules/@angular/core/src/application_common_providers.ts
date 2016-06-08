@@ -26,5 +26,5 @@ export const APPLICATION_COMMON_PROVIDERS: Array<Type | {[k: string]: any} | any
       ViewUtils,
       /* @ts2dart_Provider */ {provide: IterableDiffers, useValue: defaultIterableDiffers},
       /* @ts2dart_Provider */ {provide: KeyValueDiffers, useValue: defaultKeyValueDiffers},
-      /* @ts2dart_Provider */ {provide: DynamicComponentLoader, useClass: DynamicComponentLoader_}
+      /* @ts2dart_Provider */ {provide: DynamicComponentLoader, useClass: DynamicComponentLoader_},
     ];

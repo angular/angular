@@ -35,5 +35,5 @@ export const COMMON_PIPES = /*@ts2dart_const*/[
   DatePipe,
   ReplacePipe,
   I18nPluralPipe,
-  I18nSelectPipe
+  I18nSelectPipe,
 ];

@@ -59,5 +59,5 @@ export const CORE_DIRECTIVES: Type[] = /*@ts2dart_const*/[
   NgSwitchWhen,
   NgSwitchDefault,
   NgPlural,
-  NgPluralCase
+  NgPluralCase,
 ];
