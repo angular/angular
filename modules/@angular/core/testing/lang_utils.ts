@@ -1,4 +1,4 @@
-export function getTypeOf(instance) {
+export function getTypeOf(instance: any /** TODO #9100 */) {
   return instance.constructor;
 }
 

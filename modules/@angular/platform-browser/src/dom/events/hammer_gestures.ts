@@ -37,7 +37,7 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
   supports(eventName: string): boolean {
     if (!super.supports(eventName) && !this.isCustomEvent(eventName)) return false;
 
-    if (!isPresent(window['Hammer'])) {
+    if (!isPresent((window as any /** TODO #???? */)['Hammer'])) {
       throw new BaseException(`Hammer.js is not loaded, can not bind ${eventName} event`);
     }
 
@@ -51,7 +51,7 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
     return zone.runOutsideAngular(() => {
       // Creating the manager bind events, must be done outside of angular
       var mc = this._config.buildHammer(element);
-      var callback = function(eventObj) { zone.runGuarded(function() { handler(eventObj); }); };
+      var callback = function(eventObj: any /** TODO #???? */) { zone.runGuarded(function() { handler(eventObj); }); };
       mc.on(eventName, callback);
       return () => { mc.off(eventName, callback); };
     });

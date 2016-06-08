@@ -16,8 +16,8 @@ import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 
 export function main() {
   describe("DatePipe", () => {
-    var date;
-    var pipe;
+    var date: any /** TODO #9100 */;
+    var pipe: any /** TODO #9100 */;
 
     beforeEach(() => {
       date = DateWrapper.create(2015, 6, 15, 21, 43, 11);

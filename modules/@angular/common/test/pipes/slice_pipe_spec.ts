@@ -20,8 +20,8 @@ import {SlicePipe} from '@angular/common';
 export function main() {
   describe("SlicePipe", () => {
     var list: number[];
-    var str;
-    var pipe;
+    var str: any /** TODO #9100 */;
+    var pipe: any /** TODO #9100 */;
 
     beforeEach(() => {
       list = [1, 2, 3, 4, 5];
@@ -95,7 +95,7 @@ export function main() {
 
     describe('integration', () => {
       it('should work with mutable arrays',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.createAsync(TestComp).then((fixture) => {
              let mutable: number[] = [1, 2];
              fixture.debugElement.componentInstance.data = mutable;

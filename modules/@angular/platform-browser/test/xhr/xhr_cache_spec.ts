@@ -43,7 +43,7 @@ export function main() {
     });
 
     it('should resolve the Promise with the cached file content on success',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          setTemplateCache({'test.html': '<div>Hello</div>'});
          xhr = new CachedXHR();
          xhr.get('test.html')
@@ -53,7 +53,7 @@ export function main() {
              });
        }));
 
-    it('should reject the Promise on failure', inject([AsyncTestCompleter], (async) => {
+    it('should reject the Promise on failure', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          xhr = new CachedXHR();
          xhr.get('unknown.html')
              .then((text) => { throw new BaseException('Not expected to succeed.'); })

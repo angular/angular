@@ -3,12 +3,12 @@ import {isPresent, isBlank, RegExpWrapper} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
 
 export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
-  var paramsArray = [];
+  var paramsArray: any[] /** TODO #9100 */ = [];
   if (isBlank(urlParams)) {
     return [];
   }
   StringMapWrapper.forEach(
-      urlParams, (value, key) => { paramsArray.push((value === true) ? key : key + '=' + value); });
+      urlParams, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => { paramsArray.push((value === true) ? key : key + '=' + value); });
   return paramsArray;
 }
 
@@ -126,7 +126,7 @@ export class UrlParser {
       // TODO: should these params just be dropped?
       this.parseMatrixParams();
     }
-    var child = null;
+    var child: any /** TODO #9100 */ = null;
     if (this.peekStartsWith('/') && !this.peekStartsWith('//')) {
       this.capture('/');
       child = this.parseSegment();

@@ -8,8 +8,8 @@ import {Provider, SkipSelfMetadata, OptionalMetadata} from '../../di';
  * A differ that tracks changes made to an object over time.
  */
 export interface KeyValueDiffer {
-  diff(object: any);
-  onDestroy();
+  diff(object: any): any /** TODO #9100 */;
+  onDestroy(): any /** TODO #9100 */;
 }
 
 /**

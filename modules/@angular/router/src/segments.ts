@@ -92,7 +92,7 @@ export class UrlSegment {
 
 function _serializeParams(params: {[key: string]: string}): string {
   let res = "";
-  StringMapWrapper.forEach(params, (v, k) => res += `;${k}=${v}`);
+  StringMapWrapper.forEach(params, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => res += `;${k}=${v}`);
   return res;
 }
 

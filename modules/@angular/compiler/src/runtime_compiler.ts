@@ -101,7 +101,7 @@ export class RuntimeCompiler implements ComponentResolver {
                     this._templateParser.parse(compMeta, compMeta.template.template,
                                                normalizedViewDirMetas, pipes, compMeta.type.name);
 
-                var childPromises = [];
+                var childPromises: any[] /** TODO #9100 */ = [];
                 compiledTemplate.init(this._compileComponent(compMeta, parsedTemplate, styles,
                                                              pipes, compilingComponentsPath, childPromises));
                 return PromiseWrapper.all(childPromises).then((_) => { return compiledTemplate; });
@@ -140,7 +140,7 @@ export class RuntimeCompiler implements ComponentResolver {
         childPromises.push(this._compiledTemplateDone.get(childCacheKey));
       }
     });
-    var factory;
+    var factory: any /** TODO #9100 */;
     if (IS_DART || !this._genConfig.useJit) {
       factory = interpretStatements(compileResult.statements, compileResult.viewFactoryVar,
                                     new InterpretiveAppViewInstanceFactory());
@@ -161,7 +161,7 @@ export class RuntimeCompiler implements ComponentResolver {
     var promises = result.dependencies.map((dep) => this._loadStylesheetDep(dep));
     return PromiseWrapper.all(promises)
         .then((cssTexts) => {
-          var nestedCompileResultPromises = [];
+          var nestedCompileResultPromises: any[] /** TODO #9100 */ = [];
           for (var i = 0; i < result.dependencies.length; i++) {
             var dep = result.dependencies[i];
             var cssText = cssTexts[i];
@@ -202,7 +202,7 @@ class CompiledTemplate {
   viewFactory: Function = null;
   proxyViewFactory: Function;
   constructor() {
-    this.proxyViewFactory = (viewUtils, childInjector, contextEl) =>
+    this.proxyViewFactory = (viewUtils: any /** TODO #9100 */, childInjector: any /** TODO #9100 */, contextEl: any /** TODO #9100 */) =>
         this.viewFactory(viewUtils, childInjector, contextEl);
   }
 

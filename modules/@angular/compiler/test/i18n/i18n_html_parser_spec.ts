@@ -18,7 +18,7 @@ export function main() {
       let htmlParser = new HtmlParser();
 
       let msgs = '';
-      StringMapWrapper.forEach(messages, (v, k) => msgs += `<msg id="${k}">${v}</msg>`);
+      StringMapWrapper.forEach(messages, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => msgs += `<msg id="${k}">${v}</msg>`);
       let res = deserializeXmb(`<message-bundle>${msgs}</message-bundle>`, 'someUrl');
 
       return new I18nHtmlParser(htmlParser, parser, res.content, res.messages, implicitTags,

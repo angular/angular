@@ -34,11 +34,11 @@ var createMapFromMap: {(m: Map<any, any>): Map<any, any>} = (function() {
     return map;
   };
 })();
-var _clearValues: {(m: Map<any, any>)} = (function() {
+var _clearValues: {(m: Map<any, any>): void} = (function() {
   if ((<any>(new Map()).keys()).next) {
     return function _clearValues(m: Map<any, any>) {
       var keyIterator = m.keys();
-      var k;
+      var k: any /** TODO #???? */;
       while (!((k = (<any>keyIterator).next()).done)) {
         m.set(k.value, null);
       }
@@ -154,7 +154,7 @@ export class StringMapWrapper {
     if (k1.length != k2.length) {
       return false;
     }
-    var key;
+    var key: any /** TODO #???? */;
     for (var i = 0; i < k1.length; i++) {
       key = k1[i];
       if (m1[key] !== m2[key]) {
@@ -249,7 +249,7 @@ export class ListWrapper {
     if (list.length == 0) {
       return null;
     }
-    var solution = null;
+    var solution: any /** TODO #???? */ = null;
     var maxValue = -Infinity;
     for (var index = 0; index < list.length; index++) {
       var candidate = list[index];
@@ -266,7 +266,7 @@ export class ListWrapper {
   }
 
   static flatten<T>(list: Array<T | T[]>): T[] {
-    var target = [];
+    var target: any[] /** TODO #???? */ = [];
     _flattenArray(list, target);
     return target;
   }
@@ -320,7 +320,7 @@ export function iterateListLike(obj: any, fn: Function) {
     }
   } else {
     var iterator = obj[getSymbolIterator()]();
-    var item;
+    var item: any /** TODO #???? */;
     while (!((item = iterator.next()).done)) {
       fn(item.value);
     }

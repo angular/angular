@@ -61,7 +61,7 @@ export class QueryList<T> {
    */
   toArray(): T[] { return ListWrapper.clone(this._results); }
 
-  [getSymbolIterator()](): any { return this._results[getSymbolIterator()](); }
+  [getSymbolIterator()](): any { return (this._results as any /** TODO #???? */)[getSymbolIterator()](); }
 
   toString(): string { return this._results.toString(); }
 

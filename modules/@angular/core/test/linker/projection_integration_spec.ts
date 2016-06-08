@@ -35,7 +35,7 @@ import {getAllDebugNodes} from '@angular/core/src/debug/debug_node';
 export function main() {
   describe('projection', () => {
     it('should support simple components',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<simple>' +
                                           '<div>A</div>' +
@@ -50,7 +50,7 @@ export function main() {
        }));
 
     it('should support simple components with text interpolation as direct children',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '{{\'START(\'}}<simple>' +
                                           '{{text}}' +
@@ -68,7 +68,7 @@ export function main() {
        }));
 
     it('should support projecting text interpolation to a non bound element',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(
                 Simple,
                 new ViewMetadata(
@@ -88,7 +88,7 @@ export function main() {
 
 
     it('should support projecting text interpolation to a non bound element with other bound elements after it',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(
                 Simple, new ViewMetadata({
                   template:
@@ -109,7 +109,7 @@ export function main() {
        }));
 
     it('should project content components',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(
                 Simple,
                 new ViewMetadata(
@@ -129,7 +129,7 @@ export function main() {
        }));
 
     it('should not show the light dom even if there is no content tag',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp,
                           new ViewMetadata({template: '<empty>A</empty>', directives: [Empty]}))
              .createAsync(MainComp)
@@ -141,7 +141,7 @@ export function main() {
        }));
 
     it('should support multiple content tags',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<multiple-content-tags>' +
                                           '<div>B</div>' +
@@ -159,7 +159,7 @@ export function main() {
        }));
 
     it('should redistribute only direct children',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<multiple-content-tags>' +
                                           '<div>B<div class="left">A</div></div>' +
@@ -176,7 +176,7 @@ export function main() {
        }));
 
     it("should redistribute direct child viewcontainers when the light dom changes",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<multiple-content-tags>' +
                                           '<template manual class="left"><div>A1</div></template>' +
@@ -204,7 +204,7 @@ export function main() {
        }));
 
     it("should support nested components",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<outer-with-indirect-nested>' +
                                           '<div>A</div>' +
@@ -221,7 +221,7 @@ export function main() {
        }));
 
     it("should support nesting with content being direct child of a nested component",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<outer>' +
                                           '<template manual class="left"><div>A</div></template>' +
@@ -246,7 +246,7 @@ export function main() {
        }));
 
     it('should redistribute when the shadow dom changes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<conditional-content>' +
                                           '<div class="left">A</div>' +
@@ -278,7 +278,7 @@ export function main() {
     // important as we are removing the ng-content element during compilation,
     // which could skrew up text node indices.
     it('should support text nodes after content tags',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
          tcb.overrideView(
                 MainComp,
@@ -299,7 +299,7 @@ export function main() {
     // important as we are moving style tags around during compilation,
     // which could skrew up text node indices.
     it('should support text nodes after style tags',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
          tcb.overrideView(
                 MainComp,
@@ -316,7 +316,7 @@ export function main() {
        }));
 
     it('should support moving non projected light dom around',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<empty>' +
                                           '  <template manual><div>A</div></template>' +
@@ -326,7 +326,7 @@ export function main() {
                           }))
              .createAsync(MainComp)
              .then((main) => {
-               var sourceDirective;
+               var sourceDirective: any /** TODO #9100 */;
 
                // We can't use the child nodes to get a hold of this because it's not in the dom at
                // all.
@@ -349,7 +349,7 @@ export function main() {
        }));
 
     it('should support moving projected light dom around',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<simple><template manual><div>A</div></template></simple>' +
                                           'START(<div project></div>)END',
@@ -373,7 +373,7 @@ export function main() {
        }));
 
     it('should support moving ng-content around',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(
                 MainComp, new ViewMetadata({
                   template: '<conditional-content>' +
@@ -411,7 +411,7 @@ export function main() {
     // is still important as we are merging proto views independent of
     // the presence of ng-content elements!
     it('should still allow to implement a recursive trees',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp,
                           new ViewMetadata({template: '<tree></tree>', directives: [Tree]}))
              .createAsync(MainComp)
@@ -433,7 +433,7 @@ export function main() {
     // is still important as we are merging proto views independent of
     // the presence of ng-content elements!
     it('should still allow to implement a recursive trees via multiple components',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp,
                           new ViewMetadata({template: '<tree></tree>', directives: [Tree]}))
              .overrideView(Tree, new ViewMetadata({
@@ -468,7 +468,7 @@ export function main() {
 
     if (getDOM().supportsNativeShadowDOM()) {
       it('should support native content projection and isolate styles per component',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MainComp, new ViewMetadata({
                               template: '<simple-native1><div>A</div></simple-native1>' +
                                             '<simple-native2><div>B</div></simple-native2>',
@@ -487,7 +487,7 @@ export function main() {
 
     if (getDOM().supportsDOMEvents()) {
       it('should support non emulated styles',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MainComp, new ViewMetadata({
                               template: '<div class="redStyle"></div>',
                               styles: ['.redStyle { color: red}'],
@@ -508,7 +508,7 @@ export function main() {
          }));
 
       it('should support emulated style encapsulation',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MainComp, new ViewMetadata({
                               template: '<div></div>',
                               styles: ['div { color: red}'],
@@ -528,7 +528,7 @@ export function main() {
     }
 
     it('should support nested conditionals that contain ng-contents',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: `<conditional-text>a</conditional-text>`,
                             directives: [ConditionalTextComponent]
@@ -552,7 +552,7 @@ export function main() {
        }));
 
     it('should allow to switch the order of nested components via ng-content',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: `<cmp-a><cmp-b></cmp-b></cmp-a>`,
                             directives: [CmpA, CmpB],
@@ -568,7 +568,7 @@ export function main() {
        }));
 
     it('should create nested components in the right order',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: `<cmp-a1></cmp-a1><cmp-a2></cmp-a2>`,
                             directives: [CmpA1, CmpA2],
@@ -584,7 +584,7 @@ export function main() {
        }));
 
     it('should project filled view containers into a view container',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MainComp, new ViewMetadata({
                             template: '<conditional-content>' +
                                           '<div class="left">A</div>' +

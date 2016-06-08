@@ -244,7 +244,7 @@ export interface TemplateAstVisitor {
  */
 export function templateVisitAll(visitor: TemplateAstVisitor, asts: TemplateAst[],
                                  context: any = null): any[] {
-  var result = [];
+  var result: any[] /** TODO #9100 */ = [];
   asts.forEach(ast => {
     var astResult = ast.visit(visitor, context);
     if (isPresent(astResult)) {

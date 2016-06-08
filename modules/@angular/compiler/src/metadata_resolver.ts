@@ -126,9 +126,9 @@ export class CompileMetadataResolver {
     var meta = this._directiveCache.get(directiveType);
     if (isBlank(meta)) {
       var dirMeta = this._directiveResolver.resolve(directiveType);
-      var templateMeta = null;
-      var changeDetectionStrategy = null;
-      var viewProviders = [];
+      var templateMeta: any /** TODO #9100 */ = null;
+      var changeDetectionStrategy: any /** TODO #9100 */ = null;
+      var viewProviders: any[] /** TODO #9100 */ = [];
       var moduleUrl = staticTypeModuleUrl(directiveType);
       if (dirMeta instanceof ComponentMetadata) {
         assertArrayOfStrings('styles', dirMeta.styles);
@@ -154,12 +154,12 @@ export class CompileMetadataResolver {
         moduleUrl = componentModuleUrl(this._reflector, directiveType, cmpMeta);
       }
 
-      var providers = [];
+      var providers: any[] /** TODO #9100 */ = [];
       if (isPresent(dirMeta.providers)) {
         providers = this.getProvidersMetadata(dirMeta.providers);
       }
-      var queries = [];
-      var viewQueries = [];
+      var queries: any[] /** TODO #9100 */ = [];
+      var viewQueries: any[] /** TODO #9100 */ = [];
       if (isPresent(dirMeta.queries)) {
         queries = this.getQueriesMetadata(dirMeta.queries, false, directiveType);
         viewQueries = this.getQueriesMetadata(dirMeta.queries, true, directiveType);
@@ -275,7 +275,7 @@ export class CompileMetadataResolver {
       let isOptional = false;
       let query: QueryMetadata = null;
       let viewQuery: ViewQueryMetadata = null;
-      var token = null;
+      var token: any /** TODO #9100 */ = null;
       if (isArray(param)) {
         (<any[]>param)
             .forEach((paramEntry) => {
@@ -324,7 +324,7 @@ export class CompileMetadataResolver {
 
   getTokenMetadata(token: any): cpl.CompileTokenMetadata {
     token = resolveForwardRef(token);
-    var compileToken;
+    var compileToken: any /** TODO #9100 */;
     if (isString(token)) {
       compileToken = new cpl.CompileTokenMetadata({value: token});
     } else {
@@ -356,7 +356,7 @@ export class CompileMetadataResolver {
   }
 
   getProviderMetadata(provider: Provider): cpl.CompileProviderMetadata {
-    var compileDeps;
+    var compileDeps: any /** TODO #9100 */;
     if (isPresent(provider.useClass)) {
       compileDeps = this.getDependenciesMetadata(provider.useClass, provider.dependencies);
     } else if (isPresent(provider.useFactory)) {
@@ -382,8 +382,8 @@ export class CompileMetadataResolver {
 
   getQueriesMetadata(queries: {[key: string]: QueryMetadata},
                      isViewQuery: boolean, directiveType: Type): cpl.CompileQueryMetadata[] {
-    var compileQueries = [];
-    StringMapWrapper.forEach(queries, (query, propertyName) => {
+    var compileQueries: any[] /** TODO #9100 */ = [];
+    StringMapWrapper.forEach(queries, (query: any /** TODO #9100 */, propertyName: any /** TODO #9100 */) => {
       if (query.isViewQuery === isViewQuery) {
         compileQueries.push(this.getQueryMetadata(query, propertyName, directiveType));
       }
@@ -392,7 +392,7 @@ export class CompileMetadataResolver {
   }
 
   getQueryMetadata(q: QueryMetadata, propertyName: string, typeOrFunc: Type | Function): cpl.CompileQueryMetadata {
-    var selectors;
+    var selectors: any /** TODO #9100 */;
     if (q.isVarBindingQuery) {
       selectors = q.varBindings.map(varName => this.getTokenMetadata(varName));
     } else {
@@ -412,7 +412,7 @@ export class CompileMetadataResolver {
 }
 
 function flattenDirectives(view: ViewMetadata, platformDirectives: any[]): Type[] {
-  let directives = [];
+  let directives: any[] /** TODO #9100 */ = [];
   if (isPresent(platformDirectives)) {
     flattenArray(platformDirectives, directives);
   }
@@ -423,7 +423,7 @@ function flattenDirectives(view: ViewMetadata, platformDirectives: any[]): Type[
 }
 
 function flattenPipes(view: ViewMetadata, platformPipes: any[]): Type[] {
-  let pipes = [];
+  let pipes: any[] /** TODO #9100 */ = [];
   if (isPresent(platformPipes)) {
     flattenArray(platformPipes, pipes);
   }

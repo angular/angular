@@ -88,7 +88,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
   visitAnimationStyles(ast: AnimationStylesAst,
                        context: _AnimationBuilderContext): o.Expression {
-    var stylesArr = [];
+    var stylesArr: any[] /** TODO #9100 */ = [];
     if (context.isExpectingFirstStyleStep) {
       stylesArr.push(_ANIMATION_START_STATE_STYLES_VAR);
       context.isExpectingFirstStyleStep = false;
@@ -139,7 +139,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
   }
 
   /** @internal */
-  _callAnimateMethod(ast: AnimationStepAst, startingStylesExpr, keyframesExpr) {
+  _callAnimateMethod(ast: AnimationStepAst, startingStylesExpr: any /** TODO #9100 */, keyframesExpr: any /** TODO #9100 */) {
     return _ANIMATION_FACTORY_RENDERER_VAR.callMethod('animate', [
       _ANIMATION_FACTORY_ELEMENT_VAR,
       startingStylesExpr,
@@ -165,8 +165,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
   visitAnimationStateDeclaration(ast: AnimationStateDeclarationAst, context: _AnimationBuilderContext): void {
     var flatStyles: {[key: string]: string|number} = {};
-    _getStylesArray(ast).forEach(entry => {
-      StringMapWrapper.forEach(entry, (value, key) => {
+    _getStylesArray(ast).forEach((entry: any /** TODO #9100 */) => {
+      StringMapWrapper.forEach(entry, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
         flatStyles[key] = value;
       });
     });
@@ -182,7 +182,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
     context.isExpectingFirstStyleStep = true;
 
-    var stateChangePreconditions = [];
+    var stateChangePreconditions: any[] /** TODO #9100 */ = [];
 
     ast.stateChanges.forEach(stateChange => {
       stateChangePreconditions.push(
@@ -216,7 +216,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     //this should always be defined even if the user overrides it
     context.stateMap.registerState(DEFAULT_STATE, {});
 
-    var statements = [];
+    var statements: any[] /** TODO #9100 */ = [];
     statements.push(
       _ANIMATION_FACTORY_VIEW_VAR.callMethod('cancelActiveAnimation', [
         _ANIMATION_FACTORY_ELEMENT_VAR,
@@ -313,12 +313,12 @@ class _AnimationBuilder implements AnimationAstVisitor {
     var fnStatement = ast.visit(this, context).toDeclStmt(this._fnVarName);
     var fnVariable = o.variable(this._fnVarName);
 
-    var lookupMap = [];
-    StringMapWrapper.forEach(context.stateMap.states, (value, stateName) => {
+    var lookupMap: any[] /** TODO #9100 */ = [];
+    StringMapWrapper.forEach(context.stateMap.states, (value: any /** TODO #9100 */, stateName: any /** TODO #9100 */) => {
       var variableValue = EMPTY_MAP;
       if (isPresent(value)) {
-        let styleMap = [];
-        StringMapWrapper.forEach(value, (value, key) => {
+        let styleMap: any[] /** TODO #9100 */ = [];
+        StringMapWrapper.forEach(value, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
           styleMap.push([key, o.literal(value)]);
         });
         variableValue = o.literalMap(styleMap);

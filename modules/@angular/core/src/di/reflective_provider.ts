@@ -37,7 +37,7 @@ export class ReflectiveDependency {
   }
 }
 
-const _EMPTY_LIST = /*@ts2dart_const*/[];
+const _EMPTY_LIST: any[] /** TODO #9100 */ = /*@ts2dart_const*/[];
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.
@@ -109,13 +109,13 @@ export class ResolvedReflectiveFactory {
  */
 export function resolveReflectiveFactory(provider: Provider): ResolvedReflectiveFactory {
   var factoryFn: Function;
-  var resolvedDeps;
+  var resolvedDeps: any /** TODO #9100 */;
   if (isPresent(provider.useClass)) {
     var useClass = resolveForwardRef(provider.useClass);
     factoryFn = reflector.factory(useClass);
     resolvedDeps = _dependenciesFor(useClass);
   } else if (isPresent(provider.useExisting)) {
-    factoryFn = (aliasInstance) => aliasInstance;
+    factoryFn = (aliasInstance: any /** TODO #9100 */) => aliasInstance;
     resolvedDeps = [ReflectiveDependency.fromKey(ReflectiveKey.get(provider.useExisting))];
   } else if (isPresent(provider.useFactory)) {
     factoryFn = provider.useFactory;
@@ -173,7 +173,7 @@ export function mergeResolvedReflectiveProviders(
         normalizedProvidersMap.set(provider.key.id, provider);
       }
     } else {
-      var resolvedProvider;
+      var resolvedProvider: any /** TODO #9100 */;
       if (provider.multiProvider) {
         resolvedProvider = new ResolvedReflectiveProvider_(
             provider.key, ListWrapper.clone(provider.resolvedFactories), provider.multiProvider);
@@ -232,10 +232,10 @@ function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
   return params.map((p: any[]) => _extractToken(typeOrFunc, p, params));
 }
 
-function _extractToken(typeOrFunc, metadata /*any[] | any*/,
+function _extractToken(typeOrFunc: any /** TODO #9100 */, metadata: any /** TODO #9100 */ /*any[] | any*/,
                        params: any[][]): ReflectiveDependency {
-  var depProps = [];
-  var token = null;
+  var depProps: any[] /** TODO #9100 */ = [];
+  var token: any /** TODO #9100 */ = null;
   var optional = false;
 
   if (!isArray(metadata)) {
@@ -246,8 +246,8 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/,
     }
   }
 
-  var lowerBoundVisibility = null;
-  var upperBoundVisibility = null;
+  var lowerBoundVisibility: any /** TODO #9100 */ = null;
+  var upperBoundVisibility: any /** TODO #9100 */ = null;
 
   for (var i = 0; i < metadata.length; ++i) {
     var paramMetadata = metadata[i];
@@ -287,8 +287,8 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/,
   }
 }
 
-function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility,
-                           depProps): ReflectiveDependency {
+function _createDependency(token: any /** TODO #9100 */, optional: any /** TODO #9100 */, lowerBoundVisibility: any /** TODO #9100 */, upperBoundVisibility: any /** TODO #9100 */,
+                           depProps: any /** TODO #9100 */): ReflectiveDependency {
   return new ReflectiveDependency(ReflectiveKey.get(token), optional, lowerBoundVisibility,
                                   upperBoundVisibility, depProps);
 }

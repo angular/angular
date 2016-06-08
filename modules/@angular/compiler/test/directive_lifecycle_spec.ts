@@ -113,7 +113,7 @@ export function main() {
 class DirectiveNoHooks {}
 
 class DirectiveWithOnChangesMethod {
-  ngOnChanges(_) {}
+  ngOnChanges(_: any /** TODO #9100 */) {}
 }
 
 class DirectiveWithOnInitMethod {

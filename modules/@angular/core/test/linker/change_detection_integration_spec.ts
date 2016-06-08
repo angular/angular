@@ -130,7 +130,7 @@ export function main() {
     ]);
 
     beforeEach(inject([TestComponentBuilder, ElementSchemaRegistry, RenderLog, DirectiveLog],
-                      (_tcb, _elSchema, _renderLog, _directiveLog) => {
+                      (_tcb: any /** TODO #9100 */, _elSchema: any /** TODO #9100 */, _renderLog: any /** TODO #9100 */, _directiveLog: any /** TODO #9100 */) => {
                         tcb = _tcb;
                         elSchema = _elSchema;
                         renderLog = _renderLog;
@@ -329,7 +329,7 @@ export function main() {
 
       it('should support function calls', fakeAsync(() => {
            var ctx = _bindSimpleValue('a()(99)', TestData);
-           ctx.componentInstance.a = () => (a) => a;
+           ctx.componentInstance.a = () => (a: any /** TODO #9100 */) => a;
            ctx.detectChanges(false);
            expect(renderLog.log).toEqual(['someProp=99']);
          }));
@@ -1188,13 +1188,13 @@ class DirectiveLog {
 @Pipe({name: 'countingPipe'})
 class CountingPipe implements PipeTransform {
   state: number = 0;
-  transform(value) { return `${value} state:${this.state ++}`; }
+  transform(value: any /** TODO #9100 */) { return `${value} state:${this.state ++}`; }
 }
 
 @Pipe({name: 'countingImpurePipe', pure: false})
 class CountingImpurePipe implements PipeTransform {
   state: number = 0;
-  transform(value) { return `${value} state:${this.state ++}`; }
+  transform(value: any /** TODO #9100 */) { return `${value} state:${this.state ++}`; }
 }
 
 @Pipe({name: 'pipeWithOnDestroy'})
@@ -1203,22 +1203,22 @@ class PipeWithOnDestroy implements PipeTransform, OnDestroy {
 
   ngOnDestroy() { this.directiveLog.add('pipeWithOnDestroy', 'ngOnDestroy'); }
 
-  transform(value) { return null; }
+  transform(value: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
 }
 
 @Pipe({name: 'identityPipe'})
 class IdentityPipe implements PipeTransform {
-  transform(value) { return value; }
+  transform(value: any /** TODO #9100 */) { return value; }
 }
 
 @Pipe({name: 'wrappedPipe'})
 class WrappedPipe implements PipeTransform {
-  transform(value) { return WrappedValue.wrap(value); }
+  transform(value: any /** TODO #9100 */) { return WrappedValue.wrap(value); }
 }
 
 @Pipe({name: 'multiArgPipe'})
 class MultiArgPipe implements PipeTransform {
-  transform(value, arg1, arg2, arg3 = 'default') { return `${value} ${arg1} ${arg2} ${arg3}`; }
+  transform(value: any /** TODO #9100 */, arg1: any /** TODO #9100 */, arg2: any /** TODO #9100 */, arg3 = 'default') { return `${value} ${arg1} ${arg2} ${arg3}`; }
 }
 
 @Component({selector: 'test-cmp', template: '', directives: ALL_DIRECTIVES, pipes: ALL_PIPES})
@@ -1271,10 +1271,10 @@ class EmitterDirective {
 @Directive({selector: '[testDirective]', exportAs: 'testDirective'})
 class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked,
     AfterViewInit, AfterViewChecked, OnDestroy {
-  @Input() a;
-  @Input() b;
-  changes;
-  event;
+  @Input() a: any /** TODO #9100 */;
+  @Input() b: any /** TODO #9100 */;
+  changes: any /** TODO #9100 */;
+  event: any /** TODO #9100 */;
   eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
   @Input('testDirective') name: string;
@@ -1283,7 +1283,7 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
 
   constructor(public log: DirectiveLog) {}
 
-  onEvent(event) { this.event = event; }
+  onEvent(event: any /** TODO #9100 */) { this.event = event; }
 
   ngDoCheck() { this.log.add(this.name, 'ngDoCheck'); }
 
@@ -1294,10 +1294,10 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
     }
   }
 
-  ngOnChanges(changes) {
+  ngOnChanges(changes: any /** TODO #9100 */) {
     this.log.add(this.name, 'ngOnChanges');
     var r = {};
-    StringMapWrapper.forEach(changes, (c, key) => r[key] = c.currentValue);
+    StringMapWrapper.forEach(changes, (c: any /** TODO #9100 */, key: any /** TODO #9100 */) => (r as any /** TODO #9100 */)[key] = c.currentValue);
     this.changes = r;
     if (this.throwOn == 'ngOnChanges') {
       throw new BaseException('Boom!');
@@ -1401,9 +1401,9 @@ class Person {
     this.address = address;
   }
 
-  sayHi(m) { return `Hi, ${m}`; }
+  sayHi(m: any /** TODO #9100 */) { return `Hi, ${m}`; }
 
-  passThrough(val) { return val; }
+  passThrough(val: any /** TODO #9100 */) { return val; }
 
   toString(): string {
     var address = this.address == null ? '' : ' address=' + this.address.toString();
@@ -1416,7 +1416,7 @@ class Address {
   cityGetterCalls: number = 0;
   zipCodeGetterCalls: number = 0;
 
-  constructor(public _city: string, public _zipcode = null) {}
+  constructor(public _city: string, public _zipcode: any /** TODO #9100 */ = null) {}
 
   get city() {
     this.cityGetterCalls++;

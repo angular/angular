@@ -16,7 +16,7 @@ export enum TokenType {
 export class Lexer {
   tokenize(text: string): any[] {
     var scanner = new _Scanner(text);
-    var tokens = [];
+    var tokens: any[] /** TODO #9100 */ = [];
     var token = scanner.scanToken();
     while (token != null) {
       tokens.push(token);
@@ -160,7 +160,7 @@ export const $RBRACE = /*@ts2dart_const*/ 125;
 const $NBSP = /*@ts2dart_const*/ 160;
 
 export class ScannerError extends BaseException {
-  constructor(public message) { super(); }
+  constructor(public message: any /** TODO #9100 */) { super(); }
 
   toString(): string { return this.message; }
 }

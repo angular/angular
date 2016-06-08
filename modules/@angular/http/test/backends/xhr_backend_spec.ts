@@ -264,7 +264,7 @@ export function main() {
                                   'application/x-www-form-urlencoded;charset=UTF-8');
       });
 
-      if (global['Blob']) {
+      if ((global as any /** TODO #9100 */)['Blob']) {
         it('should use FormData body and detect content type header to the request', () => {
           var body = new FormData();
           body.append('test1', 'val1');
@@ -385,7 +385,7 @@ export function main() {
            existingXHRs[0].dispatchEvent('load');
          }));
 
-      it('should set ok to true on 200 return', inject([AsyncTestCompleter], async => {
+      it('should set ok to true on 200 return', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
         var statusCode = 200;
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
           new ResponseOptions({status: statusCode}));
@@ -399,7 +399,7 @@ export function main() {
         existingXHRs[0].dispatchEvent('load');
       }));
 
-      it('should set ok to false on 300 return', inject([AsyncTestCompleter], async => {
+      it('should set ok to false on 300 return', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
         var statusCode = 300;
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
           new ResponseOptions({status: statusCode}));

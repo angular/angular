@@ -186,8 +186,8 @@ export function main() {
   describe('processRules', () => {
     describe('parse rules', () => {
       function captureRules(input: string): CssRule[] {
-        var result = [];
-        processRules(input, (cssRule) => {
+        var result: any[] /** TODO #9100 */ = [];
+        processRules(input, (cssRule: any /** TODO #9100 */) => {
           result.push(cssRule);
           return cssRule;
         });
@@ -216,13 +216,13 @@ export function main() {
     describe('modify rules', () => {
       it('should allow to change the selector while preserving whitespaces', () => {
         expect(processRules('@import a; b {c {d}} e {f}',
-                            (cssRule) => new CssRule(cssRule.selector + '2', cssRule.content)))
+                            (cssRule: any /** TODO #9100 */) => new CssRule(cssRule.selector + '2', cssRule.content)))
             .toEqual('@import a2; b2 {c {d}} e2 {f}');
       });
 
       it('should allow to change the content', () => {
         expect(processRules('a {b}',
-                            (cssRule) => new CssRule(cssRule.selector, cssRule.content + '2')))
+                            (cssRule: any /** TODO #9100 */) => new CssRule(cssRule.selector, cssRule.content + '2')))
             .toEqual('a {b2}');
       });
     });

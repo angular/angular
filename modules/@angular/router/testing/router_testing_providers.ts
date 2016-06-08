@@ -25,5 +25,5 @@ export const ROUTER_FAKE_PROVIDERS: any[] = /*@ts2dart_const*/ [
     deps: /*@ts2dart_const*/
         [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
   },
-  /*@ts2dart_Provider*/ {provide: RouteSegment, useFactory: (r) => r.routeTree.root, deps: [Router]}
+  /*@ts2dart_Provider*/ {provide: RouteSegment, useFactory: (r: any /** TODO #9100 */) => r.routeTree.root, deps: [Router]}
 ];

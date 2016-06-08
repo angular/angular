@@ -60,8 +60,8 @@ import {
   ]
 })
 export class AnimateApp {
-  public items = [];
-  public _state;
+  public items: any[] /** TODO #9100 */ = [];
+  public _state: any /** TODO #9100 */;
 
   public bgStatus = 'focus';
 

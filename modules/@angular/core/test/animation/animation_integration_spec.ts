@@ -58,7 +58,7 @@ function declareTests() {
   describe('animation tests', function() {
     beforeEachProviders(() => [{provide: AnimationDriver, useClass: MockAnimationDriver}]);
 
-    var makeAnimationCmp = (tcb: TestComponentBuilder, tpl: string, animationEntry: AnimationEntryMetadata|AnimationEntryMetadata[], callback = null) => {
+    var makeAnimationCmp = (tcb: TestComponentBuilder, tpl: string, animationEntry: AnimationEntryMetadata|AnimationEntryMetadata[], callback: any /** TODO #9100 */ = null) => {
       var entries = isArray(animationEntry)
           ? <AnimationEntryMetadata[]>animationEntry
           : [<AnimationEntryMetadata>animationEntry];
@@ -81,7 +81,7 @@ function declareTests() {
                               style({'opacity': 1}))
                           ])
                         ]),
-                                       (fixture) => {
+                                       (fixture: any /** TODO #9100 */) => {
                                          var cmp = fixture.debugElement.componentInstance;
                                          cmp.exp = true;
                                          fixture.detectChanges();
@@ -108,7 +108,7 @@ function declareTests() {
                               style({'opacity': 0}))
                           ])
                         ]),
-                                       (fixture) => {
+                                       (fixture: any /** TODO #9100 */) => {
                                          var cmp = fixture.debugElement.componentInstance;
                                          cmp.exp = true;
                                          fixture.detectChanges();
@@ -223,7 +223,7 @@ function declareTests() {
 
       describe('groups/sequences', () => {
         var assertPlaying =
-            (player: MockAnimationDriver, isPlaying) => {
+            (player: MockAnimationDriver, isPlaying: any /** TODO #9100 */) => {
               var method = 'play';
               var lastEntry = player.log.length > 0 ? player.log[player.log.length - 1] : null;
               if (isPresent(lastEntry)) {
@@ -570,7 +570,7 @@ function declareTests() {
                           transition('* => void', [
                             animate(1000, style({'opacity': 0}))
                           ])
-                        ]), (fixture) => {
+                        ]), (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;
@@ -601,7 +601,7 @@ function declareTests() {
                             animate(1000, style({'opacity': 0})),
                             animate(1000, style({'opacity': 1}))
                           ])
-                        ]), (fixture) => {
+                        ]), (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;
@@ -636,7 +636,7 @@ function declareTests() {
                             animate(1000, style({'width': 1000}))
                           ])
                         ])
-                    ], (fixture) => {
+                    ], (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;
@@ -686,7 +686,7 @@ function declareTests() {
                           state('final', style({ "top": '100px' })),
                           transition('* => final', [ animate(1000) ])
                         ])
-                    ], (fixture) => {
+                    ], (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;
@@ -712,7 +712,7 @@ function declareTests() {
                           state('red', style({ "background": 'red' })),
                           transition('* => *', [ animate(1000) ])
                         ])
-                    ], (fixture) => {
+                    ], (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;
@@ -761,7 +761,7 @@ function declareTests() {
                           state('void', style({ "height": '100px' })),
                           transition('* => *', [ animate(1000) ])
                         ])
-                    ], (fixture) => {
+                    ], (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;
@@ -784,7 +784,7 @@ function declareTests() {
                           state('void', style({ "width": '0px' })),
                           state('final', style({ "width": '100px' })),
                         ])
-                    ], (fixture) => {
+                    ], (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;
@@ -807,7 +807,7 @@ function declareTests() {
                           state('a, c', style({ "height": '100px' })),
                           state('b, d', style({ "width": '100px' })),
                         ])
-                    ], (fixture) => {
+                    ], (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;
@@ -866,7 +866,7 @@ function declareTests() {
                             animate(300)
                           ])
                         ])
-                    ], (fixture) => {
+                    ], (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;
@@ -908,7 +908,7 @@ function declareTests() {
                             animate(1000)
                           ])
                         ])
-                    ], (fixture) => {
+                    ], (fixture: any /** TODO #9100 */) => {
                      tick();
 
                      var cmp = fixture.debugElement.componentInstance;

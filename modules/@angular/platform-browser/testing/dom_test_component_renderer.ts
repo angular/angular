@@ -9,7 +9,7 @@ import {el} from './browser_util';
  */
 @Injectable()
 export class DOMTestComponentRenderer extends TestComponentRenderer {
-  constructor(@Inject(DOCUMENT) private _doc) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any /** TODO #9100 */) { super(); }
 
   insertRootElement(rootElId: string) {
     let rootEl = el(`<div id="${rootElId}"></div>`);

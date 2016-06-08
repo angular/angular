@@ -28,7 +28,7 @@ import {asNativeElements} from '@angular/core';
 export function main() {
   describe("forwardRef integration", function() {
     it('should instantiate components which are declared using forwardRef',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(App).then((tc) => {
            tc.detectChanges();
            expect(asNativeElements(tc.debugElement.children)).toHaveText('frame(lock)');

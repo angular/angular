@@ -108,7 +108,7 @@ class _UrlParser {
       matrixParams = this.parseMatrixParams();
     }
 
-    var aux = [];
+    var aux: any[] /** TODO #9100 */ = [];
     if (this.peekStartsWith('(')) {
       aux = this.parseAuxiliaryRoutes();
     }
@@ -183,7 +183,7 @@ class _UrlParser {
   }
 
   parseAuxiliaryRoutes(): TreeNode<UrlSegment>[] {
-    var segments = [];
+    var segments: any[] /** TODO #9100 */ = [];
     this.capture('(');
 
     while (!this.peekStartsWith(')') && this._remaining.length > 0) {

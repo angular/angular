@@ -47,7 +47,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._onFinish();
   }
 
-  setPosition(p): void {
+  setPosition(p: any /** TODO #9100 */): void {
     this._player.currentTime = p * this.totalTime;
   }
 

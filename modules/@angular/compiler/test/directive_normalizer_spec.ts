@@ -36,7 +36,7 @@ export function main() {
       describe('inline template', () => {
         it('should store the template',
            inject([AsyncTestCompleter, DirectiveNormalizer],
-                  (async, normalizer: DirectiveNormalizer) => {
+                  (async: any /** TODO #9100 */, normalizer: DirectiveNormalizer) => {
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
                                                    encapsulation: null,
                                                    template: 'a',
@@ -53,7 +53,7 @@ export function main() {
 
         it('should resolve styles on the annotation against the moduleUrl',
            inject([AsyncTestCompleter, DirectiveNormalizer],
-                  (async, normalizer: DirectiveNormalizer) => {
+                  (async: any /** TODO #9100 */, normalizer: DirectiveNormalizer) => {
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
                                                    encapsulation: null,
                                                    template: '',
@@ -69,7 +69,7 @@ export function main() {
 
         it('should resolve styles in the template against the moduleUrl',
            inject([AsyncTestCompleter, DirectiveNormalizer],
-                  (async, normalizer: DirectiveNormalizer) => {
+                  (async: any /** TODO #9100 */, normalizer: DirectiveNormalizer) => {
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
                                                    encapsulation: null,
                                                    template: '<style>@import test.css</style>',
@@ -85,7 +85,7 @@ export function main() {
 
         it('should use ViewEncapsulation.Emulated by default',
            inject([AsyncTestCompleter, DirectiveNormalizer],
-                  (async, normalizer: DirectiveNormalizer) => {
+                  (async: any /** TODO #9100 */, normalizer: DirectiveNormalizer) => {
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
                                                    encapsulation: null,
                                                    template: '',
@@ -101,7 +101,7 @@ export function main() {
 
         it('should use default encapsulation provided by CompilerConfig',
            inject([AsyncTestCompleter, CompilerConfig , DirectiveNormalizer],
-                  (async, config: CompilerConfig, normalizer: DirectiveNormalizer) => {
+                  (async: any /** TODO #9100 */, config: CompilerConfig, normalizer: DirectiveNormalizer) => {
                     config.defaultEncapsulation = ViewEncapsulation.None;
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
                                                    encapsulation: null,
@@ -121,7 +121,7 @@ export function main() {
 
         it('should load a template from a url that is resolved against moduleUrl',
            inject([AsyncTestCompleter, DirectiveNormalizer, XHR],
-                  (async, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
+                  (async: any /** TODO #9100 */, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
                     xhr.expect('package:some/module/sometplurl.html', 'a');
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
                                                    encapsulation: null,
@@ -141,7 +141,7 @@ export function main() {
 
         it('should resolve styles on the annotation against the moduleUrl',
            inject([AsyncTestCompleter, DirectiveNormalizer, XHR],
-                  (async, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
+                  (async: any /** TODO #9100 */, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
                     xhr.expect('package:some/module/tpl/sometplurl.html', '');
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({
                                                    encapsulation: null,
@@ -159,7 +159,7 @@ export function main() {
 
         it('should resolve styles in the template against the templateUrl',
            inject([AsyncTestCompleter, DirectiveNormalizer, XHR],
-                  (async, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
+                  (async: any /** TODO #9100 */, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
                     xhr.expect('package:some/module/tpl/sometplurl.html',
                                '<style>@import test.css</style>');
                     normalizer.normalizeTemplate(dirType, new CompileTemplateMetadata({

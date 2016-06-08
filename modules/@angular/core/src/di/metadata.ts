@@ -43,7 +43,7 @@ import {stringify} from '../facade/lang';
  * @stable
  */
 export class InjectMetadata {
-  constructor(public token) {}
+  constructor(public token: any /** TODO #9100 */) {}
   toString(): string { return `@Inject(${stringify(this.token)})`; }
 }
 
@@ -81,7 +81,7 @@ export class OptionalMetadata {
  * @stable
  */
 export class DependencyMetadata {
-  get token() { return null; }
+  get token(): any /** TODO #9100 */ { return null; }
 }
 
 /**

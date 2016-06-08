@@ -14,7 +14,7 @@ import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 
 export function main() {
   describe("I18nSelectPipe", () => {
-    var pipe;
+    var pipe: any /** TODO #9100 */;
     var mapping = {'male': 'Invite him.', 'female': 'Invite her.', 'other': 'Invite them.'};
 
     beforeEach(() => { pipe = new I18nSelectPipe(); });
@@ -39,7 +39,7 @@ export function main() {
       });
 
       it("should use 'other' if value is undefined", () => {
-        var gender;
+        var gender: any /** TODO #9100 */;
         var val = pipe.transform(gender, mapping);
         expect(val).toEqual('Invite them.');
       });

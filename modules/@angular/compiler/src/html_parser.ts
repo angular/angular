@@ -115,7 +115,7 @@ class TreeBuilder {
     let switchValue = this._advance();
 
     let type = this._advance();
-    let cases = [];
+    let cases: any[] /** TODO #9100 */ = [];
 
     // read =
     while (this.peek.type === HtmlTokenType.EXPANSION_CASE_VALUE) {
@@ -170,7 +170,7 @@ class TreeBuilder {
   }
 
   private _collectExpansionExpTokens(start: HtmlToken): HtmlToken[] {
-    let exp = [];
+    let exp: any[] /** TODO #9100 */ = [];
     let expansionFormStack = [HtmlTokenType.EXPANSION_CASE_EXP_START];
 
     while (true) {
@@ -239,7 +239,7 @@ class TreeBuilder {
   private _consumeStartTag(startTagToken: HtmlToken) {
     var prefix = startTagToken.parts[0];
     var name = startTagToken.parts[1];
-    var attrs = [];
+    var attrs: any[] /** TODO #9100 */ = [];
     while (this.peek.type === HtmlTokenType.ATTR_NAME) {
       attrs.push(this._consumeAttr(this._advance()));
     }

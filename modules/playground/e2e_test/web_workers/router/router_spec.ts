@@ -64,7 +64,7 @@ describe("WebWorker Router", () => {
     }, 5000);
   }
 
-  function waitForUrl(regex): void {
+  function waitForUrl(regex: any /** TODO #9100 */): void {
     browser.wait(() => {
       let deferred = protractor.promise.defer();
       browser.getCurrentUrl().then(

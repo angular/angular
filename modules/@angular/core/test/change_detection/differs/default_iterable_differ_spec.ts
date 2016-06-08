@@ -35,7 +35,7 @@ class ComplexItem {
 export function main() {
   describe('iterable differ', function() {
     describe('DefaultIterableDiffer', function() {
-      var differ;
+      var differ: any /** TODO #9100 */;
 
       beforeEach(() => { differ = new DefaultIterableDiffer(); });
 
@@ -71,7 +71,7 @@ export function main() {
       });
 
       it('should detect additions', () => {
-        let l = [];
+        let l: any[] /** TODO #9100 */ = [];
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({collection: []}));
 
@@ -155,7 +155,7 @@ export function main() {
       });
 
       it('should detect changes in list', () => {
-        let l = [];
+        let l: any[] /** TODO #9100 */ = [];
         differ.check(l);
 
         l.push('a');
@@ -339,7 +339,7 @@ export function main() {
     });
 
     describe('trackBy function by id', function() {
-      var differ;
+      var differ: any /** TODO #9100 */;
 
       var trackByItemId = (index: number, item: any): any => item.id;
 
@@ -434,7 +434,7 @@ export function main() {
       });
     });
     describe('trackBy function by index', function() {
-      var differ;
+      var differ: any /** TODO #9100 */;
 
       var trackByIndex = (index: number, item: any): number => index;
 

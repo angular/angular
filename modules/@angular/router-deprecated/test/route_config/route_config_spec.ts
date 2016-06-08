@@ -31,13 +31,13 @@ class _ArrayLogger {
 }
 
 class DummyConsole implements Console {
-  log(message) {}
-  warn(message) {}
+  log(message: any /** TODO #9100 */) {}
+  warn(message: any /** TODO #9100 */) {}
 }
 
 export function main() {
   describe('RouteConfig with POJO arguments', () => {
-    var fakeDoc, el, testBindings;
+    var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, testBindings: any /** TODO #9100 */;
     beforeEach(() => {
       fakeDoc = getDOM().createHtmlDocument();
       el = getDOM().createElement('app-cmp', fakeDoc);
@@ -53,11 +53,11 @@ export function main() {
       ];
     });
 
-    it('should bootstrap an app with a hierarchy', inject([AsyncTestCompleter], (async) => {
+    it('should bootstrap an app with a hierarchy', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          bootstrap(HierarchyAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
-               router.subscribe((_) => {
+               router.subscribe((_: any /** TODO #9100 */) => {
                  expect(el).toHaveText('root { parent { hello } }');
                  expect(applicationRef.instance.location.path()).toEqual('/parent/child');
                  async.done();
@@ -67,11 +67,11 @@ export function main() {
        }));
 
 
-    it('should work in an app with redirects', inject([AsyncTestCompleter], (async) => {
+    it('should work in an app with redirects', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          bootstrap(RedirectAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
-               router.subscribe((_) => {
+               router.subscribe((_: any /** TODO #9100 */) => {
                  expect(el).toHaveText('root { hello }');
                  expect(applicationRef.instance.location.path()).toEqual('/after');
                  async.done();
@@ -81,11 +81,11 @@ export function main() {
        }));
 
 
-    it('should work in an app with async components', inject([AsyncTestCompleter], (async) => {
+    it('should work in an app with async components', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          bootstrap(AsyncAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
-               router.subscribe((_) => {
+               router.subscribe((_: any /** TODO #9100 */) => {
                  expect(el).toHaveText('root { hello }');
                  expect(applicationRef.instance.location.path()).toEqual('/hello');
                  async.done();
@@ -95,11 +95,11 @@ export function main() {
        }));
 
 
-    it('should work in an app with aux routes', inject([AsyncTestCompleter], (async) => {
+    it('should work in an app with aux routes', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          bootstrap(AuxAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
-               router.subscribe((_) => {
+               router.subscribe((_: any /** TODO #9100 */) => {
                  expect(el).toHaveText('root { hello } aside { hello }');
                  expect(applicationRef.instance.location.path()).toEqual('/hello(aside)');
                  async.done();
@@ -110,11 +110,11 @@ export function main() {
 
 
     it('should work in an app with async components defined with "loader"',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          bootstrap(ConciseAsyncAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
-               router.subscribe((_) => {
+               router.subscribe((_: any /** TODO #9100 */) => {
                  expect(el).toHaveText('root { hello }');
                  expect(applicationRef.instance.location.path()).toEqual('/hello');
                  async.done();
@@ -125,11 +125,11 @@ export function main() {
 
 
     it('should work in an app with a constructor component',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          bootstrap(ExplicitConstructorAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
-               router.subscribe((_) => {
+               router.subscribe((_: any /** TODO #9100 */) => {
                  expect(el).toHaveText('root { hello }');
                  expect(applicationRef.instance.location.path()).toEqual('/hello');
                  async.done();
@@ -141,7 +141,7 @@ export function main() {
     it('should throw if a config is missing a target',
        inject(
            [AsyncTestCompleter],
-           (async) => {
+           (async: any /** TODO #9100 */) => {
                bootstrap(WrongConfigCmp, testBindings)
                    .catch((e) => {
                      expect(e.originalException)
@@ -154,7 +154,7 @@ export function main() {
     it('should throw if a config has an invalid component type',
        inject(
            [AsyncTestCompleter],
-           (async) => {
+           (async: any /** TODO #9100 */) => {
                bootstrap(WrongComponentTypeCmp, testBindings)
                    .catch((e) => {
                      expect(e.originalException)
@@ -167,7 +167,7 @@ export function main() {
     it('should throw if a config has an invalid alias name',
        inject(
            [AsyncTestCompleter],
-           (async) => {
+           (async: any /** TODO #9100 */) => {
                bootstrap(BadAliasNameCmp, testBindings)
                    .catch((e) => {
                      expect(e.originalException)

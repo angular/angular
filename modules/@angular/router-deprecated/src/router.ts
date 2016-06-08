@@ -116,7 +116,7 @@ export class Router {
     this._auxRouters.set(outletName, router);
     router._outlet = outlet;
 
-    var auxInstruction;
+    var auxInstruction: any /** TODO #9100 */;
     if (isPresent(this.currentInstruction) &&
         isPresent(auxInstruction = this.currentInstruction.auxInstruction[outletName])) {
       return router.commit(auxInstruction);
@@ -152,7 +152,7 @@ export class Router {
         return false;
       }
       if (isPresent(instruction.component.params)) {
-        StringMapWrapper.forEach(instruction.component.params, (value, key) => {
+        StringMapWrapper.forEach(instruction.component.params, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
           if (currentInstruction.component.params[key] !== value) {
             reason = false;
           }
@@ -254,7 +254,7 @@ export class Router {
         unsettledInstructions.push(this._settleInstruction(instruction.child));
       }
 
-      StringMapWrapper.forEach(instruction.auxInstruction, (instruction: Instruction, _) => {
+      StringMapWrapper.forEach(instruction.auxInstruction, (instruction: Instruction, _: any /** TODO #9100 */) => {
         unsettledInstructions.push(this._settleInstruction(instruction));
       });
       return PromiseWrapper.all(unsettledInstructions);
@@ -547,7 +547,7 @@ export class RootRouter extends Router {
 }
 
 class ChildRouter extends Router {
-  constructor(parent: Router, hostComponent) {
+  constructor(parent: Router, hostComponent: any /** TODO #9100 */) {
     super(parent.registry, parent, hostComponent, parent.root);
     this.parent = parent;
   }

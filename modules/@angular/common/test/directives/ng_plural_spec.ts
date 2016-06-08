@@ -20,7 +20,7 @@ export function main() {
     beforeEachProviders(() => [{provide: NgLocalization, useClass: TestLocalizationMap}]);
 
     it('should display the template according to the exact value',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var template = '<div>' +
                         '<ul [ngPlural]="switchValue">' +
                         '<template ngPluralCase="=0"><li>you have no messages.</li></template>' +
@@ -43,7 +43,7 @@ export function main() {
        }));
 
     it('should display the template according to the category',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var template =
              '<div>' +
              '<ul [ngPlural]="switchValue">' +
@@ -67,7 +67,7 @@ export function main() {
        }));
 
     it('should default to other when no matches are found',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var template =
              '<div>' +
              '<ul [ngPlural]="switchValue">' +
@@ -87,7 +87,7 @@ export function main() {
        }));
 
     it('should prioritize value matches over category matches',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var template =
              '<div>' +
              '<ul [ngPlural]="switchValue">' +

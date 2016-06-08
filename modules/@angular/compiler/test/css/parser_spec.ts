@@ -33,7 +33,7 @@ import {
 
 import {CssLexer} from '@angular/compiler/src/css/lexer';
 
-export function assertTokens(tokens, valuesArr) {
+export function assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9100 */) {
   for (var i = 0; i < tokens.length; i++) {
     expect(tokens[i].strValue == valuesArr[i]);
   }
@@ -41,14 +41,14 @@ export function assertTokens(tokens, valuesArr) {
 
 export function main() {
   describe('CssParser', () => {
-    function parse(css): ParsedCssResult {
+    function parse(css: any /** TODO #9100 */): ParsedCssResult {
       var lexer = new CssLexer();
       var scanner = lexer.scan(css);
       var parser = new CssParser(scanner, 'some-fake-file-name.css');
       return parser.parse();
     }
 
-    function makeAST(css): CssStyleSheetAST {
+    function makeAST(css: any /** TODO #9100 */): CssStyleSheetAST {
       var output = parse(css);
       var errors = output.errors;
       if (errors.length > 0) {

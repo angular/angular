@@ -8,23 +8,23 @@ import {BindingPipe, LiteralPrimitive, AST} from '@angular/compiler/src/expressi
 export function main() {
   function createParser() { return new Parser(new Lexer()); }
 
-  function parseAction(text, location = null): any {
+  function parseAction(text: any /** TODO #9100 */, location: any /** TODO #9100 */ = null): any {
     return createParser().parseAction(text, location);
   }
 
-  function parseBinding(text, location = null): any {
+  function parseBinding(text: any /** TODO #9100 */, location: any /** TODO #9100 */ = null): any {
     return createParser().parseBinding(text, location);
   }
 
-  function parseTemplateBindings(text, location = null): any {
+  function parseTemplateBindings(text: any /** TODO #9100 */, location: any /** TODO #9100 */ = null): any {
     return createParser().parseTemplateBindings(text, location).templateBindings;
   }
 
-  function parseInterpolation(text, location = null): any {
+  function parseInterpolation(text: any /** TODO #9100 */, location: any /** TODO #9100 */ = null): any {
     return createParser().parseInterpolation(text, location);
   }
 
-  function parseSimpleBinding(text, location = null): any {
+  function parseSimpleBinding(text: any /** TODO #9100 */, location: any /** TODO #9100 */ = null): any {
     return createParser().parseSimpleBinding(text, location);
   }
 
@@ -48,9 +48,9 @@ export function main() {
     expect(unparse(ast)).toEqual(expected);
   }
 
-  function expectActionError(text) { return expect(() => parseAction(text)); }
+  function expectActionError(text: any /** TODO #9100 */) { return expect(() => parseAction(text)); }
 
-  function expectBindingError(text) { return expect(() => parseBinding(text)); }
+  function expectBindingError(text: any /** TODO #9100 */) { return expect(() => parseBinding(text)); }
 
   describe("parser", () => {
     describe("parseAction", () => {

@@ -58,7 +58,7 @@ export function main() {
   }
 
   describe('WebAnimationsPlayer', () => {
-    var player, captures;
+    var player: any /** TODO #9100 */, captures: any /** TODO #9100 */;
     beforeEach(() => {
       var newPlayer = makePlayer();
       captures = <{[key: string]: any}>newPlayer['captures'];

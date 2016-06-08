@@ -2,16 +2,16 @@ import {isString, isPresent} from '../../src/facade/lang';
 
 const SVG_PREFIX = ':svg:';
 
-var document = typeof global['document'] == 'object' ? global['document'] : null;
+var document = typeof (global as any /** TODO #???? */)['document'] == 'object' ? (global as any /** TODO #???? */)['document'] : null;
 
 export function extractSchema(): Map<string, string[]> {
-  var SVGGraphicsElement = global['SVGGraphicsElement'];
-  var SVGAnimationElement = global['SVGAnimationElement'];
-  var SVGGeometryElement = global['SVGGeometryElement'];
-  var SVGComponentTransferFunctionElement = global['SVGComponentTransferFunctionElement'];
-  var SVGGradientElement = global['SVGGradientElement'];
-  var SVGTextContentElement = global['SVGTextContentElement'];
-  var SVGTextPositioningElement = global['SVGTextPositioningElement'];
+  var SVGGraphicsElement = (global as any /** TODO #???? */)['SVGGraphicsElement'];
+  var SVGAnimationElement = (global as any /** TODO #???? */)['SVGAnimationElement'];
+  var SVGGeometryElement = (global as any /** TODO #???? */)['SVGGeometryElement'];
+  var SVGComponentTransferFunctionElement = (global as any /** TODO #???? */)['SVGComponentTransferFunctionElement'];
+  var SVGGradientElement = (global as any /** TODO #???? */)['SVGGradientElement'];
+  var SVGTextContentElement = (global as any /** TODO #???? */)['SVGTextContentElement'];
+  var SVGTextPositioningElement = (global as any /** TODO #???? */)['SVGTextPositioningElement'];
   if (!document || !SVGGraphicsElement) return null;
   var descMap: Map<string, string[]> = new Map();
   var visited: {[name: string]: boolean} = {};
@@ -44,7 +44,7 @@ export function extractSchema(): Map<string, string[]> {
   var keys = Object.getOwnPropertyNames(window).filter(
       k => k.endsWith('Element') && (k.startsWith('HTML') || k.startsWith('SVG')));
   keys.sort();
-  keys.forEach(name => extractRecursiveProperties(visited, descMap, window[name]));
+  keys.forEach(name => extractRecursiveProperties(visited, descMap, (window as any /** TODO #???? */)[name]));
 
   return descMap;
 }

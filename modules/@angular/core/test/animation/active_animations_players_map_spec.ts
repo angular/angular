@@ -25,8 +25,8 @@ import {ActiveAnimationPlayersMap} from '../../src/animation/active_animation_pl
 
 export function main() {
   describe('ActiveAnimationsPlayersMap', function() {
-    var playersMap;
-    var elementNode;
+    var playersMap: any /** TODO #9100 */;
+    var elementNode: any /** TODO #9100 */;
     var animationName = 'animationName';
 
     beforeEach(() => {

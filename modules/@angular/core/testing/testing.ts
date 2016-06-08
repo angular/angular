@@ -8,7 +8,7 @@ import {isPromise} from '../src/facade/lang';
 
 export {inject, async, injectAsync} from './test_injector';
 
-declare var global;
+declare var global: any /** TODO #9100 */;
 
 var _global = <any>(typeof window === 'undefined' ? global : window);
 

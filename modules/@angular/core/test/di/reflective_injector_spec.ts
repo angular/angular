@@ -46,7 +46,7 @@ class Car {
 
 @Injectable()
 class CarWithOptionalEngine {
-  engine;
+  engine: any /** TODO #9100 */;
   constructor(@Optional() engine: Engine) { this.engine = engine; }
 }
 
@@ -78,10 +78,10 @@ class CyclicEngine {
 }
 
 class NoAnnotations {
-  constructor(secretDependency) {}
+  constructor(secretDependency: any /** TODO #9100 */) {}
 }
 
-function factoryFn(a) {}
+function factoryFn(a: any /** TODO #9100 */) {}
 
 export function main() {
   var dynamicProviders = [
@@ -176,7 +176,7 @@ export function main() {
       });
 
       it('should provide to a factory', () => {
-        function sportsCarFactory(e) { return new SportsCar(e); }
+        function sportsCarFactory(e: any /** TODO #9100 */) { return new SportsCar(e); }
 
         var injector =
             createInjector([Engine, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
@@ -290,7 +290,7 @@ export function main() {
 
       it('should support overriding factory dependencies', () => {
         var injector = createInjector(
-            [Engine, {provide: Car, useFactory: (e) => new SportsCar(e), deps: [Engine]}]);
+            [Engine, {provide: Car, useFactory: (e: any /** TODO #9100 */) => new SportsCar(e), deps: [Engine]}]);
 
         var car = injector.get(Car);
         expect(car).toBeAnInstanceOf(SportsCar);
@@ -483,7 +483,7 @@ export function main() {
         it("should return a dependency from self", () => {
           var inj = ReflectiveInjector.resolveAndCreate([
             Engine,
-            {provide: Car, useFactory: (e) => new Car(e), deps: [[Engine, new SelfMetadata()]]}
+            {provide: Car, useFactory: (e: any /** TODO #9100 */) => new Car(e), deps: [[Engine, new SelfMetadata()]]}
           ]);
 
           expect(inj.get(Car)).toBeAnInstanceOf(Car);
@@ -492,7 +492,7 @@ export function main() {
         it("should throw when not requested provider on self", () => {
           var parent = ReflectiveInjector.resolveAndCreate([Engine]);
           var child = parent.resolveAndCreateChild([
-            {provide: Car, useFactory: (e) => new Car(e), deps: [[Engine, new SelfMetadata()]]}
+            {provide: Car, useFactory: (e: any /** TODO #9100 */) => new Car(e), deps: [[Engine, new SelfMetadata()]]}
           ]);
 
           expect(() => child.get(Car))
@@ -505,7 +505,7 @@ export function main() {
           var parent = ReflectiveInjector.resolveAndCreate([Engine]);
           var child = parent.resolveAndCreateChild([
             {provide: Engine, useClass: TurboEngine},
-            {provide: Car, useFactory: (e) => new Car(e), deps: [Engine]}
+            {provide: Car, useFactory: (e: any /** TODO #9100 */) => new Car(e), deps: [Engine]}
           ]);
 
           expect(child.get(Car).engine).toBeAnInstanceOf(TurboEngine);
@@ -596,7 +596,7 @@ export function main() {
                     var providers = ReflectiveInjector.resolve([
                       {
                         provide: "token",
-                        useFactory: (e) => "result",
+                        useFactory: (e: any /** TODO #9100 */) => "result",
                         deps: [[new InjectMetadata("dep"), new CustomDependencyMetadata()]]
                       }
                     ]);
@@ -610,9 +610,9 @@ export function main() {
 
                it('should allow declaring dependencies with flat arrays', () => {
                  var resolved = ReflectiveInjector.resolve(
-                     [{provide: 'token', useFactory: e => e, deps: [new InjectMetadata("dep")]}]);
+                     [{provide: 'token', useFactory: (e: any /** TODO #9100 */) => e, deps: [new InjectMetadata("dep")]}]);
                  var nestedResolved = ReflectiveInjector.resolve(
-                     [{provide: 'token', useFactory: e => e, deps: [[new InjectMetadata("dep")]]}]);
+                     [{provide: 'token', useFactory: (e: any /** TODO #9100 */) => e, deps: [[new InjectMetadata("dep")]]}]);
                  expect(resolved[0].resolvedFactories[0].dependencies[0].key.token)
                      .toEqual(nestedResolved[0].resolvedFactories[0].dependencies[0].key.token);
                });

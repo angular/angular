@@ -319,14 +319,14 @@ export class UpgradeAdapter {
         .config([
           '$provide',
           '$injector',
-          (provide, ng1Injector) => {
+          (provide: any /** TODO #???? */, ng1Injector: any /** TODO #???? */) => {
             provide.decorator(NG1_ROOT_SCOPE, [
               '$delegate',
               function(rootScopeDelegate: angular.IRootScopeService) {
                 rootScopePrototype = rootScopeDelegate.constructor.prototype;
                 if (rootScopePrototype.hasOwnProperty('$apply')) {
                   original$applyFn = rootScopePrototype.$apply;
-                  rootScopePrototype.$apply = (exp) => delayApplyExps.push(exp);
+                  rootScopePrototype.$apply = (exp: any /** TODO #???? */) => delayApplyExps.push(exp);
                 } else {
                   throw new Error("Failed to find '$apply' on '$rootScope'!");
                 }
@@ -366,7 +366,7 @@ export class UpgradeAdapter {
         (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
           ng1Injector = injector;
           ngZone.onMicrotaskEmpty.subscribe(
-              {next: (_) => ngZone.runOutsideAngular(() => rootScope.$evalAsync())});
+              {next: (_: any /** TODO #???? */) => ngZone.runOutsideAngular(() => rootScope.$evalAsync())});
           UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector)
               .then(resolve, reject);
         }
@@ -374,7 +374,7 @@ export class UpgradeAdapter {
     });
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
-    var windowAngular = window['angular'];
+    var windowAngular = (window as any /** TODO #???? */)['angular'];
     windowAngular.resumeBootstrap = undefined;
 
     angular.element(element).data(controllerKey(NG2_INJECTOR), injector);

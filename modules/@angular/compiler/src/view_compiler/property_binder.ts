@@ -97,7 +97,7 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
     var renderMethod: string;
     var oldRenderValue: o.Expression = sanitizedValue(boundProp, fieldExpr);
     var renderValue: o.Expression = sanitizedValue(boundProp, currValExpr);
-    var updateStmts = [];
+    var updateStmts: any[] /** TODO #9100 */ = [];
     switch (boundProp.type) {
       case PropertyBindingType.Property:
         if (view.genConfig.logBindingUpdate) {

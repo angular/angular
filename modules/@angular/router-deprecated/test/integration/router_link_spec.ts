@@ -54,7 +54,7 @@ export function main() {
     ]);
 
     beforeEach(inject([TestComponentBuilder, Router, Location],
-                      (tcBuilder, rtr: Router, loc: Location) => {
+                      (tcBuilder: any /** TODO #9100 */, rtr: Router, loc: Location) => {
                         tcb = tcBuilder;
                         router = rtr;
                         location = loc;
@@ -67,7 +67,7 @@ export function main() {
     }
 
     it('should generate absolute hrefs that include the base href',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          (<SpyLocation>location).setBaseHref('/my/base');
          compile('<a href="hello" [routerLink]="[\'./User\']"></a>')
              .then((_) => router.config(
@@ -81,7 +81,7 @@ export function main() {
        }));
 
 
-    it('should generate link hrefs without params', inject([AsyncTestCompleter], (async) => {
+    it('should generate link hrefs without params', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          compile('<a href="hello" [routerLink]="[\'./User\']"></a>')
              .then((_) => router.config(
                        [new Route({path: '/user', component: UserCmp, name: 'User'})]))
@@ -94,7 +94,7 @@ export function main() {
        }));
 
 
-    it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
+    it('should generate link hrefs with params', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          compile('<a href="hello" [routerLink]="[\'./User\', {name: name}]">{{name}}</a>')
              .then((_) => router.config(
                        [new Route({path: '/user/:name', component: UserCmp, name: 'User'})]))
@@ -109,7 +109,7 @@ export function main() {
        }));
 
     it('should generate link hrefs from a child to its sibling',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          compile()
              .then(
                  (_) => router.config(
@@ -123,7 +123,7 @@ export function main() {
        }));
 
     it('should generate link hrefs from a child to its sibling with no leading slash',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          compile()
              .then((_) => router.config([
                new Route(
@@ -138,7 +138,7 @@ export function main() {
        }));
 
     it('should generate link hrefs to a child with no leading slash',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          compile()
              .then((_) => router.config([
                new Route({path: '/book/:title/...', component: NoPrefixBookCmp, name: 'Book'})
@@ -152,7 +152,7 @@ export function main() {
        }));
 
     it('should throw when links without a leading slash are ambiguous',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          compile()
              .then((_) => router.config([
                new Route({path: '/book/:title/...', component: AmbiguousBookCmp, name: 'Book'})
@@ -168,7 +168,7 @@ export function main() {
        }));
 
     it('should generate link hrefs when asynchronously loaded',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          compile()
              .then((_) => router.config([
                new AsyncRoute({
@@ -186,7 +186,7 @@ export function main() {
        }));
 
     it('should generate relative links preserving the existing parent route',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          compile()
              .then((_) => router.config(
                        [new Route({path: '/book/:title/...', component: BookCmp, name: 'Book'})]))
@@ -211,7 +211,7 @@ export function main() {
              });
        }));
 
-    it('should generate links to auxiliary routes', inject([AsyncTestCompleter], (async) => {
+    it('should generate links to auxiliary routes', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          compile()
              .then((_) => router.config([new Route({path: '/...', component: AuxLinkCmp})]))
              .then((_) => router.navigateByUrl('/'))
@@ -224,7 +224,7 @@ export function main() {
 
 
     describe('router-link-active CSS class', () => {
-      it('should be added to the associated element', inject([AsyncTestCompleter], (async) => {
+      it('should be added to the associated element', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            router.config([
                    new Route({path: '/child', component: HelloCmp, name: 'Child'}),
                    new Route({path: '/better-child', component: Hello2Cmp, name: 'BetterChild'})
@@ -255,7 +255,7 @@ export function main() {
                });
          }));
 
-      it('should be added to links in child routes', inject([AsyncTestCompleter], (async) => {
+      it('should be added to links in child routes', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            router.config([
                    new Route({path: '/child', component: HelloCmp, name: 'Child'}),
                    new Route({
@@ -297,7 +297,7 @@ export function main() {
          }));
 
       it('should not be added to links in other child routes',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            router.config([
                    new Route({path: '/child', component: HelloCmp, name: 'Child'}),
                    new Route({
@@ -344,14 +344,14 @@ export function main() {
 
     describe('when clicked', () => {
 
-      var clickOnElement = function(view) {
+      var clickOnElement = function(view: any /** TODO #9100 */) {
         var anchorEl = fixture.debugElement.query(By.css('a')).nativeElement;
         var dispatchedEvent = getDOM().createMouseEvent('click');
         getDOM().dispatchEvent(anchorEl, dispatchedEvent);
         return dispatchedEvent;
       };
 
-      it('should navigate to link hrefs without params', inject([AsyncTestCompleter], (async) => {
+      it('should navigate to link hrefs without params', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            compile('<a href="hello" [routerLink]="[\'./User\']"></a>')
                .then((_) => router.config(
                          [new Route({path: '/user', component: UserCmp, name: 'User'})]))
@@ -371,7 +371,7 @@ export function main() {
          }));
 
       it('should navigate to link hrefs in presence of base href',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            (<SpyLocation>location).setBaseHref('/base');
            compile('<a href="hello" [routerLink]="[\'./User\']"></a>')
                .then((_) => router.config(
@@ -401,7 +401,7 @@ function getHref(tc: ComponentFixture<any>) {
 
 @Component({selector: 'my-comp', template: '', directives: [ROUTER_DIRECTIVES]})
 class MyComp7 {
-  name;
+  name: any /** TODO #9100 */;
 }
 
 @Component({selector: 'user-cmp', template: "hello {{user}}"})

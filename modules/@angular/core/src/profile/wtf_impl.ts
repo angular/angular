@@ -11,9 +11,9 @@ interface WTF {
 
 interface Trace {
   events: Events;
-  leaveScope(scope: Scope, returnValue: any);
+  leaveScope(scope: Scope, returnValue: any): any /** TODO #9100 */;
   beginTimeRange(rangeType: string, action: string): Range;
-  endTimeRange(range: Range);
+  endTimeRange(range: Range): any /** TODO #9100 */;
 }
 
 export interface Range {}
@@ -22,13 +22,13 @@ interface Events {
   createScope(signature: string, flags: any): Scope;
 }
 
-export interface Scope { (...args): any; }
+export interface Scope { (...args: any[] /** TODO #9100 */): any; }
 
 var trace: Trace;
 var events: Events;
 
 export function detectWTF(): boolean {
-  var wtf: WTF = global['wtf'];
+  var wtf: WTF = (global as any /** TODO #9100 */)['wtf'];
   if (wtf) {
     trace = wtf['trace'];
     if (trace) {

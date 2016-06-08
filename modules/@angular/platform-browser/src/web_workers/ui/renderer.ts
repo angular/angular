@@ -155,7 +155,7 @@ export class MessageBasedRenderer {
 
   private _listen(renderer: Renderer, renderElement: any, eventName: string, unlistenId: number) {
     var unregisterCallback = renderer.listen(renderElement, eventName,
-                                             (event) => this._eventDispatcher.dispatchRenderEvent(
+                                             (event: any /** TODO #9100 */) => this._eventDispatcher.dispatchRenderEvent(
                                                  renderElement, null, eventName, event));
     this._renderStore.store(unregisterCallback, unlistenId);
   }
@@ -164,7 +164,7 @@ export class MessageBasedRenderer {
                         unlistenId: number) {
     var unregisterCallback = renderer.listenGlobal(
         eventTarget, eventName,
-        (event) => this._eventDispatcher.dispatchRenderEvent(null, eventTarget, eventName, event));
+        (event: any /** TODO #9100 */) => this._eventDispatcher.dispatchRenderEvent(null, eventTarget, eventName, event));
     this._renderStore.store(unregisterCallback, unlistenId);
   }
 

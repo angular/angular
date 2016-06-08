@@ -12,7 +12,7 @@ import {GeneratedUrl} from '../../../src/rules/route_paths/route_path';
 import {RegexRoutePath} from '../../../src/rules/route_paths/regex_route_path';
 import {parser, Url} from '../../../src/url_parser';
 
-function emptySerializer(params) {
+function emptySerializer(params: any /** TODO #9100 */) {
   return new GeneratedUrl('', {});
 }
 
@@ -37,7 +37,7 @@ export function main() {
     });
 
     it('should generate a url by calling the provided serializer', () => {
-      function serializer(params) {
+      function serializer(params: any /** TODO #9100 */) {
         return new GeneratedUrl(`/a/${params['a']}/b/${params['b']}`, {});
       }
       var rec = new RegexRoutePath('/a/(.+)/b/(.+)$', serializer);

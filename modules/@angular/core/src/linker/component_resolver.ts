@@ -12,7 +12,7 @@ import {Injectable} from '../di/decorators';
  */
 export abstract class ComponentResolver {
   abstract resolveComponent(component: Type|string): Promise<ComponentFactory<any>>;
-  abstract clearCache();
+  abstract clearCache(): any /** TODO #9100 */;
 }
 
 function _isComponentFactory(type: any): boolean {

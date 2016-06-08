@@ -9,7 +9,7 @@ import {ChangeDetectionStrategy} from '../change_detection/constants';
 export abstract class ViewRef {
   get destroyed(): boolean { return <boolean>unimplemented(); }
 
-  abstract onDestroy(callback: Function);
+  abstract onDestroy(callback: Function): any /** TODO #9100 */;
 }
 
 /**
@@ -74,7 +74,7 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
   /**
    * Destroys the view and all of the data structures associated with it.
    */
-  abstract destroy();
+  abstract destroy(): any /** TODO #9100 */;
 }
 
 export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {

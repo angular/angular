@@ -14,14 +14,14 @@ class TodoApp {
 
   constructor(public todoStore: Store<Todo>, public factory: TodoFactory) {}
 
-  enterTodo(inputElement): void {
+  enterTodo(inputElement: any /** TODO #9100 */): void {
     this.addTodo(inputElement.value);
     inputElement.value = '';
   }
 
   editTodo(todo: Todo): void { this.todoEdit = todo; }
 
-  doneEditing($event, todo: Todo): void {
+  doneEditing($event: any /** TODO #9100 */, todo: Todo): void {
     var which = $event.which;
     var target = $event.target;
     if (which === 13) {
@@ -39,7 +39,7 @@ class TodoApp {
 
   deleteMe(todo: Todo): void { this.todoStore.remove(todo); }
 
-  toggleAll($event): void {
+  toggleAll($event: any /** TODO #9100 */): void {
     var isComplete = $event.target.checked;
     this.todoStore.list.forEach((todo: Todo) => { todo.completed = isComplete; });
   }

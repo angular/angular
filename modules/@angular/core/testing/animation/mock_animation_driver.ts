@@ -6,7 +6,7 @@ import {AnimationStyles} from '../../src/animation/animation_styles';
 import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
 
 export class MockAnimationDriver extends AnimationDriver {
-  log = [];
+  log: any[] /** TODO #9100 */ = [];
   animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number,
           easing: string): AnimationPlayer {
     var player = new MockAnimationPlayer();
@@ -30,6 +30,6 @@ function _serializeKeyframes(keyframes: AnimationKeyframe[]): any[] {
 
 function _serializeStyles(styles: AnimationStyles): {[key: string]: any} {
   var flatStyles = {};
-  styles.styles.forEach(entry => StringMapWrapper.forEach(entry, (val, prop) => { flatStyles[prop] = val; }));
+  styles.styles.forEach(entry => StringMapWrapper.forEach(entry, (val: any /** TODO #9100 */, prop: any /** TODO #9100 */) => { (flatStyles as any /** TODO #9100 */)[prop] = val; }));
   return flatStyles;
 }

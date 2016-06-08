@@ -39,17 +39,17 @@ export function main() {
       {provide: RouterUrlSerializer, useClass: DefaultRouterUrlSerializer},
       RouterOutletMap,
       {provide: Location, useClass: SpyLocation},
-      {provide: RouteSegment, useFactory: (r) => r.routeTree.root, deps: [Router]},
+      {provide: RouteSegment, useFactory: (r: any /** TODO #9100 */) => r.routeTree.root, deps: [Router]},
       {
         provide: Router,
-        useFactory: (resolver, urlParser, outletMap, location) => new Router(
+        useFactory: (resolver: any /** TODO #9100 */, urlParser: any /** TODO #9100 */, outletMap: any /** TODO #9100 */, location: any /** TODO #9100 */) => new Router(
                         "RootComponent", RootCmp, resolver, urlParser, outletMap, location),
         deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
       }
     ]);
 
     it('should update location when navigating',
-       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor');
@@ -63,7 +63,7 @@ export function main() {
        })));
 
     it('should navigate back and forward',
-      fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      fakeAsync(inject([Router, TestComponentBuilder, Location], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
         let fixture = tcb.createFakeAsync(RootCmp);
 
         router.navigateByUrl('/team/33/simple');
@@ -82,7 +82,7 @@ export function main() {
       })));
 
     it('should navigate when locations changes',
-       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor');
@@ -95,7 +95,7 @@ export function main() {
        })));
 
     it('should support nested routes',
-       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+       fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor');
@@ -105,7 +105,7 @@ export function main() {
        })));
 
     it('should support aux routes',
-       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+       fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor(/simple)');
@@ -116,7 +116,7 @@ export function main() {
        })));
 
     it('should deactivate outlets',
-       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+       fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor(/simple)');
@@ -129,7 +129,7 @@ export function main() {
        })));
 
     it('should deactivate nested outlets',
-       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+       fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor(/simple)');
@@ -142,7 +142,7 @@ export function main() {
        })));
 
     it('should update nested routes when url changes',
-       fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+       fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/user/victor');
@@ -158,7 +158,7 @@ export function main() {
        })));
 
     it('should not deactivate the route if can deactivate returns false',
-       fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+       fakeAsync(inject([Router, TestComponentBuilder, Location], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
          let fixture = tcb.createFakeAsync(RootCmp);
 
          router.navigateByUrl('/team/22/cannotDeactivate');
@@ -175,7 +175,7 @@ export function main() {
 
     if (getDOM().supportsDOMEvents()) {
       it("should support absolute router links",
-         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+         fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
            let fixture = tcb.createFakeAsync(RootCmp);
            advance(fixture);
 
@@ -192,7 +192,7 @@ export function main() {
          })));
 
       it("should support relative router links",
-         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+         fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
            let fixture = tcb.createFakeAsync(RootCmp);
            advance(fixture);
 
@@ -211,7 +211,7 @@ export function main() {
          })));
 
       it("should set the router-link-active class",
-         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+         fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
            let fixture = tcb.createFakeAsync(RootCmp);
            advance(fixture);
 
@@ -229,7 +229,7 @@ export function main() {
          })));
 
       it("should update router links when router changes",
-         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+         fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
            let fixture = tcb.createFakeAsync(RootCmp);
            advance(fixture);
 
@@ -247,14 +247,14 @@ export function main() {
          })));
 
       it("should support top-level link",
-         fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+         fakeAsync(inject([Router, TestComponentBuilder], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */) => {
            let fixture = tcb.createFakeAsync(LinkCmp);
            advance(fixture);
            expect(fixture.debugElement.nativeElement).toHaveText('link');
          })));
 
       it('should replace state when path is equal to current path',
-        fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+        fakeAsync(inject([Router, TestComponentBuilder, Location], (router: any /** TODO #9100 */, tcb: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
           let fixture = tcb.createFakeAsync(RootCmp);
 
           router.navigateByUrl('/team/33/simple');
@@ -286,12 +286,12 @@ function compileRoot(tcb: TestComponentBuilder): Promise<ComponentFixture<any>> 
 @Component({selector: 'user-cmp', template: `hello {{user}}`})
 class UserCmp implements OnActivate {
   user: string;
-  routerOnActivate(s: RouteSegment, a?, b?, c?) { this.user = s.getParam('name'); }
+  routerOnActivate(s: RouteSegment, a?: any /** TODO #9100 */, b?: any /** TODO #9100 */, c?: any /** TODO #9100 */) { this.user = s.getParam('name'); }
 }
 
 @Component({selector: 'cannot-deactivate', template: `cannotDeactivate`})
 class CanDeactivateCmp implements CanDeactivate {
-  routerCanDeactivate(a?, b?): Promise<boolean> { return PromiseWrapper.resolve(false); }
+  routerCanDeactivate(a?: any /** TODO #9100 */, b?: any /** TODO #9100 */): Promise<boolean> { return PromiseWrapper.resolve(false); }
 }
 
 @Component({selector: 'simple-cmp', template: `simple`})
@@ -334,7 +334,7 @@ class RelativeLinkCmp {
 ])
 class TeamCmp implements OnActivate {
   id: string;
-  routerOnActivate(s: RouteSegment, a?, b?, c?) { this.id = s.getParam('id'); }
+  routerOnActivate(s: RouteSegment, a?: any /** TODO #9100 */, b?: any /** TODO #9100 */, c?: any /** TODO #9100 */) { this.id = s.getParam('id'); }
 }
 
 @Component({

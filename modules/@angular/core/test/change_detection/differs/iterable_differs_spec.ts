@@ -14,9 +14,9 @@ import {Injector, provide, ReflectiveInjector} from '@angular/core';
 
 export function main() {
   describe('IterableDiffers', function() {
-    var factory1;
-    var factory2;
-    var factory3;
+    var factory1: any /** TODO #9100 */;
+    var factory2: any /** TODO #9100 */;
+    var factory3: any /** TODO #9100 */;
 
     beforeEach(() => {
       factory1 = new SpyIterableDifferFactory();

@@ -93,7 +93,7 @@ export abstract class DomSanitizationService implements SanitizationService {
    *
    * WARNING: calling this method with untrusted user data will cause severe security bugs!
    */
-  abstract bypassSecurityTrustResourceUrl(value: string);
+  abstract bypassSecurityTrustResourceUrl(value: string): any /** TODO #9100 */;
 }
 
 

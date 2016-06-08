@@ -11,7 +11,7 @@ export class SystemJsComponentResolver implements ComponentResolver {
 
   resolveComponent(componentType:string|Type):Promise<ComponentFactory<any>> {
     if (isString(componentType)) {
-      return (<any>global).System.import(componentType).then(module =>
+      return (<any>global).System.import(componentType).then((module: any /** TODO #9100 */) =>
         this._resolver.resolveComponent(module.default));
     } else {
       return this._resolver.resolveComponent(<Type>componentType);

@@ -28,7 +28,7 @@ export function main() {
 
     beforeEach(() => { registry = new RouteRegistry(RootHostCmp); });
 
-    it('should match the full URL', inject([AsyncTestCompleter], (async) => {
+    it('should match the full URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp, new Route({path: '/', component: DummyCmpA}));
          registry.config(RootHostCmp, new Route({path: '/test', component: DummyCmpB}));
 
@@ -100,7 +100,7 @@ export function main() {
 
 
     it('should generate URLs of loaded components after they are loaded',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(
              RootHostCmp,
              new AsyncRoute({path: '/first/...', loader: asyncParentLoader, name: 'FirstCmp'}));
@@ -131,7 +131,7 @@ export function main() {
           .toEqual('primary(aux)');
     });
 
-    it('should prefer static segments to dynamic', inject([AsyncTestCompleter], (async) => {
+    it('should prefer static segments to dynamic', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp, new Route({path: '/:site', component: DummyCmpB}));
          registry.config(RootHostCmp, new Route({path: '/home', component: DummyCmpA}));
 
@@ -142,7 +142,7 @@ export function main() {
              });
        }));
 
-    it('should prefer dynamic segments to star', inject([AsyncTestCompleter], (async) => {
+    it('should prefer dynamic segments to star', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp, new Route({path: '/:site', component: DummyCmpA}));
          registry.config(RootHostCmp, new Route({path: '/*site', component: DummyCmpB}));
 
@@ -153,7 +153,7 @@ export function main() {
              });
        }));
 
-    it('should prefer routes with more dynamic segments', inject([AsyncTestCompleter], (async) => {
+    it('should prefer routes with more dynamic segments', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp, new Route({path: '/:first/*rest', component: DummyCmpA}));
          registry.config(RootHostCmp, new Route({path: '/*all', component: DummyCmpB}));
 
@@ -164,7 +164,7 @@ export function main() {
              });
        }));
 
-    it('should prefer routes with more static segments', inject([AsyncTestCompleter], (async) => {
+    it('should prefer routes with more static segments', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp, new Route({path: '/first/:second', component: DummyCmpA}));
          registry.config(RootHostCmp, new Route({path: '/:first/:second', component: DummyCmpB}));
 
@@ -176,7 +176,7 @@ export function main() {
        }));
 
     it('should prefer routes with static segments before dynamic segments',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp,
                          new Route({path: '/first/second/:third', component: DummyCmpB}));
          registry.config(RootHostCmp,
@@ -190,7 +190,7 @@ export function main() {
        }));
 
     it('should prefer routes with high specificity over routes with children with lower specificity',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp, new Route({path: '/first', component: DummyCmpA}));
 
          // terminates to DummyCmpB
@@ -204,7 +204,7 @@ export function main() {
              });
        }));
 
-    it('should match the full URL using child components', inject([AsyncTestCompleter], (async) => {
+    it('should match the full URL using child components', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp, new Route({path: '/first/...', component: DummyParentCmp}));
 
          registry.recognize('/first/second', [])
@@ -216,7 +216,7 @@ export function main() {
        }));
 
     it('should match the URL using async child components',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp, new Route({path: '/first/...', component: DummyAsyncCmp}));
 
          registry.recognize('/first/second', [])
@@ -231,7 +231,7 @@ export function main() {
        }));
 
     it('should match the URL using an async parent component',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp,
                          new AsyncRoute({path: '/first/...', loader: asyncParentLoader}));
 
@@ -282,7 +282,7 @@ export function main() {
     });
 
     it('should match matrix params on child components and query params on the root component',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp, new Route({path: '/first/...', component: DummyParentCmp}));
 
          registry.recognize('/first/second;filter=odd?comments=all', [])
@@ -297,7 +297,7 @@ export function main() {
        }));
 
     it('should match query params on the root component even when the next URL segment is null',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          registry.config(RootHostCmp,
                          new Route({path: '/first/...', component: SingleSlashChildCmp}));
 
@@ -334,7 +334,7 @@ export function main() {
   });
 }
 
-function stringifyInstruction(instruction): string {
+function stringifyInstruction(instruction: any /** TODO #9100 */): string {
   return instruction.toRootUrl();
 }
 

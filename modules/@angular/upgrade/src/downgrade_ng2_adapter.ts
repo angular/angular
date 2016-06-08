@@ -53,11 +53,11 @@ export class DowngradeNg2ComponentAdapter {
     var inputs = this.info.inputs;
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
-      var expr = null;
+      var expr: any /** TODO #9100 */ = null;
       if (attrs.hasOwnProperty(input.attr)) {
-        var observeFn = ((prop) => {
+        var observeFn = ((prop: any /** TODO #9100 */) => {
           var prevValue = INITIAL_VALUE;
-          return (value) => {
+          return (value: any /** TODO #9100 */) => {
             if (this.inputChanges !== null) {
               this.inputChangeCount++;
               this.inputChanges[prop] =
@@ -69,16 +69,16 @@ export class DowngradeNg2ComponentAdapter {
         })(input.prop);
         attrs.$observe(input.attr, observeFn);
       } else if (attrs.hasOwnProperty(input.bindAttr)) {
-        expr = attrs[input.bindAttr];
+        expr = (attrs as any /** TODO #9100 */)[input.bindAttr];
       } else if (attrs.hasOwnProperty(input.bracketAttr)) {
-        expr = attrs[input.bracketAttr];
+        expr = (attrs as any /** TODO #9100 */)[input.bracketAttr];
       } else if (attrs.hasOwnProperty(input.bindonAttr)) {
-        expr = attrs[input.bindonAttr];
+        expr = (attrs as any /** TODO #9100 */)[input.bindonAttr];
       } else if (attrs.hasOwnProperty(input.bracketParenAttr)) {
-        expr = attrs[input.bracketParenAttr];
+        expr = (attrs as any /** TODO #9100 */)[input.bracketParenAttr];
       }
       if (expr != null) {
-        var watchFn = ((prop) => (value, prevValue) => {
+        var watchFn = ((prop: any /** TODO #9100 */) => (value: any /** TODO #9100 */, prevValue: any /** TODO #9100 */) => {
           if (this.inputChanges != null) {
             this.inputChangeCount++;
             this.inputChanges[prop] = new Ng1Change(prevValue, value);
@@ -117,7 +117,7 @@ export class DowngradeNg2ComponentAdapter {
     var outputs = this.info.outputs;
     for (var j = 0; j < outputs.length; j++) {
       var output = outputs[j];
-      var expr = null;
+      var expr: any /** TODO #9100 */ = null;
       var assignExpr = false;
 
       var bindonAttr =
@@ -128,14 +128,14 @@ export class DowngradeNg2ComponentAdapter {
               null;
 
       if (attrs.hasOwnProperty(output.onAttr)) {
-        expr = attrs[output.onAttr];
+        expr = (attrs as any /** TODO #9100 */)[output.onAttr];
       } else if (attrs.hasOwnProperty(output.parenAttr)) {
-        expr = attrs[output.parenAttr];
+        expr = (attrs as any /** TODO #9100 */)[output.parenAttr];
       } else if (attrs.hasOwnProperty(bindonAttr)) {
-        expr = attrs[bindonAttr];
+        expr = (attrs as any /** TODO #9100 */)[bindonAttr];
         assignExpr = true;
       } else if (attrs.hasOwnProperty(bracketParenAttr)) {
-        expr = attrs[bracketParenAttr];
+        expr = (attrs as any /** TODO #9100 */)[bracketParenAttr];
         assignExpr = true;
       }
 
@@ -148,8 +148,8 @@ export class DowngradeNg2ComponentAdapter {
         var emitter = this.component[output.prop] as EventEmitter<any>;
         if (emitter) {
           emitter.subscribe({
-            next: assignExpr ? ((setter: any) => v => setter(this.scope, v))(setter) :
-                               ((getter: any) => v => getter(this.scope, {$event: v}))(getter)
+            next: assignExpr ? ((setter: any) => (v: any /** TODO #9100 */) => setter(this.scope, v))(setter) :
+                               ((getter: any) => (v: any /** TODO #9100 */) => getter(this.scope, {$event: v}))(getter)
           });
         } else {
           throw new Error(`Missing emitter '${output.prop}' on component '${this.info.selector}'!`);

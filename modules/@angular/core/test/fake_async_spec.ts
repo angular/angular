@@ -29,17 +29,17 @@ export function main() {
     });
 
     it('should pass arguments to the wrapped function', () => {
-      fakeAsync((foo, bar) => {
+      fakeAsync((foo: any /** TODO #9100 */, bar: any /** TODO #9100 */) => {
         expect(foo).toEqual('foo');
         expect(bar).toEqual('bar');
       })('foo', 'bar');
     });
 
     it('should work with inject()',
-       fakeAsync(inject([Parser], (parser) => { expect(parser).toBeAnInstanceOf(Parser); })));
+       fakeAsync(inject([Parser], (parser: any /** TODO #9100 */) => { expect(parser).toBeAnInstanceOf(Parser); })));
 
     it('should throw on nested calls', () => {
-      expect(() => { fakeAsync(() => { fakeAsync(() => null)(); })(); })
+      expect(() => { fakeAsync(() => { fakeAsync((): any /** TODO #9100 */ => null)(); })(); })
           .toThrowError('fakeAsync() calls can not be nested');
     });
 
@@ -191,7 +191,7 @@ export function main() {
 
       it('should be able to cancel periodic timers from a callback', fakeAsync(() => {
            var cycles = 0;
-           var id;
+           var id: any /** TODO #9100 */;
 
            id = TimerWrapper.setInterval(() => {
              cycles++;

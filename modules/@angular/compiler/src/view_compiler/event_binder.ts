@@ -84,7 +84,7 @@ export class CompileEventListener {
   }
 
   listenToRenderer() {
-    var listenExpr;
+    var listenExpr: any /** TODO #9100 */;
     var eventListener = o.THIS_EXPR.callMethod(
         'eventHandler',
         [o.THIS_EXPR.prop(this._methodName).callMethod(o.BuiltinMethod.bind, [o.THIS_EXPR])]);
@@ -139,7 +139,7 @@ export function collectEventListeners(hostEvents: BoundEventAst[], dirs: Directi
 
 export function bindDirectiveOutputs(directiveAst: DirectiveAst, directiveInstance: o.Expression,
                                      eventListeners: CompileEventListener[]) {
-  StringMapWrapper.forEach(directiveAst.directive.outputs, (eventName, observablePropName) => {
+  StringMapWrapper.forEach(directiveAst.directive.outputs, (eventName: any /** TODO #9100 */, observablePropName: any /** TODO #9100 */) => {
     eventListeners.filter(listener => listener.eventName == eventName)
         .forEach(
             (listener) => { listener.listenToDirective(directiveInstance, observablePropName); });

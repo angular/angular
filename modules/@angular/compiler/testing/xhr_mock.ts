@@ -61,7 +61,7 @@ export class MockXHR extends XHR {
   verifyNoOutstandingExpectations() {
     if (this._expectations.length === 0) return;
 
-    var urls = [];
+    var urls: any[] /** TODO #9100 */ = [];
     for (var i = 0; i < this._expectations.length; i++) {
       var expectation = this._expectations[i];
       urls.push(expectation.url);
@@ -96,7 +96,7 @@ class _PendingRequest {
   url: string;
   completer: PromiseCompleter<string>;
 
-  constructor(url) {
+  constructor(url: any /** TODO #9100 */) {
     this.url = url;
     this.completer = PromiseWrapper.completer();
   }

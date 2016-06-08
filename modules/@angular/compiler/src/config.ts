@@ -38,9 +38,9 @@ export abstract class RenderTypes {
 
 export class DefaultRenderTypes implements RenderTypes {
   renderer = Identifiers.Renderer;
-  renderText = null;
-  renderElement = null;
-  renderComment = null;
-  renderNode = null;
-  renderEvent = null;
+  renderText: any /** TODO #9100 */ = null;
+  renderElement: any /** TODO #9100 */ = null;
+  renderComment: any /** TODO #9100 */ = null;
+  renderNode: any /** TODO #9100 */ = null;
+  renderEvent: any /** TODO #9100 */ = null;
 }

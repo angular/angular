@@ -39,7 +39,7 @@ class MessageDir {
 
   constructor(logger: Logger) { this.logger = logger; }
 
-  set message(newMessage) { this.logger.add(newMessage); }
+  set message(newMessage: any /** TODO #9100 */) { this.logger.add(newMessage); }
 }
 
 @Component({
@@ -193,7 +193,7 @@ class TestApp {
 export function main() {
   describe('debug element', function() {
     it('should list all child nodes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(ParentComp)
              .then((fixture) => {
                fixture.detectChanges();
@@ -205,7 +205,7 @@ export function main() {
        }));
 
     it('should list all component child elements',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
          tcb.createAsync(ParentComp)
              .then((fixture) => {
@@ -239,7 +239,7 @@ export function main() {
        }));
 
     it('should list conditional component child elements',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(ConditionalParentComp)
              .then((fixture) => {
                fixture.detectChanges();
@@ -265,7 +265,7 @@ export function main() {
        }));
 
     it('should list child elements within viewports',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(UsingFor).then((fixture) => {
            fixture.detectChanges();
 
@@ -282,7 +282,7 @@ export function main() {
        }));
 
     it('should list element attributes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(TestApp).then((fixture) => {
            fixture.detectChanges();
            var bankElem = fixture.debugElement.children[0];
@@ -294,7 +294,7 @@ export function main() {
        }));
 
     it('should list element classes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(TestApp).then((fixture) => {
            fixture.detectChanges();
            var bankElem = fixture.debugElement.children[0];
@@ -306,7 +306,7 @@ export function main() {
        }));
 
     it('should list element styles',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(TestApp).then((fixture) => {
            fixture.detectChanges();
            var bankElem = fixture.debugElement.children[0];
@@ -318,7 +318,7 @@ export function main() {
        }));
 
     it('should query child elements by css',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(ParentComp)
              .then((fixture) => {
                fixture.detectChanges();
@@ -334,7 +334,7 @@ export function main() {
        }));
 
     it('should query child elements by directive',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(ParentComp)
              .then((fixture) => {
                fixture.detectChanges();
@@ -352,7 +352,7 @@ export function main() {
        }));
 
     it('should list providerTokens',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
          tcb.createAsync(ParentComp)
              .then((fixture) => {
@@ -365,7 +365,7 @@ export function main() {
        }));
 
     it('should list locals',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.createAsync(LocalsComp)
              .then((fixture) => {
                fixture.detectChanges();
@@ -377,7 +377,7 @@ export function main() {
        }));
 
     it('should allow injecting from the element injector',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
          tcb.createAsync(ParentComp)
              .then((fixture) => {
@@ -391,7 +391,7 @@ export function main() {
        }));
 
     it('should list event listeners',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
          tcb.createAsync(EventsComp)
              .then((fixture) => {
@@ -406,7 +406,7 @@ export function main() {
 
 
     it('should trigger event handlers',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
          tcb.createAsync(EventsComp)
              .then((fixture) => {

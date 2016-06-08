@@ -19,9 +19,9 @@ import {JsonPipe} from '@angular/common';
 export function main() {
   describe("JsonPipe", () => {
     var regNewLine = '\n';
-    var inceptionObj;
-    var inceptionObjString;
-    var pipe;
+    var inceptionObj: any /** TODO #9100 */;
+    var inceptionObjString: any /** TODO #9100 */;
+    var pipe: any /** TODO #9100 */;
 
     function normalize(obj: string): string { return StringWrapper.replace(obj, regNewLine, ''); }
 
@@ -53,7 +53,7 @@ export function main() {
 
     describe('integration', () => {
       it('should work with mutable objects',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.createAsync(TestComp).then((fixture) => {
              let mutable: number[] = [1];
              fixture.debugElement.componentInstance.data = mutable;

@@ -24,18 +24,18 @@ import {
 } from '@angular/platform-browser/testing'
 
     class AType {
-  value;
+  value: any /** TODO #9100 */;
 
-  constructor(value) { this.value = value; }
+  constructor(value: any /** TODO #9100 */) { this.value = value; }
 }
 
 @ClassDecorator('class')
 class ClassWithDecorators {
-  @PropDecorator("p1") @PropDecorator("p2") a;
-  b;
+  @PropDecorator("p1") @PropDecorator("p2") a: any /** TODO #9100 */;
+  b: any /** TODO #9100 */;
 
   @PropDecorator("p3")
-  set c(value) {
+  set c(value: any /** TODO #9100 */) {
   }
 
   constructor(@ParamDecorator("a") a: AType, @ParamDecorator("b") b: AType) {
@@ -45,19 +45,19 @@ class ClassWithDecorators {
 }
 
 class ClassWithoutDecorators {
-  constructor(a, b) {}
+  constructor(a: any /** TODO #9100 */, b: any /** TODO #9100 */) {}
 }
 
 class TestObj {
-  a;
-  b;
+  a: any /** TODO #9100 */;
+  b: any /** TODO #9100 */;
 
-  constructor(a, b) {
+  constructor(a: any /** TODO #9100 */, b: any /** TODO #9100 */) {
     this.a = a;
     this.b = b;
   }
 
-  identity(arg) { return arg; }
+  identity(arg: any /** TODO #9100 */) { return arg; }
 }
 
 class Interface {}
@@ -83,7 +83,7 @@ class SubClassDoesNotDeclareOnInit extends SuperClassImplementingOnInit {}
 
 export function main() {
   describe('Reflector', () => {
-    var reflector;
+    var reflector: any /** TODO #9100 */;
 
     beforeEach(() => { reflector = new Reflector(new ReflectionCapabilities()); });
 
@@ -122,8 +122,8 @@ export function main() {
       // TODO: remove when issue is solved: https://github.com/angular/angular/issues/4756
       if (!browserDetection.isEdge) {
         it("should check args from no to max", () => {
-          var f = t => reflector.factory(t);
-          var checkArgs = (obj, args) => expect(obj.args).toEqual(args);
+          var f = (t: any /** TODO #9100 */) => reflector.factory(t);
+          var checkArgs = (obj: any /** TODO #9100 */, args: any /** TODO #9100 */) => expect(obj.args).toEqual(args);
 
           // clang-format off
           checkArgs(f(TestObjWith00Args)(), []);
@@ -248,7 +248,7 @@ export function main() {
       });
 
       it("should return a registered getter if available", () => {
-        reflector.registerGetters({"abc": (obj) => "fake"});
+        reflector.registerGetters({"abc": (obj: any /** TODO #9100 */) => "fake"});
         expect(reflector.getter("abc")("anything")).toEqual("fake");
       });
     });
@@ -262,8 +262,8 @@ export function main() {
       });
 
       it("should return a registered setter if available", () => {
-        var updateMe;
-        reflector.registerSetters({"abc": (obj, value) => { updateMe = value; }});
+        var updateMe: any /** TODO #9100 */;
+        reflector.registerSetters({"abc": (obj: any /** TODO #9100 */, value: any /** TODO #9100 */) => { updateMe = value; }});
         reflector.setter("abc")("anything", "fake");
 
         expect(updateMe).toEqual("fake");
@@ -278,7 +278,7 @@ export function main() {
       });
 
       it("should return a registered method if available", () => {
-        reflector.registerMethods({"abc": (obj, args) => args});
+        reflector.registerMethods({"abc": (obj: any /** TODO #9100 */, args: any /** TODO #9100 */) => args});
         expect(reflector.method("abc")("anything", ["fake"])).toEqual(['fake']);
       });
     });

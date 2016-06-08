@@ -137,38 +137,38 @@ class NeedsDirective {
 @Directive({selector: '[needsService]'})
 class NeedsService {
   service: any;
-  constructor(@Inject("service") service) { this.service = service; }
+  constructor(@Inject("service") service: any /** TODO #9100 */) { this.service = service; }
 }
 
 @Directive({selector: '[needsAppService]'})
 class NeedsAppService {
   service: any;
-  constructor(@Inject("appService") service) { this.service = service; }
+  constructor(@Inject("appService") service: any /** TODO #9100 */) { this.service = service; }
 }
 
 @Component({selector: '[needsHostAppService]', template: '', directives: ALL_DIRECTIVES})
 class NeedsHostAppService {
   service: any;
-  constructor(@Host() @Inject("appService") service) { this.service = service; }
+  constructor(@Host() @Inject("appService") service: any /** TODO #9100 */) { this.service = service; }
 }
 
 @Component({selector: '[needsServiceComponent]', template: ''})
 class NeedsServiceComponent {
   service: any;
-  constructor(@Inject("service") service) { this.service = service; }
+  constructor(@Inject("service") service: any /** TODO #9100 */) { this.service = service; }
 }
 
 @Directive({selector: '[needsServiceFromHost]'})
 class NeedsServiceFromHost {
   service: any;
-  constructor(@Host() @Inject("service") service) { this.service = service; }
+  constructor(@Host() @Inject("service") service: any /** TODO #9100 */) { this.service = service; }
 }
 
 @Directive({selector: '[needsAttribute]'})
 class NeedsAttribute {
-  typeAttribute;
-  titleAttribute;
-  fooAttribute;
+  typeAttribute: any /** TODO #9100 */;
+  titleAttribute: any /** TODO #9100 */;
+  fooAttribute: any /** TODO #9100 */;
   constructor(@Attribute('type') typeAttribute: String, @Attribute('title') titleAttribute: String,
               @Attribute('foo') fooAttribute: String) {
     this.typeAttribute = typeAttribute;
@@ -179,31 +179,31 @@ class NeedsAttribute {
 
 @Directive({selector: '[needsAttributeNoType]'})
 class NeedsAttributeNoType {
-  fooAttribute;
-  constructor(@Attribute('foo') fooAttribute) { this.fooAttribute = fooAttribute; }
+  fooAttribute: any /** TODO #9100 */;
+  constructor(@Attribute('foo') fooAttribute: any /** TODO #9100 */) { this.fooAttribute = fooAttribute; }
 }
 
 @Directive({selector: '[needsElementRef]'})
 class NeedsElementRef {
-  elementRef;
+  elementRef: any /** TODO #9100 */;
   constructor(ref: ElementRef) { this.elementRef = ref; }
 }
 
 @Directive({selector: '[needsViewContainerRef]'})
 class NeedsViewContainerRef {
-  viewContainer;
+  viewContainer: any /** TODO #9100 */;
   constructor(vc: ViewContainerRef) { this.viewContainer = vc; }
 }
 
 @Directive({selector: '[needsTemplateRef]'})
 class NeedsTemplateRef {
-  templateRef;
+  templateRef: any /** TODO #9100 */;
   constructor(ref: TemplateRef<Object>) { this.templateRef = ref; }
 }
 
 @Directive({selector: '[optionallyNeedsTemplateRef]'})
 class OptionallyNeedsTemplateRef {
-  templateRef;
+  templateRef: any /** TODO #9100 */;
   constructor(@Optional() ref: TemplateRef<Object>) { this.templateRef = ref; }
 }
 
@@ -244,7 +244,7 @@ class PipeNeedsChangeDetectorRef {
 @Pipe({name: 'pipeNeedsService'})
 export class PipeNeedsService implements PipeTransform {
   service: any;
-  constructor(@Inject("service") service) { this.service = service; }
+  constructor(@Inject("service") service: any /** TODO #9100 */) { this.service = service; }
   transform(value: any): any { return this; }
 }
 
@@ -289,7 +289,7 @@ export function main() {
 
     beforeEachProviders(() => [{provide: "appService", useValue: 'appService'}]);
 
-    beforeEach(inject([TestComponentBuilder], (_tcb) => { tcb = _tcb; }));
+    beforeEach(inject([TestComponentBuilder], (_tcb: any /** TODO #9100 */) => { tcb = _tcb; }));
 
     describe("injection", () => {
       it("should instantiate directives that have no dependencies", fakeAsync(() => {
@@ -336,7 +336,7 @@ export function main() {
                                      {provide: 'injectable1', useValue: 'new-injectable1'},
                                      {
                                        provide: 'injectable2',
-                                       useFactory: (val) => `${val}-injectable2`,
+                                       useFactory: (val: any /** TODO #9100 */) => `${val}-injectable2`,
                                        deps: [
                                          [
                                            new InjectMetadata('injectable1'),
@@ -352,7 +352,7 @@ export function main() {
       it("should instantiate providers that have dependencies", fakeAsync(() => {
            var providers = [
              {provide: 'injectable1', useValue: 'injectable1'},
-             {provide: 'injectable2', useFactory: (val) => `${val}-injectable2`, deps: ['injectable1']}
+             {provide: 'injectable2', useFactory: (val: any /** TODO #9100 */) => `${val}-injectable2`, deps: ['injectable1']}
            ];
            var el = createComp('<div simpleDirective></div>',
                                tcb.overrideProviders(SimpleDirective, providers));
@@ -362,7 +362,7 @@ export function main() {
       it("should instantiate viewProviders that have dependencies", fakeAsync(() => {
            var viewProviders = [
              {provide: 'injectable1', useValue: 'injectable1'},
-             {provide: 'injectable2', useFactory: (val) => `${val}-injectable2`, deps: ['injectable1']}
+             {provide: 'injectable2', useFactory: (val: any /** TODO #9100 */) => `${val}-injectable2`, deps: ['injectable1']}
            ];
 
            var el = createComp('<div simpleComponent></div>',

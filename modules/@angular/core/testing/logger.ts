@@ -6,9 +6,9 @@ export class Log {
 
   constructor() { this.logItems = []; }
 
-  add(value): void { this.logItems.push(value); }
+  add(value: any /** TODO #9100 */): void { this.logItems.push(value); }
 
-  fn(value) {
+  fn(value: any /** TODO #9100 */) {
     return (a1: any = null, a2: any = null, a3: any = null, a4: any = null, a5: any = null) => {
       this.logItems.push(value);
     };

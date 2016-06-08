@@ -123,11 +123,11 @@ export function main() {
         beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
 
         it('provides a real XHR instance',
-           inject([XHR], (xhr) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
+           inject([XHR], (xhr: any /** TODO #9100 */) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
 
-        it('should allow the use of fakeAsync', fakeAsync(inject([FancyService], (service) => {
-             var value;
-             service.getAsyncValue().then(function(val) { value = val; });
+        it('should allow the use of fakeAsync', fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
+             var value: any /** TODO #9100 */;
+             service.getAsyncValue().then(function(val: any /** TODO #9100 */) { value = val; });
              tick();
              expect(value).toEqual('async value');
            })));
@@ -140,9 +140,9 @@ export function main() {
       var patchJasmineIt = () => {
         var deferred = PromiseWrapper.completer();
         originalJasmineIt = jasmine.getEnv().it;
-        jasmine.getEnv().it = (description: string, fn) => {
+        jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
           var done = () => { deferred.resolve() };
-          (<any>done).fail = (err) => { deferred.reject(err) };
+          (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err) };
           fn(done);
           return null;
         };
@@ -151,12 +151,12 @@ export function main() {
 
       var restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
-      it('should fail when an XHR fails', (done) => {
+      it('should fail when an XHR fails', (done: any /** TODO #9100 */) => {
         var itPromise = patchJasmineIt();
 
         it('should fail with an error from a promise',
            async(inject([TestComponentBuilder],
-                        (tcb) => { return tcb.createAsync(BadTemplateUrl); })));
+                        (tcb: any /** TODO #9100 */) => { return tcb.createAsync(BadTemplateUrl); })));
 
         itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
           expect(err).toEqual('Uncaught (in promise): Failed to load non-existant.html');

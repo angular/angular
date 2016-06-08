@@ -734,7 +734,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
       throw e;
     }
 
-    var obj;
+    var obj: any /** TODO #9100 */;
     try {
       switch (length) {
         case 0:
@@ -881,7 +881,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 var INJECTOR_KEY = ReflectiveKey.get(Injector);
 
 function _mapProviders(injector: ReflectiveInjector_, fn: Function): any[] {
-  var res = [];
+  var res: any[] /** TODO #9100 */ = [];
   for (var i = 0; i < injector._proto.numberOfProviders; ++i) {
     res.push(fn(injector._proto.getProviderAtIndex(i)));
   }

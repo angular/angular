@@ -25,7 +25,7 @@ export const APP_ID_RANDOM_PROVIDER =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
       provide: APP_ID,
       useFactory: _appIdRandomProviderFactory,
-      deps: []
+      deps: [] as any
     };
 
 function _randomChar(): string {

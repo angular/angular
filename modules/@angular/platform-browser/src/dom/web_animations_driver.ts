@@ -20,7 +20,7 @@ export class WebAnimationsDriver implements AnimationDriver {
 
     var anyElm = <any>element;
 
-    var formattedSteps = [];
+    var formattedSteps: any[] /** TODO #9100 */ = [];
     var startingStyleLookup: {[key: string]: string|number}= {};
     if (isPresent(startingStyles) && startingStyles.styles.length > 0) {
       startingStyleLookup = _populateStyles(anyElm, startingStyles, {});
@@ -30,7 +30,7 @@ export class WebAnimationsDriver implements AnimationDriver {
 
     keyframes.forEach((keyframe: AnimationKeyframe) => {
       let data = _populateStyles(anyElm, keyframe.styles, startingStyleLookup);
-      data['offset'] = keyframe.offset;
+      (data as any /** TODO #9100 */)['offset'] = keyframe.offset;
       formattedSteps.push(data);
     });
 
@@ -55,15 +55,15 @@ export class WebAnimationsDriver implements AnimationDriver {
 function _populateStyles(element: any, styles: AnimationStyles, defaultStyles: {[key: string]: string|number}) {
   var data = {};
   styles.styles.forEach((entry) => {
-    StringMapWrapper.forEach(entry, (val, prop) => {
-      data[prop] = val == AUTO_STYLE
+    StringMapWrapper.forEach(entry, (val: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
+      (data as any /** TODO #9100 */)[prop] = val == AUTO_STYLE
           ? _computeStyle(element, prop)
           : val.toString() + _resolveStyleUnit(val, prop);
     });
   });
-  StringMapWrapper.forEach(defaultStyles, (value, prop) => {
-    if (!isPresent(data[prop])) {
-      data[prop] = value;
+  StringMapWrapper.forEach(defaultStyles, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
+    if (!isPresent((data as any /** TODO #9100 */)[prop])) {
+      (data as any /** TODO #9100 */)[prop] = value;
     }
   });
   return data;

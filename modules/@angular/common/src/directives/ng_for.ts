@@ -144,7 +144,7 @@ export class NgFor implements DoCheck {
       viewRef.context.count = ilen;
     }
 
-    changes.forEachIdentityChange((record) => {
+    changes.forEachIdentityChange((record: any /** TODO #9100 */) => {
       var viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(record.currentIndex);
       viewRef.context.$implicit = record.item;
     });

@@ -27,7 +27,7 @@ export function main() {
 
     it('should create type in ES5', () => {
       function MyComponent(){};
-      var as;
+      var as: any /** TODO #9100 */;
       (<any>MyComponent).annotations = as = Component({}).View({});
       expect(reflector.annotations(MyComponent)).toEqual(as.annotations);
     });

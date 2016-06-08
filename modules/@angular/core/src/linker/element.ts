@@ -41,7 +41,7 @@ export class AppElement {
   get injector(): Injector { return this.parentView.injector(this.index); }
 
   mapNestedViews(nestedViewClass: any, callback: Function): any[] {
-    var result = [];
+    var result: any[] /** TODO #9100 */ = [];
     if (isPresent(this.nestedViews)) {
       this.nestedViews.forEach((nestedView) => {
         if (nestedView.clazz === nestedViewClass) {
@@ -63,7 +63,7 @@ export class AppElement {
       this.nestedViews = nestedViews;
     }
     ListWrapper.insert(nestedViews, viewIndex, view);
-    var refRenderNode;
+    var refRenderNode: any /** TODO #9100 */;
     if (viewIndex > 0) {
       var prevView = nestedViews[viewIndex - 1];
       refRenderNode = prevView.lastRootNode;

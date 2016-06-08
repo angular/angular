@@ -10,7 +10,7 @@ import * as o from '@angular/compiler/src/output/output_ast';
 export class ExternalClass {
   changeable: any;
   constructor(public data: any) { this.changeable = data; }
-  someMethod(a) { return {'param': a, 'data': this.data}; }
+  someMethod(a: any /** TODO #9100 */) { return {'param': a, 'data': this.data}; }
 }
 
 var testDataIdentifier = new CompileIdentifierMetadata({
@@ -271,5 +271,5 @@ class _InterpretiveDynamicClass extends ExternalClass implements DynamicInstance
               public getters: Map<string, Function>, public methods: Map<string, Function>) {
     super(args[0]);
   }
-  childMethod(a) { return this.methods.get('childMethod')(a); }
+  childMethod(a: any /** TODO #9100 */) { return this.methods.get('childMethod')(a); }
 }

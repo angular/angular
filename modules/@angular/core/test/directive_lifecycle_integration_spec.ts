@@ -29,7 +29,7 @@ export function main() {
 
     it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
        inject([TestComponentBuilder, Log, AsyncTestCompleter], (tcb: TestComponentBuilder, log: Log,
-                                                                async) => {
+                                                                async: any /** TODO #9100 */) => {
          tcb.overrideView(
                 MyComp5,
                 new ViewMetadata(
@@ -71,10 +71,10 @@ class LifecycleDir implements DoCheck {
 })
 class LifecycleCmp implements OnChanges,
     OnInit, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked {
-  field;
+  field: any /** TODO #9100 */;
   constructor(private _log: Log) {}
 
-  ngOnChanges(_) { this._log.add("ngOnChanges"); }
+  ngOnChanges(_: any /** TODO #9100 */) { this._log.add("ngOnChanges"); }
 
   ngOnInit() { this._log.add("ngOnInit"); }
 

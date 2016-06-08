@@ -41,7 +41,7 @@ export function main() {
     }));
 
 
-    it('should navigate based on the initial URL state', inject([AsyncTestCompleter], (async) => {
+    it('should navigate based on the initial URL state', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.config([new Route({path: '/', component: DummyComponent})])
@@ -54,7 +54,7 @@ export function main() {
        }));
 
     it('should activate viewports and update URL on navigate',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -68,7 +68,7 @@ export function main() {
        }));
 
     it('should activate viewports and update URL when navigating via DSL',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -83,7 +83,7 @@ export function main() {
        }));
 
     it('should not push a history change on when navigate is called with skipUrlChange',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -100,7 +100,7 @@ export function main() {
     // This test is disabled because it is flaky.
     // TODO: bford. make this test not flaky and reenable it.
     xit('should replace history when triggered by a hashchange with a redirect',
-        inject([AsyncTestCompleter], (async) => {
+        inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
           var outlet = makeDummyOutlet();
 
           router.registerPrimaryOutlet(outlet)
@@ -119,7 +119,7 @@ export function main() {
         }));
 
     it('should push history when triggered by a hashchange without a redirect',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -136,7 +136,7 @@ export function main() {
 
 
     it('should pass an object containing the component instruction to the router change subscription after a successful navigation',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -152,7 +152,7 @@ export function main() {
        }));
 
     it('should pass an object containing the bad url to the router change subscription after a failed navigation',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -167,7 +167,7 @@ export function main() {
              });
        }));
 
-    it('should navigate after being configured', inject([AsyncTestCompleter], (async) => {
+    it('should navigate after being configured', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -208,7 +208,7 @@ export function main() {
     });
 
     it('should generate an instruction with terminal async routes',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet);
@@ -223,7 +223,7 @@ export function main() {
        }));
 
     it('should return whether a given instruction is active with isRouteActive',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -242,7 +242,7 @@ export function main() {
              });
        }));
 
-    it('should provide the current instruction', inject([AsyncTestCompleter], (async) => {
+    it('should provide the current instruction', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -320,7 +320,7 @@ export function main() {
 }
 
 
-function stringifyInstruction(instruction): string {
+function stringifyInstruction(instruction: any /** TODO #9100 */): string {
   return instruction.toRootUrl();
 }
 
@@ -336,10 +336,10 @@ class DummyParentComp {
 
 function makeDummyOutlet(): RouterOutlet {
   var ref = new SpyRouterOutlet();
-  ref.spy('canActivate').andCallFake((_) => PromiseWrapper.resolve(true));
-  ref.spy('routerCanReuse').andCallFake((_) => PromiseWrapper.resolve(false));
-  ref.spy('routerCanDeactivate').andCallFake((_) => PromiseWrapper.resolve(true));
-  ref.spy('activate').andCallFake((_) => PromiseWrapper.resolve(true));
+  ref.spy('canActivate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
+  ref.spy('routerCanReuse').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(false));
+  ref.spy('routerCanDeactivate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
+  ref.spy('activate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
   return <any>ref;
 }
 

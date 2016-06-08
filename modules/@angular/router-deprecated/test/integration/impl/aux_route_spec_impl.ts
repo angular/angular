@@ -27,14 +27,14 @@ function getLinkElement(rtc: ComponentFixture<any>, linkIndex: number = 0) {
 function auxRoutes() {
   var tcb: TestComponentBuilder;
   var fixture: ComponentFixture<any>;
-  var rtr;
+  var rtr: any /** TODO #9100 */;
 
-  beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
+  beforeEach(inject([TestComponentBuilder, Router], (tcBuilder: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
     tcb = tcBuilder;
     rtr = router;
   }));
 
-  it('should recognize and navigate from the URL', inject([AsyncTestCompleter], (async) => {
+  it('should recognize and navigate from the URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
        compile(tcb, `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
@@ -49,7 +49,7 @@ function auxRoutes() {
            });
      }));
 
-  it('should navigate via the link DSL', inject([AsyncTestCompleter], (async) => {
+  it('should navigate via the link DSL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
        compile(tcb, `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
@@ -64,7 +64,7 @@ function auxRoutes() {
            });
      }));
 
-  it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
+  it('should generate a link URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
        compile(
            tcb,
            `<a [routerLink]="['/', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
@@ -81,7 +81,7 @@ function auxRoutes() {
      }));
 
   it('should navigate from a link click',
-     inject([AsyncTestCompleter, Location], (async, location) => {
+     inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
        compile(
            tcb,
            `<a [routerLink]="['/', ['Modal']]">open modal</a> | <a [routerLink]="['/Hello']">hello</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
@@ -97,7 +97,7 @@ function auxRoutes() {
 
              var navCount = 0;
 
-             rtr.subscribe((_) => {
+             rtr.subscribe((_: any /** TODO #9100 */) => {
                navCount += 1;
                fixture.detectChanges();
                if (navCount == 1) {
@@ -130,14 +130,14 @@ function auxRoutes() {
 function auxRoutesWithAPrimaryRoute() {
   var tcb: TestComponentBuilder;
   var fixture: ComponentFixture<any>;
-  var rtr;
+  var rtr: any /** TODO #9100 */;
 
-  beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
+  beforeEach(inject([TestComponentBuilder, Router], (tcBuilder: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
     tcb = tcBuilder;
     rtr = router;
   }));
 
-  it('should recognize and navigate from the URL', inject([AsyncTestCompleter], (async) => {
+  it('should recognize and navigate from the URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
        compile(tcb, `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
@@ -152,7 +152,7 @@ function auxRoutesWithAPrimaryRoute() {
            });
      }));
 
-  it('should navigate via the link DSL', inject([AsyncTestCompleter], (async) => {
+  it('should navigate via the link DSL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
        compile(tcb, `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
@@ -167,7 +167,7 @@ function auxRoutesWithAPrimaryRoute() {
            });
      }));
 
-  it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
+  it('should generate a link URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
        compile(
            tcb,
            `<a [routerLink]="['/Hello', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
@@ -184,7 +184,7 @@ function auxRoutesWithAPrimaryRoute() {
      }));
 
   it('should navigate from a link click',
-     inject([AsyncTestCompleter, Location], (async, location) => {
+     inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
        compile(
            tcb,
            `<a [routerLink]="['/Hello', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
@@ -197,7 +197,7 @@ function auxRoutesWithAPrimaryRoute() {
              fixture.detectChanges();
              expect(fixture.debugElement.nativeElement).toHaveText('open modal | main {} | aux {}');
 
-             rtr.subscribe((_) => {
+             rtr.subscribe((_: any /** TODO #9100 */) => {
                fixture.detectChanges();
                expect(fixture.debugElement.nativeElement)
                    .toHaveText('open modal | main {hello} | aux {modal}');
@@ -211,8 +211,8 @@ function auxRoutesWithAPrimaryRoute() {
 }
 
 export function registerSpecs() {
-  specs['auxRoutes'] = auxRoutes;
-  specs['auxRoutesWithAPrimaryRoute'] = auxRoutesWithAPrimaryRoute;
+  (specs as any /** TODO #9100 */)['auxRoutes'] = auxRoutes;
+  (specs as any /** TODO #9100 */)['auxRoutesWithAPrimaryRoute'] = auxRoutesWithAPrimaryRoute;
 }
 
 

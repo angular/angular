@@ -47,11 +47,11 @@ class SecuredComponent {
   constructor() { this.ctxProp = 'some value'; }
 }
 
-function itAsync(msg: string, injections: Function[], f: Function);
-function itAsync(msg: string, f: (tcb: TestComponentBuilder, atc: AsyncTestCompleter) => void);
+function itAsync(msg: string, injections: Function[], f: Function): any; /** TODO #???? */
+function itAsync(msg: string, f: (tcb: TestComponentBuilder, atc: AsyncTestCompleter) => void): any; /** TODO #???? */
 function itAsync(msg: string,
                  f: Function[] | ((tcb: TestComponentBuilder, atc: AsyncTestCompleter) => void),
-                 fn?: Function) {
+                 fn?: Function): any /** TODO #???? */ {
   if (f instanceof Function) {
     it(msg, inject([TestComponentBuilder, AsyncTestCompleter], <Function>f));
   } else {
@@ -73,7 +73,7 @@ function declareTests(isJit: boolean) {
     afterEach(() => { getDOM().log = originalLog; });
 
 
-    itAsync('should disallow binding on*', (tcb: TestComponentBuilder, async) => {
+    itAsync('should disallow binding on*', (tcb: TestComponentBuilder, async: any /** TODO #???? */) => {
       let tpl = `<div [attr.onclick]="ctxProp"></div>`;
       tcb = tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl}));
       PromiseWrapper.catchError(tcb.createAsync(SecuredComponent), (e) => {
@@ -88,7 +88,7 @@ function declareTests(isJit: boolean) {
     describe('safe HTML values', function() {
       itAsync('should not escape values marked as trusted',
               [TestComponentBuilder, AsyncTestCompleter, DomSanitizationService],
-              (tcb: TestComponentBuilder, async, sanitizer: DomSanitizationService) => {
+              (tcb: TestComponentBuilder, async: any /** TODO #???? */, sanitizer: DomSanitizationService) => {
                 let tpl = `<a [href]="ctxProp">Link Title</a>`;
                 tcb.overrideView(SecuredComponent,
                                  new ViewMetadata({template: tpl, directives: []}))
@@ -107,7 +107,7 @@ function declareTests(isJit: boolean) {
 
       itAsync('should error when using the wrong trusted value',
               [TestComponentBuilder, AsyncTestCompleter, DomSanitizationService],
-              (tcb: TestComponentBuilder, async, sanitizer: DomSanitizationService) => {
+              (tcb: TestComponentBuilder, async: any /** TODO #???? */, sanitizer: DomSanitizationService) => {
                 let tpl = `<a [href]="ctxProp">Link Title</a>`;
                 tcb.overrideView(SecuredComponent,
                                  new ViewMetadata({template: tpl, directives: []}))
@@ -125,7 +125,7 @@ function declareTests(isJit: boolean) {
     });
 
     describe('sanitizing', () => {
-      itAsync('should escape unsafe attributes', (tcb: TestComponentBuilder, async) => {
+      itAsync('should escape unsafe attributes', (tcb: TestComponentBuilder, async: any /** TODO #???? */) => {
         let tpl = `<a [href]="ctxProp">Link Title</a>`;
         tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
             .createAsync(SecuredComponent)
@@ -146,7 +146,7 @@ function declareTests(isJit: boolean) {
             });
       });
 
-      itAsync('should escape unsafe style values', (tcb: TestComponentBuilder, async) => {
+      itAsync('should escape unsafe style values', (tcb: TestComponentBuilder, async: any /** TODO #???? */) => {
         let tpl = `<div [style.background]="ctxProp">Text</div>`;
         tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
             .createAsync(SecuredComponent)
@@ -169,7 +169,7 @@ function declareTests(isJit: boolean) {
             });
       });
 
-      itAsync('should escape unsafe HTML values', (tcb: TestComponentBuilder, async) => {
+      itAsync('should escape unsafe HTML values', (tcb: TestComponentBuilder, async: any /** TODO #???? */) => {
         let tpl = `<div [innerHTML]="ctxProp">Text</div>`;
         tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
             .createAsync(SecuredComponent)

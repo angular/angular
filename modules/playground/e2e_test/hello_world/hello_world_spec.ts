@@ -23,12 +23,12 @@ describe('hello world', function() {
 
 });
 
-function getComponentText(selector, innerSelector) {
+function getComponentText(selector: any /** TODO #9100 */, innerSelector: any /** TODO #9100 */) {
   return browser.executeScript('return document.querySelector("' + selector + '").querySelector("' +
                                innerSelector + '").textContent');
 }
 
-function clickComponentButton(selector, innerSelector) {
+function clickComponentButton(selector: any /** TODO #9100 */, innerSelector: any /** TODO #9100 */) {
   return browser.executeScript('return document.querySelector("' + selector + '").querySelector("' +
                                innerSelector + '").click()');
 }

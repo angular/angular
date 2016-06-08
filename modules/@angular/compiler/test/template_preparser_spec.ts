@@ -21,7 +21,7 @@ import {
 
 export function main() {
   describe('preparseElement', () => {
-    var htmlParser;
+    var htmlParser: any /** TODO #9100 */;
     beforeEach(inject([HtmlParser], (_htmlParser: HtmlParser) => { htmlParser = _htmlParser; }));
 
     function preparse(html: string): PreparsedElement {

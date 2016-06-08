@@ -20,7 +20,7 @@ import {SpyPlatformLocation} from '../spies';
 
 export function main() {
   describe('PathLocationStrategy', () => {
-    var platformLocation, locationStrategy;
+    var platformLocation: any /** TODO #9100 */, locationStrategy: any /** TODO #9100 */;
 
     beforeEachProviders(() => [
       PathLocationStrategy,
@@ -38,7 +38,7 @@ export function main() {
     });
 
     describe('without APP_BASE_HREF', () => {
-      beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl, ls) => {
+      beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
         platformLocation = pl;
         locationStrategy = ls;
       }));
@@ -69,7 +69,7 @@ export function main() {
     describe('with APP_BASE_HREF with neither leading nor trailing slash', () => {
       beforeEachProviders(() => [{provide: APP_BASE_HREF, useValue: 'app'}]);
 
-      beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl, ls) => {
+      beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
         platformLocation = pl;
         locationStrategy = ls;
         platformLocation.spy('pushState');
@@ -102,7 +102,7 @@ export function main() {
     describe('with APP_BASE_HREF with leading slash', () => {
       beforeEachProviders(() => [{provide: APP_BASE_HREF, useValue: '/app'}]);
 
-      beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl, ls) => {
+      beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
         platformLocation = pl;
         locationStrategy = ls;
         platformLocation.spy('pushState');
@@ -135,7 +135,7 @@ export function main() {
     describe('with APP_BASE_HREF with both leading and trailing slash', () => {
       beforeEachProviders(() => [{provide: APP_BASE_HREF, useValue: '/app/'}]);
 
-      beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl, ls) => {
+      beforeEach(inject([PlatformLocation, PathLocationStrategy], (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
         platformLocation = pl;
         locationStrategy = ls;
         platformLocation.spy('pushState');
