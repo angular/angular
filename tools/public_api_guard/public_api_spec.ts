@@ -771,6 +771,7 @@ const COMMON = [
   'ControlGroup.controls:{[key:string]:AbstractControl}',
   'ControlGroup.exclude(controlName:string):void',
   'ControlGroup.include(controlName:string):void',
+  'ControlGroup.registerControl(name:string, control:AbstractControl):void',
   'ControlGroup.removeControl(name:string):void',
   'ControlValueAccessor',
   'ControlValueAccessor.registerOnChange(fn:any):void',

@@ -351,6 +351,33 @@ export function main() {
         });
       });
 
+      describe("adding and removing controls", () => {
+        it("should update value and validity when control is added", () => {
+          var g = new ControlGroup({ "one": new Control("1") });
+          expect(g.value).toEqual({"one": "1"});
+          expect(g.valid).toBe(true);
+
+          g.addControl("two", new Control("2", Validators.minLength(10)));
+
+          expect(g.value).toEqual({"one": "1","two": "2"});
+          expect(g.valid).toBe(false);
+        });
+
+        it("should update value and validity when control is removed", () => {
+          var g = new ControlGroup({
+            "one": new Control("1"),
+            "two": new Control("2", Validators.minLength(10))
+          });
+          expect(g.value).toEqual({"one": "1", "two": "2"});
+          expect(g.valid).toBe(false);
+
+          g.removeControl("two");
+
+          expect(g.value).toEqual({"one": "1"});
+          expect(g.valid).toBe(true);
+        });
+      });
+
       describe("errors", () => {
         it("should run the validator when the value changes", () => {
           var simpleValidator = (c) =>

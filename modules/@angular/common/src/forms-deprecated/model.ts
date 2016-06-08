@@ -350,17 +350,28 @@ export class ControlGroup extends AbstractControl {
   }
 
   /**
-   * Add a control to this group.
+   * Register a control with the group's list of controls.
    */
-  addControl(name: string, control: AbstractControl): void {
+  registerControl(name: string, control: AbstractControl): void {
     this.controls[name] = control;
     control.setParent(this);
   }
 
   /**
+   * Add a control to this group.
+   */
+  addControl(name: string, control: AbstractControl): void {
+    this.registerControl(name, control);
+    this.updateValueAndValidity();
+  }
+
+  /**
    * Remove a control from this group.
    */
-  removeControl(name: string): void { StringMapWrapper.delete(this.controls, name); }
+  removeControl(name: string): void {
+    StringMapWrapper.delete(this.controls, name);
+    this.updateValueAndValidity();
+  }
 
   /**
    * Mark the named control as non-optional.
