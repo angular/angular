@@ -12,9 +12,9 @@ import {UpperCasePipe} from '@angular/common';
 
 export function main() {
   describe("UpperCasePipe", () => {
-    var upper;
-    var lower;
-    var pipe;
+    var upper: any /** TODO #9100 */;
+    var lower: any /** TODO #9100 */;
+    var pipe: any /** TODO #9100 */;
 
     beforeEach(() => {
       lower = 'something';

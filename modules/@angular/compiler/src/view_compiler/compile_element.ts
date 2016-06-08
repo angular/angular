@@ -167,9 +167,9 @@ export class CompileElement extends CompileNode {
           queriesWithReads,
           queriesForProvider.map(query => new _QueryWithRead(query, resolvedProvider.token)));
     });
-    StringMapWrapper.forEach(this.referenceTokens, (_, varName) => {
+    StringMapWrapper.forEach(this.referenceTokens, (_: any /** TODO #9100 */, varName: any /** TODO #9100 */) => {
       var token = this.referenceTokens[varName];
-      var varValue;
+      var varValue: any /** TODO #9100 */;
       if (isPresent(token)) {
         varValue = this._instances.get(token);
       } else {
@@ -282,7 +282,7 @@ export class CompileElement extends CompileNode {
 
   private _getLocalDependency(requestingProviderType: ProviderAstType,
                               dep: CompileDiDependencyMetadata): o.Expression {
-    var result = null;
+    var result: any /** TODO #9100 */ = null;
     // constructor content query
     if (isBlank(result) && isPresent(dep.query)) {
       result = this._addQuery(dep.query, null).queryList;
@@ -319,7 +319,7 @@ export class CompileElement extends CompileNode {
   private _getDependency(requestingProviderType: ProviderAstType,
                          dep: CompileDiDependencyMetadata): o.Expression {
     var currElement: CompileElement = this;
-    var result = null;
+    var result: any /** TODO #9100 */ = null;
     if (dep.isValue) {
       result = o.literal(dep.value);
     }
@@ -346,7 +346,7 @@ export class CompileElement extends CompileNode {
 function createInjectInternalCondition(nodeIndex: number, childNodeCount: number,
                                        provider: ProviderAst,
                                        providerExpr: o.Expression): o.Statement {
-  var indexCondition;
+  var indexCondition: any /** TODO #9100 */;
   if (childNodeCount > 0) {
     indexCondition = o.literal(nodeIndex)
                          .lowerEquals(InjectMethodVars.requestNodeIndex)
@@ -364,8 +364,8 @@ function createProviderProperty(propName: string, provider: ProviderAst,
                                 providerValueExpressions: o.Expression[], isMulti: boolean,
                                 isEager: boolean, compileElement: CompileElement): o.Expression {
   var view = compileElement.view;
-  var resolvedProviderValueExpr;
-  var type;
+  var resolvedProviderValueExpr: any /** TODO #9100 */;
+  var type: any /** TODO #9100 */;
   if (isMulti) {
     resolvedProviderValueExpr = o.literalArr(providerValueExpressions);
     type = new o.ArrayType(o.DYNAMIC_TYPE);
@@ -410,9 +410,9 @@ class _ValueOutputAstTransformer extends ValueTransformer {
     return o.literalArr(arr.map(value => visitValue(value, this, context)));
   }
   visitStringMap(map: {[key: string]: any}, context: any): o.Expression {
-    var entries = [];
+    var entries: any[] /** TODO #9100 */ = [];
     StringMapWrapper.forEach(
-        map, (value, key) => { entries.push([key, visitValue(value, this, context)]); });
+        map, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => { entries.push([key, visitValue(value, this, context)]); });
     return o.literalMap(entries);
   }
   visitPrimitive(value: any, context: any): o.Expression { return o.literal(value); }

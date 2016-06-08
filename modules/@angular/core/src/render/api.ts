@@ -59,13 +59,13 @@ export abstract class Renderer {
   abstract setBindingDebugInfo(renderElement: any, propertyName: string,
                                propertyValue: string): void;
 
-  abstract setElementClass(renderElement: any, className: string, isAdd: boolean);
+  abstract setElementClass(renderElement: any, className: string, isAdd: boolean): any /** TODO #9100 */;
 
-  abstract setElementStyle(renderElement: any, styleName: string, styleValue: string);
+  abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): any /** TODO #9100 */;
 
-  abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]);
+  abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): any /** TODO #9100 */;
 
-  abstract setText(renderNode: any, text: string);
+  abstract setText(renderNode: any, text: string): any /** TODO #9100 */;
 
   abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
 }

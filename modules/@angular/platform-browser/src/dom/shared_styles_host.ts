@@ -14,7 +14,7 @@ export class SharedStylesHost {
   constructor() {}
 
   addStyles(styles: string[]) {
-    var additions = [];
+    var additions: any[] /** TODO #9100 */ = [];
     styles.forEach(style => {
       if (!SetWrapper.has(this._stylesSet, style)) {
         this._stylesSet.add(style);

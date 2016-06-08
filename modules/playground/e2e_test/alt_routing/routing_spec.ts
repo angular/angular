@@ -1,6 +1,6 @@
 import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
-function waitForElement(selector) {
+function waitForElement(selector: any /** TODO #9100 */) {
   var EC = (<any>protractor).ExpectedConditions;
   // Waits for the element with id 'abc' to be present on the dom.
   browser.wait(EC.presenceOf($(selector)), 20000);

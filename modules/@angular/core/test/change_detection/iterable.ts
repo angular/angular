@@ -4,5 +4,5 @@ export class TestIterable {
   list: number[];
   constructor() { this.list = []; }
 
-  [getSymbolIterator()]() { return this.list[getSymbolIterator()](); }
+  [getSymbolIterator()]() { return (this.list as any)[getSymbolIterator()](); }
 }

@@ -61,8 +61,8 @@ export class DirectiveResolver {
   private _mergeWithPropertyMetadata(dm: DirectiveMetadata,
                                      propertyMetadata: {[key: string]: any[]},
                                      directiveType: Type): DirectiveMetadata {
-    var inputs = [];
-    var outputs = [];
+    var inputs: any[] /** TODO #9100 */ = [];
+    var outputs: any[] /** TODO #9100 */ = [];
     var host: {[key: string]: string} = {};
     var queries: {[key: string]: any} = {};
 
@@ -122,7 +122,7 @@ export class DirectiveResolver {
                  directiveType: Type): DirectiveMetadata {
     var mergedInputs = isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
 
-    var mergedOutputs;
+    var mergedOutputs: any /** TODO #9100 */;
     if (isPresent(dm.outputs)) {
       dm.outputs.forEach((propName: string) => {
         if (ListWrapper.contains(outputs, propName)) {

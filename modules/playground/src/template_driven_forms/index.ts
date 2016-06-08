@@ -31,7 +31,7 @@ class CheckoutModel {
 /**
  * Custom validator.
  */
-function creditCardValidator(c): {[key: string]: boolean} {
+function creditCardValidator(c: any /** TODO #9100 */): {[key: string]: boolean} {
   if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
     return null;
   } else {
@@ -73,7 +73,7 @@ class CreditCardValidator {
   directives: [NgIf]
 })
 class ShowError {
-  formDir;
+  formDir: any /** TODO #9100 */;
   controlPath: string;
   errorTypes: string[];
 
@@ -94,7 +94,7 @@ class ShowError {
 
   _errorMessage(code: string): string {
     var config = {'required': 'is required', 'invalidCreditCard': 'is invalid credit card number'};
-    return config[code];
+    return (config as any /** TODO #9100 */)[code];
   }
 }
 

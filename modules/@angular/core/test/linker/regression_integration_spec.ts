@@ -54,7 +54,7 @@ function declareTests(isJit: boolean) {
       beforeEachProviders(() => [{provide: PLATFORM_PIPES, useValue: [PlatformPipe], multi: true}]);
 
       it('should overwrite them by custom pipes',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp1, new ViewMetadata({template: '{{true | somePipe}}', pipes: [CustomPipe]}))
                .createAsync(MyComp1)
@@ -69,7 +69,7 @@ function declareTests(isJit: boolean) {
     describe('expressions', () => {
 
       it('should evaluate conditional and boolean operators with right precedence - #8244',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp1,
                             new ViewMetadata({template: `{{'red' + (true ? ' border' : '')}}`}))
                .createAsync(MyComp1)
@@ -83,7 +83,7 @@ function declareTests(isJit: boolean) {
       if (!IS_DART) {
         it('should evaluate conditional and unary operators with right precedence - #8235',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
+                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                     tcb.overrideView(MyComp1, new ViewMetadata({template: `{{!null?.length}}`}))
                         .createAsync(MyComp1)
                         .then((fixture) => {
@@ -103,7 +103,7 @@ function declareTests(isJit: boolean) {
       }
 
       it('should support providers with an OpaqueToken that contains a `.` in the name',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var token = new OpaqueToken('a.b');
            var tokenValue = 1;
            createInjector(tcb, [{provide: token, useValue: tokenValue}])
@@ -114,7 +114,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support providers with string token with a `.` in it',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var token = 'a.b';
            var tokenValue = 1;
            createInjector(tcb, [{provide: token, useValue: tokenValue}])
@@ -125,7 +125,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support providers with an anonymous function',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var token = () => true;
            var tokenValue = 1;
            createInjector(tcb, [{provide: token, useValue: tokenValue}])
@@ -136,7 +136,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support providers with an OpaqueToken that has a StringMap as value',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var token1 = new OpaqueToken('someToken');
            var token2 = new OpaqueToken('someToken');
            var tokenValue1 = {'a': 1};
@@ -153,7 +153,7 @@ function declareTests(isJit: boolean) {
     });
 
     it('should allow logging a previous elements class binding via interpolation',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideTemplate(MyComp1, `<div [class.a]="true" #el>Class: {{el.className}}</div>`)
              .createAsync(MyComp1)
              .then((fixture) => {
@@ -164,7 +164,7 @@ function declareTests(isJit: boolean) {
        }));
 
     it('should support ngClass before a component and content projection inside of an ngIf',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(
                 MyComp1, new ViewMetadata({
                   template: `A<cmp-content *ngIf="true" [ngClass]="'red'">B</cmp-content>C`,

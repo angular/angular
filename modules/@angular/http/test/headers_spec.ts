@@ -65,9 +65,9 @@ export function main() {
 
 
     describe('.toJSON()', () => {
-      let headers = null;
-      let inputArr = null;
-      let obj = null;
+      let headers: any /** TODO #9100 */ = null;
+      let inputArr: any /** TODO #9100 */ = null;
+      let obj: any /** TODO #9100 */ = null;
 
       beforeEach(() => {
         headers = new Headers();

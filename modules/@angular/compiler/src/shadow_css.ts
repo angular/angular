@@ -175,7 +175,7 @@ export class ShadowCss {
   private _insertPolyfillDirectivesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     return StringWrapper.replaceAllMapped(cssText, _cssContentNextSelectorRe,
-                                          function(m) { return m[1] + '{'; });
+                                          function(m: any /** TODO #9100 */) { return m[1] + '{'; });
   }
 
   /*
@@ -195,7 +195,7 @@ export class ShadowCss {
   **/
   private _insertPolyfillRulesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
-    return StringWrapper.replaceAllMapped(cssText, _cssContentRuleRe, function(m) {
+    return StringWrapper.replaceAllMapped(cssText, _cssContentRuleRe, function(m: any /** TODO #9100 */) {
       var rule = m[0];
       rule = StringWrapper.replace(rule, m[1], '');
       rule = StringWrapper.replace(rule, m[2], '');
@@ -241,7 +241,7 @@ export class ShadowCss {
   **/
   private _extractUnscopedRulesFromCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
-    var r = '', m;
+    var r = '', m: any /** TODO #9100 */;
     var matcher = RegExpWrapper.matcher(_cssContentUnscopedRuleRe, cssText);
     while (isPresent(m = RegExpMatcherWrapper.next(matcher))) {
       var rule = m[0];
@@ -285,9 +285,9 @@ export class ShadowCss {
 
   private _convertColonRule(cssText: string, regExp: RegExp, partReplacer: Function): string {
     // p1 = :host, p2 = contents of (), p3 rest of rule
-    return StringWrapper.replaceAllMapped(cssText, regExp, function(m) {
+    return StringWrapper.replaceAllMapped(cssText, regExp, function(m: any /** TODO #9100 */) {
       if (isPresent(m[2])) {
-        var parts = m[2].split(','), r = [];
+        var parts = m[2].split(','), r: any[] /** TODO #9100 */ = [];
         for (var i = 0; i < parts.length; i++) {
           var p = parts[i];
           if (isBlank(p)) break;
@@ -341,7 +341,7 @@ export class ShadowCss {
 
   private _scopeSelector(selector: string, scopeSelector: string, hostSelector: string,
                          strict: boolean): string {
-    var r = [], parts = selector.split(',');
+    var r: any[] /** TODO #9100 */ = [], parts = selector.split(',');
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i].trim();
       var deepParts = StringWrapper.split(p, _shadowDeepSelectors);
@@ -392,7 +392,7 @@ export class ShadowCss {
   // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]  /** @internal */
   private _applyStrictSelectorScope(selector: string, scopeSelector: string): string {
     var isRe = /\[is=([^\]]*)\]/g;
-    scopeSelector = StringWrapper.replaceAllMapped(scopeSelector, isRe, (m) => m[1]);
+    scopeSelector = StringWrapper.replaceAllMapped(scopeSelector, isRe, (m: any /** TODO #9100 */) => m[1]);
     var splits = [' ', '>', '+', '~'], scoped = selector, attrName = '[' + scopeSelector + ']';
     for (var i = 0; i < splits.length; i++) {
       var sep = splits[i];
@@ -454,7 +454,7 @@ var _colonHostContextRe = /:host-context/gim;
 var _commentRe = /\/\*[\s\S]*?\*\//g;
 
 function stripComments(input:string):string {
-  return StringWrapper.replaceAllMapped(input, _commentRe, (_) => '');
+  return StringWrapper.replaceAllMapped(input, _commentRe, (_: any /** TODO #9100 */) => '');
 }
 
 var _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
@@ -470,7 +470,7 @@ export class CssRule {
 export function processRules(input:string, ruleCallback:Function):string {
   var inputWithEscapedBlocks = escapeBlocks(input);
   var nextBlockIndex = 0;
-  return StringWrapper.replaceAllMapped(inputWithEscapedBlocks.escapedString, _ruleRe, function(m) {
+  return StringWrapper.replaceAllMapped(inputWithEscapedBlocks.escapedString, _ruleRe, function(m: any /** TODO #9100 */) {
     var selector = m[2];
     var content = '';
     var suffix = m[4];
@@ -491,10 +491,10 @@ class StringWithEscapedBlocks {
 
 function escapeBlocks(input:string):StringWithEscapedBlocks {
   var inputParts = StringWrapper.split(input, _curlyRe);
-  var resultParts = [];
-  var escapedBlocks = [];
+  var resultParts: any[] /** TODO #9100 */ = [];
+  var escapedBlocks: any[] /** TODO #9100 */ = [];
   var bracketCount = 0;
-  var currentBlockParts = [];
+  var currentBlockParts: any[] /** TODO #9100 */ = [];
   for (var partIndex = 0; partIndex<inputParts.length; partIndex++) {
     var part = inputParts[partIndex];
     if (part == CLOSE_CURLY) {

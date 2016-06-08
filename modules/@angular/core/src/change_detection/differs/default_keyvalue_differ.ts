@@ -86,8 +86,8 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     var lastNewSeqRecord: KeyValueChangeRecord = null;
     var seqChanged: boolean = false;
 
-    this._forEach(map, (value, key) => {
-      var newSeqRecord;
+    this._forEach(map, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
+      var newSeqRecord: any /** TODO #9100 */;
       if (oldSeqRecord !== null && key === oldSeqRecord.key) {
         newSeqRecord = oldSeqRecord;
         if (!looseIdentical(value, oldSeqRecord.currentValue)) {
@@ -296,11 +296,11 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
   }
 
   toString(): string {
-    var items = [];
-    var previous = [];
-    var changes = [];
-    var additions = [];
-    var removals = [];
+    var items: any[] /** TODO #9100 */ = [];
+    var previous: any[] /** TODO #9100 */ = [];
+    var changes: any[] /** TODO #9100 */ = [];
+    var additions: any[] /** TODO #9100 */ = [];
+    var removals: any[] /** TODO #9100 */ = [];
     var record: KeyValueChangeRecord;
 
     for (record = this._mapHead; record !== null; record = record._next) {
@@ -325,7 +325,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
   }
 
   /** @internal */
-  _forEach(obj, fn: Function) {
+  _forEach(obj: any /** TODO #9100 */, fn: Function) {
     if (obj instanceof Map) {
       (<Map<any, any>>obj).forEach(<any>fn);
     } else {

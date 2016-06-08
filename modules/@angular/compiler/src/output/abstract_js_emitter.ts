@@ -141,11 +141,11 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   }
 
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects((param) => ctx.print(param.name), params, ctx, ',');
+    this.visitAllObjects((param: any /** TODO #9100 */) => ctx.print(param.name), params, ctx, ',');
   }
 
   getBuiltinMethodName(method: o.BuiltinMethod): string {
-    var name;
+    var name: any /** TODO #9100 */;
     switch (method) {
       case o.BuiltinMethod.ConcatArray:
         name = 'concat';

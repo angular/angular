@@ -100,7 +100,7 @@ export function main() {
         {provide: RenderStore, useValue: workerRenderStore},
         {
           provide: RootRenderer,
-          useFactory: (workerSerializer) => {
+          useFactory: (workerSerializer: any /** TODO #9100 */) => {
             return createWorkerRenderer(workerSerializer, uiSerializer, domRootRenderer,
                                         uiRenderStore, workerRenderStore);
           },
@@ -119,7 +119,7 @@ export function main() {
     }
 
     it('should update text nodes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MyComp2, new ViewMetadata({template: '<div>{{ctxProp}}</div>'}))
              .createAsync(MyComp2)
              .then((fixture) => {
@@ -135,12 +135,12 @@ export function main() {
        }));
 
     it('should update any element property/attributes/class/style(s) independent of the compilation on the root element and other elements',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MyComp2, new ViewMetadata(
                                        {template: '<input [title]="y" style="position:absolute">'}))
              .createAsync(MyComp2)
              .then((fixture) => {
-               var checkSetters = (componentRef, workerEl) => {
+               var checkSetters = (componentRef: any /** TODO #9100 */, workerEl: any /** TODO #9100 */) => {
                  var renderer = getRenderer(componentRef);
                  var el = getRenderElement(workerEl);
                  renderer.setElementProperty(workerEl, 'tabIndex', 1);
@@ -170,7 +170,7 @@ export function main() {
        }));
 
     it('should update any template comment property/attributes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var tpl = '<template [ngIf]="ctxBoolProp"></template>';
          tcb.overrideView(MyComp2, new ViewMetadata({template: tpl, directives: [NgIf]}))
 
@@ -185,7 +185,7 @@ export function main() {
        }));
 
     it('should add and remove fragments',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MyComp2, new ViewMetadata({
                             template: '<template [ngIf]="ctxBoolProp">hello</template>',
                             directives: [NgIf]
@@ -210,7 +210,7 @@ export function main() {
 
     if (getDOM().supportsDOMEvents()) {
       it('should call actions on the element',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp2, new ViewMetadata({template: '<input [title]="y">'}))
                .createAsync(MyComp2)
                .then((fixture) => {
@@ -225,7 +225,7 @@ export function main() {
          }));
 
       it('should listen to events',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp2,
                             new ViewMetadata({template: '<input (change)="ctxNumProp = 1">'}))
                .createAsync(MyComp2)
@@ -248,7 +248,7 @@ export function main() {
 @Injectable()
 class MyComp2 {
   ctxProp: string;
-  ctxNumProp;
+  ctxNumProp: any /** TODO #9100 */;
   ctxBoolProp: boolean;
   constructor() {
     this.ctxProp = 'initial value';

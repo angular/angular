@@ -16,7 +16,7 @@ import {NgTemplateOutlet} from '@angular/common';
 export function main() {
   describe('insert', () => {
     it('should do nothing if templateRef is null',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var template = `<template [ngTemplateOutlet]="null"></template>`;
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -30,7 +30,7 @@ export function main() {
        }));
 
     it('should insert content specified by TemplateRef',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var template =
              `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef"></template>`;
          tcb.overrideTemplate(TestComponent, template)
@@ -51,7 +51,7 @@ export function main() {
        }));
 
     it('should clear content if TemplateRef becomes null',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var template =
              `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef"></template>`;
          tcb.overrideTemplate(TestComponent, template)
@@ -74,7 +74,7 @@ export function main() {
        }));
 
     it('should swap content if TemplateRef changes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var template = `<tpl-refs #refs="tplRefs"><template>foo</template><template>bar</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef"></template>`;
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)

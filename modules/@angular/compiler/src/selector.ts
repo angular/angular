@@ -33,7 +33,7 @@ export class CssSelector {
 
   static parse(selector: string): CssSelector[] {
     var results: CssSelector[] = [];
-    var _addResult = (res: CssSelector[], cssSel) => {
+    var _addResult = (res: CssSelector[], cssSel: any /** TODO #9100 */) => {
       if (cssSel.notSelectors.length > 0 && isBlank(cssSel.element) &&
           ListWrapper.isEmpty(cssSel.classNames) && ListWrapper.isEmpty(cssSel.attrs)) {
         cssSel.element = "*";
@@ -42,7 +42,7 @@ export class CssSelector {
     };
     var cssSelector = new CssSelector();
     var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
-    var match;
+    var match: any /** TODO #9100 */;
     var current = cssSelector;
     var inNot = false;
     while (isPresent(match = RegExpMatcherWrapper.next(matcher))) {
@@ -159,7 +159,7 @@ export class SelectorMatcher {
   private _listContexts: SelectorListContext[] = [];
 
   addSelectables(cssSelectors: CssSelector[], callbackCtxt?: any) {
-    var listContext = null;
+    var listContext: any /** TODO #9100 */ = null;
     if (cssSelectors.length > 1) {
       listContext = new SelectorListContext(cssSelectors);
       this._listContexts.push(listContext);
@@ -308,7 +308,7 @@ export class SelectorMatcher {
   }
 
   /** @internal */
-  _matchTerminal(map: Map<string, SelectorContext[]>, name, cssSelector: CssSelector,
+  _matchTerminal(map: Map<string, SelectorContext[]>, name: any /** TODO #9100 */, cssSelector: CssSelector,
                  matchedCallback: (c: CssSelector, a: any) => void): boolean {
     if (isBlank(map) || isBlank(name)) {
       return false;
@@ -322,7 +322,7 @@ export class SelectorMatcher {
     if (isBlank(selectables)) {
       return false;
     }
-    var selectable;
+    var selectable: any /** TODO #9100 */;
     var result = false;
     for (var index = 0; index < selectables.length; index++) {
       selectable = selectables[index];
@@ -332,8 +332,8 @@ export class SelectorMatcher {
   }
 
   /** @internal */
-  _matchPartial(map: Map<string, SelectorMatcher>, name, cssSelector: CssSelector,
-                matchedCallback /*: (c: CssSelector, a: any) => void*/): boolean {
+  _matchPartial(map: Map<string, SelectorMatcher>, name: any /** TODO #9100 */, cssSelector: CssSelector,
+                matchedCallback: any /** TODO #9100 */ /*: (c: CssSelector, a: any) => void*/): boolean {
     if (isBlank(map) || isBlank(name)) {
       return false;
     }

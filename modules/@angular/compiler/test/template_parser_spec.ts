@@ -71,7 +71,7 @@ var MOCK_SCHEMA_REGISTRY = [
 let zeConsole = console;
 
 export function main() {
-  var ngIf;
+  var ngIf: any /** TODO #9100 */;
   var parse:
       (template: string, directives: CompileDirectiveMetadata[], pipes?: CompilePipeMetadata[]) =>
           TemplateAst[];
@@ -82,7 +82,7 @@ export function main() {
       console = new ArrayConsole();
       return [{provide: Console, useValue: console}];
     });
-    beforeEach(inject([TemplateParser], (parser) => {
+    beforeEach(inject([TemplateParser], (parser: any /** TODO #9100 */) => {
       var component = CompileDirectiveMetadata.create({
         selector: 'root',
         type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'Root'}),
@@ -518,10 +518,10 @@ export function main() {
       });
 
       describe('providers', () => {
-        var nextProviderId;
+        var nextProviderId: any /** TODO #9100 */;
 
         function createToken(value: string): CompileTokenMetadata {
-          var token;
+          var token: any /** TODO #9100 */;
           if (value.startsWith('type:')) {
             token = new CompileTokenMetadata({
               identifier:
@@ -1071,7 +1071,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
     });
 
     describe('content projection', () => {
-      var compCounter;
+      var compCounter: any /** TODO #9100 */;
       beforeEach(() => { compCounter = 0; });
 
       function createComp(selector: string,

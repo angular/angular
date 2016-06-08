@@ -1,7 +1,7 @@
 import {BaseException} from '../index';
 import {getTestInjector} from './test_injector';
 
-let _FakeAsyncTestZoneSpecType = Zone['FakeAsyncTestZoneSpec'];
+let _FakeAsyncTestZoneSpecType = (Zone as any /** TODO #9100 */)['FakeAsyncTestZoneSpec'];
 
 /**
  * Wraps a function to be executed in the fakeAsync zone:
@@ -27,7 +27,7 @@ export function fakeAsync(fn: Function): Function {
   let fakeAsyncTestZoneSpec = new _FakeAsyncTestZoneSpecType();
   let fakeAsyncZone = Zone.current.fork(fakeAsyncTestZoneSpec);
 
-  return function(...args) {
+  return function(...args: any[] /** TODO #9100 */) {
     let res = fakeAsyncZone.run(() => {
       let res = fn(...args);
       flushMicrotasks();

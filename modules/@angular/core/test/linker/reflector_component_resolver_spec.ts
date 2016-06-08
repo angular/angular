@@ -23,17 +23,17 @@ import {ComponentFactory} from '@angular/core/src/linker/component_factory';
 
 export function main() {
   describe('Compiler', () => {
-    var someCompFactory;
+    var someCompFactory: any /** TODO #9100 */;
 
     beforeEachProviders(() => [{provide: ComponentResolver, useClass: ReflectorComponentResolver}]);
 
-    beforeEach(inject([ComponentResolver], (_compiler) => {
+    beforeEach(inject([ComponentResolver], (_compiler: any /** TODO #9100 */) => {
       someCompFactory = new ComponentFactory(null, null, null);
       reflector.registerType(SomeComponent, new ReflectionInfo([someCompFactory]));
     }));
 
     it('should read the template from an annotation',
-       inject([AsyncTestCompleter, ComponentResolver], (async, compiler: ComponentResolver) => {
+       inject([AsyncTestCompleter, ComponentResolver], (async: any /** TODO #9100 */, compiler: ComponentResolver) => {
          compiler.resolveComponent(SomeComponent)
              .then((compFactory: ComponentFactory<any>) => {
                expect(compFactory).toBe(someCompFactory);
@@ -43,7 +43,7 @@ export function main() {
        }));
 
     it('should throw when given a string',
-       inject([AsyncTestCompleter, ComponentResolver], (async, compiler: ComponentResolver) => {
+       inject([AsyncTestCompleter, ComponentResolver], (async: any /** TODO #9100 */, compiler: ComponentResolver) => {
          compiler.resolveComponent("someString")
              .catch((e) => {
                expect(e.message).toContain("Cannot resolve component using 'someString'.")

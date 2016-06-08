@@ -219,19 +219,19 @@ class _ActivateSegments {
     let prevChildren = isPresent(prevNode) ?
                            prevNode.children.reduce(
                                (m, c) => {
-                                 m[c.value.outlet] = c;
+                                 (m as any /** TODO #9100 */)[c.value.outlet] = c;
                                  return m;
                                },
                                {}) :
                            {};
 
     currNode.children.forEach(c => {
-      this.activateSegments(c, prevChildren[c.value.outlet], outletMap, components);
+      this.activateSegments(c, (prevChildren as any /** TODO #9100 */)[c.value.outlet], outletMap, components);
       StringMapWrapper.delete(prevChildren, c.value.outlet);
     });
 
     StringMapWrapper.forEach(prevChildren,
-                             (v, k) => this.deactivateOutlet(outletMap._outlets[k], components));
+                             (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => this.deactivateOutlet(outletMap._outlets[k], components));
   }
 
   activateSegments(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
@@ -279,7 +279,7 @@ class _ActivateSegments {
   private deactivateOutlet(outlet: RouterOutlet, components: Object[]): void {
     if (isPresent(outlet) && outlet.isActivated) {
       StringMapWrapper.forEach(outlet.outletMap._outlets,
-                               (v, k) => this.deactivateOutlet(v, components));
+                               (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => this.deactivateOutlet(v, components));
       if (this.performMutation) {
         outlet.deactivate();
       } else {

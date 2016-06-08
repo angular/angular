@@ -32,7 +32,7 @@ function _recognize(componentResolver: ComponentResolver, parentComponent: Type,
         `Component '${stringify(parentComponent)}' does not have route configuration`);
   }
 
-  let match;
+  let match: any /** TODO #9100 */;
   try {
     match = _match(metadata, url);
   } catch (e) {
@@ -146,7 +146,7 @@ function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _Matc
 
   let parts = path.split("/");
   let positionalParams = {};
-  let consumedUrlSegments = [];
+  let consumedUrlSegments: any[] /** TODO #9100 */ = [];
 
   let lastParent: TreeNode<UrlSegment> = null;
   let lastSegment: TreeNode<UrlSegment> = null;
@@ -169,7 +169,7 @@ function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _Matc
     }
 
     if (isPosParam) {
-      positionalParams[p.substring(1)] = current.value.segment;
+      (positionalParams as any /** TODO #9100 */)[p.substring(1)] = current.value.segment;
     }
 
     consumedUrlSegments.push(current.value);
@@ -188,13 +188,13 @@ function _matchWithParts(route: RouteMetadata, url: TreeNode<UrlSegment>): _Matc
 function _checkOutletNameUniqueness(nodes: TreeNode<RouteSegment>[]): TreeNode<RouteSegment>[] {
   let names = {};
   nodes.forEach(n => {
-    let segmentWithSameOutletName = names[n.value.outlet];
+    let segmentWithSameOutletName = (names as any /** TODO #9100 */)[n.value.outlet];
     if (isPresent(segmentWithSameOutletName)) {
       let p = segmentWithSameOutletName.stringifiedUrlSegments;
       let c = n.value.stringifiedUrlSegments;
       throw new BaseException(`Two segments cannot have the same outlet name: '${p}' and '${c}'.`);
     }
-    names[n.value.outlet] = n.value;
+    (names as any /** TODO #9100 */)[n.value.outlet] = n.value;
   });
   return nodes;
 }

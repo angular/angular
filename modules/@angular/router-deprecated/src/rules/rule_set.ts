@@ -44,7 +44,7 @@ export class RuleSet {
    * @returns {boolean} true if the config is terminal
    */
   config(config: RouteDefinition): boolean {
-    let handler;
+    let handler: any /** TODO #9100 */;
 
     if (isPresent(config.name) && config.name[0].toUpperCase() != config.name[0]) {
       let suggestedName = config.name[0].toUpperCase() + config.name.substring(1);
@@ -104,7 +104,7 @@ export class RuleSet {
    * Given a URL, returns a list of `RouteMatch`es, which are partial recognitions for some route.
    */
   recognize(urlParse: Url): Promise<RouteMatch>[] {
-    var solutions = [];
+    var solutions: any[] /** TODO #9100 */ = [];
 
     this.rules.forEach((routeRecognizer: AbstractRule) => {
       var pathMatch = routeRecognizer.recognize(urlParse);
@@ -157,7 +157,7 @@ export class RuleSet {
     return rule.generate(params);
   }
 
-  private _assertNoHashCollision(hash: string, path) {
+  private _assertNoHashCollision(hash: string, path: any /** TODO #9100 */) {
     this.rules.forEach((rule) => {
       if (hash == rule.hash) {
         throw new BaseException(

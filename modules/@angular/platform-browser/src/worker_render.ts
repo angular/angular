@@ -113,7 +113,7 @@ export function initializeGenericWorkerRenderer(injector: Injector) {
 
   // initialize message services after the bus has been created
   let services = injector.get(WORKER_RENDER_STARTABLE_MESSAGING_SERVICE);
-  zone.runGuarded(() => { services.forEach((svc) => { svc.start(); }); });
+  zone.runGuarded(() => { services.forEach((svc: any /** TODO #9100 */) => { svc.start(); }); });
 }
 
 export function bootstrapRender(

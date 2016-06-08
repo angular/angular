@@ -166,7 +166,7 @@ class SanitizingHtmlSerializer {
     }
   }
 
-  private chars(chars) { this.buf.push(encodeEntities(chars)); }
+  private chars(chars: any /** TODO #9100 */) { this.buf.push(encodeEntities(chars)); }
 }
 
 // Regular Expressions for parsing tags and attributes
@@ -181,16 +181,16 @@ const NON_ALPHANUMERIC_REGEXP = /([^\#-~ |!])/g;
  * @param value
  * @returns {string} escaped text
  */
-function encodeEntities(value) {
+function encodeEntities(value: any /** TODO #9100 */) {
   return value.replace(/&/g, '&amp;')
       .replace(SURROGATE_PAIR_REGEXP,
-               function(match) {
+               function(match: any /** TODO #9100 */) {
                  let hi = match.charCodeAt(0);
                  let low = match.charCodeAt(1);
                  return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
                })
       .replace(NON_ALPHANUMERIC_REGEXP,
-               function(match) { return '&#' + match.charCodeAt(0) + ';'; })
+               function(match: any /** TODO #9100 */) { return '&#' + match.charCodeAt(0) + ';'; })
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 }

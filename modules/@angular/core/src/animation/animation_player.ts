@@ -9,7 +9,7 @@ export abstract class AnimationPlayer {
   abstract finish(): void;
   abstract destroy(): void;
   abstract reset(): void;
-  abstract setPosition(p): void;
+  abstract setPosition(p: any /** TODO #9100 */): void;
   abstract getPosition(): number;
   get parentPlayer(): AnimationPlayer { throw new BaseException('NOT IMPLEMENTED: Base Class'); }
   set parentPlayer(player: AnimationPlayer) { throw new BaseException('NOT IMPLEMENTED: Base Class'); }
@@ -17,7 +17,7 @@ export abstract class AnimationPlayer {
 
 export class NoOpAnimationPlayer implements AnimationPlayer {
   
-  private _subscriptions = [];
+  private _subscriptions: any[] /** TODO #9100 */ = [];
   public parentPlayer: AnimationPlayer = null;
   constructor() {
     scheduleMicroTask(() => this._onFinish());
@@ -36,6 +36,6 @@ export class NoOpAnimationPlayer implements AnimationPlayer {
   }
   destroy(): void {}
   reset(): void {}
-  setPosition(p): void {}
+  setPosition(p: any /** TODO #9100 */): void {}
   getPosition(): number { return 0; }
 }

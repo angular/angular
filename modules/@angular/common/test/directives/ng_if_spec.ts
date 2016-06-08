@@ -21,7 +21,7 @@ import {IS_DART} from '../../src/facade/lang';
 export function main() {
   describe('ngIf directive', () => {
     it('should work in a template attribute',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var html = '<div><copy-me template="ngIf booleanCondition">hello</copy-me></div>';
 
          tcb.overrideTemplate(TestComponent, html)
@@ -37,7 +37,7 @@ export function main() {
        }));
 
     it('should work in a template element',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var html =
              '<div><template [ngIf]="booleanCondition"><copy-me>hello2</copy-me></template></div>';
 
@@ -54,7 +54,7 @@ export function main() {
        }));
 
     it('should toggle node when condition changes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var html = '<div><copy-me template="ngIf booleanCondition">hello</copy-me></div>';
 
          tcb.overrideTemplate(TestComponent, html)
@@ -86,7 +86,7 @@ export function main() {
        }));
 
     it('should handle nested if correctly',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var html =
              '<div><template [ngIf]="booleanCondition"><copy-me *ngIf="nestedBooleanCondition">hello</copy-me></template></div>';
 
@@ -133,7 +133,7 @@ export function main() {
        }));
 
     it('should update several nodes with if',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          var html =
              '<div>' +
              '<copy-me template="ngIf numberCondition + 1 >= 2">helloNumber</copy-me>' +
@@ -172,7 +172,7 @@ export function main() {
 
     if (!IS_DART) {
       it('should not add the element twice if the condition goes from true to true (JS)',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
 
            tcb.overrideTemplate(TestComponent, html)
@@ -198,7 +198,7 @@ export function main() {
          }));
 
       it('should not recreate the element if the condition goes from true to true (JS)',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
 
            tcb.overrideTemplate(TestComponent, html)
@@ -222,7 +222,7 @@ export function main() {
 
     if (IS_DART) {
       it('should not create the element if the condition is not a boolean (DART)',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
 
            tcb.overrideTemplate(TestComponent, html)
@@ -254,6 +254,6 @@ class TestComponent {
     this.nestedBooleanCondition = true;
     this.numberCondition = 1;
     this.stringCondition = "foo";
-    this.functionCondition = function(s, n) { return s == "foo" && n == 1; };
+    this.functionCondition = function(s: any /** TODO #9100 */, n: any /** TODO #9100 */) { return s == "foo" && n == 1; };
   }
 }

@@ -2,12 +2,12 @@ import {isPresent} from '../../src/facade/lang';
 import {AnimationPlayer} from '../../src/animation/animation_player';
 
 export class MockAnimationPlayer implements AnimationPlayer {
-  private _subscriptions = [];
+  private _subscriptions: any[] /** TODO #9100 */ = [];
   private _finished = false;
   private _destroyed = false;
   public parentPlayer: AnimationPlayer = null;
 
-  public log = [];
+  public log: any[] /** TODO #9100 */ = [];
 
   private _onfinish(): void {
     if (!this._finished) {
@@ -42,6 +42,6 @@ export class MockAnimationPlayer implements AnimationPlayer {
     }
   }
 
-  setPosition(p): void {}
+  setPosition(p: any /** TODO #9100 */): void {}
   getPosition(): number { return 0; }
 }

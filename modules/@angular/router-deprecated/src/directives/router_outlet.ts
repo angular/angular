@@ -155,7 +155,7 @@ export class RouterOutlet implements OnDestroy {
    * or resolves to true if the hook is not present.
    */
   routerCanReuse(nextInstruction: ComponentInstruction): Promise<boolean> {
-    var result;
+    var result: any /** TODO #9100 */;
 
     if (isBlank(this._currentInstruction) ||
         this._currentInstruction.componentType != nextInstruction.componentType) {

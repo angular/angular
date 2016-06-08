@@ -91,12 +91,12 @@ export function main() {
     });
 
     describe('forEachWithIndex', () => {
-      var l;
+      var l: any /** TODO #9100 */;
 
       beforeEach(() => { l = ["a", "b"]; });
 
       it('should iterate over an array passing values and indices', () => {
-        var record = [];
+        var record: any[] /** TODO #9100 */ = [];
         ListWrapper.forEachWithIndex(l, (value, index) => record.push([value, index]));
         expect(record).toEqual([["a", 0], ["b", 1]]);
       });

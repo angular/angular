@@ -13,7 +13,7 @@ export class EventDispatcher {
   constructor(private _sink: EventEmitter<any>, private _serializer: Serializer) {}
 
   dispatchRenderEvent(element: any, eventTarget: string, eventName: string, event: any): boolean {
-    var serializedEvent;
+    var serializedEvent: any /** TODO #9100 */;
     // TODO (jteplitz602): support custom events #3350
     switch (event.type) {
       case "click":

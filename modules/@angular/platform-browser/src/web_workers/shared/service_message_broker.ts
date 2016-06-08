@@ -43,7 +43,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
   private _sink: EventEmitter<any>;
   private _methods: Map<string, Function> = new Map<string, Function>();
 
-  constructor(messageBus: MessageBus, private _serializer: Serializer, public channel) {
+  constructor(messageBus: MessageBus, private _serializer: Serializer, public channel: any /** TODO #9100 */) {
     super();
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);

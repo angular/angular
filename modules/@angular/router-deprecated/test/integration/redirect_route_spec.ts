@@ -26,19 +26,19 @@ import {Location} from '@angular/common';
 import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from './util';
 import {HelloCmp, GoodbyeCmp, RedirectToParentCmp} from './impl/fixture_components';
 
-var cmpInstanceCount;
-var childCmpInstanceCount;
+var cmpInstanceCount: any /** TODO #9100 */;
+var childCmpInstanceCount: any /** TODO #9100 */;
 
 export function main() {
   describe('redirects', () => {
 
     var tcb: TestComponentBuilder;
     var rootTC: ComponentFixture<any>;
-    var rtr;
+    var rtr: any /** TODO #9100 */;
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
 
-    beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
+    beforeEach(inject([TestComponentBuilder, Router], (tcBuilder: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
       tcb = tcBuilder;
       rtr = router;
       childCmpInstanceCount = 0;
@@ -47,7 +47,7 @@ export function main() {
 
 
     it('should apply when navigating by URL',
-       inject([AsyncTestCompleter, Location], (async, location) => {
+       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([
@@ -65,7 +65,7 @@ export function main() {
 
 
     it('should recognize and apply absolute redirects',
-       inject([AsyncTestCompleter, Location], (async, location) => {
+       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([
@@ -83,7 +83,7 @@ export function main() {
 
 
     it('should recognize and apply relative child redirects',
-       inject([AsyncTestCompleter, Location], (async, location) => {
+       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([
@@ -101,7 +101,7 @@ export function main() {
 
 
     it('should recognize and apply relative parent redirects',
-       inject([AsyncTestCompleter, Location], (async, location) => {
+       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([
@@ -119,7 +119,7 @@ export function main() {
 
 
     it('should not redirect when redirect is less specific than other matching routes',
-       inject([AsyncTestCompleter, Location], (async, location) => {
+       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([

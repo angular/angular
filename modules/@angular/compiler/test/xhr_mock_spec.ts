@@ -18,7 +18,7 @@ export function main() {
 
     beforeEach(() => { xhr = new MockXHR(); });
 
-    function expectResponse(request: Promise<string>, url: string, response: string, done = null) {
+    function expectResponse(request: Promise<string>, url: string, response: string, done: any /** TODO #9100 */ = null) {
       function onResponse(text: string): string {
         if (response === null) {
           throw `Unexpected response ${url} -> ${text}`;
@@ -42,7 +42,7 @@ export function main() {
       PromiseWrapper.then(request, onResponse, onError);
     }
 
-    it('should return a response from the definitions', inject([AsyncTestCompleter], (async) => {
+    it('should return a response from the definitions', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var url = '/foo';
          var response = 'bar';
          xhr.when(url, response);
@@ -50,15 +50,15 @@ export function main() {
          xhr.flush();
        }));
 
-    it('should return an error from the definitions', inject([AsyncTestCompleter], (async) => {
+    it('should return an error from the definitions', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var url = '/foo';
-         var response = null;
+         var response: any /** TODO #9100 */ = null;
          xhr.when(url, response);
          expectResponse(xhr.get(url), url, response, () => async.done());
          xhr.flush();
        }));
 
-    it('should return a response from the expectations', inject([AsyncTestCompleter], (async) => {
+    it('should return a response from the expectations', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var url = '/foo';
          var response = 'bar';
          xhr.expect(url, response);
@@ -66,9 +66,9 @@ export function main() {
          xhr.flush();
        }));
 
-    it('should return an error from the expectations', inject([AsyncTestCompleter], (async) => {
+    it('should return an error from the expectations', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var url = '/foo';
-         var response = null;
+         var response: any /** TODO #9100 */ = null;
          xhr.expect(url, response);
          expectResponse(xhr.get(url), url, response, () => async.done());
          xhr.flush();
@@ -83,7 +83,7 @@ export function main() {
       expect(() => { xhr.flush(); }).toThrowError('Unexpected request /foo');
     });
 
-    it('should return expectations before definitions', inject([AsyncTestCompleter], (async) => {
+    it('should return expectations before definitions', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var url = '/foo';
          xhr.when(url, 'when');
          xhr.expect(url, 'expect');

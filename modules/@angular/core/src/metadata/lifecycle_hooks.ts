@@ -83,7 +83,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * ```
  * @stable
  */
-export abstract class OnChanges { abstract ngOnChanges(changes: SimpleChanges); }
+export abstract class OnChanges { abstract ngOnChanges(changes: SimpleChanges): any /** TODO #9100 */; }
 
 /**
  * Implement this interface to execute custom initialization logic after your directive's
@@ -127,7 +127,7 @@ export abstract class OnChanges { abstract ngOnChanges(changes: SimpleChanges); 
  *  ```
  * @stable
  */
-export abstract class OnInit { abstract ngOnInit(); }
+export abstract class OnInit { abstract ngOnInit(): any /** TODO #9100 */; }
 
 /**
  * Implement this interface to supplement the default change detection algorithm in your directive.
@@ -192,7 +192,7 @@ export abstract class OnInit { abstract ngOnInit(); }
  * ```
  * @stable
  */
-export abstract class DoCheck { abstract ngDoCheck(); }
+export abstract class DoCheck { abstract ngDoCheck(): any /** TODO #9100 */; }
 
 /**
  * Implement this interface to get notified when your directive is destroyed.
@@ -284,7 +284,7 @@ export abstract class DoCheck { abstract ngDoCheck(); }
  *
  * @stable
  */
-export abstract class OnDestroy { abstract ngOnDestroy(); }
+export abstract class OnDestroy { abstract ngOnDestroy(): any /** TODO #9100 */; }
 
 /**
  * Implement this interface to get notified when your directive's content has been fully
@@ -338,7 +338,7 @@ export abstract class OnDestroy { abstract ngOnDestroy(); }
  * ```
  * @stable
  */
-export abstract class AfterContentInit { abstract ngAfterContentInit(); }
+export abstract class AfterContentInit { abstract ngAfterContentInit(): any /** TODO #9100 */; }
 
 /**
  * Implement this interface to get notified after every check of your directive's content.
@@ -387,7 +387,7 @@ export abstract class AfterContentInit { abstract ngAfterContentInit(); }
  * ```
  * @stable
  */
-export abstract class AfterContentChecked { abstract ngAfterContentChecked(); }
+export abstract class AfterContentChecked { abstract ngAfterContentChecked(): any /** TODO #9100 */; }
 
 /**
  * Implement this interface to get notified when your component's view has been fully initialized.
@@ -435,7 +435,7 @@ export abstract class AfterContentChecked { abstract ngAfterContentChecked(); }
  * ```
  * @stable
  */
-export abstract class AfterViewInit { abstract ngAfterViewInit(); }
+export abstract class AfterViewInit { abstract ngAfterViewInit(): any /** TODO #9100 */; }
 
 /**
  * Implement this interface to get notified after every check of your component's view.
@@ -486,4 +486,4 @@ export abstract class AfterViewInit { abstract ngAfterViewInit(); }
  * ```
  * @stable
  */
-export abstract class AfterViewChecked { abstract ngAfterViewChecked(); }
+export abstract class AfterViewChecked { abstract ngAfterViewChecked(): any /** TODO #9100 */; }

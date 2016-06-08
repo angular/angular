@@ -53,8 +53,8 @@ class InboxRecord {
     this.subject = record['subject'];
     this.content = record['content'];
     this.email = record['email'];
-    this.firstName = record['first-name'];
-    this.lastName = record['last-name'];
+    this.firstName = (record as any /** TODO #9100 */)['first-name'];
+    this.lastName = (record as any /** TODO #9100 */)['last-name'];
     this.date = record['date'];
     this.draft = record['draft'] == true;
   }
@@ -79,7 +79,7 @@ class DbService {
                                    data.filter(record => !isPresent(record['draft'])));
   }
 
-  email(id): Promise<any> {
+  email(id: any /** TODO #9100 */): Promise<any> {
     return PromiseWrapper.then(this.getData(), (data: any[]) => {
       for (var i = 0; i < data.length; i++) {
         var entry = data[i];

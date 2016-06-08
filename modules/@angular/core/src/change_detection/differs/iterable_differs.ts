@@ -12,7 +12,7 @@ import {Provider, SkipSelfMetadata, OptionalMetadata} from '../../di';
  */
 export interface IterableDiffer {
   diff(object: any): any;
-  onDestroy();
+  onDestroy(): any /** TODO #9100 */;
 }
 
 /**

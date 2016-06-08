@@ -37,7 +37,7 @@ import {
 
 import {CssLexer} from '@angular/compiler/src/css/lexer';
 
-function _assertTokens(tokens, valuesArr) {
+function _assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9100 */) {
   for (var i = 0; i < tokens.length; i++) {
     expect(tokens[i].strValue == valuesArr[i]);
   }
@@ -46,16 +46,16 @@ function _assertTokens(tokens, valuesArr) {
 class MyVisitor implements CssASTVisitor {
   captures: {[key: string]: any[]} = {};
 
-  _capture(method, ast, context) {
+  _capture(method: any /** TODO #9100 */, ast: any /** TODO #9100 */, context: any /** TODO #9100 */) {
     this.captures[method] = isPresent(this.captures[method]) ? this.captures[method] : [];
     this.captures[method].push([ast, context]);
   }
 
   constructor(ast: CssStyleSheetAST, context?: any) { ast.visit(this, context); }
 
-  visitCssValue(ast, context?: any): void { this._capture("visitCssValue", ast, context); }
+  visitCssValue(ast: any /** TODO #9100 */, context?: any): void { this._capture("visitCssValue", ast, context); }
 
-  visitInlineCssRule(ast, context?: any): void {
+  visitInlineCssRule(ast: any /** TODO #9100 */, context?: any): void {
     this._capture("visitInlineCssRule", ast, context);
   }
 
@@ -118,7 +118,7 @@ export function main() {
   }
 
   describe('CSS parsing and visiting', () => {
-    var ast;
+    var ast: any /** TODO #9100 */;
     var context = {};
 
     beforeEach(() => {

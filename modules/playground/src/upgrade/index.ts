@@ -22,7 +22,7 @@ var adapter: UpgradeAdapter = new UpgradeAdapter();
 
 var ng1module = angular.module('myExample', []);
 
-ng1module.controller('Index', function($scope) { $scope.name = 'World'; });
+ng1module.controller('Index', function($scope: any /** TODO #9100 */) { $scope.name = 'World'; });
 
 ng1module.directive('user', function() {
   return {

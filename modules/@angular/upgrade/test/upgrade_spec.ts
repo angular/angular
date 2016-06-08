@@ -8,7 +8,7 @@ export function main() {
     it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
 
     it('should instantiate ng2 in ng1 template and project content',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var ng1Module = angular.module('ng1', []);
          var Ng2 = Component({selector: 'ng2', template: `{{ 'NG2' }}(<ng-content></ng-content>)`})
                        .Class({constructor: function() {}});
@@ -26,7 +26,7 @@ export function main() {
        }));
 
     it('should instantiate ng1 in ng2 template and project content',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var adapter: UpgradeAdapter = new UpgradeAdapter();
          var ng1Module = angular.module('ng1', []);
 
@@ -53,10 +53,10 @@ export function main() {
 
     describe('scope/component change-detection', () => {
       it('should interleave scope and component expressions',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var ng1Module = angular.module('ng1', []);
-           var log = [];
-           var l = function(value) {
+           var log: any[] /** TODO #9100 */ = [];
+           var l = function(value: any /** TODO #9100 */) {
              log.push(value);
              return value + ';';
            };
@@ -64,7 +64,7 @@ export function main() {
 
            ng1Module.directive('ng1a', () => { return {template: "{{ l('ng1a') }}"}; });
            ng1Module.directive('ng1b', () => { return {template: "{{ l('ng1b') }}"}; });
-           ng1Module.run(($rootScope) => {
+           ng1Module.run(($rootScope: any /** TODO #9100 */) => {
              $rootScope.l = l;
              $rootScope.reset = () => log.length = 0;
            });
@@ -92,11 +92,11 @@ export function main() {
     });
 
     describe('downgrade ng2 component', () => {
-      it('should bind properties, events', inject([AsyncTestCompleter], (async) => {
+      it('should bind properties, events', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter: UpgradeAdapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
-           ng1Module.run(($rootScope) => {
+           ng1Module.run(($rootScope: any /** TODO #9100 */) => {
              $rootScope.dataA = 'A';
              $rootScope.dataB = 'B';
              $rootScope.modelA = 'initModelA';
@@ -134,15 +134,15 @@ export function main() {
                        this.twoWayAEmitter = new EventEmitter();
                        this.twoWayBEmitter = new EventEmitter();
                      },
-                     ngOnChanges: function(changes) {
-                       var assert = (prop, value) => {
+                     ngOnChanges: function(changes: any /** TODO #9100 */) {
+                       var assert = (prop: any /** TODO #9100 */, value: any /** TODO #9100 */) => {
                          if (this[prop] != value) {
                            throw new Error(
                                `Expected: '${prop}' to be '${value}' but was '${this[prop]}'`);
                          }
                        };
 
-                       var assertChange = (prop, value) => {
+                       var assertChange = (prop: any /** TODO #9100 */, value: any /** TODO #9100 */) => {
                          assert(prop, value);
                          if (!changes[prop]) {
                            throw new Error(`Changes record for '${prop}' not found.`);
@@ -202,7 +202,7 @@ export function main() {
          }));
 
       it('should properly run cleanup when ng1 directive is destroyed',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter: UpgradeAdapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
            var onDestroyed: EventEmitter<string> = new EventEmitter<string>();
@@ -210,7 +210,7 @@ export function main() {
            ng1Module.directive('ng1', () => {
              return {
                template: '<div ng-if="!destroyIt"><ng2></ng2></div>',
-               controller: function($rootScope, $timeout) {
+               controller: function($rootScope: any /** TODO #9100 */, $timeout: any /** TODO #9100 */) {
                  $timeout(function() { $rootScope.destroyIt = true; });
                }
              };
@@ -232,13 +232,13 @@ export function main() {
 
 
       it('should fallback to the root ng2.injector when compiled outside the dom',
-        inject([AsyncTestCompleter], (async) => {
+        inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
           var adapter: UpgradeAdapter = new UpgradeAdapter();
           var ng1Module = angular.module('ng1', []);
 
-          ng1Module.directive('ng1', ['$compile', ($compile) => {
+          ng1Module.directive('ng1', ['$compile', ($compile: any /** TODO #9100 */) => {
             return {
-              link: function($scope, $element, $attrs) {
+              link: function($scope: any /** TODO #9100 */, $element: any /** TODO #9100 */, $attrs: any /** TODO #9100 */) {
                 var compiled = $compile("<ng2></ng2>");
                 var template = compiled($scope);
                 $element.append(template);
@@ -263,7 +263,7 @@ export function main() {
     });
 
     describe('upgrade ng1 component', () => {
-      it('should bind properties, events', inject([AsyncTestCompleter], (async) => {
+      it('should bind properties, events', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
@@ -271,8 +271,8 @@ export function main() {
              return {
                template: 'Hello {{fullName}}; A: {{dataA}}; B: {{dataB}}; | ',
                scope: {fullName: '@', modelA: '=dataA', modelB: '=dataB', event: '&'},
-               link: function(scope) {
-                 scope.$watch('dataB', (v) => {
+               link: function(scope: any /** TODO #9100 */) {
+                 scope.$watch('dataB', (v: any /** TODO #9100 */) => {
                    if (v == 'Savkin') {
                      scope.dataB = 'SAVKIN';
                      scope.event('WORKS');
@@ -318,7 +318,7 @@ export function main() {
                });
          }));
 
-      it('should bind properties, events in controller when bindToController is not used', inject([AsyncTestCompleter], (async) => {
+      it('should bind properties, events in controller when bindToController is not used', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
         var adapter = new UpgradeAdapter();
         var ng1Module = angular.module('ng1', []);
 
@@ -327,7 +327,7 @@ export function main() {
             restrict: 'E',
             template: '{{someText}} - Length: {{data.length}}',
             scope: { data: "="},
-            controller: function($scope) {
+            controller: function($scope: any /** TODO #9100 */) {
               $scope.someText = "ng1 - Data: " + $scope.data;
             }
           };
@@ -362,7 +362,7 @@ export function main() {
           });
       }));
 
-      it('should bind properties, events in link function', inject([AsyncTestCompleter], (async) => {
+      it('should bind properties, events in link function', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
         var adapter = new UpgradeAdapter();
         var ng1Module = angular.module('ng1', []);
 
@@ -371,7 +371,7 @@ export function main() {
             restrict: 'E',
             template: '{{someText}} - Length: {{data.length}}',
             scope: { data: "=" },
-            link: function($scope) {
+            link: function($scope: any /** TODO #9100 */) {
               $scope.someText = "ng1 - Data: " + $scope.data;
             }
           };
@@ -407,11 +407,11 @@ export function main() {
       }));
 
       it('should support templateUrl fetched from $httpBackend',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
            ng1Module.value('$httpBackend',
-                           (method, url, post, cbFn) => { cbFn(200, `${method}:${url}`); });
+                           (method: any /** TODO #9100 */, url: any /** TODO #9100 */, post: any /** TODO #9100 */, cbFn: any /** TODO #9100 */) => { cbFn(200, `${method}:${url}`); });
 
            var ng1 = function() { return {templateUrl: 'url.html'}; };
            ng1Module.directive('ng1', ng1);
@@ -431,11 +431,11 @@ export function main() {
          }));
 
       it('should support templateUrl as a function',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
            ng1Module.value('$httpBackend',
-                           (method, url, post, cbFn) => { cbFn(200, `${method}:${url}`); });
+                           (method: any /** TODO #9100 */, url: any /** TODO #9100 */, post: any /** TODO #9100 */, cbFn: any /** TODO #9100 */) => { cbFn(200, `${method}:${url}`); });
 
            var ng1 = function() { return {templateUrl(){ return 'url.html' }}; };
            ng1Module.directive('ng1', ng1);
@@ -454,7 +454,7 @@ export function main() {
                });
          }));
 
-      it('should support empty template', inject([AsyncTestCompleter], (async) => {
+      it('should support empty template', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
@@ -475,7 +475,7 @@ export function main() {
                });
          }));
 
-      it('should support template as a function', inject([AsyncTestCompleter], (async) => {
+      it('should support template as a function', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
@@ -497,10 +497,10 @@ export function main() {
          }));
 
       it('should support templateUrl fetched from $templateCache',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
-           ng1Module.run(($templateCache) => $templateCache.put('url.html', 'WORKS'));
+           ng1Module.run(($templateCache: any /** TODO #9100 */) => $templateCache.put('url.html', 'WORKS'));
 
            var ng1 = function() { return {templateUrl: 'url.html'}; };
            ng1Module.directive('ng1', ng1);
@@ -519,7 +519,7 @@ export function main() {
                });
          }));
 
-      it('should support controller with controllerAs', inject([AsyncTestCompleter], (async) => {
+      it('should support controller with controllerAs', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
@@ -530,7 +530,7 @@ export function main() {
                    '{{ctl.scope}}; {{ctl.isClass}}; {{ctl.hasElement}}; {{ctl.isPublished()}}',
                controllerAs: 'ctl',
                controller: Class({
-                 constructor: function($scope, $element) {
+                 constructor: function($scope: any /** TODO #9100 */, $element: any /** TODO #9100 */) {
                    (<any>this).verifyIAmAClass();
                    this.scope = $scope.$parent.$parent == $scope.$root ? 'scope' : 'wrong-scope';
                    this.hasElement = $element[0].nodeName;
@@ -560,7 +560,7 @@ export function main() {
                });
          }));
 
-      it('should support bindToController', inject([AsyncTestCompleter], (async) => {
+      it('should support bindToController', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
@@ -589,7 +589,7 @@ export function main() {
                });
          }));
 
-      it('should support bindToController with bindings', inject([AsyncTestCompleter], (async) => {
+      it('should support bindToController with bindings', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
@@ -618,11 +618,11 @@ export function main() {
                });
          }));
 
-      it('should support single require in linking fn', inject([AsyncTestCompleter], (async) => {
+      it('should support single require in linking fn', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
-           var ng1 = function($rootScope) {
+           var ng1 = function($rootScope: any /** TODO #9100 */) {
              return {
                scope: {title: '@'},
                bindToController: true,
@@ -630,7 +630,7 @@ export function main() {
                require: 'ng1',
                controllerAs: 'ctrl',
                controller: Class({constructor: function() { this.status = 'WORKS'; }}),
-               link: function(scope, element, attrs, linkController) {
+               link: function(scope: any /** TODO #9100 */, element: any /** TODO #9100 */, attrs: any /** TODO #9100 */, linkController: any /** TODO #9100 */) {
                  expect(scope.$root).toEqual($rootScope);
                  expect(element[0].nodeName).toEqual('NG1');
                  expect(linkController.status).toEqual('WORKS');
@@ -654,7 +654,7 @@ export function main() {
                });
          }));
 
-      it('should support array require in linking fn', inject([AsyncTestCompleter], (async) => {
+      it('should support array require in linking fn', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
@@ -669,7 +669,7 @@ export function main() {
                require: ['ng1', '^parent', '?^^notFound'],
                controllerAs: 'ctrl',
                controller: Class({constructor: function() { this.status = 'WORKS'; }}),
-               link: function(scope, element, attrs, linkControllers) {
+               link: function(scope: any /** TODO #9100 */, element: any /** TODO #9100 */, attrs: any /** TODO #9100 */, linkControllers: any /** TODO #9100 */) {
                  expect(linkControllers[0].status).toEqual('WORKS');
                  expect(linkControllers[1].parent).toEqual('PARENT');
                  expect(linkControllers[2]).toBe(undefined);
@@ -695,7 +695,7 @@ export function main() {
                });
          }));
 
-      it('should call $onInit of components', inject([AsyncTestCompleter], (async) => {
+      it('should call $onInit of components', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
            var valueToFind = '$onInit';
@@ -724,7 +724,7 @@ export function main() {
                });
          }));
 
-      it('should bind input properties (<) of components', inject([AsyncTestCompleter], (async) => {
+      it('should bind input properties (<) of components', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
@@ -755,7 +755,7 @@ export function main() {
                });
          }));
 
-       it('should support ng2 > ng1 > ng2', inject([AsyncTestCompleter], (async) => {
+       it('should support ng2 > ng1 > ng2', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
@@ -798,7 +798,7 @@ export function main() {
     describe('injection', () => {
       function SomeToken() {}
 
-      it('should export ng2 instance to ng1', inject([AsyncTestCompleter], (async) => {
+      it('should export ng2 instance to ng1', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var module = angular.module('myExample', []);
            adapter.addProvider({provide: SomeToken, useValue: 'correct_value'});
@@ -811,7 +811,7 @@ export function main() {
                });
          }));
 
-      it('should export ng1 instance to ng2', inject([AsyncTestCompleter], (async) => {
+      it('should export ng1 instance to ng2', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var module = angular.module('myExample', []);
            module.value('testValue', 'secreteToken');
@@ -830,7 +830,7 @@ export function main() {
     });
 
     describe('testability', () => {
-      it('should handle deferred bootstrap', inject([AsyncTestCompleter], (async) => {
+      it('should handle deferred bootstrap', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter: UpgradeAdapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
            var bootstrapResumed: boolean = false;
@@ -851,7 +851,7 @@ export function main() {
            }, 100);
          }));
 
-      it('should wait for ng2 testability', inject([AsyncTestCompleter], (async) => {
+      it('should wait for ng2 testability', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter: UpgradeAdapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
            var element = html("<div></div>");
@@ -876,7 +876,7 @@ export function main() {
     });
 
     describe('examples', () => {
-      it('should verify UpgradeAdapter example', inject([AsyncTestCompleter], (async) => {
+      it('should verify UpgradeAdapter example', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            var adapter = new UpgradeAdapter();
            var module = angular.module('myExample', []);
 

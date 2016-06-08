@@ -89,7 +89,7 @@ export function main() {
         });
 
         it('should return a promise with rejected errors even if the exceptionHandler is not rethrowing',
-           inject([AsyncTestCompleter, Injector], (async, injector) => {
+           inject([AsyncTestCompleter, Injector], (async: any /** TODO #9100 */, injector: any /** TODO #9100 */) => {
              var ref = createApplication([]);
              var promise = ref.run(() => PromiseWrapper.reject('Test', null));
              PromiseWrapper.catchError(promise, (e) => {
@@ -102,7 +102,7 @@ export function main() {
 
     describe("coreLoadAndBootstrap", () => {
       it("should wait for asynchronous app initializers",
-         inject([AsyncTestCompleter, Injector], (async, injector) => {
+         inject([AsyncTestCompleter, Injector], (async: any /** TODO #9100 */, injector: any /** TODO #9100 */) => {
            let completer: PromiseCompleter<any> = PromiseWrapper.completer();
            var initializerDone = false;
            TimerWrapper.setTimeout(() => {
@@ -121,7 +121,7 @@ export function main() {
 
     describe("coreBootstrap", () => {
       it("should throw if an APP_INITIIALIZER is not yet resolved",
-         inject([Injector], (injector) => {
+         inject([Injector], (injector: any /** TODO #9100 */) => {
            var app = createApplication([
              {provide: APP_INITIALIZER, useValue: () => PromiseWrapper.completer().promise, multi: true}
            ]);
@@ -170,6 +170,6 @@ class _MockComponentRef extends ComponentRef_<any> {
 }
 
 class _MockConsole implements Console {
-  log(message) {}
-  warn(message) {}
+  log(message: any /** TODO #9100 */) {}
+  warn(message: any /** TODO #9100 */) {}
 }

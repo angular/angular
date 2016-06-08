@@ -19,7 +19,7 @@ import {kvChangesAsString} from '../../change_detection/util';
 export function main() {
   describe('keyvalue differ', function() {
     describe('DefaultKeyValueDiffer', function() {
-      var differ;
+      var differ: any /** TODO #9100 */;
       var m: Map<any, any>;
 
       beforeEach(() => {
@@ -61,7 +61,7 @@ export function main() {
       });
 
       it('should expose previous and current value', () => {
-        var previous, current;
+        var previous: any /** TODO #9100 */, current: any /** TODO #9100 */;
 
         m.set(1, 10);
         differ.check(m);
@@ -69,7 +69,7 @@ export function main() {
         m.set(1, 20);
         differ.check(m);
 
-        differ.forEachChangedItem((record) => {
+        differ.forEachChangedItem((record: any /** TODO #9100 */) => {
           previous = record.previousValue;
           current = record.currentValue;
         });
@@ -154,19 +154,19 @@ export function main() {
             let m = {};
             differ.check(m);
 
-            m['a'] = 'A';
+            (m as any /** TODO #9100 */)['a'] = 'A';
             differ.check(m);
             expect(differ.toString())
                 .toEqual(kvChangesAsString({map: ['a[null->A]'], additions: ['a[null->A]']}));
 
-            m['b'] = 'B';
+            (m as any /** TODO #9100 */)['b'] = 'B';
             differ.check(m);
             expect(differ.toString())
                 .toEqual(kvChangesAsString(
                     {map: ['a', 'b[null->B]'], previous: ['a'], additions: ['b[null->B]']}));
 
-            m['b'] = 'BB';
-            m['d'] = 'D';
+            (m as any /** TODO #9100 */)['b'] = 'BB';
+            (m as any /** TODO #9100 */)['d'] = 'D';
             differ.check(m);
             expect(differ.toString())
                 .toEqual(kvChangesAsString({
@@ -177,8 +177,8 @@ export function main() {
                 }));
 
             m = {};
-            m['a'] = 'A';
-            m['d'] = 'D';
+            (m as any /** TODO #9100 */)['a'] = 'A';
+            (m as any /** TODO #9100 */)['d'] = 'D';
             differ.check(m);
             expect(differ.toString())
                 .toEqual(kvChangesAsString({

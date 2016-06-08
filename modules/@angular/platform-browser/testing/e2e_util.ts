@@ -1,12 +1,12 @@
 import * as webdriver from 'selenium-webdriver';
 
-declare var global;
+declare var global: any /** TODO #9100 */;
 declare var expect: Function;
 export var browser: protractor.IBrowser = global['browser'];
 export var $: cssSelectorHelper = global['$'];
 
-export function clickAll(buttonSelectors) {
-  buttonSelectors.forEach(function(selector) { $(selector).click(); });
+export function clickAll(buttonSelectors: any /** TODO #9100 */) {
+  buttonSelectors.forEach(function(selector: any /** TODO #9100 */) { $(selector).click(); });
 }
 
 export function verifyNoBrowserErrors() {

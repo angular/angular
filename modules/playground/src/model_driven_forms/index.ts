@@ -48,7 +48,7 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   directives: [NgIf]
 })
 class ShowError {
-  formDir;
+  formDir: any /** TODO #9100 */;
   controlPath: string;
   errorTypes: string[];
 
@@ -69,7 +69,7 @@ class ShowError {
 
   _errorMessage(code: string): string {
     var config = {'required': 'is required', 'invalidCreditCard': 'is invalid credit card number'};
-    return config[code];
+    return (config as any /** TODO #9100 */)[code];
   }
 }
 
@@ -135,7 +135,7 @@ class ShowError {
   directives: [FORM_DIRECTIVES, NgFor, ShowError]
 })
 class ModelDrivenForms {
-  form;
+  form: any /** TODO #9100 */;
   countries = ['US', 'Canada'];
 
   constructor(fb: FormBuilder) {

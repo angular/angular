@@ -179,7 +179,7 @@ export enum BuiltinVar {
 }
 
 export class ReadVarExpr extends Expression {
-  public name;
+  public name: any /** TODO #9100 */;
   public builtin: BuiltinVar;
 
   constructor(name: string | BuiltinVar, type: Type = null) {

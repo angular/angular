@@ -89,8 +89,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   /** @internal */
-  _zipTypesAndAnnotations(paramTypes, paramAnnotations): any[][] {
-    var result;
+  _zipTypesAndAnnotations(paramTypes: any /** TODO #9100 */, paramAnnotations: any /** TODO #9100 */): any[][] {
+    var result: any /** TODO #9100 */;
 
     if (typeof paramTypes === 'undefined') {
       result = new Array(paramAnnotations.length);
@@ -125,9 +125,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // API of tsickle for lowering decorators to properties on the class.
     if (isPresent((<any>typeOrFunc).ctorParameters)) {
       let ctorParameters = (<any>typeOrFunc).ctorParameters;
-      let paramTypes = ctorParameters.map(ctorParam => ctorParam && ctorParam.type);
+      let paramTypes = ctorParameters.map((ctorParam: any /** TODO #9100 */) => ctorParam && ctorParam.type);
       let paramAnnotations = ctorParameters.map(
-          ctorParam => ctorParam && convertTsickleDecoratorIntoMetadata(ctorParam.decorators));
+          (ctorParam: any /** TODO #9100 */) => ctorParam && convertTsickleDecoratorIntoMetadata(ctorParam.decorators));
       return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
     }
 

@@ -127,9 +127,9 @@ export function main() {
           "color": "red"
         };
         var expectedResult = {
-          "opacity": null,
-          "width": null,
-          "color": null
+          "opacity": null as number,
+          "width": null as number,
+          "color": null as string
         };
         expect(animationUtils.clearStyles(styles)).toEqual(expectedResult);
       });

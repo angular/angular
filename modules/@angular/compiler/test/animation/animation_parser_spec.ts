@@ -52,7 +52,7 @@ export function main() {
   describe('parseAnimationEntry', () => {
     var combineStyles = (styles: AnimationStylesAst): {[key: string]: string | number} => {
       var flatStyles: {[key: string]: string | number} = {};
-      styles.styles.forEach(entry => StringMapWrapper.forEach(entry, (val, prop) => { flatStyles[prop] = val; }));
+      styles.styles.forEach(entry => StringMapWrapper.forEach(entry, (val: any /** TODO #9100 */, prop: any /** TODO #9100 */) => { flatStyles[prop] = val; }));
       return flatStyles;
     };
 
@@ -62,7 +62,7 @@ export function main() {
 
     var collectStepStyles = (step: AnimationStepAst): Array<{[key: string]: string | number}> => {
       var keyframes = step.keyframes;
-      var styles = [];
+      var styles: any[] /** TODO #9100 */ = [];
       if (step.startingStyles.styles.length > 0) {
         styles.push(combineStyles(step.startingStyles));
       }
@@ -70,7 +70,7 @@ export function main() {
       return styles;
     };
 
-    var resolver;
+    var resolver: any /** TODO #9100 */;
     beforeEach(inject([CompileMetadataResolver], (res: CompileMetadataResolver) => {
       resolver = res;
     }));

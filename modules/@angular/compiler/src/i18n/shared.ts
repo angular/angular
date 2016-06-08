@@ -28,11 +28,11 @@ export class I18nError extends ParseError {
 
 // Man, this is so ugly!
 export function partition(nodes: HtmlAst[], errors: ParseError[], implicitTags: string[]): Part[] {
-  let res = [];
+  let res: any[] /** TODO #9100 */ = [];
 
   for (let i = 0; i < nodes.length; ++i) {
     let n = nodes[i];
-    let temp = [];
+    let temp: any[] /** TODO #9100 */ = [];
     if (_isOpeningComment(n)) {
       let i18n = (<HtmlCommentAst>n).value.substring(5).trim();
       i++;

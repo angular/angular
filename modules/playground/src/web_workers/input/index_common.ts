@@ -18,7 +18,7 @@ export class InputCmp {
   inputVal = "";
   textareaVal = "";
 
-  inputChanged(e) { this.inputVal = e.target.value; }
+  inputChanged(e: any /** TODO #9100 */) { this.inputVal = e.target.value; }
 
-  textAreaChanged(e) { this.textareaVal = e.target.value; }
+  textAreaChanged(e: any /** TODO #9100 */) { this.textareaVal = e.target.value; }
 }

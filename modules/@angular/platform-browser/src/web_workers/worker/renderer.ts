@@ -20,7 +20,7 @@ import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} fr
 
 @Injectable()
 export class WebWorkerRootRenderer implements RootRenderer {
-  private _messageBroker;
+  private _messageBroker: any /** TODO #9100 */;
   public globalEvents: NamedEventEmitter = new NamedEventEmitter();
   private _componentRenderers: Map<string, WebWorkerRenderer> =
       new Map<string, WebWorkerRenderer>();

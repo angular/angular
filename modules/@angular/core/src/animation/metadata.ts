@@ -263,7 +263,7 @@ export function style(tokens: string|{[key: string]: string | number}|Array<stri
       input = [<{[key: string]: string | number}>tokens];
     }
     input.forEach(entry => {
-      var entryOffset = entry['offset'];
+      var entryOffset = (entry as any /** TODO #9100 */)['offset'];
       if (isPresent(entryOffset)) {
         offset = offset == null ? NumberWrapper.parseFloat(entryOffset) : offset;
       }

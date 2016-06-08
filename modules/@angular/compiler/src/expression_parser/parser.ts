@@ -125,7 +125,7 @@ export class Parser {
     let split = this.splitInterpolation(input, location);
     if (split == null) return null;
 
-    let expressions = [];
+    let expressions: any[] /** TODO #9100 */ = [];
 
     for (let i = 0; i < split.expressions.length; ++i) {
       var tokens = this._lexer.tokenize(this._stripComments(split.expressions[i]));
@@ -141,8 +141,8 @@ export class Parser {
     if (parts.length <= 1) {
       return null;
     }
-    var strings = [];
-    var expressions = [];
+    var strings: any[] /** TODO #9100 */ = [];
+    var expressions: any[] /** TODO #9100 */ = [];
 
     for (var i = 0; i < parts.length; i++) {
       var part: string = parts[i];
@@ -170,7 +170,7 @@ export class Parser {
   }
 
   private _commentStart(input: string): number {
-    var outerQuote = null;
+    var outerQuote: any /** TODO #9100 */ = null;
     for (var i = 0; i < input.length - 1; i++) {
       let char = StringWrapper.charCodeAt(input, i);
       let nextChar = StringWrapper.charCodeAt(input, i + 1);
@@ -277,7 +277,7 @@ export class _ParseAST {
   }
 
   parseChain(): AST {
-    var exprs = [];
+    var exprs: any[] /** TODO #9100 */ = [];
     while (this.index < this.tokens.length) {
       var expr = this.parsePipe();
       exprs.push(expr);
@@ -306,7 +306,7 @@ export class _ParseAST {
 
       do {
         var name = this.expectIdentifierOrKeyword();
-        var args = [];
+        var args: any[] /** TODO #9100 */ = [];
         while (this.optionalCharacter($COLON)) {
           args.push(this.parseExpression());
         }
@@ -512,7 +512,7 @@ export class _ParseAST {
   }
 
   parseExpressionList(terminator: number): any[] {
-    var result = [];
+    var result: any[] /** TODO #9100 */ = [];
     if (!this.next.isCharacter(terminator)) {
       do {
         result.push(this.parsePipe());
@@ -522,8 +522,8 @@ export class _ParseAST {
   }
 
   parseLiteralMap(): LiteralMap {
-    var keys = [];
-    var values = [];
+    var keys: any[] /** TODO #9100 */ = [];
+    var values: any[] /** TODO #9100 */ = [];
     this.expectCharacter($LBRACE);
     if (!this.optionalCharacter($RBRACE)) {
       do {
@@ -571,7 +571,7 @@ export class _ParseAST {
 
   parseCallArguments(): BindingPipe[] {
     if (this.next.isCharacter($RPAREN)) return [];
-    var positionals = [];
+    var positionals: any[] /** TODO #9100 */ = [];
     do {
       positionals.push(this.parsePipe());
     } while (this.optionalCharacter($COMMA));
@@ -582,7 +582,7 @@ export class _ParseAST {
     if (!this.parseAction) {
       this.error("Binding expression cannot contain chained expression");
     }
-    var exprs = [];
+    var exprs: any[] /** TODO #9100 */ = [];
     while (this.index < this.tokens.length && !this.next.isCharacter($RBRACE)) {
       var expr = this.parseExpression();
       exprs.push(expr);
@@ -618,7 +618,7 @@ export class _ParseAST {
 
   parseTemplateBindings(): TemplateBindingParseResult {
     var bindings: TemplateBinding[] = [];
-    var prefix = null;
+    var prefix: any /** TODO #9100 */ = null;
     var warnings: string[] = [];
     while (this.index < this.tokens.length) {
       var keyIsVar: boolean = this.peekKeywordLet();
@@ -642,8 +642,8 @@ export class _ParseAST {
         }
       }
       this.optionalCharacter($COLON);
-      var name = null;
-      var expression = null;
+      var name: any /** TODO #9100 */ = null;
+      var expression: any /** TODO #9100 */ = null;
       if (keyIsVar) {
         if (this.optionalOperator("=")) {
           name = this.expectTemplateBindingKey();

@@ -42,8 +42,8 @@ import {MockApplicationRef} from '@angular/core/testing';
 
 // noinspection JSAnnotator
 class DummyConsole implements Console {
-  log(message) {}
-  warn(message) {}
+  log(message: any /** TODO #9100 */) {}
+  warn(message: any /** TODO #9100 */) {}
 }
 
 export function main() {
@@ -56,7 +56,7 @@ export function main() {
 
     // do not refactor out the `bootstrap` functionality. We still want to
     // keep this test around so we can ensure that bootstrap a router works
-    it('should bootstrap a simple app', inject([AsyncTestCompleter], (async) => {
+    it('should bootstrap a simple app', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          var fakeDoc = getDOM().createHtmlDocument();
          var el = getDOM().createElement('app-cmp', fakeDoc);
          getDOM().appendChild(fakeDoc.body, el);
@@ -71,7 +71,7 @@ export function main() {
                    ])
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
-               router.subscribe((_) => {
+               router.subscribe((_: any /** TODO #9100 */) => {
                  expect(el).toHaveText('outer { hello }');
                  expect(applicationRef.instance.location.path()).toEqual('');
                  async.done();
@@ -83,7 +83,7 @@ export function main() {
       beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: BrokenAppCmp}]);
 
       it('should rethrow exceptions from component constructors',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
+         inject([AsyncTestCompleter, TestComponentBuilder], (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
            tcb.createAsync(AppCmp).then((fixture) => {
              var router = fixture.debugElement.componentInstance.router;
              PromiseWrapper.catchError(router.navigateByUrl('/cause-error'), (error) => {
@@ -98,7 +98,7 @@ export function main() {
       beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp}]);
 
       it('should change the url without pushing a new history state for back navigations',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
+         inject([AsyncTestCompleter, TestComponentBuilder], (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
 
            tcb.createAsync(HierarchyAppCmp)
                .then((fixture) => {
@@ -111,7 +111,7 @@ export function main() {
                    ['/parent/child', 'root { parent { hello } }', false]
                  ];
 
-                 router.subscribe((_) => {
+                 router.subscribe((_: any /** TODO #9100 */) => {
                    var location = fixture.debugElement.componentInstance.location;
                    var element = fixture.debugElement.nativeElement;
                    var path = location.path();
@@ -149,12 +149,12 @@ export function main() {
           () => { return [{provide: ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp}]; });
 
       it('should bootstrap an app with a hierarchy',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
+         inject([AsyncTestCompleter, TestComponentBuilder], (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
 
            tcb.createAsync(HierarchyAppCmp)
                .then((fixture) => {
                  var router = fixture.debugElement.componentInstance.router;
-                 router.subscribe((_) => {
+                 router.subscribe((_: any /** TODO #9100 */) => {
                    expect(fixture.debugElement.nativeElement)
                        .toHaveText('root { parent { hello } }');
                    expect(fixture.debugElement.componentInstance.location.path())
@@ -170,12 +170,12 @@ export function main() {
         beforeEachProviders(() => { return [{provide: APP_BASE_HREF, useValue: '/my/app'}]; });
         it('should bootstrap',
            inject([AsyncTestCompleter, TestComponentBuilder],
-                  (async, tcb: TestComponentBuilder) => {
+                  (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
 
                     tcb.createAsync(HierarchyAppCmp)
                         .then((fixture) => {
                           var router = fixture.debugElement.componentInstance.router;
-                          router.subscribe((_) => {
+                          router.subscribe((_: any /** TODO #9100 */) => {
                             expect(fixture.debugElement.nativeElement)
                                 .toHaveText('root { parent { hello } }');
                             expect(fixture.debugElement.componentInstance.location.path())
@@ -194,11 +194,11 @@ export function main() {
           () => { return [{provide: ROUTER_PRIMARY_COMPONENT, useValue: QueryStringAppCmp}]; });
 
       it('should recognize and return querystring params with the injected RouteParams',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
+         inject([AsyncTestCompleter, TestComponentBuilder], (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
            tcb.createAsync(QueryStringAppCmp)
                .then((fixture) => {
                  var router = fixture.debugElement.componentInstance.router;
-                 router.subscribe((_) => {
+                 router.subscribe((_: any /** TODO #9100 */) => {
                    fixture.detectChanges();
 
                    expect(fixture.debugElement.nativeElement)
@@ -220,16 +220,16 @@ export function main() {
       beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp}]);
 
       beforeEach(inject([TestComponentBuilder],
-                        (testComponentBuilder) => { tcb = testComponentBuilder; }));
+                        (testComponentBuilder: any /** TODO #9100 */) => { tcb = testComponentBuilder; }));
 
       it('should get a reference and pass data to components loaded inside of outlets',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
            tcb.createAsync(AppWithOutletListeners)
                .then(fixture => {
                  let appInstance = fixture.debugElement.componentInstance;
                  let router = appInstance.router;
 
-                 router.subscribe((_) => {
+                 router.subscribe((_: any /** TODO #9100 */) => {
                    fixture.detectChanges();
 
                    expect(appInstance.helloCmp).toBeAnInstanceOf(HelloCmp);

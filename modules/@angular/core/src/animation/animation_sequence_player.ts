@@ -72,7 +72,7 @@ export class AnimationSequencePlayer implements AnimationPlayer {
     this._players.forEach(player => player.destroy());
   }
 
-  setPosition(p): void {
+  setPosition(p: any /** TODO #9100 */): void {
     this._players[0].setPosition(p);
   }
 

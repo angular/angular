@@ -109,13 +109,13 @@ export var expect: (actual: any) => NgMatchers = <any>_global.expect;
 // gives us bad error messages in tests.
 // The only way to do this in Jasmine is to monkey patch a method
 // to the object :-(
-Map.prototype['jasmineToString'] = function() {
+(Map as any /** TODO #???? */).prototype['jasmineToString'] = function() {
   var m = this;
   if (!m) {
     return '' + m;
   }
-  var res = [];
-  m.forEach((v, k) => { res.push(`${k}:${v}`); });
+  var res: any[] /** TODO #???? */ = [];
+  m.forEach((v: any /** TODO #???? */, k: any /** TODO #???? */) => { res.push(`${k}:${v}`); });
   return `{ ${res.join(',')} }`;
 };
 
@@ -124,16 +124,16 @@ _global.beforeEach(function() {
     // Custom handler for Map as Jasmine does not support it yet
     toEqual: function(util, customEqualityTesters) {
       return {
-        compare: function(actual, expected) {
+        compare: function(actual: any /** TODO #???? */, expected: any /** TODO #???? */) {
           return {pass: util.equals(actual, expected, [compareMap])};
         }
       };
 
-      function compareMap(actual, expected) {
+      function compareMap(actual: any /** TODO #???? */, expected: any /** TODO #???? */) {
         if (actual instanceof Map) {
           var pass = actual.size === expected.size;
           if (pass) {
-            actual.forEach((v, k) => { pass = pass && util.equals(v, expected.get(k)); });
+            actual.forEach((v: any /** TODO #???? */, k: any /** TODO #???? */) => { pass = pass && util.equals(v, expected.get(k)); });
           }
           return pass;
         } else {
@@ -144,7 +144,7 @@ _global.beforeEach(function() {
 
     toBePromise: function() {
       return {
-        compare: function(actual, expectedClass) {
+        compare: function(actual: any /** TODO #???? */, expectedClass: any /** TODO #???? */) {
           var pass = typeof actual === 'object' && typeof actual.then === 'function';
           return {pass: pass, get message() { return 'Expected ' + actual + ' to be a promise'; }};
         }
@@ -153,7 +153,7 @@ _global.beforeEach(function() {
 
     toBeAnInstanceOf: function() {
       return {
-        compare: function(actual, expectedClass) {
+        compare: function(actual: any /** TODO #???? */, expectedClass: any /** TODO #???? */) {
           var pass = typeof actual === 'object' && actual instanceof expectedClass;
           return {
             pass: pass,
@@ -167,7 +167,7 @@ _global.beforeEach(function() {
 
     toHaveText: function() {
       return {
-        compare: function(actual, expectedText) {
+        compare: function(actual: any /** TODO #???? */, expectedText: any /** TODO #???? */) {
           var actualText = elementText(actual);
           return {
             pass: actualText == expectedText,
@@ -180,8 +180,8 @@ _global.beforeEach(function() {
     toHaveCssClass: function() {
       return {compare: buildError(false), negativeCompare: buildError(true)};
 
-      function buildError(isNot) {
-        return function(actual, className) {
+      function buildError(isNot: any /** TODO #???? */) {
+        return function(actual: any /** TODO #???? */, className: any /** TODO #???? */) {
           return {
             pass: getDOM().hasClass(actual, className) == !isNot,
             get message() {
@@ -194,13 +194,13 @@ _global.beforeEach(function() {
 
     toHaveCssStyle: function() {
       return {
-        compare: function(actual, styles) {
-          var allPassed;
+        compare: function(actual: any /** TODO #???? */, styles: any /** TODO #???? */) {
+          var allPassed: any /** TODO #???? */;
           if (isString(styles)) {
             allPassed = getDOM().hasStyle(actual, styles);
           } else {
             allPassed = !StringMapWrapper.isEmpty(styles);
-            StringMapWrapper.forEach(styles, (style, prop) => {
+            StringMapWrapper.forEach(styles, (style: any /** TODO #???? */, prop: any /** TODO #???? */) => {
               allPassed = allPassed && getDOM().hasStyle(actual, prop, style);
             });
           }
@@ -219,7 +219,7 @@ _global.beforeEach(function() {
 
     toContainError: function() {
       return {
-        compare: function(actual, expectedText) {
+        compare: function(actual: any /** TODO #???? */, expectedText: any /** TODO #???? */) {
           var errorMessage = actual.toString();
           return {
             pass: errorMessage.indexOf(expectedText) > -1,
@@ -231,7 +231,7 @@ _global.beforeEach(function() {
 
     toThrowErrorWith: function() {
       return {
-        compare: function(actual, expectedText) {
+        compare: function(actual: any /** TODO #???? */, expectedText: any /** TODO #???? */) {
           try {
             actual();
             return {
@@ -252,8 +252,8 @@ _global.beforeEach(function() {
     toMatchPattern() {
       return {compare: buildError(false), negativeCompare: buildError(true)};
 
-      function buildError(isNot) {
-        return function(actual, regex) {
+      function buildError(isNot: any /** TODO #???? */) {
+        return function(actual: any /** TODO #???? */, regex: any /** TODO #???? */) {
           return {
             pass: regex.test(actual) == !isNot,
             get message() {
@@ -266,11 +266,11 @@ _global.beforeEach(function() {
 
     toImplement: function() {
       return {
-        compare: function(actualObject, expectedInterface) {
+        compare: function(actualObject: any /** TODO #???? */, expectedInterface: any /** TODO #???? */) {
           var objProps = Object.keys(actualObject.constructor.prototype);
           var intProps = Object.keys(expectedInterface.prototype);
 
-          var missedMethods = [];
+          var missedMethods: any[] /** TODO #???? */ = [];
           intProps.forEach((k) => {
             if (!actualObject.constructor.prototype[k]) missedMethods.push(k);
           });
@@ -288,8 +288,8 @@ _global.beforeEach(function() {
   });
 });
 
-function elementText(n) {
-  var hasNodes = (n) => {
+function elementText(n: any /** TODO #???? */): any /** TODO #???? */ {
+  var hasNodes = (n: any /** TODO #???? */) => {
     var children = getDOM().childNodes(n);
     return children && children.length > 0;
   };

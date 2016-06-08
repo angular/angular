@@ -31,7 +31,7 @@ export function getRelativePath(modulePath: string, importedPath: string): strin
   var importedParts = importedPath.split(_PATH_SEP_RE);
   var longestPrefix = getLongestPathSegmentPrefix(moduleParts, importedParts);
 
-  var resultParts = [];
+  var resultParts: any[] /** TODO #9100 */ = [];
   var goParentCount = moduleParts.length - 1 - longestPrefix;
   for (var i = 0; i < goParentCount; i++) {
     resultParts.push('..');

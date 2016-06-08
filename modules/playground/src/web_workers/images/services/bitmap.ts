@@ -1,6 +1,6 @@
 /// <reference path="../bitmap.d.ts" /> /// <reference path="../b64.d.ts" />
 import {Injectable} from '@angular/core';
-declare var base64js;
+declare var base64js: any /** TODO #9100 */;
 
 // Temporary fix for Typescript issue #4220 (https://github.com/Microsoft/TypeScript/issues/4220)
 // var _ImageData: (width: number, height: number) => void = <any>postMessage;
@@ -151,7 +151,7 @@ export class BitmapService {
   // Based on example from
   // http://www.worldwidewhat.net/2012/07/how-to-draw-bitmaps-using-javascript/
   private _getLittleEndianHex(value: number): string {
-    var result = [];
+    var result: any[] /** TODO #9100 */ = [];
 
     for (var bytes = 4; bytes > 0; bytes--) {
       result.push(String.fromCharCode(value & 255));

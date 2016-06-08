@@ -141,7 +141,7 @@ export class TemplateParser {
            templateUrl: string): TemplateParseResult {
     var htmlAstWithErrors = this._htmlParser.parse(template, templateUrl);
     var errors:ParseError[] = htmlAstWithErrors.errors;
-    var result;
+    var result: any /** TODO #???? */;
     if (htmlAstWithErrors.rootNodes.length > 0) {
       var uniqDirectives = <CompileDirectiveMetadata[]>removeDuplicates(directives);
       var uniqPipes = <CompilePipeMetadata[]>removeDuplicates(pipes);
@@ -170,10 +170,10 @@ export class TemplateParser {
 
   /** @internal */
   _assertNoReferenceDuplicationOnTemplate(result:any[], errors:TemplateParseError[]):void {
-    const existingReferences = [];
+    const existingReferences: any[] /** TODO #???? */ = [];
     result
       .filter(element => !!element.references)
-      .forEach(element => element.references.forEach(reference=> {
+      .forEach(element => element.references.forEach((reference: any /** TODO #???? */)=> {
         const name = reference.name;
         if (existingReferences.indexOf(name) < 0) {
           existingReferences.push(name);
@@ -335,7 +335,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var templateElementVars: VariableAst[] = [];
 
     var hasInlineTemplates = false;
-    var attrs = [];
+    var attrs: any[] /** TODO #???? */ = [];
     var lcElName = splitNsName(nodeName.toLowerCase())[1];
     var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
 
@@ -377,7 +377,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                  CssSelector.parse(preparsedElement.projectAs)[0] :
                                  elementCssSelector;
     var ngContentIndex = parent.findNgContentIndex(projectionSelector);
-    var parsedElement;
+    var parsedElement: any /** TODO #???? */;
 
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       if (isPresent(element.children) && element.children.length > 0) {
@@ -434,7 +434,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseInlineTemplateBinding(attr: HtmlAttrAst, targetMatchableAttrs: string[][],
                                       targetProps: BoundElementOrDirectiveProperty[],
                                       targetVars: VariableAst[]): boolean {
-    var templateBindingsSource = null;
+    var templateBindingsSource: any /** TODO #???? */ = null;
     if (attr.name == TEMPLATE_ATTR) {
       templateBindingsSource = attr.value;
     } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
@@ -667,7 +667,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                             elOrDirRef.sourceSpan);
         };
       } else if (isBlank(component)) {
-        var refToken = null;
+        var refToken: any /** TODO #???? */ = null;
         if (isTemplateElement) {
           refToken = identifierToken(Identifiers.TemplateRef);
         }
@@ -744,8 +744,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   private _createElementPropertyAst(elementName: string, name: string, ast: AST,
                                     sourceSpan: ParseSourceSpan): BoundElementPropertyAst {
-    var unit = null;
-    var bindingType;
+    var unit: any /** TODO #???? */ = null;
+    var bindingType: any /** TODO #???? */;
     var boundPropertyName: string;
     var parts = name.split(PROPERTY_PARTS_SEPARATOR);
     let securityContext: SecurityContext;
@@ -837,7 +837,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var allDirectiveEvents = new Set<string>();
     directives.forEach(directive => {
       StringMapWrapper.forEach(directive.directive.outputs,
-                               (eventName: string, _) => { allDirectiveEvents.add(eventName); });
+                               (eventName: string, _: any /** TODO #???? */) => { allDirectiveEvents.add(eventName); });
     });
     events.forEach(event => {
       if (isPresent(event.target) || !SetWrapper.has(allDirectiveEvents, event.name)) {
@@ -897,7 +897,7 @@ class ElementContext {
   static create(isTemplateElement: boolean, directives: DirectiveAst[],
                 providerContext: ProviderElementContext): ElementContext {
     var matcher = new SelectorMatcher();
-    var wildcardNgContentIndex = null;
+    var wildcardNgContentIndex: any /** TODO #???? */ = null;
     var component = directives.find(directive => directive.directive.isComponent);
     if (isPresent(component)) {
       var ngContentSelectors = component.directive.template.ngContentSelectors;
@@ -917,7 +917,7 @@ class ElementContext {
               public providerContext: ProviderElementContext) {}
 
   findNgContentIndex(selector: CssSelector): number {
-    var ngContentIndices = [];
+    var ngContentIndices: any[] /** TODO #???? */ = [];
     this._ngContentIndexMatcher.match(
         selector, (selector, ngContentIndex) => { ngContentIndices.push(ngContentIndex); });
     ListWrapper.sort(ngContentIndices);
@@ -963,7 +963,7 @@ export class PipeCollector extends RecursiveAstVisitor {
 }
 
 function removeDuplicates(items: CompileMetadataWithType[]): CompileMetadataWithType[] {
-  let res = [];
+  let res: any[] /** TODO #???? */ = [];
   items.forEach(item => {
     let hasMatch =
         res.filter(r => r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl &&

@@ -81,7 +81,7 @@ export function main() {
       expect(() => platformLocation.pathname = "TEST").toThrowError();
     });
 
-    it("should send pathname to render thread", inject([AsyncTestCompleter], (async) => {
+    it("should send pathname to render thread", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
          let platformLocation = createWebWorkerPlatformLocation(TEST_LOCATION);
          platformLocation.init().then((_) => {
            let PATHNAME = "/test";

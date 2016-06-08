@@ -65,7 +65,7 @@ export function main() {
 
     describe('Class', () => {
       it('should create a class', () => {
-        var i0, i1;
+        var i0: any /** TODO #9100 */, i1: any /** TODO #9100 */;
         var MyClass =
             (<any>TestDecorator('test-works'))
                 .Class(<any>{
@@ -73,9 +73,9 @@ export function main() {
                     constructor: function() {},
                     extendWorks: function() { return 'extend ' + this.arg; }
                   }),
-                  constructor: [String, function(arg) { this.arg = arg; }],
+                  constructor: [String, function(arg: any /** TODO #9100 */) { this.arg = arg; }],
                   methodA:
-                      [i0 = new Inject(String), [i1 = Inject(String), Number], function(a, b) {}],
+                      [i0 = new Inject(String), [i1 = Inject(String), Number], function(a: any /** TODO #9100 */, b: any /** TODO #9100 */) {}],
                   works: function() { return this.arg; },
                   prototype: 'IGNORE'
                 });

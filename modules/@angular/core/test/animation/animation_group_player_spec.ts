@@ -22,7 +22,7 @@ import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player
 
 export function main() {
   describe('AnimationGroupPlayer', function() {
-    var players;
+    var players: any /** TODO #9100 */;
     beforeEach(() => {
       players = [
         new MockAnimationPlayer(),

@@ -11,8 +11,8 @@ export function getIntParameter(name: string) {
 
 export function getStringParameter(name: string) {
   var els = DOM.querySelectorAll(document, `input[name="${name}"]`);
-  var value;
-  var el;
+  var value: any /** TODO #9100 */;
+  var el: any /** TODO #9100 */;
 
   for (var i = 0; i < els.length; i++) {
     el = els[i];
@@ -32,10 +32,10 @@ export function getStringParameter(name: string) {
 
 export function bindAction(selector: string, callback: Function) {
   var el = DOM.querySelector(document, selector);
-  DOM.on(el, 'click', function(_) { callback(); });
+  DOM.on(el, 'click', function(_: any /** TODO #9100 */) { callback(); });
 }
 
-export function microBenchmark(name, iterationCount, callback) {
+export function microBenchmark(name: any /** TODO #9100 */, iterationCount: any /** TODO #9100 */, callback: any /** TODO #9100 */) {
   var durationName = `${name}/${iterationCount}`;
   window.console.time(durationName);
   callback();

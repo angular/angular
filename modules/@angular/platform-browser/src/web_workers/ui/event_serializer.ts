@@ -80,7 +80,7 @@ function serializeEvent(e: any, properties: string[]): {[key: string]: any} {
   var serialized = {};
   for (var i = 0; i < properties.length; i++) {
     var prop = properties[i];
-    serialized[prop] = e[prop];
+    (serialized as any /** TODO #9100 */)[prop] = e[prop];
   }
   return serialized;
 }

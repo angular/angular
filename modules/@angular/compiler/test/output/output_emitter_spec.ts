@@ -26,7 +26,7 @@ import {
 
     export function
     main() {
-  var outputDefs = [];
+  var outputDefs: any[] /** TODO #9100 */ = [];
   outputDefs.push({
     'getExpressions': () => interpretStatements(codegenStmts, 'getExpressions',
                                                 new DynamicClassInstanceFactory()),
@@ -50,7 +50,7 @@ import {
   describe('output emitter', () => {
     outputDefs.forEach((outputDef) => {
       describe(`${outputDef['name']}`, () => {
-        var expressions;
+        var expressions: any /** TODO #9100 */;
         beforeEach(() => { expressions = outputDef['getExpressions']()(); });
 
         it('should support literals', () => {
@@ -116,8 +116,8 @@ import {
         });
 
         describe('operators', () => {
-          var ops;
-          var aObj, bObj;
+          var ops: any /** TODO #9100 */;
+          var aObj: any /** TODO #9100 */, bObj: any /** TODO #9100 */;
           beforeEach(() => {
             ops = expressions['operators'];
             aObj = new Object();

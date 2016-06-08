@@ -15,7 +15,7 @@ import {DomSharedStylesHost} from '@angular/platform-browser/src/dom/shared_styl
 
 export function main() {
   describe('DomSharedStylesHost', () => {
-    var doc;
+    var doc: any /** TODO #9100 */;
     var ssh: DomSharedStylesHost;
     var someHost: Element;
     beforeEach(() => {

@@ -18,7 +18,7 @@ export function main() {
   describe('switch', () => {
     describe('switch value changes', () => {
       it('should switch amongst when values',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var template = '<div>' +
                           '<ul [ngSwitch]="switchValue">' +
                           '<template ngSwitchWhen="a"><li>when a</li></template>' +
@@ -44,7 +44,7 @@ export function main() {
          }));
 
       it('should switch amongst when values with fallback to default',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var template = '<div>' +
                           '<ul [ngSwitch]="switchValue">' +
                           '<li template="ngSwitchWhen \'a\'">when a</li>' +
@@ -70,7 +70,7 @@ export function main() {
          }));
 
       it('should support multiple whens with the same value',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var template = '<div>' +
                           '<ul [ngSwitch]="switchValue">' +
                           '<template ngSwitchWhen="a"><li>when a1;</li></template>' +
@@ -103,7 +103,7 @@ export function main() {
 
     describe('when values changes', () => {
       it('should switch amongst when values',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var template = '<div>' +
                           '<ul [ngSwitch]="switchValue">' +
                           '<template [ngSwitchWhen]="when1"><li>when 1;</li></template>' +

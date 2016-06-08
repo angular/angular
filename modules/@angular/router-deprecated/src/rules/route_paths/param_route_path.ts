@@ -119,7 +119,7 @@ export class ParamRoutePath implements RoutePath {
       if (isPresent(currentUrlSegment)) {
         // the star segment consumes all of the remaining URL, including matrix params
         if (pathSegment instanceof StarPathSegment) {
-          positionalParams[pathSegment.name] = currentUrlSegment.toString();
+          (positionalParams as any /** TODO #9100 */)[pathSegment.name] = currentUrlSegment.toString();
           captured.push(currentUrlSegment.toString());
           nextUrlSegment = null;
           break;
@@ -128,7 +128,7 @@ export class ParamRoutePath implements RoutePath {
         captured.push(currentUrlSegment.path);
 
         if (pathSegment instanceof DynamicPathSegment) {
-          positionalParams[pathSegment.name] = decodeDynamicSegment(currentUrlSegment.path);
+          (positionalParams as any /** TODO #9100 */)[pathSegment.name] = decodeDynamicSegment(currentUrlSegment.path);
         } else if (!pathSegment.match(currentUrlSegment.path)) {
           return null;
         }
@@ -145,8 +145,8 @@ export class ParamRoutePath implements RoutePath {
 
     var urlPath = captured.join('/');
 
-    var auxiliary = [];
-    var urlParams = [];
+    var auxiliary: any[] /** TODO #9100 */ = [];
+    var urlParams: any[] /** TODO #9100 */ = [];
     var allParams = positionalParams;
     if (isPresent(currentUrlSegment)) {
       // If this is the root component, read query params. Otherwise, read matrix params.
@@ -168,7 +168,7 @@ export class ParamRoutePath implements RoutePath {
   generateUrl(params: {[key: string]: any}): GeneratedUrl {
     var paramTokens = new TouchMap(params);
 
-    var path = [];
+    var path: any[] /** TODO #9100 */ = [];
 
     for (var i = 0; i < this._segments.length; i++) {
       let segment = this._segments[i];
@@ -199,7 +199,7 @@ export class ParamRoutePath implements RoutePath {
 
     var limit = segmentStrings.length - 1;
     for (var i = 0; i <= limit; i++) {
-      var segment = segmentStrings[i], match;
+      var segment = segmentStrings[i], match: any /** TODO #9100 */;
 
       if (isPresent(match = RegExpWrapper.firstMatch(DynamicPathSegment.paramMatcher, segment))) {
         this._segments.push(new DynamicPathSegment(match[1]));
@@ -230,7 +230,7 @@ export class ParamRoutePath implements RoutePath {
     // The code below uses place values to combine the different types of segments into a single
     // string that we can sort later. Each static segment is marked as a specificity of "2," each
     // dynamic segment is worth "1" specificity, and stars are worth "0" specificity.
-    var i, length = this._segments.length, specificity;
+    var i: any /** TODO #9100 */, length = this._segments.length, specificity: any /** TODO #9100 */;
     if (length == 0) {
       // a single slash (or "empty segment" is as specific as a static segment
       specificity += '2';
@@ -246,8 +246,8 @@ export class ParamRoutePath implements RoutePath {
   private _calculateHash(): string {
     // this function is used to determine whether a route config path like `/foo/:id` collides with
     // `/foo/:name`
-    var i, length = this._segments.length;
-    var hashParts = [];
+    var i: any /** TODO #9100 */, length = this._segments.length;
+    var hashParts: any[] /** TODO #9100 */ = [];
     for (i = 0; i < length; i++) {
       hashParts.push(this._segments[i].hash);
     }

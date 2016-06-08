@@ -103,7 +103,7 @@ function declareTests(isJit: boolean) {
 
     describe('react to record changes', function() {
       it('should consume text node changes',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({template: '<div>{{ctxProp}}</div>'}))
                .createAsync(MyComp)
                .then((fixture) => {
@@ -116,7 +116,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should update text node with a blank string when interpolation evaluates to null',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({template: '<div>{{null}}{{ctxProp}}</div>'}))
                .createAsync(MyComp)
                .then((fixture) => {
@@ -129,7 +129,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should consume element binding changes',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({template: '<div [id]="ctxProp"></div>'}))
                .createAsync(MyComp)
                .then((fixture) => {
@@ -143,7 +143,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should consume binding to aria-* attributes',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp,
                             new ViewMetadata({template: '<div [attr.aria-label]="ctxProp"></div>'}))
 
@@ -166,7 +166,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should remove an attribute when attribute expression evaluates to null',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp,
                             new ViewMetadata({template: '<div [attr.foo]="ctxProp"></div>'}))
 
@@ -190,7 +190,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should remove style when when style expression evaluates to null',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp,
                             new ViewMetadata({template: '<div [style.height.px]="ctxProp"></div>'}))
 
@@ -212,7 +212,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should consume binding to property names where attr name and property name do not match',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp,
                             new ViewMetadata({template: '<div [tabindex]="ctxNumProp"></div>'}))
 
@@ -231,7 +231,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should consume binding to camel-cased properties',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp,
                             new ViewMetadata({template: '<input [readOnly]="ctxBoolProp">'}))
 
@@ -250,7 +250,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should consume binding to innerHtml',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp,
                             new ViewMetadata({template: '<div innerHtml="{{ctxProp}}"></div>'}))
 
@@ -272,7 +272,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should consume binding to className using class alias',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp,
                   new ViewMetadata({template: '<div class="initial" [class]="ctxProp"></div>'}))
@@ -292,7 +292,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should consume directive watch expression change.',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var tpl = '<span>' +
                      '<div my-dir [elprop]="ctxProp"></div>' +
                      '<div my-dir elprop="Hi there!"></div>' +
@@ -320,7 +320,7 @@ function declareTests(isJit: boolean) {
       describe('pipes', () => {
         it("should support pipes in bindings",
            inject(
-               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                  tcb.overrideView(
                         MyComp, new ViewMetadata({
                           template: '<div my-dir #dir="mydir" [elprop]="ctxProp | double"></div>',
@@ -341,7 +341,7 @@ function declareTests(isJit: boolean) {
       });
 
       it('should support nested components.',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp,
                   new ViewMetadata({template: '<child-cmp></child-cmp>', directives: [ChildComp]}))
@@ -358,7 +358,7 @@ function declareTests(isJit: boolean) {
 
       // GH issue 328 - https://github.com/angular/angular/issues/328
       it('should support different directive types on a single node',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<child-cmp my-dir [elprop]="ctxProp"></child-cmp>',
                               directives: [MyDir, ChildComp]
@@ -380,7 +380,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support directives where a binding attribute is not given',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               // No attribute "el-prop" specified.
                               template: '<p my-dir></p>',
@@ -392,7 +392,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should execute a given directive once, even if specified multiple times',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template: '<p no-duplicate></p>',
@@ -406,7 +406,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support directives where a selector matches property binding',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata(
                                         {template: '<p [id]="ctxProp"></p>', directives: [IdDir]}))
 
@@ -428,7 +428,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support directives where a selector matches event binding',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp,
                   new ViewMetadata(
@@ -443,7 +443,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should read directives metadata from their binding token',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<div public-api><div needs-public-api></div></div>',
                               directives: [PrivateImpl, NeedsPublicApi]
@@ -454,7 +454,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support template directives via `<template>` elements.',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
@@ -477,7 +477,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should not detach views in ViewContainers when the parent view is destroyed.',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
@@ -506,7 +506,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should use a comment while stamping out `<template>` elements.',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({template: '<template></template>'}))
 
                .createAsync(MyComp)
@@ -519,7 +519,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support template directives via `template` attribute.',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
@@ -541,7 +541,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should allow to transplant TemplateRefs into other ViewContainers',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
@@ -564,7 +564,7 @@ function declareTests(isJit: boolean) {
       describe("reference bindings", () => {
         it('should assign a component to a ref-',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
+                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                       tcb.overrideView(MyComp, new ViewMetadata({
                                          template: '<p><child-cmp ref-alice></child-cmp></p>',
                                          directives: [ChildComp]
@@ -580,7 +580,7 @@ function declareTests(isJit: boolean) {
 
         it('should assign a directive to a ref-',
            inject(
-               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                  tcb.overrideView(MyComp, new ViewMetadata({
                                     template: '<div><div export-dir #localdir="dir"></div></div>',
                                     directives: [ExportDir]
@@ -598,7 +598,7 @@ function declareTests(isJit: boolean) {
         it('should make the assigned component accessible in property bindings, even if they were declared before the component',
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
-               (tcb: TestComponentBuilder, async) => {
+               (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                    tcb.overrideView(
                           MyComp, new ViewMetadata({
                             template:
@@ -617,7 +617,7 @@ function declareTests(isJit: boolean) {
         it('should assign two component instances each with a ref-',
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
-               (tcb: TestComponentBuilder, async) => {
+               (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                    tcb.overrideView(
                           MyComp, new ViewMetadata({
                             template:
@@ -641,7 +641,7 @@ function declareTests(isJit: boolean) {
         it('should assign the component instance to a ref- with shorthand syntax',
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder,
-                   async) => {tcb.overrideView(MyComp, new ViewMetadata({
+                   async: any /** TODO #9100 */) => {tcb.overrideView(MyComp, new ViewMetadata({
                                                  template: '<child-cmp #alice></child-cmp>',
                                                  directives: [ChildComp]
                                                }))
@@ -657,7 +657,7 @@ function declareTests(isJit: boolean) {
 
         it('should assign the element instance to a user-defined variable',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
+                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                       tcb.overrideView(MyComp, new ViewMetadata({
                                          template: '<div><div ref-alice><i>Hello</i></div></div>'
                                        }))
@@ -675,7 +675,7 @@ function declareTests(isJit: boolean) {
 
         it('should assign the TemplateRef to a user-defined variable',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
+                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                       tcb.overrideView(MyComp, new ViewMetadata(
                                                    {template: '<template ref-alice></template>'}))
 
@@ -690,7 +690,7 @@ function declareTests(isJit: boolean) {
 
         it('should preserve case',
            inject(
-               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                  tcb.overrideView(MyComp, new ViewMetadata({
                                     template: '<p><child-cmp ref-superAlice></child-cmp></p>',
                                     directives: [ChildComp]
@@ -709,7 +709,7 @@ function declareTests(isJit: boolean) {
       describe('variables', () => {
         it('should allow to use variables in a for loop',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
+                                                               async: any /** TODO #9100 */) => {
              tcb.overrideView(
                     MyComp, new ViewMetadata({
                       template:
@@ -733,7 +733,7 @@ function declareTests(isJit: boolean) {
 
         it("should use ChangeDetectorRef to manually request a check",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
+                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
                       tcb.overrideView(MyComp, new ViewMetadata({
                                          template: '<push-cmp-with-ref #cmp></push-cmp-with-ref>',
@@ -760,7 +760,7 @@ function declareTests(isJit: boolean) {
 
         it("should be checked when its bindings got updated",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
+                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
                       tcb.overrideView(MyComp, new ViewMetadata({
                                          template: '<push-cmp [prop]="ctxProp" #cmp></push-cmp>',
@@ -798,7 +798,7 @@ function declareTests(isJit: boolean) {
 
                var cmpEl = fixture.debugElement.children[0];
                var cmp: PushCmpWithHostEvent = cmpEl.inject(PushCmpWithHostEvent);
-               cmp.ctxCallback = (_) => fixture.destroy();
+               cmp.ctxCallback = (_: any /** TODO #9100 */) => fixture.destroy();
 
                expect(() => cmpEl.triggerEventHandler('click', <Event>{})).not.toThrow();
              })));
@@ -806,7 +806,7 @@ function declareTests(isJit: boolean) {
 
         it("should be checked when an event is fired",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
+                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
                       tcb.overrideView(MyComp, new ViewMetadata({
                                          template: '<push-cmp [prop]="ctxProp" #cmp></push-cmp>',
@@ -847,7 +847,7 @@ function declareTests(isJit: boolean) {
 
         it('should not affect updating properties on the component',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
+                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
                       tcb.overrideView(
                              MyComp, new ViewMetadata({
                                template:
@@ -903,7 +903,7 @@ function declareTests(isJit: boolean) {
       it('should create a component that injects an @Host',
          inject([TestComponentBuilder, AsyncTestCompleter],
                 (tcb: TestComponentBuilder,
-                 async) => {tcb.overrideView(MyComp, new ViewMetadata({
+                 async: any /** TODO #9100 */) => {tcb.overrideView(MyComp, new ViewMetadata({
                                                template: `
             <some-directive>
               <p>
@@ -926,7 +926,7 @@ function declareTests(isJit: boolean) {
                                 })}));
 
       it('should create a component that injects an @Host through viewcontainer directive',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: `
             <some-directive>
@@ -951,7 +951,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support events via EventEmitter on regular elements',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<div emitter listener></div>',
                               directives: [DirectiveEmittingEvent, DirectiveListeningEvent]
@@ -985,7 +985,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support events via EventEmitter on template elements',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template: '<template emitter listener (event)="ctxProp=$event"></template>',
@@ -1015,7 +1015,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support [()] syntax',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<div [(control)]="ctxProp" two-way></div>',
                               directives: [DirectiveWithTwoWayBinding]
@@ -1041,7 +1041,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support render events',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp,
                   new ViewMetadata(
@@ -1069,7 +1069,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support render global events',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp,
                   new ViewMetadata(
@@ -1096,7 +1096,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support updating host element via hostAttributes',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<div update-host-attributes></div>',
                               directives: [DirectiveUpdatingHostAttributes]
@@ -1115,7 +1115,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support updating host element via hostProperties',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<div update-host-properties></div>',
                               directives: [DirectiveUpdatingHostProperties]
@@ -1140,7 +1140,7 @@ function declareTests(isJit: boolean) {
       if (getDOM().supportsDOMEvents()) {
         it('should support preventing default on render events',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
+                                                               async: any /** TODO #9100 */) => {
              tcb.overrideView(
                     MyComp, new ViewMetadata({
                       template:
@@ -1171,7 +1171,7 @@ function declareTests(isJit: boolean) {
       }
 
       it('should support render global events from multiple directives',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template: '<div *ngIf="ctxBoolProp" listener listenerother></div>',
@@ -1215,7 +1215,7 @@ function declareTests(isJit: boolean) {
       describe('dynamic ViewContainers', () => {
         it('should allow to create a ViewContainerRef at any bound location',
            inject([TestComponentBuilder, AsyncTestCompleter, ComponentResolver],
-                  (tcb: TestComponentBuilder, async, compiler) => {
+                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */, compiler: any /** TODO #9100 */) => {
                     tcb.overrideView(MyComp, new ViewMetadata({
                                        template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',
                                        directives: [DynamicViewport]
@@ -1237,7 +1237,7 @@ function declareTests(isJit: boolean) {
       });
 
       it('should support static attributes',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp,
                   new ViewMetadata(
@@ -1257,7 +1257,7 @@ function declareTests(isJit: boolean) {
 
     describe("dependency injection", () => {
       it("should support bindings",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template: `
@@ -1278,7 +1278,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it("should support viewProviders",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(DirectiveProvidingInjectableInView, new ViewMetadata({
                               template: `
               <directive-consuming-injectable #consuming>
@@ -1296,7 +1296,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it("should support unbounded lookup",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: `
             <directive-providing-injectable>
@@ -1326,7 +1326,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it("should support the event-bus scenario",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: `
             <grand-parent-providing-event-bus>
@@ -1362,7 +1362,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it("should instantiate bindings lazily",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template: `
@@ -1391,7 +1391,7 @@ function declareTests(isJit: boolean) {
 
     describe("corner cases", () => {
       it('should remove script tags from templates',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: `
             <script>alert("Ooops");</script>
@@ -1409,7 +1409,7 @@ function declareTests(isJit: boolean) {
 
     describe("error handling", () => {
       it('should report a meaningful error when a directive is missing annotation',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb = tcb.overrideView(
                MyComp,
                new ViewMetadata({template: '', directives: [SomeDirectiveMissingAnnotation]}));
@@ -1423,7 +1423,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should report a meaningful error when a component is missing view annotation',
-         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         inject([TestComponentBuilder], (tcb: TestComponentBuilder): any /** TODO #9100 */ => {
            try {
              tcb.createAsync(ComponentWithoutView);
            } catch (e) {
@@ -1433,7 +1433,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should report a meaningful error when a directive is null',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
            tcb = tcb.overrideView(MyComp, new ViewMetadata({directives: [[null]], template: ''}));
 
@@ -1446,7 +1446,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should provide an error context when an error happens in DI',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
            tcb =
                tcb.overrideView(MyComp, new ViewMetadata({
@@ -1464,7 +1464,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should provide an error context when an error happens in change detection',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
            tcb = tcb.overrideView(
                MyComp, new ViewMetadata({template: `<input [value]="one.two.three" #local>`}));
@@ -1488,7 +1488,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should provide an error context when an error happens in change detection (text node)',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
            tcb = tcb.overrideView(MyComp,
                                   new ViewMetadata({template: `<div>{{one.two.three}}</div>`}));
@@ -1540,9 +1540,9 @@ function declareTests(isJit: boolean) {
       if (!IS_DART) {
         it('should report a meaningful error when a directive is undefined',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
+                                                               async: any /** TODO #9100 */) => {
 
-             var undefinedValue;
+             var undefinedValue: any /** TODO #9100 */;
 
              tcb = tcb.overrideView(MyComp,
                                     new ViewMetadata({directives: [undefinedValue], template: ''}));
@@ -1558,7 +1558,7 @@ function declareTests(isJit: boolean) {
 
       it('should specify a location of an error that happened during change detection (text)',
          inject([TestComponentBuilder, AsyncTestCompleter],
-                (tcb: TestComponentBuilder, async) => {
+                (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
                     tcb.overrideView(MyComp, new ViewMetadata({template: '<div>{{a.b}}</div>'}))
 
@@ -1572,7 +1572,7 @@ function declareTests(isJit: boolean) {
       it('should specify a location of an error that happened during change detection (element property)',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async) => {
+             (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
                  tcb.overrideView(MyComp, new ViewMetadata({template: '<div [title]="a.b"></div>'}))
 
@@ -1584,7 +1584,7 @@ function declareTests(isJit: boolean) {
 
       it('should specify a location of an error that happened during change detection (directive property)',
          inject([TestComponentBuilder, AsyncTestCompleter],
-                (tcb: TestComponentBuilder, async) => {
+                (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
 
                     tcb.overrideView(MyComp, new ViewMetadata({
                                        template: '<child-cmp [title]="a.b"></child-cmp>',
@@ -1600,7 +1600,7 @@ function declareTests(isJit: boolean) {
     });
 
     it('should support imperative views',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
          tcb.overrideView(MyComp, new ViewMetadata({
                             template: '<simple-imp-cmp></simple-imp-cmp>',
                             directives: [SimpleImperativeViewComponent]
@@ -1614,7 +1614,7 @@ function declareTests(isJit: boolean) {
 
     it('should support moving embedded views around',
        inject([TestComponentBuilder, AsyncTestCompleter, ANCHOR_ELEMENT],
-              (tcb: TestComponentBuilder, async, anchorElement) => {
+              (tcb: TestComponentBuilder, async: any /** TODO #9100 */, anchorElement: any /** TODO #9100 */) => {
                 tcb.overrideView(MyComp, new ViewMetadata({
                                    template: '<div><div *someImpvp="ctxBoolProp">hello</div></div>',
                                    directives: [SomeImperativeViewport]
@@ -1641,7 +1641,7 @@ function declareTests(isJit: boolean) {
       if (!IS_DART) {
         it('should throw on bindings to unknown properties',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
+                                                               async: any /** TODO #9100 */) => {
              tcb =
                  tcb.overrideView(MyComp,
                                   new ViewMetadata({template: '<div unknown="{{ctxProp}}"></div>'}))
@@ -1656,7 +1656,7 @@ function declareTests(isJit: boolean) {
 
         it('should not throw for property binding to a non-existing property when there is a matching directive property',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
+                                                               async: any /** TODO #9100 */) => {
              tcb.overrideView(
                     MyComp,
                     new ViewMetadata(
@@ -1667,7 +1667,7 @@ function declareTests(isJit: boolean) {
       }
 
       it('should not be created when there is a directive with the same property',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<span [title]="ctxProp"></span>',
                               directives: [DirectiveWithTitle]
@@ -1686,7 +1686,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should work when a directive uses hostProperty to update the DOM element',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<span [title]="ctxProp"></span>',
                               directives: [DirectiveWithTitleAndHostProperty]
@@ -1710,7 +1710,7 @@ function declareTests(isJit: boolean) {
           () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, true, isJit)}]);
 
       it('should reflect property values as attributes',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var tpl = '<div>' +
                      '<div my-dir [elprop]="ctxProp"></div>' +
                      '</div>';
@@ -1728,7 +1728,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should reflect property values on template comments',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            var tpl = '<template [ngIf]="ctxBoolProp"></template>';
            tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [NgIf]}))
 
@@ -1746,7 +1746,7 @@ function declareTests(isJit: boolean) {
 
     describe('property decorators', () => {
       it('should support property decorators',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template: '<with-prop-decorators elProp="aaa"></with-prop-decorators>',
@@ -1762,7 +1762,7 @@ function declareTests(isJit: boolean) {
          }));
 
       it('should support host binding decorators',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<with-prop-decorators></with-prop-decorators>',
                               directives: [DirectiveWithPropDecorators]
@@ -1803,7 +1803,7 @@ function declareTests(isJit: boolean) {
 
         it('should support host listener decorators',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
+                                                               async: any /** TODO #9100 */) => {
              tcb.overrideView(MyComp, new ViewMetadata({
                                 template: '<with-prop-decorators></with-prop-decorators>',
                                 directives: [DirectiveWithPropDecorators]
@@ -1822,7 +1822,7 @@ function declareTests(isJit: boolean) {
       }
 
       it('should support defining views in the component decorator',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<component-with-template></component-with-template>',
                               directives: [ComponentWithTemplate]
@@ -1842,7 +1842,7 @@ function declareTests(isJit: boolean) {
       describe('svg', () => {
         it('should support svg elements',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
+                                                               async: any /** TODO #9100 */) => {
              tcb.overrideView(MyComp,
                               new ViewMetadata({template: '<svg><use xlink:href="Port" /></svg>'}))
                  .createAsync(MyComp)
@@ -1874,7 +1874,7 @@ function declareTests(isJit: boolean) {
 
         it('should support attributes with namespace',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
+                                                               async: any /** TODO #9100 */) => {
              tcb.overrideView(SomeCmp, new ViewMetadata({template: '<svg:use xlink:href="#id" />'}))
                  .createAsync(SomeCmp)
                  .then((fixture) => {
@@ -1887,7 +1887,7 @@ function declareTests(isJit: boolean) {
 
         it('should support binding to attributes with namespace',
            inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                               async) => {
+                                                               async: any /** TODO #9100 */) => {
              tcb.overrideView(SomeCmp,
                               new ViewMetadata({template: '<svg:use [attr.xlink:href]="value" />'}))
                  .createAsync(SomeCmp)
@@ -1924,7 +1924,7 @@ class MyService {
 @Component({selector: 'simple-imp-cmp', template: ''})
 @Injectable()
 class SimpleImperativeViewComponent {
-  done;
+  done: any /** TODO #9100 */;
 
   constructor(self: ElementRef, renderer: Renderer) {
     var hostElement = self.nativeElement;
@@ -1980,7 +1980,7 @@ class EventCmp {
 @Injectable()
 class PushCmp {
   numberOfChecks: number;
-  prop;
+  prop: any /** TODO #9100 */;
 
   constructor() { this.numberOfChecks = 0; }
 
@@ -2002,7 +2002,7 @@ class PushCmp {
 class PushCmpWithRef {
   numberOfChecks: number;
   ref: ChangeDetectorRef;
-  prop;
+  prop: any /** TODO #9100 */;
 
   constructor(ref: ChangeDetectorRef) {
     this.numberOfChecks = 0;
@@ -2024,7 +2024,7 @@ class PushCmpWithRef {
   template: ''
 })
 class PushCmpWithHostEvent {
-  ctxCallback: Function = (_) => {};
+  ctxCallback: Function = (_: any /** TODO #9100 */) => {};
 }
 
 @Component({
@@ -2049,7 +2049,7 @@ class PushCmpWithAsyncPipe {
     return this.promise;
   }
 
-  resolve(value) { this.completer.resolve(value); }
+  resolve(value: any /** TODO #9100 */) { this.completer.resolve(value); }
 }
 
 @Component({selector: 'my-comp', directives: []})
@@ -2142,7 +2142,7 @@ class SomeViewport {
 @Pipe({name: 'double'})
 class DoublePipe implements PipeTransform, OnDestroy {
   ngOnDestroy() {}
-  transform(value) { return `${value}${value}`; }
+  transform(value: any /** TODO #9100 */) { return `${value}${value}`; }
 }
 
 @Directive({selector: '[emitter]', outputs: ['event']})
@@ -2215,13 +2215,13 @@ class DirectiveListeningDomEventOther {
 @Directive({selector: '[listenerprevent]', host: {'(click)': 'onEvent($event)'}})
 @Injectable()
 class DirectiveListeningDomEventPrevent {
-  onEvent(event) { return false; }
+  onEvent(event: any /** TODO #9100 */) { return false; }
 }
 
 @Directive({selector: '[listenernoprevent]', host: {'(click)': 'onEvent($event)'}})
 @Injectable()
 class DirectiveListeningDomEventNoPrevent {
-  onEvent(event) { return true; }
+  onEvent(event: any /** TODO #9100 */) { return true; }
 }
 
 @Directive({selector: '[id]', inputs: ['id']})
@@ -2240,9 +2240,9 @@ class EventDir {
 @Directive({selector: '[static]'})
 @Injectable()
 class NeedsAttribute {
-  typeAttribute;
-  staticAttribute;
-  fooAttribute;
+  typeAttribute: any /** TODO #9100 */;
+  staticAttribute: any /** TODO #9100 */;
+  fooAttribute: any /** TODO #9100 */;
   constructor(@Attribute('type') typeAttribute: String,
               @Attribute('static') staticAttribute: String,
               @Attribute('foo') fooAttribute: String) {
@@ -2314,9 +2314,9 @@ class ToolbarComponent {
 @Injectable()
 class DirectiveWithTwoWayBinding {
   controlChange = new EventEmitter();
-  control = null;
+  control: any /** TODO #9100 */ = null;
 
-  triggerChange(value) { ObservableWrapper.callEmit(this.controlChange, value); }
+  triggerChange(value: any /** TODO #9100 */) { ObservableWrapper.callEmit(this.controlChange, value); }
 }
 
 @Injectable()
@@ -2373,9 +2373,9 @@ class DirectiveProvidingInjectableInHostAndView {
 @Component({selector: 'directive-consuming-injectable', template: ''})
 @Injectable()
 class DirectiveConsumingInjectable {
-  injectable;
+  injectable: any /** TODO #9100 */;
 
-  constructor(@Host() @Inject(InjectableService) injectable) { this.injectable = injectable; }
+  constructor(@Host() @Inject(InjectableService) injectable: any /** TODO #9100 */) { this.injectable = injectable; }
 }
 
 
@@ -2383,13 +2383,13 @@ class DirectiveConsumingInjectable {
 @Component({selector: 'directive-containing-directive-consuming-an-injectable'})
 @Injectable()
 class DirectiveContainingDirectiveConsumingAnInjectable {
-  directive;
+  directive: any /** TODO #9100 */;
 }
 
 @Component({selector: 'directive-consuming-injectable-unbounded', template: ''})
 @Injectable()
 class DirectiveConsumingInjectableUnbounded {
-  injectable;
+  injectable: any /** TODO #9100 */;
 
   constructor(injectable: InjectableService,
               @SkipSelf() parent: DirectiveContainingDirectiveConsumingAnInjectable) {
@@ -2422,7 +2422,7 @@ class GrandParentProvidingEventBus {
   constructor(bus: EventBus) { this.bus = bus; }
 }
 
-function createParentBus(peb) {
+function createParentBus(peb: any /** TODO #9100 */) {
   return new EventBus(peb, "parent");
 }
 
@@ -2455,9 +2455,9 @@ class ChildConsumingEventBus {
 @Injectable()
 class SomeImperativeViewport {
   view: EmbeddedViewRef<Object>;
-  anchor;
+  anchor: any /** TODO #9100 */;
   constructor(public vc: ViewContainerRef, public templateRef: TemplateRef<Object>,
-              @Inject(ANCHOR_ELEMENT) anchor) {
+              @Inject(ANCHOR_ELEMENT) anchor: any /** TODO #9100 */) {
     this.view = null;
     this.anchor = anchor;
   }
@@ -2516,18 +2516,18 @@ class ComponentWithTemplate {
 
 @Directive({selector: 'with-prop-decorators'})
 class DirectiveWithPropDecorators {
-  target;
+  target: any /** TODO #9100 */;
 
   @Input('elProp') dirProp: string;
   @Output('elEvent') event = new EventEmitter();
 
   @HostBinding("attr.my-attr") myAttr: string;
   @HostListener("click", ["$event.target"])
-  onClick(target) {
+  onClick(target: any /** TODO #9100 */) {
     this.target = target;
   }
 
-  fireEvent(msg) { ObservableWrapper.callEmit(this.event, msg); }
+  fireEvent(msg: any /** TODO #9100 */) { ObservableWrapper.callEmit(this.event, msg); }
 }
 
 @Component({selector: 'some-cmp'})

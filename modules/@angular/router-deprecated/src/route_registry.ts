@@ -236,7 +236,7 @@ export class RouteRegistry {
    */
   generate(linkParams: any[], ancestorInstructions: Instruction[], _aux = false): Instruction {
     var params = splitAndFlattenLinkParams(linkParams);
-    var prevInstruction;
+    var prevInstruction: any /** TODO #9100 */;
 
     // The first segment should be either '.' (generate from parent) or '' (generate from root).
     // When we normalize above, we strip all the slashes, './' becomes '.' and '/' becomes ''.
@@ -264,7 +264,7 @@ export class RouteRegistry {
         // we must only peak at the link param, and not consume it
         let routeName = ListWrapper.first(params);
         let parentComponentType = this._rootComponent;
-        let grandparentComponentType = null;
+        let grandparentComponentType: any /** TODO #9100 */ = null;
 
         if (ancestorInstructions.length > 1) {
           let parentComponentInstruction = ancestorInstructions[ancestorInstructions.length - 1];
@@ -333,7 +333,7 @@ export class RouteRegistry {
   private _generate(linkParams: any[], ancestorInstructions: Instruction[],
                     prevInstruction: Instruction, _aux = false, _originalLink: any[]): Instruction {
     let parentComponentType = this._rootComponent;
-    let componentInstruction = null;
+    let componentInstruction: any /** TODO #9100 */ = null;
     let auxInstructions: {[key: string]: Instruction} = {};
 
     let parentInstruction: Instruction = ListWrapper.last(ancestorInstructions);
@@ -456,7 +456,7 @@ export class RouteRegistry {
       return null;
     }
 
-    var defaultChild = null;
+    var defaultChild: any /** TODO #9100 */ = null;
     if (isPresent(rules.defaultRule.handler.componentType)) {
       var componentInstruction = rules.defaultRule.generate({});
       if (!rules.defaultRule.terminal) {
@@ -477,7 +477,7 @@ export class RouteRegistry {
  * Returns: ['', 'a', 'b', {c: 2}]
  */
 function splitAndFlattenLinkParams(linkParams: any[]): any[] {
-  var accumulation = [];
+  var accumulation: any[] /** TODO #9100 */ = [];
   linkParams.forEach(function(item: any) {
     if (isString(item)) {
       var strItem: string = <string>item;
@@ -529,7 +529,7 @@ function compareSpecificityStrings(a: string, b: string): number {
   return a.length - b.length;
 }
 
-function assertTerminalComponent(component, path) {
+function assertTerminalComponent(component: any /** TODO #9100 */, path: any /** TODO #9100 */) {
   if (!isType(component)) {
     return;
   }

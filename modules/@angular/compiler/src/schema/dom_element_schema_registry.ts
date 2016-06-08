@@ -238,7 +238,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       typeName.split(',').forEach(tag => this.schema[tag] = type);
       var superType = this.schema[typeParts[1]];
       if (isPresent(superType)) {
-        StringMapWrapper.forEach(superType, (v, k) => type[k] = v);
+        StringMapWrapper.forEach(superType, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => type[k] = v);
       }
       properties.forEach((property: string) => {
         if (property == '') {

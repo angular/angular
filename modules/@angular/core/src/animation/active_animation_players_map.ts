@@ -18,8 +18,8 @@ export class ActiveAnimationPlayersMap {
   }
 
   findAllPlayersByElement(element: any): AnimationPlayer[] {
-    var players = [];
-    StringMapWrapper.forEach(this._map.get(element), player => players.push(player));
+    var players: any[] /** TODO #9100 */ = [];
+    StringMapWrapper.forEach(this._map.get(element), (player: any /** TODO #9100 */) => players.push(player));
     return players;
   }
 

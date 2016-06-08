@@ -16,12 +16,12 @@ var DASH_CASE_REGEXP = /-([a-z])/g;
 
 export function camelCaseToDashCase(input: string): string {
   return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,
-                                        (m) => { return '-' + m[1].toLowerCase(); });
+                                        (m: any /** TODO #9100 */) => { return '-' + m[1].toLowerCase(); });
 }
 
 export function dashCaseToCamelCase(input: string): string {
   return StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP,
-                                        (m) => { return m[1].toUpperCase(); });
+                                        (m: any /** TODO #9100 */) => { return m[1].toUpperCase(); });
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
@@ -63,7 +63,7 @@ export class ValueTransformer implements ValueVisitor {
   visitStringMap(map: {[key: string]: any}, context: any): any {
     var result = {};
     StringMapWrapper.forEach(map,
-                             (value, key) => { result[key] = visitValue(value, this, context); });
+                             (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => { (result as any /** TODO #9100 */)[key] = visitValue(value, this, context); });
     return result;
   }
   visitPrimitive(value: any, context: any): any { return value; }

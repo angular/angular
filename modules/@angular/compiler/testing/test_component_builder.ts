@@ -75,10 +75,10 @@ export class ComponentFixture<T> {
 
   private _isStable: boolean = true;
   private _completer: PromiseCompleter<any> = null;
-  private _onUnstableSubscription = null;
-  private _onStableSubscription = null;
-  private _onMicrotaskEmptySubscription = null;
-  private _onErrorSubscription = null;
+  private _onUnstableSubscription: any /** TODO #9100 */ = null;
+  private _onStableSubscription: any /** TODO #9100 */ = null;
+  private _onMicrotaskEmptySubscription: any /** TODO #9100 */ = null;
+  private _onErrorSubscription: any /** TODO #9100 */ = null;
 
   constructor(componentRef: ComponentRef<T>, ngZone: NgZone, autoDetect: boolean) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
@@ -368,8 +368,8 @@ export class TestComponentBuilder {
   }
 
   createFakeAsync(rootComponentType: Type): ComponentFixture<any> {
-    let result;
-    let error;
+    let result: any /** TODO #9100 */;
+    let error: any /** TODO #9100 */;
     PromiseWrapper.then(this.createAsync(rootComponentType), (_result) => { result = _result; },
                         (_error) => { error = _error; });
     tick();

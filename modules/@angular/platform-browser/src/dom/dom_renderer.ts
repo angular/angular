@@ -88,7 +88,7 @@ export class DomRenderer implements Renderer {
   }
 
   selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): Element {
-    var el;
+    var el: any /** TODO #9100 */;
     if (isString(selectorOrNode)) {
       el = getDOM().querySelector(this._rootRenderer.document, selectorOrNode);
       if (isBlank(el)) {
@@ -104,7 +104,7 @@ export class DomRenderer implements Renderer {
   createElement(parent: Element, name: string, debugInfo: RenderDebugInfo): Node {
     var nsAndName = splitNamespace(name);
     var el = isPresent(nsAndName[0]) ?
-                 getDOM().createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
+                 getDOM().createElementNS((NAMESPACE_URIS as any /** TODO #9100 */)[nsAndName[0]], nsAndName[1]) :
                  getDOM().createElement(nsAndName[1]);
     if (isPresent(this._contentAttr)) {
       getDOM().setAttribute(el, this._contentAttr, '');
@@ -116,7 +116,7 @@ export class DomRenderer implements Renderer {
   }
 
   createViewRoot(hostElement: any): any {
-    var nodesParent;
+    var nodesParent: any /** TODO #9100 */;
     if (this.componentProto.encapsulation === ViewEncapsulation.Native) {
       nodesParent = getDOM().createShadowRoot(hostElement);
       this._rootRenderer.sharedStylesHost.addHost(nodesParent);
@@ -184,11 +184,11 @@ export class DomRenderer implements Renderer {
   }
 
   setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void {
-    var attrNs;
+    var attrNs: any /** TODO #9100 */;
     var nsAndName = splitNamespace(attributeName);
     if (isPresent(nsAndName[0])) {
       attributeName = nsAndName[0] + ':' + nsAndName[1];
-      attrNs = NAMESPACE_URIS[nsAndName[0]];
+      attrNs = (NAMESPACE_URIS as any /** TODO #9100 */)[nsAndName[0]];
     }
     if (isPresent(attributeValue)) {
       if (isPresent(attrNs)) {
@@ -212,7 +212,7 @@ export class DomRenderer implements Renderer {
           TEMPLATE_BINDINGS_EXP,
           StringWrapper.replaceAll(getDOM().getText(renderElement), /\n/g, ''));
       var parsedBindings = Json.parse(existingBindings[1]);
-      parsedBindings[dashCasedPropertyName] = propertyValue;
+      (parsedBindings as any /** TODO #9100 */)[dashCasedPropertyName] = propertyValue;
       getDOM().setText(renderElement, StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}',
                                                             Json.stringify(parsedBindings)));
     } else {
@@ -250,7 +250,7 @@ export class DomRenderer implements Renderer {
   }
 }
 
-function moveNodesAfterSibling(sibling, nodes) {
+function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
   var parent = getDOM().parentElement(sibling);
   if (nodes.length > 0 && isPresent(parent)) {
     var nextSibling = getDOM().nextSibling(sibling);
@@ -266,14 +266,14 @@ function moveNodesAfterSibling(sibling, nodes) {
   }
 }
 
-function appendNodes(parent, nodes) {
+function appendNodes(parent: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
   for (var i = 0; i < nodes.length; i++) {
     getDOM().appendChild(parent, nodes[i]);
   }
 }
 
 function decoratePreventDefault(eventHandler: Function): Function {
-  return (event) => {
+  return (event: any /** TODO #9100 */) => {
     var allowDefaultBehavior = eventHandler(event);
     if (allowDefaultBehavior === false) {
       // TODO(tbosch): move preventDefault into event plugins...

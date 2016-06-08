@@ -41,7 +41,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
   $controller: angular.IControllerService = null;
 
   constructor(public name: string) {
-    var selector = name.replace(CAMEL_CASE, (all, next: string) => '-' + next.toLowerCase());
+    var selector = name.replace(CAMEL_CASE, (all: any /** TODO #9100 */, next: string) => '-' + next.toLowerCase());
     var self = this;
     this.type =
         Directive({selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
@@ -141,7 +141,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
         this.linkFn = compileHtml(html);
       } else {
         return new Promise((resolve, err) => {
-          httpBackend('GET', url, null, (status, response) => {
+          httpBackend('GET', url, null, (status: any /** TODO #9100 */, response: any /** TODO #9100 */) => {
             if (status == 200) {
               resolve(this.linkFn = compileHtml(templateCache.put(url, response)));
             } else {
@@ -154,7 +154,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
       throw new Error(`Directive '${this.name}' is not a component, it is missing template.`);
     }
     return null;
-    function compileHtml(html): angular.ILinkFn {
+    function compileHtml(html: any /** TODO #9100 */): angular.ILinkFn {
       var div = document.createElement('div');
       div.innerHTML = html;
       return compile(div.childNodes);
@@ -163,7 +163,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
 
   static resolve(exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
                  injector: angular.IInjectorService): Promise<any> {
-    var promises = [];
+    var promises: any[] /** TODO #9100 */ = [];
     var compile: angular.ICompileService = injector.get(NG1_COMPILE);
     var templateCache: angular.ITemplateCacheService = injector.get(NG1_TEMPLATE_CACHE);
     var httpBackend: angular.IHttpBackendService = injector.get(NG1_HTTP_BACKEND);
@@ -205,14 +205,14 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
 
     for (var i = 0; i < inputs.length; i++) {
-      this[inputs[i]] = null;
+      (this as any /** TODO #9100 */)[inputs[i]] = null;
     }
     for (var j = 0; j < outputs.length; j++) {
-      var emitter = this[outputs[j]] = new EventEmitter();
-      this.setComponentProperty(outputs[j], ((emitter) => (value) => emitter.emit(value))(emitter));
+      var emitter = (this as any /** TODO #9100 */)[outputs[j]] = new EventEmitter();
+      this.setComponentProperty(outputs[j], ((emitter: any /** TODO #9100 */) => (value: any /** TODO #9100 */) => emitter.emit(value))(emitter));
     }
     for (var k = 0; k < propOuts.length; k++) {
-      this[propOuts[k]] = new EventEmitter();
+      (this as any /** TODO #9100 */)[propOuts[k]] = new EventEmitter();
       this.checkLastValues.push(INITIAL_VALUE);
     }
 
@@ -234,7 +234,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
 
     var childNodes: Node[] = [];
-    var childNode;
+    var childNode: any /** TODO #9100 */;
     while (childNode = this.element.firstChild) {
       this.element.removeChild(childNode);
       childNodes.push(childNode);
@@ -243,7 +243,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       for (var i = 0, ii = clonedElement.length; i < ii; i++) {
         this.element.appendChild(clonedElement[i]);
       }
-    }, {parentBoundTranscludeFn: (scope, cloneAttach) => { cloneAttach(childNodes); }});
+    }, {parentBoundTranscludeFn: (scope: any /** TODO #9100 */, cloneAttach: any /** TODO #9100 */) => { cloneAttach(childNodes); }});
     if (this.destinationObj.$onInit) {
       this.destinationObj.$onInit();
     }
@@ -270,7 +270,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
         if (typeof value == 'number' && isNaN(value) && typeof last == 'number' && isNaN(last)) {
           // ignore because NaN != NaN
         } else {
-          var eventEmitter: EventEmitter<any> = this[this.propOuts[i]];
+          var eventEmitter: EventEmitter<any> = (this as any /** TODO #9100 */)[this.propOuts[i]];
           eventEmitter.emit(lastValues[i] = value);
         }
       }
@@ -282,7 +282,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     this.destinationObj[this.propertyMap[name]] = value;
   }
 
-  private buildController(controllerType) {
+  private buildController(controllerType: any /** TODO #9100 */) {
     var locals = { $scope: this.componentScope, $element: this.$element };
     var controller:any = this.$controller(controllerType, locals, null, this.directive.controllerAs);
     this.$element.data(controllerKey(this.directive.name), controller);
@@ -319,7 +319,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       }
       return dep;
     } else if (require instanceof Array) {
-      var deps = [];
+      var deps: any[] /** TODO #9100 */ = [];
       for (var i = 0; i < require.length; i++) {
         deps.push(this.resolveRequired($element, require[i]));
       }

@@ -22,7 +22,7 @@ export class TodoApp {
     this.inputValue = "";
   }
 
-  doneEditing($event, todo: Todo): void {
+  doneEditing($event: any /** TODO #9100 */, todo: Todo): void {
     var which = $event.keyCode;
     if (which === 13) {
       todo.title = todo.editTitle;
@@ -56,7 +56,7 @@ export class TodoApp {
 
   deleteMe(todo: Todo): void { this.todoStore.remove(todo); }
 
-  toggleAll($event): void {
+  toggleAll($event: any /** TODO #9100 */): void {
     this.isComplete = !this.isComplete;
     this.todoStore.list.forEach((todo: Todo) => { todo.completed = this.isComplete; });
   }

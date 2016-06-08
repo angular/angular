@@ -14,7 +14,7 @@ import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 
 export function main() {
   describe("I18nPluralPipe", () => {
-    var pipe;
+    var pipe: any /** TODO #9100 */;
     var mapping = {'=0': 'No messages.', '=1': 'One message.', 'other': 'There are some messages.'};
     var interpolatedMapping =
         {'=0': 'No messages.', '=1': 'One message.', 'other': 'There are # messages, that is #.'};
@@ -46,7 +46,7 @@ export function main() {
       });
 
       it("should use 'other' if value is undefined", () => {
-        var messageLength;
+        var messageLength: any /** TODO #9100 */;
         var val = pipe.transform(messageLength, interpolatedMapping);
         expect(val).toEqual('There are  messages, that is .');
       });

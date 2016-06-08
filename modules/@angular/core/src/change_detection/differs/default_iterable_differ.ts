@@ -29,7 +29,7 @@ var trackByIdentity = (index: number, item: any) => item;
  */
 export class DefaultIterableDiffer implements IterableDiffer {
   private _length: number = null;
-  private _collection = null;
+  private _collection: any /** TODO #9100 */ = null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
   private _linkedRecords: _DuplicateMap = null;
   // Keeps track of the removed records at any point in time during `_check()` calls.
@@ -119,8 +119,8 @@ export class DefaultIterableDiffer implements IterableDiffer {
     var record: CollectionChangeRecord = this._itHead;
     var mayBeDirty: boolean = false;
     var index: number;
-    var item;
-    var itemTrackBy;
+    var item: any /** TODO #9100 */;
+    var itemTrackBy: any /** TODO #9100 */;
     if (isArray(collection)) {
       var list = collection;
       this._length = collection.length;
@@ -143,7 +143,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
       }
     } else {
       index = 0;
-      iterateListLike(collection, (item) => {
+      iterateListLike(collection, (item: any /** TODO #9100 */) => {
         itemTrackBy = this._trackByFn(index, item);
         if (record === null || !looseIdentical(record.trackById, itemTrackBy)) {
           record = this._mismatch(record, item, itemTrackBy, index);
@@ -510,23 +510,23 @@ export class DefaultIterableDiffer implements IterableDiffer {
 
 
   toString(): string {
-    var list = [];
-    this.forEachItem((record) => list.push(record));
+    var list: any[] /** TODO #9100 */ = [];
+    this.forEachItem((record: any /** TODO #9100 */) => list.push(record));
 
-    var previous = [];
-    this.forEachPreviousItem((record) => previous.push(record));
+    var previous: any[] /** TODO #9100 */ = [];
+    this.forEachPreviousItem((record: any /** TODO #9100 */) => previous.push(record));
 
-    var additions = [];
-    this.forEachAddedItem((record) => additions.push(record));
+    var additions: any[] /** TODO #9100 */ = [];
+    this.forEachAddedItem((record: any /** TODO #9100 */) => additions.push(record));
 
-    var moves = [];
-    this.forEachMovedItem((record) => moves.push(record));
+    var moves: any[] /** TODO #9100 */ = [];
+    this.forEachMovedItem((record: any /** TODO #9100 */) => moves.push(record));
 
-    var removals = [];
-    this.forEachRemovedItem((record) => removals.push(record));
+    var removals: any[] /** TODO #9100 */ = [];
+    this.forEachRemovedItem((record: any /** TODO #9100 */) => removals.push(record));
 
-    var identityChanges = [];
-    this.forEachIdentityChange((record) => identityChanges.push(record));
+    var identityChanges: any[] /** TODO #9100 */ = [];
+    this.forEachIdentityChange((record: any /** TODO #9100 */) => identityChanges.push(record));
 
     return "collection: " + list.join(', ') + "\n" + "previous: " + previous.join(', ') + "\n" +
            "additions: " + additions.join(', ') + "\n" + "moves: " + moves.join(', ') + "\n" +

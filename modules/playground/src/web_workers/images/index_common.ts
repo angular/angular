@@ -7,12 +7,12 @@ import {FileReader, Uint8ArrayWrapper} from './file_api';
 
 @Component({selector: 'image-demo', viewProviders: [BitmapService], templateUrl: 'image_demo.html'})
 export class ImageDemo {
-  images = [];
+  images: any[] /** TODO #9100 */ = [];
   fileInput: String;
 
   constructor(private _bitmapService: BitmapService) {}
 
-  uploadFiles(files) {
+  uploadFiles(files: any /** TODO #9100 */) {
     for (var i = 0; i < files.length; i++) {
       var reader = new FileReader();
       reader.addEventListener("load", this.handleReaderLoad(reader));
