@@ -62,7 +62,7 @@ for (let arg of process.argv.slice(2)) {
  * @return {string} The content with all templates inlined.
  */
 function inlineTemplate(filePath, content) {
-  return content.replace(/templateUrl:\s*'([^']+\.html)'/g, function(m, templateUrl) {
+  return content.replace(/templateUrl:\s*'([^']+?\.html)'/g, function(m, templateUrl) {
     const templateFile = path.join(path.dirname(filePath), templateUrl);
     const templateContent = fs.readFileSync(templateFile, 'utf-8');
     const shortenedTemplate = templateContent
