@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
-import {tsc, check} from './tsc';
+
+import {check, tsc} from './tsc';
+
 import NgOptions from './options';
 import {MetadataWriterHost, TsickleHost} from './compiler_host';
 

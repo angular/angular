@@ -1,8 +1,9 @@
 import * as ts from 'typescript';
 
 import {Evaluator, ImportMetadata, ImportSpecifierMetadata, errorSymbol, isPrimitive} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, ModuleMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, isMetadataError, isMetadataSymbolicReferenceExpression, VERSION} from './schema';
+import {ClassMetadata, ConstructorMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isMetadataError, isMetadataSymbolicReferenceExpression} from './schema';
 import {Symbols} from './symbols';
+
 
 /**
  * Collect decorator metadata from a TypeScript module.

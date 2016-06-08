@@ -1,7 +1,7 @@
 import {spawn} from 'child_process';
-import {writeFileSync, mkdirSync, existsSync} from 'fs';
+import {existsSync, mkdirSync, writeFileSync} from 'fs';
 
-import {TscWatch, TSC, reportError} from './tsc_watch';
+import {TSC, TscWatch, reportError} from './tsc_watch';
 
 export * from './tsc_watch';
 import 'reflect-metadata';

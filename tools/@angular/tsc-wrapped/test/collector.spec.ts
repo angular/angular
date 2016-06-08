@@ -1,8 +1,9 @@
 import * as ts from 'typescript';
+
 import {MetadataCollector} from '../src/collector';
 import {ClassMetadata, ConstructorMetadata, ModuleMetadata} from '../src/schema';
 
-import {Directory, expectValidSources, Host} from './typescript.mocks';
+import {Directory, Host, expectValidSources} from './typescript.mocks';
 
 describe('Collector', () => {
   let host: ts.LanguageServiceHost;
