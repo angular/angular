@@ -1,4 +1,4 @@
-import { RouterOutlet } from './directives/router_outlet';
+import {RouterOutlet} from './directives/router_outlet';
 
 /**
  * @internal

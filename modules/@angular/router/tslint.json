@@ -1,7 +1,6 @@
 {
   "rulesDirectory": ["node_modules/codelyzer"],
   "rules": {
-    "max-line-length": [true, 100],
     "no-inferrable-types": true,
     "class-name": true,
     "comment-format": [
@@ -12,14 +11,13 @@
       true,
       "spaces"
     ],
-    "eofline": true,
     "no-duplicate-variable": true,
     "no-eval": true,
     "no-arg": true,
     "no-internal-module": true,
     "no-trailing-whitespace": true,
     "no-bitwise": true,
-    "no-shadowed-variable": true,
+    "no-shadowed-variable": false,
     "no-unused-expression": true,
     "no-unused-variable": true,
     "one-line": [
@@ -28,11 +26,6 @@
       "check-else",
       "check-open-brace",
       "check-whitespace"
-    ],
-    "quotemark": [
-      true,
-      "single",
-      "avoid-escape"
     ],
     "semicolon": [true, "always"],
     "typedef-whitespace": [
@@ -45,12 +38,12 @@
         "variable-declaration": "nospace"
       }
     ],
-    "curly": true,
+    "curly": false,
     "variable-name": [
       true,
       "ban-keywords",
       "check-format",
-      "allow-trailing-underscore"
+      "allow-leading-underscore"
     ],
     "whitespace": [
       true,
@@ -62,10 +55,6 @@
     ],
     "component-selector-name": [true, "kebab-case"],
     "component-selector-type": [true, "element"],
-    "host-parameter-decorator": true,
-    "input-parameter-decorator": true,
-    "output-parameter-decorator": true,
-    "attribute-parameter-decorator": true,
     "input-property-directive": true,
     "output-property-directive": true
   }

@@ -1,11 +1,13 @@
-import { Tree, TreeNode } from './utils/tree';
-import { shallowEqual } from './utils/collection';
-import { UrlSegment } from './url_tree';
-import { Route } from './config';
-import { Params, PRIMARY_OUTLET } from './shared';
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Type, ComponentFactory } from '@angular/core';
+import {ComponentFactory, Type} from '@angular/core';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Observable} from 'rxjs/Observable';
+
+import {Route} from './config';
+import {PRIMARY_OUTLET, Params} from './shared';
+import {UrlSegment} from './url_tree';
+import {shallowEqual} from './utils/collection';
+import {Tree, TreeNode} from './utils/tree';
+
 
 /**
  * The state of the router.
@@ -26,34 +28,41 @@ export class RouterState extends Tree<ActivatedRoute> {
   /**
    * @internal
    */
-  constructor(root: TreeNode<ActivatedRoute>, public queryParams: Observable<Params>, public fragment: Observable<string>, public snapshot: RouterStateSnapshot) {
+  constructor(
+      root: TreeNode<ActivatedRoute>, public queryParams: Observable<Params>,
+      public fragment: Observable<string>, public snapshot: RouterStateSnapshot) {
     super(root);
   }
 }
 
 export function createEmptyState(rootComponent: Type): RouterState {
   const snapshot = createEmptyStateSnapshot(rootComponent);
-  const emptyUrl = new BehaviorSubject([new UrlSegment("", {}, PRIMARY_OUTLET)]);
+  const emptyUrl = new BehaviorSubject([new UrlSegment('', {}, PRIMARY_OUTLET)]);
   const emptyParams = new BehaviorSubject({});
   const emptyQueryParams = new BehaviorSubject({});
-  const fragment = new BehaviorSubject("");
-  const activated = new ActivatedRoute(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, snapshot.root);
+  const fragment = new BehaviorSubject('');
+  const activated =
+      new ActivatedRoute(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, snapshot.root);
   activated.snapshot = snapshot.root;
-  return new RouterState(new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment, snapshot);
+  return new RouterState(
+      new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment, snapshot);
 }
 
 function createEmptyStateSnapshot(rootComponent: Type): RouterStateSnapshot {
-  const rootUrlSegment = new UrlSegment("", {}, PRIMARY_OUTLET);
+  const rootUrlSegment = new UrlSegment('', {}, PRIMARY_OUTLET);
   const emptyUrl = [rootUrlSegment];
   const emptyParams = {};
   const emptyQueryParams = {};
-  const fragment = "";
-  const activated = new ActivatedRouteSnapshot(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, null, rootUrlSegment);
-  return new RouterStateSnapshot(new TreeNode<ActivatedRouteSnapshot>(activated, []), emptyQueryParams, fragment);
+  const fragment = '';
+  const activated = new ActivatedRouteSnapshot(
+      emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, null, rootUrlSegment);
+  return new RouterStateSnapshot(
+      new TreeNode<ActivatedRouteSnapshot>(activated, []), emptyQueryParams, fragment);
 }
 
 /**
- * Contains the information about a component loaded in an outlet. The information is provided through
+ * Contains the information about a component loaded in an outlet. The information is provided
+ * through
  * the params and urlSegments observables.
  *
  * ### Usage
@@ -74,12 +83,10 @@ export class ActivatedRoute {
   /**
    * @internal
    */
-  constructor(public urlSegments: Observable<UrlSegment[]>,
-              public params: Observable<Params>,
-              public outlet: string,
-              public component: Type | string,
-              futureSnapshot: ActivatedRouteSnapshot
-  ) {
+  constructor(
+      public urlSegments: Observable<UrlSegment[]>, public params: Observable<Params>,
+      public outlet: string, public component: Type|string,
+      futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
   }
 }
@@ -102,9 +109,9 @@ export class ActivatedRouteSnapshot {
    * @internal
    */
   _resolvedComponentFactory: ComponentFactory<any>;
-  
+
   /** @internal **/
-  _routeConfig: Route | null;
+  _routeConfig: Route|null;
 
   /** @internal **/
   _lastUrlSegment: UrlSegment;
@@ -112,12 +119,9 @@ export class ActivatedRouteSnapshot {
   /**
    * @internal
    */
-  constructor(public urlSegments: UrlSegment[],
-              public params: Params,
-              public outlet: string,
-              public component: Type | string, 
-              routeConfig: Route | null,
-              lastUrlSegment: UrlSegment) {
+  constructor(
+      public urlSegments: UrlSegment[], public params: Params, public outlet: string,
+      public component: Type|string, routeConfig: Route|null, lastUrlSegment: UrlSegment) {
     this._routeConfig = routeConfig;
     this._lastUrlSegment = lastUrlSegment;
   }
@@ -140,7 +144,9 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   /**
    * @internal
    */
-  constructor(root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params, public fragment: string | null) {
+  constructor(
+      root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params,
+      public fragment: string|null) {
     super(root);
   }
 }
