@@ -23,8 +23,8 @@ import {RouterConfig} from './config';
  * bootstrap(AppCmp, [provideRouter(router)]);
  * ```
  */
-export function provideRouter(config: RouterConfig): any[] {
+export function provideRouter(config: RouterConfig, opts: common.ExtraOptions = {}): any[] {
   return [
-    {provide: PlatformLocation, useClass: BrowserPlatformLocation}, ...common.provideRouter(config)
+    {provide: PlatformLocation, useClass: BrowserPlatformLocation}, ...common.provideRouter(config, opts)
   ];
 }

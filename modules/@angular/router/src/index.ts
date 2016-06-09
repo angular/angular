@@ -6,6 +6,7 @@ export {CanActivate, CanDeactivate} from './interfaces';
 export {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RoutesRecognized, Router} from './router';
 export {RouterOutletMap} from './router_outlet_map';
 export {provideRouter} from './router_providers';
+export {ExtraOptions} from './common_router_providers';
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
 export {PRIMARY_OUTLET, Params} from './shared';
 export {DefaultUrlSerializer, UrlSerializer} from './url_serializer';
