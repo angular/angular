@@ -199,7 +199,7 @@ function update(node: TreeNode<UrlSegment>| null, commands: any[]): TreeNode<Url
 
 function stringify(params: {[key: string]: any}): {[key: string]: string} {
   const res = {};
-  forEach(params, (v, k) => res[k] = v.toString());
+  forEach(params, (v, k) => res[k] = `${v}`);
   return res;
 }
 
