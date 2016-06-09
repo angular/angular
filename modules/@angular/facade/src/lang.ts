@@ -320,6 +320,8 @@ export class NumberWrapper {
 
   static get NaN(): number { return NaN; }
 
+  static isNumeric(value: any): boolean { return !isNaN(value - parseFloat(value)); }
+
   static isNaN(value: any): boolean { return isNaN(value); }
 
   static isInteger(value: any): boolean { return Number.isInteger(value); }

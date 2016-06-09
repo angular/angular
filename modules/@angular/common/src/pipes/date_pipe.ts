@@ -1,7 +1,7 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {isDate, isNumber, isString, DateWrapper, isBlank,} from '../facade/lang';
-import {DateFormatter} from '../facade/intl';
 import {StringMapWrapper} from '../facade/collection';
+import {DateFormatter} from '../facade/intl';
+import {DateWrapper, NumberWrapper, isBlank, isDate, isString} from '../facade/lang';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 // TODO: move to a global configurable location along with other i18n components.
@@ -98,8 +98,8 @@ export class DatePipe implements PipeTransform {
       throw new InvalidPipeArgumentException(DatePipe, value);
     }
 
-    if (isNumber(value)) {
-      value = DateWrapper.fromMillis(value);
+    if (NumberWrapper.isNumeric(value)) {
+      value = DateWrapper.fromMillis(NumberWrapper.parseInt(value, 10));
     } else if (isString(value)) {
       value = DateWrapper.fromISOString(value);
     }
@@ -110,7 +110,7 @@ export class DatePipe implements PipeTransform {
   }
 
   private supports(obj: any): boolean {
-    if (isDate(obj) || isNumber(obj)) {
+    if (isDate(obj) || NumberWrapper.isNumeric(obj)) {
       return true;
     }
     if (isString(obj) && isDate(DateWrapper.fromISOString(obj))) {

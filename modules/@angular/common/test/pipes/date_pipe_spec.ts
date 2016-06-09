@@ -25,6 +25,9 @@ export function main() {
       describe('supports', () => {
         it('should support date', () => { expect(() => pipe.transform(date)).not.toThrow(); });
         it('should support int', () => { expect(() => pipe.transform(123456789)).not.toThrow(); });
+        it('should support numeric strings',
+           () => { expect(() => pipe.transform('123456789')).not.toThrow(); });
+
         it('should support ISO string',
            () => { expect(() => pipe.transform('2015-06-15T21:43:11Z')).not.toThrow(); });
 
