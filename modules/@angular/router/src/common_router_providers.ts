@@ -59,7 +59,12 @@ export function provideRouter(config: RouterConfig): any[] {
         // https://github.com/angular/angular/issues/9101
         // Delay the router instantiation to avoid circular dependency (ApplicationRef ->
         // APP_INITIALIZER -> Router)
-        setTimeout(_ => injector.get(Router).initialNavigation(), 0);
+        setTimeout(_ => {
+          const appRef = injector.get(ApplicationRef);
+          appRef.registerBootstrapListener((_) => {
+            injector.get(Router).initialNavigation()
+          });
+        }, 0);
         return _ => null;
       },
       deps: [Injector]
