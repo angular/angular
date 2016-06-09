@@ -43,9 +43,8 @@ env:
    - CI_MODE=e2e
    - CI_MODE=saucelabs_required
    - CI_MODE=browserstack_required
-   # To be activted when the required CI is more stable
-   #- CI_MODE=saucelabs_optional
-   #- CI_MODE=browserstack_optional
+   - CI_MODE=saucelabs_optional
+   - CI_MODE=browserstack_optional
 
 matrix:
   allow_failures:
