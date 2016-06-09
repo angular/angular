@@ -25,6 +25,7 @@ import {RouterConfig} from './config';
  */
 export function provideRouter(config: RouterConfig, opts: common.ExtraOptions = {}): any[] {
   return [
-    {provide: PlatformLocation, useClass: BrowserPlatformLocation}, ...common.provideRouter(config, opts)
+    {provide: PlatformLocation, useClass: BrowserPlatformLocation},
+    ...common.provideRouter(config, opts)
   ];
 }

@@ -1,7 +1,7 @@
 import {PRIMARY_OUTLET} from './shared';
+import {DefaultUrlSerializer, serializeSegment} from './url_serializer';
 import {shallowEqual} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
-import {DefaultUrlSerializer, serializeSegment} from './url_serializer';
 
 export function createEmptyUrlTree() {
   return new UrlTree(
@@ -21,9 +21,7 @@ export class UrlTree extends Tree<UrlSegment> {
     super(root);
   }
 
-  toString(): string {
-    return new DefaultUrlSerializer().serialize(this);
-  }
+  toString(): string { return new DefaultUrlSerializer().serialize(this); }
 }
 
 export class UrlSegment {
@@ -33,9 +31,7 @@ export class UrlSegment {
   constructor(
       public path: string, public parameters: {[key: string]: string}, public outlet: string) {}
 
-  toString(): string {
-    return serializeSegment(this);
-  }
+  toString(): string { return serializeSegment(this); }
 }
 
 export function equalUrlSegments(a: UrlSegment[], b: UrlSegment[]): boolean {
