@@ -34,9 +34,7 @@ export class RouterState extends Tree<ActivatedRoute> {
     super(root);
   }
 
-  toString(): string {
-    return this.snapshot.toString();
-  }
+  toString(): string { return this.snapshot.toString(); }
 }
 
 export function createEmptyState(rootComponent: Type): RouterState {
@@ -135,7 +133,7 @@ export class ActivatedRouteSnapshot {
   }
 
   toString(): string {
-    const url = this.urlSegments.map(s => s.toString()).join("/");
+    const url = this.urlSegments.map(s => s.toString()).join('/');
     const matched = this._routeConfig ? this._routeConfig.path : '';
     return `Route(url:'${url}', path:'${matched}')`;
   }
@@ -164,9 +162,7 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
     super(root);
   }
 
-  toString(): string {
-    return serializeNode(this._root);
-  }
+  toString(): string { return serializeNode(this._root); }
 }
 
 function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {

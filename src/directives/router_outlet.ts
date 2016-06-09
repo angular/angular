@@ -36,8 +36,8 @@ export class RouterOutlet {
   }
 
   activate(
-      factory: ComponentFactory<any>, activatedRoute: ActivatedRoute, providers: ResolvedReflectiveProvider[],
-      outletMap: RouterOutletMap): void {
+      factory: ComponentFactory<any>, activatedRoute: ActivatedRoute,
+      providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void {
     this.outletMap = outletMap;
     this._activatedRoute = activatedRoute;
     const inj = ReflectiveInjector.fromResolvedProviders(providers, this.location.parentInjector);
