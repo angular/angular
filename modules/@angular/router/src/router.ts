@@ -231,6 +231,7 @@ export class Router {
 
   private runNavigate(url: UrlTree, pop: boolean, id: number): Promise<boolean> {
     if (id !== this.navigationId) {
+      this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
       this.routerEvents.next(new NavigationCancel(id, url));
       return Promise.resolve(false);
     }
@@ -263,6 +264,7 @@ export class Router {
           })
           .forEach((shouldActivate) => {
             if (!shouldActivate || id !== this.navigationId) {
+              this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
               this.routerEvents.next(new NavigationCancel(id, url));
               return Promise.resolve(false);
             }
@@ -355,7 +357,7 @@ class GuardChecks {
     if (outlet && outlet.isActivated) {
       forEach(
           outlet.outletMap._outlets,
-          (v, k) => this.deactivateOutletAndItChildren(v, outlet.outletMap._outlets[k]));
+          (v, k) => this.deactivateOutletAndItChildren(v.activatedRoute.snapshot, v));
       this.checks.push(new CanDeactivate(outlet.component, route));
     }
   }
@@ -447,7 +449,7 @@ class ActivateRoutes {
       {provide: ActivatedRoute, useValue: future},
       {provide: RouterOutletMap, useValue: outletMap}
     ]);
-    outlet.activate(future._futureSnapshot._resolvedComponentFactory, resolved, outletMap);
+    outlet.activate(future._futureSnapshot._resolvedComponentFactory, future, resolved, outletMap);
     advanceActivatedRoute(future);
   }
 
