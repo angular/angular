@@ -3,6 +3,6 @@
       "requireInternalWithUnderscore": true,
       "duplicateModuleImport": true,
       "semicolon": true,
-      "variable-name": false
+      "variable-name": [true, "ban-keywords"]
     }
 }
