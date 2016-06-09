@@ -39,6 +39,9 @@ export class XHRConnection implements Connection {
       if (isPresent(req.withCredentials)) {
         _xhr.withCredentials = req.withCredentials;
       }
+      if (isPresent(req.timeout)) {
+        _xhr.timeout = req.timeout;
+      }
       // load event handler
       let onLoad = () => {
         // responseText is the old-school way of retrieving response (supported by IE8 & 9)

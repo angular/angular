@@ -7,6 +7,7 @@ import {Injectable} from '@angular/core';
 import {BrowserJsonp} from './browser_jsonp';
 import {makeTypeError} from '../facade/exceptions';
 import {StringWrapper, isPresent} from '../facade/lang';
+import {TimerWrapper} from '../facade/async';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 
@@ -108,18 +109,27 @@ export class JSONPConnection_ extends JSONPConnection {
       script.addEventListener('load', onLoad);
       script.addEventListener('error', onError);
 
+      if (isPresent(this.request.timeout)) {
+        TimerWrapper.setTimeout(() => {
+          this.cancel(script, onLoad, onError);
+        }, this.request.timeout);
+       }
+
       _dom.send(script);
 
       return () => {
-        this.readyState = ReadyState.Cancelled;
-        script.removeEventListener('load', onLoad);
-        script.removeEventListener('error', onError);
-        if (isPresent(script)) {
-          this._dom.cleanup(script);
-        }
-
+        this.cancel(script, onLoad, onError);
       };
     });
+  }
+
+  cancel(script: any, onLoad, onError) {
+    this.readyState = ReadyState.Cancelled;
+    if (isPresent(script)) {
+      script.removeEventListener('load', onLoad);
+      script.removeEventListener('error', onError);
+      this._dom.cleanup(script);
+    }
   }
 
   finished(data?: any) {

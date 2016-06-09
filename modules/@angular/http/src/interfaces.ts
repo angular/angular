@@ -36,6 +36,7 @@ export interface RequestOptionsArgs {
   headers?: Headers;
   body?: any;
   withCredentials?: boolean;
+  timeout?: number;
 }
 
 /**

@@ -182,6 +182,23 @@ export function main() {
            connection.finished(({fake_payload: true, blob_id: 12345}));
            existingScripts[0].dispatchEvent('load');
          }));
+
+      it('should timeout request',
+        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+          let base = new BaseRequestOptions();
+          let sampleTimeoutRequest = new Request(base.merge(new RequestOptions({ url: 'https://google.com', timeout: 10 })));
+          let connection = new JSONPConnection_(sampleTimeoutRequest, new MockBrowserJsonp());
+
+          connection.response.subscribe(res => {
+            async.fail();
+          });
+
+          TimerWrapper.setTimeout(() => {
+            connection.finished(({ fake_payload: true, blob_id: 12345 }));
+            existingScripts[0].dispatchEvent('load');
+            async.done();
+          }, 20);
+      }));
     });
   });
 }
