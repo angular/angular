@@ -42,6 +42,16 @@
       "from": "@types/selenium-webdriver@latest",
       "resolved": "https://registry.npmjs.org/@types/selenium-webdriver/-/selenium-webdriver-2.44.20-alpha.tgz"
     },
+    "@most/multicast": {
+      "version": "1.1.4",
+      "from": "@most/multicast@>=1.1.1 <2.0.0",
+      "resolved": "https://registry.npmjs.org/@most/multicast/-/multicast-1.1.4.tgz"
+    },
+    "@most/prelude": {
+      "version": "1.2.0",
+      "from": "@most/prelude@>=1.2.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/@most/prelude/-/prelude-1.2.0.tgz"
+    },
     "abbrev": {
       "version": "1.0.7",
       "from": "abbrev@>=1.0.0 <2.0.0",
@@ -6362,6 +6372,11 @@
       "from": "morgan@>=1.6.1 <1.7.0",
       "resolved": "https://registry.npmjs.org/morgan/-/morgan-1.6.1.tgz"
     },
+    "most": {
+      "version": "0.19.6",
+      "from": "most@latest",
+      "resolved": "https://registry.npmjs.org/most/-/most-0.19.6.tgz"
+    },
     "mozilla-toolkit-versioning": {
       "version": "0.0.2",
       "from": "mozilla-toolkit-versioning@0.0.2",
@@ -7488,9 +7503,9 @@
       "resolved": "https://registry.npmjs.org/run-sequence/-/run-sequence-1.1.5.tgz"
     },
     "rxjs": {
-      "version": "5.0.0-beta.6",
-      "from": "rxjs@5.0.0-beta.6",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.6.tgz"
+      "version": "5.0.0-beta.8",
+      "from": "rxjs@5.0.0-beta.8",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.8.tgz"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -7980,6 +7995,11 @@
       "version": "0.2.0",
       "from": "supports-color@>=0.2.0 <0.3.0",
       "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-0.2.0.tgz"
+    },
+    "symbol-observable": {
+      "version": "0.2.4",
+      "from": "symbol-observable@>=0.2.4 <0.3.0",
+      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-0.2.4.tgz"
     },
     "symlink-or-copy": {
       "version": "1.0.1",

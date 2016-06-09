@@ -20,7 +20,7 @@
   "dependencies": {
     "es6-shim": "^0.35.0",
     "reflect-metadata": "^0.1.3",
-    "rxjs": "5.0.0-beta.6",
+    "rxjs": "5.0.0-beta.8",
     "zone.js": "^0.6.12"
   },
   "devDependencies": {
@@ -85,6 +85,7 @@
     "minimatch": "^3.0.0",
     "minimist": "^1.2.0",
     "mock-fs": "^3.6.0",
+    "most": "^0.19.6",
     "node-uuid": "1.4.x",
     "on-headers": "^1.0.0",
     "parse5": "1.3.2",
