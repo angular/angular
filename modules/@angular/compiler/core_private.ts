@@ -81,7 +81,8 @@ export var DEFAULT_STATE = r.DEFAULT_STATE;
 export var EMPTY_STATE = r.EMPTY_STATE;
 export var FILL_STYLE_FLAG = r.FILL_STYLE_FLAG;
 export var balanceAnimationStyles: typeof t.balanceAnimationStyles = r.balanceAnimationStyles;
-export var balanceAnimationKeyframes: typeof t.balanceAnimationKeyframes = r.balanceAnimationKeyframes;
+export var balanceAnimationKeyframes: typeof t.balanceAnimationKeyframes =
+    r.balanceAnimationKeyframes;
 export var flattenStyles: typeof t.flattenStyles = r.flattenStyles;
 export var clearStyles: typeof t.clearStyles = r.clearStyles;
 export var collectAndResolveStyles: typeof r.collectAndResolveStyles = r.collectAndResolveStyles;

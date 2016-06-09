@@ -1,9 +1,11 @@
 import {Injectable} from '@angular/core';
+
 import {SecurityContext} from '../../core_private';
-import {isPresent} from '../facade/lang';
 import {StringMapWrapper} from '../facade/collection';
-import {ElementSchemaRegistry} from './element_schema_registry';
+import {isPresent} from '../facade/lang';
+
 import {SECURITY_SCHEMA} from './dom_security_schema';
+import {ElementSchemaRegistry} from './element_schema_registry';
 
 const EVENT = 'event';
 const BOOLEAN = 'boolean';
@@ -238,7 +240,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       typeName.split(',').forEach(tag => this.schema[tag] = type);
       var superType = this.schema[typeParts[1]];
       if (isPresent(superType)) {
-        StringMapWrapper.forEach(superType, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => type[k] = v);
+        StringMapWrapper.forEach(
+            superType, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => type[k] = v);
       }
       properties.forEach((property: string) => {
         if (property == '') {

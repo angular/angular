@@ -1,13 +1,4 @@
-import {
-  describe,
-  it,
-  iit,
-  ddescribe,
-  expect,
-  inject,
-  beforeEach,
-  beforeEachProviders,
-} from '@angular/core/testing/testing_internal';
+import {describe, it, iit, ddescribe, expect, inject, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {Injector, provide, ReflectiveInjector} from '@angular/core';
@@ -19,8 +10,8 @@ export function main() {
 
     var locationStrategy: any /** TODO #9100 */, location: any /** TODO #9100 */;
 
-    function makeLocation(baseHref: string = '/my/app',
-                          provider: any = /*@ts2dart_const*/[]): Location {
+    function makeLocation(
+        baseHref: string = '/my/app', provider: any = /*@ts2dart_const*/[]): Location {
       locationStrategy = new MockLocationStrategy();
       locationStrategy.internalBaseHref = baseHref;
       let injector = ReflectiveInjector.resolveAndCreate(
@@ -43,7 +34,8 @@ export function main() {
       expect(locationStrategy.path()).toEqual('/my/app/user/btford');
     });
 
-    it('should normalize urls on popstate', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should normalize urls on popstate',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
          location.subscribe((ev: any /** TODO #9100 */) => {
            expect(ev['url']).toEqual('/user/btford');
@@ -78,8 +70,8 @@ export function main() {
       var locationStrategy = new MockLocationStrategy();
       var location = new Location(locationStrategy);
 
-      location.go('/home', "key=value");
-      expect(location.path()).toEqual("/home?key=value");
+      location.go('/home', 'key=value');
+      expect(location.path()).toEqual('/home?key=value');
     });
   });
 }

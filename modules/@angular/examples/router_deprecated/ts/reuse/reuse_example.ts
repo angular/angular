@@ -1,14 +1,8 @@
+import {APP_BASE_HREF} from '@angular/common';
 import {Component, ComponentRef} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser';
-import {
-  RouteConfig,
-  ComponentInstruction,
-  ROUTER_DIRECTIVES,
-  CanReuse,
-  RouteParams,
-  OnReuse
-} from '@angular/router-deprecated';
-import {APP_BASE_HREF} from '@angular/common';
+import {CanReuse, ComponentInstruction, OnReuse, ROUTER_DIRECTIVES, RouteConfig, RouteParams} from '@angular/router-deprecated';
+
 
 
 // #docregion reuseCmp
@@ -52,6 +46,6 @@ export class AppCmp {
 
 
 export function main(): Promise<ComponentRef<AppCmp>> {
-  return bootstrap(AppCmp,
-                   [{provide: APP_BASE_HREF, useValue: '/@angular/examples/router/ts/reuse'}]);
+  return bootstrap(
+      AppCmp, [{provide: APP_BASE_HREF, useValue: '/@angular/examples/router/ts/reuse'}]);
 }

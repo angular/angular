@@ -1,16 +1,4 @@
-import {
-  ddescribe,
-  describe,
-  xdescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  inject,
-  beforeEachProviders,
-} from '@angular/core/testing/testing_internal';
+import {ddescribe, describe, xdescribe, it, iit, xit, expect, beforeEach, afterEach, inject, beforeEachProviders,} from '@angular/core/testing/testing_internal';
 
 import {IS_DART} from '../src/facade/lang';
 import {Injector} from '@angular/core';
@@ -43,10 +31,12 @@ export function main() {
     var injector: Injector;
     var sharedStylesHost: SharedStylesHost;
 
-    beforeEach(inject([Injector, SharedStylesHost], (_injector: Injector, _sharedStylesHost: SharedStylesHost) => {
-      injector = _injector;
-      sharedStylesHost = _sharedStylesHost;
-    }));
+    beforeEach(inject(
+        [Injector, SharedStylesHost],
+        (_injector: Injector, _sharedStylesHost: SharedStylesHost) => {
+          injector = _injector;
+          sharedStylesHost = _sharedStylesHost;
+        }));
 
     fixtures.forEach((fixture) => {
       describe(`${fixture.name}`, () => {

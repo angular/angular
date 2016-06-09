@@ -1,29 +1,13 @@
-import {ListWrapper, Map, StringMapWrapper} from '../src/facade/collection';
 import {PromiseWrapper} from '../src/facade/async';
-import {
-  isPresent,
-  isArray,
-  isBlank,
-  isType,
-  isString,
-  isStringMap,
-  Type,
-  StringWrapper,
-  Math,
-  getTypeNameForDebugging,
-} from '../src/facade/lang';
+import {ListWrapper, Map, StringMapWrapper} from '../src/facade/collection';
+
+import {isPresent, isArray, isBlank, isType, isString, isStringMap, Type, StringWrapper, Math, getTypeNameForDebugging,} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
 import {Injectable, Inject, OpaqueToken} from '@angular/core';
 import {RouteConfig, Route, AuxRoute, RouteDefinition} from './route_config/route_config_impl';
 import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';
 import {RuleSet} from './rules/rule_set';
-import {
-  Instruction,
-  ResolvedInstruction,
-  RedirectInstruction,
-  UnresolvedInstruction,
-  DefaultInstruction
-} from './instruction';
+import {Instruction, ResolvedInstruction, RedirectInstruction, UnresolvedInstruction, DefaultInstruction} from './instruction';
 import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_normalizer';
 import {parser, Url, convertUrlParamsToArray} from './url_parser';
 import {GeneratedUrl} from './rules/route_paths/route_path';
@@ -152,8 +136,8 @@ export class RouteRegistry {
   /**
    * Recognizes all parent-child routes, but creates unresolved auxiliary routes
    */
-  private _recognize(parsedUrl: Url, ancestorInstructions: Instruction[],
-                     _aux = false): Promise<Instruction> {
+  private _recognize(parsedUrl: Url, ancestorInstructions: Instruction[], _aux = false):
+      Promise<Instruction> {
     var parentInstruction = ListWrapper.last(ancestorInstructions);
     var parentComponent = isPresent(parentInstruction) ? parentInstruction.component.componentType :
                                                          this._rootComponent;
@@ -202,8 +186,9 @@ export class RouteRegistry {
           if (candidate instanceof RedirectMatch) {
             var instruction =
                 this.generate(candidate.redirectTo, ancestorInstructions.concat([null]));
-            return new RedirectInstruction(instruction.component, instruction.child,
-                                           instruction.auxInstruction, candidate.specificity);
+            return new RedirectInstruction(
+                instruction.component, instruction.child, instruction.auxInstruction,
+                candidate.specificity);
           }
         }));
 
@@ -214,8 +199,8 @@ export class RouteRegistry {
     return PromiseWrapper.all<Instruction>(matchPromises).then(mostSpecific);
   }
 
-  private _auxRoutesToUnresolved(auxRoutes: Url[],
-                                 parentInstructions: Instruction[]): {[key: string]: Instruction} {
+  private _auxRoutesToUnresolved(auxRoutes: Url[], parentInstructions: Instruction[]):
+      {[key: string]: Instruction} {
     var unresolvedAuxInstructions: {[key: string]: Instruction} = {};
 
     auxRoutes.forEach((auxUrl: Url) => {
@@ -281,7 +266,7 @@ export class RouteRegistry {
         // If both exist, we throw. Otherwise, we prefer whichever exists.
         var childRouteExists = this.hasRoute(routeName, parentComponentType);
         var parentRouteExists = isPresent(grandparentComponentType) &&
-                                this.hasRoute(routeName, grandparentComponentType);
+            this.hasRoute(routeName, grandparentComponentType);
 
         if (parentRouteExists && childRouteExists) {
           let msg =
@@ -330,8 +315,9 @@ export class RouteRegistry {
    * `prevInstruction` is the existing instruction that would be replaced, but which might have
    * aux routes that need to be cloned.
    */
-  private _generate(linkParams: any[], ancestorInstructions: Instruction[],
-                    prevInstruction: Instruction, _aux = false, _originalLink: any[]): Instruction {
+  private _generate(
+      linkParams: any[], ancestorInstructions: Instruction[], prevInstruction: Instruction,
+      _aux = false, _originalLink: any[]): Instruction {
     let parentComponentType = this._rootComponent;
     let componentInstruction: any /** TODO #9100 */ = null;
     let auxInstructions: {[key: string]: Instruction} = {};
@@ -394,8 +380,8 @@ export class RouteRegistry {
         var generatedUrl: GeneratedUrl = routeRecognizer.generateComponentPathValues(routeParams);
         return new UnresolvedInstruction(() => {
           return routeRecognizer.handler.resolveComponentType().then((_) => {
-            return this._generate(linkParams, ancestorInstructions, prevInstruction, _aux,
-                                  _originalLink);
+            return this._generate(
+                linkParams, ancestorInstructions, prevInstruction, _aux, _originalLink);
           });
         }, generatedUrl.urlPath, convertUrlParamsToArray(generatedUrl.urlParams));
       }
@@ -408,8 +394,8 @@ export class RouteRegistry {
     // If we have an ancestor instruction, we preserve whatever aux routes are active from it.
     while (linkParamIndex < linkParams.length && isArray(linkParams[linkParamIndex])) {
       let auxParentInstruction: Instruction[] = [parentInstruction];
-      let auxInstruction = this._generate(linkParams[linkParamIndex], auxParentInstruction, null,
-                                          true, _originalLink);
+      let auxInstruction = this._generate(
+          linkParams[linkParamIndex], auxParentInstruction, null, true, _originalLink);
 
       // TODO: this will not work for aux routes with parameters or multiple segments
       auxInstructions[auxInstruction.component.urlPath] = auxInstruction;
@@ -429,8 +415,8 @@ export class RouteRegistry {
       } else {
         let childAncestorComponents: Instruction[] = ancestorInstructions.concat([instruction]);
         let remainingLinkParams = linkParams.slice(linkParamIndex);
-        childInstruction = this._generate(remainingLinkParams, childAncestorComponents, null, false,
-                                          _originalLink);
+        childInstruction = this._generate(
+            remainingLinkParams, childAncestorComponents, null, false, _originalLink);
       }
       instruction.child = childInstruction;
     }

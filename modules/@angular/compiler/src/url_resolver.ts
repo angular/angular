@@ -1,10 +1,6 @@
-import {Injectable, Inject, PACKAGE_ROOT_URL} from '@angular/core';
-import {
-  StringWrapper,
-  isPresent,
-  isBlank,
-  RegExpWrapper,
-} from '../src/facade/lang';
+import {Inject, Injectable, PACKAGE_ROOT_URL} from '@angular/core';
+
+import {StringWrapper, isPresent, isBlank, RegExpWrapper,} from '../src/facade/lang';
 
 
 const _ASSET_SCHEME = 'asset:';
@@ -25,7 +21,7 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
  */
 export var DEFAULT_PACKAGE_URL_PROVIDER = {
   provide: PACKAGE_ROOT_URL,
-  useValue: "/"
+  useValue: '/'
 };
 
 /**
@@ -59,7 +55,7 @@ export class UrlResolver {
     var resolvedParts = _split(resolvedUrl);
     var prefix = this._packagePrefix;
     if (isPresent(prefix) && isPresent(resolvedParts) &&
-        resolvedParts[_ComponentIndex.Scheme] == "package") {
+        resolvedParts[_ComponentIndex.Scheme] == 'package') {
       var path = resolvedParts[_ComponentIndex.Path];
       if (this._packagePrefix === _ASSET_SCHEME) {
         var pathSegements = path.split(/\//);
@@ -79,7 +75,7 @@ export class UrlResolver {
  */
 export function getUrlScheme(url: string): string {
   var match = _split(url);
-  return (match && match[_ComponentIndex.Scheme]) || "";
+  return (match && match[_ComponentIndex.Scheme]) || '';
 }
 
 // The code below is adapted from Traceur:
@@ -102,9 +98,9 @@ export function getUrlScheme(url: string): string {
  * @param opt_fragment The URI-encoded fragment identifier.
  * @return The fully combined URI.
  */
-function _buildFromEncodedParts(opt_scheme?: string, opt_userInfo?: string, opt_domain?: string,
-                                opt_port?: string, opt_path?: string, opt_queryData?: string,
-                                opt_fragment?: string): string {
+function _buildFromEncodedParts(
+    opt_scheme?: string, opt_userInfo?: string, opt_domain?: string, opt_port?: string,
+    opt_path?: string, opt_queryData?: string, opt_fragment?: string): string {
   var out: any[] /** TODO #9100 */ = [];
 
   if (isPresent(opt_scheme)) {
@@ -202,24 +198,24 @@ function _buildFromEncodedParts(opt_scheme?: string, opt_userInfo?: string, opt_
  * @type {!RegExp}
  * @internal
  */
-var _splitRe =
-    RegExpWrapper.create('^' +
-                         '(?:' +
-                         '([^:/?#.]+)' +  // scheme - ignore special characters
-                                          // used by other URL parts such as :,
-                                          // ?, /, #, and .
-                         ':)?' +
-                         '(?://' +
-                         '(?:([^/?#]*)@)?' +                  // userInfo
-                         '([\\w\\d\\-\\u0100-\\uffff.%]*)' +  // domain - restrict to letters,
-                                                              // digits, dashes, dots, percent
-                                                              // escapes, and unicode characters.
-                         '(?::([0-9]+))?' +                   // port
-                         ')?' +
-                         '([^?#]+)?' +        // path
-                         '(?:\\?([^#]*))?' +  // query
-                         '(?:#(.*))?' +       // fragment
-                         '$');
+var _splitRe = RegExpWrapper.create(
+    '^' +
+    '(?:' +
+    '([^:/?#.]+)' +  // scheme - ignore special characters
+                     // used by other URL parts such as :,
+                     // ?, /, #, and .
+    ':)?' +
+    '(?://' +
+    '(?:([^/?#]*)@)?' +                  // userInfo
+    '([\\w\\d\\-\\u0100-\\uffff.%]*)' +  // domain - restrict to letters,
+                                         // digits, dashes, dots, percent
+                                         // escapes, and unicode characters.
+    '(?::([0-9]+))?' +                   // port
+    ')?' +
+    '([^?#]+)?' +        // path
+    '(?:\\?([^#]*))?' +  // query
+    '(?:#(.*))?' +       // fragment
+    '$');
 
 /**
  * The index of each URI component in the return value of goog.uri.utils.split.
@@ -250,7 +246,7 @@ enum _ComponentIndex {
  *     on the browser's regular expression implementation.  Never null, since
  *     arbitrary strings may still look like path names.
  */
-function _split(uri: string): Array<string | any> {
+function _split(uri: string): Array<string|any> {
   return RegExpWrapper.firstMatch(_splitRe, uri);
 }
 
@@ -308,9 +304,10 @@ function _joinAndCanonicalizePath(parts: any[]): string {
   path = isBlank(path) ? '' : _removeDotSegments(path);
   parts[_ComponentIndex.Path] = path;
 
-  return _buildFromEncodedParts(parts[_ComponentIndex.Scheme], parts[_ComponentIndex.UserInfo],
-                                parts[_ComponentIndex.Domain], parts[_ComponentIndex.Port], path,
-                                parts[_ComponentIndex.QueryData], parts[_ComponentIndex.Fragment]);
+  return _buildFromEncodedParts(
+      parts[_ComponentIndex.Scheme], parts[_ComponentIndex.UserInfo], parts[_ComponentIndex.Domain],
+      parts[_ComponentIndex.Port], path, parts[_ComponentIndex.QueryData],
+      parts[_ComponentIndex.Fragment]);
 }
 
 /**

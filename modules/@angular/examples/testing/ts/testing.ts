@@ -1,13 +1,4 @@
-import {
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  afterEach,
-  beforeEachProviders,
-  inject
-} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, beforeEachProviders, describe, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 var db: any;
 class MyService {}
@@ -27,12 +18,14 @@ fdescribe('some component', () => {
                        // This test will run.
                    });
 });
-describe('another component',
-         () => { it('also has a test', () => { throw 'This test will not run.'; }); });
+describe('another component', () => {
+  it('also has a test', () => { throw 'This test will not run.'; });
+});
 // #enddocregion
 
 // #docregion xdescribe
-xdescribe('some component', () => { it('has a test', () => {throw 'This test will not run.';}); });
+xdescribe(
+    'some component', () => { it('has a test', () => { throw 'This test will not run.'; }); });
 describe('another component', () => {
   it('also has a test', () => {
                             // This test will run.
@@ -70,9 +63,10 @@ describe('some component', () => {
 // #docregion beforeEachProviders
 describe('some component', () => {
   beforeEachProviders(() => [{provide: MyService, useClass: MyMockService}]);
-  it('uses MyService', inject([MyService], (service: MyMockService) => {
-                                               // service is an instance of MyMockService.
-                                           }));
+  it('uses MyService', inject(
+                           [MyService], (service: MyMockService) => {
+                                            // service is an instance of MyMockService.
+                                        }));
 });
 // #enddocregion
 

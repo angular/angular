@@ -1,17 +1,9 @@
-import {
-  Directive,
-  ElementRef,
-  Renderer,
-  forwardRef,
-  Input,
-  OnInit,
-  OnDestroy,
-  Injector,
-  Injectable
-} from '@angular/core';
-import {isPresent} from '../../facade/lang';
+import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer, forwardRef} from '@angular/core';
+
 import {ListWrapper} from '../../facade/collection';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
+import {isPresent} from '../../facade/lang';
+
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 
 export const RADIO_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
@@ -49,10 +41,10 @@ export class RadioControlRegistry {
     });
   }
 
-  private _isSameGroup(controlPair:[NgControl, RadioControlValueAccessor],
-                       accessor: RadioControlValueAccessor) {
+  private _isSameGroup(
+      controlPair: [NgControl, RadioControlValueAccessor], accessor: RadioControlValueAccessor) {
     return controlPair[0].control.root === accessor._control.control.root &&
-           controlPair[1].name === accessor.name;
+        controlPair[1].name === accessor.name;
   }
 }
 
@@ -102,8 +94,9 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   onChange = () => {};
   onTouched = () => {};
 
-  constructor(private _renderer: Renderer, private _elementRef: ElementRef,
-              private _registry: RadioControlRegistry, private _injector: Injector) {}
+  constructor(
+      private _renderer: Renderer, private _elementRef: ElementRef,
+      private _registry: RadioControlRegistry, private _injector: Injector) {}
 
   ngOnInit(): void {
     this._control = this._injector.get(NgControl);

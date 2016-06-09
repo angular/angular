@@ -1,7 +1,8 @@
-import {forwardRef, Attribute, Directive} from '@angular/core';
+import {Attribute, Directive, forwardRef} from '@angular/core';
+
 import {NumberWrapper} from '../../facade/lang';
-import {Validators, NG_VALIDATORS} from '../validators';
 import {AbstractControl} from '../model';
+import {NG_VALIDATORS, Validators} from '../validators';
 
 
 
@@ -82,7 +83,7 @@ export const MIN_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
 export class MinLengthValidator implements Validator {
   private _validator: ValidatorFn;
 
-  constructor(@Attribute("minlength") minLength: string) {
+  constructor(@Attribute('minlength') minLength: string) {
     this._validator = Validators.minLength(NumberWrapper.parseInt(minLength, 10));
   }
 
@@ -115,7 +116,7 @@ export const MAX_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
 export class MaxLengthValidator implements Validator {
   private _validator: ValidatorFn;
 
-  constructor(@Attribute("maxlength") maxLength: string) {
+  constructor(@Attribute('maxlength') maxLength: string) {
     this._validator = Validators.maxLength(NumberWrapper.parseInt(maxLength, 10));
   }
 
@@ -150,7 +151,7 @@ export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
 export class PatternValidator implements Validator {
   private _validator: ValidatorFn;
 
-  constructor(@Attribute("pattern") pattern: string) {
+  constructor(@Attribute('pattern') pattern: string) {
     this._validator = Validators.pattern(pattern);
   }
 

@@ -1,11 +1,13 @@
-import {ComponentResolver} from './component_resolver';
-import {Type, isPresent} from '../facade/lang';
-import {ComponentRef} from './component_factory';
-import {ViewContainerRef} from './view_container_ref';
-import {ResolvedReflectiveProvider} from '../di/reflective_provider';
-import {ReflectiveInjector} from '../di/reflective_injector';
 import {Injectable} from '../di/decorators';
 import {Injector} from '../di/injector';
+import {ReflectiveInjector} from '../di/reflective_injector';
+import {ResolvedReflectiveProvider} from '../di/reflective_provider';
+import {Type, isPresent} from '../facade/lang';
+
+import {ComponentRef} from './component_factory';
+import {ComponentResolver} from './component_resolver';
+import {ViewContainerRef} from './view_container_ref';
+
 
 /**
  * Use ComponentResolver and ViewContainerRef directly.
@@ -61,9 +63,9 @@ export abstract class DynamicComponentLoader {
    * </my-app>
    * ```
    */
-  abstract loadAsRoot(type: Type, overrideSelectorOrNode: string | any, injector: Injector,
-                      onDispose?: () => void,
-                      projectableNodes?: any[][]): Promise<ComponentRef<any>>;
+  abstract loadAsRoot(
+      type: Type, overrideSelectorOrNode: string|any, injector: Injector, onDispose?: () => void,
+      projectableNodes?: any[][]): Promise<ComponentRef<any>>;
 
 
   /**
@@ -106,17 +108,18 @@ export abstract class DynamicComponentLoader {
    * <child-component>Child</child-component>
    * ```
    */
-  abstract loadNextToLocation(type: Type, location: ViewContainerRef,
-                              providers?: ResolvedReflectiveProvider[],
-                              projectableNodes?: any[][]): Promise<ComponentRef<any>>;
+  abstract loadNextToLocation(
+      type: Type, location: ViewContainerRef, providers?: ResolvedReflectiveProvider[],
+      projectableNodes?: any[][]): Promise<ComponentRef<any>>;
 }
 
 @Injectable()
 export class DynamicComponentLoader_ extends DynamicComponentLoader {
   constructor(private _compiler: ComponentResolver) { super(); }
 
-  loadAsRoot(type: Type, overrideSelectorOrNode: string | any, injector: Injector,
-             onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef<any>> {
+  loadAsRoot(
+      type: Type, overrideSelectorOrNode: string|any, injector: Injector, onDispose?: () => void,
+      projectableNodes?: any[][]): Promise<ComponentRef<any>> {
     return this._compiler.resolveComponent(type).then(componentFactory => {
       var componentRef = componentFactory.create(
           injector, projectableNodes,
@@ -128,16 +131,16 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
     });
   }
 
-  loadNextToLocation(type: Type, location: ViewContainerRef,
-                     providers: ResolvedReflectiveProvider[] = null,
-                     projectableNodes: any[][] = null): Promise<ComponentRef<any>> {
+  loadNextToLocation(
+      type: Type, location: ViewContainerRef, providers: ResolvedReflectiveProvider[] = null,
+      projectableNodes: any[][] = null): Promise<ComponentRef<any>> {
     return this._compiler.resolveComponent(type).then(componentFactory => {
       var contextInjector = location.parentInjector;
       var childInjector = isPresent(providers) && providers.length > 0 ?
-                              ReflectiveInjector.fromResolvedProviders(providers, contextInjector) :
-                              contextInjector;
-      return location.createComponent(componentFactory, location.length, childInjector,
-                                      projectableNodes);
+          ReflectiveInjector.fromResolvedProviders(providers, contextInjector) :
+          contextInjector;
+      return location.createComponent(
+          componentFactory, location.length, childInjector, projectableNodes);
     });
   }
 }

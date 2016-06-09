@@ -1,22 +1,11 @@
-import {
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from '@angular/core/testing/testing_internal';
-
-import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {HtmlElementAst} from '@angular/compiler/src/html_ast';
-
+import {HtmlParser} from '@angular/compiler/src/html_parser';
+import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing';
 
-import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {SecurityContext} from '../../core_private';
+
 import {extractSchema} from './schema_extractor';
 
 export function main() {
@@ -73,7 +62,7 @@ export function main() {
 
     it('should detect properties on namespaced elements', () => {
       let htmlAst = new HtmlParser().parse('<svg:style>', 'TestComp');
-      let nodeName  = (<HtmlElementAst>htmlAst.rootNodes[0]).name;
+      let nodeName = (<HtmlElementAst>htmlAst.rootNodes[0]).name;
       expect(registry.hasProperty(nodeName, 'type')).toBeTruthy();
     });
 
@@ -86,12 +75,10 @@ export function main() {
     if (browserDetection.isChromeDesktop) {
       it('generate a new schema', () => {
         let schema = '\n';
-        extractSchema().forEach((props, name) => {
-          schema += `'${name}|${props.join(',')}',\n`;
-        });
+        extractSchema().forEach((props, name) => { schema += `'${name}|${props.join(',')}',\n`; });
         // Uncomment this line to see:
         // the generated schema which can then be pasted to the DomElementSchemaRegistry
-        //console.log(schema);
+        // console.log(schema);
       });
     }
 

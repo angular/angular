@@ -1,15 +1,8 @@
-import {
-  inject,
-  describe,
-  ddescribe,
-  beforeEach,
-  it,
-  expect
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {RenderStore} from '@angular/platform-browser/src/web_workers/shared/render_store';
 
 export function main() {
-  describe("RenderStoreSpec", () => {
+  describe('RenderStoreSpec', () => {
     var store: RenderStore;
     beforeEach(() => { store = new RenderStore(); });
 

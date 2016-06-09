@@ -1,7 +1,9 @@
-import {Injectable, EventEmitter} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
+
 import {ObservableWrapper} from '../facade/async';
 
 import {LocationStrategy} from './location_strategy';
+
 
 /**
  * `Location` is a service that applications can use to interact with a browser's URL.
@@ -127,8 +129,9 @@ export class Location {
   /**
    * Subscribe to the platform's `popState` events.
    */
-  subscribe(onNext: (value: any) => void, onThrow: (exception: any) => void = null,
-            onReturn: () => void = null): Object {
+  subscribe(
+      onNext: (value: any) => void, onThrow: (exception: any) => void = null,
+      onReturn: () => void = null): Object {
     return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 

@@ -20,9 +20,9 @@ export interface AnimationAstVisitor {
 }
 
 export class AnimationEntryAst extends AnimationAst {
-  constructor(public name: string,
-              public stateDeclarations: AnimationStateDeclarationAst[],
-              public stateTransitions: AnimationStateTransitionAst[]) {
+  constructor(
+      public name: string, public stateDeclarations: AnimationStateDeclarationAst[],
+      public stateTransitions: AnimationStateTransitionAst[]) {
     super();
   }
   visit(visitor: AnimationAstVisitor, context: any): any {
@@ -31,9 +31,7 @@ export class AnimationEntryAst extends AnimationAst {
 }
 
 export class AnimationStateDeclarationAst extends AnimationStateAst {
-  constructor(public stateName: string, public styles: AnimationStylesAst) {
-    super();
-  }
+  constructor(public stateName: string, public styles: AnimationStylesAst) { super(); }
   visit(visitor: AnimationAstVisitor, context: any): any {
     return visitor.visitAnimationStateDeclaration(this, context);
   }
@@ -44,7 +42,9 @@ export class AnimationStateTransitionExpression {
 }
 
 export class AnimationStateTransitionAst extends AnimationStateAst {
-  constructor(public stateChanges: AnimationStateTransitionExpression[], public animation: AnimationSequenceAst) {
+  constructor(
+      public stateChanges: AnimationStateTransitionExpression[],
+      public animation: AnimationSequenceAst) {
     super();
   }
   visit(visitor: AnimationAstVisitor, context: any): any {
@@ -53,11 +53,9 @@ export class AnimationStateTransitionAst extends AnimationStateAst {
 }
 
 export class AnimationStepAst extends AnimationAst {
-  constructor(public startingStyles: AnimationStylesAst,
-              public keyframes: AnimationKeyframeAst[],
-              public duration: number,
-              public delay: number,
-              public easing: string) {
+  constructor(
+      public startingStyles: AnimationStylesAst, public keyframes: AnimationKeyframeAst[],
+      public duration: number, public delay: number, public easing: string) {
     super();
   }
   visit(visitor: AnimationAstVisitor, context: any): any {

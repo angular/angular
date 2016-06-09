@@ -1,38 +1,12 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 
-import {
-  CompileDirectiveMetadata,
-  CompileTypeMetadata,
-  CompileTemplateMetadata,
-  CompileProviderMetadata,
-  CompileDiDependencyMetadata,
-  CompileQueryMetadata,
-  CompileIdentifierMetadata,
-  CompileFactoryMetadata,
-  CompileTokenMetadata,
-  CompileAnimationEntryMetadata,
-  CompileAnimationStyleMetadata,
-  CompileAnimationAnimateMetadata,
-  CompileAnimationSequenceMetadata,
-  CompileAnimationStateTransitionMetadata,
-  CompileAnimationKeyframesSequenceMetadata,
-  CompileAnimationGroupMetadata
-} from '@angular/compiler/src/compile_metadata';
+import {CompileDirectiveMetadata, CompileTypeMetadata, CompileTemplateMetadata, CompileProviderMetadata, CompileDiDependencyMetadata, CompileQueryMetadata, CompileIdentifierMetadata, CompileFactoryMetadata, CompileTokenMetadata, CompileAnimationEntryMetadata, CompileAnimationStyleMetadata, CompileAnimationAnimateMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationGroupMetadata} from '@angular/compiler/src/compile_metadata';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 import {ChangeDetectionStrategy} from '@angular/core/src/change_detection';
 import {LifecycleHooks} from '@angular/core/src/metadata/lifecycle_hooks';
 
 export function main() {
-   describe('CompileMetadata', () => {
+  describe('CompileMetadata', () => {
     var fullTypeMeta: CompileTypeMetadata;
     var fullTemplateMeta: CompileTemplateMetadata;
     var fullDirectiveMeta: CompileDirectiveMetadata;
@@ -67,17 +41,14 @@ export function main() {
         templateUrl: 'someTemplateUrl',
         styles: ['someStyle'],
         styleUrls: ['someStyleUrl'],
-        animations: [
-          new CompileAnimationEntryMetadata('animation', [
-            new CompileAnimationStateTransitionMetadata('* => *',
-              new CompileAnimationSequenceMetadata([
-                new CompileAnimationStyleMetadata(0, [{ 'opacity': 0 }]),
-                new CompileAnimationAnimateMetadata(1000,
-                  new CompileAnimationStyleMetadata(0, [{ 'opacity': 1 }]))
-              ])
-            )
-          ])
-        ],
+        animations: [new CompileAnimationEntryMetadata(
+            'animation',
+            [new CompileAnimationStateTransitionMetadata(
+                '* => *', new CompileAnimationSequenceMetadata([
+                  new CompileAnimationStyleMetadata(0, [{'opacity': 0}]),
+                  new CompileAnimationAnimateMetadata(
+                      1000, new CompileAnimationStyleMetadata(0, [{'opacity': 1}]))
+                ]))])],
         ngContentSelectors: ['*']
       });
       fullDirectiveMeta = CompileDirectiveMetadata.create({
@@ -90,47 +61,39 @@ export function main() {
         outputs: ['someEvent'],
         host: {'(event1)': 'handler1', '[prop1]': 'expr1', 'attr1': 'attrValue2'},
         lifecycleHooks: [LifecycleHooks.OnChanges],
-        providers: [
-          new CompileProviderMetadata({
-            token: new CompileTokenMetadata({value: 'token'}),
-            multi: true,
-            useClass: fullTypeMeta,
-            useExisting: new CompileTokenMetadata({
-              identifier: new CompileIdentifierMetadata({name: 'someName'}),
-              identifierIsInstance: true
-            }),
-            useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
-            useValue: 'someValue',
-          })
-        ],
-        viewProviders: [
-          new CompileProviderMetadata({
-            token: new CompileTokenMetadata({value: 'token'}),
-            useClass: fullTypeMeta,
-            useExisting: new CompileTokenMetadata(
-                {identifier: new CompileIdentifierMetadata({name: 'someName'})}),
-            useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
-            useValue: 'someValue'
-          })
-        ],
-        queries: [
-          new CompileQueryMetadata({
-            selectors: [new CompileTokenMetadata({value: 'selector'})],
-            descendants: true,
-            first: false,
-            propertyName: 'prop',
-            read: new CompileTokenMetadata({value: 'readToken'})
-          })
-        ],
-        viewQueries: [
-          new CompileQueryMetadata({
-            selectors: [new CompileTokenMetadata({value: 'selector'})],
-            descendants: true,
-            first: false,
-            propertyName: 'prop',
-            read: new CompileTokenMetadata({value: 'readToken'})
-          })
-        ]
+        providers: [new CompileProviderMetadata({
+          token: new CompileTokenMetadata({value: 'token'}),
+          multi: true,
+          useClass: fullTypeMeta,
+          useExisting: new CompileTokenMetadata({
+            identifier: new CompileIdentifierMetadata({name: 'someName'}),
+            identifierIsInstance: true
+          }),
+          useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
+          useValue: 'someValue',
+        })],
+        viewProviders: [new CompileProviderMetadata({
+          token: new CompileTokenMetadata({value: 'token'}),
+          useClass: fullTypeMeta,
+          useExisting: new CompileTokenMetadata(
+              {identifier: new CompileIdentifierMetadata({name: 'someName'})}),
+          useFactory: new CompileFactoryMetadata({name: 'someName', diDeps: [diDep]}),
+          useValue: 'someValue'
+        })],
+        queries: [new CompileQueryMetadata({
+          selectors: [new CompileTokenMetadata({value: 'selector'})],
+          descendants: true,
+          first: false,
+          propertyName: 'prop',
+          read: new CompileTokenMetadata({value: 'readToken'})
+        })],
+        viewQueries: [new CompileQueryMetadata({
+          selectors: [new CompileTokenMetadata({value: 'selector'})],
+          descendants: true,
+          first: false,
+          propertyName: 'prop',
+          read: new CompileTokenMetadata({value: 'readToken'})
+        })]
       });
 
     });
@@ -186,7 +149,7 @@ export function main() {
 
     describe('CompileAnimationStyleMetadata', () => {
       it('should serialize with full data', () => {
-        let full = new CompileAnimationStyleMetadata(0, [{ "opacity": 0, "color": "red" }]);
+        let full = new CompileAnimationStyleMetadata(0, [{'opacity': 0, 'color': 'red'}]);
         expect(CompileAnimationStyleMetadata.fromJson(full.toJson())).toEqual(full);
       });
 
@@ -198,8 +161,8 @@ export function main() {
 
     describe('CompileAnimationAnimateMetadata', () => {
       it('should serialize with full data', () => {
-        let full = new CompileAnimationAnimateMetadata("1s linear",
-          new CompileAnimationStyleMetadata(0, [{ "opacity": 0.5, "color": "blue" }]))
+        let full = new CompileAnimationAnimateMetadata(
+            '1s linear', new CompileAnimationStyleMetadata(0, [{'opacity': 0.5, 'color': 'blue'}]))
         expect(CompileAnimationAnimateMetadata.fromJson(full.toJson())).toEqual(full);
       });
 
@@ -212,9 +175,9 @@ export function main() {
     describe('CompileAnimationSequenceMetadata', () => {
       it('should serialize with full data', () => {
         let full = new CompileAnimationSequenceMetadata([
-          new CompileAnimationStyleMetadata(0, [{ "opacity": 0.5, "width": 100 }]),
-          new CompileAnimationAnimateMetadata(1000,
-            new CompileAnimationStyleMetadata(0, [{ "opacity": 1, "width": 0 }]))
+          new CompileAnimationStyleMetadata(0, [{'opacity': 0.5, 'width': 100}]),
+          new CompileAnimationAnimateMetadata(
+              1000, new CompileAnimationStyleMetadata(0, [{'opacity': 1, 'width': 0}]))
         ]);
         expect(CompileAnimationSequenceMetadata.fromJson(full.toJson())).toEqual(full);
       });
@@ -228,9 +191,10 @@ export function main() {
     describe('CompileAnimationGroupMetadata', () => {
       it('should serialize with full data', () => {
         let full = new CompileAnimationGroupMetadata([
-          new CompileAnimationStyleMetadata(0, [{ "width": 100, "border": "1px solid red" }]),
-          new CompileAnimationAnimateMetadata(1000,
-            new CompileAnimationStyleMetadata(0, [{ "width": 900, "border": "10px solid blue" }]))
+          new CompileAnimationStyleMetadata(0, [{'width': 100, 'border': '1px solid red'}]),
+          new CompileAnimationAnimateMetadata(
+              1000, new CompileAnimationStyleMetadata(
+                        0, [{'width': 900, 'border': '10px solid blue'}]))
         ]);
         expect(CompileAnimationGroupMetadata.fromJson(full.toJson())).toEqual(full);
       });
@@ -244,9 +208,9 @@ export function main() {
     describe('CompileAnimationKeyframesSequenceMetadata', () => {
       it('should serialize with full data', () => {
         let full = new CompileAnimationKeyframesSequenceMetadata([
-          new CompileAnimationStyleMetadata(0, [{ "width": 0 }]),
-          new CompileAnimationStyleMetadata(0.5, [{ "width": 100 }]),
-          new CompileAnimationStyleMetadata(1, [{ "width": 200 }]),
+          new CompileAnimationStyleMetadata(0, [{'width': 0}]),
+          new CompileAnimationStyleMetadata(0.5, [{'width': 100}]),
+          new CompileAnimationStyleMetadata(1, [{'width': 200}]),
         ]);
         expect(CompileAnimationKeyframesSequenceMetadata.fromJson(full.toJson())).toEqual(full);
       });
@@ -259,15 +223,13 @@ export function main() {
 
     describe('CompileAnimationEntryMetadata', () => {
       it('should serialize with full data', () => {
-        let full = new CompileAnimationEntryMetadata('name', [
-          new CompileAnimationStateTransitionMetadata('key => value',
-            new CompileAnimationSequenceMetadata([
-              new CompileAnimationStyleMetadata(0, [{ "color": "red" }]),
-              new CompileAnimationAnimateMetadata(1000,
-                new CompileAnimationStyleMetadata(0, [{ "color": "blue" }]))
-            ])
-          )
-        ]);
+        let full = new CompileAnimationEntryMetadata(
+            'name', [new CompileAnimationStateTransitionMetadata(
+                        'key => value', new CompileAnimationSequenceMetadata([
+                          new CompileAnimationStyleMetadata(0, [{'color': 'red'}]),
+                          new CompileAnimationAnimateMetadata(
+                              1000, new CompileAnimationStyleMetadata(0, [{'color': 'blue'}]))
+                        ]))]);
         expect(CompileAnimationEntryMetadata.fromJson(full.toJson())).toEqual(full);
       });
 

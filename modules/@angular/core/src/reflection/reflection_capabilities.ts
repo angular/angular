@@ -1,7 +1,8 @@
-import {Type, isPresent, isFunction, global, stringify, ConcreteType} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';
-import {GetterFn, SetterFn, MethodFn} from './types';
+import {ConcreteType, Type, global, isFunction, isPresent, stringify} from '../facade/lang';
+
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
+import {GetterFn, MethodFn, SetterFn} from './types';
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
@@ -65,23 +66,29 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       case 17:
         return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
                 a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any) =>
-                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16,
-                         a17);
+                   new t(
+                       a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
       case 18:
         return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
                 a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
-                a18: any) => new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15,
-                                   a16, a17, a18);
+                a18: any) =>
+                   new t(
+                       a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17,
+                       a18);
       case 19:
         return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
                 a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
-                a18: any, a19: any) => new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13,
-                                             a14, a15, a16, a17, a18, a19);
+                a18: any, a19: any) =>
+                   new t(
+                       a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17,
+                       a18, a19);
       case 20:
         return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
                 a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
-                a18: any, a19: any, a20: any) => new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11,
-                                                       a12, a13, a14, a15, a16, a17, a18, a19, a20);
+                a18: any, a19: any, a20: any) =>
+                   new t(
+                       a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17,
+                       a18, a19, a20);
     };
 
     throw new Error(
@@ -89,7 +96,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   /** @internal */
-  _zipTypesAndAnnotations(paramTypes: any /** TODO #9100 */, paramAnnotations: any /** TODO #9100 */): any[][] {
+  _zipTypesAndAnnotations(
+      paramTypes: any /** TODO #9100 */, paramAnnotations: any /** TODO #9100 */): any[][] {
     var result: any /** TODO #9100 */;
 
     if (typeof paramTypes === 'undefined') {
@@ -125,9 +133,11 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // API of tsickle for lowering decorators to properties on the class.
     if (isPresent((<any>typeOrFunc).ctorParameters)) {
       let ctorParameters = (<any>typeOrFunc).ctorParameters;
-      let paramTypes = ctorParameters.map((ctorParam: any /** TODO #9100 */) => ctorParam && ctorParam.type);
+      let paramTypes =
+          ctorParameters.map((ctorParam: any /** TODO #9100 */) => ctorParam && ctorParam.type);
       let paramAnnotations = ctorParameters.map(
-          (ctorParam: any /** TODO #9100 */) => ctorParam && convertTsickleDecoratorIntoMetadata(ctorParam.decorators));
+          (ctorParam: any /** TODO #9100 */) =>
+              ctorParam && convertTsickleDecoratorIntoMetadata(ctorParam.decorators));
       return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
     }
 
@@ -182,10 +192,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     if (isPresent((<any>typeOrFunc).propDecorators)) {
       let propDecorators = (<any>typeOrFunc).propDecorators;
       let propMetadata = <{[key: string]: any[]}>{};
-      Object.keys(propDecorators)
-          .forEach(prop => {
-            propMetadata[prop] = convertTsickleDecoratorIntoMetadata(propDecorators[prop]);
-          });
+      Object.keys(propDecorators).forEach(prop => {
+        propMetadata[prop] = convertTsickleDecoratorIntoMetadata(propDecorators[prop]);
+      });
       return propMetadata;
     }
 

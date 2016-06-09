@@ -1,6 +1,7 @@
 import {isBlank} from '../facade/lang';
-import {ElementRef} from './element_ref';
+
 import {AppElement} from './element';
+import {ElementRef} from './element_ref';
 import {AppView} from './view';
 import {EmbeddedViewRef} from './view_ref';
 
@@ -41,8 +42,8 @@ export class TemplateRef_<C> extends TemplateRef<C> {
   constructor(private _appElement: AppElement, private _viewFactory: Function) { super(); }
 
   createEmbeddedView(context: C): EmbeddedViewRef<C> {
-    var view: AppView<C> = this._viewFactory(this._appElement.parentView.viewUtils,
-                                             this._appElement.parentInjector, this._appElement);
+    var view: AppView<C> = this._viewFactory(
+        this._appElement.parentView.viewUtils, this._appElement.parentInjector, this._appElement);
     if (isBlank(context)) {
       context = <any>EMPTY_CONTEXT;
     }

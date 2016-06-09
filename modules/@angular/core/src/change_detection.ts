@@ -4,23 +4,4 @@
  * Change detection enables data binding in Angular.
  */
 
-export {
-  ChangeDetectionStrategy,
-
-  ChangeDetectorRef,
-
-  WrappedValue,
-  SimpleChange,
-  SimpleChanges,
-  PipeTransform,
-  DefaultIterableDiffer,
-  IterableDiffers,
-  IterableDiffer,
-  IterableDifferFactory,
-  KeyValueDiffers,
-  KeyValueDiffer,
-  KeyValueDifferFactory,
-  CollectionChangeRecord,
-  KeyValueChangeRecord,
-  TrackByFn
-} from './change_detection/change_detection';
+export {ChangeDetectionStrategy, ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, IterableDiffer, IterableDifferFactory, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDifferFactory, KeyValueDiffers, PipeTransform, SimpleChange, SimpleChanges, TrackByFn, WrappedValue} from './change_detection/change_detection';

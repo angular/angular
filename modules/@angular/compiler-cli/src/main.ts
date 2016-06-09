@@ -8,7 +8,8 @@ import * as tsc from '@angular/tsc-wrapped';
 
 import {CodeGenerator} from './codegen';
 
-function codegen(ngOptions: tsc.AngularCompilerOptions, program: ts.Program, host: ts.CompilerHost) {
+function codegen(
+    ngOptions: tsc.AngularCompilerOptions, program: ts.Program, host: ts.CompilerHost) {
   return CodeGenerator.create(ngOptions, program, host).codegen();
 }
 
@@ -19,7 +20,7 @@ if (require.main === module) {
       .then(exitCode => process.exit(exitCode))
       .catch(e => {
         console.error(e.stack);
-        console.error("Compilation failed");
+        console.error('Compilation failed');
         process.exit(1);
       });
 }

@@ -1,7 +1,7 @@
-import {Pipe, Injectable, ChangeDetectorRef, OnDestroy, WrappedValue} from '@angular/core';
+import {ChangeDetectorRef, Injectable, OnDestroy, Pipe, WrappedValue} from '@angular/core';
 
+import {EventEmitter, Observable, ObservableWrapper} from '../facade/async';
 import {isBlank, isPresent, isPromise} from '../facade/lang';
-import {ObservableWrapper, Observable, EventEmitter} from '../facade/async';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
@@ -13,7 +13,7 @@ interface SubscriptionStrategy {
 
 class ObservableStrategy implements SubscriptionStrategy {
   createSubscription(async: any, updateLatestValue: any): any {
-    return ObservableWrapper.subscribe(async, updateLatestValue, e => { throw e; } );
+    return ObservableWrapper.subscribe(async, updateLatestValue, e => { throw e; });
   }
 
   dispose(subscription: any): void { ObservableWrapper.dispose(subscription); }
@@ -73,7 +73,7 @@ export class AsyncPipe implements OnDestroy {
   /** @internal */
   _subscription: Object = null;
   /** @internal */
-  _obj: Observable<any>| Promise<any>| EventEmitter<any> = null;
+  _obj: Observable<any>|Promise<any>|EventEmitter<any> = null;
   /** @internal */
   _ref: ChangeDetectorRef;
   private _strategy: SubscriptionStrategy = null;
@@ -86,7 +86,7 @@ export class AsyncPipe implements OnDestroy {
     }
   }
 
-  transform(obj: Observable<any>| Promise<any>| EventEmitter<any>): any {
+  transform(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
     if (isBlank(this._obj)) {
       if (isPresent(obj)) {
         this._subscribe(obj);
@@ -109,7 +109,7 @@ export class AsyncPipe implements OnDestroy {
   }
 
   /** @internal */
-  _subscribe(obj: Observable<any>| Promise<any>| EventEmitter<any>): void {
+  _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
     this._subscription = this._strategy.createSubscription(
@@ -117,7 +117,7 @@ export class AsyncPipe implements OnDestroy {
   }
 
   /** @internal */
-  _selectStrategy(obj: Observable<any>| Promise<any>| EventEmitter<any>): any {
+  _selectStrategy(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
     if (isPromise(obj)) {
       return _promiseStrategy;
     } else if (ObservableWrapper.isObservable(obj)) {

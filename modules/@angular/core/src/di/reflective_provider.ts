@@ -1,25 +1,9 @@
-import {
-  Type,
-  isBlank,
-  isPresent,
-  isArray,
-} from '../facade/lang';
+import {Type, isBlank, isPresent, isArray,} from '../facade/lang';
 import {MapWrapper, ListWrapper} from '../facade/collection';
 import {reflector} from '../reflection/reflection';
 import {ReflectiveKey} from './reflective_key';
-import {
-  InjectMetadata,
-  OptionalMetadata,
-  SelfMetadata,
-  HostMetadata,
-  SkipSelfMetadata,
-  DependencyMetadata
-} from './metadata';
-import {
-  NoAnnotationError,
-  MixingMultiProvidersWithRegularProvidersError,
-  InvalidProviderError
-} from './reflective_exceptions';
+import {InjectMetadata, OptionalMetadata, SelfMetadata, HostMetadata, SkipSelfMetadata, DependencyMetadata} from './metadata';
+import {NoAnnotationError, MixingMultiProvidersWithRegularProvidersError, InvalidProviderError} from './reflective_exceptions';
 import {resolveForwardRef} from './forward_ref';
 import {Provider, ProviderBuilder, provide} from './provider';
 import {isProviderLiteral, createProvider} from './provider_util';
@@ -29,8 +13,9 @@ import {isProviderLiteral, createProvider} from './provider_util';
  * This is internal to Angular and should not be used directly.
  */
 export class ReflectiveDependency {
-  constructor(public key: ReflectiveKey, public optional: boolean, public lowerBoundVisibility: any,
-              public upperBoundVisibility: any, public properties: any[]) {}
+  constructor(
+      public key: ReflectiveKey, public optional: boolean, public lowerBoundVisibility: any,
+      public upperBoundVisibility: any, public properties: any[]) {}
 
   static fromKey(key: ReflectiveKey): ReflectiveDependency {
     return new ReflectiveDependency(key, false, null, null, []);
@@ -80,8 +65,9 @@ export interface ResolvedReflectiveProvider {
 export interface ResolvedReflectiveBinding extends ResolvedReflectiveProvider {}
 
 export class ResolvedReflectiveProvider_ implements ResolvedReflectiveBinding {
-  constructor(public key: ReflectiveKey, public resolvedFactories: ResolvedReflectiveFactory[],
-              public multiProvider: boolean) {}
+  constructor(
+      public key: ReflectiveKey, public resolvedFactories: ResolvedReflectiveFactory[],
+      public multiProvider: boolean) {}
 
   get resolvedFactory(): ResolvedReflectiveFactory { return this.resolvedFactories[0]; }
 }
@@ -134,15 +120,15 @@ export function resolveReflectiveFactory(provider: Provider): ResolvedReflective
  * convenience provider syntax.
  */
 export function resolveReflectiveProvider(provider: Provider): ResolvedReflectiveProvider {
-  return new ResolvedReflectiveProvider_(ReflectiveKey.get(provider.token),
-                                         [resolveReflectiveFactory(provider)], provider.multi);
+  return new ResolvedReflectiveProvider_(
+      ReflectiveKey.get(provider.token), [resolveReflectiveFactory(provider)], provider.multi);
 }
 
 /**
  * Resolve a list of Providers.
  */
 export function resolveReflectiveProviders(
-    providers: Array<Type | Provider | {[k: string]: any} | any[]>): ResolvedReflectiveProvider[] {
+    providers: Array<Type|Provider|{[k: string]: any}|any[]>): ResolvedReflectiveProvider[] {
   var normalized = _normalizeProviders(providers, []);
   var resolved = normalized.map(resolveReflectiveProvider);
   return MapWrapper.values(
@@ -187,7 +173,7 @@ export function mergeResolvedReflectiveProviders(
 }
 
 function _normalizeProviders(
-    providers: Array<Type | Provider | {[k: string]: any} | ProviderBuilder | any[]>,
+    providers: Array<Type|Provider|{[k: string]: any}|ProviderBuilder|any[]>,
     res: Provider[]): Provider[] {
   providers.forEach(b => {
     if (b instanceof Type) {
@@ -213,8 +199,8 @@ function _normalizeProviders(
   return res;
 }
 
-export function constructDependencies(typeOrFunc: any,
-                                      dependencies: any[]): ReflectiveDependency[] {
+export function constructDependencies(
+    typeOrFunc: any, dependencies: any[]): ReflectiveDependency[] {
   if (isBlank(dependencies)) {
     return _dependenciesFor(typeOrFunc);
   } else {
@@ -232,8 +218,9 @@ function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
   return params.map((p: any[]) => _extractToken(typeOrFunc, p, params));
 }
 
-function _extractToken(typeOrFunc: any /** TODO #9100 */, metadata: any /** TODO #9100 */ /*any[] | any*/,
-                       params: any[][]): ReflectiveDependency {
+function _extractToken(
+    typeOrFunc: any /** TODO #9100 */, metadata: any /** TODO #9100 */ /*any[] | any*/,
+    params: any[][]): ReflectiveDependency {
   var depProps: any[] /** TODO #9100 */ = [];
   var token: any /** TODO #9100 */ = null;
   var optional = false;
@@ -287,8 +274,10 @@ function _extractToken(typeOrFunc: any /** TODO #9100 */, metadata: any /** TODO
   }
 }
 
-function _createDependency(token: any /** TODO #9100 */, optional: any /** TODO #9100 */, lowerBoundVisibility: any /** TODO #9100 */, upperBoundVisibility: any /** TODO #9100 */,
-                           depProps: any /** TODO #9100 */): ReflectiveDependency {
-  return new ReflectiveDependency(ReflectiveKey.get(token), optional, lowerBoundVisibility,
-                                  upperBoundVisibility, depProps);
+function _createDependency(
+    token: any /** TODO #9100 */, optional: any /** TODO #9100 */,
+    lowerBoundVisibility: any /** TODO #9100 */, upperBoundVisibility: any /** TODO #9100 */,
+    depProps: any /** TODO #9100 */): ReflectiveDependency {
+  return new ReflectiveDependency(
+      ReflectiveKey.get(token), optional, lowerBoundVisibility, upperBoundVisibility, depProps);
 }

@@ -1,7 +1,9 @@
-import {Injectable, EventEmitter} from '@angular/core';
-import {ObservableWrapper} from '../src/facade/async';
+import {EventEmitter, Injectable} from '@angular/core';
+
 import {Location} from '../index';
-import {LocationStrategy} from "../src/location/location_strategy";
+import {ObservableWrapper} from '../src/facade/async';
+import {LocationStrategy} from '../src/location/location_strategy';
+
 
 /**
  * A spy for {@link Location} that allows tests to fire simulated location events.
@@ -62,7 +64,7 @@ export class SpyLocation implements Location {
     this._historyIndex = this._history.length - 1;
 
     var locationState = this._history[this._historyIndex - 1];
-    if(locationState.path == path && locationState.query == query) {
+    if (locationState.path == path && locationState.query == query) {
       return;
     }
 
@@ -99,8 +101,9 @@ export class SpyLocation implements Location {
     }
   }
 
-  subscribe(onNext: (value: any) => void, onThrow: (error: any) => void = null,
-            onReturn: () => void = null): Object {
+  subscribe(
+      onNext: (value: any) => void, onThrow: (error: any) => void = null,
+      onReturn: () => void = null): Object {
     return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 

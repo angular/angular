@@ -1,6 +1,5 @@
+import {IS_DART, assertionsEnabled} from '../../router/src/facade/lang';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../testing';
-
-import {assertionsEnabled, IS_DART} from '../../router/src/facade/lang';
 
 export function main() {
   describe('dev mode', () => {
@@ -13,7 +12,7 @@ export function main() {
         try {
           var s: string = <any>42;
           expect(s).toEqual(42);  // without it, dart analyzer will complain that `s` is not used.
-          throw "should not be reached";
+          throw 'should not be reached';
         } catch (e) {
         }
       });

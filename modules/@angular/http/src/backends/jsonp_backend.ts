@@ -1,14 +1,16 @@
-import {ConnectionBackend, Connection} from '../interfaces';
-import {ReadyState, RequestMethod, ResponseType} from '../enums';
-import {Request} from '../static_request';
-import {Response} from '../static_response';
-import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from '@angular/core';
-import {BrowserJsonp} from './browser_jsonp';
-import {makeTypeError} from '../facade/exceptions';
-import {StringWrapper, isPresent} from '../facade/lang';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
+
+import {BaseResponseOptions, ResponseOptions} from '../base_response_options';
+import {ReadyState, RequestMethod, ResponseType} from '../enums';
+import {makeTypeError} from '../facade/exceptions';
+import {StringWrapper, isPresent} from '../facade/lang';
+import {Connection, ConnectionBackend} from '../interfaces';
+import {Request} from '../static_request';
+import {Response} from '../static_response';
+
+import {BrowserJsonp} from './browser_jsonp';
 
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
@@ -45,8 +47,8 @@ export class JSONPConnection_ extends JSONPConnection {
   private _responseData: any;
   private _finished: boolean = false;
 
-  constructor(req: Request, private _dom: BrowserJsonp,
-              private baseResponseOptions?: ResponseOptions) {
+  constructor(
+      req: Request, private _dom: BrowserJsonp, private baseResponseOptions?: ResponseOptions) {
     super();
     if (req.method !== RequestMethod.Get) {
       throw makeTypeError(JSONP_ERR_WRONG_METHOD);

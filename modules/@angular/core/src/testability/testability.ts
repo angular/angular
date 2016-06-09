@@ -1,9 +1,10 @@
-import {Map, MapWrapper} from '../facade/collection';
-import {scheduleMicroTask} from '../facade/lang';
-import {BaseException} from '../facade/exceptions';
-import {NgZone} from '../zone/ng_zone';
-import {ObservableWrapper} from '../facade/async';
 import {Injectable} from '../di/decorators';
+import {ObservableWrapper} from '../facade/async';
+import {Map, MapWrapper} from '../facade/collection';
+import {BaseException} from '../facade/exceptions';
+import {scheduleMicroTask} from '../facade/lang';
+import {NgZone} from '../zone/ng_zone';
+
 
 
 /**
@@ -132,15 +133,15 @@ export class TestabilityRegistry {
  */
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any,
-                        findInAncestors: boolean): Testability;
+  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
+      Testability;
 }
 
 /* @ts2dart_const */
 class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any,
-                        findInAncestors: boolean): Testability {
+  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
+      Testability {
     return null;
   }
 }

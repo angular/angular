@@ -1,18 +1,8 @@
-import {
-  DoCheck,
-  OnDestroy,
-  Directive,
-  ElementRef,
-  IterableDiffers,
-  KeyValueDiffers,
-  Renderer,
-  IterableDiffer,
-  KeyValueDiffer,
-  CollectionChangeRecord,
-  KeyValueChangeRecord
-} from '@angular/core';
-import {isPresent, isString, isArray} from '../facade/lang';
+import {CollectionChangeRecord, Directive, DoCheck, ElementRef, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, OnDestroy, Renderer} from '@angular/core';
+
 import {StringMapWrapper, isListLikeIterable} from '../facade/collection';
+import {isArray, isPresent, isString} from '../facade/lang';
+
 
 /**
  * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on
@@ -80,10 +70,11 @@ export class NgClass implements DoCheck, OnDestroy {
   private _iterableDiffer: IterableDiffer;
   private _keyValueDiffer: KeyValueDiffer;
   private _initialClasses: string[] = [];
-  private _rawClass: string[] | Set<string>;
+  private _rawClass: string[]|Set<string>;
 
-  constructor(private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
-              private _ngEl: ElementRef, private _renderer: Renderer) {}
+  constructor(
+      private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
+      private _ngEl: ElementRef, private _renderer: Renderer) {}
 
   set initialClasses(v: string) {
     this._applyInitialClasses(true);
@@ -92,14 +83,14 @@ export class NgClass implements DoCheck, OnDestroy {
     this._applyClasses(this._rawClass, false);
   }
 
-  set rawClass(v: string | string[] | Set<string>| {[key: string]: any}) {
+  set rawClass(v: string|string[]|Set<string>|{[key: string]: any}) {
     this._cleanupClasses(this._rawClass);
 
     if (isString(v)) {
       v = (<string>v).split(' ');
     }
 
-    this._rawClass = <string[] | Set<string>>v;
+    this._rawClass = <string[]|Set<string>>v;
     this._iterableDiffer = null;
     this._keyValueDiffer = null;
     if (isPresent(v)) {
@@ -128,7 +119,7 @@ export class NgClass implements DoCheck, OnDestroy {
 
   ngOnDestroy(): void { this._cleanupClasses(this._rawClass); }
 
-  private _cleanupClasses(rawClassVal: string[] | Set<string>| {[key: string]: any}): void {
+  private _cleanupClasses(rawClassVal: string[]|Set<string>|{[key: string]: any}): void {
     this._applyClasses(rawClassVal, true);
     this._applyInitialClasses(false);
   }
@@ -156,18 +147,18 @@ export class NgClass implements DoCheck, OnDestroy {
     this._initialClasses.forEach(className => this._toggleClass(className, !isCleanup));
   }
 
-  private _applyClasses(rawClassVal: string[] | Set<string>| {[key: string]: any},
-                        isCleanup: boolean) {
+  private _applyClasses(
+      rawClassVal: string[]|Set<string>|{[key: string]: any}, isCleanup: boolean) {
     if (isPresent(rawClassVal)) {
       if (isArray(rawClassVal)) {
         (<string[]>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
       } else if (rawClassVal instanceof Set) {
         (<Set<string>>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
       } else {
-        StringMapWrapper.forEach(<{[k: string]: any}>rawClassVal,
-                                 (expVal: any, className: string) => {
-                                   if (isPresent(expVal)) this._toggleClass(className, !isCleanup);
-                                 });
+        StringMapWrapper.forEach(
+            <{[k: string]: any}>rawClassVal, (expVal: any, className: string) => {
+              if (isPresent(expVal)) this._toggleClass(className, !isCleanup);
+            });
       }
     }
   }

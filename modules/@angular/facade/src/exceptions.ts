@@ -8,7 +8,7 @@ export {ExceptionHandler} from './exception_handler';
  */
 export class BaseException extends Error {
   public stack: any;
-  constructor(public message: string = "--") {
+  constructor(public message: string = '--') {
     super(message);
     this.stack = (<any>new Error(message)).stack;
   }
@@ -23,8 +23,9 @@ export class BaseException extends Error {
 export class WrappedException extends BaseWrappedException {
   private _wrapperStack: any;
 
-  constructor(private _wrapperMessage: string, private _originalException: any /** TODO #9100 */, private _originalStack?: any /** TODO #9100 */,
-              private _context?: any /** TODO #9100 */) {
+  constructor(
+      private _wrapperMessage: string, private _originalException: any /** TODO #9100 */,
+      private _originalStack?: any /** TODO #9100 */, private _context?: any /** TODO #9100 */) {
     super(_wrapperMessage);
     this._wrapperStack = (<any>new Error(_wrapperMessage)).stack;
   }

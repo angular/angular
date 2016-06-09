@@ -1,9 +1,11 @@
-import {Type, isBlank, isString, stringify} from '../facade/lang';
-import {BaseException} from '../facade/exceptions';
-import {PromiseWrapper} from '../facade/async';
-import {reflector} from '../reflection/reflection';
-import {ComponentFactory} from './component_factory';
 import {Injectable} from '../di/decorators';
+import {PromiseWrapper} from '../facade/async';
+import {BaseException} from '../facade/exceptions';
+import {Type, isBlank, isString, stringify} from '../facade/lang';
+import {reflector} from '../reflection/reflection';
+
+import {ComponentFactory} from './component_factory';
+
 
 /**
  * Low-level service for loading {@link ComponentFactory}s, which
@@ -23,7 +25,8 @@ function _isComponentFactory(type: any): boolean {
 export class ReflectorComponentResolver extends ComponentResolver {
   resolveComponent(component: Type|string): Promise<ComponentFactory<any>> {
     if (isString(component)) {
-      return PromiseWrapper.reject(new BaseException(`Cannot resolve component using '${component}'.`), null);
+      return PromiseWrapper.reject(
+          new BaseException(`Cannot resolve component using '${component}'.`), null);
     }
 
     var metadatas = reflector.annotations(<Type>component);

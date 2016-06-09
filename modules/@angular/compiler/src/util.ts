@@ -1,13 +1,5 @@
-import {
-  IS_DART,
-  StringWrapper,
-  Math,
-  isBlank,
-  isArray,
-  isStrictStringMap,
-  isPrimitive
-} from './facade/lang';
 import {StringMapWrapper} from './facade/collection';
+import {IS_DART, Math, StringWrapper, isArray, isBlank, isPrimitive, isStrictStringMap} from './facade/lang';
 
 export var MODULE_SUFFIX = IS_DART ? '.dart' : '';
 
@@ -15,13 +7,13 @@ var CAMEL_CASE_REGEXP = /([A-Z])/g;
 var DASH_CASE_REGEXP = /-([a-z])/g;
 
 export function camelCaseToDashCase(input: string): string {
-  return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,
-                                        (m: any /** TODO #9100 */) => { return '-' + m[1].toLowerCase(); });
+  return StringWrapper.replaceAllMapped(
+      input, CAMEL_CASE_REGEXP, (m: any /** TODO #9100 */) => { return '-' + m[1].toLowerCase(); });
 }
 
 export function dashCaseToCamelCase(input: string): string {
-  return StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP,
-                                        (m: any /** TODO #9100 */) => { return m[1].toUpperCase(); });
+  return StringWrapper.replaceAllMapped(
+      input, DASH_CASE_REGEXP, (m: any /** TODO #9100 */) => { return m[1].toUpperCase(); });
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
@@ -62,8 +54,9 @@ export class ValueTransformer implements ValueVisitor {
   }
   visitStringMap(map: {[key: string]: any}, context: any): any {
     var result = {};
-    StringMapWrapper.forEach(map,
-                             (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => { (result as any /** TODO #9100 */)[key] = visitValue(value, this, context); });
+    StringMapWrapper.forEach(map, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
+      (result as any /** TODO #9100 */)[key] = visitValue(value, this, context);
+    });
     return result;
   }
   visitPrimitive(value: any, context: any): any { return value; }

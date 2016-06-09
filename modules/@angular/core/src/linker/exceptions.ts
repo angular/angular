@@ -36,8 +36,9 @@ import {BaseException, WrappedException} from '../facade/exceptions';
  */
 export class ExpressionChangedAfterItHasBeenCheckedException extends BaseException {
   constructor(oldValue: any, currValue: any, context: any) {
-    super(`Expression has changed after it was checked. ` +
-          `Previous value: '${oldValue}'. Current value: '${currValue}'`);
+    super(
+        `Expression has changed after it was checked. ` +
+        `Previous value: '${oldValue}'. Current value: '${currValue}'`);
   }
 }
 

@@ -1,7 +1,8 @@
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
-import {RegExpWrapper, StringWrapper, isPresent, isBlank} from '../src/facade/lang';
+import {RegExpWrapper, StringWrapper, isBlank, isPresent} from '../src/facade/lang';
+
 import {UrlResolver} from './url_resolver';
 
 export class StyleWithImports {
@@ -18,18 +19,19 @@ export function isStyleUrlResolvable(url: string): boolean {
  * Rewrites stylesheets by resolving and removing the @import urls that
  * are either relative or don't have a `package:` scheme
  */
-export function extractStyleUrls(resolver: UrlResolver, baseUrl: string,
-                                 cssText: string): StyleWithImports {
+export function extractStyleUrls(
+    resolver: UrlResolver, baseUrl: string, cssText: string): StyleWithImports {
   var foundUrls: any[] /** TODO #9100 */ = [];
-  var modifiedCssText = StringWrapper.replaceAllMapped(cssText, _cssImportRe, (m: any /** TODO #9100 */) => {
-    var url = isPresent(m[1]) ? m[1] : m[2];
-    if (!isStyleUrlResolvable(url)) {
-      // Do not attempt to resolve non-package absolute URLs with URI scheme
-      return m[0];
-    }
-    foundUrls.push(resolver.resolve(baseUrl, url));
-    return '';
-  });
+  var modifiedCssText =
+      StringWrapper.replaceAllMapped(cssText, _cssImportRe, (m: any /** TODO #9100 */) => {
+        var url = isPresent(m[1]) ? m[1] : m[2];
+        if (!isStyleUrlResolvable(url)) {
+          // Do not attempt to resolve non-package absolute URLs with URI scheme
+          return m[0];
+        }
+        foundUrls.push(resolver.resolve(baseUrl, url));
+        return '';
+      });
   return new StyleWithImports(modifiedCssText, foundUrls);
 }
 

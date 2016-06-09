@@ -1,4 +1,4 @@
-import {ConcreteType, global, Type, isFunction, stringify} from '../facade/lang';
+import {ConcreteType, Type, global, isFunction, stringify} from '../facade/lang';
 
 var _nextClassId = 0;
 
@@ -20,13 +20,13 @@ export interface ClassDefinition {
    *
    * See {@link Class} for example of usage.
    */
-  constructor: Function | any[];
+  constructor: Function|any[];
 
   /**
    * Other methods on the class. Note that values should have type 'Function' but TS requires
    * all properties to have a narrower type than the index signature.
    */
-  [x: string]: Type | Function | any[];
+  [x: string]: Type|Function|any[];
 }
 
 /**
@@ -61,7 +61,7 @@ export interface TypeDecorator {
   // ParameterDecorator is declared in lib.d.ts as a `declare type`
   // so we cannot declare this interface as a subtype.
   // see https://github.com/angular/angular/issues/3379#issuecomment-126169417
-  (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
+  (target: Object, propertyKey?: string|symbol, parameterIndex?: number): void;
 
   /**
    * Storage for the accumulated annotations so far used by the DSL syntax.
@@ -248,7 +248,8 @@ var Reflect = global.Reflect;
 })();
 
 export function makeDecorator(
-    annotationCls: any /** TODO #9100 */, chainFn: (fn: Function) => void = null): (...args: any[]) => (cls: any) => any {
+    annotationCls: any /** TODO #9100 */,
+    chainFn: (fn: Function) => void = null): (...args: any[]) => (cls: any) => any {
   function DecoratorFactory(objOrType: any /** TODO #9100 */): (cls: any) => any {
     var annotationInstance = new (<any>annotationCls)(objOrType);
     if (this instanceof annotationCls) {
@@ -257,13 +258,14 @@ export function makeDecorator(
       var chainAnnotation =
           isFunction(this) && this.annotations instanceof Array ? this.annotations : [];
       chainAnnotation.push(annotationInstance);
-      var TypeDecorator: TypeDecorator = <TypeDecorator>function TypeDecorator(cls: any /** TODO #9100 */) {
-        var annotations = Reflect.getOwnMetadata('annotations', cls);
-        annotations = annotations || [];
-        annotations.push(annotationInstance);
-        Reflect.defineMetadata('annotations', annotations, cls);
-        return cls;
-      };
+      var TypeDecorator: TypeDecorator =
+          <TypeDecorator>function TypeDecorator(cls: any /** TODO #9100 */) {
+            var annotations = Reflect.getOwnMetadata('annotations', cls);
+            annotations = annotations || [];
+            annotations.push(annotationInstance);
+            Reflect.defineMetadata('annotations', annotations, cls);
+            return cls;
+          };
       TypeDecorator.annotations = chainAnnotation;
       TypeDecorator.Class = Class;
       if (chainFn) chainFn(TypeDecorator);
@@ -287,7 +289,9 @@ export function makeParamDecorator(annotationCls: any /** TODO #9100 */): any {
     }
 
 
-    function ParamDecorator(cls: any /** TODO #9100 */, unusedKey: any /** TODO #9100 */, index: any /** TODO #9100 */): any {
+    function ParamDecorator(
+        cls: any /** TODO #9100 */, unusedKey: any /** TODO #9100 */,
+        index: any /** TODO #9100 */): any {
       var parameters: any[][] = Reflect.getMetadata('parameters', cls);
       parameters = parameters || [];
 

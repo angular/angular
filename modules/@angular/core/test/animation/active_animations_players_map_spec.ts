@@ -1,27 +1,11 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from '../../testing/testing_internal';
-
-import {
-  fakeAsync,
-  flushMicrotasks
-} from '../../testing';
-
-import {el} from '@angular/platform-browser/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {el} from '@angular/platform-browser/testing';
 
-import {isPresent} from '../../src/facade/lang';
-import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
 import {ActiveAnimationPlayersMap} from '../../src/animation/active_animation_players_map';
+import {isPresent} from '../../src/facade/lang';
+import {fakeAsync, flushMicrotasks} from '../../testing';
+import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {
   describe('ActiveAnimationsPlayersMap', function() {
@@ -65,10 +49,7 @@ export function main() {
       playersMap.set(elementNode, 'myAnimation1', player1);
       playersMap.set(elementNode, 'myAnimation2', player2);
       expect(playersMap.length).toEqual(2);
-      expect(playersMap.findAllPlayersByElement(elementNode)).toEqual([
-        player1,
-        player2
-      ]);
+      expect(playersMap.findAllPlayersByElement(elementNode)).toEqual([player1, player2]);
     });
 
     it('should only allow one player to be set for a given element/animationName pair', () => {

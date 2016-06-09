@@ -1,16 +1,7 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-  AsyncTestCompleter
-} from '@angular/core/testing/testing_internal';
-import {XHRImpl} from '../../src/xhr/xhr_impl';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+
 import {PromiseWrapper} from '../../src/facade/async';
+import {XHRImpl} from '../../src/xhr/xhr_impl';
 
 export function main() {
   describe('XHRImpl', () => {
@@ -35,7 +26,8 @@ export function main() {
          });
        }), 10000);
 
-    it('should reject the Promise on failure', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should reject the Promise on failure',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          PromiseWrapper.catchError(xhr.get(url404), (e) => {
            expect(e).toEqual(`Failed to load ${url404}`);
            async.done();

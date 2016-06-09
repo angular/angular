@@ -1,14 +1,13 @@
-import {global, noop} from './lang';
-export {PromiseWrapper, PromiseCompleter} from './promise';
-
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-
 import {PromiseObservable} from 'rxjs/observable/PromiseObservable';
 import {toPromise} from 'rxjs/operator/toPromise';
 
+import {global, noop} from './lang';
+
 export {Observable} from 'rxjs/Observable';
 export {Subject} from 'rxjs/Subject';
+export {PromiseCompleter, PromiseWrapper} from './promise';
 
 export class TimerWrapper {
   static setTimeout(fn: (...args: any[]) => void, millis: number): number {
@@ -24,10 +23,11 @@ export class TimerWrapper {
 
 export class ObservableWrapper {
   // TODO(vsavkin): when we use rxnext, try inferring the generic type from the first arg
-  static subscribe<T>(emitter: any, onNext: (value: T) => void, onError?: (exception: any) => void,
-                      onComplete: () => void = () => {}): Object {
-    onError = (typeof onError === "function") && onError || noop;
-    onComplete = (typeof onComplete === "function") && onComplete || noop;
+  static subscribe<T>(
+      emitter: any, onNext: (value: T) => void, onError?: (exception: any) => void,
+      onComplete: () => void = () => {}): Object {
+    onError = (typeof onError === 'function') && onError || noop;
+    onComplete = (typeof onComplete === 'function') && onComplete || noop;
     return emitter.subscribe({next: onNext, error: onError, complete: onComplete});
   }
 
@@ -92,7 +92,8 @@ export class ObservableWrapper {
  * }
  * ```
  *
- * The events payload can be accessed by the parameter `$event` on the components output event handler:
+ * The events payload can be accessed by the parameter `$event` on the components output event
+ * handler:
  *
  * ```
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
@@ -134,21 +135,23 @@ export class EventEmitter<T> extends Subject<T> {
     let completeFn = (): any /** TODO #9100 */ => null;
 
     if (generatorOrNext && typeof generatorOrNext === 'object') {
-      schedulerFn = this.__isAsync ? (value: any /** TODO #9100 */) => { setTimeout(() => generatorOrNext.next(value)); } :
-                                    (value: any /** TODO #9100 */) => { generatorOrNext.next(value); };
+      schedulerFn = this.__isAsync ? (value: any /** TODO #9100 */) => {
+        setTimeout(() => generatorOrNext.next(value));
+      } : (value: any /** TODO #9100 */) => { generatorOrNext.next(value); };
 
       if (generatorOrNext.error) {
         errorFn = this.__isAsync ? (err) => { setTimeout(() => generatorOrNext.error(err)); } :
-                                  (err) => { generatorOrNext.error(err); };
+                                   (err) => { generatorOrNext.error(err); };
       }
 
       if (generatorOrNext.complete) {
         completeFn = this.__isAsync ? () => { setTimeout(() => generatorOrNext.complete()); } :
-                                     () => { generatorOrNext.complete(); };
+                                      () => { generatorOrNext.complete(); };
       }
     } else {
-      schedulerFn = this.__isAsync ? (value: any /** TODO #9100 */) => { setTimeout(() => generatorOrNext(value)); } :
-                                    (value: any /** TODO #9100 */) => { generatorOrNext(value); };
+      schedulerFn = this.__isAsync ? (value: any /** TODO #9100 */) => {
+        setTimeout(() => generatorOrNext(value));
+      } : (value: any /** TODO #9100 */) => { generatorOrNext(value); };
 
       if (error) {
         errorFn =

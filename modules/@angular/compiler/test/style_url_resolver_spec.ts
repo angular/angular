@@ -1,7 +1,6 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit} from '@angular/core/testing';
 import {extractStyleUrls, isStyleUrlResolvable} from '@angular/compiler/src/style_url_resolver';
-
 import {UrlResolver} from '@angular/compiler/src/url_resolver';
+import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing';
 
 export function main() {
   describe('extractStyleUrls', () => {
@@ -38,8 +37,9 @@ export function main() {
       `;
       var styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual('');
-      expect(styleWithImports.styleUrls)
-          .toEqual(['http://ng.io/3.css', 'http://ng.io/4.css', 'http://ng.io/5.css']);
+      expect(styleWithImports.styleUrls).toEqual([
+        'http://ng.io/3.css', 'http://ng.io/4.css', 'http://ng.io/5.css'
+      ]);
     });
 
     it('should extract "@import urls and keep rules in the same line', () => {
@@ -56,8 +56,9 @@ export function main() {
       `;
       var styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual('');
-      expect(styleWithImports.styleUrls)
-          .toEqual(['http://ng.io/print1.css', 'http://ng.io/print2.css']);
+      expect(styleWithImports.styleUrls).toEqual([
+        'http://ng.io/print1.css', 'http://ng.io/print2.css'
+      ]);
     });
 
     it('should leave absolute non-package @import urls intact', () => {

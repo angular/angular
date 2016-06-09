@@ -1,22 +1,24 @@
-import {BrowserPlatformLocation} from '../../browser/location/browser_platform_location';
 import {UrlChangeListener} from '@angular/common';
 import {Injectable} from '@angular/core';
-import {ROUTER_CHANNEL} from '../shared/messaging_api';
-import {ServiceMessageBrokerFactory, ServiceMessageBroker} from '../shared/service_message_broker';
-import {PRIMITIVE, Serializer} from '../shared/serializer';
-import {LocationType} from '../shared/serialized_types';
-import {MessageBus} from '../shared/message_bus';
+
+import {BrowserPlatformLocation} from '../../browser/location/browser_platform_location';
 import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../facade/async';
 import {FunctionWrapper} from '../../facade/lang';
+import {MessageBus} from '../shared/message_bus';
+import {ROUTER_CHANNEL} from '../shared/messaging_api';
+import {LocationType} from '../shared/serialized_types';
+import {PRIMITIVE, Serializer} from '../shared/serializer';
+import {ServiceMessageBroker, ServiceMessageBrokerFactory} from '../shared/service_message_broker';
 
 @Injectable()
 export class MessageBasedPlatformLocation {
   private _channelSink: EventEmitter<Object>;
   private _broker: ServiceMessageBroker;
 
-  constructor(private _brokerFactory: ServiceMessageBrokerFactory,
-              private _platformLocation: BrowserPlatformLocation, bus: MessageBus,
-              private _serializer: Serializer) {
+  constructor(
+      private _brokerFactory: ServiceMessageBrokerFactory,
+      private _platformLocation: BrowserPlatformLocation, bus: MessageBus,
+      private _serializer: Serializer) {
     this._platformLocation.onPopState(
         <UrlChangeListener>FunctionWrapper.bind(this._sendUrlChangeEvent, this));
     this._platformLocation.onHashChange(
@@ -26,21 +28,21 @@ export class MessageBasedPlatformLocation {
   }
 
   start(): void {
-    this._broker.registerMethod("getLocation", null, FunctionWrapper.bind(this._getLocation, this),
-                                LocationType);
-    this._broker.registerMethod("setPathname", [PRIMITIVE],
-                                FunctionWrapper.bind(this._setPathname, this));
     this._broker.registerMethod(
-        "pushState", [PRIMITIVE, PRIMITIVE, PRIMITIVE],
+        'getLocation', null, FunctionWrapper.bind(this._getLocation, this), LocationType);
+    this._broker.registerMethod(
+        'setPathname', [PRIMITIVE], FunctionWrapper.bind(this._setPathname, this));
+    this._broker.registerMethod(
+        'pushState', [PRIMITIVE, PRIMITIVE, PRIMITIVE],
         FunctionWrapper.bind(this._platformLocation.pushState, this._platformLocation));
     this._broker.registerMethod(
-        "replaceState", [PRIMITIVE, PRIMITIVE, PRIMITIVE],
+        'replaceState', [PRIMITIVE, PRIMITIVE, PRIMITIVE],
         FunctionWrapper.bind(this._platformLocation.replaceState, this._platformLocation));
     this._broker.registerMethod(
-        "forward", null,
+        'forward', null,
         FunctionWrapper.bind(this._platformLocation.forward, this._platformLocation));
     this._broker.registerMethod(
-        "back", null, FunctionWrapper.bind(this._platformLocation.back, this._platformLocation));
+        'back', null, FunctionWrapper.bind(this._platformLocation.back, this._platformLocation));
   }
 
   private _getLocation(): Promise<Location> {

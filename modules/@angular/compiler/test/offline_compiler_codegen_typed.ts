@@ -1,11 +1,13 @@
 // ATTENTION: This file will be overwritten with generated code by main()
-import {print, IS_DART} from '../src/facade/lang';
-import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {DartEmitter} from '@angular/compiler/src/output/dart_emitter';
 import {DartImportGenerator} from '@angular/compiler/src/output/dart_imports';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {compileComp, compAMetadata} from './offline_compiler_util';
+import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {ComponentFactory} from '@angular/core/src/linker/component_factory';
+
+import {IS_DART, print} from '../src/facade/lang';
+
+import {compAMetadata, compileComp} from './offline_compiler_util';
 import {CompA, SimpleJsImportGenerator} from './offline_compiler_util';
 
 export const CompANgFactory: ComponentFactory<CompA> = null;

@@ -1,5 +1,6 @@
-import {normalizeBool, Type, isType, isBlank, isFunction, stringify} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';
+import {Type, isBlank, isFunction, isType, normalizeBool, stringify} from '../facade/lang';
+
 
 /**
  * Describes how the {@link Injector} should instantiate a given token.
@@ -148,14 +149,15 @@ export class Provider {
   /** @internal */
   _multi: boolean;
 
-  constructor(token: any /** TODO #9100 */, {useClass, useValue, useExisting, useFactory, deps, multi}: {
-    useClass?: Type,
-    useValue?: any,
-    useExisting?: any,
-    useFactory?: Function,
-    deps?: Object[],
-    multi?: boolean
-  }) {
+  constructor(
+      token: any /** TODO #9100 */, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+        useClass?: Type,
+        useValue?: any,
+        useExisting?: any,
+        useFactory?: Function,
+        deps?: Object[],
+        multi?: boolean
+      }) {
     this.token = token;
     this.useClass = useClass;
     this.useValue = useValue;
@@ -388,14 +390,15 @@ export class ProviderBuilder {
  * <!-- TODO: improve the docs -->
  * @deprecated
  */
-export function provide(token: any /** TODO #9100 */, {useClass, useValue, useExisting, useFactory, deps, multi}: {
-  useClass?: Type,
-  useValue?: any,
-  useExisting?: any,
-  useFactory?: Function,
-  deps?: Object[],
-  multi?: boolean
-}): Provider {
+export function provide(
+    token: any /** TODO #9100 */, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+      useClass?: Type,
+      useValue?: any,
+      useExisting?: any,
+      useFactory?: Function,
+      deps?: Object[],
+      multi?: boolean
+    }): Provider {
   return new Provider(token, {
     useClass: useClass,
     useValue: useValue,

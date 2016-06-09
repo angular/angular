@@ -60,8 +60,9 @@ export enum PreparsedElementType {
 }
 
 export class PreparsedElement {
-  constructor(public type: PreparsedElementType, public selectAttr: string, public hrefAttr: string,
-              public nonBindable: boolean, public projectAs: string) {}
+  constructor(
+      public type: PreparsedElementType, public selectAttr: string, public hrefAttr: string,
+      public nonBindable: boolean, public projectAs: string) {}
 }
 
 

@@ -1,5 +1,6 @@
 import {AbstractControl} from '../model';
-import {Validator, ValidatorFn, AsyncValidatorFn} from './validators';
+
+import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export function normalizeValidator(validator: ValidatorFn | Validator): ValidatorFn {
   if ((<Validator>validator).validate !== undefined) {

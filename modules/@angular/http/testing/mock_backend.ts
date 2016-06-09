@@ -1,13 +1,15 @@
 import {Injectable} from '@angular/core';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {Subject} from 'rxjs/Subject';
+import {take} from 'rxjs/operator/take';
+
+import {ReadyState} from '../src/enums';
+import {BaseException} from '../src/facade/exceptions';
+import {isPresent} from '../src/facade/lang';
+import {Connection, ConnectionBackend} from '../src/interfaces';
 import {Request} from '../src/static_request';
 import {Response} from '../src/static_response';
-import {ReadyState} from '../src/enums';
-import {Connection, ConnectionBackend} from '../src/interfaces';
-import {isPresent} from '../src/facade/lang';
-import {BaseException} from '../src/facade/exceptions';
-import {Subject} from 'rxjs/Subject';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {take} from 'rxjs/operator/take';
+
 
 /**
  *
@@ -50,7 +52,8 @@ export class MockConnection implements Connection {
    * var connection;
    * backend.connections.subscribe(c => connection = c);
    * http.request('data.json').subscribe(res => console.log(res.text()));
-   * connection.mockRespond(new Response(new ResponseOptions({ body: 'fake response' }))); //logs 'fake response'
+   * connection.mockRespond(new Response(new ResponseOptions({ body: 'fake response' }))); //logs
+   * 'fake response'
    * ```
    *
    */
@@ -187,8 +190,8 @@ export class MockBackend implements ConnectionBackend {
   constructor() {
     this.connectionsArray = [];
     this.connections = new Subject();
-    this.connections.subscribe((connection: MockConnection) =>
-                                   this.connectionsArray.push(connection));
+    this.connections.subscribe(
+        (connection: MockConnection) => this.connectionsArray.push(connection));
     this.pendingConnections = new Subject();
   }
 

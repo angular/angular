@@ -1,4 +1,4 @@
-import {isBlank, Type} from '../facade/lang';
+import {Type, isBlank} from '../facade/lang';
 
 var _DOM: DomAdapter = null;
 
@@ -48,9 +48,14 @@ export abstract class DomAdapter {
   abstract query(selector: string): any;
   abstract querySelector(el: any /** TODO #9100 */, selector: string): HTMLElement;
   abstract querySelectorAll(el: any /** TODO #9100 */, selector: string): any[];
-  abstract on(el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */): any /** TODO #9100 */;
-  abstract onAndCancel(el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */): Function;
-  abstract dispatchEvent(el: any /** TODO #9100 */, evt: any /** TODO #9100 */): any /** TODO #9100 */;
+  abstract on(
+      el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */): any
+      /** TODO #9100 */;
+  abstract onAndCancel(
+      el: any /** TODO #9100 */, evt: any /** TODO #9100 */,
+      listener: any /** TODO #9100 */): Function;
+  abstract dispatchEvent(el: any /** TODO #9100 */, evt: any /** TODO #9100 */): any
+      /** TODO #9100 */;
   abstract createMouseEvent(eventType: any /** TODO #9100 */): any;
   abstract createEvent(eventType: string): any;
   abstract preventDefault(evt: any /** TODO #9100 */): any /** TODO #9100 */;
@@ -69,14 +74,22 @@ export abstract class DomAdapter {
   abstract childNodes(el: any /** TODO #9100 */): Node[];
   abstract childNodesAsList(el: any /** TODO #9100 */): Node[];
   abstract clearNodes(el: any /** TODO #9100 */): any /** TODO #9100 */;
-  abstract appendChild(el: any /** TODO #9100 */, node: any /** TODO #9100 */): any /** TODO #9100 */;
-  abstract removeChild(el: any /** TODO #9100 */, node: any /** TODO #9100 */): any /** TODO #9100 */;
-  abstract replaceChild(el: any /** TODO #9100 */, newNode: any /** TODO #9100 */, oldNode: any /** TODO #9100 */): any /** TODO #9100 */;
+  abstract appendChild(el: any /** TODO #9100 */, node: any /** TODO #9100 */): any
+      /** TODO #9100 */;
+  abstract removeChild(el: any /** TODO #9100 */, node: any /** TODO #9100 */): any
+      /** TODO #9100 */;
+  abstract replaceChild(
+      el: any /** TODO #9100 */, newNode: any /** TODO #9100 */,
+      oldNode: any /** TODO #9100 */): any /** TODO #9100 */;
   abstract remove(el: any /** TODO #9100 */): Node;
-  abstract insertBefore(el: any /** TODO #9100 */, node: any /** TODO #9100 */): any /** TODO #9100 */;
-  abstract insertAllBefore(el: any /** TODO #9100 */, nodes: any /** TODO #9100 */): any /** TODO #9100 */;
-  abstract insertAfter(el: any /** TODO #9100 */, node: any /** TODO #9100 */): any /** TODO #9100 */;
-  abstract setInnerHTML(el: any /** TODO #9100 */, value: any /** TODO #9100 */): any /** TODO #9100 */;
+  abstract insertBefore(el: any /** TODO #9100 */, node: any /** TODO #9100 */): any
+      /** TODO #9100 */;
+  abstract insertAllBefore(el: any /** TODO #9100 */, nodes: any /** TODO #9100 */): any
+      /** TODO #9100 */;
+  abstract insertAfter(el: any /** TODO #9100 */, node: any /** TODO #9100 */): any
+      /** TODO #9100 */;
+  abstract setInnerHTML(el: any /** TODO #9100 */, value: any /** TODO #9100 */): any
+      /** TODO #9100 */;
   abstract getText(el: any /** TODO #9100 */): string;
   abstract setText(el: any /** TODO #9100 */, value: string): any /** TODO #9100 */;
   abstract getValue(el: any /** TODO #9100 */): string;
@@ -88,7 +101,8 @@ export abstract class DomAdapter {
   abstract createElement(tagName: any /** TODO #9100 */, doc?: any /** TODO #9100 */): HTMLElement;
   abstract createElementNS(ns: string, tagName: string, doc?: any /** TODO #9100 */): Element;
   abstract createTextNode(text: string, doc?: any /** TODO #9100 */): Text;
-  abstract createScriptTag(attrName: string, attrValue: string, doc?: any /** TODO #9100 */): HTMLElement;
+  abstract createScriptTag(attrName: string, attrValue: string, doc?: any /** TODO #9100 */):
+      HTMLElement;
   abstract createStyleElement(css: string, doc?: any /** TODO #9100 */): HTMLStyleElement;
   abstract createShadowRoot(el: any /** TODO #9100 */): any;
   abstract getShadowRoot(el: any /** TODO #9100 */): any;
@@ -101,20 +115,26 @@ export abstract class DomAdapter {
   abstract addClass(element: any /** TODO #9100 */, className: string): any /** TODO #9100 */;
   abstract removeClass(element: any /** TODO #9100 */, className: string): any /** TODO #9100 */;
   abstract hasClass(element: any /** TODO #9100 */, className: string): boolean;
-  abstract setStyle(element: any /** TODO #9100 */, styleName: string, styleValue: string): any /** TODO #9100 */;
+  abstract setStyle(element: any /** TODO #9100 */, styleName: string, styleValue: string): any
+      /** TODO #9100 */;
   abstract removeStyle(element: any /** TODO #9100 */, styleName: string): any /** TODO #9100 */;
   abstract getStyle(element: any /** TODO #9100 */, styleName: string): string;
-  abstract hasStyle(element: any /** TODO #9100 */, styleName: string, styleValue?: string): boolean;
+  abstract hasStyle(element: any /** TODO #9100 */, styleName: string, styleValue?: string):
+      boolean;
   abstract tagName(element: any /** TODO #9100 */): string;
   abstract attributeMap(element: any /** TODO #9100 */): Map<string, string>;
   abstract hasAttribute(element: any /** TODO #9100 */, attribute: string): boolean;
   abstract hasAttributeNS(element: any /** TODO #9100 */, ns: string, attribute: string): boolean;
   abstract getAttribute(element: any /** TODO #9100 */, attribute: string): string;
   abstract getAttributeNS(element: any /** TODO #9100 */, ns: string, attribute: string): string;
-  abstract setAttribute(element: any /** TODO #9100 */, name: string, value: string): any /** TODO #9100 */;
-  abstract setAttributeNS(element: any /** TODO #9100 */, ns: string, name: string, value: string): any /** TODO #9100 */;
-  abstract removeAttribute(element: any /** TODO #9100 */, attribute: string): any /** TODO #9100 */;
-  abstract removeAttributeNS(element: any /** TODO #9100 */, ns: string, attribute: string): any /** TODO #9100 */;
+  abstract setAttribute(element: any /** TODO #9100 */, name: string, value: string): any
+      /** TODO #9100 */;
+  abstract setAttributeNS(element: any /** TODO #9100 */, ns: string, name: string, value: string):
+      any /** TODO #9100 */;
+  abstract removeAttribute(element: any /** TODO #9100 */, attribute: string): any
+      /** TODO #9100 */;
+  abstract removeAttributeNS(element: any /** TODO #9100 */, ns: string, attribute: string): any
+      /** TODO #9100 */;
   abstract templateAwareRoot(el: any /** TODO #9100 */): any /** TODO #9100 */;
   abstract createHtmlDocument(): HTMLDocument;
   abstract defaultDoc(): HTMLDocument;
@@ -132,7 +152,8 @@ export abstract class DomAdapter {
   abstract adoptNode /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
   abstract getHref(element: any /** TODO #9100 */): string;
   abstract getEventKey(event: any /** TODO #9100 */): string;
-  abstract resolveAndSetHref(element: any /** TODO #9100 */, baseUrl: string, href: string): any /** TODO #9100 */;
+  abstract resolveAndSetHref(element: any /** TODO #9100 */, baseUrl: string, href: string): any
+      /** TODO #9100 */;
   abstract supportsDOMEvents(): boolean;
   abstract supportsNativeShadowDOM(): boolean;
   abstract getGlobalEventTarget(target: string): any;
@@ -141,7 +162,8 @@ export abstract class DomAdapter {
   abstract getBaseHref(): string;
   abstract resetBaseElement(): void;
   abstract getUserAgent(): string;
-  abstract setData(element: any /** TODO #9100 */, name: string, value: string): any /** TODO #9100 */;
+  abstract setData(element: any /** TODO #9100 */, name: string, value: string): any
+      /** TODO #9100 */;
   abstract getComputedStyle(element: any /** TODO #9100 */): any;
   abstract getData(element: any /** TODO #9100 */, name: string): string;
   abstract setGlobalVar(name: string, value: any): any /** TODO #9100 */;

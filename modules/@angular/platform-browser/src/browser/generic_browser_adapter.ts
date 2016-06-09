@@ -1,6 +1,7 @@
-import {StringMapWrapper} from '../facade/collection';
-import {isPresent, isFunction, Type} from '../facade/lang';
 import {DomAdapter} from '../dom/dom_adapter';
+import {StringMapWrapper} from '../facade/collection';
+import {Type, isFunction, isPresent} from '../facade/lang';
+
 
 
 /**
@@ -50,9 +51,9 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
     return isFunction((<any>this.defaultDoc().body).createShadowRoot);
   }
   getAnimationPrefix(): string {
-    return isPresent(this._animationPrefix) ? this._animationPrefix : "";
+    return isPresent(this._animationPrefix) ? this._animationPrefix : '';
   }
-  getTransitionEnd(): string { return isPresent(this._transitionEnd) ? this._transitionEnd : ""; }
+  getTransitionEnd(): string { return isPresent(this._transitionEnd) ? this._transitionEnd : ''; }
   supportsAnimation(): boolean {
     return isPresent(this._animationPrefix) && isPresent(this._transitionEnd);
   }

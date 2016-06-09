@@ -1,7 +1,7 @@
 
 export class PromiseCompleter<R> {
   promise: Promise<R>;
-  resolve: (value?: R | PromiseLike<R>) => void;
+  resolve: (value?: R|PromiseLike<R>) => void;
   reject: (error?: any, stackTrace?: string) => void;
 
   constructor() {
@@ -19,18 +19,19 @@ export class PromiseWrapper {
 
   // Note: We can't rename this method into `catch`, as this is not a valid
   // method name in Dart.
-  static catchError<T>(promise: Promise<T>,
-                       onError: (error: any) => T | PromiseLike<T>): Promise<T> {
+  static catchError<T>(promise: Promise<T>, onError: (error: any) => T | PromiseLike<T>):
+      Promise<T> {
     return promise.catch(onError);
   }
 
-  static all<T>(promises: (T | Promise<T>)[]): Promise<T[]> {
+  static all<T>(promises: (T|Promise<T>)[]): Promise<T[]> {
     if (promises.length == 0) return Promise.resolve([]);
     return Promise.all(promises);
   }
 
-  static then<T, U>(promise: Promise<T>, success: (value: T) => U | PromiseLike<U>,
-                    rejection?: (error: any, stack?: any) => U | PromiseLike<U>): Promise<U> {
+  static then<T, U>(
+      promise: Promise<T>, success: (value: T) => U | PromiseLike<U>,
+      rejection?: (error: any, stack?: any) => U | PromiseLike<U>): Promise<U> {
     return promise.then(success, rejection);
   }
 

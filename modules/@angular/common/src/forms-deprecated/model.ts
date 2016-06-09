@@ -1,48 +1,49 @@
-import {isPresent, isBlank, normalizeBool} from '../facade/lang';
-import {Observable, EventEmitter, ObservableWrapper} from '../facade/async';
+import {EventEmitter, Observable, ObservableWrapper} from '../facade/async';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {isBlank, isPresent, normalizeBool} from '../facade/lang';
 import {PromiseWrapper} from '../facade/promise';
-import {StringMapWrapper, ListWrapper} from '../facade/collection';
-import {ValidatorFn, AsyncValidatorFn} from './directives/validators';
+
+import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
+
 
 /**
  * Indicates that a Control is valid, i.e. that no errors exist in the input value.
  */
-export const VALID = "VALID";
+export const VALID = 'VALID';
 
 /**
  * Indicates that a Control is invalid, i.e. that an error exists in the input value.
  */
-export const INVALID = "INVALID";
+export const INVALID = 'INVALID';
 
 /**
  * Indicates that a Control is pending, i.e. that async validation is occurring and
  * errors are not yet available for the input value.
  */
-export const PENDING = "PENDING";
+export const PENDING = 'PENDING';
 
 export function isControl(control: Object): boolean {
   return control instanceof AbstractControl;
 }
 
-function _find(control: AbstractControl, path: Array<string | number>| string) {
+function _find(control: AbstractControl, path: Array<string|number>| string) {
   if (isBlank(path)) return null;
 
   if (!(path instanceof Array)) {
-    path = (<string>path).split("/");
+    path = (<string>path).split('/');
   }
   if (path instanceof Array && ListWrapper.isEmpty(path)) return null;
 
-  return (<Array<string | number>>path)
-      .reduce((v, name) => {
-        if (v instanceof ControlGroup) {
-          return isPresent(v.controls[name]) ? v.controls[name] : null;
-        } else if (v instanceof ControlArray) {
-          var index = <number>name;
-          return isPresent(v.at(index)) ? v.at(index) : null;
-        } else {
-          return null;
-        }
-      }, control);
+  return (<Array<string|number>>path).reduce((v, name) => {
+    if (v instanceof ControlGroup) {
+      return isPresent(v.controls[name]) ? v.controls[name] : null;
+    } else if (v instanceof ControlArray) {
+      var index = <number>name;
+      return isPresent(v.at(index)) ? v.at(index) : null;
+    } else {
+      return null;
+    }
+  }, control);
 }
 
 function toObservable(r: any): Observable<any> {
@@ -62,7 +63,7 @@ export abstract class AbstractControl {
   private _errors: {[key: string]: any};
   private _pristine: boolean = true;
   private _touched: boolean = false;
-  private _parent: ControlGroup | ControlArray;
+  private _parent: ControlGroup|ControlArray;
   private _asyncValidationSubscription: any;
 
   constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn) {}
@@ -112,10 +113,10 @@ export abstract class AbstractControl {
     }
   }
 
-  setParent(parent: ControlGroup | ControlArray): void { this._parent = parent; }
+  setParent(parent: ControlGroup|ControlArray): void { this._parent = parent; }
 
-  updateValueAndValidity(
-      {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     onlySelf = normalizeBool(onlySelf);
     emitEvent = isPresent(emitEvent) ? emitEvent : true;
 
@@ -196,7 +197,7 @@ export abstract class AbstractControl {
     }
   }
 
-  find(path: Array<string | number>| string): AbstractControl { return _find(this, path); }
+  find(path: Array<string|number>|string): AbstractControl { return _find(this, path); }
 
   getError(errorCode: string, path: string[] = null): any {
     var control = isPresent(path) && !ListWrapper.isEmpty(path) ? this.find(path) : this;
@@ -273,8 +274,8 @@ export class Control extends AbstractControl {
   /** @internal */
   _onChange: Function;
 
-  constructor(value: any = null, validator: ValidatorFn = null,
-              asyncValidator: AsyncValidatorFn = null) {
+  constructor(
+      value: any = null, validator: ValidatorFn = null, asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._value = value;
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
@@ -339,9 +340,9 @@ export class Control extends AbstractControl {
 export class ControlGroup extends AbstractControl {
   private _optionals: {[key: string]: boolean};
 
-  constructor(public controls: {[key: string]: AbstractControl},
-              optionals: {[key: string]: boolean} = null, validator: ValidatorFn = null,
-              asyncValidator: AsyncValidatorFn = null) {
+  constructor(
+      public controls: {[key: string]: AbstractControl}, optionals: {[key: string]: boolean} = null,
+      validator: ValidatorFn = null, asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._optionals = isPresent(optionals) ? optionals : {};
     this._initObservables();
@@ -467,8 +468,9 @@ export class ControlGroup extends AbstractControl {
  * @experimental
  */
 export class ControlArray extends AbstractControl {
-  constructor(public controls: AbstractControl[], validator: ValidatorFn = null,
-              asyncValidator: AsyncValidatorFn = null) {
+  constructor(
+      public controls: AbstractControl[], validator: ValidatorFn = null,
+      asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._initObservables();
     this._setParentForControls();

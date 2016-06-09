@@ -1,24 +1,8 @@
-import {
-  Directive,
-  DoCheck,
-  ElementRef,
-  EventEmitter,
-  Inject,
-  OnInit,
-  OnChanges,
-  SimpleChange,
-  SimpleChanges,
-  Type
-} from '@angular/core';
-import {
-  NG1_COMPILE,
-  NG1_SCOPE,
-  NG1_HTTP_BACKEND,
-  NG1_TEMPLATE_CACHE,
-  NG1_CONTROLLER
-} from './constants';
-import {controllerKey} from './util';
+import {Directive, DoCheck, ElementRef, EventEmitter, Inject, OnChanges, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
+
 import * as angular from './angular_js';
+import {NG1_COMPILE, NG1_CONTROLLER, NG1_HTTP_BACKEND, NG1_SCOPE, NG1_TEMPLATE_CACHE} from './constants';
+import {controllerKey} from './util';
 
 const CAMEL_CASE = /([A-Z])/g;
 const INITIAL_VALUE = {
@@ -41,14 +25,14 @@ export class UpgradeNg1ComponentAdapterBuilder {
   $controller: angular.IControllerService = null;
 
   constructor(public name: string) {
-    var selector = name.replace(CAMEL_CASE, (all: any /** TODO #9100 */, next: string) => '-' + next.toLowerCase());
+    var selector = name.replace(
+        CAMEL_CASE, (all: any /** TODO #9100 */, next: string) => '-' + next.toLowerCase());
     var self = this;
     this.type =
         Directive({selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
             .Class({
               constructor: [
-                new Inject(NG1_SCOPE),
-                ElementRef,
+                new Inject(NG1_SCOPE), ElementRef,
                 function(scope: angular.IScope, elementRef: ElementRef) {
                   return new UpgradeNg1ComponentAdapter(
                       self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs,
@@ -130,24 +114,30 @@ export class UpgradeNg1ComponentAdapterBuilder {
     }
   }
 
-  compileTemplate(compile: angular.ICompileService, templateCache: angular.ITemplateCacheService,
-                  httpBackend: angular.IHttpBackendService): Promise<any> {
+  compileTemplate(
+      compile: angular.ICompileService, templateCache: angular.ITemplateCacheService,
+      httpBackend: angular.IHttpBackendService): Promise<any> {
     if (this.directive.template !== undefined) {
-      this.linkFn = compileHtml(typeof this.directive.template === 'function' ? this.directive.template() : this.directive.template);
+      this.linkFn = compileHtml(
+          typeof this.directive.template === 'function' ? this.directive.template() :
+                                                          this.directive.template);
     } else if (this.directive.templateUrl) {
-      var url = typeof this.directive.templateUrl === 'function' ? this.directive.templateUrl() : this.directive.templateUrl;
+      var url = typeof this.directive.templateUrl === 'function' ? this.directive.templateUrl() :
+                                                                   this.directive.templateUrl;
       var html = templateCache.get(url);
       if (html !== undefined) {
         this.linkFn = compileHtml(html);
       } else {
         return new Promise((resolve, err) => {
-          httpBackend('GET', url, null, (status: any /** TODO #9100 */, response: any /** TODO #9100 */) => {
-            if (status == 200) {
-              resolve(this.linkFn = compileHtml(templateCache.put(url, response)));
-            } else {
-              err(`GET ${url} returned ${status}: ${response}`);
-            }
-          });
+          httpBackend(
+              'GET', url, null,
+              (status: any /** TODO #9100 */, response: any /** TODO #9100 */) => {
+                if (status == 200) {
+                  resolve(this.linkFn = compileHtml(templateCache.put(url, response)));
+                } else {
+                  err(`GET ${url} returned ${status}: ${response}`);
+                }
+              });
         });
       }
     } else {
@@ -161,8 +151,9 @@ export class UpgradeNg1ComponentAdapterBuilder {
     }
   }
 
-  static resolve(exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
-                 injector: angular.IInjectorService): Promise<any> {
+  static resolve(
+      exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
+      injector: angular.IInjectorService): Promise<any> {
     var promises: any[] /** TODO #9100 */ = [];
     var compile: angular.ICompileService = injector.get(NG1_COMPILE);
     var templateCache: angular.ITemplateCacheService = injector.get(NG1_TEMPLATE_CACHE);
@@ -189,11 +180,11 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   element: Element;
   $element: any = null;
 
-  constructor(private linkFn: angular.ILinkFn, scope: angular.IScope,
-              private directive: angular.IDirective, elementRef: ElementRef,
-              private $controller: angular.IControllerService, private inputs: string[],
-              private outputs: string[], private propOuts: string[],
-              private checkProperties: string[], private propertyMap: {[key: string]: string}) {
+  constructor(
+      private linkFn: angular.ILinkFn, scope: angular.IScope, private directive: angular.IDirective,
+      elementRef: ElementRef, private $controller: angular.IControllerService,
+      private inputs: string[], private outputs: string[], private propOuts: string[],
+      private checkProperties: string[], private propertyMap: {[key: string]: string}) {
     this.element = elementRef.nativeElement;
     this.componentScope = scope.$new(!!directive.scope);
     this.$element = angular.element(this.element);
@@ -209,17 +200,17 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
     for (var j = 0; j < outputs.length; j++) {
       var emitter = (this as any /** TODO #9100 */)[outputs[j]] = new EventEmitter();
-      this.setComponentProperty(outputs[j], ((emitter: any /** TODO #9100 */) => (value: any /** TODO #9100 */) => emitter.emit(value))(emitter));
+      this.setComponentProperty(
+          outputs[j], ((emitter: any /** TODO #9100 */) => (value: any /** TODO #9100 */) =>
+                           emitter.emit(value))(emitter));
     }
     for (var k = 0; k < propOuts.length; k++) {
       (this as any /** TODO #9100 */)[propOuts[k]] = new EventEmitter();
       this.checkLastValues.push(INITIAL_VALUE);
     }
-
   }
 
   ngOnInit() {
-
     if (!this.directive.bindToController && this.directive.controller) {
       this.buildController(this.directive.controller);
     }
@@ -229,8 +220,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       var attrs: angular.IAttributes = NOT_SUPPORTED;
       var transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
       var linkController = this.resolveRequired(this.$element, this.directive.require);
-      (<angular.IDirectiveLinkFn>this.directive.link)(this.componentScope, this.$element, attrs,
-        linkController, transcludeFn);
+      (<angular.IDirectiveLinkFn>this.directive.link)(
+          this.componentScope, this.$element, attrs, linkController, transcludeFn);
     }
 
     var childNodes: Node[] = [];
@@ -243,7 +234,10 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       for (var i = 0, ii = clonedElement.length; i < ii; i++) {
         this.element.appendChild(clonedElement[i]);
       }
-    }, {parentBoundTranscludeFn: (scope: any /** TODO #9100 */, cloneAttach: any /** TODO #9100 */) => { cloneAttach(childNodes); }});
+    }, {
+      parentBoundTranscludeFn: (scope: any /** TODO #9100 */,
+                                cloneAttach: any /** TODO #9100 */) => { cloneAttach(childNodes); }
+    });
     if (this.destinationObj.$onInit) {
       this.destinationObj.$onInit();
     }
@@ -283,13 +277,14 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   }
 
   private buildController(controllerType: any /** TODO #9100 */) {
-    var locals = { $scope: this.componentScope, $element: this.$element };
-    var controller:any = this.$controller(controllerType, locals, null, this.directive.controllerAs);
+    var locals = {$scope: this.componentScope, $element: this.$element};
+    var controller: any =
+        this.$controller(controllerType, locals, null, this.directive.controllerAs);
     this.$element.data(controllerKey(this.directive.name), controller);
     return controller;
   }
 
-  private resolveRequired($element: angular.IAugmentedJQuery, require: string | string[]): any {
+  private resolveRequired($element: angular.IAugmentedJQuery, require: string|string[]): any {
     if (!require) {
       return undefined;
     } else if (typeof require == 'string') {

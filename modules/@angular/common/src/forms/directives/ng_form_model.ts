@@ -1,23 +1,17 @@
-import {
-  SimpleChanges,
-  OnChanges,
-  Directive,
-  forwardRef,
-  Inject,
-  Optional,
-  Self
-} from '@angular/core';
-import {isBlank} from '../../facade/lang';
+import {Directive, Inject, OnChanges, Optional, Self, SimpleChanges, forwardRef} from '@angular/core';
+
+import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {ListWrapper, StringMapWrapper} from '../../facade/collection';
 import {BaseException} from '../../facade/exceptions';
-import {ObservableWrapper, EventEmitter} from '../../facade/async';
-import {NgControl} from './ng_control';
-import {NgControlGroup} from './ng_control_group';
+import {isBlank} from '../../facade/lang';
+import {Control, ControlGroup} from '../model';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../validators';
+
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
-import {Control, ControlGroup} from '../model';
-import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
-import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {NgControl} from './ng_control';
+import {NgControlGroup} from './ng_control_group';
+import {composeAsyncValidators, composeValidators, setUpControl, setUpControlGroup} from './shared';
 
 export const formDirectiveProvider: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
@@ -115,14 +109,15 @@ export class NgFormModel extends ControlContainer implements Form,
   directives: NgControl[] = [];
   ngSubmit = new EventEmitter();
 
-  constructor(@Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+  constructor(
+      @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this._checkFormPresent();
-    if (StringMapWrapper.contains(changes, "form")) {
+    if (StringMapWrapper.contains(changes, 'form')) {
       var sync = composeValidators(this._validators);
       this.form.validator = Validators.compose([this.form.validator, sync]);
 

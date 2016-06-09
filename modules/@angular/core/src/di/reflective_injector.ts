@@ -1,23 +1,13 @@
 import {ListWrapper} from '../facade/collection';
-import {Provider} from './provider';
-import {
-  ResolvedReflectiveProvider,
-  ReflectiveDependency,
-  ResolvedReflectiveFactory,
-  resolveReflectiveProviders
-} from './reflective_provider';
-import {
-  AbstractProviderError,
-  NoProviderError,
-  CyclicDependencyError,
-  InstantiationError,
-  OutOfBoundsError
-} from './reflective_exceptions';
-import {Type} from '../facade/lang';
 import {BaseException, unimplemented} from '../facade/exceptions';
-import {ReflectiveKey} from './reflective_key';
-import {SelfMetadata, SkipSelfMetadata} from './metadata';
+import {Type} from '../facade/lang';
+
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
+import {SelfMetadata, SkipSelfMetadata} from './metadata';
+import {Provider} from './provider';
+import {AbstractProviderError, CyclicDependencyError, InstantiationError, NoProviderError, OutOfBoundsError} from './reflective_exceptions';
+import {ReflectiveKey} from './reflective_key';
+import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
 
 var __unused: Type;  // avoid unused import when Type union types are erased
 
@@ -154,8 +144,8 @@ export class ReflectiveProtoInjector {
   constructor(providers: ResolvedReflectiveProvider[]) {
     this.numberOfProviders = providers.length;
     this._strategy = providers.length > _MAX_CONSTRUCTION_COUNTER ?
-                         new ReflectiveProtoInjectorDynamicStrategy(this, providers) :
-                         new ReflectiveProtoInjectorInlineStrategy(this, providers);
+        new ReflectiveProtoInjectorDynamicStrategy(this, providers) :
+        new ReflectiveProtoInjectorInlineStrategy(this, providers);
   }
 
   getProviderAtIndex(index: number): ResolvedReflectiveProvider {
@@ -186,8 +176,9 @@ export class ReflectiveInjectorInlineStrategy implements ReflectiveInjectorStrat
   obj8: any = UNDEFINED;
   obj9: any = UNDEFINED;
 
-  constructor(public injector: ReflectiveInjector_,
-              public protoStrategy: ReflectiveProtoInjectorInlineStrategy) {}
+  constructor(
+      public injector: ReflectiveInjector_,
+      public protoStrategy: ReflectiveProtoInjectorInlineStrategy) {}
 
   resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
 
@@ -284,8 +275,9 @@ export class ReflectiveInjectorInlineStrategy implements ReflectiveInjectorStrat
 export class ReflectiveInjectorDynamicStrategy implements ReflectiveInjectorStrategy {
   objs: any[];
 
-  constructor(public protoStrategy: ReflectiveProtoInjectorDynamicStrategy,
-              public injector: ReflectiveInjector_) {
+  constructor(
+      public protoStrategy: ReflectiveProtoInjectorDynamicStrategy,
+      public injector: ReflectiveInjector_) {
     this.objs = ListWrapper.createFixedSize(protoStrategy.providers.length);
     ListWrapper.fill(this.objs, UNDEFINED);
   }
@@ -390,7 +382,7 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * See {@link ReflectiveInjector#fromResolvedProviders} for more info.
    */
-  static resolve(providers: Array<Type | Provider | {[k: string]: any} | any[]>):
+  static resolve(providers: Array<Type|Provider|{[k: string]: any}|any[]>):
       ResolvedReflectiveProvider[] {
     return resolveReflectiveProviders(providers);
   }
@@ -421,8 +413,9 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
-  static resolveAndCreate(providers: Array<Type | Provider | {[k: string]: any} | any[]>,
-                          parent: Injector = null): ReflectiveInjector {
+  static resolveAndCreate(
+      providers: Array<Type|Provider|{[k: string]: any}|any[]>,
+      parent: Injector = null): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return ReflectiveInjector.fromResolvedProviders(ResolvedReflectiveProviders, parent);
   }
@@ -450,10 +443,10 @@ export abstract class ReflectiveInjector implements Injector {
    * ```
    * @experimental
    */
-  static fromResolvedProviders(providers: ResolvedReflectiveProvider[],
-                               parent: Injector = null): ReflectiveInjector {
-    return new ReflectiveInjector_(ReflectiveProtoInjector.fromResolvedProviders(providers),
-                                   parent);
+  static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent: Injector = null):
+      ReflectiveInjector {
+    return new ReflectiveInjector_(
+        ReflectiveProtoInjector.fromResolvedProviders(providers), parent);
   }
 
   /**
@@ -513,8 +506,8 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
-  resolveAndCreateChild(
-      providers: Array<Type | Provider | {[k: string]: any} | any[]>): ReflectiveInjector {
+  resolveAndCreateChild(providers: Array<Type|Provider|{[k: string]: any}|any[]>):
+      ReflectiveInjector {
     return unimplemented();
   }
 
@@ -571,7 +564,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(car).not.toBe(injector.resolveAndInstantiate(Car));
    * ```
    */
-  resolveAndInstantiate(provider: Type | Provider): any { return unimplemented(); }
+  resolveAndInstantiate(provider: Type|Provider): any { return unimplemented(); }
 
   /**
    * Instantiates an object using a resolved provider in the context of the injector.
@@ -613,8 +606,9 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   /**
    * Private
    */
-  constructor(_proto: any /* ProtoInjector */, _parent: Injector = null,
-              private _debugContext: Function = null) {
+  constructor(
+      _proto: any /* ProtoInjector */, _parent: Injector = null,
+      private _debugContext: Function = null) {
     this._proto = _proto;
     this._parent = _parent;
     this._strategy = _proto._strategy.createInjectorStrategy(this);
@@ -640,7 +634,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
    */
   get internalStrategy(): any { return this._strategy; }
 
-  resolveAndCreateChild(providers: Array<Type | Provider | any[]>): ReflectiveInjector {
+  resolveAndCreateChild(providers: Array<Type|Provider|any[]>): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return this.createChildFromResolved(ResolvedReflectiveProviders);
   }
@@ -652,7 +646,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return inj;
   }
 
-  resolveAndInstantiate(provider: Type | Provider): any {
+  resolveAndInstantiate(provider: Type|Provider): any {
     return this.instantiateResolved(ReflectiveInjector.resolve([provider])[0]);
   }
 
@@ -680,8 +674,9 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     }
   }
 
-  private _instantiate(provider: ResolvedReflectiveProvider,
-                       ResolvedReflectiveFactory: ResolvedReflectiveFactory): any {
+  private _instantiate(
+      provider: ResolvedReflectiveProvider,
+      ResolvedReflectiveFactory: ResolvedReflectiveFactory): any {
     var factory = ResolvedReflectiveFactory.factory;
     var deps = ResolvedReflectiveFactory.dependencies;
     var length = deps.length;
@@ -792,16 +787,17 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
           obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16);
           break;
         case 18:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16,
-                        d17);
+          obj = factory(
+              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17);
           break;
         case 19:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16,
-                        d17, d18);
+          obj = factory(
+              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18);
           break;
         case 20:
-          obj = factory(d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16,
-                        d17, d18, d19);
+          obj = factory(
+              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18,
+              d19);
           break;
         default:
           throw new BaseException(
@@ -813,14 +809,16 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return obj;
   }
 
-  private _getByReflectiveDependency(provider: ResolvedReflectiveProvider,
-                                     dep: ReflectiveDependency): any {
-    return this._getByKey(dep.key, dep.lowerBoundVisibility, dep.upperBoundVisibility,
-                          dep.optional ? null : THROW_IF_NOT_FOUND);
+  private _getByReflectiveDependency(
+      provider: ResolvedReflectiveProvider, dep: ReflectiveDependency): any {
+    return this._getByKey(
+        dep.key, dep.lowerBoundVisibility, dep.upperBoundVisibility,
+        dep.optional ? null : THROW_IF_NOT_FOUND);
   }
 
-  private _getByKey(key: ReflectiveKey, lowerBoundVisibility: Object, upperBoundVisibility: Object,
-                    notFoundValue: any): any {
+  private _getByKey(
+      key: ReflectiveKey, lowerBoundVisibility: Object, upperBoundVisibility: Object,
+      notFoundValue: any): any {
     if (key === INJECTOR_KEY) {
       return this;
     }
@@ -872,7 +870,10 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   }
 
   get displayName(): string {
-    return `ReflectiveInjector(providers: [${_mapProviders(this, (b: ResolvedReflectiveProvider) => ` "${b.key.displayName}" `).join(", ")}])`;
+    const providers =
+        _mapProviders(this, (b: ResolvedReflectiveProvider) => ' "' + b.key.displayName + '" ')
+            .join(', ');
+    return `ReflectiveInjector(providers: [${providers}])`;
   }
 
   toString(): string { return this.displayName; }

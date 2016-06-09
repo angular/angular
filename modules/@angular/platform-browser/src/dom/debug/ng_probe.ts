@@ -1,17 +1,15 @@
-import {
-  DebugNode,
-  getDebugNode,
-  RootRenderer,
-  NgZone,
-  ApplicationRef
-} from '@angular/core';
+import {ApplicationRef, DebugNode, NgZone, RootRenderer, getDebugNode} from '@angular/core';
+
 import {DebugDomRootRenderer} from '../../../core_private';
 import {assertionsEnabled} from '../../facade/lang';
 import {getDOM} from '../dom_adapter';
 import {DomRootRenderer} from '../dom_renderer';
 
 
-const CORE_TOKENS = {'ApplicationRef': ApplicationRef, 'NgZone': NgZone};
+const CORE_TOKENS = {
+  'ApplicationRef': ApplicationRef,
+  'NgZone': NgZone
+};
 
 const INSPECT_GLOBAL_NAME = 'ng.probe';
 const CORE_TOKENS_GLOBAL_NAME = 'ng.coreTokens';
@@ -41,18 +39,8 @@ function _createRootRenderer(rootRenderer: any /** TODO #9100 */) {
 /**
  * Providers which support debugging Angular applications (e.g. via `ng.probe`).
  */
-export const ELEMENT_PROBE_PROVIDERS: any[] = [
-  {
-    provide: RootRenderer,
-    useFactory: _createConditionalRootRenderer,
-    deps: [DomRootRenderer]
-  }
-];
+export const ELEMENT_PROBE_PROVIDERS: any[] =
+    [{provide: RootRenderer, useFactory: _createConditionalRootRenderer, deps: [DomRootRenderer]}];
 
-export const ELEMENT_PROBE_PROVIDERS_PROD_MODE: any[] = [
-  {
-    provide: RootRenderer,
-    useFactory: _createRootRenderer,
-    deps: [DomRootRenderer]
-  }
-];
+export const ELEMENT_PROBE_PROVIDERS_PROD_MODE: any[] =
+    [{provide: RootRenderer, useFactory: _createRootRenderer, deps: [DomRootRenderer]}];

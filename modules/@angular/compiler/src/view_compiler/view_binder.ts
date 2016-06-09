@@ -1,37 +1,8 @@
-import {
-  ListWrapper,
-} from '../facade/collection';
-import {
-  TemplateAst,
-  TemplateAstVisitor,
-  NgContentAst,
-  EmbeddedTemplateAst,
-  ElementAst,
-  ReferenceAst,
-  VariableAst,
-  BoundEventAst,
-  BoundElementPropertyAst,
-  AttrAst,
-  BoundTextAst,
-  TextAst,
-  DirectiveAst,
-  BoundDirectivePropertyAst,
-  templateVisitAll,
-} from '../template_ast';
-import {
-  bindRenderText,
-  bindRenderInputs,
-  bindDirectiveInputs,
-  bindDirectiveHostProps
-} from './property_binder';
+import {ListWrapper,} from '../facade/collection';
+import {TemplateAst, TemplateAstVisitor, NgContentAst, EmbeddedTemplateAst, ElementAst, ReferenceAst, VariableAst, BoundEventAst, BoundElementPropertyAst, AttrAst, BoundTextAst, TextAst, DirectiveAst, BoundDirectivePropertyAst, templateVisitAll,} from '../template_ast';
+import {bindRenderText, bindRenderInputs, bindDirectiveInputs, bindDirectiveHostProps} from './property_binder';
 import {bindRenderOutputs, collectEventListeners, bindDirectiveOutputs} from './event_binder';
-import {
-  bindDirectiveAfterContentLifecycleCallbacks,
-  bindDirectiveAfterViewLifecycleCallbacks,
-  bindDirectiveDestroyLifecycleCallbacks,
-  bindPipeDestroyLifecycleCallbacks,
-  bindDirectiveDetectChangesLifecycleCallbacks
-} from './lifecycle_binder';
+import {bindDirectiveAfterContentLifecycleCallbacks, bindDirectiveAfterViewLifecycleCallbacks, bindDirectiveDestroyLifecycleCallbacks, bindPipeDestroyLifecycleCallbacks, bindDirectiveDetectChangesLifecycleCallbacks} from './lifecycle_binder';
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
 
@@ -77,12 +48,12 @@ class ViewBinderVisitor implements TemplateAstVisitor {
     // so that children are notified before parents
     ListWrapper.forEachWithIndex(ast.directives, (directiveAst, index) => {
       var directiveInstance = compileElement.directiveInstances[index];
-      bindDirectiveAfterContentLifecycleCallbacks(directiveAst.directive, directiveInstance,
-                                                  compileElement);
-      bindDirectiveAfterViewLifecycleCallbacks(directiveAst.directive, directiveInstance,
-                                               compileElement);
-      bindDirectiveDestroyLifecycleCallbacks(directiveAst.directive, directiveInstance,
-                                             compileElement);
+      bindDirectiveAfterContentLifecycleCallbacks(
+          directiveAst.directive, directiveInstance, compileElement);
+      bindDirectiveAfterViewLifecycleCallbacks(
+          directiveAst.directive, directiveInstance, compileElement);
+      bindDirectiveDestroyLifecycleCallbacks(
+          directiveAst.directive, directiveInstance, compileElement);
     });
     return null;
   }
@@ -95,12 +66,12 @@ class ViewBinderVisitor implements TemplateAstVisitor {
       bindDirectiveInputs(directiveAst, directiveInstance, compileElement);
       bindDirectiveDetectChangesLifecycleCallbacks(directiveAst, directiveInstance, compileElement);
       bindDirectiveOutputs(directiveAst, directiveInstance, eventListeners);
-      bindDirectiveAfterContentLifecycleCallbacks(directiveAst.directive, directiveInstance,
-                                                  compileElement);
-      bindDirectiveAfterViewLifecycleCallbacks(directiveAst.directive, directiveInstance,
-                                               compileElement);
-      bindDirectiveDestroyLifecycleCallbacks(directiveAst.directive, directiveInstance,
-                                             compileElement);
+      bindDirectiveAfterContentLifecycleCallbacks(
+          directiveAst.directive, directiveInstance, compileElement);
+      bindDirectiveAfterViewLifecycleCallbacks(
+          directiveAst.directive, directiveInstance, compileElement);
+      bindDirectiveDestroyLifecycleCallbacks(
+          directiveAst.directive, directiveInstance, compileElement);
     });
     bindView(compileElement.embeddedView, ast.children);
     return null;

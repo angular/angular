@@ -1,14 +1,10 @@
-import {isPresent, isBlank, isArray} from '../facade/lang';
-import {BaseException} from '../facade/exceptions';
 import {CompileIdentifierMetadata} from '../compile_metadata';
+import {BaseException} from '../facade/exceptions';
+import {isArray, isBlank, isPresent} from '../facade/lang';
+
 import * as o from './output_ast';
-import {
-  OutputEmitter,
-  EmitterVisitorContext,
-  AbstractEmitterVisitor,
-  CATCH_ERROR_VAR,
-  CATCH_STACK_VAR,
-} from './abstract_emitter';
+
+import {OutputEmitter, EmitterVisitorContext, AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR,} from './abstract_emitter';
 import {ImportGenerator} from './path_util';
 
 var _debugModuleUrl = 'asset://debug/lib';
@@ -332,8 +328,8 @@ class _DartEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisito
     }, params, ctx, ',');
   }
 
-  private _visitIdentifier(value: CompileIdentifierMetadata, typeParams: o.Type[],
-                           ctx: EmitterVisitorContext): void {
+  private _visitIdentifier(
+      value: CompileIdentifierMetadata, typeParams: o.Type[], ctx: EmitterVisitorContext): void {
     if (isBlank(value.name)) {
       throw new BaseException(`Internal error: unknown identifier ${value}`);
     }
@@ -348,7 +344,8 @@ class _DartEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisito
     ctx.print(value.name);
     if (isPresent(typeParams) && typeParams.length > 0) {
       ctx.print(`<`);
-      this.visitAllObjects((type: any /** TODO #9100 */) => type.visitType(this, ctx), typeParams, ctx, ',');
+      this.visitAllObjects(
+          (type: any /** TODO #9100 */) => type.visitType(this, ctx), typeParams, ctx, ',');
       ctx.print(`>`);
     }
   }

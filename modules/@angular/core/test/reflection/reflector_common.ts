@@ -1,8 +1,4 @@
-import {
-  makeDecorator,
-  makeParamDecorator,
-  makePropDecorator
-} from '@angular/core/src/util/decorators';
+import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
 
 export class ClassDecoratorMeta {
   constructor(public value: any /** TODO #9100 */) {}

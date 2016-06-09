@@ -1,6 +1,6 @@
-import {isPresent, isBlank} from './lang';
 import {BaseWrappedException} from './base_wrapped_exception';
 import {isListLikeIterable} from './collection';
+import {isBlank, isPresent} from './lang';
 
 class _ArrayLogger {
   res: any[] = [];
@@ -39,7 +39,7 @@ export class ExceptionHandler {
     var l = new _ArrayLogger();
     var e = new ExceptionHandler(l, false);
     e.call(exception, stackTrace, reason);
-    return l.res.join("\n");
+    return l.res.join('\n');
   }
 
   call(exception: any, stackTrace: any = null, reason: string = null): void {
@@ -50,7 +50,7 @@ export class ExceptionHandler {
     this._logger.logGroup(`EXCEPTION: ${this._extractMessage(exception)}`);
 
     if (isPresent(stackTrace) && isBlank(originalStack)) {
-      this._logger.logError("STACKTRACE:");
+      this._logger.logError('STACKTRACE:');
       this._logger.logError(this._longStackTrace(stackTrace));
     }
 
@@ -63,12 +63,12 @@ export class ExceptionHandler {
     }
 
     if (isPresent(originalStack)) {
-      this._logger.logError("ORIGINAL STACKTRACE:");
+      this._logger.logError('ORIGINAL STACKTRACE:');
       this._logger.logError(this._longStackTrace(originalStack));
     }
 
     if (isPresent(context)) {
-      this._logger.logError("ERROR CONTEXT:");
+      this._logger.logError('ERROR CONTEXT:');
       this._logger.logError(context);
     }
 
@@ -87,7 +87,7 @@ export class ExceptionHandler {
 
   /** @internal */
   _longStackTrace(stackTrace: any): any {
-    return isListLikeIterable(stackTrace) ? (<any[]>stackTrace).join("\n\n-----async gap-----\n") :
+    return isListLikeIterable(stackTrace) ? (<any[]>stackTrace).join('\n\n-----async gap-----\n') :
                                             stackTrace.toString();
   }
 

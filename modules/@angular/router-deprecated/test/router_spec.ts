@@ -1,38 +1,29 @@
-import {
-  describe,
-  it,
-  iit,
-  xit,
-  ddescribe,
-  expect,
-  inject,
-  beforeEach,
-  beforeEachProviders
-} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {SpyRouterOutlet} from './spies';
-import {Type} from '../src/facade/lang';
-import {PromiseWrapper, ObservableWrapper} from '../src/facade/async';
-import {ListWrapper} from '../src/facade/collection';
-import {Router, RootRouter} from '../src/router';
-import {SpyLocation} from '@angular/common/testing';
 import {Location} from '@angular/common';
-import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from '../src/route_registry';
-import {RouteConfig, AsyncRoute, Route, Redirect} from '../src/route_config/route_config_decorator';
+import {SpyLocation} from '@angular/common/testing';
 import {provide} from '@angular/core';
+import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+
 import {RouterOutlet} from '../src/directives/router_outlet';
+import {ObservableWrapper, PromiseWrapper} from '../src/facade/async';
+import {ListWrapper} from '../src/facade/collection';
+import {Type} from '../src/facade/lang';
+import {AsyncRoute, Redirect, Route, RouteConfig} from '../src/route_config/route_config_decorator';
+import {ROUTER_PRIMARY_COMPONENT, RouteRegistry} from '../src/route_registry';
+import {RootRouter, Router} from '../src/router';
+
+import {SpyRouterOutlet} from './spies';
 
 export function main() {
   describe('Router', () => {
     var router: Router;
     var location: Location;
 
-    beforeEachProviders(() => [
-      RouteRegistry,
-      {provide: Location, useClass: SpyLocation},
-      {provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp},
-      {provide: Router, useClass: RootRouter}
-    ]);
+    beforeEachProviders(
+        () =>
+            [RouteRegistry, {provide: Location, useClass: SpyLocation},
+             {provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp},
+             {provide: Router, useClass: RootRouter}]);
 
 
     beforeEach(inject([Router, Location], (rtr: Router, loc: Location) => {
@@ -41,7 +32,8 @@ export function main() {
     }));
 
 
-    it('should navigate based on the initial URL state', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should navigate based on the initial URL state',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var outlet = makeDummyOutlet();
 
          router.config([new Route({path: '/', component: DummyComponent})])
@@ -72,8 +64,9 @@ export function main() {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
-             .then((_) => router.config(
-                       [new Route({path: '/a', component: DummyComponent, name: 'A'})]))
+             .then(
+                 (_) =>
+                     router.config([new Route({path: '/a', component: DummyComponent, name: 'A'})]))
              .then((_) => router.navigate(['/A']))
              .then((_) => {
                expect((<any>outlet).spy('activate')).toHaveBeenCalled();
@@ -144,7 +137,8 @@ export function main() {
              .then((_) => {
                router.subscribe(({status, instruction}) => {
                  expect(status).toEqual('success');
-                 expect(instruction).toEqual(jasmine.objectContaining({urlPath: 'a', urlParams: []}));
+                 expect(instruction)
+                     .toEqual(jasmine.objectContaining({urlPath: 'a', urlParams: []}));
                  async.done();
                });
                (<SpyLocation>location).simulateHashChange('a');
@@ -167,7 +161,8 @@ export function main() {
              });
        }));
 
-    it('should navigate after being configured', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should navigate after being configured',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -215,11 +210,10 @@ export function main() {
          router.config([new AsyncRoute({path: '/first', loader: loader, name: 'FirstCmp'})]);
 
          var instruction = router.generate(['/FirstCmp']);
-         router.navigateByInstruction(instruction)
-             .then((_) => {
-               expect((<any>outlet).spy('activate')).toHaveBeenCalled();
-               async.done();
-             });
+         router.navigateByInstruction(instruction).then((_) => {
+           expect((<any>outlet).spy('activate')).toHaveBeenCalled();
+           async.done();
+         });
        }));
 
     it('should return whether a given instruction is active with isRouteActive',
@@ -242,7 +236,8 @@ export function main() {
              });
        }));
 
-    it('should provide the current instruction', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should provide the current instruction',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
@@ -285,9 +280,8 @@ export function main() {
 
       it('should serialize parameters that are not part of the route definition as query string params',
          () => {
-           router.config([
-             new Route({path: '/one/two/:three', component: DummyComponent, name: 'NumberUrl'})
-           ]);
+           router.config([new Route(
+               {path: '/one/two/:three', component: DummyComponent, name: 'NumberUrl'})]);
 
            var instruction = router.generate(['/NumberUrl', {'three': 'three', 'four': 'four'}]);
            var path = stringifyInstruction(instruction);
@@ -337,8 +331,10 @@ class DummyParentComp {
 function makeDummyOutlet(): RouterOutlet {
   var ref = new SpyRouterOutlet();
   ref.spy('canActivate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
-  ref.spy('routerCanReuse').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(false));
-  ref.spy('routerCanDeactivate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
+  ref.spy('routerCanReuse')
+      .andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(false));
+  ref.spy('routerCanDeactivate')
+      .andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
   ref.spy('activate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
   return <any>ref;
 }

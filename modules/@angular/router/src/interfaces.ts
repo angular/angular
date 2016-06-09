@@ -1,4 +1,5 @@
-import {RouteSegment, Tree, RouteTree} from './segments';
+import {RouteSegment, RouteTree, Tree} from './segments';
+
 
 /**
  * Defines route lifecycle method `routerOnActivate`, which is called by the router at the end of a
@@ -8,8 +9,8 @@ import {RouteSegment, Tree, RouteTree} from './segments';
  * component and with the corresponding route trees.
  */
 export interface OnActivate {
-  routerOnActivate(curr: RouteSegment, prev?: RouteSegment, currTree?: RouteTree,
-                   prevTree?: RouteTree): void;
+  routerOnActivate(
+      curr: RouteSegment, prev?: RouteSegment, currTree?: RouteTree, prevTree?: RouteTree): void;
 }
 
 /**

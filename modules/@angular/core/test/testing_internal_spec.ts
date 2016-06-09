@@ -1,8 +1,8 @@
-import {describe, it, iit, ddescribe, expect, tick, beforeEach, containsRegexp} from '../testing';
 import {SpyObject} from '@angular/core/testing/testing_internal';
 
 import {MapWrapper} from '../../platform-browser/src/facade/collection';
 import {RegExpWrapper} from '../../router/src/facade/lang';
+import {beforeEach, containsRegexp, ddescribe, describe, expect, iit, it, tick} from '../testing';
 
 class TestObj {
   prop: any /** TODO #9100 */;
@@ -29,11 +29,11 @@ export function main() {
       });
     });
 
-    describe("toMatchPAttern", () => {
-      it("should assert that a string matches a given pattern", () => {
-        expect("matias").toMatchPattern(/ias$/g);
-        expect("tobias").toMatchPattern(/ias$/g);
-        expect("joonas").not.toMatchPattern(/ias$/g);
+    describe('toMatchPAttern', () => {
+      it('should assert that a string matches a given pattern', () => {
+        expect('matias').toMatchPattern(/ias$/g);
+        expect('tobias').toMatchPattern(/ias$/g);
+        expect('joonas').not.toMatchPattern(/ias$/g);
       });
     });
 
@@ -44,60 +44,65 @@ export function main() {
       });
 
       it('should detect equality for same content', () => {
-        expect(MapWrapper.createFromStringMap({'a': 1}))
-            .toEqual(MapWrapper.createFromStringMap({'a': 1}));
+        expect(MapWrapper.createFromStringMap({'a': 1})).toEqual(MapWrapper.createFromStringMap({
+          'a': 1
+        }));
       });
 
       it('should detect missing entries', () => {
-        expect(MapWrapper.createFromStringMap({'a': 1}))
-            .not.toEqual(MapWrapper.createFromStringMap({}));
+        expect(MapWrapper.createFromStringMap({
+          'a': 1
+        })).not.toEqual(MapWrapper.createFromStringMap({}));
       });
 
       it('should detect different values', () => {
-        expect(MapWrapper.createFromStringMap({'a': 1}))
-            .not.toEqual(MapWrapper.createFromStringMap({'a': 2}));
+        expect(MapWrapper.createFromStringMap({
+          'a': 1
+        })).not.toEqual(MapWrapper.createFromStringMap({'a': 2}));
       });
 
       it('should detect additional entries', () => {
-        expect(MapWrapper.createFromStringMap({'a': 1}))
-            .not.toEqual(MapWrapper.createFromStringMap({'a': 1, 'b': 1}));
+        expect(MapWrapper.createFromStringMap({
+          'a': 1
+        })).not.toEqual(MapWrapper.createFromStringMap({'a': 1, 'b': 1}));
       });
     });
 
-    describe("spy objects", () => {
+    describe('spy objects', () => {
       var spyObj: any /** TODO #9100 */;
 
       beforeEach(() => { spyObj = <any>new SpyTestObj(); });
 
-      it("should return a new spy func with no calls",
-         () => { expect(spyObj.spy("someFunc")).not.toHaveBeenCalled(); });
+      it('should return a new spy func with no calls',
+         () => { expect(spyObj.spy('someFunc')).not.toHaveBeenCalled(); });
 
-      it("should record function calls", () => {
-        spyObj.spy("someFunc").andCallFake((a: any /** TODO #9100 */, b: any /** TODO #9100 */) => {return a + b});
+      it('should record function calls', () => {
+        spyObj.spy('someFunc')
+            .andCallFake((a: any /** TODO #9100 */, b: any /** TODO #9100 */) => {return a + b});
 
         expect(spyObj.someFunc(1, 2)).toEqual(3);
-        expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(1, 2);
+        expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(1, 2);
       });
 
-      it("should match multiple function calls", () => {
+      it('should match multiple function calls', () => {
         spyObj.someFunc(1, 2);
         spyObj.someFunc(3, 4);
-        expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(1, 2);
-        expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(3, 4);
+        expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(1, 2);
+        expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(3, 4);
       });
 
-      it("should match null arguments", () => {
-        spyObj.someFunc(null, "hello");
-        expect(spyObj.spy("someFunc")).toHaveBeenCalledWith(null, "hello");
+      it('should match null arguments', () => {
+        spyObj.someFunc(null, 'hello');
+        expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(null, 'hello');
       });
 
-      it("should match using deep equality", () => {
+      it('should match using deep equality', () => {
         spyObj.someComplexFunc([1]);
-        expect(spyObj.spy("someComplexFunc")).toHaveBeenCalledWith([1]);
+        expect(spyObj.spy('someComplexFunc')).toHaveBeenCalledWith([1]);
       });
 
-      it("should support stubs", () => {
-        var s = SpyObject.stub({"a": 1}, {"b": 2});
+      it('should support stubs', () => {
+        var s = SpyObject.stub({'a': 1}, {'b': 2});
 
         expect(s.a()).toEqual(1);
         expect(s.b()).toEqual(2);

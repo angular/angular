@@ -1,37 +1,8 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from '@angular/core/testing/testing_internal';
+import {CssLexer} from '@angular/compiler/src/css/lexer';
+import {BlockType, CssBlockAST, CssBlockDefinitionRuleAST, CssBlockRuleAST, CssDefinitionAST, CssInlineRuleAST, CssKeyframeDefinitionAST, CssKeyframeRuleAST, CssMediaQueryRuleAST, CssParseError, CssParser, CssRuleAST, CssSelectorAST, CssSelectorRuleAST, CssStyleSheetAST, CssStyleValueAST, ParsedCssResult} from '@angular/compiler/src/css/parser';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
 import {BaseException} from '../../src/facade/exceptions';
-
-import {
-  ParsedCssResult,
-  CssParser,
-  BlockType,
-  CssSelectorRuleAST,
-  CssKeyframeRuleAST,
-  CssKeyframeDefinitionAST,
-  CssBlockDefinitionRuleAST,
-  CssMediaQueryRuleAST,
-  CssBlockRuleAST,
-  CssInlineRuleAST,
-  CssStyleValueAST,
-  CssSelectorAST,
-  CssDefinitionAST,
-  CssStyleSheetAST,
-  CssRuleAST,
-  CssBlockAST,
-  CssParseError
-} from '@angular/compiler/src/css/parser';
-
-import {CssLexer} from '@angular/compiler/src/css/lexer';
 
 export function assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9100 */) {
   for (var i = 0; i < tokens.length; i++) {
@@ -94,17 +65,17 @@ export function main() {
       var rule = <CssSelectorRuleAST>ast.rules[0];
       expect(rule.selectors.length).toBe(7);
 
-      assertTokens(rule.selectors[0].tokens, [".", "class"]);
-      assertTokens(rule.selectors[1].tokens, ["#", "id"]);
-      assertTokens(rule.selectors[2].tokens, ["tag"]);
-      assertTokens(rule.selectors[3].tokens, ["[", "attr", "]"]);
-      assertTokens(rule.selectors[4].tokens, ["key", " ", "+", " ", "value"]);
-      assertTokens(rule.selectors[5].tokens, ["*", " ", "value"]);
-      assertTokens(rule.selectors[6].tokens, [":", "-moz-any-link"]);
+      assertTokens(rule.selectors[0].tokens, ['.', 'class']);
+      assertTokens(rule.selectors[1].tokens, ['#', 'id']);
+      assertTokens(rule.selectors[2].tokens, ['tag']);
+      assertTokens(rule.selectors[3].tokens, ['[', 'attr', ']']);
+      assertTokens(rule.selectors[4].tokens, ['key', ' ', '+', ' ', 'value']);
+      assertTokens(rule.selectors[5].tokens, ['*', ' ', 'value']);
+      assertTokens(rule.selectors[6].tokens, [':', '-moz-any-link']);
 
       var style1 = <CssDefinitionAST>rule.block.entries[0];
-      expect(style1.property.strValue).toEqual("prop");
-      assertTokens(style1.value.tokens, ["value123"]);
+      expect(style1.property.strValue).toEqual('prop');
+      assertTokens(style1.value.tokens, ['value123']);
     });
 
     it('should parse keyframe rules', () => {
@@ -187,16 +158,16 @@ export function main() {
 
       var importRule = <CssInlineRuleAST>ast.rules[0];
       expect(importRule.type).toEqual(BlockType.Import);
-      assertTokens(importRule.value.tokens, ["url", "(", "remote", ".", "css", ")"]);
+      assertTokens(importRule.value.tokens, ['url', '(', 'remote', '.', 'css', ')']);
 
       var charsetRule = <CssInlineRuleAST>ast.rules[1];
       expect(charsetRule.type).toEqual(BlockType.Charset);
-      assertTokens(charsetRule.value.tokens, ["UTF-8"]);
+      assertTokens(charsetRule.value.tokens, ['UTF-8']);
 
       var namespaceRule = <CssInlineRuleAST>ast.rules[2];
       expect(namespaceRule.type).toEqual(BlockType.Namespace);
-      assertTokens(namespaceRule.value.tokens,
-                   ["ng", "url", "(", "http://angular.io/namespace/ng", ")"]);
+      assertTokens(
+          namespaceRule.value.tokens, ['ng', 'url', '(', 'http://angular.io/namespace/ng', ')']);
     });
 
     it('should parse CSS values that contain functions and leave the inner function data untokenized',
@@ -217,11 +188,13 @@ export function main() {
          expect(defs.length).toEqual(4);
 
          assertTokens((<CssDefinitionAST>defs[0]).value.tokens, ['url', '(', 'matias.css', ')']);
-         assertTokens((<CssDefinitionAST>defs[1]).value.tokens,
-                      ['cubic-bezier', '(', '0.755, 0.050, 0.855, 0.060', ')']);
+         assertTokens(
+             (<CssDefinitionAST>defs[1]).value.tokens,
+             ['cubic-bezier', '(', '0.755, 0.050, 0.855, 0.060', ')']);
          assertTokens((<CssDefinitionAST>defs[2]).value.tokens, ['calc', '(', '100% - 50px', ')']);
-         assertTokens((<CssDefinitionAST>defs[3]).value.tokens,
-                      ['linear-gradient', '(', '45deg, rgba(100, 0, 0, 0.5), black', ')']);
+         assertTokens(
+             (<CssDefinitionAST>defs[3]).value.tokens,
+             ['linear-gradient', '(', '45deg, rgba(100, 0, 0, 0.5), black', ')']);
        });
 
     it('should parse un-named block-level CSS values', () => {
@@ -268,7 +241,7 @@ export function main() {
 
       var importRule = <CssInlineRuleAST>ast.rules[0];
       expect(importRule.type).toEqual(BlockType.Import);
-      assertTokens(importRule.value.tokens, ["url", "(", "something something", ")"]);
+      assertTokens(importRule.value.tokens, ['url', '(', 'something something', ')']);
 
       var fontFaceRule = <CssBlockRuleAST>ast.rules[1];
       expect(fontFaceRule.type).toEqual(BlockType.FontFace);
@@ -333,7 +306,7 @@ export function main() {
       expect(documentRule.type).toEqual(BlockType.Document);
 
       var rule = <CssSelectorRuleAST>documentRule.block.entries[0];
-      expect(rule.strValue).toEqual("body");
+      expect(rule.strValue).toEqual('body');
     });
 
     it('should parse the @page rule', () => {
@@ -351,11 +324,11 @@ export function main() {
       var rules = ast.rules;
 
       var pageRule1 = <CssBlockDefinitionRuleAST>rules[0];
-      expect(pageRule1.strValue).toEqual("one");
+      expect(pageRule1.strValue).toEqual('one');
       expect(pageRule1.type).toEqual(BlockType.Page);
 
       var pageRule2 = <CssBlockDefinitionRuleAST>rules[1];
-      expect(pageRule2.strValue).toEqual("two");
+      expect(pageRule2.strValue).toEqual('two');
       expect(pageRule2.type).toEqual(BlockType.Page);
 
       var selectorOne = <CssSelectorRuleAST>pageRule1.block.entries[0];
@@ -411,15 +384,15 @@ export function main() {
       expect(ast.rules.length).toEqual(3);
 
       var rule1 = <CssSelectorRuleAST>ast.rules[0];
-      expect(rule1.selectors[0].strValue).toEqual("tag&");
+      expect(rule1.selectors[0].strValue).toEqual('tag&');
       expect(rule1.block.entries.length).toEqual(1);
 
       var rule2 = <CssSelectorRuleAST>ast.rules[1];
-      expect(rule2.selectors[0].strValue).toEqual(".%tag");
+      expect(rule2.selectors[0].strValue).toEqual('.%tag');
       expect(rule2.block.entries.length).toEqual(1);
 
       var rule3 = <CssSelectorRuleAST>ast.rules[2];
-      expect(rule3.selectors[0].strValue).toEqual("#tag$");
+      expect(rule3.selectors[0].strValue).toEqual('#tag$');
       expect(rule3.block.entries.length).toEqual(1);
     });
 

@@ -1,6 +1,8 @@
 import {Type} from '@angular/core';
-import {FORM_DIRECTIVES} from './forms-deprecated';
+
 import {CORE_DIRECTIVES} from './directives';
+import {FORM_DIRECTIVES} from './forms-deprecated';
+
 
 /**
  * A collection of Angular core directives that are likely to be used in each and every Angular

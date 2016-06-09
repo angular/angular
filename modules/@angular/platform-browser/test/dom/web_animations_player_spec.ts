@@ -1,21 +1,8 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-  beforeEachProviders,
-  MockAnimationPlayer
-} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, MockAnimationPlayer, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {isPresent} from "../../src/facade/lang";
-import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
+import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
+import {isPresent} from '../../src/facade/lang';
 
 export class MockDomAnimatePlayer implements DomAnimatePlayer {
   public captures: {[key: string]: any[]} = {};
@@ -131,24 +118,23 @@ export function main() {
          expect(count).toEqual(2);
        });
 
-    it('should destroy itself automatically if a parent player is not present',
-       () => {
-         captures['cancel'] = [];
-         player.finish();
+    it('should destroy itself automatically if a parent player is not present', () => {
+      captures['cancel'] = [];
+      player.finish();
 
-         expect(captures['finish'].length).toEqual(1);
-         expect(captures['cancel'].length).toEqual(1);
+      expect(captures['finish'].length).toEqual(1);
+      expect(captures['cancel'].length).toEqual(1);
 
-         var next = makePlayer();
-         var player2 = next['player'];
-         player2.parentPlayer = new MockAnimationPlayer();
+      var next = makePlayer();
+      var player2 = next['player'];
+      player2.parentPlayer = new MockAnimationPlayer();
 
-         var captures2 = next['captures'];
-         captures2['cancel'] = [];
+      var captures2 = next['captures'];
+      captures2['cancel'] = [];
 
-         player2.finish();
-         expect(captures2['finish'].length).toEqual(1);
-         expect(captures2['cancel'].length).toEqual(0);
-       });
+      player2.finish();
+      expect(captures2['finish'].length).toEqual(1);
+      expect(captures2['cancel'].length).toEqual(0);
+    });
   });
 }

@@ -1,6 +1,7 @@
+import {EventEmitter, Observable} from '../facade/async';
 import {ListWrapper} from '../facade/collection';
 import {getSymbolIterator} from '../facade/lang';
-import {Observable, EventEmitter} from '../facade/async';
+
 
 
 /**
@@ -61,14 +62,16 @@ export class QueryList<T> {
    */
   toArray(): T[] { return ListWrapper.clone(this._results); }
 
-  [getSymbolIterator()](): any { return (this._results as any /** TODO #???? */)[getSymbolIterator()](); }
+  [getSymbolIterator()](): any {
+    return (this._results as any /** TODO #???? */)[getSymbolIterator()]();
+  }
 
   toString(): string { return this._results.toString(); }
 
   /**
    * @internal
    */
-  reset(res: Array<T | any[]>): void {
+  reset(res: Array<T|any[]>): void {
     this._results = ListWrapper.flatten(res);
     this._dirty = false;
   }

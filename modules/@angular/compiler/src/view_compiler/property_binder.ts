@@ -1,18 +1,12 @@
-import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy, SecurityContext} from '../../core_private';
-
-import {isBlank, isPresent} from '../facade/lang';
-
+import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, SecurityContext, isDefaultChangeDetectionStrategy} from '../../core_private';
 import * as cdAst from '../expression_parser/ast';
-import * as o from '../output/output_ast';
+import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
+import * as o from '../output/output_ast';
+
 import {DetectChangesVars, ViewProperties} from './constants';
 
-import {
-  BoundTextAst,
-  BoundElementPropertyAst,
-  DirectiveAst,
-  PropertyBindingType,
-} from '../template_ast';
+import {BoundTextAst, BoundElementPropertyAst, DirectiveAst, PropertyBindingType,} from '../template_ast';
 
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
@@ -34,9 +28,10 @@ function createCurrValueExpr(exprIndex: number): o.ReadVarExpr {
   return o.variable(`currVal_${exprIndex}`);  // fix syntax highlighting: `
 }
 
-function bind(view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,
-              parsedExpression: cdAst.AST, context: o.Expression, actions: o.Statement[],
-              method: CompileMethod) {
+function bind(
+    view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,
+    parsedExpression: cdAst.AST, context: o.Expression, actions: o.Statement[],
+    method: CompileMethod) {
   var checkExpression =
       convertCdExpressionToIr(view, context, parsedExpression, DetectChangesVars.valUnwrapper);
   if (isBlank(checkExpression.expression)) {
@@ -56,9 +51,9 @@ function bind(view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPr
   method.addStmt(
       currValExpr.set(checkExpression.expression).toDeclStmt(null, [o.StmtModifier.Final]));
 
-  var condition: o.Expression =
-      o.importExpr(Identifiers.checkBinding)
-          .callFn([DetectChangesVars.throwOnChange, fieldExpr, currValExpr]);
+  var condition: o.Expression = o.importExpr(Identifiers.checkBinding).callFn([
+    DetectChangesVars.throwOnChange, fieldExpr, currValExpr
+  ]);
   if (checkExpression.needsValueUnwrapper) {
     condition = DetectChangesVars.valUnwrapper.prop('hasWrappedValue').or(condition);
   }
@@ -67,25 +62,24 @@ function bind(view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPr
       actions.concat([<o.Statement>o.THIS_EXPR.prop(fieldExpr.name).set(currValExpr).toStmt()])));
 }
 
-export function bindRenderText(boundText: BoundTextAst, compileNode: CompileNode,
-                               view: CompileView) {
+export function bindRenderText(
+    boundText: BoundTextAst, compileNode: CompileNode, view: CompileView) {
   var bindingIndex = view.bindings.length;
   view.bindings.push(new CompileBinding(compileNode, boundText));
   var currValExpr = createCurrValueExpr(bindingIndex);
   var valueField = createBindFieldExpr(bindingIndex);
   view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileNode.nodeIndex, boundText);
 
-  bind(view, currValExpr, valueField, boundText.value, view.componentContext,
-       [
-         o.THIS_EXPR.prop('renderer')
-             .callMethod('setText', [compileNode.renderNode, currValExpr])
-             .toStmt()
-       ],
-       view.detectChangesRenderPropertiesMethod);
+  bind(
+      view, currValExpr, valueField, boundText.value, view.componentContext,
+      [o.THIS_EXPR.prop('renderer')
+           .callMethod('setText', [compileNode.renderNode, currValExpr])
+           .toStmt()],
+      view.detectChangesRenderPropertiesMethod);
 }
 
-function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: o.Expression,
-                                compileElement: CompileElement) {
+function bindAndWriteToRenderer(
+    boundProps: BoundElementPropertyAst[], context: o.Expression, compileElement: CompileElement) {
   var view = compileElement.view;
   var renderNode = compileElement.renderNode;
   boundProps.forEach((boundProp) => {
@@ -105,24 +99,24 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
         }
         updateStmts.push(
             o.THIS_EXPR.prop('renderer')
-                .callMethod('setElementProperty', [renderNode, o.literal(boundProp.name), renderValue])
-                .toStmt()
-        );
+                .callMethod(
+                    'setElementProperty', [renderNode, o.literal(boundProp.name), renderValue])
+                .toStmt());
         break;
       case PropertyBindingType.Attribute:
-        renderValue = renderValue.isBlank().conditional(o.NULL_EXPR, renderValue.callMethod('toString', []));
+        renderValue =
+            renderValue.isBlank().conditional(o.NULL_EXPR, renderValue.callMethod('toString', []));
         updateStmts.push(
             o.THIS_EXPR.prop('renderer')
-                .callMethod('setElementAttribute', [renderNode, o.literal(boundProp.name), renderValue])
-                .toStmt()
-        );
+                .callMethod(
+                    'setElementAttribute', [renderNode, o.literal(boundProp.name), renderValue])
+                .toStmt());
         break;
       case PropertyBindingType.Class:
         updateStmts.push(
             o.THIS_EXPR.prop('renderer')
                 .callMethod('setElementClass', [renderNode, o.literal(boundProp.name), renderValue])
-                .toStmt()
-        );
+                .toStmt());
         break;
       case PropertyBindingType.Style:
         var strValue: o.Expression = renderValue.callMethod('toString', []);
@@ -133,14 +127,14 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
         updateStmts.push(
             o.THIS_EXPR.prop('renderer')
                 .callMethod('setElementStyle', [renderNode, o.literal(boundProp.name), renderValue])
-                .toStmt()
-        );
+                .toStmt());
         break;
       case PropertyBindingType.Animation:
         var animationName = boundProp.name;
         var animation = view.componentView.animations.get(animationName);
         if (!isPresent(animation)) {
-          throw new BaseException(`Internal Error: couldn't find an animation entry for ${boundProp.name}`);
+          throw new BaseException(
+              `Internal Error: couldn't find an animation entry for ${boundProp.name}`);
         }
 
         // it's important to normalize the void value as `void` explicitly
@@ -150,45 +144,36 @@ function bindAndWriteToRenderer(boundProps: BoundElementPropertyAst[], context: 
         // void => ...
         var oldRenderVar = o.variable('oldRenderVar');
         updateStmts.push(oldRenderVar.set(oldRenderValue).toDeclStmt());
-        updateStmts.push(
-          new o.IfStmt(oldRenderVar.equals(o.importExpr(Identifiers.uninitialized)), [
-            oldRenderVar.set(emptyStateValue).toStmt()
-          ]));
+        updateStmts.push(new o.IfStmt(
+            oldRenderVar.equals(o.importExpr(Identifiers.uninitialized)),
+            [oldRenderVar.set(emptyStateValue).toStmt()]));
 
         // ... => void
         var newRenderVar = o.variable('newRenderVar');
         updateStmts.push(newRenderVar.set(renderValue).toDeclStmt());
-        updateStmts.push(
-          new o.IfStmt(newRenderVar.equals(o.importExpr(Identifiers.uninitialized)), [
-            newRenderVar.set(emptyStateValue).toStmt()
-          ]));
+        updateStmts.push(new o.IfStmt(
+            newRenderVar.equals(o.importExpr(Identifiers.uninitialized)),
+            [newRenderVar.set(emptyStateValue).toStmt()]));
 
         updateStmts.push(
-          animation.fnVariable.callFn([
-            o.THIS_EXPR,
-            renderNode,
-            oldRenderVar,
-            newRenderVar
-          ]).toStmt());
+            animation.fnVariable.callFn([o.THIS_EXPR, renderNode, oldRenderVar, newRenderVar])
+                .toStmt());
 
         view.detachMethod.addStmt(
-          animation.fnVariable.callFn([
-            o.THIS_EXPR,
-            renderNode,
-            oldRenderValue,
-            emptyStateValue
-          ]).toStmt());
+            animation.fnVariable.callFn([o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue])
+                .toStmt());
 
         break;
     }
 
-    bind(view, currValExpr, fieldExpr, boundProp.value, context, updateStmts,
-         view.detectChangesRenderPropertiesMethod);
+    bind(
+        view, currValExpr, fieldExpr, boundProp.value, context, updateStmts,
+        view.detectChangesRenderPropertiesMethod);
   });
 }
 
-function sanitizedValue(boundProp: BoundElementPropertyAst,
-                        renderValue: o.Expression): o.Expression {
+function sanitizedValue(
+    boundProp: BoundElementPropertyAst, renderValue: o.Expression): o.Expression {
   let enumValue: string;
   switch (boundProp.securityContext) {
     case SecurityContext.NONE:
@@ -216,18 +201,19 @@ function sanitizedValue(boundProp: BoundElementPropertyAst,
   return ctx.callMethod('sanitize', args);
 }
 
-export function bindRenderInputs(boundProps: BoundElementPropertyAst[],
-                                 compileElement: CompileElement): void {
+export function bindRenderInputs(
+    boundProps: BoundElementPropertyAst[], compileElement: CompileElement): void {
   bindAndWriteToRenderer(boundProps, compileElement.view.componentContext, compileElement);
 }
 
-export function bindDirectiveHostProps(directiveAst: DirectiveAst, directiveInstance: o.Expression,
-                                       compileElement: CompileElement): void {
+export function bindDirectiveHostProps(
+    directiveAst: DirectiveAst, directiveInstance: o.Expression,
+    compileElement: CompileElement): void {
   bindAndWriteToRenderer(directiveAst.hostProperties, directiveInstance, compileElement);
 }
 
-export function bindDirectiveInputs(directiveAst: DirectiveAst, directiveInstance: o.Expression,
-                                    compileElement: CompileElement) {
+export function bindDirectiveInputs(
+    directiveAst: DirectiveAst, directiveInstance: o.Expression, compileElement: CompileElement) {
   if (directiveAst.inputs.length === 0) {
     return;
   }
@@ -238,7 +224,7 @@ export function bindDirectiveInputs(directiveAst: DirectiveAst, directiveInstanc
   var lifecycleHooks = directiveAst.directive.lifecycleHooks;
   var calcChangesMap = lifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1;
   var isOnPushComp = directiveAst.directive.isComponent &&
-                     !isDefaultChangeDetectionStrategy(directiveAst.directive.changeDetection);
+      !isDefaultChangeDetectionStrategy(directiveAst.directive.changeDetection);
   if (calcChangesMap) {
     detectChangesInInputsMethod.addStmt(DetectChangesVars.changes.set(o.NULL_EXPR).toStmt());
   }
@@ -254,11 +240,11 @@ export function bindDirectiveInputs(directiveAst: DirectiveAst, directiveInstanc
     var statements: o.Statement[] =
         [directiveInstance.prop(input.directiveName).set(currValExpr).toStmt()];
     if (calcChangesMap) {
-      statements.push(new o.IfStmt(DetectChangesVars.changes.identical(o.NULL_EXPR), [
-        DetectChangesVars.changes.set(o.literalMap([], new o.MapType(
-                                                           o.importType(Identifiers.SimpleChange))))
-            .toStmt()
-      ]));
+      statements.push(new o.IfStmt(
+          DetectChangesVars.changes.identical(o.NULL_EXPR),
+          [DetectChangesVars.changes
+               .set(o.literalMap([], new o.MapType(o.importType(Identifiers.SimpleChange))))
+               .toStmt()]));
       statements.push(
           DetectChangesVars.changes.key(o.literal(input.directiveName))
               .set(o.importExpr(Identifiers.SimpleChange).instantiate([fieldExpr, currValExpr]))
@@ -271,26 +257,25 @@ export function bindDirectiveInputs(directiveAst: DirectiveAst, directiveInstanc
       statements.push(
           logBindingUpdateStmt(compileElement.renderNode, input.directiveName, currValExpr));
     }
-    bind(view, currValExpr, fieldExpr, input.value, view.componentContext, statements,
-         detectChangesInInputsMethod);
+    bind(
+        view, currValExpr, fieldExpr, input.value, view.componentContext, statements,
+        detectChangesInInputsMethod);
   });
   if (isOnPushComp) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(DetectChangesVars.changed, [
-      compileElement.appElement.prop('componentView')
-          .callMethod('markAsCheckOnce', [])
-          .toStmt()
+      compileElement.appElement.prop('componentView').callMethod('markAsCheckOnce', []).toStmt()
     ]));
   }
 }
 
-function logBindingUpdateStmt(renderNode: o.Expression, propName: string,
-                              value: o.Expression): o.Statement {
+function logBindingUpdateStmt(
+    renderNode: o.Expression, propName: string, value: o.Expression): o.Statement {
   return o.THIS_EXPR.prop('renderer')
-      .callMethod('setBindingDebugInfo',
-                  [
-                    renderNode,
-                    o.literal(`ng-reflect-${camelCaseToDashCase(propName)}`),
-                    value.isBlank().conditional(o.NULL_EXPR, value.callMethod('toString', []))
-                  ])
+      .callMethod(
+          'setBindingDebugInfo',
+          [
+            renderNode, o.literal(`ng-reflect-${camelCaseToDashCase(propName)}`),
+            value.isBlank().conditional(o.NULL_EXPR, value.callMethod('toString', []))
+          ])
       .toStmt();
 }

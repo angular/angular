@@ -1,5 +1,6 @@
-import {isPresent} from '../facade/lang';
 import {AnimationPlayer} from '../../core_private';
+import {isPresent} from '../facade/lang';
+
 import {DomAnimatePlayer} from './dom_animate_player';
 
 export class WebAnimationsPlayer implements AnimationPlayer {
@@ -47,11 +48,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._onFinish();
   }
 
-  setPosition(p: any /** TODO #9100 */): void {
-    this._player.currentTime = p * this.totalTime;
-  }
+  setPosition(p: any /** TODO #9100 */): void { this._player.currentTime = p * this.totalTime; }
 
-  getPosition(): number {
-    return this._player.currentTime / this.totalTime;
-  }
+  getPosition(): number { return this._player.currentTime / this.totalTime; }
 }

@@ -1,8 +1,11 @@
 import {Injectable} from '@angular/core';
-import {isPresent, isJsObject} from '../src/facade/lang';
-import {Headers} from './headers';
+
+import {isJsObject, isPresent} from '../src/facade/lang';
+
 import {ResponseType} from './enums';
+import {Headers} from './headers';
 import {ResponseOptionsArgs} from './interfaces';
+
 
 /**
  * Creates a response options object to be optionally provided when instantiating a
@@ -35,7 +38,7 @@ export class ResponseOptions {
   /**
    * String or Object representing the body of the {@link Response}.
    */
-  body: string | Object;
+  body: string|Object;
   /**
    * Http {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
    * associated with the response.

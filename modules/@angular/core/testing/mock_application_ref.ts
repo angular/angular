@@ -1,12 +1,5 @@
-import {
-  ApplicationRef,
-  Injectable,
-  ComponentRef,
-  ComponentFactory,
-  Injector,
-  NgZone,
-  Type
-} from '../index';
+import {ApplicationRef, ComponentFactory, ComponentRef, Injectable, Injector, NgZone, Type} from '../index';
+
 
 /**
  * A no-op implementation of {@link ApplicationRef}, useful for testing.

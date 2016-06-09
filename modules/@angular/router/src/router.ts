@@ -1,27 +1,17 @@
-import {BaseException, provide, ReflectiveInjector, ComponentResolver} from '@angular/core';
-import {RouterOutlet} from './directives/router_outlet';
-import {Type, isBlank, isPresent} from './facade/lang';
-import {ListWrapper, StringMapWrapper} from './facade/collection';
-import {EventEmitter, Observable, PromiseWrapper, ObservableWrapper} from './facade/async';
-import {RouterUrlSerializer} from './router_url_serializer';
-import {CanDeactivate} from './interfaces';
-import {recognize} from './recognize';
 import {Location} from '@angular/common';
-import {link} from './link';
+import {BaseException, ComponentResolver, ReflectiveInjector, provide} from '@angular/core';
 
-import {
-  routeSegmentComponentFactory,
-  RouteSegment,
-  UrlTree,
-  RouteTree,
-  rootNode,
-  TreeNode,
-  UrlSegment,
-  serializeRouteSegmentTree,
-  createEmptyRouteTree
-} from './segments';
-import {hasLifecycleHook} from './lifecycle_reflector';
 import {DEFAULT_OUTLET_NAME} from './constants';
+import {RouterOutlet} from './directives/router_outlet';
+import {EventEmitter, Observable, ObservableWrapper, PromiseWrapper} from './facade/async';
+import {ListWrapper, StringMapWrapper} from './facade/collection';
+import {Type, isBlank, isPresent} from './facade/lang';
+import {CanDeactivate} from './interfaces';
+import {hasLifecycleHook} from './lifecycle_reflector';
+import {link} from './link';
+import {recognize} from './recognize';
+import {RouterUrlSerializer} from './router_url_serializer';
+import {RouteSegment, RouteTree, TreeNode, UrlSegment, UrlTree, createEmptyRouteTree, rootNode, routeSegmentComponentFactory, serializeRouteSegmentTree} from './segments';
 
 export class RouterOutletMap {
   /** @internal */
@@ -44,10 +34,10 @@ export class Router {
   /**
    * @internal
    */
-  constructor(private _rootComponent: Object, private _rootComponentType: Type,
-              private _componentResolver: ComponentResolver,
-              private _urlSerializer: RouterUrlSerializer,
-              private _routerOutletMap: RouterOutletMap, private _location: Location) {
+  constructor(
+      private _rootComponent: Object, private _rootComponentType: Type,
+      private _componentResolver: ComponentResolver, private _urlSerializer: RouterUrlSerializer,
+      private _routerOutletMap: RouterOutletMap, private _location: Location) {
     this._routeTree = createEmptyRouteTree(this._rootComponentType);
     this._setUpLocationChangeListener();
     this.navigateByUrl(this._location.path());
@@ -149,24 +139,24 @@ export class Router {
   private _navigate(url: UrlTree, preventPushState?: boolean): Promise<void> {
     this._urlTree = url;
     return recognize(this._componentResolver, this._rootComponentType, url, this._routeTree)
-      .then(currTree => {
-        return new _ActivateSegments(currTree, this._routeTree)
-          .activate(this._routerOutletMap, this._rootComponent)
-          .then(updated => {
-            if (updated) {
-              this._routeTree = currTree;
-              if (isBlank(preventPushState) || !preventPushState) {
-                let path = this._urlSerializer.serialize(this._urlTree);
-                if (this._location.isCurrentPathEqualTo(path)) {
-                  this._location.replaceState(path);
-                } else {
-                  this._location.go(path);
+        .then(currTree => {
+          return new _ActivateSegments(currTree, this._routeTree)
+              .activate(this._routerOutletMap, this._rootComponent)
+              .then(updated => {
+                if (updated) {
+                  this._routeTree = currTree;
+                  if (isBlank(preventPushState) || !preventPushState) {
+                    let path = this._urlSerializer.serialize(this._urlTree);
+                    if (this._location.isCurrentPathEqualTo(path)) {
+                      this._location.replaceState(path);
+                    } else {
+                      this._location.go(path);
+                    }
+                  }
+                  this._changes.emit(null);
                 }
-              }
-              this._changes.emit(null);
-            }
-          });
-      });
+              });
+        });
   }
 }
 
@@ -181,18 +171,18 @@ class _ActivateSegments {
     let prevRoot = isPresent(this.prevTree) ? rootNode(this.prevTree) : null;
     let currRoot = rootNode(this.currTree);
 
-    return this.canDeactivate(currRoot, prevRoot, parentOutletMap, rootComponent)
-        .then(res => {
-          this.performMutation = true;
-          if (res) {
-            this.activateChildSegments(currRoot, prevRoot, parentOutletMap, [rootComponent]);
-          }
-          return res;
-        });
+    return this.canDeactivate(currRoot, prevRoot, parentOutletMap, rootComponent).then(res => {
+      this.performMutation = true;
+      if (res) {
+        this.activateChildSegments(currRoot, prevRoot, parentOutletMap, [rootComponent]);
+      }
+      return res;
+    });
   }
 
-  private canDeactivate(currRoot: TreeNode<RouteSegment>, prevRoot: TreeNode<RouteSegment>,
-                        outletMap: RouterOutletMap, rootComponent: Object): Promise<boolean> {
+  private canDeactivate(
+      currRoot: TreeNode<RouteSegment>, prevRoot: TreeNode<RouteSegment>,
+      outletMap: RouterOutletMap, rootComponent: Object): Promise<boolean> {
     this.performMutation = false;
     this.activateChildSegments(currRoot, prevRoot, outletMap, [rootComponent]);
 
@@ -204,7 +194,7 @@ class _ActivateSegments {
     let curr = PromiseWrapper.resolve(true);
     for (let p of ListWrapper.reversed(path)) {
       curr = curr.then(_ => {
-        if (hasLifecycleHook("routerCanDeactivate", p)) {
+        if (hasLifecycleHook('routerCanDeactivate', p)) {
           return (<CanDeactivate>p).routerCanDeactivate(this.prevTree, this.currTree);
         } else {
           return _;
@@ -214,35 +204,35 @@ class _ActivateSegments {
     return curr;
   }
 
-  private activateChildSegments(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
-                                outletMap: RouterOutletMap, components: Object[]): void {
-    let prevChildren = isPresent(prevNode) ?
-                           prevNode.children.reduce(
-                               (m, c) => {
-                                 (m as any /** TODO #9100 */)[c.value.outlet] = c;
-                                 return m;
-                               },
-                               {}) :
-                           {};
+  private activateChildSegments(
+      currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
+      outletMap: RouterOutletMap, components: Object[]): void {
+    let prevChildren = isPresent(prevNode) ? prevNode.children.reduce((m, c) => {
+      (m as any /** TODO #9100 */)[c.value.outlet] = c;
+      return m;
+    }, {}) : {};
 
     currNode.children.forEach(c => {
-      this.activateSegments(c, (prevChildren as any /** TODO #9100 */)[c.value.outlet], outletMap, components);
+      this.activateSegments(
+          c, (prevChildren as any /** TODO #9100 */)[c.value.outlet], outletMap, components);
       StringMapWrapper.delete(prevChildren, c.value.outlet);
     });
 
-    StringMapWrapper.forEach(prevChildren,
-                             (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => this.deactivateOutlet(outletMap._outlets[k], components));
+    StringMapWrapper.forEach(
+        prevChildren, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) =>
+                          this.deactivateOutlet(outletMap._outlets[k], components));
   }
 
-  activateSegments(currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
-                   parentOutletMap: RouterOutletMap, components: Object[]): void {
+  activateSegments(
+      currNode: TreeNode<RouteSegment>, prevNode: TreeNode<RouteSegment>,
+      parentOutletMap: RouterOutletMap, components: Object[]): void {
     let curr = currNode.value;
     let prev = isPresent(prevNode) ? prevNode.value : null;
     let outlet = this.getOutlet(parentOutletMap, currNode.value);
 
     if (curr === prev) {
-      this.activateChildSegments(currNode, prevNode, outlet.outletMap,
-                                 components.concat([outlet.component]));
+      this.activateChildSegments(
+          currNode, prevNode, outlet.outletMap, components.concat([outlet.component]));
     } else {
       this.deactivateOutlet(outlet, components);
       if (this.performMutation) {
@@ -253,12 +243,13 @@ class _ActivateSegments {
     }
   }
 
-  private activateNewSegments(outletMap: RouterOutletMap, curr: RouteSegment, prev: RouteSegment,
-                              outlet: RouterOutlet): Object {
+  private activateNewSegments(
+      outletMap: RouterOutletMap, curr: RouteSegment, prev: RouteSegment,
+      outlet: RouterOutlet): Object {
     let resolved = ReflectiveInjector.resolve(
         [{provide: RouterOutletMap, useValue: outletMap}, {provide: RouteSegment, useValue: curr}]);
     let ref = outlet.activate(routeSegmentComponentFactory(curr), resolved, outletMap);
-    if (hasLifecycleHook("routerOnActivate", ref.instance)) {
+    if (hasLifecycleHook('routerOnActivate', ref.instance)) {
       ref.instance.routerOnActivate(curr, prev, this.currTree, this.prevTree);
     }
     return ref.instance;
@@ -278,8 +269,9 @@ class _ActivateSegments {
 
   private deactivateOutlet(outlet: RouterOutlet, components: Object[]): void {
     if (isPresent(outlet) && outlet.isActivated) {
-      StringMapWrapper.forEach(outlet.outletMap._outlets,
-                               (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => this.deactivateOutlet(v, components));
+      StringMapWrapper.forEach(
+          outlet.outletMap._outlets, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) =>
+                                         this.deactivateOutlet(v, components));
       if (this.performMutation) {
         outlet.deactivate();
       } else {

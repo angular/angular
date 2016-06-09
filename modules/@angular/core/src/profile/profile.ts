@@ -1,6 +1,7 @@
+import * as impl from './wtf_impl';
+
 export {WtfScopeFn} from './wtf_impl';
 
-import * as impl from './wtf_impl';
 
 // Change exports to const once https://github.com/angular/ts2dart/issues/150
 
@@ -55,7 +56,7 @@ export var wtfCreateScope: (signature: string, flags?: any) => impl.WtfScopeFn =
  * Returns the `returnValue for easy chaining.
  * @experimental
  */
-export var wtfLeave:<T>(scope: any, returnValue?: T) => T =
+export var wtfLeave: <T>(scope: any, returnValue?: T) => T =
     wtfEnabled ? impl.leave : (s: any, r?: any) => r;
 
 /**
@@ -80,5 +81,5 @@ export var wtfStartTimeRange: (rangeType: string, action: string) => any =
  * enabled.
  * @experimental
  */
-export var wtfEndTimeRange: (range: any) => void = wtfEnabled ? impl.endTimeRange : (r: any) =>
-                                                                                        null;
+export var wtfEndTimeRange: (range: any) => void =
+    wtfEnabled ? impl.endTimeRange : (r: any) => null;

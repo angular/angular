@@ -1,4 +1,5 @@
-import {describe, it, fakeAsync, expect, tick, clearPendingTimers} from '@angular/core/testing';
+import {clearPendingTimers, describe, expect, fakeAsync, it, tick} from '@angular/core/testing';
+
 
 // #docregion basic
 describe('this test', () => {

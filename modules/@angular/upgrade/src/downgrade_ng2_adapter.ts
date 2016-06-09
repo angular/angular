@@ -1,17 +1,8 @@
-import {
-  ChangeDetectorRef,
-  Injector,
-  OnChanges,
-  ComponentFactory,
-  ComponentRef,
-  SimpleChange,
-  SimpleChanges,
-  ReflectiveInjector,
-  EventEmitter
-} from '@angular/core';
+import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges} from '@angular/core';
+
+import * as angular from './angular_js';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
-import * as angular from './angular_js';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -27,11 +18,11 @@ export class DowngradeNg2ComponentAdapter {
   childNodes: Node[];
   contentInsertionPoint: Node = null;
 
-  constructor(private id: string, private info: ComponentInfo,
-              private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
-              private scope: angular.IScope, private parentInjector: Injector,
-              private parse: angular.IParseService,
-              private componentFactory: ComponentFactory<any>) {
+  constructor(
+      private id: string, private info: ComponentInfo, private element: angular.IAugmentedJQuery,
+      private attrs: angular.IAttributes, private scope: angular.IScope,
+      private parentInjector: Injector, private parse: angular.IParseService,
+      private componentFactory: ComponentFactory<any>) {
     (<any>this.element[0]).id = id;
     this.componentScope = scope.$new();
     this.childNodes = <Node[]><any>element.contents();
@@ -42,8 +33,8 @@ export class DowngradeNg2ComponentAdapter {
         [{provide: NG1_SCOPE, useValue: this.componentScope}], this.parentInjector);
     this.contentInsertionPoint = document.createComment('ng1 insertion point');
 
-    this.componentRef =
-        this.componentFactory.create(childInjector, [[this.contentInsertionPoint]], this.element[0]);
+    this.componentRef = this.componentFactory.create(
+        childInjector, [[this.contentInsertionPoint]], this.element[0]);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
   }
@@ -78,13 +69,15 @@ export class DowngradeNg2ComponentAdapter {
         expr = (attrs as any /** TODO #9100 */)[input.bracketParenAttr];
       }
       if (expr != null) {
-        var watchFn = ((prop: any /** TODO #9100 */) => (value: any /** TODO #9100 */, prevValue: any /** TODO #9100 */) => {
-          if (this.inputChanges != null) {
-            this.inputChangeCount++;
-            this.inputChanges[prop] = new Ng1Change(prevValue, value);
-          }
-          this.component[prop] = value;
-        })(input.prop);
+        var watchFn =
+            ((prop: any /** TODO #9100 */) =>
+                 (value: any /** TODO #9100 */, prevValue: any /** TODO #9100 */) => {
+                   if (this.inputChanges != null) {
+                     this.inputChangeCount++;
+                     this.inputChanges[prop] = new Ng1Change(prevValue, value);
+                   }
+                   this.component[prop] = value;
+                 })(input.prop);
         this.componentScope.$watch(expr, watchFn);
       }
     }
@@ -122,10 +115,9 @@ export class DowngradeNg2ComponentAdapter {
 
       var bindonAttr =
           output.bindonAttr ? output.bindonAttr.substring(0, output.bindonAttr.length - 6) : null;
-      var bracketParenAttr =
-          output.bracketParenAttr ?
-              `[(${output.bracketParenAttr.substring(2, output.bracketParenAttr.length - 8)})]` :
-              null;
+      var bracketParenAttr = output.bracketParenAttr ?
+          `[(${output.bracketParenAttr.substring(2, output.bracketParenAttr.length - 8)})]` :
+          null;
 
       if (attrs.hasOwnProperty(output.onAttr)) {
         expr = (attrs as any /** TODO #9100 */)[output.onAttr];
@@ -148,8 +140,10 @@ export class DowngradeNg2ComponentAdapter {
         var emitter = this.component[output.prop] as EventEmitter<any>;
         if (emitter) {
           emitter.subscribe({
-            next: assignExpr ? ((setter: any) => (v: any /** TODO #9100 */) => setter(this.scope, v))(setter) :
-                               ((getter: any) => (v: any /** TODO #9100 */) => getter(this.scope, {$event: v}))(getter)
+            next: assignExpr ?
+                ((setter: any) => (v: any /** TODO #9100 */) => setter(this.scope, v))(setter) :
+                ((getter: any) => (v: any /** TODO #9100 */) =>
+                     getter(this.scope, {$event: v}))(getter)
           });
         } else {
           throw new Error(`Missing emitter '${output.prop}' on component '${this.info.selector}'!`);

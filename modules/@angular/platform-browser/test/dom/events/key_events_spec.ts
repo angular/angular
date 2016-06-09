@@ -1,13 +1,4 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  xdescribe,
-  expect,
-  beforeEach,
-} from '@angular/core/testing/testing_internal';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach,} from '@angular/core/testing/testing_internal';
 import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_events';
 
 export function main() {

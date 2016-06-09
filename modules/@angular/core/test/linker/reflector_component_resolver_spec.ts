@@ -1,25 +1,9 @@
-import {
-  ddescribe,
-  describe,
-  xdescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  inject,
-  beforeEachProviders
-} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-
 import {provide} from '@angular/core';
-import {
-  ComponentResolver,
-  ReflectorComponentResolver
-} from '@angular/core/src/linker/component_resolver';
-import {reflector, ReflectionInfo} from '@angular/core/src/reflection/reflection';
 import {ComponentFactory} from '@angular/core/src/linker/component_factory';
+import {ComponentResolver, ReflectorComponentResolver} from '@angular/core/src/linker/component_resolver';
+import {ReflectionInfo, reflector} from '@angular/core/src/reflection/reflection';
+import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('Compiler', () => {
@@ -33,23 +17,25 @@ export function main() {
     }));
 
     it('should read the template from an annotation',
-       inject([AsyncTestCompleter, ComponentResolver], (async: AsyncTestCompleter, compiler: ComponentResolver) => {
-         compiler.resolveComponent(SomeComponent)
-             .then((compFactory: ComponentFactory<any>) => {
+       inject(
+           [AsyncTestCompleter, ComponentResolver],
+           (async: AsyncTestCompleter, compiler: ComponentResolver) => {
+             compiler.resolveComponent(SomeComponent).then((compFactory: ComponentFactory<any>) => {
                expect(compFactory).toBe(someCompFactory);
                async.done();
                return null;
              });
-       }));
+           }));
 
     it('should throw when given a string',
-       inject([AsyncTestCompleter, ComponentResolver], (async: AsyncTestCompleter, compiler: ComponentResolver) => {
-         compiler.resolveComponent("someString")
-             .catch((e) => {
-               expect(e.message).toContain("Cannot resolve component using 'someString'.")
-               async.done();
+       inject(
+           [AsyncTestCompleter, ComponentResolver],
+           (async: AsyncTestCompleter, compiler: ComponentResolver) => {
+             compiler.resolveComponent('someString').catch((e) => {
+               expect(e.message).toContain('Cannot resolve component using \'someString\'.')
+                   async.done();
              });
-       }));
+           }));
   });
 }
 

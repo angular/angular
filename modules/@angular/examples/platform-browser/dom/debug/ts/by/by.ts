@@ -1,5 +1,5 @@
-import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
+import {By} from '@angular/platform-browser';
 
 var debugElement: DebugElement;
 class MyDirective {}

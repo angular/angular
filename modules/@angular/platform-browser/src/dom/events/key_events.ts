@@ -1,8 +1,6 @@
-import {NgZone, Injectable} from '@angular/core';
-import {
-  isPresent,
-  StringWrapper,
-} from '../../facade/lang';
+import {Injectable, NgZone} from '@angular/core';
+
+import {isPresent, StringWrapper,} from '../../facade/lang';
 import {StringMapWrapper, ListWrapper} from '../../facade/collection';
 
 import {getDOM} from '../dom_adapter';
@@ -32,8 +30,8 @@ export class KeyEventsPlugin extends EventManagerPlugin {
         element, StringMapWrapper.get(parsedEvent, 'fullKey'), handler, this.manager.getZone());
 
     return this.manager.getZone().runOutsideAngular(() => {
-      return getDOM().onAndCancel(element, StringMapWrapper.get(parsedEvent, 'domEventName'),
-                                  outsideHandler);
+      return getDOM().onAndCancel(
+          element, StringMapWrapper.get(parsedEvent, 'domEventName'), outsideHandler);
     });
   }
 
@@ -89,8 +87,8 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
-  static eventCallback(element: HTMLElement, fullKey: any, handler: Function,
-                       zone: NgZone): Function {
+  static eventCallback(element: HTMLElement, fullKey: any, handler: Function, zone: NgZone):
+      Function {
     return (event: any /** TODO #9100 */) => {
       if (StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
         zone.runGuarded(() => handler(event));

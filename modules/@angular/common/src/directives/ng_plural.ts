@@ -1,15 +1,7 @@
-import {
-  Directive,
-  ViewContainerRef,
-  TemplateRef,
-  ContentChildren,
-  QueryList,
-  Attribute,
-  AfterContentInit,
-  Input
-} from '@angular/core';
-import {isPresent, NumberWrapper} from '../facade/lang';
+import {AfterContentInit, Attribute, ContentChildren, Directive, Input, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
+
 import {Map} from '../facade/collection';
+import {NumberWrapper, isPresent} from '../facade/lang';
 
 import {SwitchView} from './ng_switch';
 
@@ -81,8 +73,9 @@ export abstract class NgLocalization { abstract getPluralCategory(value: any): s
 export class NgPluralCase {
   /** @internal */
   _view: SwitchView;
-  constructor(@Attribute('ngPluralCase') public value: string, template: TemplateRef<Object>,
-              viewContainer: ViewContainerRef) {
+  constructor(
+      @Attribute('ngPluralCase') public value: string, template: TemplateRef<Object>,
+      viewContainer: ViewContainerRef) {
     this._view = new SwitchView(viewContainer, template);
   }
 }
@@ -143,7 +136,7 @@ export class NgPlural implements AfterContentInit {
   }
 
   /** @internal */
-  _isValueView(pluralCase: NgPluralCase): boolean { return pluralCase.value[0] === "="; }
+  _isValueView(pluralCase: NgPluralCase): boolean { return pluralCase.value[0] === '='; }
 
   /** @internal */
   _formatValue(pluralCase: NgPluralCase): any {
