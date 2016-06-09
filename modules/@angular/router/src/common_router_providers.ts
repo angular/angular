@@ -7,6 +7,9 @@ import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_serializer';
 
+export interface ExtraOptions {
+  enableTracing?: boolean;
+}
 
 /**
  * A list of {@link Provider}s. To use the router, you must add this to your application.
@@ -26,7 +29,7 @@ import {DefaultUrlSerializer, UrlSerializer} from './url_serializer';
  * bootstrap(AppCmp, [provideRouter(router)]);
  * ```
  */
-export function provideRouter(config: RouterConfig): any[] {
+export function provideRouter(config: RouterConfig, opts: ExtraOptions): any[] {
   return [
     Location,
     {provide: LocationStrategy, useClass: PathLocationStrategy},
@@ -42,6 +45,16 @@ export function provideRouter(config: RouterConfig): any[] {
         const r = new Router(
             componentType, resolver, urlSerializer, outletMap, location, injector, config);
         ref.registerDisposeListener(() => r.dispose());
+
+        if (opts.enableTracing) {
+          r.events.subscribe(e => {
+            console.group(`Router Event: ${(<any>e.constructor).name}`);
+            console.log(e.toString());
+            console.log(e);
+            console.groupEnd();
+          });
+        }
+
         return r;
       },
       deps:
