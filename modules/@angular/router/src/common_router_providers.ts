@@ -7,9 +7,7 @@ import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_serializer';
 
-export interface ExtraOptions {
-  enableTracing?: boolean;
-}
+export interface ExtraOptions { enableTracing?: boolean; }
 
 /**
  * A list of {@link Provider}s. To use the router, you must add this to your application.
@@ -31,8 +29,7 @@ export interface ExtraOptions {
  */
 export function provideRouter(config: RouterConfig, opts: ExtraOptions): any[] {
   return [
-    Location,
-    {provide: LocationStrategy, useClass: PathLocationStrategy},
+    Location, {provide: LocationStrategy, useClass: PathLocationStrategy},
     {provide: UrlSerializer, useClass: DefaultUrlSerializer},
 
     {
@@ -76,10 +73,10 @@ export function provideRouter(config: RouterConfig, opts: ExtraOptions): any[] {
           const appRef = injector.get(ApplicationRef);
           if (appRef.componentTypes.length == 0) {
             appRef.registerBootstrapListener((_) => {
-              injector.get(Router).initialNavigation()
+              injector.get(Router).initialNavigation();
             });
           } else {
-            injector.get(Router).initialNavigation()
+            injector.get(Router).initialNavigation();
           }
         }, 0);
         return _ => null;

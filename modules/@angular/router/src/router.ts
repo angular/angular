@@ -41,9 +41,7 @@ export interface NavigationExtras {
 export class NavigationStart {
   constructor(public id: number, public url: UrlTree) {}
 
-  toString(): string {
-    return `NavigationStart(id: ${this.id}, url: '${this.url}')`;
-  }
+  toString(): string { return `NavigationStart(id: ${this.id}, url: '${this.url}')`; }
 }
 
 /**
@@ -52,9 +50,7 @@ export class NavigationStart {
 export class NavigationEnd {
   constructor(public id: number, public url: UrlTree) {}
 
-  toString(): string {
-    return `NavigationEnd(id: ${this.id}, url: '${this.url}')`;
-  }
+  toString(): string { return `NavigationEnd(id: ${this.id}, url: '${this.url}')`; }
 }
 
 /**
@@ -63,9 +59,7 @@ export class NavigationEnd {
 export class NavigationCancel {
   constructor(public id: number, public url: UrlTree) {}
 
-  toString(): string {
-    return `NavigationCancel(id: ${this.id}, url: '${this.url}')`;
-  }
+  toString(): string { return `NavigationCancel(id: ${this.id}, url: '${this.url}')`; }
 }
 
 /**
@@ -83,7 +77,9 @@ export class NavigationError {
  * An event triggered when routes are recognized
  */
 export class RoutesRecognized {
-  constructor(public id: number, public url: UrlTree, public urlAfterRedirects: UrlTree, public state: RouterStateSnapshot) {}
+  constructor(
+      public id: number, public url: UrlTree, public urlAfterRedirects: UrlTree,
+      public state: RouterStateSnapshot) {}
 
   toString(): string {
     return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
@@ -108,7 +104,7 @@ export class Router {
   constructor(
       private rootComponentType: Type, private resolver: ComponentResolver,
       private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
-      private location: Location, private injector:g Injector, private config: RouterConfig) {
+      private location: Location, private injector: g Injector, private config: RouterConfig) {
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
     this.currentRouterState = createEmptyState(this.rootComponentType);
@@ -273,7 +269,8 @@ export class Router {
           })
 
           .mergeMap((newRouterStateSnapshot) => {
-            this.routerEvents.next(new RoutesRecognized(id, url, updatedUrl, newRouterStateSnapshot));
+            this.routerEvents.next(
+                new RoutesRecognized(id, url, updatedUrl, newRouterStateSnapshot));
             return resolve(this.resolver, newRouterStateSnapshot);
 
           })
