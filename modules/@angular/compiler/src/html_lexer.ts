@@ -164,12 +164,12 @@ class _HtmlTokenizer {
             this.tokenizeExpansionForms) {
           this._consumeExpansionCaseStart();
 
-        } else if (this._peek === $RBRACE && this._isInExpansionCase() &&
-                   this.tokenizeExpansionForms) {
+        } else if (
+            this._peek === $RBRACE && this._isInExpansionCase() && this.tokenizeExpansionForms) {
           this._consumeExpansionCaseEnd();
 
-        } else if (this._peek === $RBRACE && this._isInExpansionForm() &&
-                   this.tokenizeExpansionForms) {
+        } else if (
+            this._peek === $RBRACE && this._isInExpansionForm() && this.tokenizeExpansionForms) {
           this._consumeExpansionFormEnd();
 
         } else {
@@ -214,8 +214,8 @@ class _HtmlTokenizer {
     if (isBlank(end)) {
       end = this._getLocation();
     }
-    var token = new HtmlToken(this._currentTokenType, parts,
-                              new ParseSourceSpan(this._currentTokenStart, end));
+    var token = new HtmlToken(
+        this._currentTokenType, parts, new ParseSourceSpan(this._currentTokenStart, end));
     this.tokens.push(token);
     this._currentTokenStart = null;
     this._currentTokenType = null;
@@ -240,9 +240,11 @@ class _HtmlTokenizer {
       this._column++;
     }
     this._index++;
-    this._peek = this._index >= this._length ? $EOF : StringWrapper.charCodeAt(this._input, this._index);
-    this._nextPeek =
-        this._index + 1 >= this._length ? $EOF : StringWrapper.charCodeAt(this._input, this._index + 1);
+    this._peek =
+        this._index >= this._length ? $EOF : StringWrapper.charCodeAt(this._input, this._index);
+    this._nextPeek = this._index + 1 >= this._length ?
+        $EOF :
+        StringWrapper.charCodeAt(this._input, this._index + 1);
   }
 
   private _attemptCharCode(charCode: number): boolean {
@@ -264,8 +266,8 @@ class _HtmlTokenizer {
   private _requireCharCode(charCode: number) {
     var location = this._getLocation();
     if (!this._attemptCharCode(charCode)) {
-      throw this._createError(unexpectedCharacterErrorMsg(this._peek),
-                              this._getSpan(location, location));
+      throw this._createError(
+          unexpectedCharacterErrorMsg(this._peek), this._getSpan(location, location));
     }
   }
 
@@ -656,14 +658,14 @@ class _HtmlTokenizer {
 
   private _isInExpansionCase(): boolean {
     return this._expansionCaseStack.length > 0 &&
-           this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
-               HtmlTokenType.EXPANSION_CASE_EXP_START;
+        this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
+        HtmlTokenType.EXPANSION_CASE_EXP_START;
   }
 
   private _isInExpansionForm(): boolean {
     return this._expansionCaseStack.length > 0 &&
-           this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
-               HtmlTokenType.EXPANSION_FORM_START;
+        this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
+        HtmlTokenType.EXPANSION_FORM_START;
   }
 }
 

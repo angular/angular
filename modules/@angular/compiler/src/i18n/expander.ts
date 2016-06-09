@@ -1,7 +1,10 @@
 import {BaseException} from '../facade/exceptions';
 import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../html_ast';
+import {ParseError} from '../parse_util';
+import {I18nError} from './shared';
 
-
+// http://cldr.unicode.org/index/cldr-spec/plural-rules
+const PLURAL_CASES: string[] = ['zero', 'one', 'two', 'few', 'many', 'other'];
 
 /**
  * Expands special forms into elements.
@@ -20,25 +23,25 @@ import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, Ht
  *
  * ```
  * <ul [ngPlural]="messages.length">
- *   <template [ngPluralCase]="0"><li i18n="plural_0">zero</li></template>
- *   <template [ngPluralCase]="1"><li i18n="plural_1">one</li></template>
- *   <template [ngPluralCase]="other"><li i18n="plural_other">more than one</li></template>
+ *   <template [ngPluralCase]="'=0'"><li i18n="plural_=0">zero</li></template>
+ *   <template [ngPluralCase]="'=1'"><li i18n="plural_=1">one</li></template>
+ *   <template [ngPluralCase]="'other'"><li i18n="plural_other">more than one</li></template>
  * </ul>
  * ```
  */
 export function expandNodes(nodes: HtmlAst[]): ExpansionResult {
   let e = new _Expander();
   let n = htmlVisitAll(e, nodes);
-  return new ExpansionResult(n, e.expanded);
+  return new ExpansionResult(n, e.expanded, e.errors);
 }
 
 export class ExpansionResult {
-  constructor(public nodes: HtmlAst[], public expanded: boolean) {}
+  constructor(public nodes: HtmlAst[], public expanded: boolean, public errors: ParseError[]) {}
 }
 
 class _Expander implements HtmlAstVisitor {
   expanded: boolean = false;
-  constructor() {}
+  errors: ParseError[] = [];
 
   visitElement(ast: HtmlElementAst, context: any): any {
     return new HtmlElementAst(
@@ -54,7 +57,7 @@ class _Expander implements HtmlAstVisitor {
 
   visitExpansion(ast: HtmlExpansionAst, context: any): any {
     this.expanded = true;
-    return ast.type == 'plural' ? _expandPluralForm(ast) : _expandDefaultForm(ast);
+    return ast.type == 'plural' ? _expandPluralForm(ast, this.errors) : _expandDefaultForm(ast);
   }
 
   visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any {
@@ -62,9 +65,15 @@ class _Expander implements HtmlAstVisitor {
   }
 }
 
-function _expandPluralForm(ast: HtmlExpansionAst): HtmlElementAst {
+function _expandPluralForm(ast: HtmlExpansionAst, errors: ParseError[]): HtmlElementAst {
   let children = ast.cases.map(c => {
+    if (PLURAL_CASES.indexOf(c.value) == -1 && !c.value.match(/^=\d+$/)) {
+      errors.push(new I18nError(
+          c.valueSourceSpan,
+          `Plural cases should be "=<number>" or one of ${PLURAL_CASES.join(", ")}`));
+    }
     let expansionResult = expandNodes(c.expression);
+    expansionResult.errors.forEach(e => errors.push(e));
     let i18nAttrs = expansionResult.expanded ?
         [] :
         [new HtmlAttrAst('i18n', `${ast.type}_${c.value}`, c.valueSourceSpan)];

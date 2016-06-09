@@ -21,8 +21,7 @@ export function main() {
 
       let msgs = '';
       StringMapWrapper.forEach(
-          messages, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => msgs +=
-          `<msg id="${k}">${v}</msg>`);
+          messages, (v: string, k: string) => msgs += `<msg id="${k}">${v}</msg>`);
       let res = deserializeXmb(`<message-bundle>${msgs}</message-bundle>`, 'someUrl');
 
       return new I18nHtmlParser(
@@ -175,52 +174,45 @@ export function main() {
 
     it('should handle the plural expansion form', () => {
       let translations: {[key: string]: string} = {};
-      translations[id(new Message('zero<ph name="e1">bold</ph>', "plural_=0", null))] =
+      translations[id(new Message('zero<ph name="e1">bold</ph>', 'plural_=0', null))] =
           'ZERO<ph name="e1">BOLD</ph>';
 
       let res = parse(`{messages.length, plural,=0 {zero<b>bold</b>}}`, translations);
 
-      expect(humanizeDom(res))
-          .toEqual([
-            [HtmlElementAst, 'ul', 0],
-            [HtmlAttrAst, '[ngPlural]', 'messages.length'],
-            [HtmlElementAst, 'template', 1],
-            [HtmlAttrAst, 'ngPluralCase', '=0'],
-            [HtmlElementAst, 'li', 2],
-            [HtmlTextAst, 'ZERO', 3],
-            [HtmlElementAst, 'b', 3],
-            [HtmlTextAst, 'BOLD', 4],
-          ]);
+      expect(humanizeDom(res)).toEqual([
+        [HtmlElementAst, 'ul', 0],
+        [HtmlAttrAst, '[ngPlural]', 'messages.length'],
+        [HtmlElementAst, 'template', 1],
+        [HtmlAttrAst, 'ngPluralCase', '=0'],
+        [HtmlElementAst, 'li', 2],
+        [HtmlTextAst, 'ZERO', 3],
+        [HtmlElementAst, 'b', 3],
+        [HtmlTextAst, 'BOLD', 4],
+      ]);
     });
 
     it('should handle nested expansion forms', () => {
       let translations: {[key: string]: string} = {};
-      translations[id(new Message('m', "gender_=m", null))] = 'M';
+      translations[id(new Message('m', 'gender_=m', null))] = 'M';
 
       let res = parse(`{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`, translations);
 
-      expect(humanizeDom(res))
-          .toEqual([
-            [HtmlElementAst, 'ul', 0],
-            [HtmlAttrAst, '[ngPlural]', 'messages.length'],
-            [HtmlElementAst, 'template', 1],
-            [HtmlAttrAst, 'ngPluralCase', '=0'],
-            [HtmlElementAst, 'li', 2],
+      expect(humanizeDom(res)).toEqual([
+        [HtmlElementAst, 'ul', 0], [HtmlAttrAst, '[ngPlural]', 'messages.length'],
+        [HtmlElementAst, 'template', 1], [HtmlAttrAst, 'ngPluralCase', '=0'],
+        [HtmlElementAst, 'li', 2],
 
-            [HtmlElementAst, 'ul', 3],
-            [HtmlAttrAst, '[ngSwitch]', 'p.gender'],
-            [HtmlElementAst, 'template', 4],
-            [HtmlAttrAst, 'ngSwitchWhen', '=m'],
-            [HtmlElementAst, 'li', 5],
-            [HtmlTextAst, 'M', 6],
+        [HtmlElementAst, 'ul', 3], [HtmlAttrAst, '[ngSwitch]', 'p.gender'],
+        [HtmlElementAst, 'template', 4], [HtmlAttrAst, 'ngSwitchWhen', '=m'],
+        [HtmlElementAst, 'li', 5], [HtmlTextAst, 'M', 6],
 
-            [HtmlTextAst, ' ', 3]
-          ]);
+        [HtmlTextAst, ' ', 3]
+      ]);
     });
 
     it('should correctly set source code positions', () => {
       let translations: {[key: string]: string} = {};
-      translations[id(new Message('<ph name="e0">bold</ph>', "plural_=0", null))] =
+      translations[id(new Message('<ph name="e0">bold</ph>', 'plural_=0', null))] =
           '<ph name="e0">BOLD</ph>';
 
       let nodes = parse(`{messages.length, plural,=0 {<b>bold</b>}}`, translations).rootNodes;
@@ -259,19 +251,18 @@ export function main() {
 
     it('should handle other special forms', () => {
       let translations: {[key: string]: string} = {};
-      translations[id(new Message('m', "gender_=male", null))] = 'M';
+      translations[id(new Message('m', 'gender_=male', null))] = 'M';
 
       let res = parse(`{person.gender, gender,=male {m}}`, translations);
 
-      expect(humanizeDom(res))
-          .toEqual([
-            [HtmlElementAst, 'ul', 0],
-            [HtmlAttrAst, '[ngSwitch]', 'person.gender'],
-            [HtmlElementAst, 'template', 1],
-            [HtmlAttrAst, 'ngSwitchWhen', '=male'],
-            [HtmlElementAst, 'li', 2],
-            [HtmlTextAst, 'M', 3],
-          ]);
+      expect(humanizeDom(res)).toEqual([
+        [HtmlElementAst, 'ul', 0],
+        [HtmlAttrAst, '[ngSwitch]', 'person.gender'],
+        [HtmlElementAst, 'template', 1],
+        [HtmlAttrAst, 'ngSwitchWhen', '=male'],
+        [HtmlElementAst, 'li', 2],
+        [HtmlTextAst, 'M', 3],
+      ]);
     });
 
     describe('errors', () => {
@@ -321,45 +312,51 @@ export function main() {
             .toEqual(['Invalid interpolation name \'99\'']);
       });
 
-      describe('implicit translation', () => {
-        it('should support attributes', () => {
-          let translations: {[key: string]: string} = {};
-          translations[id(new Message('some message', null, null))] = 'another message';
+      it('should error on unknown plural cases', () => {
+        let mid = id(new Message('-', 'plural_unknown', null));
+        expect(humanizeErrors(parse('{n, plural, unknown {-}}', {mid: ''}).errors)).toEqual([
+          `Cannot find message for id '${mid}', content '-'.`,
+          `Plural cases should be "=<number>" or one of zero, one, two, few, many, other`,
+        ]);
+      });
+    });
 
-          expect(humanizeDom(parse('<i18n-el value=\'some message\'></i18n-el>', translations, [], {
-            'i18n-el': ['value']
-          }))).toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlAttrAst, 'value', 'another message']]);
-        });
+    describe('implicit translation', () => {
+      it('should support attributes', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('some message', null, null))] = 'another message';
 
-        it('should support attributes with meaning and description', () => {
-          let translations: {[key: string]: string} = {};
-          translations[id(new Message('some message', 'meaning', 'description'))] =
-              'another message';
+        expect(humanizeDom(parse('<i18n-el value=\'some message\'></i18n-el>', translations, [], {
+          'i18n-el': ['value']
+        }))).toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlAttrAst, 'value', 'another message']]);
+      });
 
-          expect(
-              humanizeDom(parse(
-                  '<i18n-el value=\'some message\' i18n-value=\'meaning|description\'></i18n-el>',
-                  translations, [], {'i18n-el': ['value']})))
-              .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlAttrAst, 'value', 'another message']]);
-        });
+      it('should support attributes with meaning and description', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('some message', 'meaning', 'description'))] = 'another message';
 
-        it('should support elements', () => {
-          let translations: {[key: string]: string} = {};
-          translations[id(new Message('message', null, null))] = 'another message';
+        expect(humanizeDom(parse(
+                   '<i18n-el value=\'some message\' i18n-value=\'meaning|description\'></i18n-el>',
+                   translations, [], {'i18n-el': ['value']})))
+            .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlAttrAst, 'value', 'another message']]);
+      });
 
-          expect(humanizeDom(parse('<i18n-el>message</i18n-el>', translations, ['i18n-el'])))
-              .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlTextAst, 'another message', 1]]);
-        });
+      it('should support elements', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('message', null, null))] = 'another message';
 
-        it('should support elements with meaning and description', () => {
-          let translations: {[key: string]: string} = {};
-          translations[id(new Message('message', 'meaning', 'description'))] = 'another message';
+        expect(humanizeDom(parse('<i18n-el>message</i18n-el>', translations, ['i18n-el'])))
+            .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlTextAst, 'another message', 1]]);
+      });
 
-          expect(humanizeDom(parse(
-                     '<i18n-el i18n=\'meaning|description\'>message</i18n-el>', translations,
-                     ['i18n-el'])))
-              .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlTextAst, 'another message', 1]]);
-        });
+      it('should support elements with meaning and description', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('message', 'meaning', 'description'))] = 'another message';
+
+        expect(humanizeDom(parse(
+                   '<i18n-el i18n=\'meaning|description\'>message</i18n-el>', translations,
+                   ['i18n-el'])))
+            .toEqual([[HtmlElementAst, 'i18n-el', 0], [HtmlTextAst, 'another message', 1]]);
       });
     });
   });
