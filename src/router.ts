@@ -63,6 +63,13 @@ export class NavigationError {
   constructor(public id: number, public url: UrlTree, public error: any) {}
 }
 
+/**
+ * An event triggered when routes are recognized
+ */
+export class RoutesRecognized {
+  constructor(public id: number, public url: UrlTree, public urlAfterRedirects: UrlTree, public state: RouterStateSnapshot) {}
+}
+
 export type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError;
 
 /**
@@ -246,6 +253,7 @@ export class Router {
           })
 
           .mergeMap((newRouterStateSnapshot) => {
+            this.routerEvents.next(new RoutesRecognized(id, url, updatedUrl, newRouterStateSnapshot));
             return resolve(this.resolver, newRouterStateSnapshot);
 
           })

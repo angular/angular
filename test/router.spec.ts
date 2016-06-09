@@ -18,7 +18,7 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 import { ComponentResolver } from '@angular/core';
 import { SpyLocation } from '@angular/common/testing';
 import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES, Params,
- RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, RouterConfig } from '../src/index';
+ RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, RoutesRecognized, RouterConfig } from '../src/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import {of} from 'rxjs/observable/of';
@@ -269,14 +269,16 @@ describe("Integration", () => {
       expect(fixture.debugElement.nativeElement).toHaveText('user fedor');
       expect(user.recordedParams).toEqual([{name: 'init'}, {name: 'fedor'}]);
 
-      expectEvents(router, recordedEvents.slice(1), [
+      expectEvents(router, recordedEvents.slice(2), [
         [NavigationStart, '/user/init'],
+        [RoutesRecognized, '/user/init'],
         [NavigationEnd, '/user/init'],
 
         [NavigationStart, '/user/victor'],
         [NavigationStart, '/user/fedor'],
 
         [NavigationCancel, '/user/victor'],
+        [RoutesRecognized, '/user/fedor'],
         [NavigationEnd, '/user/fedor']
       ]);
     })));
@@ -302,11 +304,13 @@ describe("Integration", () => {
       advance(fixture);
 
       expect(fixture.debugElement.nativeElement).toHaveText('user fedor');
-      expectEvents(router, recordedEvents.slice(1), [
+
+      expectEvents(router, recordedEvents.slice(2), [
         [NavigationStart, '/invalid'],
         [NavigationError, '/invalid'],
 
         [NavigationStart, '/user/fedor'],
+        [RoutesRecognized, '/user/fedor'],
         [NavigationEnd, '/user/fedor']
       ]);
     })));
