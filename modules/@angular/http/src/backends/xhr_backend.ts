@@ -13,7 +13,7 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {isSuccess, getResponseURL} from '../http_utils';
 
-const XSSI_PREFIX = ')]}\',\n';
+const XSSI_PREFIX = /^\)\]\}',?\n/;
 
 /**
  * Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -46,9 +46,7 @@ export class XHRConnection implements Connection {
         // IE10)
         let body = isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
         // Implicitly strip a potential XSSI prefix.
-        if (isString(body) && body.startsWith(XSSI_PREFIX)) {
-          body = body.substring(XSSI_PREFIX.length);
-        }
+        if (isString(body)) body = body.replace(XSSI_PREFIX, '');
         let headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
 
         let url = getResponseURL(_xhr);

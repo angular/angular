@@ -479,6 +479,17 @@ export function main() {
              async.done();
            });
            existingXHRs[0].setStatusCode(200);
+           existingXHRs[0].setResponseText(')]}\'\n{json: "object"}');
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should strip XSSI prefixes', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var conn = new XHRConnection(sampleRequest, new MockBrowserXHR(), new ResponseOptions());
+           conn.response.subscribe((res: Response) => {
+             expect(res.text()).toBe('{json: "object"}');
+             async.done();
+           });
+           existingXHRs[0].setStatusCode(200);
            existingXHRs[0].setResponseText(')]}\',\n{json: "object"}');
            existingXHRs[0].dispatchEvent('load');
          }));
@@ -491,7 +502,7 @@ export function main() {
              async.done();
            });
            existingXHRs[0].setStatusCode(404);
-           existingXHRs[0].setResponseText(')]}\',\n{json: "object"}');
+           existingXHRs[0].setResponseText(')]}\'\n{json: "object"}');
            existingXHRs[0].dispatchEvent('load');
          }));
 
