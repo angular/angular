@@ -33,6 +33,10 @@ export class RouterState extends Tree<ActivatedRoute> {
       public fragment: Observable<string>, public snapshot: RouterStateSnapshot) {
     super(root);
   }
+
+  toString(): string {
+    return this.snapshot.toString();
+  }
 }
 
 export function createEmptyState(rootComponent: Type): RouterState {
@@ -89,6 +93,10 @@ export class ActivatedRoute {
       futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
   }
+
+  toString(): string {
+    return this.snapshot ? this.snapshot.toString() : `Future(${this._futureSnapshot})`;
+  }
 }
 
 /**
@@ -125,6 +133,12 @@ export class ActivatedRouteSnapshot {
     this._routeConfig = routeConfig;
     this._lastUrlSegment = lastUrlSegment;
   }
+
+  toString(): string {
+    const url = this.urlSegments.map(s => s.toString()).join("/");
+    const matched = this._routeConfig ? this._routeConfig.path : '';
+    return `Route(url:'${url}', path:'${matched}')`;
+  }
 }
 
 /**
@@ -149,7 +163,17 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
       public fragment: string|null) {
     super(root);
   }
+
+  toString(): string {
+    return serializeNode(this._root);
+  }
 }
+
+function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
+  const c = node.children.length > 0 ? ` { ${node.children.map(serializeNode).join(", ")} } ` : '';
+  return `${node.value}${c}`;
+}
+
 
 /**
  * The expectation is that the activate route is created with the right set of parameters.
