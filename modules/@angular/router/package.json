@@ -1,15 +1,15 @@
 {
-  "name": "vladivostok",
-  "version": "0.9.1",
+  "name": "@angular/router",
+  "version": "3.0.0-alpha.0",
   "description": "",
-  "main": "./build/src/index.js",
-  "jsnext:main": "./build/es6/index.js",
+  "main": "./dist/index.js",
+  "jsnext:main": "./dist/esm/index.js",
   "scripts": {
     "karma": "karma start",
     "test": "npm run build; karma start",
     "build_watch": "rm -rf dist; tsc -w",
     "build": "rm -rf dist; tsc",
-    "build_npm": "rm -rf dist && tsc -p tsconfig.publish.es5.json && tsc -p tsconfig.publish.es6.json",
+    "build_npm": "rm -rf dist && tsc -p tsconfig.publish.es5.json && tsc -p tsconfig.publish.esm.json",
     "postbuild_npm": "cp package.json README.md dist/ && npm run rewrite_npm_package",
     "postinstall": "typings install",
     "rewrite_npm_package": "node --harmony_destructuring tools/rewrite-published-package.js",
@@ -70,5 +70,5 @@
     "tslint": "^3.6.0",
     "codelyzer": "0.0.14"
   },
-  "typings": "build/src/index.d.ts"
+  "typings": "dist/index.d.ts"
 }

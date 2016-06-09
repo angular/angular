@@ -9,7 +9,7 @@ var [MAIN, JSNEXT_MAIN] = ['main', 'jsnext:main'].map(k => srcPackage[k].replace
 var outPackage = Object.assign({}, srcPackage, {
   peerDependencies: srcPackage.dependencies,
   main: MAIN,
-  typings: "router.d.ts",
+  typings: "index.d.ts",
   "jsnext:main": JSNEXT_MAIN,
   dependencies: undefined
 });

@@ -3,3 +3,4 @@ dist/
 typings/
 npm-debug.log
 .idea/
+package
