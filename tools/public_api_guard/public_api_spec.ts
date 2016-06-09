@@ -1530,7 +1530,7 @@ const PLATFORM_BROWSER = [
   'DomEventsPlugin.supports(eventName:string):boolean',
   'DomSanitizationService',
   'DomSanitizationService.bypassSecurityTrustHtml(value:string):SafeHtml',
-  'DomSanitizationService.bypassSecurityTrustResourceUrl(value:string):any',
+  'DomSanitizationService.bypassSecurityTrustResourceUrl(value:string):SafeResourceUrl',
   'DomSanitizationService.bypassSecurityTrustScript(value:string):SafeScript',
   'DomSanitizationService.bypassSecurityTrustStyle(value:string):SafeStyle',
   'DomSanitizationService.bypassSecurityTrustUrl(value:string):SafeUrl',
