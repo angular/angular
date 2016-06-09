@@ -165,6 +165,7 @@ export interface MetadataImportedDefaultReferenceExpression extends MetadataSymb
   module: string;
   default:
     boolean;
+    arguments?: MetadataValue[];
 }
 export function isMetadataImportDefaultReference(value: any):
     value is MetadataImportedDefaultReferenceExpression {

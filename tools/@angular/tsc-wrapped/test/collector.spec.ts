@@ -14,7 +14,7 @@ describe('Collector', () => {
   beforeEach(() => {
     host = new Host(FILES, [
       '/app/app.component.ts', '/app/cases-data.ts', '/app/error-cases.ts', '/promise.ts',
-      '/unsupported-1.ts', '/unsupported-2.ts'
+      '/unsupported-1.ts', '/unsupported-2.ts', 'import-star.ts'
     ]);
     service = ts.createLanguageService(host);
     program = service.getProgram();
@@ -212,41 +212,16 @@ describe('Collector', () => {
       __symbolic: 'module',
       version: 1,
       metadata: {
-        a: {
-          __symbolic: 'error',
-          message: 'Destructuring declarations cannot be referenced statically',
-          line: 1,
-          character: 16
-        },
-        b: {
-          __symbolic: 'error',
-          message: 'Destructuring declarations cannot be referenced statically',
-          line: 1,
-          character: 18
-        },
-        c: {
-          __symbolic: 'error',
-          message: 'Destructuring declarations cannot be referenced statically',
-          line: 2,
-          character: 16
-        },
-        d: {
-          __symbolic: 'error',
-          message: 'Destructuring declarations cannot be referenced statically',
-          line: 2,
-          character: 18
-        },
-        e: {
-          __symbolic: 'error',
-          message: 'Only intialized variables and constants can be referenced statically',
-          line: 3,
-          character: 14
-        }
+        a: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 16},
+        b: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 18},
+        c: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 16},
+        d: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 18},
+        e: {__symbolic: 'error', message: 'Variable not initialized', line: 3, character: 14}
       }
     });
   });
 
-  it('should report an error for refrences to unexpected types', () => {
+  it('should report an error for references to unexpected types', () => {
     let unsupported1 = program.getSourceFile('/unsupported-2.ts');
     let metadata = collector.getMetadata(unsupported1);
     let barClass = <ClassMetadata>metadata.metadata['Bar'];
@@ -254,10 +229,22 @@ describe('Collector', () => {
     let parameter = ctor.parameters[0];
     expect(parameter).toEqual({
       __symbolic: 'error',
-      message: 'Reference to non-exported class Foo',
+      message: 'Reference to non-exported class',
       line: 1,
-      character: 45
+      character: 45,
+      context: {className: 'Foo'}
     });
+  });
+
+  it('should be able to handle import star type references', () => {
+    let importStar = program.getSourceFile('/import-star.ts');
+    let metadata = collector.getMetadata(importStar);
+    let someClass = <ClassMetadata>metadata.metadata['SomeClass'];
+    let ctor = <ConstructorMetadata>someClass.members['__ctor__'][0];
+    let parameters = ctor.parameters;
+    expect(parameters).toEqual([
+      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
+    ]);
   });
 });
 
@@ -466,6 +453,15 @@ const FILES: Directory = {
     @Injectable()
     export class Bar {
       constructor(private f: Foo) {}
+    }
+  `,
+  'import-star.ts': `
+    import {Injectable} from 'angular2/core';
+    import * as common from 'angular2/common';
+
+    @Injectable()
+    export class SomeClass {
+      constructor(private f: common.NgFor) {}
     }
   `,
   'node_modules': {

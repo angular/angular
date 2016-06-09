@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 
-import {MetadataValue, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataError, isMetadataError, isMetadataModuleReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataGlobalReferenceExpression,} from './schema';
+import {MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression} from './schema';
 import {Symbols} from './symbols';
 
 function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): boolean {
@@ -66,14 +66,21 @@ function getSourceFileOfNode(node: ts.Node): ts.SourceFile {
 export function errorSymbol(
     message: string, node?: ts.Node, context?: {[name: string]: string},
     sourceFile?: ts.SourceFile): MetadataError {
+  let result: MetadataError;
   if (node) {
     sourceFile = sourceFile || getSourceFileOfNode(node);
     if (sourceFile) {
       let {line, character} = ts.getLineAndCharacterOfPosition(sourceFile, node.pos);
-      return {__symbolic: 'error', message, line, character, context};
+      result = {__symbolic: 'error', message, line, character};
     };
   }
-  return {__symbolic: 'error', message, context};
+  if (!result) {
+    result = {__symbolic: 'error', message};
+  }
+  if (context) {
+    result.context = context;
+  }
+  return result;
 }
 
 /**
@@ -325,27 +332,36 @@ export class Evaluator {
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
-        if (typeNameNode.kind != ts.SyntaxKind.Identifier) {
-          return errorSymbol('Qualified type names not supported', node);
-        }
-        const typeNameIdentifier = <ts.Identifier>typeReferenceNode.typeName;
-        const typeName = typeNameIdentifier.text;
-        const typeReference = this.symbols.resolve(typeName);
-        if (!typeReference) {
-          return errorSymbol('Could not resolve type', node, {typeName});
-        }
-        if (typeReferenceNode.typeArguments && typeReferenceNode.typeArguments.length) {
-          const args = typeReferenceNode.typeArguments.map(element => this.evaluateNode(element));
-          if (isMetadataImportedSymbolReferenceExpression(typeReference)) {
-            return {
-              __symbolic: 'reference',
-              module: typeReference.module,
-              name: typeReference.name,
-              arguments: args
+        const getReference: (typeNameNode: ts.Identifier | ts.QualifiedName) =>
+            MetadataSymbolicReferenceExpression | MetadataError = node => {
+              if (typeNameNode.kind === ts.SyntaxKind.QualifiedName) {
+                const qualifiedName = <ts.QualifiedName>node;
+                const left = this.evaluateNode(qualifiedName.left);
+                if (isMetadataModuleReferenceExpression(left)) {
+                  return <MetadataImportedSymbolReferenceExpression> {
+                    __symbolic: 'reference', module: left.module, name: qualifiedName.right.text
+                  }
+                }
+                return errorSymbol('Qualified type names not supported', node);
+              } else {
+                const identifier = <ts.Identifier>typeNameNode;
+                let symbol = this.symbols.resolve(identifier.text);
+                if (isMetadataError(symbol) || isMetadataSymbolicReferenceExpression(symbol)) {
+                  return symbol;
+                }
+                return errorSymbol('Could not resolve type', node, {typeName: identifier.text});
+              }
             };
-          } else if (isMetadataGlobalReferenceExpression(typeReference)) {
-            return {__symbolic: 'reference', name: typeReference.name, arguments: args};
-          }
+        const typeReference = getReference(typeNameNode);
+        if (isMetadataError(typeReference)) {
+          return typeReference;
+        }
+        if (!isMetadataModuleReferenceExpression(typeReference) &&
+            typeReferenceNode.typeArguments && typeReferenceNode.typeArguments.length) {
+          const args = typeReferenceNode.typeArguments.map(element => this.evaluateNode(element));
+          // TODO: Remove typecast when upgraded to 2.0 as it will be corretly inferred.
+          // Some versions of 1.9 do not infer this correctly.
+          (<MetadataImportedSymbolReferenceExpression>typeReference).arguments = args;
         }
         return typeReference;
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
