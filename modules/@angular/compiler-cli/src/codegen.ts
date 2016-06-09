@@ -24,7 +24,7 @@ import {
 
 import {Parse5DomAdapter} from '@angular/platform-server';
 
-import {NodeReflectorHost} from './reflector_host';
+import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
@@ -42,7 +42,7 @@ export class CodeGenerator {
               private program: ts.Program, public host: ts.CompilerHost,
               private staticReflector: StaticReflector, private resolver: CompileMetadataResolver,
               private compiler: compiler.OfflineCompiler,
-              private reflectorHost: NodeReflectorHost) {}
+              private reflectorHost: ReflectorHost) {}
 
   private generateSource(metadatas: compiler.CompileDirectiveMetadata[]) {
     const normalize = (metadata: compiler.CompileDirectiveMetadata) => {
@@ -155,10 +155,11 @@ export class CodeGenerator {
   }
 
   static create(options: AngularCompilerOptions, program: ts.Program,
-                compilerHost: ts.CompilerHost): CodeGenerator {
+                compilerHost: ts.CompilerHost,
+                reflectorHostContext?: ReflectorHostContext): CodeGenerator {
     const xhr: compiler.XHR = {get: (s: string) => Promise.resolve(compilerHost.readFile(s))};
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
-    const reflectorHost = new NodeReflectorHost(program, compilerHost, options);
+    const reflectorHost = new ReflectorHost(program, compilerHost, options, reflectorHostContext);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser = new HtmlParser();
