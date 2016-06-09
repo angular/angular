@@ -40,6 +40,10 @@ export interface NavigationExtras {
  */
 export class NavigationStart {
   constructor(public id: number, public url: UrlTree) {}
+
+  toString(): string {
+    return `NavigationStart(id: ${this.id}, url: '${this.url}')`;
+  }
 }
 
 /**
@@ -47,6 +51,10 @@ export class NavigationStart {
  */
 export class NavigationEnd {
   constructor(public id: number, public url: UrlTree) {}
+
+  toString(): string {
+    return `NavigationEnd(id: ${this.id}, url: '${this.url}')`;
+  }
 }
 
 /**
@@ -54,6 +62,10 @@ export class NavigationEnd {
  */
 export class NavigationCancel {
   constructor(public id: number, public url: UrlTree) {}
+
+  toString(): string {
+    return `NavigationCancel(id: ${this.id}, url: '${this.url}')`;
+  }
 }
 
 /**
@@ -61,6 +73,10 @@ export class NavigationCancel {
  */
 export class NavigationError {
   constructor(public id: number, public url: UrlTree, public error: any) {}
+
+  toString(): string {
+    return `NavigationError(id: ${this.id}, url: '${this.url}', error: ${this.error})`;
+  }
 }
 
 /**
@@ -68,6 +84,10 @@ export class NavigationError {
  */
 export class RoutesRecognized {
   constructor(public id: number, public url: UrlTree, public urlAfterRedirects: UrlTree, public state: RouterStateSnapshot) {}
+
+  toString(): string {
+    return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+  }
 }
 
 export type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError;
@@ -88,7 +108,7 @@ export class Router {
   constructor(
       private rootComponentType: Type, private resolver: ComponentResolver,
       private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
-      private location: Location, private injector: Injector, private config: RouterConfig) {
+      private location: Location, private injector:g Injector, private config: RouterConfig) {
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
     this.currentRouterState = createEmptyState(this.rootComponentType);
