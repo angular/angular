@@ -1,11 +1,11 @@
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
+import * as o from '@angular/compiler/src/output/output_ast';
+import {DynamicInstance, InstanceFactory} from '@angular/compiler/src/output/output_interpreter';
+import {assetUrl} from '@angular/compiler/src/util';
 import {EventEmitter} from '@angular/core';
 import {ViewType} from '@angular/core/src/linker/view_type';
-import {BaseException} from '../../src/facade/exceptions';
-import {InstanceFactory, DynamicInstance} from '@angular/compiler/src/output/output_interpreter';
-import {assetUrl} from '@angular/compiler/src/util';
 
-import * as o from '@angular/compiler/src/output/output_ast';
+import {BaseException} from '../../src/facade/exceptions';
 
 export class ExternalClass {
   changeable: any;
@@ -37,9 +37,7 @@ export var codegenExportsVars = [
 
 
 var _getExpressionsStmts: o.Statement[] = [
-  o.variable('readVar')
-      .set(o.literal('someValue'))
-      .toDeclStmt(),
+  o.variable('readVar').set(o.literal('someValue')).toDeclStmt(),
 
   o.variable('changedVar').set(o.literal('initialValue')).toDeclStmt(),
   o.variable('changedVar').set(o.literal('changedValue')).toStmt(),
@@ -58,34 +56,29 @@ var _getExpressionsStmts: o.Statement[] = [
   o.variable('externalInstance').prop('changeable').set(o.literal('changedValue')).toStmt(),
 
   o.variable('fn')
-      .set(o.fn([new o.FnParam('param')],
-                [new o.ReturnStatement(o.literalMap([['param', o.variable('param')]]))],
-                o.DYNAMIC_TYPE))
+      .set(o.fn(
+          [new o.FnParam('param')],
+          [new o.ReturnStatement(o.literalMap([['param', o.variable('param')]]))], o.DYNAMIC_TYPE))
       .toDeclStmt(),
 
   o.variable('throwError')
-      .set(o.fn([],
-                [
-                  new o.ThrowStmt(o.importExpr(baseExceptionIdentifier)
-                                      .instantiate([o.literal('someError')]))
-                ]))
+      .set(o.fn([], [new o.ThrowStmt(o.importExpr(baseExceptionIdentifier).instantiate([o.literal(
+                        'someError')]))]))
       .toDeclStmt(),
 
   o.variable('catchError')
-      .set(o.fn([new o.FnParam('runCb')],
-                [
-                  new o.TryCatchStmt([o.variable('runCb').callFn([]).toStmt()],
-                                     [
-                                       new o.ReturnStatement(
-                                           o.literalArr([o.CATCH_ERROR_VAR, o.CATCH_STACK_VAR]))
-                                     ])
-                ],
-                o.DYNAMIC_TYPE))
+      .set(o.fn(
+          [new o.FnParam('runCb')],
+          [new o.TryCatchStmt(
+              [o.variable('runCb').callFn([]).toStmt()],
+              [new o.ReturnStatement(o.literalArr([o.CATCH_ERROR_VAR, o.CATCH_STACK_VAR]))])],
+          o.DYNAMIC_TYPE))
       .toDeclStmt(),
 
   o.variable('dynamicInstance')
-      .set(o.variable('DynamicClass')
-               .instantiate([o.literal('someValue'), o.literal('dynamicValue')]))
+      .set(o.variable('DynamicClass').instantiate([
+        o.literal('someValue'), o.literal('dynamicValue')
+      ]))
       .toDeclStmt(),
   o.variable('dynamicInstance').prop('dynamicChangeable').set(o.literal('changedValue')).toStmt(),
 
@@ -129,9 +122,8 @@ var _getExpressionsStmts: o.Statement[] = [
           .callFn([o.literal('someParam')])
     ],
     [
-      'concatedArray',
-      o.literalArr([o.literal(0)])
-          .callMethod(o.BuiltinMethod.ConcatArray, [o.literalArr([o.literal(1)])])
+      'concatedArray', o.literalArr([o.literal(0)])
+                           .callMethod(o.BuiltinMethod.ConcatArray, [o.literalArr([o.literal(1)])])
     ],
 
     ['fn', o.variable('fn')],
@@ -139,18 +131,16 @@ var _getExpressionsStmts: o.Statement[] = [
     ['invokeFn', o.variable('fn').callFn([o.literal('someParam')])],
 
     [
-      'conditionalTrue',
-      o.literal('')
-          .prop('length')
-          .equals(o.literal(0))
-          .conditional(o.literal('true'), o.literal('false'))
+      'conditionalTrue', o.literal('')
+                             .prop('length')
+                             .equals(o.literal(0))
+                             .conditional(o.literal('true'), o.literal('false'))
     ],
     [
-      'conditionalFalse',
-      o.literal('')
-          .prop('length')
-          .notEquals(o.literal(0))
-          .conditional(o.literal('true'), o.literal('false'))
+      'conditionalFalse', o.literal('')
+                              .prop('length')
+                              .notEquals(o.literal(0))
+                              .conditional(o.literal('true'), o.literal('false'))
     ],
 
     ['not', o.not(o.literal(false))],
@@ -166,8 +156,7 @@ var _getExpressionsStmts: o.Statement[] = [
     ['catchError', o.variable('catchError')],
 
     [
-      'operators',
-      o.literalMap([
+      'operators', o.literalMap([
         ['==', createOperatorFn(o.BinaryOperator.Equals)],
         ['!=', createOperatorFn(o.BinaryOperator.NotEquals)],
         ['===', createOperatorFn(o.BinaryOperator.Identical)],
@@ -257,8 +246,9 @@ function createOperatorFn(op: o.BinaryOperator) {
 }
 
 export class DynamicClassInstanceFactory implements InstanceFactory {
-  createInstance(superClass: any, clazz: any, args: any[], props: Map<string, any>,
-                 getters: Map<string, Function>, methods: Map<string, Function>): any {
+  createInstance(
+      superClass: any, clazz: any, args: any[], props: Map<string, any>,
+      getters: Map<string, Function>, methods: Map<string, Function>): any {
     if (superClass === ExternalClass) {
       return new _InterpretiveDynamicClass(args, clazz, props, getters, methods);
     }
@@ -267,8 +257,9 @@ export class DynamicClassInstanceFactory implements InstanceFactory {
 }
 
 class _InterpretiveDynamicClass extends ExternalClass implements DynamicInstance {
-  constructor(args: any[], public clazz: any, public props: Map<string, any>,
-              public getters: Map<string, Function>, public methods: Map<string, Function>) {
+  constructor(
+      args: any[], public clazz: any, public props: Map<string, any>,
+      public getters: Map<string, Function>, public methods: Map<string, Function>) {
     super(args[0]);
   }
   childMethod(a: any /** TODO #9100 */) { return this.methods.get('childMethod')(a); }

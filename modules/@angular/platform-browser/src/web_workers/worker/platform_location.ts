@@ -1,19 +1,16 @@
-import {Injectable} from '@angular/core';
-import {
-  FnArg,
-  UiArguments,
-  ClientMessageBroker,
-  ClientMessageBrokerFactory
-} from '../shared/client_message_broker';
 import {PlatformLocation, UrlChangeListener} from '@angular/common';
+import {Injectable} from '@angular/core';
+
+import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../facade/async';
+import {StringMapWrapper} from '../../facade/collection';
+import {BaseException} from '../../facade/exceptions';
+import {StringWrapper} from '../../facade/lang';
+import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
+import {MessageBus} from '../shared/message_bus';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';
 import {LocationType} from '../shared/serialized_types';
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../facade/async';
-import {BaseException} from '../../facade/exceptions';
 import {PRIMITIVE, Serializer} from '../shared/serializer';
-import {MessageBus} from '../shared/message_bus';
-import {StringMapWrapper} from '../../facade/collection';
-import {StringWrapper} from '../../facade/lang';
+
 import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()
@@ -24,8 +21,8 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   private _location: LocationType = null;
   private _channelSource: EventEmitter<Object>;
 
-  constructor(brokerFactory: ClientMessageBrokerFactory, bus: MessageBus,
-              private _serializer: Serializer) {
+  constructor(
+      brokerFactory: ClientMessageBrokerFactory, bus: MessageBus, private _serializer: Serializer) {
     super();
     this._broker = brokerFactory.createMessageBroker(ROUTER_CHANNEL);
 
@@ -34,9 +31,9 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
       var listeners: Array<Function> = null;
       if (StringMapWrapper.contains(msg, 'event')) {
         let type: string = msg['event']['type'];
-        if (StringWrapper.equals(type, "popstate")) {
+        if (StringWrapper.equals(type, 'popstate')) {
           listeners = this._popStateListeners;
-        } else if (StringWrapper.equals(type, "hashchange")) {
+        } else if (StringWrapper.equals(type, 'hashchange')) {
           listeners = this._hashChangeListeners;
         }
 
@@ -52,18 +49,21 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
   /** @internal **/
   init(): Promise<boolean> {
-    var args: UiArguments = new UiArguments("getLocation");
+    var args: UiArguments = new UiArguments('getLocation');
 
     var locationPromise: Promise<LocationType> = this._broker.runOnService(args, LocationType);
-    return PromiseWrapper.then(locationPromise, (val: LocationType): boolean => {
-      this._location = val;
-      return true;
-    }, (err): boolean => { throw new BaseException(err); });
+    return PromiseWrapper.then(
+        locationPromise, (val: LocationType):
+                             boolean => {
+                               this._location = val;
+                               return true;
+                             },
+        (err): boolean => { throw new BaseException(err); });
   }
 
   getBaseHrefFromDOM(): string {
     throw new BaseException(
-        "Attempt to get base href from DOM from WebWorker. You must either provide a value for the APP_BASE_HREF token through DI or use the hash location strategy.");
+        'Attempt to get base href from DOM from WebWorker. You must either provide a value for the APP_BASE_HREF token through DI or use the hash location strategy.');
   }
 
   onPopState(fn: UrlChangeListener): void { this._popStateListeners.push(fn); }
@@ -96,37 +96,37 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
   set pathname(newPath: string) {
     if (this._location === null) {
-      throw new BaseException("Attempt to set pathname before value is obtained from UI");
+      throw new BaseException('Attempt to set pathname before value is obtained from UI');
     }
 
     this._location.pathname = newPath;
 
     var fnArgs = [new FnArg(newPath, PRIMITIVE)];
-    var args = new UiArguments("setPathname", fnArgs);
+    var args = new UiArguments('setPathname', fnArgs);
     this._broker.runOnService(args, null);
   }
 
   pushState(state: any, title: string, url: string): void {
     var fnArgs =
         [new FnArg(state, PRIMITIVE), new FnArg(title, PRIMITIVE), new FnArg(url, PRIMITIVE)];
-    var args = new UiArguments("pushState", fnArgs);
+    var args = new UiArguments('pushState', fnArgs);
     this._broker.runOnService(args, null);
   }
 
   replaceState(state: any, title: string, url: string): void {
     var fnArgs =
         [new FnArg(state, PRIMITIVE), new FnArg(title, PRIMITIVE), new FnArg(url, PRIMITIVE)];
-    var args = new UiArguments("replaceState", fnArgs);
+    var args = new UiArguments('replaceState', fnArgs);
     this._broker.runOnService(args, null);
   }
 
   forward(): void {
-    var args = new UiArguments("forward");
+    var args = new UiArguments('forward');
     this._broker.runOnService(args, null);
   }
 
   back(): void {
-    var args = new UiArguments("back");
+    var args = new UiArguments('back');
     this._broker.runOnService(args, null);
   }
 }

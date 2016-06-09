@@ -1,14 +1,4 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  inject,
-} from '@angular/core/testing/testing_internal';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Json, RegExp, NumberWrapper, StringWrapper} from '../../src/facade/lang';
@@ -17,7 +7,7 @@ import {Component} from '@angular/core';
 import {JsonPipe} from '@angular/common';
 
 export function main() {
-  describe("JsonPipe", () => {
+  describe('JsonPipe', () => {
     var regNewLine = '\n';
     var inceptionObj: any /** TODO #9100 */;
     var inceptionObjString: any /** TODO #9100 */;
@@ -27,24 +17,29 @@ export function main() {
 
     beforeEach(() => {
       inceptionObj = {dream: {dream: {dream: 'Limbo'}}};
-      inceptionObjString = "{\n" + "  \"dream\": {\n" + "    \"dream\": {\n" +
-                           "      \"dream\": \"Limbo\"\n" + "    }\n" + "  }\n" + "}";
+      inceptionObjString = '{\n' +
+          '  "dream": {\n' +
+          '    "dream": {\n' +
+          '      "dream": "Limbo"\n' +
+          '    }\n' +
+          '  }\n' +
+          '}';
 
 
       pipe = new JsonPipe();
     });
 
-    describe("transform", () => {
-      it("should return JSON-formatted string",
+    describe('transform', () => {
+      it('should return JSON-formatted string',
          () => { expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString); });
 
-      it("should return JSON-formatted string even when normalized", () => {
+      it('should return JSON-formatted string even when normalized', () => {
         var dream1 = normalize(pipe.transform(inceptionObj));
         var dream2 = normalize(inceptionObjString);
         expect(dream1).toEqual(dream2);
       });
 
-      it("should return JSON-formatted string similar to Json.stringify", () => {
+      it('should return JSON-formatted string similar to Json.stringify', () => {
         var dream1 = normalize(pipe.transform(inceptionObj));
         var dream2 = normalize(Json.stringify(inceptionObj));
         expect(dream1).toEqual(dream2);
@@ -53,20 +48,22 @@ export function main() {
 
     describe('integration', () => {
       it('should work with mutable objects',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-           tcb.createAsync(TestComp).then((fixture) => {
-             let mutable: number[] = [1];
-             fixture.debugElement.componentInstance.data = mutable;
-             fixture.detectChanges();
-             expect(fixture.debugElement.nativeElement).toHaveText("[\n  1\n]");
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               tcb.createAsync(TestComp).then((fixture) => {
+                 let mutable: number[] = [1];
+                 fixture.debugElement.componentInstance.data = mutable;
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('[\n  1\n]');
 
-             mutable.push(2);
-             fixture.detectChanges();
-             expect(fixture.debugElement.nativeElement).toHaveText("[\n  1,\n  2\n]");
+                 mutable.push(2);
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('[\n  1,\n  2\n]');
 
-             async.done();
-           });
-         }));
+                 async.done();
+               });
+             }));
     });
   });
 }

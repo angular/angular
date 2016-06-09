@@ -13,17 +13,18 @@ export class HtmlTextAst implements HtmlAst {
 }
 
 export class HtmlExpansionAst implements HtmlAst {
-  constructor(public switchValue: string, public type: string, public cases: HtmlExpansionCaseAst[],
-              public sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan) {}
+  constructor(
+      public switchValue: string, public type: string, public cases: HtmlExpansionCaseAst[],
+      public sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan) {}
   visit(visitor: HtmlAstVisitor, context: any): any {
     return visitor.visitExpansion(this, context);
   }
 }
 
 export class HtmlExpansionCaseAst implements HtmlAst {
-  constructor(public value: string, public expression: HtmlAst[],
-              public sourceSpan: ParseSourceSpan, public valueSourceSpan: ParseSourceSpan,
-              public expSourceSpan: ParseSourceSpan) {}
+  constructor(
+      public value: string, public expression: HtmlAst[], public sourceSpan: ParseSourceSpan,
+      public valueSourceSpan: ParseSourceSpan, public expSourceSpan: ParseSourceSpan) {}
 
   visit(visitor: HtmlAstVisitor, context: any): any {
     return visitor.visitExpansionCase(this, context);
@@ -36,9 +37,10 @@ export class HtmlAttrAst implements HtmlAst {
 }
 
 export class HtmlElementAst implements HtmlAst {
-  constructor(public name: string, public attrs: HtmlAttrAst[], public children: HtmlAst[],
-              public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-              public endSourceSpan: ParseSourceSpan) {}
+  constructor(
+      public name: string, public attrs: HtmlAttrAst[], public children: HtmlAst[],
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan) {}
   visit(visitor: HtmlAstVisitor, context: any): any { return visitor.visitElement(this, context); }
 }
 

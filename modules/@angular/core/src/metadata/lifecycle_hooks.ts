@@ -19,16 +19,11 @@ export enum LifecycleHooks {
  * values are instances of {@link SimpleChange}. See {@link OnChanges}
  * @stable
  */
-export interface SimpleChanges {[propName: string]: SimpleChange;}
+export interface SimpleChanges { [propName: string]: SimpleChange; }
 
 export var LIFECYCLE_HOOKS_VALUES = [
-  LifecycleHooks.OnInit,
-  LifecycleHooks.OnDestroy,
-  LifecycleHooks.DoCheck,
-  LifecycleHooks.OnChanges,
-  LifecycleHooks.AfterContentInit,
-  LifecycleHooks.AfterContentChecked,
-  LifecycleHooks.AfterViewInit,
+  LifecycleHooks.OnInit, LifecycleHooks.OnDestroy, LifecycleHooks.DoCheck, LifecycleHooks.OnChanges,
+  LifecycleHooks.AfterContentInit, LifecycleHooks.AfterContentChecked, LifecycleHooks.AfterViewInit,
   LifecycleHooks.AfterViewChecked
 ];
 
@@ -83,7 +78,9 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * ```
  * @stable
  */
-export abstract class OnChanges { abstract ngOnChanges(changes: SimpleChanges): any /** TODO #9100 */; }
+export abstract class OnChanges {
+  abstract ngOnChanges(changes: SimpleChanges): any /** TODO #9100 */;
+}
 
 /**
  * Implement this interface to execute custom initialization logic after your directive's
@@ -132,17 +129,21 @@ export abstract class OnInit { abstract ngOnInit(): any /** TODO #9100 */; }
 /**
  * Implement this interface to supplement the default change detection algorithm in your directive.
  *
- * `ngDoCheck` gets called to check the changes in the directives in addition to the default algorithm.
+ * `ngDoCheck` gets called to check the changes in the directives in addition to the default
+ * algorithm.
  *
  * The default change detection algorithm looks for differences by comparing bound-property values
  * by reference across change detection runs.
  *
  * Note that a directive typically should not use both `DoCheck` and {@link OnChanges} to respond to
- * changes on the same input. `ngOnChanges` will continue to be called when the default change detector
- * detects changes, so it is usually unnecessary to respond to changes on the same input in both hooks.
+ * changes on the same input. `ngOnChanges` will continue to be called when the default change
+ * detector
+ * detects changes, so it is usually unnecessary to respond to changes on the same input in both
+ * hooks.
  * Reaction to the changes have to be handled from within the `ngDoCheck` callback.
  *
- * You can use {@link KeyValueDiffers} and {@link IterableDiffers} to help add your custom check mechanisms.
+ * You can use {@link KeyValueDiffers} and {@link IterableDiffers} to help add your custom check
+ * mechanisms.
  *
  * ### Example ([live demo](http://plnkr.co/edit/QpnIlF0CR2i5bcYbHEUJ?p=preview))
  *
@@ -387,7 +388,9 @@ export abstract class AfterContentInit { abstract ngAfterContentInit(): any /** 
  * ```
  * @stable
  */
-export abstract class AfterContentChecked { abstract ngAfterContentChecked(): any /** TODO #9100 */; }
+export abstract class AfterContentChecked {
+  abstract ngAfterContentChecked(): any /** TODO #9100 */;
+}
 
 /**
  * Implement this interface to get notified when your component's view has been fully initialized.

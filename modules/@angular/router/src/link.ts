@@ -1,10 +1,10 @@
-import {Tree, TreeNode, UrlSegment, RouteSegment, rootNode, UrlTree, RouteTree} from './segments';
-import {isBlank, isPresent, isString, isStringMap} from './facade/lang';
-import {BaseException} from './facade/exceptions';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
+import {BaseException} from './facade/exceptions';
+import {isBlank, isPresent, isString, isStringMap} from './facade/lang';
+import {RouteSegment, RouteTree, Tree, TreeNode, UrlSegment, UrlTree, rootNode} from './segments';
 
-export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree,
-                     commands: any[]): UrlTree {
+export function link(
+    segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree, commands: any[]): UrlTree {
   if (commands.length === 0) return urlTree;
 
   let normalizedCommands = _normalizeCommands(commands);
@@ -13,10 +13,9 @@ export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTr
   }
 
   let startingNode = _findStartingNode(normalizedCommands, urlTree, segment, routeTree);
-  let updated =
-      normalizedCommands.commands.length > 0 ?
-          _updateMany(ListWrapper.clone(startingNode.children), normalizedCommands.commands) :
-          [];
+  let updated = normalizedCommands.commands.length > 0 ?
+      _updateMany(ListWrapper.clone(startingNode.children), normalizedCommands.commands) :
+      [];
   let newRoot = _constructNewTree(rootNode(urlTree), startingNode, updated);
 
   return new UrlTree(newRoot);
@@ -24,16 +23,16 @@ export function link(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTr
 
 function _navigateToRoot(normalizedChange: _NormalizedNavigationCommands): boolean {
   return normalizedChange.isAbsolute && normalizedChange.commands.length === 1 &&
-         normalizedChange.commands[0] == "/";
+      normalizedChange.commands[0] == '/';
 }
 
 class _NormalizedNavigationCommands {
-  constructor(public isAbsolute: boolean, public numberOfDoubleDots: number,
-              public commands: any[]) {}
+  constructor(
+      public isAbsolute: boolean, public numberOfDoubleDots: number, public commands: any[]) {}
 }
 
 function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {
-  if (isString(commands[0]) && commands.length === 1 && commands[0] == "/") {
+  if (isString(commands[0]) && commands.length === 1 && commands[0] == '/') {
     return new _NormalizedNavigationCommands(true, 0, commands);
   }
 
@@ -55,11 +54,11 @@ function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {
 
       // first exp is treated in a special way
       if (i == 0) {
-        if (j == 0 && cc == ".") {  //  './a'
+        if (j == 0 && cc == '.') {  //  './a'
           // skip it
-        } else if (j == 0 && cc == "") {  //  '/a'
+        } else if (j == 0 && cc == '') {  //  '/a'
           isAbsolute = true;
-        } else if (cc == "..") {  //  '../a'
+        } else if (cc == '..') {  //  '../a'
           numberOfDoubleDots++;
         } else if (cc != '') {
           res.push(cc);
@@ -76,8 +75,9 @@ function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {
   return new _NormalizedNavigationCommands(isAbsolute, numberOfDoubleDots, res);
 }
 
-function _findUrlSegment(segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree,
-                         numberOfDoubleDots: number): UrlSegment {
+function _findUrlSegment(
+    segment: RouteSegment, routeTree: RouteTree, urlTree: UrlTree,
+    numberOfDoubleDots: number): UrlSegment {
   let s = segment;
   while (s.urlSegments.length === 0) {
     s = routeTree.parent(s);
@@ -85,13 +85,14 @@ function _findUrlSegment(segment: RouteSegment, routeTree: RouteTree, urlTree: U
   let urlSegment = ListWrapper.last(s.urlSegments);
   let path = urlTree.pathFromRoot(urlSegment);
   if (path.length <= numberOfDoubleDots) {
-    throw new BaseException("Invalid number of '../'");
+    throw new BaseException('Invalid number of \'../\'');
   }
   return path[path.length - 1 - numberOfDoubleDots];
 }
 
-function _findStartingNode(normalizedChange: _NormalizedNavigationCommands, urlTree: UrlTree,
-                           segment: RouteSegment, routeTree: RouteTree): TreeNode<UrlSegment> {
+function _findStartingNode(
+    normalizedChange: _NormalizedNavigationCommands, urlTree: UrlTree, segment: RouteSegment,
+    routeTree: RouteTree): TreeNode<UrlSegment> {
   if (normalizedChange.isAbsolute) {
     return rootNode(urlTree);
   } else {
@@ -110,8 +111,9 @@ function _findMatchingNode(segment: UrlSegment, node: TreeNode<UrlSegment>): Tre
   return null;
 }
 
-function _constructNewTree(node: TreeNode<UrlSegment>, original: TreeNode<UrlSegment>,
-                           updated: TreeNode<UrlSegment>[]): TreeNode<UrlSegment> {
+function _constructNewTree(
+    node: TreeNode<UrlSegment>, original: TreeNode<UrlSegment>,
+    updated: TreeNode<UrlSegment>[]): TreeNode<UrlSegment> {
   if (node === original) {
     return new TreeNode<UrlSegment>(node.value, updated);
   } else {
@@ -167,7 +169,9 @@ function _update(node: TreeNode<UrlSegment>, commands: any[]): TreeNode<UrlSegme
 
 function _stringify(params: {[key: string]: any}): {[key: string]: string} {
   let res = {};
-  StringMapWrapper.forEach(params, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => (res as any /** TODO #9100 */)[k] = v.toString());
+  StringMapWrapper.forEach(
+      params, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) =>
+                  (res as any /** TODO #9100 */)[k] = v.toString());
   return res;
 }
 
@@ -175,8 +179,8 @@ function _compare(path: string, params: {[key: string]: any}, segment: UrlSegmen
   return path == segment.segment && StringMapWrapper.equals(params, segment.parameters);
 }
 
-function _recurse(urlSegment: UrlSegment, node: TreeNode<UrlSegment>,
-                  rest: any[]): TreeNode<UrlSegment> {
+function _recurse(
+    urlSegment: UrlSegment, node: TreeNode<UrlSegment>, rest: any[]): TreeNode<UrlSegment> {
   if (rest.length === 0) {
     return new TreeNode<UrlSegment>(urlSegment, []);
   }
@@ -198,12 +202,12 @@ function _updateMany(nodes: TreeNode<UrlSegment>[], commands: any[]): TreeNode<U
 
 function _segment(commands: any[]): any {
   if (!isString(commands[0])) return commands[0];
-  let parts = commands[0].toString().split(":");
+  let parts = commands[0].toString().split(':');
   return parts.length > 1 ? parts[1] : commands[0];
 }
 
 function _outlet(commands: any[]): string {
   if (!isString(commands[0])) return null;
-  let parts = commands[0].toString().split(":");
+  let parts = commands[0].toString().split(':');
   return parts.length > 1 ? parts[0] : null;
 }

@@ -1,15 +1,10 @@
-import * as o from './output_ast';
-import {
-  isPresent,
-  isBlank,
-  isString,
-  evalExpression,
-  RegExpWrapper,
-  StringWrapper
-} from '../facade/lang';
 import {BaseException} from '@angular/core';
-import {OutputEmitter, EmitterVisitorContext} from './abstract_emitter';
+
+import {RegExpWrapper, StringWrapper, evalExpression, isBlank, isPresent, isString} from '../facade/lang';
+
+import {EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
+import * as o from './output_ast';
 import {ImportGenerator} from './path_util';
 
 export class JavaScriptEmitter implements OutputEmitter {

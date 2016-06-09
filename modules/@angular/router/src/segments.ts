@@ -1,7 +1,8 @@
 import {ComponentFactory, Type} from '@angular/core';
-import {StringMapWrapper, ListWrapper} from './facade/collection';
-import {isBlank, isPresent, stringify, NumberWrapper} from './facade/lang';
+
 import {DEFAULT_OUTLET_NAME} from './constants';
+import {ListWrapper, StringMapWrapper} from './facade/collection';
+import {NumberWrapper, isBlank, isPresent, stringify} from './facade/lang';
 
 export class Tree<T> {
   /** @internal */
@@ -81,18 +82,19 @@ export class TreeNode<T> {
 }
 
 export class UrlSegment {
-  constructor(public segment: any, public parameters: {[key: string]: string},
-              public outlet: string) {}
+  constructor(
+      public segment: any, public parameters: {[key: string]: string}, public outlet: string) {}
 
   toString(): string {
-    let outletPrefix = isBlank(this.outlet) ? "" : `${this.outlet}:`;
+    let outletPrefix = isBlank(this.outlet) ? '' : `${this.outlet}:`;
     return `${outletPrefix}${this.segment}${_serializeParams(this.parameters)}`;
   }
 }
 
 function _serializeParams(params: {[key: string]: string}): string {
-  let res = "";
-  StringMapWrapper.forEach(params, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => res += `;${k}=${v}`);
+  let res = '';
+  StringMapWrapper.forEach(
+      params, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) => res += `;${k}=${v}`);
   return res;
 }
 
@@ -103,8 +105,9 @@ export class RouteSegment {
   /** @internal */
   _componentFactory: ComponentFactory<any>;
 
-  constructor(public urlSegments: UrlSegment[], public parameters: {[key: string]: string},
-              public outlet: string, type: Type, componentFactory: ComponentFactory<any>) {
+  constructor(
+      public urlSegments: UrlSegment[], public parameters: {[key: string]: string},
+      public outlet: string, type: Type, componentFactory: ComponentFactory<any>) {
     this._type = type;
     this._componentFactory = componentFactory;
   }
@@ -119,11 +122,11 @@ export class RouteSegment {
 
   get type(): Type { return this._type; }
 
-  get stringifiedUrlSegments(): string { return this.urlSegments.map(s => s.toString()).join("/"); }
+  get stringifiedUrlSegments(): string { return this.urlSegments.map(s => s.toString()).join('/'); }
 }
 
 export function createEmptyRouteTree(type: Type): RouteTree {
-  let root = new RouteSegment([new UrlSegment("", {}, null)], {}, DEFAULT_OUTLET_NAME, type, null);
+  let root = new RouteSegment([new UrlSegment('', {}, null)], {}, DEFAULT_OUTLET_NAME, type, null);
   return new RouteTree(new TreeNode<RouteSegment>(root, []));
 }
 
@@ -133,7 +136,7 @@ export function serializeRouteSegmentTree(tree: RouteTree): string {
 
 function _serializeRouteSegmentTree(node: TreeNode<RouteSegment>): string {
   let v = node.value;
-  let children = node.children.map(c => _serializeRouteSegmentTree(c)).join(", ");
+  let children = node.children.map(c => _serializeRouteSegmentTree(c)).join(', ');
   return `${v.outlet}:${v.stringifiedUrlSegments}(${stringify(v.type)}) [${children}]`;
 }
 

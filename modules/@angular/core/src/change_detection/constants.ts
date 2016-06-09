@@ -87,8 +87,8 @@ export var CHANGE_DETECTOR_STATE_VALUES = [
   ChangeDetectorState.Errored,
 ];
 
-export function isDefaultChangeDetectionStrategy(
-    changeDetectionStrategy: ChangeDetectionStrategy): boolean {
+export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy):
+    boolean {
   return isBlank(changeDetectionStrategy) ||
-         changeDetectionStrategy === ChangeDetectionStrategy.Default;
+      changeDetectionStrategy === ChangeDetectionStrategy.Default;
 }

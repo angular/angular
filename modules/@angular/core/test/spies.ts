@@ -1,7 +1,7 @@
-import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detection';
 import {ElementRef} from '@angular/core';
-import {DomAdapter} from '@angular/platform-browser/src/dom/dom_adapter';
+import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detection';
 import {SpyObject} from '@angular/core/testing/testing_internal';
+import {DomAdapter} from '@angular/platform-browser/src/dom/dom_adapter';
 
 export class SpyChangeDetectorRef extends SpyObject {
   constructor() {

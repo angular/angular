@@ -1,21 +1,12 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from '@angular/core/testing/testing_internal';
+import {DatePipe} from '@angular/common';
+import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing';
 
-import {DatePipe} from '@angular/common';
 import {DateWrapper} from '../../src/facade/lang';
-import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 
 export function main() {
-  describe("DatePipe", () => {
+  describe('DatePipe', () => {
     var date: any /** TODO #9100 */;
     var pipe: any /** TODO #9100 */;
 
@@ -27,23 +18,23 @@ export function main() {
     it('should be marked as pure',
        () => { expect(new PipeResolver().resolve(DatePipe).pure).toEqual(true); });
 
-    describe("supports", () => {
-      it("should support date", () => { expect(pipe.supports(date)).toBe(true); });
-      it("should support int", () => { expect(pipe.supports(123456789)).toBe(true); });
-      it("should support ISO string",
-         () => { expect(pipe.supports("2015-06-15T21:43:11Z")).toBe(true); });
+    describe('supports', () => {
+      it('should support date', () => { expect(pipe.supports(date)).toBe(true); });
+      it('should support int', () => { expect(pipe.supports(123456789)).toBe(true); });
+      it('should support ISO string',
+         () => { expect(pipe.supports('2015-06-15T21:43:11Z')).toBe(true); });
 
-      it("should not support other objects", () => {
+      it('should not support other objects', () => {
         expect(pipe.supports(new Object())).toBe(false);
         expect(pipe.supports(null)).toBe(false);
-        expect(pipe.supports("")).toBe(false);
+        expect(pipe.supports('')).toBe(false);
       });
     });
 
     // TODO(mlaval): enable tests when Intl API is no longer used, see
     // https://github.com/angular/angular/issues/3333
     if (browserDetection.supportsIntlApi) {
-      describe("transform", () => {
+      describe('transform', () => {
         it('should format each component correctly', () => {
           expect(pipe.transform(date, 'y')).toEqual('2015');
           expect(pipe.transform(date, 'yy')).toEqual('15');

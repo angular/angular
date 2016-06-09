@@ -1,5 +1,5 @@
-import {Component, Inject, OpaqueToken} from '@angular/core';
 import * as common from '@angular/common';
+import {Component, Inject, OpaqueToken} from '@angular/core';
 
 export const SOME_OPAQUE_TOKEN = new OpaqueToken('opaqueToken');
 

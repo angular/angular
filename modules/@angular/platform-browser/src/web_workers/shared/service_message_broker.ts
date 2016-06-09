@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
+
+import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../facade/async';
 import {ListWrapper, Map} from '../../facade/collection';
-import {Serializer} from '../shared/serializer';
-import {isPresent, Type, FunctionWrapper} from '../../facade/lang';
+import {FunctionWrapper, Type, isPresent} from '../../facade/lang';
 import {MessageBus} from '../shared/message_bus';
-import {EventEmitter, PromiseWrapper, ObservableWrapper} from '../../facade/async';
+import {Serializer} from '../shared/serializer';
 
 export abstract class ServiceMessageBrokerFactory {
   /**
@@ -29,8 +30,8 @@ export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
 }
 
 export abstract class ServiceMessageBroker {
-  abstract registerMethod(methodName: string, signature: Type[], method: Function,
-                          returnType?: Type): void;
+  abstract registerMethod(
+      methodName: string, signature: Type[], method: Function, returnType?: Type): void;
 }
 
 /**
@@ -43,15 +44,18 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
   private _sink: EventEmitter<any>;
   private _methods: Map<string, Function> = new Map<string, Function>();
 
-  constructor(messageBus: MessageBus, private _serializer: Serializer, public channel: any /** TODO #9100 */) {
+  constructor(
+      messageBus: MessageBus, private _serializer: Serializer,
+      public channel: any /** TODO #9100 */) {
     super();
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);
     ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
   }
 
-  registerMethod(methodName: string, signature: Type[], method: (..._: any[]) => Promise<any>| void,
-                 returnType?: Type): void {
+  registerMethod(
+      methodName: string, signature: Type[], method: (..._: any[]) => Promise<any>| void,
+      returnType?: Type): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       var serializedArgs = message.args;
       let numArgs = signature === null ? 0 : signature.length;

@@ -1,10 +1,11 @@
 import {XHR} from '@angular/compiler';
-import {PromiseWrapper, PromiseCompleter} from '../facade/promise';
+
 import {isPresent} from '../facade/lang';
+import {PromiseCompleter, PromiseWrapper} from '../facade/promise';
 
 export class XHRImpl extends XHR {
   get(url: string): Promise<string> {
-    var completer: PromiseCompleter <string> = PromiseWrapper.completer();
+    var completer: PromiseCompleter<string> = PromiseWrapper.completer();
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'text';

@@ -1,9 +1,11 @@
-import {Directive, HostListener, HostBinding, Input, OnDestroy} from '@angular/core';
+import {LocationStrategy} from '@angular/common';
+import {Directive, HostBinding, HostListener, Input, OnDestroy} from '@angular/core';
+
+import {ObservableWrapper} from '../facade/async';
+import {isArray, isPresent, isString} from '../facade/lang';
 import {Router} from '../router';
 import {RouteSegment} from '../segments';
-import {isString, isArray, isPresent} from '../facade/lang';
-import {ObservableWrapper} from '../facade/async';
-import {LocationStrategy} from '@angular/common';
+
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -45,8 +47,9 @@ export class RouterLink implements OnDestroy {
   @HostBinding() href: string;
   @HostBinding('class.router-link-active') isActive: boolean = false;
 
-  constructor(private _routeSegment: RouteSegment, private _router: Router,
-              private _locationStrategy: LocationStrategy) {
+  constructor(
+      private _routeSegment: RouteSegment, private _router: Router,
+      private _locationStrategy: LocationStrategy) {
     // because auxiliary links take existing primary and auxiliary routes into account,
     // we need to update the link whenever params or other routes change.
     this._subscription =
@@ -56,7 +59,7 @@ export class RouterLink implements OnDestroy {
   ngOnDestroy() { ObservableWrapper.dispose(this._subscription); }
 
   @Input()
-  set routerLink(data: any[] | any) {
+  set routerLink(data: any[]|any) {
     if (isArray(data)) {
       this._commands = <any[]>data;
     } else {
@@ -66,7 +69,7 @@ export class RouterLink implements OnDestroy {
   }
 
 
-  @HostListener("click", ["$event.button", "$event.ctrlKey", "$event.metaKey"])
+  @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
     if (button != 0 || ctrlKey || metaKey) {
       return true;

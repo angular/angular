@@ -1,23 +1,9 @@
-import {
-  Input, 
-  Directive, 
-  ElementRef, 
-  Renderer, 
-  Optional, 
-  Host, 
-  OnDestroy, 
-  forwardRef
-} from "@angular/core";
-import {
-  isBlank, 
-  isPrimitive, 
-  StringWrapper, 
-  isPresent, 
-  looseIdentical, 
-  isString
-} from '../../facade/lang';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer, forwardRef} from '@angular/core';
+
 import {MapWrapper} from '../../facade/collection';
+import {StringWrapper, isBlank, isPresent, isPrimitive, isString, looseIdentical} from '../../facade/lang';
+
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 const SELECT_MULTIPLE_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -28,12 +14,12 @@ const SELECT_MULTIPLE_VALUE_ACCESSOR = {
 function _buildValueString(id: string, value: any): string {
   if (isBlank(id)) return `${value}`;
   if (isString(value)) value = `'${value}'`;
-  if (!isPrimitive(value)) value = "Object";
+  if (!isPrimitive(value)) value = 'Object';
   return StringWrapper.slice(`${id}: ${value}`, 0, 50);
 }
 
 function _extractId(valueString: string): string {
-  return valueString.split(":")[0];
+  return valueString.split(':')[0];
 }
 
 /** Mock interface for HTML Options */
@@ -74,9 +60,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
     let values: Array<any> = <Array<any>>value;
     // convert values to ids
     let ids = values.map((v) => this._getOptionId(v));
-    this._optionMap.forEach((opt, o) => {
-      opt._setSelected(ids.indexOf(o.toString()) > -1);
-    });
+    this._optionMap.forEach((opt, o) => { opt._setSelected(ids.indexOf(o.toString()) > -1); });
   }
 
   registerOnChange(fn: (value: any) => any): void {
@@ -108,7 +92,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   /** @internal */
   _registerOption(value: NgSelectMultipleOption): string {
-    let id:string = (this._idCounter++).toString();
+    let id: string = (this._idCounter++).toString();
     this._optionMap.set(id, value);
     return id;
   }
@@ -145,8 +129,9 @@ export class NgSelectMultipleOption implements OnDestroy {
   /** @internal */
   _value: any;
 
-  constructor(private _element: ElementRef, private _renderer: Renderer,
-              @Optional() @Host() private _select: SelectMultipleControlValueAccessor) {
+  constructor(
+      private _element: ElementRef, private _renderer: Renderer,
+      @Optional() @Host() private _select: SelectMultipleControlValueAccessor) {
     if (isPresent(this._select)) {
       this.id = this._select._registerOption(this);
     }

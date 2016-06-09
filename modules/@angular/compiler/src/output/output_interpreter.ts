@@ -1,27 +1,28 @@
 import {reflector} from '../../core_private';
-import {isPresent, IS_DART, FunctionWrapper} from '../facade/lang';
 import {ObservableWrapper} from '../facade/async';
-import {BaseException, unimplemented} from '../facade/exceptions';
 import {ListWrapper} from '../facade/collection';
+import {BaseException, unimplemented} from '../facade/exceptions';
+import {FunctionWrapper, IS_DART, isPresent} from '../facade/lang';
 
-import * as o from './output_ast';
 import {debugOutputAstAsDart} from './dart_emitter';
+import * as o from './output_ast';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 
-export function interpretStatements(statements: o.Statement[], resultVar: string,
-                                    instanceFactory: InstanceFactory): any {
+export function interpretStatements(
+    statements: o.Statement[], resultVar: string, instanceFactory: InstanceFactory): any {
   var stmtsWithReturn = statements.concat([new o.ReturnStatement(o.variable(resultVar))]);
-  var ctx = new _ExecutionContext(null, null, null, null, new Map<string, any>(),
-                                  new Map<string, any>(), new Map<string, Function>(),
-                                  new Map<string, Function>(), instanceFactory);
+  var ctx = new _ExecutionContext(
+      null, null, null, null, new Map<string, any>(), new Map<string, any>(),
+      new Map<string, Function>(), new Map<string, Function>(), instanceFactory);
   var visitor = new StatementInterpreter();
   var result = visitor.visitAllStatements(stmtsWithReturn, ctx);
   return isPresent(result) ? result.value : null;
 }
 
 export interface InstanceFactory {
-  createInstance(superClass: any, clazz: any, constructorArgs: any[], props: Map<string, any>,
-                 getters: Map<string, Function>, methods: Map<string, Function>): DynamicInstance;
+  createInstance(
+      superClass: any, clazz: any, constructorArgs: any[], props: Map<string, any>,
+      getters: Map<string, Function>, methods: Map<string, Function>): DynamicInstance;
 }
 
 export abstract class DynamicInstance {
@@ -36,12 +37,13 @@ function isDynamicInstance(instance: any): any {
     return instance instanceof DynamicInstance;
   } else {
     return isPresent(instance) && isPresent(instance.props) && isPresent(instance.getters) &&
-           isPresent(instance.methods);
+        isPresent(instance.methods);
   }
 }
 
-function _executeFunctionStatements(varNames: string[], varValues: any[], statements: o.Statement[],
-                                    ctx: _ExecutionContext, visitor: StatementInterpreter): any {
+function _executeFunctionStatements(
+    varNames: string[], varValues: any[], statements: o.Statement[], ctx: _ExecutionContext,
+    visitor: StatementInterpreter): any {
   var childCtx = ctx.createChildWihtLocalVars();
   for (var i = 0; i < varNames.length; i++) {
     childCtx.vars.set(varNames[i], varValues[i]);
@@ -51,15 +53,16 @@ function _executeFunctionStatements(varNames: string[], varValues: any[], statem
 }
 
 class _ExecutionContext {
-  constructor(public parent: _ExecutionContext, public superClass: any, public superInstance: any,
-              public className: string, public vars: Map<string, any>,
-              public props: Map<string, any>, public getters: Map<string, Function>,
-              public methods: Map<string, Function>, public instanceFactory: InstanceFactory) {}
+  constructor(
+      public parent: _ExecutionContext, public superClass: any, public superInstance: any,
+      public className: string, public vars: Map<string, any>, public props: Map<string, any>,
+      public getters: Map<string, Function>, public methods: Map<string, Function>,
+      public instanceFactory: InstanceFactory) {}
 
   createChildWihtLocalVars(): _ExecutionContext {
-    return new _ExecutionContext(this, this.superClass, this.superInstance, this.className,
-                                 new Map<string, any>(), this.props, this.getters, this.methods,
-                                 this.instanceFactory);
+    return new _ExecutionContext(
+        this, this.superClass, this.superInstance, this.className, new Map<string, any>(),
+        this.props, this.getters, this.methods, this.instanceFactory);
   }
 }
 
@@ -68,22 +71,24 @@ class ReturnValue {
 }
 
 class _DynamicClass {
-  constructor(private _classStmt: o.ClassStmt, private _ctx: _ExecutionContext,
-              private _visitor: StatementInterpreter) {}
+  constructor(
+      private _classStmt: o.ClassStmt, private _ctx: _ExecutionContext,
+      private _visitor: StatementInterpreter) {}
 
   instantiate(args: any[]): DynamicInstance {
     var props = new Map<string, any>();
     var getters = new Map<string, Function>();
     var methods = new Map<string, Function>();
     var superClass = this._classStmt.parent.visitExpression(this._visitor, this._ctx);
-    var instanceCtx =
-        new _ExecutionContext(this._ctx, superClass, null, this._classStmt.name, this._ctx.vars,
-                              props, getters, methods, this._ctx.instanceFactory);
+    var instanceCtx = new _ExecutionContext(
+        this._ctx, superClass, null, this._classStmt.name, this._ctx.vars, props, getters, methods,
+        this._ctx.instanceFactory);
 
     this._classStmt.fields.forEach((field: o.ClassField) => { props.set(field.name, null); });
     this._classStmt.getters.forEach((getter: o.ClassGetter) => {
-      getters.set(getter.name, () => _executeFunctionStatements([], [], getter.body, instanceCtx,
-                                                                this._visitor));
+      getters.set(
+          getter.name,
+          () => _executeFunctionStatements([], [], getter.body, instanceCtx, this._visitor));
     });
     this._classStmt.methods.forEach((method: o.ClassMethod) => {
       var paramNames = method.params.map(param => param.name);
@@ -91,8 +96,8 @@ class _DynamicClass {
     });
 
     var ctorParamNames = this._classStmt.constructorMethod.params.map(param => param.name);
-    _executeFunctionStatements(ctorParamNames, args, this._classStmt.constructorMethod.body,
-                               instanceCtx, this._visitor);
+    _executeFunctionStatements(
+        ctorParamNames, args, this._classStmt.constructorMethod.body, instanceCtx, this._visitor);
     return instanceCtx.superInstance;
   }
 
@@ -100,7 +105,7 @@ class _DynamicClass {
 }
 
 class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
-  debugAst(ast: o.Expression | o.Statement | o.Type): string {
+  debugAst(ast: o.Expression|o.Statement|o.Type): string {
     return IS_DART ? debugOutputAstAsDart(ast) : debugOutputAstAsTypeScript(ast);
   }
 
@@ -207,8 +212,8 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     var args = this.visitAllExpressions(stmt.args, ctx);
     var fnExpr = stmt.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
-      ctx.superInstance = ctx.instanceFactory.createInstance(ctx.superClass, ctx.className, args,
-                                                             ctx.props, ctx.getters, ctx.methods);
+      ctx.superInstance = ctx.instanceFactory.createInstance(
+          ctx.superClass, ctx.className, args, ctx.props, ctx.getters, ctx.methods);
       ctx.parent.superInstance = ctx.superInstance;
       return null;
     } else {
@@ -352,8 +357,9 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: _ExecutionContext): any {
     var result = {};
-    ast.entries.forEach((entry) => (result as any /** TODO #9100 */)[<string>entry[0]] =
-                            (<o.Expression>entry[1]).visitExpression(this, ctx));
+    ast.entries.forEach(
+        (entry) => (result as any /** TODO #9100 */)[<string>entry[0]] =
+            (<o.Expression>entry[1]).visitExpression(this, ctx));
     return result;
   }
 
@@ -373,39 +379,60 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   }
 }
 
-function _declareFn(varNames: string[], statements: o.Statement[], ctx: _ExecutionContext,
-                    visitor: StatementInterpreter): Function {
+function _declareFn(
+    varNames: string[], statements: o.Statement[], ctx: _ExecutionContext,
+    visitor: StatementInterpreter): Function {
   switch (varNames.length) {
     case 0:
       return () => _executeFunctionStatements(varNames, [], statements, ctx, visitor);
     case 1:
-      return (d0: any /** TODO #9100 */) => _executeFunctionStatements(varNames, [d0], statements, ctx, visitor);
+      return (d0: any /** TODO #9100 */) =>
+                 _executeFunctionStatements(varNames, [d0], statements, ctx, visitor);
     case 2:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */) => _executeFunctionStatements(varNames, [d0, d1], statements, ctx, visitor);
+      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */) =>
+                 _executeFunctionStatements(varNames, [d0, d1], statements, ctx, visitor);
     case 3:
       return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */) =>
                  _executeFunctionStatements(varNames, [d0, d1, d2], statements, ctx, visitor);
     case 4:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */, d3: any /** TODO #9100 */) =>
+      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
+              d3: any /** TODO #9100 */) =>
                  _executeFunctionStatements(varNames, [d0, d1, d2, d3], statements, ctx, visitor);
     case 5:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */, d3: any /** TODO #9100 */, d4: any /** TODO #9100 */) => _executeFunctionStatements(varNames, [d0, d1, d2, d3, d4],
-                                                                statements, ctx, visitor);
+      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
+              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */) =>
+                 _executeFunctionStatements(
+                     varNames, [d0, d1, d2, d3, d4], statements, ctx, visitor);
     case 6:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */, d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5], statements, ctx, visitor);
+      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
+              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */) =>
+                 _executeFunctionStatements(
+                     varNames, [d0, d1, d2, d3, d4, d5], statements, ctx, visitor);
     case 7:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */, d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */, d6: any /** TODO #9100 */) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5, d6], statements, ctx, visitor);
+      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
+              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */,
+              d6: any /** TODO #9100 */) =>
+                 _executeFunctionStatements(
+                     varNames, [d0, d1, d2, d3, d4, d5, d6], statements, ctx, visitor);
     case 8:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */, d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */, d6: any /** TODO #9100 */, d7: any /** TODO #9100 */) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5, d6, d7], statements, ctx, visitor);
+      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
+              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */,
+              d6: any /** TODO #9100 */, d7: any /** TODO #9100 */) =>
+                 _executeFunctionStatements(
+                     varNames, [d0, d1, d2, d3, d4, d5, d6, d7], statements, ctx, visitor);
     case 9:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */, d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */, d6: any /** TODO #9100 */, d7: any /** TODO #9100 */, d8: any /** TODO #9100 */) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5, d6, d7, d8], statements, ctx, visitor);
+      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
+              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */,
+              d6: any /** TODO #9100 */, d7: any /** TODO #9100 */, d8: any /** TODO #9100 */) =>
+                 _executeFunctionStatements(
+                     varNames, [d0, d1, d2, d3, d4, d5, d6, d7, d8], statements, ctx, visitor);
     case 10:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */, d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */, d6: any /** TODO #9100 */, d7: any /** TODO #9100 */, d8: any /** TODO #9100 */, d9: any /** TODO #9100 */) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9], statements, ctx, visitor);
+      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
+              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */,
+              d6: any /** TODO #9100 */, d7: any /** TODO #9100 */, d8: any /** TODO #9100 */,
+              d9: any /** TODO #9100 */) =>
+                 _executeFunctionStatements(
+                     varNames, [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9], statements, ctx, visitor);
     default:
       throw new BaseException(
           'Declaring functions with more than 10 arguments is not supported right now');

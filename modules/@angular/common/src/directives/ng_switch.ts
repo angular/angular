@@ -1,12 +1,13 @@
-import {Directive, Host, ViewContainerRef, TemplateRef} from '@angular/core';
-import {isPresent, isBlank, normalizeBlank} from '../facade/lang';
+import {Directive, Host, TemplateRef, ViewContainerRef} from '@angular/core';
+
 import {ListWrapper, Map} from '../facade/collection';
+import {isBlank, isPresent, normalizeBlank} from '../facade/lang';
 
 const _WHEN_DEFAULT = /*@ts2dart_const*/ new Object();
 
 export class SwitchView {
-  constructor(private _viewContainerRef: ViewContainerRef,
-              private _templateRef: TemplateRef<Object>) {}
+  constructor(
+      private _viewContainerRef: ViewContainerRef, private _templateRef: TemplateRef<Object>) {}
 
   create(): void { this._viewContainerRef.createEmbeddedView(this._templateRef); }
 
@@ -180,8 +181,9 @@ export class NgSwitchWhen {
   _view: SwitchView;
   private _switch: NgSwitch;
 
-  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
-              @Host() ngSwitch: NgSwitch) {
+  constructor(
+      viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
+      @Host() ngSwitch: NgSwitch) {
     this._switch = ngSwitch;
     this._view = new SwitchView(viewContainer, templateRef);
   }
@@ -202,8 +204,9 @@ export class NgSwitchWhen {
  */
 @Directive({selector: '[ngSwitchDefault]'})
 export class NgSwitchDefault {
-  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
-              @Host() sswitch: NgSwitch) {
+  constructor(
+      viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
+      @Host() sswitch: NgSwitch) {
     sswitch._registerView(_WHEN_DEFAULT, new SwitchView(viewContainer, templateRef));
   }
 }

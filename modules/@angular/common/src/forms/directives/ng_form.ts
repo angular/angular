@@ -1,18 +1,16 @@
-import {Directive, forwardRef, Optional, Inject, Self} from '@angular/core';
-import {
-  PromiseWrapper,
-  ObservableWrapper,
-  EventEmitter
-} from '../../facade/async';
+import {Directive, Inject, Optional, Self, forwardRef} from '@angular/core';
+
+import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../facade/async';
 import {ListWrapper} from '../../facade/collection';
 import {isPresent} from '../../facade/lang';
-import {NgControl} from './ng_control';
-import {Form} from './form_interface';
-import {NgControlGroup} from './ng_control_group';
+import {AbstractControl, Control, ControlGroup} from '../model';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+
 import {ControlContainer} from './control_container';
-import {AbstractControl, ControlGroup, Control} from '../model';
-import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
-import {NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {Form} from './form_interface';
+import {NgControl} from './ng_control';
+import {NgControlGroup} from './ng_control_group';
+import {composeAsyncValidators, composeValidators, setUpControl, setUpControlGroup} from './shared';
 
 export const formDirectiveProvider: any =
     /*@ts2dart_const*/ {provide: ControlContainer, useExisting: forwardRef(() => NgForm)};
@@ -93,11 +91,12 @@ export class NgForm extends ControlContainer implements Form {
   form: ControlGroup;
   ngSubmit = new EventEmitter();
 
-  constructor(@Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+  constructor(
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
-    this.form = new ControlGroup({}, null, composeValidators(validators),
-                                 composeAsyncValidators(asyncValidators));
+    this.form = new ControlGroup(
+        {}, null, composeValidators(validators), composeAsyncValidators(asyncValidators));
   }
 
   get submitted(): boolean { return this._submitted; }

@@ -1,16 +1,7 @@
-import {
-  describeRouter,
-  ddescribeRouter,
-  describeWith,
-  describeWithout,
-  describeWithAndWithout,
-  itShouldRoute,
-  TEST_ROUTER_PROVIDERS
-} from './util';
-
-import {beforeEachProviders, describe, ddescribe} from '@angular/core/testing/testing_internal';
+import {beforeEachProviders, ddescribe, describe} from '@angular/core/testing/testing_internal';
 
 import {registerSpecs} from './impl/sync_route_spec_impl';
+import {TEST_ROUTER_PROVIDERS, ddescribeRouter, describeRouter, describeWith, describeWithAndWithout, describeWithout, itShouldRoute} from './util';
 
 export function main() {
   describe('sync route spec', () => {
@@ -23,8 +14,8 @@ export function main() {
       describeWithout('children', () => { describeWithAndWithout('params', itShouldRoute); });
 
       describeWith('sync children', () => {
-        describeWithout('default routes',
-                        () => { describeWithAndWithout('params', itShouldRoute); });
+        describeWithout(
+            'default routes', () => { describeWithAndWithout('params', itShouldRoute); });
         describeWith('default routes', () => { describeWithout('params', itShouldRoute); });
 
       });

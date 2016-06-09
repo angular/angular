@@ -1,25 +1,22 @@
-import {Type, isPresent, stringify} from '../facade/lang';
+import {ListWrapper, Map, MapWrapper, Set, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {BaseException, WrappedException} from '../facade/exceptions';
-import {
-  ListWrapper,
-  Map,
-  MapWrapper,
-  Set,
-  SetWrapper,
-  StringMapWrapper
-} from '../facade/collection';
-import {SetterFn, GetterFn, MethodFn} from './types';
-import {ReflectorReader} from './reflector_reader';
+import {Type, isPresent, stringify} from '../facade/lang';
+
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
-export {SetterFn, GetterFn, MethodFn} from './types';
+import {ReflectorReader} from './reflector_reader';
+import {GetterFn, MethodFn, SetterFn} from './types';
+
 export {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
+export {GetterFn, MethodFn, SetterFn} from './types';
+
 
 /**
  * Reflective information about a symbol, including annotations, interfaces, and other metadata.
  */
 export class ReflectionInfo {
-  constructor(public annotations?: any[], public parameters?: any[][], public factory?: Function,
-              public interfaces?: any[], public propMetadata?: {[key: string]: any[]}) {}
+  constructor(
+      public annotations?: any[], public parameters?: any[][], public factory?: Function,
+      public interfaces?: any[], public propMetadata?: {[key: string]: any[]}) {}
 }
 
 /**

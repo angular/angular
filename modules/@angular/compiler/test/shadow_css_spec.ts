@@ -1,11 +1,4 @@
-import {
-  describe,
-  beforeEach,
-  it,
-  expect,
-  ddescribe,
-  iit,
-} from '@angular/core/testing/testing_internal';
+import {describe, beforeEach, it, expect, ddescribe, iit,} from '@angular/core/testing/testing_internal';
 import {ShadowCss, processRules, CssRule} from '@angular/compiler/src/shadow_css';
 
 import {RegExpWrapper, StringWrapper, isPresent} from '../src/facade/lang';
@@ -110,7 +103,7 @@ export function main() {
     });
 
     it('should support polyfill-next-selector', () => {
-      var css = s("polyfill-next-selector {content: 'x > y'} z {}", 'a');
+      var css = s('polyfill-next-selector {content: \'x > y\'} z {}', 'a');
       expect(css).toEqual('x[a] > y[a]{}');
 
       css = s('polyfill-next-selector {content: "x > y"} z {}', 'a');
@@ -118,7 +111,7 @@ export function main() {
     });
 
     it('should support polyfill-unscoped-rule', () => {
-      var css = s("polyfill-unscoped-rule {content: '#menu > .bar';color: blue;}", 'a');
+      var css = s('polyfill-unscoped-rule {content: \'#menu > .bar\';color: blue;}', 'a');
       expect(StringWrapper.contains(css, '#menu > .bar {;color:blue;}')).toBeTruthy();
 
       css = s('polyfill-unscoped-rule {content: "#menu > .bar";color: blue;}', 'a');
@@ -126,15 +119,16 @@ export function main() {
     });
 
     it('should support multiple instances polyfill-unscoped-rule', () => {
-      var css = s("polyfill-unscoped-rule {content: 'foo';color: blue;}" +
-                      "polyfill-unscoped-rule {content: 'bar';color: blue;}",
-                  'a');
+      var css =
+          s('polyfill-unscoped-rule {content: \'foo\';color: blue;}' +
+                'polyfill-unscoped-rule {content: \'bar\';color: blue;}',
+            'a');
       expect(StringWrapper.contains(css, 'foo {;color:blue;}')).toBeTruthy();
       expect(StringWrapper.contains(css, 'bar {;color:blue;}')).toBeTruthy();
     });
 
     it('should support polyfill-rule', () => {
-      var css = s("polyfill-rule {content: ':host.foo .bar';color: blue;}", 'a', 'a-host');
+      var css = s('polyfill-rule {content: \':host.foo .bar\';color: blue;}', 'a', 'a-host');
       expect(css).toEqual('[a-host].foo .bar {;color:blue;}');
 
       css = s('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'a', 'a-host');
@@ -203,26 +197,30 @@ export function main() {
          () => { expect(captureRules('a {b}')).toEqual([new CssRule('a', 'b')]); });
 
       it('should capture css rules with nested rules', () => {
-        expect(captureRules('a {b {c}} d {e}'))
-            .toEqual([new CssRule('a', 'b {c}'), new CssRule('d', 'e')]);
+        expect(captureRules('a {b {c}} d {e}')).toEqual([
+          new CssRule('a', 'b {c}'), new CssRule('d', 'e')
+        ]);
       });
 
       it('should capture multiple rules where some have no body', () => {
-        expect(captureRules('@import a ; b {c}'))
-            .toEqual([new CssRule('@import a', ''), new CssRule('b', 'c')]);
+        expect(captureRules('@import a ; b {c}')).toEqual([
+          new CssRule('@import a', ''), new CssRule('b', 'c')
+        ]);
       });
     });
 
     describe('modify rules', () => {
       it('should allow to change the selector while preserving whitespaces', () => {
-        expect(processRules('@import a; b {c {d}} e {f}',
-                            (cssRule: any /** TODO #9100 */) => new CssRule(cssRule.selector + '2', cssRule.content)))
+        expect(processRules(
+                   '@import a; b {c {d}} e {f}', (cssRule: any /** TODO #9100 */) => new CssRule(
+                                                     cssRule.selector + '2', cssRule.content)))
             .toEqual('@import a2; b2 {c {d}} e2 {f}');
       });
 
       it('should allow to change the content', () => {
-        expect(processRules('a {b}',
-                            (cssRule: any /** TODO #9100 */) => new CssRule(cssRule.selector, cssRule.content + '2')))
+        expect(processRules(
+                   'a {b}', (cssRule: any /** TODO #9100 */) =>
+                                new CssRule(cssRule.selector, cssRule.content + '2')))
             .toEqual('a {b2}');
       });
     });

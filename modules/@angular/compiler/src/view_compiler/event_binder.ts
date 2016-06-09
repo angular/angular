@@ -1,17 +1,14 @@
-import {isBlank, isPresent, StringWrapper} from '../facade/lang';
+import {CompileDirectiveMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
-
-import {EventHandlerVars, ViewProperties} from './constants';
-
+import {StringWrapper, isBlank, isPresent} from '../facade/lang';
 import * as o from '../output/output_ast';
+import {BoundEventAst, DirectiveAst} from '../template_ast';
+
+import {CompileBinding} from './compile_binding';
 import {CompileElement} from './compile_element';
 import {CompileMethod} from './compile_method';
-
-import {BoundEventAst, DirectiveAst} from '../template_ast';
-import {CompileDirectiveMetadata} from '../compile_metadata';
-
+import {EventHandlerVars, ViewProperties} from './constants';
 import {convertCdStatementToIr} from './expression_converter';
-import {CompileBinding} from './compile_binding';
 
 export class CompileEventListener {
   private _method: CompileMethod;
@@ -20,30 +17,33 @@ export class CompileEventListener {
   private _eventParam: o.FnParam;
   private _actionResultExprs: o.Expression[] = [];
 
-  static getOrCreate(compileElement: CompileElement, eventTarget: string, eventName: string,
-                     targetEventListeners: CompileEventListener[]): CompileEventListener {
-    var listener = targetEventListeners.find(listener => listener.eventTarget == eventTarget &&
-                                                         listener.eventName == eventName);
+  static getOrCreate(
+      compileElement: CompileElement, eventTarget: string, eventName: string,
+      targetEventListeners: CompileEventListener[]): CompileEventListener {
+    var listener = targetEventListeners.find(
+        listener => listener.eventTarget == eventTarget && listener.eventName == eventName);
     if (isBlank(listener)) {
-      listener = new CompileEventListener(compileElement, eventTarget, eventName,
-                                          targetEventListeners.length);
+      listener = new CompileEventListener(
+          compileElement, eventTarget, eventName, targetEventListeners.length);
       targetEventListeners.push(listener);
     }
     return listener;
   }
 
-  constructor(public compileElement: CompileElement, public eventTarget: string,
-              public eventName: string, listenerIndex: number) {
+  constructor(
+      public compileElement: CompileElement, public eventTarget: string, public eventName: string,
+      listenerIndex: number) {
     this._method = new CompileMethod(compileElement.view);
     this._methodName =
         `_handle_${santitizeEventName(eventName)}_${compileElement.nodeIndex}_${listenerIndex}`;
-    this._eventParam =
-        new o.FnParam(EventHandlerVars.event.name,
-                      o.importType(this.compileElement.view.genConfig.renderTypes.renderEvent));
+    this._eventParam = new o.FnParam(
+        EventHandlerVars.event.name,
+        o.importType(this.compileElement.view.genConfig.renderTypes.renderEvent));
   }
 
-  addAction(hostEvent: BoundEventAst, directive: CompileDirectiveMetadata,
-            directiveInstance: o.Expression) {
+  addAction(
+      hostEvent: BoundEventAst, directive: CompileDirectiveMetadata,
+      directiveInstance: o.Expression) {
     if (isPresent(directive) && directive.isComponent) {
       this._hasComponentHostListener = true;
     }
@@ -70,8 +70,8 @@ export class CompileEventListener {
 
   finishMethod() {
     var markPathToRootStart = this._hasComponentHostListener ?
-                                  this.compileElement.appElement.prop('componentView') :
-                                  o.THIS_EXPR;
+        this.compileElement.appElement.prop('componentView') :
+        o.THIS_EXPR;
     var resultExpr: o.Expression = o.literal(true);
     this._actionResultExprs.forEach((expr) => { resultExpr = resultExpr.and(expr); });
     var stmts =
@@ -109,27 +109,29 @@ export class CompileEventListener {
         'eventHandler',
         [o.THIS_EXPR.prop(this._methodName).callMethod(o.BuiltinMethod.bind, [o.THIS_EXPR])]);
     this.compileElement.view.createMethod.addStmt(
-        subscription.set(directiveInstance.prop(observablePropName)
-                             .callMethod(o.BuiltinMethod.SubscribeObservable, [eventListener]))
+        subscription
+            .set(directiveInstance.prop(observablePropName)
+                     .callMethod(o.BuiltinMethod.SubscribeObservable, [eventListener]))
             .toDeclStmt(null, [o.StmtModifier.Final]));
   }
 }
 
-export function collectEventListeners(hostEvents: BoundEventAst[], dirs: DirectiveAst[],
-                                      compileElement: CompileElement): CompileEventListener[] {
+export function collectEventListeners(
+    hostEvents: BoundEventAst[], dirs: DirectiveAst[],
+    compileElement: CompileElement): CompileEventListener[] {
   var eventListeners: CompileEventListener[] = [];
   hostEvents.forEach((hostEvent) => {
     compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
-    var listener = CompileEventListener.getOrCreate(compileElement, hostEvent.target,
-                                                    hostEvent.name, eventListeners);
+    var listener = CompileEventListener.getOrCreate(
+        compileElement, hostEvent.target, hostEvent.name, eventListeners);
     listener.addAction(hostEvent, null, null);
   });
   ListWrapper.forEachWithIndex(dirs, (directiveAst, i) => {
     var directiveInstance = compileElement.directiveInstances[i];
     directiveAst.hostEvents.forEach((hostEvent) => {
       compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
-      var listener = CompileEventListener.getOrCreate(compileElement, hostEvent.target,
-                                                      hostEvent.name, eventListeners);
+      var listener = CompileEventListener.getOrCreate(
+          compileElement, hostEvent.target, hostEvent.name, eventListeners);
       listener.addAction(hostEvent, directiveAst.directive, directiveInstance);
     });
   });
@@ -137,13 +139,16 @@ export function collectEventListeners(hostEvents: BoundEventAst[], dirs: Directi
   return eventListeners;
 }
 
-export function bindDirectiveOutputs(directiveAst: DirectiveAst, directiveInstance: o.Expression,
-                                     eventListeners: CompileEventListener[]) {
-  StringMapWrapper.forEach(directiveAst.directive.outputs, (eventName: any /** TODO #9100 */, observablePropName: any /** TODO #9100 */) => {
-    eventListeners.filter(listener => listener.eventName == eventName)
-        .forEach(
-            (listener) => { listener.listenToDirective(directiveInstance, observablePropName); });
-  });
+export function bindDirectiveOutputs(
+    directiveAst: DirectiveAst, directiveInstance: o.Expression,
+    eventListeners: CompileEventListener[]) {
+  StringMapWrapper.forEach(
+      directiveAst.directive.outputs,
+      (eventName: any /** TODO #9100 */, observablePropName: any /** TODO #9100 */) => {
+        eventListeners.filter(listener => listener.eventName == eventName).forEach((listener) => {
+          listener.listenToDirective(directiveInstance, observablePropName);
+        });
+      });
 }
 
 export function bindRenderOutputs(eventListeners: CompileEventListener[]) {

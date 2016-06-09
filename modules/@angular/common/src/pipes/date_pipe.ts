@@ -1,11 +1,6 @@
-import {PipeTransform, Pipe, Injectable} from '@angular/core';
-import {
-  isDate,
-  isNumber,
-  isString,
-  DateWrapper,
-  isBlank,
-} from '../facade/lang';
+import {Injectable, Pipe, PipeTransform} from '@angular/core';
+
+import {isDate, isNumber, isString, DateWrapper, isBlank,} from '../facade/lang';
 import {DateFormatter} from '../facade/intl';
 import {StringMapWrapper} from '../facade/collection';
 

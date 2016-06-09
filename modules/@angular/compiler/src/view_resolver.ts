@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  ViewMetadata,
-  ComponentMetadata,
-} from '@angular/core';
+import {Injectable, ViewMetadata, ComponentMetadata,} from '@angular/core';
 
 import {ReflectorReader, reflector} from '../core_private';
 
@@ -67,9 +63,8 @@ export class ViewResolver {
         });
       }
     } else {
-        throw new BaseException(
-            `Could not compile '${stringify(component)}' because it is not a component.`);
+      throw new BaseException(
+          `Could not compile '${stringify(component)}' because it is not a component.`);
     }
   }
-
 }

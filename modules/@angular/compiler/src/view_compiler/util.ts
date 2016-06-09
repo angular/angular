@@ -1,16 +1,13 @@
-import {isPresent, isBlank} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';
-
+import {isBlank, isPresent} from '../facade/lang';
 import * as o from '../output/output_ast';
-import {
-  CompileTokenMetadata,
-  CompileDirectiveMetadata,
-} from '../compile_metadata';
+
+import {CompileTokenMetadata, CompileDirectiveMetadata,} from '../compile_metadata';
 import {CompileView} from './compile_view';
 import {Identifiers} from '../identifiers';
 
-export function getPropertyInView(property: o.Expression, callingView: CompileView,
-                                  definedView: CompileView): o.Expression {
+export function getPropertyInView(
+    property: o.Expression, callingView: CompileView, definedView: CompileView): o.Expression {
   if (callingView === definedView) {
     return property;
   } else {
@@ -36,8 +33,8 @@ export function getPropertyInView(property: o.Expression, callingView: CompileVi
   }
 }
 
-export function injectFromViewParentInjector(token: CompileTokenMetadata,
-                                             optional: boolean): o.Expression {
+export function injectFromViewParentInjector(
+    token: CompileTokenMetadata, optional: boolean): o.Expression {
   var args = [createDiTokenExpression(token)];
   if (optional) {
     args.push(o.NULL_EXPR);
@@ -45,8 +42,8 @@ export function injectFromViewParentInjector(token: CompileTokenMetadata,
   return o.THIS_EXPR.prop('parentInjector').callMethod('get', args);
 }
 
-export function getViewFactoryName(component: CompileDirectiveMetadata,
-                                   embeddedTemplateIndex: number): string {
+export function getViewFactoryName(
+    component: CompileDirectiveMetadata, embeddedTemplateIndex: number): string {
   return `viewFactory_${component.type.name}${embeddedTemplateIndex}`;
 }
 
@@ -85,8 +82,8 @@ export function createFlatArray(expressions: o.Expression[]): o.Expression {
   return result;
 }
 
-export function createPureProxy(fn: o.Expression, argCount: number, pureProxyProp: o.ReadPropExpr,
-                                view: CompileView) {
+export function createPureProxy(
+    fn: o.Expression, argCount: number, pureProxyProp: o.ReadPropExpr, view: CompileView) {
   view.fields.push(new o.ClassField(pureProxyProp.name, null));
   var pureProxyId =
       argCount < Identifiers.pureProxies.length ? Identifiers.pureProxies[argCount] : null;

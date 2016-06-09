@@ -9,7 +9,7 @@ require('./tools/check-environment')(
 const gulp = require('gulp');
 const path = require('path');
 
-const srcsToFmt = ['tools/**/*.ts'];
+const srcsToFmt = ['tools/**/*.ts', 'modules/@angular/**/*.ts'];
 
 gulp.task('format:enforce', () => {
   const format = require('gulp-clang-format');

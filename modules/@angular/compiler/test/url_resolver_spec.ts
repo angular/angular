@@ -1,15 +1,7 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  ddescribe,
-  iit,
-  xit,
-  inject
-} from '@angular/core/testing/testing_internal';
-import {IS_DART} from '../src/facade/lang';
 import {UrlResolver, createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+
+import {IS_DART} from '../src/facade/lang';
 
 export function main() {
   describe('UrlResolver', () => {
@@ -82,9 +74,9 @@ export function main() {
 
       it('should not resolve urls against the baseUrl when the url contains a scheme', () => {
         resolver = new UrlResolver('my_packages_dir');
-        expect(resolver.resolve("base/", 'package:file')).toEqual('my_packages_dir/file');
-        expect(resolver.resolve("base/", 'http:super_file')).toEqual('http:super_file');
-        expect(resolver.resolve("base/", './mega_file')).toEqual('base/mega_file');
+        expect(resolver.resolve('base/', 'package:file')).toEqual('my_packages_dir/file');
+        expect(resolver.resolve('base/', 'http:super_file')).toEqual('http:super_file');
+        expect(resolver.resolve('base/', './mega_file')).toEqual('base/mega_file');
       });
     });
 
@@ -128,11 +120,11 @@ export function main() {
     });
 
     describe('corner and error cases', () => {
-      it('should encode URLs before resolving', () => {
-        expect(resolver.resolve('foo/baz', `<p #p>Hello
-        </p>`))
-            .toEqual('foo/%3Cp%20#p%3EHello%0A%20%20%20%20%20%20%20%20%3C/p%3E');
-      });
+      it('should encode URLs before resolving',
+         () => {
+           expect(resolver.resolve('foo/baz', `<p #p>Hello
+        </p>`)).toEqual('foo/%3Cp%20#p%3EHello%0A%20%20%20%20%20%20%20%20%3C/p%3E');
+         });
     });
   });
 }

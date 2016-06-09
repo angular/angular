@@ -1,32 +1,14 @@
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
-import {
-  CHANGE_DETECTION_STRATEGY_VALUES,
-  VIEW_ENCAPSULATION_VALUES,
-  LifecycleHooks,
-  LIFECYCLE_HOOKS_VALUES,
-  reflector
-} from '../core_private';
 
-import {
-  isPresent,
-  isBlank,
-  isNumber,
-  isBoolean,
-  normalizeBool,
-  normalizeBlank,
-  serializeEnum,
-  Type,
-  isString,
-  RegExpWrapper,
-  StringWrapper,
-  NumberWrapper,
-  isArray
-} from '../src/facade/lang';
-import {unimplemented, BaseException} from '../src/facade/exceptions';
-import {StringMapWrapper, ListWrapper} from '../src/facade/collection';
+import {CHANGE_DETECTION_STRATEGY_VALUES, LIFECYCLE_HOOKS_VALUES, LifecycleHooks, VIEW_ENCAPSULATION_VALUES, reflector} from '../core_private';
+import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
+import {BaseException, unimplemented} from '../src/facade/exceptions';
+import {NumberWrapper, RegExpWrapper, StringWrapper, Type, isArray, isBlank, isBoolean, isNumber, isPresent, isString, normalizeBlank, normalizeBool, serializeEnum} from '../src/facade/lang';
+
 import {CssSelector} from './selector';
-import {splitAtColon, sanitizeIdentifier} from './util';
 import {getUrlScheme} from './url_resolver';
+import {sanitizeIdentifier, splitAtColon} from './util';
+
 
 // group 2: "event" from "(event)"
 var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
@@ -56,15 +38,13 @@ export class CompileAnimationEntryMetadata {
     return new CompileAnimationEntryMetadata(value['name'], defs);
   }
 
-  constructor(public name: string = null, public definitions: CompileAnimationStateMetadata[] = null) {}
+  constructor(
+      public name: string = null, public definitions: CompileAnimationStateMetadata[] = null) {}
 
   toJson(): {[key: string]: any} {
     return {
       'class': 'AnimationEntryMetadata',
-      'value': {
-        'name' : this.name,
-        'definitions': _arrayToJson(this.definitions)
-      }
+      'value': {'name': this.name, 'definitions': _arrayToJson(this.definitions)}
     };
   }
 }
@@ -78,15 +58,14 @@ export class CompileAnimationStateDeclarationMetadata extends CompileAnimationSt
     return new CompileAnimationStateDeclarationMetadata(value['stateNameExpr'], styles);
   }
 
-  constructor(public stateNameExpr: string, public styles: CompileAnimationStyleMetadata) { super(); }
+  constructor(public stateNameExpr: string, public styles: CompileAnimationStyleMetadata) {
+    super();
+  }
 
   toJson(): {[key: string]: any} {
     return {
       'class': 'AnimationStateDeclarationMetadata',
-      'value': {
-        'stateNameExpr': this.stateNameExpr,
-        'styles': this.styles.toJson()
-      }
+      'value': {'stateNameExpr': this.stateNameExpr, 'styles': this.styles.toJson()}
     };
   }
 }
@@ -103,17 +82,12 @@ export class CompileAnimationStateTransitionMetadata extends CompileAnimationSta
   toJson(): {[key: string]: any} {
     return {
       'class': 'AnimationStateTransitionMetadata',
-      'value': {
-        'stateChangeExpr': this.stateChangeExpr,
-        'steps': this.steps.toJson()
-      }
+      'value': {'stateChangeExpr': this.stateChangeExpr, 'steps': this.steps.toJson()}
     };
   }
 }
 
-export abstract class CompileAnimationMetadata {
-  abstract toJson(): {[key: string]: any};
-}
+export abstract class CompileAnimationMetadata { abstract toJson(): {[key: string]: any}; }
 
 export class CompileAnimationKeyframesSequenceMetadata extends CompileAnimationMetadata {
   static fromJson(data: {[key: string]: any}): CompileAnimationKeyframesSequenceMetadata {
@@ -121,15 +95,10 @@ export class CompileAnimationKeyframesSequenceMetadata extends CompileAnimationM
     return new CompileAnimationKeyframesSequenceMetadata(<CompileAnimationStyleMetadata[]>steps);
   }
 
-  constructor(public steps: CompileAnimationStyleMetadata[] = []) {
-    super();
-  }
+  constructor(public steps: CompileAnimationStyleMetadata[] = []) { super(); }
 
   toJson(): {[key: string]: any} {
-    return {
-      'class': 'AnimationKeyframesSequenceMetadata',
-      'value': _arrayToJson(this.steps)
-    };
+    return {'class': 'AnimationKeyframesSequenceMetadata', 'value': _arrayToJson(this.steps)};
   }
 }
 
@@ -142,15 +111,15 @@ export class CompileAnimationStyleMetadata extends CompileAnimationMetadata {
     return new CompileAnimationStyleMetadata(offset, styles);
   }
 
-  constructor(public offset: number, public styles: Array<string|{[key: string]: string | number}> = null) { super(); }
+  constructor(
+      public offset: number, public styles: Array<string|{[key: string]: string | number}> = null) {
+    super();
+  }
 
   toJson(): {[key: string]: any} {
     return {
       'class': 'AnimationStyleMetadata',
-      'value': {
-        'offset': this.offset,
-        'styles': this.styles
-      }
+      'value': {'offset': this.offset, 'styles': this.styles}
     };
   }
 }
@@ -163,16 +132,16 @@ export class CompileAnimationAnimateMetadata extends CompileAnimationMetadata {
     return new CompileAnimationAnimateMetadata(timings, styles);
   }
 
-  constructor(public timings: string|number = 0,
-              public styles: CompileAnimationStyleMetadata|CompileAnimationKeyframesSequenceMetadata = null) { super(); }
+  constructor(
+      public timings: string|number = 0, public styles: CompileAnimationStyleMetadata|
+      CompileAnimationKeyframesSequenceMetadata = null) {
+    super();
+  }
 
   toJson(): {[key: string]: any} {
     return {
       'class': 'AnimationAnimateMetadata',
-      'value': {
-        'timings': this.timings,
-        'styles': _objToJson(this.styles)
-      }
+      'value': {'timings': this.timings, 'styles': _objToJson(this.styles)}
     };
   }
 }
@@ -187,33 +156,23 @@ export class CompileAnimationSequenceMetadata extends CompileAnimationWithStepsM
     return new CompileAnimationSequenceMetadata(steps);
   }
 
-  constructor(steps: CompileAnimationMetadata[] = null) {
-    super(steps);
-  }
+  constructor(steps: CompileAnimationMetadata[] = null) { super(steps); }
 
   toJson(): {[key: string]: any} {
-    return {
-      'class': 'AnimationSequenceMetadata',
-      'value': _arrayToJson(this.steps)
-    };
+    return {'class': 'AnimationSequenceMetadata', 'value': _arrayToJson(this.steps)};
   }
 }
 
 export class CompileAnimationGroupMetadata extends CompileAnimationWithStepsMetadata {
   static fromJson(data: {[key: string]: any}): CompileAnimationGroupMetadata {
-    var steps = _arrayFromJson(data["value"], metadataFromJson);
+    var steps = _arrayFromJson(data['value'], metadataFromJson);
     return new CompileAnimationGroupMetadata(steps);
   }
 
-  constructor(steps: CompileAnimationMetadata[] = null) {
-    super(steps);
-  }
+  constructor(steps: CompileAnimationMetadata[] = null) { super(steps); }
 
   toJson(): {[key: string]: any} {
-    return {
-      'class': 'AnimationGroupMetadata',
-      'value': _arrayToJson(this.steps)
-    };
+    return {'class': 'AnimationGroupMetadata', 'value': _arrayToJson(this.steps)};
   }
 }
 
@@ -268,19 +227,20 @@ export class CompileDiDependencyMetadata {
   token: CompileTokenMetadata;
   value: any;
 
-  constructor({isAttribute, isSelf, isHost, isSkipSelf, isOptional, isValue, query, viewQuery,
-               token, value}: {
-    isAttribute?: boolean,
-    isSelf?: boolean,
-    isHost?: boolean,
-    isSkipSelf?: boolean,
-    isOptional?: boolean,
-    isValue?: boolean,
-    query?: CompileQueryMetadata,
-    viewQuery?: CompileQueryMetadata,
-    token?: CompileTokenMetadata,
-    value?: any
-  } = {}) {
+  constructor(
+      {isAttribute, isSelf, isHost, isSkipSelf, isOptional, isValue, query, viewQuery, token,
+       value}: {
+        isAttribute?: boolean,
+        isSelf?: boolean,
+        isHost?: boolean,
+        isSkipSelf?: boolean,
+        isOptional?: boolean,
+        isValue?: boolean,
+        query?: CompileQueryMetadata,
+        viewQuery?: CompileQueryMetadata,
+        token?: CompileTokenMetadata,
+        value?: any
+      } = {}) {
     this.isAttribute = normalizeBool(isAttribute);
     this.isSelf = normalizeBool(isSelf);
     this.isHost = normalizeBool(isHost);
@@ -435,11 +395,9 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
   identifierIsInstance: boolean;
   private _assetCacheKey = UNDEFINED;
 
-  constructor({value, identifier, identifierIsInstance}: {
-    value?: any,
-    identifier?: CompileIdentifierMetadata,
-    identifierIsInstance?: boolean
-  }) {
+  constructor(
+      {value, identifier, identifierIsInstance}:
+          {value?: any, identifier?: CompileIdentifierMetadata, identifierIsInstance?: boolean}) {
     this.value = value;
     this.identifier = identifier;
     this.identifierIsInstance = normalizeBool(identifierIsInstance);
@@ -473,11 +431,9 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
     if (this._assetCacheKey === UNDEFINED) {
       if (isPresent(this.identifier)) {
         if (isPresent(this.identifier.moduleUrl) &&
-                      isPresent(getUrlScheme(this.identifier.moduleUrl))) {
-          var uri = reflector.importUri({
-            'filePath': this.identifier.moduleUrl,
-            'name': this.identifier.name
-          });
+            isPresent(getUrlScheme(this.identifier.moduleUrl))) {
+          var uri = reflector.importUri(
+              {'filePath': this.identifier.moduleUrl, 'name': this.identifier.name});
           this._assetCacheKey = `${this.identifier.name}|${uri}|${this.identifierIsInstance}`;
         } else {
           this._assetCacheKey = null;
@@ -493,7 +449,7 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
     var rk = this.runtimeCacheKey;
     var ak = this.assetCacheKey;
     return (isPresent(rk) && rk == token2.runtimeCacheKey) ||
-           (isPresent(ak) && ak == token2.assetCacheKey);
+        (isPresent(ak) && ak == token2.assetCacheKey);
   }
 
   get name(): string {
@@ -647,15 +603,16 @@ export class CompileTemplateMetadata {
   styleUrls: string[];
   animations: CompileAnimationEntryMetadata[];
   ngContentSelectors: string[];
-  constructor({encapsulation, template, templateUrl, styles, styleUrls, animations, ngContentSelectors}: {
-    encapsulation?: ViewEncapsulation,
-    template?: string,
-    templateUrl?: string,
-    styles?: string[],
-    styleUrls?: string[],
-    ngContentSelectors?: string[],
-    animations?: CompileAnimationEntryMetadata[]
-  } = {}) {
+  constructor(
+      {encapsulation, template, templateUrl, styles, styleUrls, animations, ngContentSelectors}: {
+        encapsulation?: ViewEncapsulation,
+        template?: string,
+        templateUrl?: string,
+        styles?: string[],
+        styleUrls?: string[],
+        ngContentSelectors?: string[],
+        animations?: CompileAnimationEntryMetadata[]
+      } = {}) {
     this.encapsulation = encapsulation;
     this.template = template;
     this.templateUrl = templateUrl;
@@ -666,11 +623,12 @@ export class CompileTemplateMetadata {
   }
 
   static fromJson(data: {[key: string]: any}): CompileTemplateMetadata {
-    var animations = <CompileAnimationEntryMetadata[]>_arrayFromJson(data['animations'], metadataFromJson);
+    var animations =
+        <CompileAnimationEntryMetadata[]>_arrayFromJson(data['animations'], metadataFromJson);
     return new CompileTemplateMetadata({
       encapsulation: isPresent(data['encapsulation']) ?
-                         VIEW_ENCAPSULATION_VALUES[data['encapsulation']] :
-                         data['encapsulation'],
+          VIEW_ENCAPSULATION_VALUES[data['encapsulation']] :
+          data['encapsulation'],
       template: data['template'],
       templateUrl: data['templateUrl'],
       styles: data['styles'],
@@ -682,8 +640,8 @@ export class CompileTemplateMetadata {
 
   toJson(): {[key: string]: any} {
     return {
-      'encapsulation':
-          isPresent(this.encapsulation) ? serializeEnum(this.encapsulation) : this.encapsulation,
+      'encapsulation': isPresent(this.encapsulation) ? serializeEnum(this.encapsulation) :
+                                                       this.encapsulation,
       'template': this.template,
       'templateUrl': this.templateUrl,
       'styles': this.styles,
@@ -698,25 +656,26 @@ export class CompileTemplateMetadata {
  * Metadata regarding compilation of a directive.
  */
 export class CompileDirectiveMetadata implements CompileMetadataWithType {
-  static create({type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
-                 lifecycleHooks, providers, viewProviders, queries, viewQueries, template}: {
-    type?: CompileTypeMetadata,
-    isComponent?: boolean,
-    selector?: string,
-    exportAs?: string,
-    changeDetection?: ChangeDetectionStrategy,
-    inputs?: string[],
-    outputs?: string[],
-    host?: {[key: string]: string},
-    lifecycleHooks?: LifecycleHooks[],
-    providers?:
-        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
-    viewProviders?:
-        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
-    queries?: CompileQueryMetadata[],
-    viewQueries?: CompileQueryMetadata[],
-    template?: CompileTemplateMetadata
-  } = {}): CompileDirectiveMetadata {
+  static create(
+      {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
+       lifecycleHooks, providers, viewProviders, queries, viewQueries, template}: {
+        type?: CompileTypeMetadata,
+        isComponent?: boolean,
+        selector?: string,
+        exportAs?: string,
+        changeDetection?: ChangeDetectionStrategy,
+        inputs?: string[],
+        outputs?: string[],
+        host?: {[key: string]: string},
+        lifecycleHooks?: LifecycleHooks[],
+        providers?:
+            Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
+        viewProviders?:
+            Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
+        queries?: CompileQueryMetadata[],
+        viewQueries?: CompileQueryMetadata[],
+        template?: CompileTemplateMetadata
+      } = {}): CompileDirectiveMetadata {
     var hostListeners: {[key: string]: string} = {};
     var hostProperties: {[key: string]: string} = {};
     var hostAttributes: {[key: string]: string} = {};
@@ -787,28 +746,29 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
   viewQueries: CompileQueryMetadata[];
 
   template: CompileTemplateMetadata;
-  constructor({type, isComponent, selector, exportAs, changeDetection, inputs, outputs,
-               hostListeners, hostProperties, hostAttributes, lifecycleHooks, providers,
-               viewProviders, queries, viewQueries, template}: {
-    type?: CompileTypeMetadata,
-    isComponent?: boolean,
-    selector?: string,
-    exportAs?: string,
-    changeDetection?: ChangeDetectionStrategy,
-    inputs?: {[key: string]: string},
-    outputs?: {[key: string]: string},
-    hostListeners?: {[key: string]: string},
-    hostProperties?: {[key: string]: string},
-    hostAttributes?: {[key: string]: string},
-    lifecycleHooks?: LifecycleHooks[],
-    providers?:
-        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
-    viewProviders?:
-        Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>,
-    queries?: CompileQueryMetadata[],
-    viewQueries?: CompileQueryMetadata[],
-    template?: CompileTemplateMetadata
-  } = {}) {
+  constructor(
+      {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, hostListeners,
+       hostProperties, hostAttributes, lifecycleHooks, providers, viewProviders, queries,
+       viewQueries, template}: {
+        type?: CompileTypeMetadata,
+        isComponent?: boolean,
+        selector?: string,
+        exportAs?: string,
+        changeDetection?: ChangeDetectionStrategy,
+        inputs?: {[key: string]: string},
+        outputs?: {[key: string]: string},
+        hostListeners?: {[key: string]: string},
+        hostProperties?: {[key: string]: string},
+        hostAttributes?: {[key: string]: string},
+        lifecycleHooks?: LifecycleHooks[],
+        providers?:
+            Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
+        viewProviders?:
+            Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
+        queries?: CompileQueryMetadata[],
+        viewQueries?: CompileQueryMetadata[],
+        template?: CompileTemplateMetadata
+      } = {}) {
     this.type = type;
     this.isComponent = isComponent;
     this.selector = selector;
@@ -836,8 +796,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
       exportAs: data['exportAs'],
       type: isPresent(data['type']) ? CompileTypeMetadata.fromJson(data['type']) : data['type'],
       changeDetection: isPresent(data['changeDetection']) ?
-                           CHANGE_DETECTION_STRATEGY_VALUES[data['changeDetection']] :
-                           data['changeDetection'],
+          CHANGE_DETECTION_STRATEGY_VALUES[data['changeDetection']] :
+          data['changeDetection'],
       inputs: data['inputs'],
       outputs: data['outputs'],
       hostListeners: data['hostListeners'],
@@ -881,8 +841,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
 /**
  * Construct {@link CompileDirectiveMetadata} from {@link ComponentTypeMetadata} and a selector.
  */
-export function createHostComponentMeta(componentType: CompileTypeMetadata,
-                                        componentSelector: string): CompileDirectiveMetadata {
+export function createHostComponentMeta(
+    componentType: CompileTypeMetadata, componentSelector: string): CompileDirectiveMetadata {
   var template = CssSelector.parse(componentSelector)[0].getMatchingElementTemplate();
   return CompileDirectiveMetadata.create({
     type: new CompileTypeMetadata({
@@ -891,8 +851,14 @@ export function createHostComponentMeta(componentType: CompileTypeMetadata,
       moduleUrl: componentType.moduleUrl,
       isHost: true
     }),
-    template: new CompileTemplateMetadata(
-        {template: template, templateUrl: '', styles: [], styleUrls: [], ngContentSelectors: [], animations:[]}),
+    template: new CompileTemplateMetadata({
+      template: template,
+      templateUrl: '',
+      styles: [],
+      styleUrls: [],
+      ngContentSelectors: [],
+      animations: []
+    }),
     changeDetection: ChangeDetectionStrategy.Default,
     inputs: [],
     outputs: [],
@@ -966,7 +932,7 @@ function _arrayFromJson(obj: any[], fn: (a: {[key: string]: any}) => any): any {
   return isBlank(obj) ? null : obj.map(o => _objFromJson(o, fn));
 }
 
-function _arrayToJson(obj: any[]): string | {[key: string]: any} {
+function _arrayToJson(obj: any[]): string|{[key: string]: any} {
   return isBlank(obj) ? null : obj.map(_objToJson);
 }
 
@@ -976,7 +942,7 @@ function _objFromJson(obj: any, fn: (a: {[key: string]: any}) => any): any {
   return fn(obj);
 }
 
-function _objToJson(obj: any): string | {[key: string]: any} {
+function _objToJson(obj: any): string|{[key: string]: any} {
   if (isArray(obj)) return _arrayToJson(obj);
   if (isString(obj) || isBlank(obj) || isBoolean(obj) || isNumber(obj)) return obj;
   return obj.toJson();

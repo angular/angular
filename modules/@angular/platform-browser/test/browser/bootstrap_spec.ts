@@ -1,40 +1,16 @@
-import {
-  beforeEach,
-  afterEach,
-  describe,
-  expect,
-  inject,
-  it,
-  AsyncTestCompleter
-} from "@angular/core/testing/testing_internal";
-import {Log} from "@angular/core/testing";
-import {stringify} from "../../src/facade/lang";
-import {
-  BROWSER_PLATFORM_PROVIDERS,
-  BROWSER_APP_PROVIDERS,
-  BROWSER_APP_COMPILER_PROVIDERS,
-  bootstrap
-} from "@angular/platform-browser";
-import {ApplicationRef, disposePlatform} from "@angular/core/src/application_ref";
-import {Console} from "@angular/core/src/console";
-import {
-  Component,
-  Directive,
-  OnDestroy,
-  provide,
-  Inject,
-  PLATFORM_INITIALIZER,
-  APP_INITIALIZER,
-  coreLoadAndBootstrap,
-  createPlatform,
-  ReflectiveInjector,
-  ExceptionHandler
-} from "@angular/core";
-import {getDOM} from "@angular/platform-browser/src/dom/dom_adapter";
-import {DOCUMENT} from "@angular/platform-browser/src/dom/dom_tokens";
-import {PromiseWrapper} from "../../src/facade/async";
-import {Testability, TestabilityRegistry} from "@angular/core/src/testability/testability";
-import {ComponentRef} from "@angular/core/src/linker/component_factory";
+import {APP_INITIALIZER, Component, Directive, ExceptionHandler, Inject, OnDestroy, PLATFORM_INITIALIZER, ReflectiveInjector, coreLoadAndBootstrap, createPlatform, provide} from '@angular/core';
+import {ApplicationRef, disposePlatform} from '@angular/core/src/application_ref';
+import {Console} from '@angular/core/src/console';
+import {ComponentRef} from '@angular/core/src/linker/component_factory';
+import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
+import {Log} from '@angular/core/testing';
+import {AsyncTestCompleter, afterEach, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {BROWSER_APP_COMPILER_PROVIDERS, BROWSER_APP_PROVIDERS, BROWSER_PLATFORM_PROVIDERS, bootstrap} from '@angular/platform-browser';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+
+import {PromiseWrapper} from '../../src/facade/async';
+import {stringify} from '../../src/facade/lang';
 
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
@@ -57,7 +33,9 @@ class HelloRootCmp2 {
 class HelloRootCmp3 {
   appBinding: any /** TODO #9100 */;
 
-  constructor(@Inject("appBinding") appBinding: any /** TODO #9100 */) { this.appBinding = appBinding; }
+  constructor(@Inject('appBinding') appBinding: any /** TODO #9100 */) {
+    this.appBinding = appBinding;
+  }
 }
 
 @Component({selector: 'hello-app', template: ''})
@@ -98,7 +76,8 @@ class DummyConsole implements Console {
 }
 
 export function main() {
-  var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, el2: any /** TODO #9100 */, testProviders: any /** TODO #9100 */, lightDom: any /** TODO #9100 */;
+  var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, el2: any /** TODO #9100 */,
+      testProviders: any /** TODO #9100 */, lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
     beforeEach(() => {
@@ -122,14 +101,16 @@ export function main() {
       var logger = new _ArrayLogger();
       var exceptionHandler = new ExceptionHandler(logger, false);
       expect(
-          () => bootstrap(HelloRootDirectiveIsNotCmp,
-                          [testProviders, {provide: ExceptionHandler, useValue: exceptionHandler}]))
+          () => bootstrap(
+              HelloRootDirectiveIsNotCmp,
+              [testProviders, {provide: ExceptionHandler, useValue: exceptionHandler}]))
           .toThrowError(
               `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
-      expect(logger.res.join("")).toContain("Could not compile");
+      expect(logger.res.join('')).toContain('Could not compile');
     });
 
-    it('should throw if no element is found', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should throw if no element is found',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var logger = new _ArrayLogger();
          var exceptionHandler = new ExceptionHandler(logger, false);
 
@@ -166,7 +147,7 @@ export function main() {
            var refPromise =
                bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
            PromiseWrapper.then(refPromise, null, (reason) => {
-             expect(logger.res.join(""))
+             expect(logger.res.join(''))
                  .toContain('The selector "hello-app" did not match any elements');
              async.done();
              return null;
@@ -187,53 +168,53 @@ export function main() {
          });
        }));
 
-    it('should support multiple calls to bootstrap', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should support multiple calls to bootstrap',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var refPromise1 = bootstrap(HelloRootCmp, testProviders);
          var refPromise2 = bootstrap(HelloRootCmp2, testProviders);
-         PromiseWrapper.all([refPromise1, refPromise2])
-             .then((refs) => {
-               expect(el).toHaveText('hello world!');
-               expect(el2).toHaveText('hello world, again!');
-               async.done();
-             });
-       }));
-
-    it('should not crash if change detection is invoked when the root component is disposed',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         bootstrap(HelloOnDestroyTickCmp, testProviders)
-             .then((ref) => {
-               expect(() => ref.destroy()).not.toThrow();
-               async.done();
-             });
-       }));
-
-    it('should unregister change detectors when components are disposed',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var platform = createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));
-         var app =
-             ReflectiveInjector.resolveAndCreate([BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS, testProviders],
-                                                 platform.injector)
-                 .get(ApplicationRef);
-         coreLoadAndBootstrap(HelloRootCmp, app.injector)
-             .then((ref) => {
-               ref.destroy();
-               expect(() => app.tick()).not.toThrow();
-               async.done();
-             });
-       }));
-
-    it("should make the provided bindings available to the application component",
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var refPromise = bootstrap(
-             HelloRootCmp3, [testProviders, {provide: "appBinding", useValue: "BoundValue"}]);
-
-         refPromise.then((ref) => {
-           expect(ref.instance.appBinding).toEqual("BoundValue");
+         PromiseWrapper.all([refPromise1, refPromise2]).then((refs) => {
+           expect(el).toHaveText('hello world!');
+           expect(el2).toHaveText('hello world, again!');
            async.done();
          });
        }));
 
-    it("should avoid cyclic dependencies when root component requires Lifecycle through DI",
+    it('should not crash if change detection is invoked when the root component is disposed',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         bootstrap(HelloOnDestroyTickCmp, testProviders).then((ref) => {
+           expect(() => ref.destroy()).not.toThrow();
+           async.done();
+         });
+       }));
+
+    it('should unregister change detectors when components are disposed',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         var platform =
+             createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));
+         var app = ReflectiveInjector
+                       .resolveAndCreate(
+                           [BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS, testProviders],
+                           platform.injector)
+                       .get(ApplicationRef);
+         coreLoadAndBootstrap(HelloRootCmp, app.injector).then((ref) => {
+           ref.destroy();
+           expect(() => app.tick()).not.toThrow();
+           async.done();
+         });
+       }));
+
+    it('should make the provided bindings available to the application component',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         var refPromise = bootstrap(
+             HelloRootCmp3, [testProviders, {provide: 'appBinding', useValue: 'BoundValue'}]);
+
+         refPromise.then((ref) => {
+           expect(ref.instance.appBinding).toEqual('BoundValue');
+           async.done();
+         });
+       }));
+
+    it('should avoid cyclic dependencies when root component requires Lifecycle through DI',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var refPromise = bootstrap(HelloRootCmp4, testProviders);
 
@@ -243,24 +224,24 @@ export function main() {
          });
        }));
 
-    it("should run platform initializers", inject([Log], (log: Log) => {
+    it('should run platform initializers', inject([Log], (log: Log) => {
          let p = createPlatform(ReflectiveInjector.resolveAndCreate([
            BROWSER_PLATFORM_PROVIDERS,
-           {provide: PLATFORM_INITIALIZER, useValue: log.fn("platform_init1"), multi: true},
-           {provide: PLATFORM_INITIALIZER, useValue: log.fn("platform_init2"), multi: true}
+           {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init1'), multi: true},
+           {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init2'), multi: true}
          ]));
-         expect(log.result()).toEqual("platform_init1; platform_init2");
+         expect(log.result()).toEqual('platform_init1; platform_init2');
          log.clear();
          var a = ReflectiveInjector.resolveAndCreate(
              [
                BROWSER_APP_PROVIDERS,
-               {provide: APP_INITIALIZER, useValue: log.fn("app_init1"), multi: true},
-               {provide: APP_INITIALIZER, useValue: log.fn("app_init2"), multi: true}
+               {provide: APP_INITIALIZER, useValue: log.fn('app_init1'), multi: true},
+               {provide: APP_INITIALIZER, useValue: log.fn('app_init2'), multi: true}
              ],
              p.injector);
          a.get(ApplicationRef);
 
-         expect(log.result()).toEqual("app_init1; app_init2");
+         expect(log.result()).toEqual('app_init1; app_init2');
        }));
 
     it('should register each application with the testability registry',
@@ -268,18 +249,16 @@ export function main() {
          var refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
          var refPromise2: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp2, testProviders);
 
-         PromiseWrapper.all([refPromise1, refPromise2])
-             .then((refs: ComponentRef<any>[]) => {
-               var registry = refs[0].injector.get(TestabilityRegistry);
-               var testabilities =
-                   [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
-               PromiseWrapper.all(testabilities)
-                   .then((testabilities: Testability[]) => {
-                     expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
-                     expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
-                     async.done();
-                   });
-             });
+         PromiseWrapper.all([refPromise1, refPromise2]).then((refs: ComponentRef<any>[]) => {
+           var registry = refs[0].injector.get(TestabilityRegistry);
+           var testabilities =
+               [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
+           PromiseWrapper.all(testabilities).then((testabilities: Testability[]) => {
+             expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
+             expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
+             async.done();
+           });
+         });
        }));
   });
 }

@@ -4,7 +4,7 @@ export type AssetUrl = _c.AssetUrl;
 export var AssetUrl: typeof _c.AssetUrl = _c.AssetUrl;
 
 export type ImportGenerator = _c.ImportGenerator;
-export var ImportGenerator: typeof _c.ImportGenerator  = _c.ImportGenerator;
+export var ImportGenerator: typeof _c.ImportGenerator = _c.ImportGenerator;
 
 export type CompileMetadataResolver = _c.CompileMetadataResolver;
 export var CompileMetadataResolver: typeof _c.CompileMetadataResolver = _c.CompileMetadataResolver;

@@ -1,5 +1,5 @@
 import {Type} from '@angular/core';
-import {stringify} from "../facade/lang";
+import {stringify} from '../facade/lang';
 
 /**
  * Information about a route.
@@ -22,7 +22,7 @@ import {stringify} from "../facade/lang";
  */
 export abstract class RouteMetadata {
   abstract get path(): string;
-  abstract get component(): Type | string;
+  abstract get component(): Type|string;
 }
 
 /**
@@ -31,8 +31,8 @@ export abstract class RouteMetadata {
  */
 export class Route implements RouteMetadata {
   path: string;
-  component: Type | string;
-  constructor({path, component}: {path?: string, component?: Type | string} = {}) {
+  component: Type|string;
+  constructor({path, component}: {path?: string, component?: Type|string} = {}) {
     this.path = path;
     this.component = component;
   }

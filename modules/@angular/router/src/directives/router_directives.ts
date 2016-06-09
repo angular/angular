@@ -1,5 +1,5 @@
-import {RouterOutlet} from "./router_outlet";
-import {RouterLink} from "./router_link";
+import {RouterLink} from './router_link';
+import {RouterOutlet} from './router_outlet';
 
 /**
  * A list of directives. To use the router directives like {@link RouterOutlet} and

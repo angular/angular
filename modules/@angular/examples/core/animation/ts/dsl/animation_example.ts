@@ -1,8 +1,8 @@
 // #docregion Component
-import {Component, trigger, state, animate, transition, style} from '@angular/core';
+import {Component, animate, state, style, transition, trigger} from '@angular/core';
 
 @Component({
-  selector: "my-expando",
+  selector: 'my-expando',
   styles: [`
     .toggle-container {
       background-color:white;
@@ -15,18 +15,14 @@ import {Component, trigger, state, animate, transition, style} from '@angular/co
       overflow:hidden;
     }
   `],
-  animations: [
-    trigger('openClose', [
-      state('collapsed, void',
-        style({ height:"0px", color: "maroon", borderColor: "maroon" })),
-      state('expanded',
-        style({ height:"*", borderColor:"green", color:"green" })),
-      transition("collapsed <=> expanded", [
-        animate(500, style({ height: '250px'})),
-        animate(500)
-      ])
-    ])
-  ],
+  animations: [trigger(
+      'openClose',
+      [
+        state('collapsed, void', style({height: '0px', color: 'maroon', borderColor: 'maroon'})),
+        state('expanded', style({height: '*', borderColor: 'green', color: 'green'})),
+        transition(
+            'collapsed <=> expanded', [animate(500, style({height: '250px'})), animate(500)])
+      ])],
   template: `
     <button (click)="expand()">Open</button>
     <button (click)="collapse()">Closed</button>
@@ -37,15 +33,9 @@ import {Component, trigger, state, animate, transition, style} from '@angular/co
   `
 })
 export class MyExpandoCmp {
-  stateExpression:string;
-  constructor() {
-    this.collapse();
-  }
-  expand() {
-    this.stateExpression = 'expanded';
-  }
-  collapse() {
-    this.stateExpression = 'collapsed';
-  }
+  stateExpression: string;
+  constructor() { this.collapse(); }
+  expand() { this.stateExpression = 'expanded'; }
+  collapse() { this.stateExpression = 'collapsed'; }
 }
 // #enddocregion

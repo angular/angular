@@ -1,57 +1,6 @@
-import {
-  SimpleChange,
-  ChangeDetectorRef,
-  ChangeDetectionStrategy,
-  ElementRef,
-  ViewContainerRef,
-  Renderer,
-  RenderComponentType,
-  Injector,
-  QueryList,
-  ViewEncapsulation,
-  TemplateRef
-} from '@angular/core';
-import {
-  AppElement,
-  AppView,
-  DebugAppView,
-  ChangeDetectorState,
-  checkBinding,
-  DebugContext,
-  devModeEqual,
-  flattenNestedViewRenderNodes,
-  interpolate,
-  StaticNodeDebugInfo,
-  TemplateRef_,
-  uninitialized,
-  ValueUnwrapper,
-  ViewType,
-  ViewUtils,
-  castByValue,
-  EMPTY_ARRAY,
-  EMPTY_MAP,
-  pureProxy1,
-  pureProxy2,
-  pureProxy3,
-  pureProxy4,
-  pureProxy5,
-  pureProxy6,
-  pureProxy7,
-  pureProxy8,
-  pureProxy9,
-  pureProxy10,
-  AnimationKeyframe as AnimationKeyframe_,
-  AnimationStyles as AnimationStyles_,
-  NoOpAnimationPlayer as NoOpAnimationPlayer_,
-  AnimationGroupPlayer as AnimationGroupPlayer_,
-  AnimationSequencePlayer as AnimationSequencePlayer_,
-  balanceAnimationStyles as impBalanceAnimationStyles,
-  balanceAnimationKeyframes as impBalanceAnimationKeyframes,
-  clearStyles as impClearStyles,
-  collectAndResolveStyles as impCollectAndResolveStyles,
-  renderStyles as impRenderStyles,
-  SecurityContext
-} from '../core_private';
+import {ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, Injector, QueryList, RenderComponentType, Renderer, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+
+import {AnimationGroupPlayer as AnimationGroupPlayer_, AnimationKeyframe as AnimationKeyframe_, AnimationSequencePlayer as AnimationSequencePlayer_, AnimationStyles as AnimationStyles_, AppElement, AppView, ChangeDetectorState, DebugAppView, DebugContext, EMPTY_ARRAY, EMPTY_MAP, NoOpAnimationPlayer as NoOpAnimationPlayer_, SecurityContext, StaticNodeDebugInfo, TemplateRef_, ValueUnwrapper, ViewType, ViewUtils, balanceAnimationKeyframes as impBalanceAnimationKeyframes, balanceAnimationStyles as impBalanceAnimationStyles, castByValue, checkBinding, clearStyles as impClearStyles, collectAndResolveStyles as impCollectAndResolveStyles, devModeEqual, flattenNestedViewRenderNodes, interpolate, pureProxy1, pureProxy10, pureProxy2, pureProxy3, pureProxy4, pureProxy5, pureProxy6, pureProxy7, pureProxy8, pureProxy9, renderStyles as impRenderStyles, uninitialized} from '../core_private';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 import {assetUrl} from './util';
@@ -98,7 +47,7 @@ var impAnimationKeyframe = AnimationKeyframe_;
 var impAnimationStyles = AnimationStyles_;
 var impNoOpAnimationPlayer = NoOpAnimationPlayer_;
 
-var ANIMATION_STYLE_UTIL_ASSET_URL = assetUrl('core','animation/animation_style_util');
+var ANIMATION_STYLE_UTIL_ASSET_URL = assetUrl('core', 'animation/animation_style_util');
 
 export class Identifiers {
   static ViewUtils = new CompileIdentifierMetadata(
@@ -223,27 +172,27 @@ export class Identifiers {
   });
   static AnimationKeyframe = new CompileIdentifierMetadata({
     name: 'AnimationKeyframe',
-    moduleUrl: assetUrl('core','animation/animation_keyframe'),
+    moduleUrl: assetUrl('core', 'animation/animation_keyframe'),
     runtime: impAnimationKeyframe
   });
   static AnimationStyles = new CompileIdentifierMetadata({
     name: 'AnimationStyles',
-    moduleUrl: assetUrl('core','animation/animation_styles'),
+    moduleUrl: assetUrl('core', 'animation/animation_styles'),
     runtime: impAnimationStyles
   });
   static NoOpAnimationPlayer = new CompileIdentifierMetadata({
     name: 'NoOpAnimationPlayer',
-    moduleUrl: assetUrl('core','animation/animation_player'),
+    moduleUrl: assetUrl('core', 'animation/animation_player'),
     runtime: impNoOpAnimationPlayer
   });
   static AnimationGroupPlayer = new CompileIdentifierMetadata({
     name: 'AnimationGroupPlayer',
-    moduleUrl: assetUrl('core','animation/animation_group_player'),
+    moduleUrl: assetUrl('core', 'animation/animation_group_player'),
     runtime: impAnimationGroupPlayer
   });
   static AnimationSequencePlayer = new CompileIdentifierMetadata({
     name: 'AnimationSequencePlayer',
-    moduleUrl: assetUrl('core','animation/animation_sequence_player'),
+    moduleUrl: assetUrl('core', 'animation/animation_sequence_player'),
     runtime: impAnimationSequencePlayer
   });
   static balanceAnimationStyles = new CompileIdentifierMetadata({
@@ -256,16 +205,10 @@ export class Identifiers {
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
     runtime: impBalanceAnimationKeyframes
   });
-  static clearStyles = new CompileIdentifierMetadata({
-    name: 'clearStyles',
-    moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: impClearStyles
-  });
-  static renderStyles = new CompileIdentifierMetadata({
-    name: 'renderStyles',
-    moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: impRenderStyles
-  });
+  static clearStyles = new CompileIdentifierMetadata(
+      {name: 'clearStyles', moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL, runtime: impClearStyles});
+  static renderStyles = new CompileIdentifierMetadata(
+      {name: 'renderStyles', moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL, runtime: impRenderStyles});
   static collectAndResolveStyles = new CompileIdentifierMetadata({
     name: 'collectAndResolveStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,

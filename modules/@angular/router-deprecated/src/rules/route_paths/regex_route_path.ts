@@ -1,7 +1,9 @@
-import {RegExpWrapper, RegExpMatcherWrapper, isBlank} from '../../facade/lang';
 import {BaseException} from '@angular/core';
+
+import {RegExpMatcherWrapper, RegExpWrapper, isBlank} from '../../facade/lang';
 import {Url} from '../../url_parser';
-import {RoutePath, GeneratedUrl, MatchedUrl} from './route_path';
+
+import {GeneratedUrl, MatchedUrl, RoutePath} from './route_path';
 
 
 export interface RegexSerializer { (params: {[key: string]: any}): GeneratedUrl; }
@@ -10,7 +12,7 @@ function computeNumberOfRegexGroups(regex: string): number {
   // cleverly compute regex groups by appending an alternative empty matching
   // pattern and match against an empty string, the resulting match still
   // receives all the other groups
-  var test_regex = RegExpWrapper.create(regex + "|");
+  var test_regex = RegExpWrapper.create(regex + '|');
   var matcher = RegExpWrapper.matcher(test_regex, '');
   var match = RegExpMatcherWrapper.next(matcher);
   return match.length;
@@ -23,8 +25,9 @@ export class RegexRoutePath implements RoutePath {
 
   private _regex: RegExp;
 
-  constructor(private _reString: string, private _serializer: RegexSerializer,
-              private _groupNames?: Array<string>) {
+  constructor(
+      private _reString: string, private _serializer: RegexSerializer,
+      private _groupNames?: Array<string>) {
     this.hash = this._reString;
     this._regex = RegExpWrapper.create(this._reString);
     if (this._groupNames != null) {

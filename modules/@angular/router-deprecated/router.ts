@@ -4,11 +4,12 @@
  * Maps application URLs into application states, to support deep-linking and navigation.
  */
 
-export {Router, RootRouter} from './src/router';
-export {RouterOutlet} from './src/directives/router_outlet';
 export {RouterLink} from './src/directives/router_link';
-export {RouteParams, RouteData} from './src/instruction';
-export {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from './src/route_registry';
+export {RouterOutlet} from './src/directives/router_outlet';
+export {RouteData, RouteParams} from './src/instruction';
+export {ROUTER_PRIMARY_COMPONENT, RouteRegistry} from './src/route_registry';
+export {RootRouter, Router} from './src/router';
+
 export * from './src/route_config/route_config_decorator';
 export * from './src/route_definition';
 export {OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse} from './src/interfaces';

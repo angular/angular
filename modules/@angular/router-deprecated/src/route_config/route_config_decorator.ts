@@ -1,7 +1,9 @@
-import {RouteConfig as RouteConfigAnnotation, RouteDefinition} from './route_config_impl';
 import {makeDecorator} from '../../core_private';
 
-export {Route, Redirect, AuxRoute, AsyncRoute, RouteDefinition} from './route_config_impl';
+import {RouteConfig as RouteConfigAnnotation, RouteDefinition} from './route_config_impl';
+
+export {AsyncRoute, AuxRoute, Redirect, Route, RouteDefinition} from './route_config_impl';
+
 
 // Copied from RouteConfig in route_config_impl.
 /**

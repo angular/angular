@@ -1,14 +1,13 @@
-import {AnimationPlayer} from './animation_player';
+import {ListWrapper, Map, StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
-import {ListWrapper, StringMapWrapper, Map} from '../facade/collection';
+
+import {AnimationPlayer} from './animation_player';
 
 export class ActiveAnimationPlayersMap {
   private _map = new Map<any, {[key: string]: AnimationPlayer}>();
   private _allPlayers: AnimationPlayer[] = [];
 
-  get length(): number {
-    return this.getAllPlayers().length;
-  }
+  get length(): number { return this.getAllPlayers().length; }
 
   find(element: any, animationName: string): AnimationPlayer {
     var playersByAnimation = this._map.get(element);
@@ -19,7 +18,8 @@ export class ActiveAnimationPlayersMap {
 
   findAllPlayersByElement(element: any): AnimationPlayer[] {
     var players: any[] /** TODO #9100 */ = [];
-    StringMapWrapper.forEach(this._map.get(element), (player: any /** TODO #9100 */) => players.push(player));
+    StringMapWrapper.forEach(
+        this._map.get(element), (player: any /** TODO #9100 */) => players.push(player));
     return players;
   }
 
@@ -37,9 +37,7 @@ export class ActiveAnimationPlayersMap {
     this._map.set(element, playersByAnimation);
   }
 
-  getAllPlayers(): AnimationPlayer[] {
-    return this._allPlayers;
-  }
+  getAllPlayers(): AnimationPlayer[] { return this._allPlayers; }
 
   remove(element: any, animationName: string): void {
     var playersByAnimation = this._map.get(element);

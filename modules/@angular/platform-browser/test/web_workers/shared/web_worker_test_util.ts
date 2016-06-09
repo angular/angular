@@ -1,21 +1,16 @@
-import {StringMapWrapper, ListWrapper} from '../../../src/facade/collection';
-import {PromiseWrapper} from '../../../src/facade/async';
+import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {expect} from '@angular/core/testing';
 import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
+import {ClientMessageBroker, ClientMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
+import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-browser/src/web_workers/shared/message_bus';
+
+import {PromiseWrapper} from '../../../src/facade/async';
+import {ListWrapper, StringMapWrapper} from '../../../src/facade/collection';
+import {BaseException, WrappedException} from '../../../src/facade/exceptions';
 import {Type, isPresent} from '../../../src/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
-import {expect} from '@angular/core/testing';
-import {
-  MessageBusSink,
-  MessageBusSource,
-  MessageBus
-} from '@angular/platform-browser/src/web_workers/shared/message_bus';
-import {
-  ClientMessageBroker,
-  ClientMessageBrokerFactory_
-} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
+
 import {MockEventEmitter} from './mock_event_emitter';
-import {BaseException, WrappedException} from '../../../src/facade/exceptions';
-import {NgZone} from '@angular/core/src/zone/ng_zone';
 
 var __unused: Promise<any>;  // avoid unused import when Promise union types are erased
 
@@ -32,8 +27,9 @@ export function createPairedMessageBuses(): PairedMessageBuses {
   var uiMessageBusSink = new MockMessageBusSink(secondChannels);
   var workerMessageBusSource = new MockMessageBusSource(secondChannels);
 
-  return new PairedMessageBuses(new MockMessageBus(uiMessageBusSink, uiMessageBusSource),
-                                new MockMessageBus(workerMessageBusSink, workerMessageBusSource));
+  return new PairedMessageBuses(
+      new MockMessageBus(uiMessageBusSink, uiMessageBusSource),
+      new MockMessageBus(workerMessageBusSink, workerMessageBusSource));
 }
 
 /**
@@ -42,29 +38,29 @@ export function createPairedMessageBuses(): PairedMessageBuses {
  * If a handler is provided it will be called to handle the request.
  * Only intended to be called on a given broker instance once.
  */
-export function expectBrokerCall(broker: SpyMessageBroker, methodName: string, vals?: Array<any>,
-                                 handler?: (..._: any[]) => Promise<any>| void): void {
-  broker.spy("runOnService")
-      .andCallFake((args: UiArguments, returnType: Type) => {
-        expect(args.method).toEqual(methodName);
-        if (isPresent(vals)) {
-          expect(args.args.length).toEqual(vals.length);
-          ListWrapper.forEachWithIndex(vals, (v, i) => {expect(v).toEqual(args.args[i].value)});
-        }
-        var promise: any /** TODO #9100 */ = null;
-        if (isPresent(handler)) {
-          let givenValues = args.args.map((arg) => {arg.value});
-          if (givenValues.length > 0) {
-            promise = handler(givenValues);
-          } else {
-            promise = handler();
-          }
-        }
-        if (promise == null) {
-          promise = PromiseWrapper.wrap(() => {});
-        }
-        return promise;
-      });
+export function expectBrokerCall(
+    broker: SpyMessageBroker, methodName: string, vals?: Array<any>,
+    handler?: (..._: any[]) => Promise<any>| void): void {
+  broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type) => {
+    expect(args.method).toEqual(methodName);
+    if (isPresent(vals)) {
+      expect(args.args.length).toEqual(vals.length);
+      ListWrapper.forEachWithIndex(vals, (v, i) => {expect(v).toEqual(args.args[i].value)});
+    }
+    var promise: any /** TODO #9100 */ = null;
+    if (isPresent(handler)) {
+      let givenValues = args.args.map((arg) => {arg.value});
+      if (givenValues.length > 0) {
+        promise = handler(givenValues);
+      } else {
+        promise = handler();
+      }
+    }
+    if (promise == null) {
+      promise = PromiseWrapper.wrap(() => {});
+    }
+    return promise;
+  });
 }
 
 export class PairedMessageBuses {

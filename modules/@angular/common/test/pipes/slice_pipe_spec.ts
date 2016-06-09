@@ -1,14 +1,4 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  inject,
-} from '@angular/core/testing/testing_internal';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
@@ -18,7 +8,7 @@ import {Component} from '@angular/core';
 import {SlicePipe} from '@angular/common';
 
 export function main() {
-  describe("SlicePipe", () => {
+  describe('SlicePipe', () => {
     var list: number[];
     var str: any /** TODO #9100 */;
     var pipe: any /** TODO #9100 */;
@@ -29,20 +19,21 @@ export function main() {
       pipe = new SlicePipe();
     });
 
-    describe("supports", () => {
-      it("should support strings", () => { expect(pipe.supports(str)).toBe(true); });
-      it("should support lists", () => { expect(pipe.supports(list)).toBe(true); });
+    describe('supports', () => {
+      it('should support strings', () => { expect(pipe.supports(str)).toBe(true); });
+      it('should support lists', () => { expect(pipe.supports(list)).toBe(true); });
 
-      it("should not support other objects", () => {
+      it('should not support other objects', () => {
         expect(pipe.supports(new Object())).toBe(false);
         expect(pipe.supports(null)).toBe(false);
       });
     });
 
-    describe("transform", () => {
+    describe('transform', () => {
 
-      it('should return null if the value is null',
-         () => { expect(pipe.transform(null, [4, 2])).toBe(null); });
+      it('should return null if the value is null', () => {
+        expect(pipe.transform(null, [4, 2])).toBe(null);
+      });
 
       it('should return all items after START index when START is positive and END is omitted',
          () => {
@@ -95,20 +86,22 @@ export function main() {
 
     describe('integration', () => {
       it('should work with mutable arrays',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-           tcb.createAsync(TestComp).then((fixture) => {
-             let mutable: number[] = [1, 2];
-             fixture.debugElement.componentInstance.data = mutable;
-             fixture.detectChanges();
-             expect(fixture.debugElement.nativeElement).toHaveText('2');
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               tcb.createAsync(TestComp).then((fixture) => {
+                 let mutable: number[] = [1, 2];
+                 fixture.debugElement.componentInstance.data = mutable;
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('2');
 
-             mutable.push(3);
-             fixture.detectChanges();
-             expect(fixture.debugElement.nativeElement).toHaveText('2,3');
+                 mutable.push(3);
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('2,3');
 
-             async.done();
-           });
-         }));
+                 async.done();
+               });
+             }));
     });
   });
 }

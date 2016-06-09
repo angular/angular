@@ -16,5 +16,5 @@ export class Log {
 
   clear(): void { this.logItems = []; }
 
-  result(): string { return this.logItems.join("; "); }
+  result(): string { return this.logItems.join('; '); }
 }

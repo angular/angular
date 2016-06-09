@@ -1,47 +1,17 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  inject,
-} from '@angular/core/testing/testing_internal';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {Type} from '@angular/core';
 import {SpyChangeDetectorRef} from './spies';
-import {
-  ApplicationRef_,
-  ApplicationRef,
-  PLATFORM_CORE_PROVIDERS,
-  APPLICATION_CORE_PROVIDERS
-} from '@angular/core/src/application_ref';
-import {
-  Injector,
-  APP_INITIALIZER,
-  Component,
-  ReflectiveInjector,
-  coreLoadAndBootstrap,
-  PlatformRef,
-  createPlatform,
-  disposePlatform,
-  ComponentResolver,
-  ChangeDetectorRef
-} from '@angular/core';
+import {ApplicationRef_, ApplicationRef, PLATFORM_CORE_PROVIDERS, APPLICATION_CORE_PROVIDERS} from '@angular/core/src/application_ref';
+import {Injector, APP_INITIALIZER, Component, ReflectiveInjector, coreLoadAndBootstrap, PlatformRef, createPlatform, disposePlatform, ComponentResolver, ChangeDetectorRef} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {BaseException} from '../src/facade/exceptions';
 import {PromiseWrapper, PromiseCompleter, TimerWrapper} from '../src/facade/async';
-import {
-  ComponentFactory,
-  ComponentRef_,
-  ComponentRef
-} from '@angular/core/src/linker/component_factory';
+import {ComponentFactory, ComponentRef_, ComponentRef} from '@angular/core/src/linker/component_factory';
 import {ExceptionHandler} from '../src/facade/exception_handler';
 
 export function main() {
-  describe("bootstrap", () => {
+  describe('bootstrap', () => {
     var platform: PlatformRef;
     var errorLogger: _ArrayLogger;
     var someCompFactory: ComponentFactory<any>;
@@ -59,8 +29,7 @@ export function main() {
     function createApplication(providers: any[]): ApplicationRef_ {
       var appInjector = ReflectiveInjector.resolveAndCreate(
           [
-            APPLICATION_CORE_PROVIDERS,
-            {provide: Console, useValue: new _MockConsole()},
+            APPLICATION_CORE_PROVIDERS, {provide: Console, useValue: new _MockConsole()},
             {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
             {provide: ComponentResolver, useValue: new _MockComponentResolver(someCompFactory)},
             providers
@@ -69,14 +38,14 @@ export function main() {
       return appInjector.get(ApplicationRef);
     }
 
-    describe("ApplicationRef", () => {
-      it("should throw when reentering tick", () => {
+    describe('ApplicationRef', () => {
+      it('should throw when reentering tick', () => {
         var cdRef = <any>new SpyChangeDetectorRef();
         var ref = createApplication([]);
         try {
           ref.registerChangeDetector(cdRef);
-          cdRef.spy("detectChanges").andCallFake(() => ref.tick());
-          expect(() => ref.tick()).toThrowError("ApplicationRef.tick is called recursively");
+          cdRef.spy('detectChanges').andCallFake(() => ref.tick());
+          expect(() => ref.tick()).toThrowError('ApplicationRef.tick is called recursively');
         } finally {
           ref.unregisterChangeDetector(cdRef);
         }
@@ -89,19 +58,20 @@ export function main() {
         });
 
         it('should return a promise with rejected errors even if the exceptionHandler is not rethrowing',
-           inject([AsyncTestCompleter, Injector], (async: AsyncTestCompleter, injector: Injector) => {
-             var ref = createApplication([]);
-             var promise = ref.run(() => PromiseWrapper.reject('Test', null));
-             PromiseWrapper.catchError(promise, (e) => {
-               expect(e).toEqual('Test');
-               async.done();
-             });
-           }));
+           inject(
+               [AsyncTestCompleter, Injector], (async: AsyncTestCompleter, injector: Injector) => {
+                 var ref = createApplication([]);
+                 var promise = ref.run(() => PromiseWrapper.reject('Test', null));
+                 PromiseWrapper.catchError(promise, (e) => {
+                   expect(e).toEqual('Test');
+                   async.done();
+                 });
+               }));
       });
     });
 
-    describe("coreLoadAndBootstrap", () => {
-      it("should wait for asynchronous app initializers",
+    describe('coreLoadAndBootstrap', () => {
+      it('should wait for asynchronous app initializers',
          inject([AsyncTestCompleter, Injector], (async: AsyncTestCompleter, injector: Injector) => {
            let completer: PromiseCompleter<any> = PromiseWrapper.completer();
            var initializerDone = false;
@@ -111,23 +81,24 @@ export function main() {
            }, 1);
            var app = createApplication(
                [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]);
-           coreLoadAndBootstrap(MyComp6, app.injector)
-               .then(_ => {
-                 expect(initializerDone).toBe(true);
-                 async.done();
-               });
+           coreLoadAndBootstrap(MyComp6, app.injector).then(_ => {
+             expect(initializerDone).toBe(true);
+             async.done();
+           });
          }));
     });
 
-    describe("coreBootstrap", () => {
-      it("should throw if an APP_INITIIALIZER is not yet resolved",
+    describe('coreBootstrap', () => {
+      it('should throw if an APP_INITIIALIZER is not yet resolved',
          inject([Injector], (injector: Injector) => {
-           var app = createApplication([
-             {provide: APP_INITIALIZER, useValue: () => PromiseWrapper.completer().promise, multi: true}
-           ]);
+           var app = createApplication([{
+             provide: APP_INITIALIZER,
+             useValue: () => PromiseWrapper.completer().promise,
+             multi: true
+           }]);
            expect(() => app.bootstrap(someCompFactory))
                .toThrowError(
-                   "Cannot bootstrap as there are still asynchronous initializers running. Wait for them using waitForAsyncInitializers().");
+                   'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using waitForAsyncInitializers().');
          }));
     });
   });
@@ -147,8 +118,9 @@ class _ArrayLogger {
 
 class _MockComponentFactory extends ComponentFactory<any> {
   constructor(private _compRef: ComponentRef<any>) { super(null, null, null); }
-  create(injector: Injector, projectableNodes: any[][] = null,
-         rootSelectorOrNode: string | any = null): ComponentRef<any> {
+  create(
+      injector: Injector, projectableNodes: any[][] = null,
+      rootSelectorOrNode: string|any = null): ComponentRef<any> {
     return this._compRef;
   }
 }

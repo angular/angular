@@ -1,5 +1,6 @@
-import {isPresent, isBlank, isString, StringWrapper} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';
+import {StringWrapper, isBlank, isPresent, isString} from '../facade/lang';
+
 import * as o from './output_ast';
 
 var _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
@@ -73,13 +74,14 @@ export class EmitterVisitorContext {
     if (lines[lines.length - 1].parts.length === 0) {
       lines = lines.slice(0, lines.length - 1);
     }
-    return lines.map((line) => {
-                  if (line.parts.length > 0) {
-                    return _createIndent(line.indent) + line.parts.join('');
-                  } else {
-                    return '';
-                  }
-                })
+    return lines
+        .map((line) => {
+          if (line.parts.length > 0) {
+            return _createIndent(line.indent) + line.parts.join('');
+          } else {
+            return '';
+          }
+        })
         .join('\n');
   }
 }
@@ -367,14 +369,17 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
 
-  visitAllExpressions(expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string,
-                      newLine: boolean = false): void {
-    this.visitAllObjects((expr: any /** TODO #9100 */) => expr.visitExpression(this, ctx), expressions, ctx, separator,
-                         newLine);
+  visitAllExpressions(
+      expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string,
+      newLine: boolean = false): void {
+    this.visitAllObjects(
+        (expr: any /** TODO #9100 */) => expr.visitExpression(this, ctx), expressions, ctx,
+        separator, newLine);
   }
 
-  visitAllObjects(handler: Function, expressions: any, ctx: EmitterVisitorContext,
-                  separator: string, newLine: boolean = false): void {
+  visitAllObjects(
+      handler: Function, expressions: any, ctx: EmitterVisitorContext, separator: string,
+      newLine: boolean = false): void {
     for (var i = 0; i < expressions.length; i++) {
       if (i > 0) {
         ctx.print(separator, newLine);
@@ -395,17 +400,18 @@ export function escapeSingleQuoteString(input: string, escapeDollar: boolean): a
   if (isBlank(input)) {
     return null;
   }
-  var body = StringWrapper.replaceAllMapped(input, _SINGLE_QUOTE_ESCAPE_STRING_RE, (match: any /** TODO #9100 */) => {
-    if (match[0] == '$') {
-      return escapeDollar ? '\\$' : '$';
-    } else if (match[0] == '\n') {
-      return '\\n';
-    } else if (match[0] == '\r') {
-      return '\\r';
-    } else {
-      return `\\${match[0]}`;
-    }
-  });
+  var body = StringWrapper.replaceAllMapped(
+      input, _SINGLE_QUOTE_ESCAPE_STRING_RE, (match: any /** TODO #9100 */) => {
+        if (match[0] == '$') {
+          return escapeDollar ? '\\$' : '$';
+        } else if (match[0] == '\n') {
+          return '\\n';
+        } else if (match[0] == '\r') {
+          return '\\r';
+        } else {
+          return `\\${match[0]}`;
+        }
+      });
   return `'${body}'`;
 }
 

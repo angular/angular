@@ -1,52 +1,31 @@
-import {
-  Inject,
-  Injectable,
-  OpaqueToken,
-  Renderer,
-  RootRenderer,
-  RenderComponentType,
-  ViewEncapsulation
-} from '@angular/core';
-import {
-  isPresent,
-  isBlank,
-  Json,
-  RegExpWrapper,
-  stringify,
-  StringWrapper,
-  isArray,
-  isString
-} from '../facade/lang';
+import {Inject, Injectable, OpaqueToken, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {StringMapWrapper} from '../facade/collection';
-
 import {BaseException} from '../facade/exceptions';
+import {Json, RegExpWrapper, StringWrapper, isArray, isBlank, isPresent, isString, stringify} from '../facade/lang';
+
 import {DomSharedStylesHost} from './shared_styles_host';
 
-import {
-  AnimationKeyframe,
-  AnimationStyles,
-  AnimationPlayer,
-  AnimationDriver,
-  RenderDebugInfo,
-} from '../../core_private';
+import {AnimationKeyframe, AnimationStyles, AnimationPlayer, AnimationDriver, RenderDebugInfo,} from '../../core_private';
 
 import {EventManager} from './events/event_manager';
 import {DOCUMENT} from './dom_tokens';
 import {getDOM} from './dom_adapter';
 import {camelCaseToDashCase} from './util';
 
-const NAMESPACE_URIS =
-    {'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'};
+const NAMESPACE_URIS = {
+  'xlink': 'http://www.w3.org/1999/xlink',
+  'svg': 'http://www.w3.org/2000/svg'
+};
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 
 export abstract class DomRootRenderer implements RootRenderer {
   protected registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();
 
-  constructor(public document: any, public eventManager: EventManager,
-              public sharedStylesHost: DomSharedStylesHost,
-              public animationDriver: AnimationDriver) {}
+  constructor(
+      public document: any, public eventManager: EventManager,
+      public sharedStylesHost: DomSharedStylesHost, public animationDriver: AnimationDriver) {}
 
   renderComponent(componentProto: RenderComponentType): Renderer {
     var renderer = this.registeredComponents.get(componentProto.id);
@@ -60,9 +39,9 @@ export abstract class DomRootRenderer implements RootRenderer {
 
 @Injectable()
 export class DomRootRenderer_ extends DomRootRenderer {
-  constructor(@Inject(DOCUMENT) _document: any, _eventManager: EventManager,
-              sharedStylesHost: DomSharedStylesHost,
-              animationDriver: AnimationDriver) {
+  constructor(
+      @Inject(DOCUMENT) _document: any, _eventManager: EventManager,
+      sharedStylesHost: DomSharedStylesHost, animationDriver: AnimationDriver) {
     super(_document, _eventManager, sharedStylesHost, animationDriver);
   }
 }
@@ -72,8 +51,9 @@ export class DomRenderer implements Renderer {
   private _hostAttr: string;
   private _styles: string[];
 
-  constructor(private _rootRenderer: DomRootRenderer, private componentProto: RenderComponentType,
-              private _animationDriver: AnimationDriver) {
+  constructor(
+      private _rootRenderer: DomRootRenderer, private componentProto: RenderComponentType,
+      private _animationDriver: AnimationDriver) {
     this._styles = _flattenStyles(componentProto.id, componentProto.styles, []);
     if (componentProto.encapsulation !== ViewEncapsulation.Native) {
       this._rootRenderer.sharedStylesHost.addStyles(this._styles);
@@ -87,7 +67,7 @@ export class DomRenderer implements Renderer {
     }
   }
 
-  selectRootElement(selectorOrNode: string | any, debugInfo: RenderDebugInfo): Element {
+  selectRootElement(selectorOrNode: string|any, debugInfo: RenderDebugInfo): Element {
     var el: any /** TODO #9100 */;
     if (isString(selectorOrNode)) {
       el = getDOM().querySelector(this._rootRenderer.document, selectorOrNode);
@@ -104,8 +84,9 @@ export class DomRenderer implements Renderer {
   createElement(parent: Element, name: string, debugInfo: RenderDebugInfo): Node {
     var nsAndName = splitNamespace(name);
     var el = isPresent(nsAndName[0]) ?
-                 getDOM().createElementNS((NAMESPACE_URIS as any /** TODO #9100 */)[nsAndName[0]], nsAndName[1]) :
-                 getDOM().createElement(nsAndName[1]);
+        getDOM().createElementNS(
+            (NAMESPACE_URIS as any /** TODO #9100 */)[nsAndName[0]], nsAndName[1]) :
+        getDOM().createElement(nsAndName[1]);
     if (isPresent(this._contentAttr)) {
       getDOM().setAttribute(el, this._contentAttr, '');
     }
@@ -153,9 +134,7 @@ export class DomRenderer implements Renderer {
     appendNodes(parentElement, nodes);
   }
 
-  attachViewAfter(node: any, viewRootNodes: any[]) {
-    moveNodesAfterSibling(node, viewRootNodes);
-  }
+  attachViewAfter(node: any, viewRootNodes: any[]) { moveNodesAfterSibling(node, viewRootNodes); }
 
   detachView(viewRootNodes: any[]) {
     for (var i = 0; i < viewRootNodes.length; i++) {
@@ -170,13 +149,13 @@ export class DomRenderer implements Renderer {
   }
 
   listen(renderElement: any, name: string, callback: Function): Function {
-    return this._rootRenderer.eventManager.addEventListener(renderElement, name,
-                                                            decoratePreventDefault(callback));
+    return this._rootRenderer.eventManager.addEventListener(
+        renderElement, name, decoratePreventDefault(callback));
   }
 
   listenGlobal(target: string, name: string, callback: Function): Function {
-    return this._rootRenderer.eventManager.addGlobalEventListener(target, name,
-                                                                  decoratePreventDefault(callback));
+    return this._rootRenderer.eventManager.addGlobalEventListener(
+        target, name, decoratePreventDefault(callback));
   }
 
   setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void {
@@ -213,8 +192,9 @@ export class DomRenderer implements Renderer {
           StringWrapper.replaceAll(getDOM().getText(renderElement), /\n/g, ''));
       var parsedBindings = Json.parse(existingBindings[1]);
       (parsedBindings as any /** TODO #9100 */)[dashCasedPropertyName] = propertyValue;
-      getDOM().setText(renderElement, StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}',
-                                                            Json.stringify(parsedBindings)));
+      getDOM().setText(
+          renderElement,
+          StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}', Json.stringify(parsedBindings)));
     } else {
       this.setElementAttribute(renderElement, propertyName, propertyValue);
     }
@@ -242,11 +222,11 @@ export class DomRenderer implements Renderer {
 
   setText(renderNode: any, text: string): void { getDOM().setText(renderNode, text); }
 
-  animate(element: any,
-          startingStyles: AnimationStyles,
-          keyframes: AnimationKeyframe[], duration: number, delay: number,
-          easing: string): AnimationPlayer {
-    return this._animationDriver.animate(element, startingStyles, keyframes, duration, delay, easing);
+  animate(
+      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
+      duration: number, delay: number, easing: string): AnimationPlayer {
+    return this._animationDriver.animate(
+        element, startingStyles, keyframes, duration, delay, easing);
   }
 }
 
@@ -295,7 +275,7 @@ function _shimHostAttribute(componentShortId: string): string {
   return StringWrapper.replaceAll(HOST_ATTR, COMPONENT_REGEX, componentShortId);
 }
 
-function _flattenStyles(compId: string, styles: Array<any | any[]>, target: string[]): string[] {
+function _flattenStyles(compId: string, styles: Array<any|any[]>, target: string[]): string[] {
   for (var i = 0; i < styles.length; i++) {
     var style = styles[i];
     if (isArray(style)) {

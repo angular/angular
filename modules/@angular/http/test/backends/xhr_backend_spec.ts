@@ -1,15 +1,4 @@
-import {
-  afterEach,
-  beforeEach,
-  beforeEachProviders,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
 import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {XSRFStrategy} from '../../src/interfaces';
@@ -94,11 +83,9 @@ export function main() {
 
     beforeEachProviders(
         () =>
-            [
-              {provide: ResponseOptions, useClass: BaseResponseOptions},
-              {provide: BrowserXhr, useClass: MockBrowserXHR},
-              XHRBackend,
-              {provide: XSRFStrategy, useValue: new CookieXSRFStrategy()},
+            [{provide: ResponseOptions, useClass: BaseResponseOptions},
+             {provide: BrowserXhr, useClass: MockBrowserXHR}, XHRBackend,
+             {provide: XSRFStrategy, useValue: new CookieXSRFStrategy()},
     ]);
 
     beforeEach(inject([XHRBackend], (be: XHRBackend) => {
@@ -136,8 +123,10 @@ export function main() {
         });
 
         describe('configuration', () => {
-          beforeEachProviders(
-              () => [{provide: XSRFStrategy, useValue: new CookieXSRFStrategy('my cookie', 'X-MY-HEADER')}]);
+          beforeEachProviders(() => [{
+                                provide: XSRFStrategy,
+                                useValue: new CookieXSRFStrategy('my cookie', 'X-MY-HEADER')
+                              }]);
 
           it('uses the configured names', () => {
             getDOM().setCookie('my cookie', 'XSRF value');
@@ -151,8 +140,9 @@ export function main() {
     describe('XHRConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({type: ResponseType.Error}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(),
+               new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe((res: Response) => {
              expect(res.type).toBe(ResponseType.Error);
              async.done();
@@ -162,11 +152,12 @@ export function main() {
          }));
 
       it('should complete a request', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({type: ResponseType.Error}));
-           connection.response.subscribe((res: Response) => {
-             expect(res.type).toBe(ResponseType.Error);
-           }, null, () => { async.done(); });
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(),
+               new ResponseOptions({type: ResponseType.Error}));
+           connection.response.subscribe(
+               (res: Response) => { expect(res.type).toBe(ResponseType.Error); }, null,
+               () => { async.done(); });
            existingXHRs[0].setStatusCode(200);
            existingXHRs[0].dispatchEvent('load');
          }));
@@ -180,8 +171,9 @@ export function main() {
 
       it('should create an error Response on error',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({type: ResponseType.Error}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(),
+               new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(null, (res: Response) => {
              expect(res.type).toBe(ResponseType.Error);
              async.done();
@@ -260,8 +252,8 @@ export function main() {
         connection.response.subscribe();
         expect(sendSpy).toHaveBeenCalledWith('test1=val1&test2=val2');
         expect(setRequestHeaderSpy)
-            .toHaveBeenCalledWith('Content-Type',
-                                  'application/x-www-form-urlencoded;charset=UTF-8');
+            .toHaveBeenCalledWith(
+                'Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
       });
 
       if ((global as any /** TODO #9100 */)['Blob']) {
@@ -270,7 +262,7 @@ export function main() {
           body.append('test1', 'val1');
           body.append('test2', 123456);
           var blob = new Blob(['body { color: red; }'], {type: 'text/css'});
-          body.append("userfile", blob);
+          body.append('userfile', blob);
           var base = new BaseRequestOptions();
           var connection = new XHRConnection(
               new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
@@ -299,17 +291,18 @@ export function main() {
           expect(setRequestHeaderSpy).not.toHaveBeenCalledWith();
         });
 
-        it('should use blob body without type with custom content type header to the request', () => {
-          var headers = new Headers({'Content-Type': 'text/css'});
-          var body = new Blob(['body { color: red; }']);
-          var base = new BaseRequestOptions();
-          var connection = new XHRConnection(
-              new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
-              new MockBrowserXHR());
-          connection.response.subscribe();
-          expect(sendSpy).toHaveBeenCalledWith(body);
-          expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
-        });
+        it('should use blob body without type with custom content type header to the request',
+           () => {
+             var headers = new Headers({'Content-Type': 'text/css'});
+             var body = new Blob(['body { color: red; }']);
+             var base = new BaseRequestOptions();
+             var connection = new XHRConnection(
+                 new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
+                 new MockBrowserXHR());
+             connection.response.subscribe();
+             expect(sendSpy).toHaveBeenCalledWith(body);
+             expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
+           });
 
         it('should use array buffer body to the request', () => {
           var body = new ArrayBuffer(512);
@@ -319,35 +312,35 @@ export function main() {
           }
           var base = new BaseRequestOptions();
           var connection = new XHRConnection(
-            new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
+              new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
           connection.response.subscribe();
           expect(sendSpy).toHaveBeenCalledWith(body);
           expect(setRequestHeaderSpy).not.toHaveBeenCalledWith();
         });
 
         it('should use array buffer body without type with custom content type header to the request',
-          () => {
-            var headers = new Headers({'Content-Type': 'text/css'});
-            var body = new ArrayBuffer(512);
-            var longInt8View = new Uint8Array(body);
-            for (var i = 0; i < longInt8View.length; i++) {
-              longInt8View[i] = i % 255;
-            }
-            var base = new BaseRequestOptions();
-            var connection = new XHRConnection(
-              new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
-              new MockBrowserXHR());
-            connection.response.subscribe();
-            expect(sendSpy).toHaveBeenCalledWith(body);
-            expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
-          });
+           () => {
+             var headers = new Headers({'Content-Type': 'text/css'});
+             var body = new ArrayBuffer(512);
+             var longInt8View = new Uint8Array(body);
+             for (var i = 0; i < longInt8View.length; i++) {
+               longInt8View[i] = i % 255;
+             }
+             var base = new BaseRequestOptions();
+             var connection = new XHRConnection(
+                 new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
+                 new MockBrowserXHR());
+             connection.response.subscribe();
+             expect(sendSpy).toHaveBeenCalledWith(body);
+             expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
+           });
       }
 
       it('should return the correct status code',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 418;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe(
                (res: Response) => {
@@ -367,15 +360,16 @@ export function main() {
            var nextCalled = false;
            var errorCalled = false;
            var statusCode = 200;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe(
                (res: Response) => {
                  nextCalled = true;
                  expect(res.status).toBe(statusCode);
                },
-               errRes => { errorCalled = true; }, () => {
+               errRes => { errorCalled = true; },
+               () => {
                  expect(nextCalled).toBe(true);
                  expect(errorCalled).toBe(false);
                  async.done();
@@ -385,47 +379,54 @@ export function main() {
            existingXHRs[0].dispatchEvent('load');
          }));
 
-      it('should set ok to true on 200 return', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-        var statusCode = 200;
-        var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-          new ResponseOptions({status: statusCode}));
+      it('should set ok to true on 200 return',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var statusCode = 200;
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
-        connection.response.subscribe(res => {
-          expect(res.ok).toBe(true);
-          async.done();
-        });
+           connection.response.subscribe(res => {
+             expect(res.ok).toBe(true);
+             async.done();
+           });
 
-        existingXHRs[0].setStatusCode(statusCode);
-        existingXHRs[0].dispatchEvent('load');
-      }));
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
 
-      it('should set ok to false on 300 return', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-        var statusCode = 300;
-        var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-          new ResponseOptions({status: statusCode}));
+      it('should set ok to false on 300 return',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var statusCode = 300;
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
-        connection.response.subscribe(res => { throw 'should not be called'; }, errRes => {
-          expect(errRes.ok).toBe(false);
-          async.done();
-        });
+           connection.response.subscribe(
+               res => { throw 'should not be called'; },
+               errRes => {
+                 expect(errRes.ok).toBe(false);
+                 async.done();
+               });
 
-        existingXHRs[0].setStatusCode(statusCode);
-        existingXHRs[0].dispatchEvent('load');
-      }));
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
 
       it('should call error and not complete on 300+ codes',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var nextCalled = false;
            var errorCalled = false;
            var statusCode = 301;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
-           connection.response.subscribe((res: Response) => { nextCalled = true; }, errRes => {
-             expect(errRes.status).toBe(statusCode);
-             expect(nextCalled).toBe(false);
-             async.done();
-           }, () => { throw 'should not be called'; });
+           connection.response.subscribe(
+               (res: Response) => { nextCalled = true; },
+               errRes => {
+                 expect(errRes.status).toBe(statusCode);
+                 expect(nextCalled).toBe(false);
+                 async.done();
+               },
+               () => { throw 'should not be called'; });
 
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
@@ -434,8 +435,8 @@ export function main() {
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 1223;
            var normalizedCode = 204;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe((res: Response) => {
              expect(res.status).toBe(normalizedCode);
@@ -494,9 +495,9 @@ export function main() {
            existingXHRs[0].dispatchEvent('load');
          }));
 
-      it('should strip XSSI prefix from errors', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var conn =
-               new XHRConnection(sampleRequest, new MockBrowserXHR(), new ResponseOptions());
+      it('should strip XSSI prefix from errors',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var conn = new XHRConnection(sampleRequest, new MockBrowserXHR(), new ResponseOptions());
            conn.response.subscribe(null, (res: Response) => {
              expect(res.text()).toBe('{json: "object"}');
              async.done();
@@ -509,22 +510,21 @@ export function main() {
       it('should parse response headers and add them to the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 200;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
-           let responseHeaderString =
-               `Date: Fri, 20 Nov 2015 01:45:26 GMT
+           let responseHeaderString = `Date: Fri, 20 Nov 2015 01:45:26 GMT
                Content-Type: application/json; charset=utf-8
                Transfer-Encoding: chunked
                Connection: keep-alive`
 
-               connection.response.subscribe((res: Response) => {
-                 expect(res.headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
-                 expect(res.headers.get('Content-Type')).toEqual('application/json; charset=utf-8');
-                 expect(res.headers.get('Transfer-Encoding')).toEqual('chunked');
-                 expect(res.headers.get('Connection')).toEqual('keep-alive');
-                 async.done();
-               });
+           connection.response.subscribe((res: Response) => {
+             expect(res.headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
+             expect(res.headers.get('Content-Type')).toEqual('application/json; charset=utf-8');
+             expect(res.headers.get('Transfer-Encoding')).toEqual('chunked');
+             expect(res.headers.get('Connection')).toEqual('keep-alive');
+             async.done();
+           });
 
            existingXHRs[0].setResponseHeaders(responseHeaderString);
            existingXHRs[0].setStatusCode(statusCode);
@@ -534,8 +534,8 @@ export function main() {
       it('should add the responseURL to the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 200;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe((res: Response) => {
              expect(res.url).toEqual('http://google.com');
@@ -550,15 +550,15 @@ export function main() {
       it('should add use the X-Request-URL in CORS situations',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var statusCode = 200;
-           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
-                                              new ResponseOptions({status: statusCode}));
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
            var responseHeaders = `X-Request-URL: http://somedomain.com
            Foo: Bar`
 
-                                 connection.response.subscribe((res: Response) => {
-                                   expect(res.url).toEqual('http://somedomain.com');
-                                   async.done();
-                                 });
+           connection.response.subscribe((res: Response) => {
+             expect(res.url).toEqual('http://somedomain.com');
+             async.done();
+           });
 
            existingXHRs[0].setResponseHeaders(responseHeaders);
            existingXHRs[0].setStatusCode(statusCode);
@@ -603,11 +603,11 @@ export function main() {
            var responseHeaders = `X-Request-URL: http://somedomain.com
            Foo: Bar`
 
-                                 connection.response.subscribe((res: Response) => {
-                                   expect(res.url).toEqual('http://somedomain.com');
-                                   expect(existingXHRs[0].withCredentials).toBeTruthy();
-                                   async.done();
-                                 });
+           connection.response.subscribe((res: Response) => {
+             expect(res.url).toEqual('http://somedomain.com');
+             expect(existingXHRs[0].withCredentials).toBeTruthy();
+             async.done();
+           });
 
            existingXHRs[0].setResponseHeaders(responseHeaders);
            existingXHRs[0].setStatusCode(statusCode);

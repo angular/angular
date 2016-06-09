@@ -1,13 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 
 import {Component, Directive} from '@angular/core';
 import {reflector} from '@angular/core/src/reflection/reflection';

@@ -1,10 +1,11 @@
-import {isPresent} from '../src/facade/lang';
 import {SecurityContext} from '../core_private';
 import {ElementSchemaRegistry} from '../index';
+import {isPresent} from '../src/facade/lang';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {
-  constructor(public existingProperties: {[key: string]: boolean},
-              public attrPropMapping: {[key: string]: string}) {}
+  constructor(
+      public existingProperties: {[key: string]: boolean},
+      public attrPropMapping: {[key: string]: string}) {}
 
   hasProperty(tagName: string, property: string): boolean {
     var result = this.existingProperties[property];

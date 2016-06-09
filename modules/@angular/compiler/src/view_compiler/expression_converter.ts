@@ -1,9 +1,8 @@
-import {BaseException} from '../facade/exceptions';
-import {isBlank, isPresent, isArray} from '../facade/lang';
-
 import * as cdAst from '../expression_parser/ast';
-import * as o from '../output/output_ast';
+import {BaseException} from '../facade/exceptions';
+import {isArray, isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
+import * as o from '../output/output_ast';
 
 var IMPLICIT_RECEIVER = o.variable('#implicit');
 
@@ -11,7 +10,7 @@ export interface NameResolver {
   callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression;
   getLocal(name: string): o.Expression;
   createLiteralArray(values: o.Expression[]): o.Expression;
-  createLiteralMap(values: Array<Array<string | o.Expression>>): o.Expression;
+  createLiteralMap(values: Array<Array<string|o.Expression>>): o.Expression;
 }
 
 export class ExpressionWithWrappedValueInfo {
@@ -26,8 +25,8 @@ export function convertCdExpressionToIr(
   return new ExpressionWithWrappedValueInfo(irAst, visitor.needsValueUnwrapper);
 }
 
-export function convertCdStatementToIr(nameResolver: NameResolver, implicitReceiver: o.Expression,
-                                       stmt: cdAst.AST): o.Statement[] {
+export function convertCdStatementToIr(
+    nameResolver: NameResolver, implicitReceiver: o.Expression, stmt: cdAst.AST): o.Statement[] {
   var visitor = new _AstToIrVisitor(nameResolver, implicitReceiver, null);
   var statements: any[] /** TODO #9100 */ = [];
   flattenStatements(stmt.visit(visitor, _Mode.Statement), statements);
@@ -51,7 +50,7 @@ function ensureExpressionMode(mode: _Mode, ast: cdAst.AST) {
   }
 }
 
-function convertToStatementIfNeeded(mode: _Mode, expr: o.Expression): o.Expression | o.Statement {
+function convertToStatementIfNeeded(mode: _Mode, expr: o.Expression): o.Expression|o.Statement {
   if (mode === _Mode.Statement) {
     return expr.toStmt();
   } else {
@@ -62,8 +61,9 @@ function convertToStatementIfNeeded(mode: _Mode, expr: o.Expression): o.Expressi
 class _AstToIrVisitor implements cdAst.AstVisitor {
   public needsValueUnwrapper: boolean = false;
 
-  constructor(private _nameResolver: NameResolver, private _implicitReceiver: o.Expression,
-              private _valueUnwrapper: o.ReadVarExpr) {}
+  constructor(
+      private _nameResolver: NameResolver, private _implicitReceiver: o.Expression,
+      private _valueUnwrapper: o.ReadVarExpr) {}
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
     var op: any /** TODO #9100 */;
@@ -118,8 +118,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
 
     return convertToStatementIfNeeded(
-        mode, new o.BinaryOperatorExpr(op, ast.left.visit(this, _Mode.Expression),
-                                       ast.right.visit(this, _Mode.Expression)));
+        mode,
+        new o.BinaryOperatorExpr(
+            op, ast.left.visit(this, _Mode.Expression), ast.right.visit(this, _Mode.Expression)));
   }
   visitChain(ast: cdAst.Chain, mode: _Mode): any {
     ensureStatementMode(mode, ast);
@@ -128,8 +129,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   visitConditional(ast: cdAst.Conditional, mode: _Mode): any {
     var value: o.Expression = ast.condition.visit(this, _Mode.Expression);
     return convertToStatementIfNeeded(
-        mode, value.conditional(ast.trueExp.visit(this, _Mode.Expression),
-                                ast.falseExp.visit(this, _Mode.Expression)));
+        mode,
+        value.conditional(
+            ast.trueExp.visit(this, _Mode.Expression), ast.falseExp.visit(this, _Mode.Expression)));
   }
   visitPipe(ast: cdAst.BindingPipe, mode: _Mode): any {
     var input = ast.exp.visit(this, _Mode.Expression);
@@ -139,8 +141,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(mode, this._valueUnwrapper.callMethod('unwrap', [value]));
   }
   visitFunctionCall(ast: cdAst.FunctionCall, mode: _Mode): any {
-    return convertToStatementIfNeeded(mode, ast.target.visit(this, _Mode.Expression)
-                                                .callFn(this.visitAll(ast.args, _Mode.Expression)));
+    return convertToStatementIfNeeded(
+        mode,
+        ast.target.visit(this, _Mode.Expression).callFn(this.visitAll(ast.args, _Mode.Expression)));
   }
   visitImplicitReceiver(ast: cdAst.ImplicitReceiver, mode: _Mode): any {
     ensureExpressionMode(mode, ast);

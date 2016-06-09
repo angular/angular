@@ -1,7 +1,8 @@
-import {getDOM, DomAdapter} from '../dom/dom_adapter';
+import {DomAdapter, getDOM} from '../dom/dom_adapter';
 import {assertionsEnabled} from '../facade/lang';
 
 import {sanitizeUrl} from './url_sanitizer';
+
 
 /** A <body> element that can be safely used to parse untrusted HTML. Lazily initialized below. */
 let inertElement: HTMLElement = null;
@@ -36,7 +37,7 @@ function tagSet(tags: string): {[k: string]: boolean} {
   return res;
 }
 
-function merge(...sets: { [k: string]: boolean }[]): {[k: string]: boolean} {
+function merge(...sets: {[k: string]: boolean}[]): {[k: string]: boolean} {
   let res: {[k: string]: boolean} = {};
   for (let s of sets) {
     for (let v in s) {
@@ -72,9 +73,10 @@ const BLOCK_ELEMENTS = merge(
 // Inline Elements - HTML5
 const INLINE_ELEMENTS = merge(
     OPTIONAL_END_TAG_INLINE_ELEMENTS,
-    tagSet('a,abbr,acronym,b,' +
-           'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,' +
-           'samp,small,span,strike,strong,sub,sup,time,tt,u,var'));
+    tagSet(
+        'a,abbr,acronym,b,' +
+        'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,' +
+        'samp,small,span,strike,strong,sub,sup,time,tt,u,var'));
 
 const VALID_ELEMENTS =
     merge(VOID_ELEMENTS, BLOCK_ELEMENTS, INLINE_ELEMENTS, OPTIONAL_END_TAG_ELEMENTS);
@@ -82,12 +84,12 @@ const VALID_ELEMENTS =
 // Attributes that have href and hence need to be sanitized
 const URI_ATTRS = tagSet('background,cite,href,longdesc,src,xlink:href');
 
-const HTML_ATTRS =
-    tagSet('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
-           'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,' +
-           'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,' +
-           'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,' +
-           'valign,value,vspace,width');
+const HTML_ATTRS = tagSet(
+    'abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
+    'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,' +
+    'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,' +
+    'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,' +
+    'valign,value,vspace,width');
 
 // NB: This currently conciously doesn't support SVG. SVG sanitization has had several security
 // issues in the past, so it seems safer to leave it out if possible. If support for binding SVG via
@@ -183,14 +185,16 @@ const NON_ALPHANUMERIC_REGEXP = /([^\#-~ |!])/g;
  */
 function encodeEntities(value: any /** TODO #9100 */) {
   return value.replace(/&/g, '&amp;')
-      .replace(SURROGATE_PAIR_REGEXP,
-               function(match: any /** TODO #9100 */) {
-                 let hi = match.charCodeAt(0);
-                 let low = match.charCodeAt(1);
-                 return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
-               })
-      .replace(NON_ALPHANUMERIC_REGEXP,
-               function(match: any /** TODO #9100 */) { return '&#' + match.charCodeAt(0) + ';'; })
+      .replace(
+          SURROGATE_PAIR_REGEXP,
+          function(match: any /** TODO #9100 */) {
+            let hi = match.charCodeAt(0);
+            let low = match.charCodeAt(1);
+            return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
+          })
+      .replace(
+          NON_ALPHANUMERIC_REGEXP,
+          function(match: any /** TODO #9100 */) { return '&#' + match.charCodeAt(0) + ';'; })
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 }

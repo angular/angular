@@ -1,12 +1,8 @@
-import {isPresent} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';
+import {isPresent} from '../facade/lang';
+
+import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext} from './abstract_emitter';
 import * as o from './output_ast';
-import {
-  EmitterVisitorContext,
-  AbstractEmitterVisitor,
-  CATCH_ERROR_VAR,
-  CATCH_STACK_VAR
-} from './abstract_emitter';
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   constructor() { super(false); }
@@ -130,10 +126,10 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.decIndent();
     ctx.println(`} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
-    var catchStmts = [
-      <o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack'))
-          .toDeclStmt(null, [o.StmtModifier.Final])
-    ].concat(stmt.catchStmts);
+    var catchStmts =
+        [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
+          o.StmtModifier.Final
+        ])].concat(stmt.catchStmts);
     this.visitAllStatements(catchStmts, ctx);
     ctx.decIndent();
     ctx.println(`}`);

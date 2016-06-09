@@ -1,9 +1,11 @@
+import {StringWrapper, isPresent} from '../src/facade/lang';
+
 import {ContentType, RequestMethod} from './enums';
-import {RequestArgs} from './interfaces';
 import {Headers} from './headers';
-import {URLSearchParams} from './url_search_params';
 import {normalizeMethodName} from './http_utils';
-import {isPresent, StringWrapper} from '../src/facade/lang';
+import {RequestArgs} from './interfaces';
+import {URLSearchParams} from './url_search_params';
+
 
 // TODO(jeffbcross): properly implement body accessors
 /**
@@ -108,7 +110,7 @@ export class Request {
    */
   arrayBuffer(): ArrayBuffer {
     if (this._body instanceof ArrayBuffer) return <ArrayBuffer>this._body;
-    throw "The request body isn't an array buffer";
+    throw 'The request body isn\'t an array buffer';
   }
 
   /**
@@ -118,7 +120,7 @@ export class Request {
   blob(): Blob {
     if (this._body instanceof Blob) return <Blob>this._body;
     if (this._body instanceof ArrayBuffer) return new Blob([this._body]);
-    throw "The request body isn't either a blob or an array buffer";
+    throw 'The request body isn\'t either a blob or an array buffer';
   }
 
   /**
@@ -166,7 +168,7 @@ export class Request {
   }
 }
 
-const noop = function () {};
+const noop = function() {};
 const w = typeof window == 'object' ? window : noop;
 const FormData = (w as any /** TODO #9100 */)['FormData'] || noop;
 const Blob = (w as any /** TODO #9100 */)['Blob'] || noop;

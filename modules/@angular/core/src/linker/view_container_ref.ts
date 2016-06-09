@@ -1,15 +1,15 @@
+import {Injector} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
 import {unimplemented} from '../facade/exceptions';
-import {Injector} from '../di/injector';
 import {isPresent} from '../facade/lang';
-import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
+import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 
+import {ComponentFactory, ComponentRef} from './component_factory';
 import {AppElement} from './element';
-
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef, ViewRef_} from './view_ref';
-import {ComponentFactory, ComponentRef} from './component_factory';
+
 
 /**
  * Represents a container where one or more Views can be attached.
@@ -63,8 +63,8 @@ export abstract class ViewContainerRef {
    *
    * Returns the {@link ViewRef} for the newly created View.
    */
-  abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C,
-                                 index?: number): EmbeddedViewRef<C>;
+  abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
+      EmbeddedViewRef<C>;
 
   /**
    * Instantiates a single {@link Component} and inserts its Host View into this container at the
@@ -79,8 +79,9 @@ export abstract class ViewContainerRef {
    *
    * Returns the {@link ComponentRef} of the Host View created for the newly instantiated Component.
    */
-  abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number,
-                              injector?: Injector, projectableNodes?: any[][]): ComponentRef<C>;
+  abstract createComponent<C>(
+      componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
+      projectableNodes?: any[][]): ComponentRef<C>;
 
   /**
    * Inserts a View identified by a {@link ViewRef} into the container at the specified `index`.
@@ -129,8 +130,8 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  createEmbeddedView<C>(templateRef: TemplateRef<C>, context: C = null,
-                        index: number = -1): EmbeddedViewRef<C> {
+  createEmbeddedView<C>(templateRef: TemplateRef<C>, context: C = null, index: number = -1):
+      EmbeddedViewRef<C> {
     var viewRef: EmbeddedViewRef<any> = templateRef.createEmbeddedView(context);
     this.insert(viewRef, index);
     return viewRef;
@@ -140,8 +141,9 @@ export class ViewContainerRef_ implements ViewContainerRef {
   _createComponentInContainerScope: WtfScopeFn =
       wtfCreateScope('ViewContainerRef#createComponent()');
 
-  createComponent<C>(componentFactory: ComponentFactory<C>, index: number = -1,
-                     injector: Injector = null, projectableNodes: any[][] = null): ComponentRef<C> {
+  createComponent<C>(
+      componentFactory: ComponentFactory<C>, index: number = -1, injector: Injector = null,
+      projectableNodes: any[][] = null): ComponentRef<C> {
     var s = this._createComponentInContainerScope();
     var contextInjector = isPresent(injector) ? injector : this._element.parentInjector;
     var componentRef = componentFactory.create(contextInjector, projectableNodes);

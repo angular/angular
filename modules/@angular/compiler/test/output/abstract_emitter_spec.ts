@@ -1,13 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 
 import {escapeSingleQuoteString} from '@angular/compiler/src/output/abstract_emitter';
 

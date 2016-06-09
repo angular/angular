@@ -7,16 +7,16 @@ import {AnimateCmpNgFactory} from '../src/animate.ngfactory';
 import {AUTO_STYLE, ReflectiveInjector, DebugElement, getDebugNode} from '@angular/core';
 import {browserPlatform, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 
-describe("template codegen output", () => {
+describe('template codegen output', () => {
   function findTargetElement(elm: DebugElement): DebugElement {
     // the open-close-container is a child of the main container
     // if the template changes then please update the location below
     return elm.children[4];
   }
 
-  it("should apply the animate states to the element", (done) => {
-    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS,
-      browserPlatform().injector);
+  it('should apply the animate states to the element', (done) => {
+    const appInjector =
+        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
     var comp = AnimateCmpNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
 
@@ -34,7 +34,7 @@ describe("template codegen output", () => {
       comp.changeDetectorRef.detectChanges();
 
       setTimeout(() => {
-        expect(targetDebugElement.styles['height']).toEqual("0px");
+        expect(targetDebugElement.styles['height']).toEqual('0px');
         expect(targetDebugElement.styles['borderColor']).toEqual('maroon');
         expect(targetDebugElement.styles['color']).toEqual('maroon');
         done();
@@ -42,9 +42,9 @@ describe("template codegen output", () => {
     }, 0);
   });
 
-  it("should apply the default animate state to the element", (done) => {
-    const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS,
-      browserPlatform().injector);
+  it('should apply the default animate state to the element', (done) => {
+    const appInjector =
+        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
     var comp = AnimateCmpNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
 

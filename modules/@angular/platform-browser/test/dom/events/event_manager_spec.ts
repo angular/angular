@@ -1,21 +1,9 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  xdescribe,
-  expect,
-  beforeEach,
-} from '@angular/core/testing/testing_internal';
+import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach,} from '@angular/core/testing/testing_internal';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {ListWrapper, Map} from '../../../src/facade/collection';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {
-  EventManager,
-  EventManagerPlugin
-} from '@angular/platform-browser/src/dom/events/event_manager';
+import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 import {el} from '../../../testing/browser_util';
 
 export function main() {
@@ -82,7 +70,7 @@ export function main() {
       var handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
       var manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-      var remover = manager.addGlobalEventListener("document", 'click', handler);
+      var remover = manager.addGlobalEventListener('document', 'click', handler);
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
 

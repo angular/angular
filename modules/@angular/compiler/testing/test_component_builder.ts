@@ -1,27 +1,12 @@
-import {
-  AnimationEntryMetadata,
-  OpaqueToken,
-  ComponentRef,
-  ComponentFactory,
-  ComponentResolver,
-  Injector,
-  Injectable,
-  ViewMetadata,
-  ElementRef,
-  ChangeDetectorRef,
-  NgZone,
-  NgZoneError,
-  DebugElement,
-  getDebugNode
-} from '@angular/core';
-import {DirectiveResolver, ViewResolver} from '../index';
-
-import {BaseException} from '../src/facade/exceptions';
-import {Type, isPresent, isBlank, IS_DART, scheduleMicroTask} from '../src/facade/lang';
-import {PromiseWrapper, ObservableWrapper, PromiseCompleter} from '../src/facade/async';
-import {ListWrapper, MapWrapper} from '../src/facade/collection';
-
+import {AnimationEntryMetadata, ChangeDetectorRef, ComponentFactory, ComponentRef, ComponentResolver, DebugElement, ElementRef, Injectable, Injector, NgZone, NgZoneError, OpaqueToken, ViewMetadata, getDebugNode} from '@angular/core';
 import {tick} from '@angular/core/testing';
+
+import {DirectiveResolver, ViewResolver} from '../index';
+import {ObservableWrapper, PromiseCompleter, PromiseWrapper} from '../src/facade/async';
+import {ListWrapper, MapWrapper} from '../src/facade/collection';
+import {BaseException} from '../src/facade/exceptions';
+import {IS_DART, Type, isBlank, isPresent, scheduleMicroTask} from '../src/facade/lang';
+
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
  */
@@ -29,8 +14,8 @@ export class TestComponentRenderer {
   insertRootElement(rootElementId: string) {}
 }
 
-export var ComponentFixtureAutoDetect = new OpaqueToken("ComponentFixtureAutoDetect");
-export var ComponentFixtureNoNgZone = new OpaqueToken("ComponentFixtureNoNgZone");
+export var ComponentFixtureAutoDetect = new OpaqueToken('ComponentFixtureAutoDetect');
+export var ComponentFixtureNoNgZone = new OpaqueToken('ComponentFixtureNoNgZone');
 
 /**
  * Fixture for debugging and testing a component.
@@ -250,7 +235,8 @@ export class TestComponentBuilder {
     return clone;
   }
 
-  overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder {
+  overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]):
+      TestComponentBuilder {
     var clone = this._clone();
     clone._animationOverrides.set(componentType, animations);
     return clone;
@@ -346,10 +332,10 @@ export class TestComponentBuilder {
       let mockDirectiveResolver = this._injector.get(DirectiveResolver);
       let mockViewResolver = this._injector.get(ViewResolver);
       this._viewOverrides.forEach((view, type) => mockViewResolver.setView(type, view));
-      this._templateOverrides.forEach((template, type) =>
-                                          mockViewResolver.setInlineTemplate(type, template));
-      this._animationOverrides.forEach((animationsEntry, type) =>
-                                           mockViewResolver.setAnimations(type, animationsEntry));
+      this._templateOverrides.forEach(
+          (template, type) => mockViewResolver.setInlineTemplate(type, template));
+      this._animationOverrides.forEach(
+          (animationsEntry, type) => mockViewResolver.setAnimations(type, animationsEntry));
       this._directiveOverrides.forEach((overrides, component) => {
         overrides.forEach(
             (to, from) => { mockViewResolver.overrideViewDirective(component, from, to); });
@@ -370,8 +356,9 @@ export class TestComponentBuilder {
   createFakeAsync(rootComponentType: Type): ComponentFixture<any> {
     let result: any /** TODO #9100 */;
     let error: any /** TODO #9100 */;
-    PromiseWrapper.then(this.createAsync(rootComponentType), (_result) => { result = _result; },
-                        (_error) => { error = _error; });
+    PromiseWrapper.then(
+        this.createAsync(rootComponentType), (_result) => { result = _result; },
+        (_error) => { error = _error; });
     tick();
     if (isPresent(error)) {
       throw error;

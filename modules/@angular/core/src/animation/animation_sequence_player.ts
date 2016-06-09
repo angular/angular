@@ -1,5 +1,6 @@
 import {isPresent, scheduleMicroTask} from '../facade/lang';
-import {NoOpAnimationPlayer, AnimationPlayer} from './animation_player';
+
+import {AnimationPlayer, NoOpAnimationPlayer} from './animation_player';
 
 export class AnimationSequencePlayer implements AnimationPlayer {
   private _currentIndex: number = 0;
@@ -10,9 +11,7 @@ export class AnimationSequencePlayer implements AnimationPlayer {
   public parentPlayer: AnimationPlayer = null;
 
   constructor(private _players: AnimationPlayer[]) {
-    this._players.forEach(player => {
-      player.parentPlayer = this;
-    });
+    this._players.forEach(player => { player.parentPlayer = this; });
     this._onNext(false);
   }
 
@@ -72,11 +71,7 @@ export class AnimationSequencePlayer implements AnimationPlayer {
     this._players.forEach(player => player.destroy());
   }
 
-  setPosition(p: any /** TODO #9100 */): void {
-    this._players[0].setPosition(p);
-  }
+  setPosition(p: any /** TODO #9100 */): void { this._players[0].setPosition(p); }
 
-  getPosition(): number {
-    return this._players[0].getPosition();
-  }
+  getPosition(): number { return this._players[0].getPosition(); }
 }

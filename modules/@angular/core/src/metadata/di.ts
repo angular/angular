@@ -1,6 +1,7 @@
-import {stringify, isString, Type, StringWrapper} from '../facade/lang';
-import {DependencyMetadata} from '../di/metadata';
 import {resolveForwardRef} from '../di/forward_ref';
+import {DependencyMetadata} from '../di/metadata';
+import {StringWrapper, Type, isString, stringify} from '../facade/lang';
+
 
 /**
  * Specifies that a constant attribute value should be injected.
@@ -156,9 +157,11 @@ export class QueryMetadata extends DependencyMetadata {
    */
   read: any;
 
-  constructor(private _selector: Type | string,
-              {descendants = false, first = false,
-               read = null}: {descendants?: boolean, first?: boolean, read?: any} = {}) {
+  constructor(private _selector: Type|string, {descendants = false, first = false, read = null}: {
+    descendants?: boolean,
+    first?: boolean,
+    read?: any
+  } = {}) {
     super();
     this.descendants = descendants;
     this.first = first;
@@ -213,8 +216,9 @@ export class QueryMetadata extends DependencyMetadata {
  * @stable
  */
 export class ContentChildrenMetadata extends QueryMetadata {
-  constructor(_selector: Type | string,
-              {descendants = false, read = null}: {descendants?: boolean, read?: any} = {}) {
+  constructor(
+      _selector: Type|string,
+      {descendants = false, read = null}: {descendants?: boolean, read?: any} = {}) {
     super(_selector, {descendants: descendants, read: read});
   }
 }
@@ -243,7 +247,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
  * @stable
  */
 export class ContentChildMetadata extends QueryMetadata {
-  constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {
+  constructor(_selector: Type|string, {read = null}: {read?: any} = {}) {
     super(_selector, {descendants: true, first: true, read: read});
   }
 }
@@ -286,9 +290,9 @@ export class ContentChildMetadata extends QueryMetadata {
  * @deprecated
  */
 export class ViewQueryMetadata extends QueryMetadata {
-  constructor(_selector: Type | string,
-              {descendants = false, first = false,
-               read = null}: {descendants?: boolean, first?: boolean, read?: any} = {}) {
+  constructor(
+      _selector: Type|string, {descendants = false, first = false, read = null}:
+                                  {descendants?: boolean, first?: boolean, read?: any} = {}) {
     super(_selector, {descendants: descendants, first: first, read: read});
   }
 
@@ -379,7 +383,7 @@ export class ViewQueryMetadata extends QueryMetadata {
  * @stable
  */
 export class ViewChildrenMetadata extends ViewQueryMetadata {
-  constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {
+  constructor(_selector: Type|string, {read = null}: {read?: any} = {}) {
     super(_selector, {descendants: true, read: read});
   }
 }
@@ -457,7 +461,7 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  * @stable
  */
 export class ViewChildMetadata extends ViewQueryMetadata {
-  constructor(_selector: Type | string, {read = null}: {read?: any} = {}) {
+  constructor(_selector: Type|string, {read = null}: {read?: any} = {}) {
     super(_selector, {descendants: true, first: true, read: read});
   }
 }

@@ -1,7 +1,8 @@
-import {Injectable, ViewMetadata, Type, BaseException, AnimationEntryMetadata, resolveForwardRef} from '@angular/core';
+import {AnimationEntryMetadata, BaseException, Injectable, Type, ViewMetadata, resolveForwardRef} from '@angular/core';
+
 import {ViewResolver} from '../index';
 import {Map} from '../src/facade/collection';
-import {isPresent, stringify, isBlank, isArray} from '../src/facade/lang';
+import {isArray, isBlank, isPresent, stringify} from '../src/facade/lang';
 
 @Injectable()
 export class MockViewResolver extends ViewResolver {
@@ -135,7 +136,7 @@ export class MockViewResolver extends ViewResolver {
   }
 }
 
-function flattenArray(tree: any[], out: Array<Type | any[]>): void {
+function flattenArray(tree: any[], out: Array<Type|any[]>): void {
   if (!isPresent(tree)) return;
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);

@@ -31,7 +31,8 @@ export var AnimationKeyframe: typeof t.AnimationKeyframe = r.AnimationKeyframe;
 export type AnimationStyles = t.AnimationStyles;
 export var AnimationStyles: typeof t.AnimationStyles = r.AnimationStyles;
 export var balanceAnimationStyles: typeof t.balanceAnimationStyles = r.balanceAnimationStyles;
-export var balanceAnimationKeyframes: typeof t.balanceAnimationKeyframes = r.balanceAnimationKeyframes;
+export var balanceAnimationKeyframes: typeof t.balanceAnimationKeyframes =
+    r.balanceAnimationKeyframes;
 export var flattenStyles: typeof t.flattenStyles = r.flattenStyles;
 export var clearStyles: typeof t.clearStyles = r.clearStyles;
 export var collectAndResolveStyles: typeof r.collectAndResolveStyles = r.collectAndResolveStyles;

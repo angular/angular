@@ -35,8 +35,9 @@ export function fakeAsync(fn: Function): Function {
     });
 
     if (fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
-      throw new BaseException(`${fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
-                              `periodic timer(s) still in the queue.`);
+      throw new BaseException(
+          `${fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
+          `periodic timer(s) still in the queue.`);
     }
 
     if (fakeAsyncTestZoneSpec.pendingTimers.length > 0) {

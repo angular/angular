@@ -1,15 +1,15 @@
-import {StringMapWrapper} from '../src/facade/collection';
-import {global, isFunction, Math, isPromise} from '../src/facade/lang';
 import {provide} from '../index';
-import {getTestInjector, inject} from './test_injector';
+import {StringMapWrapper} from '../src/facade/collection';
+import {Math, global, isFunction, isPromise} from '../src/facade/lang';
+
 import {AsyncTestCompleter} from './async_test_completer';
+import {getTestInjector, inject} from './test_injector';
 
-export {expect} from './testing';
-export {inject} from './test_injector';
-export {AsyncTestCompleter} from './async_test_completer';
-
-export {MockAnimationPlayer} from './animation/mock_animation_player';
 export {MockAnimationDriver} from './animation/mock_animation_driver';
+export {MockAnimationPlayer} from './animation/mock_animation_player';
+export {AsyncTestCompleter} from './async_test_completer';
+export {inject} from './test_injector';
+export {expect} from './testing';
 
 export var proxy: ClassDecorator = (t: any /** TODO #9100 */) => t;
 
@@ -115,7 +115,7 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
   if (runnerStack.length == 0) {
     // This left here intentionally, as we should never get here, and it aids debugging.
     debugger;
-    throw new Error("Empty Stack!");
+    throw new Error('Empty Stack!');
   }
   var runner = runnerStack[runnerStack.length - 1];
   var timeOut = Math.max(globalTimeOut, testTimeOut);
@@ -150,15 +150,21 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
   }, timeOut);
 }
 
-export function it(name: any /** TODO #9100 */, fn: any /** TODO #9100 */, timeOut: any /** TODO #9100 */ = null): void {
+export function it(
+    name: any /** TODO #9100 */, fn: any /** TODO #9100 */,
+    timeOut: any /** TODO #9100 */ = null): void {
   return _it(jsmIt, name, fn, timeOut);
 }
 
-export function xit(name: any /** TODO #9100 */, fn: any /** TODO #9100 */, timeOut: any /** TODO #9100 */ = null): void {
+export function xit(
+    name: any /** TODO #9100 */, fn: any /** TODO #9100 */,
+    timeOut: any /** TODO #9100 */ = null): void {
   return _it(jsmXIt, name, fn, timeOut);
 }
 
-export function iit(name: any /** TODO #9100 */, fn: any /** TODO #9100 */, timeOut: any /** TODO #9100 */ = null): void {
+export function iit(
+    name: any /** TODO #9100 */, fn: any /** TODO #9100 */,
+    timeOut: any /** TODO #9100 */ = null): void {
   return _it(jsmIIt, name, fn, timeOut);
 }
 
@@ -202,9 +208,13 @@ export class SpyObject {
     return (this as any /** TODO #9100 */)[name];
   }
 
-  prop(name: any /** TODO #9100 */, value: any /** TODO #9100 */) { (this as any /** TODO #9100 */)[name] = value; }
+  prop(name: any /** TODO #9100 */, value: any /** TODO #9100 */) {
+    (this as any /** TODO #9100 */)[name] = value;
+  }
 
-  static stub(object: any /** TODO #9100 */ = null, config: any /** TODO #9100 */ = null, overrides: any /** TODO #9100 */ = null) {
+  static stub(
+      object: any /** TODO #9100 */ = null, config: any /** TODO #9100 */ = null,
+      overrides: any /** TODO #9100 */ = null) {
     if (!(object instanceof SpyObject)) {
       overrides = config;
       config = object;
@@ -212,7 +222,9 @@ export class SpyObject {
     }
 
     var m = StringMapWrapper.merge(config, overrides);
-    StringMapWrapper.forEach(m, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => { object.spy(key).andReturn(value); });
+    StringMapWrapper.forEach(m, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
+      object.spy(key).andReturn(value);
+    });
     return object;
   }
 

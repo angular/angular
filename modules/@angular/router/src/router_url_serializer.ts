@@ -1,6 +1,8 @@
-import {UrlSegment, Tree, TreeNode, rootNode, UrlTree} from './segments';
 import {BaseException} from '@angular/core';
-import {isBlank, isPresent, RegExpWrapper} from './facade/lang';
+
+import {RegExpWrapper, isBlank, isPresent} from './facade/lang';
+import {Tree, TreeNode, UrlSegment, UrlTree, rootNode} from './segments';
+
 
 /**
  * Defines a way to serialize/deserialize a url tree.
@@ -36,7 +38,7 @@ function _serializeUrlTreeNode(node: TreeNode<UrlSegment>): string {
 function _serializeUrlTreeNodes(nodes: TreeNode<UrlSegment>[]): string {
   let main = nodes[0].value.toString();
   let auxNodes = nodes.slice(1);
-  let aux = auxNodes.length > 0 ? `(${auxNodes.map(_serializeUrlTreeNode).join("//")})` : "";
+  let aux = auxNodes.length > 0 ? `(${auxNodes.map(_serializeUrlTreeNode).join("//")})` : '';
   let children = _serializeChildren(nodes[0]);
   return `${main}${aux}${children}`;
 }
@@ -45,7 +47,7 @@ function _serializeChildren(node: TreeNode<UrlSegment>): string {
   if (node.children.length > 0) {
     return `/${_serializeUrlTreeNodes(node.children)}`;
   } else {
-    return "";
+    return '';
   }
 }
 
@@ -97,8 +99,8 @@ class _UrlParser {
     this.capture(path);
 
 
-    if (path.indexOf(":") > -1) {
-      let parts = path.split(":");
+    if (path.indexOf(':') > -1) {
+      let parts = path.split(':');
       outletName = parts[0];
       path = parts[1];
     }
@@ -150,7 +152,7 @@ class _UrlParser {
       return;
     }
     this.capture(key);
-    var value: any = "true";
+    var value: any = 'true';
     if (this.peekStartsWith('=')) {
       this.capture('=');
       var valueMatch = matchUrlSegment(this._remaining);
@@ -169,7 +171,7 @@ class _UrlParser {
       return;
     }
     this.capture(key);
-    var value: any = "true";
+    var value: any = 'true';
     if (this.peekStartsWith('=')) {
       this.capture('=');
       var valueMatch = matchUrlQueryParamValue(this._remaining);
@@ -187,7 +189,7 @@ class _UrlParser {
     this.capture('(');
 
     while (!this.peekStartsWith(')') && this._remaining.length > 0) {
-      segments = segments.concat(this.parseSegments("aux"));
+      segments = segments.concat(this.parseSegments('aux'));
       if (this.peekStartsWith('//')) {
         this.capture('//');
       }

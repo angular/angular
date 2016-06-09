@@ -1,15 +1,8 @@
-import {PipeTransform, Pipe} from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
-import {
-  isNumber,
-  isPresent,
-  isBlank,
-  NumberWrapper,
-  RegExpWrapper,
-  Type
-} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';
-import {NumberFormatter, NumberFormatStyle} from '../facade/intl';
+import {NumberFormatStyle, NumberFormatter} from '../facade/intl';
+import {NumberWrapper, RegExpWrapper, Type, isBlank, isNumber, isPresent} from '../facade/lang';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
@@ -19,8 +12,9 @@ var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
 /**
  * Internal function to format numbers used by Decimal, Percent and Date pipes.
  */
-function formatNumber(pipe: Type, value: number, style: NumberFormatStyle, digits: string, currency: string = null,
-                 currencyAsSymbol: boolean = false): string {
+function formatNumber(
+    pipe: Type, value: number, style: NumberFormatStyle, digits: string, currency: string = null,
+    currencyAsSymbol: boolean = false): string {
   if (isBlank(value)) return null;
   if (!isNumber(value)) {
     throw new InvalidPipeArgumentException(pipe, value);
@@ -138,9 +132,10 @@ export class PercentPipe implements PipeTransform {
  */
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {
-  transform(value: any, currencyCode: string = 'USD', symbolDisplay: boolean = false,
-            digits: string = null): string {
-    return formatNumber(CurrencyPipe, value, NumberFormatStyle.Currency, digits, currencyCode,
-                              symbolDisplay);
+  transform(
+      value: any, currencyCode: string = 'USD', symbolDisplay: boolean = false,
+      digits: string = null): string {
+    return formatNumber(
+        CurrencyPipe, value, NumberFormatStyle.Currency, digits, currencyCode, symbolDisplay);
   }
 }

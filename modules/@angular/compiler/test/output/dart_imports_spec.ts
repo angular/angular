@@ -1,13 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 
 import {DartImportGenerator} from '@angular/compiler/src/output/dart_imports';
 
@@ -31,8 +22,8 @@ export function main() {
         expect(
             generator.getImportPath('asset:somePkg/lib/dir1/modPath', 'asset:somePkg/lib/impPath'))
             .toEqual('../impPath');
-        expect(generator.getImportPath('asset:somePkg/lib/dir1/modPath',
-                                       'asset:somePkg/lib/dir2/impPath'))
+        expect(generator.getImportPath(
+                   'asset:somePkg/lib/dir1/modPath', 'asset:somePkg/lib/dir2/impPath'))
             .toEqual('../dir2/impPath');
       });
 
@@ -43,8 +34,9 @@ export function main() {
       });
 
       it('should not allow absolute imports of non lib modules', () => {
-        expect(() => generator.getImportPath('asset:somePkg/lib/modPath',
-                                             'asset:somePkg/test/impPath'))
+        expect(
+            () =>
+                generator.getImportPath('asset:somePkg/lib/modPath', 'asset:somePkg/test/impPath'))
             .toThrowError(
                 `Can't import url asset:somePkg/test/impPath from asset:somePkg/lib/modPath`);
       });

@@ -1,14 +1,11 @@
-import {
-  isPresent,
-  evalExpression,
-} from '../facade/lang';
+import {isPresent, evalExpression,} from '../facade/lang';
 import * as o from './output_ast';
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import {sanitizeIdentifier} from '../util';
 
-export function jitStatements(sourceUrl: string, statements: o.Statement[],
-                              resultVar: string): any {
+export function jitStatements(
+    sourceUrl: string, statements: o.Statement[], resultVar: string): any {
   var converter = new JitEmitterVisitor();
   var ctx = EmitterVisitorContext.createRoot([resultVar]);
   converter.visitAllStatements(statements, ctx);

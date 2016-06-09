@@ -1,13 +1,4 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 
 import {makeDecorator, makeParamDecorator, Class} from '@angular/core/src/util/decorators';
 import {global} from '../../src/facade/lang';
@@ -66,19 +57,19 @@ export function main() {
     describe('Class', () => {
       it('should create a class', () => {
         var i0: any /** TODO #9100 */, i1: any /** TODO #9100 */;
-        var MyClass =
-            (<any>TestDecorator('test-works'))
-                .Class(<any>{
-                  extends: Class(<any>{
-                    constructor: function() {},
-                    extendWorks: function() { return 'extend ' + this.arg; }
-                  }),
-                  constructor: [String, function(arg: any /** TODO #9100 */) { this.arg = arg; }],
-                  methodA:
-                      [i0 = new Inject(String), [i1 = Inject(String), Number], function(a: any /** TODO #9100 */, b: any /** TODO #9100 */) {}],
-                  works: function() { return this.arg; },
-                  prototype: 'IGNORE'
-                });
+        var MyClass = (<any>TestDecorator('test-works')).Class(<any>{
+          extends: Class(<any>{
+            constructor: function() {},
+            extendWorks: function() { return 'extend ' + this.arg; }
+          }),
+          constructor: [String, function(arg: any /** TODO #9100 */) { this.arg = arg; }],
+          methodA: [
+            i0 = new Inject(String), [i1 = Inject(String), Number],
+            function(a: any /** TODO #9100 */, b: any /** TODO #9100 */) {}
+          ],
+          works: function() { return this.arg; },
+          prototype: 'IGNORE'
+        });
         var obj: any = new MyClass('WORKS');
         expect(obj.arg).toEqual('WORKS');
         expect(obj.works()).toEqual('WORKS');
@@ -97,38 +88,39 @@ export function main() {
         it('should ensure that last constructor is required', () => {
           expect(() => { (<Function>Class)({}); })
               .toThrowError(
-                  "Only Function or Array is supported in Class definition for key 'constructor' is 'undefined'");
+                  'Only Function or Array is supported in Class definition for key \'constructor\' is \'undefined\'');
         });
 
 
         it('should ensure that we dont accidently patch native objects', () => {
-          expect(() => { (<Function>Class)({constructor: Object}); })
-              .toThrowError("Can not use native Object as constructor");
+          expect(() => {
+            (<Function>Class)({constructor: Object});
+          }).toThrowError('Can not use native Object as constructor');
         });
 
 
         it('should ensure that last position is function', () => {
           expect(() => {Class({constructor: []})})
               .toThrowError(
-                  "Last position of Class method array must be Function in key constructor was 'undefined'");
+                  'Last position of Class method array must be Function in key constructor was \'undefined\'');
         });
 
         it('should ensure that annotation count matches parameters count', () => {
           expect(() => {Class({constructor: [String, function MyType() {}]})})
               .toThrowError(
-                  "Number of annotations (1) does not match number of arguments (0) in the function: MyType");
+                  'Number of annotations (1) does not match number of arguments (0) in the function: MyType');
         });
 
         it('should ensure that only Function|Arrays are supported', () => {
           expect(() => { Class(<any>{constructor: function() {}, method: 'non_function'}); })
               .toThrowError(
-                  "Only Function or Array is supported in Class definition for key 'method' is 'non_function'");
+                  'Only Function or Array is supported in Class definition for key \'method\' is \'non_function\'');
         });
 
         it('should ensure that extends is a Function', () => {
           expect(() => {(<Function>Class)({extends: 'non_type', constructor: function() {}})})
               .toThrowError(
-                  "Class definition 'extends' property must be a constructor function was: non_type");
+                  'Class definition \'extends\' property must be a constructor function was: non_type');
         });
       });
     });

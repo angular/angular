@@ -1,5 +1,7 @@
-import {ComponentInstruction} from './instruction';
 import {global} from '../src/facade/lang';
+
+import {ComponentInstruction} from './instruction';
+
 
 // This is here only so that after TS transpilation the file is not empty.
 // TODO(rado): find a better way to fix this, or remove if likely culprit
@@ -26,9 +28,8 @@ var __make_dart_analyzer_happy: Promise<any> = null;
  * {@example router/ts/on_activate/on_activate_example.ts region='routerOnActivate'}
  */
 export interface OnActivate {
-  routerOnActivate(nextInstruction: ComponentInstruction,
-                   prevInstruction: ComponentInstruction): any |
-      Promise<any>;
+  routerOnActivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction):
+      any|Promise<any>;
 }
 
 /**
@@ -47,8 +48,8 @@ export interface OnActivate {
  * {@example router/ts/reuse/reuse_example.ts region='reuseCmp'}
  */
 export interface OnReuse {
-  routerOnReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any |
-      Promise<any>;
+  routerOnReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any
+      |Promise<any>;
 }
 
 /**
@@ -67,9 +68,8 @@ export interface OnReuse {
  * {@example router/ts/on_deactivate/on_deactivate_example.ts region='routerOnDeactivate'}
  */
 export interface OnDeactivate {
-  routerOnDeactivate(nextInstruction: ComponentInstruction,
-                     prevInstruction: ComponentInstruction): any |
-      Promise<any>;
+  routerOnDeactivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction):
+      any|Promise<any>;
 }
 
 /**
@@ -93,9 +93,8 @@ export interface OnDeactivate {
  * {@example router/ts/reuse/reuse_example.ts region='reuseCmp'}
  */
 export interface CanReuse {
-  routerCanReuse(nextInstruction: ComponentInstruction,
-                 prevInstruction: ComponentInstruction): boolean |
-      Promise<boolean>;
+  routerCanReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction):
+      boolean|Promise<boolean>;
 }
 
 /**
@@ -118,7 +117,6 @@ export interface CanReuse {
  * {@example router/ts/can_deactivate/can_deactivate_example.ts region='routerCanDeactivate'}
  */
 export interface CanDeactivate {
-  routerCanDeactivate(nextInstruction: ComponentInstruction,
-                      prevInstruction: ComponentInstruction): boolean |
-      Promise<boolean>;
+  routerCanDeactivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction):
+      boolean|Promise<boolean>;
 }

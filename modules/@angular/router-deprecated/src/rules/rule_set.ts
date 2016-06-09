@@ -1,22 +1,18 @@
-import {isBlank, isPresent, isFunction} from '../facade/lang';
-import {BaseException} from '../facade/exceptions';
-import {Map} from '../facade/collection';
 import {PromiseWrapper} from '../facade/async';
-import {AbstractRule, RouteRule, RedirectRule, RouteMatch, PathMatch} from './rules';
-import {
-  Route,
-  AsyncRoute,
-  AuxRoute,
-  Redirect,
-  RouteDefinition
-} from '../route_config/route_config_impl';
+import {Map} from '../facade/collection';
+import {BaseException} from '../facade/exceptions';
+import {isBlank, isFunction, isPresent} from '../facade/lang';
+import {ComponentInstruction} from '../instruction';
+import {AsyncRoute, AuxRoute, Redirect, Route, RouteDefinition} from '../route_config/route_config_impl';
+import {Url} from '../url_parser';
+
 import {AsyncRouteHandler} from './route_handlers/async_route_handler';
 import {SyncRouteHandler} from './route_handlers/sync_route_handler';
-import {RoutePath} from './route_paths/route_path';
 import {ParamRoutePath} from './route_paths/param_route_path';
 import {RegexRoutePath} from './route_paths/regex_route_path';
-import {Url} from '../url_parser';
-import {ComponentInstruction} from '../instruction';
+import {RoutePath} from './route_paths/route_path';
+import {AbstractRule, PathMatch, RedirectRule, RouteMatch, RouteRule} from './rules';
+
 
 
 /**
@@ -178,8 +174,8 @@ export class RuleSet {
     if (isPresent(config.path)) {
       // Auxiliary routes do not have a slash at the start
       let path = (config instanceof AuxRoute && config.path.startsWith('/')) ?
-                     config.path.substring(1) :
-                     config.path;
+          config.path.substring(1) :
+          config.path;
       return new ParamRoutePath(path);
     }
     throw new BaseException('Route must provide either a path or regex property');

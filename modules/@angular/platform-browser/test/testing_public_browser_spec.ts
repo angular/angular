@@ -1,22 +1,5 @@
-import {
-  it,
-  iit,
-  xit,
-  describe,
-  ddescribe,
-  xdescribe,
-  expect,
-  beforeEach,
-  beforeEachProviders,
-  inject,
-} from '@angular/core/testing';
-import {
-  async,
-  fakeAsync,
-  flushMicrotasks,
-  Log,
-  tick,
-} from '@angular/core/testing';
+import {it, iit, xit, describe, ddescribe, xdescribe, expect, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing';
+import {async, fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
 
 import {ROUTER_FAKE_PROVIDERS} from '@angular/router/testing';
 import {ROUTER_DIRECTIVES, Routes, Route} from '@angular/router';
@@ -50,7 +33,8 @@ class BadTemplateUrl {
 
 @Component({
   selector: 'test-router-cmp',
-  template: `<a [routerLink]="['One']">one</a> <a [routerLink]="['Two']">two</a><router-outlet></router-outlet>`,
+  template:
+      `<a [routerLink]="['One']">one</a> <a [routerLink]="['Two']">two</a><router-outlet></router-outlet>`,
   directives: [ROUTER_DIRECTIVES]
 })
 @Routes([
@@ -125,7 +109,8 @@ export function main() {
         it('provides a real XHR instance',
            inject([XHR], (xhr: XHR) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
 
-        it('should allow the use of fakeAsync', fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
+        it('should allow the use of fakeAsync',
+           fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
              var value: any /** TODO #9100 */;
              service.getAsyncValue().then(function(val: any /** TODO #9100 */) { value = val; });
              tick();
@@ -155,29 +140,32 @@ export function main() {
         var itPromise = patchJasmineIt();
 
         it('should fail with an error from a promise',
-           async(inject([TestComponentBuilder],
-                        (tcb: TestComponentBuilder) => { return tcb.createAsync(BadTemplateUrl); })));
+           async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+             return tcb.createAsync(BadTemplateUrl);
+           })));
 
-        itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
-          expect(err).toEqual('Uncaught (in promise): Failed to load non-existant.html');
-          done();
-        });
+        itPromise.then(
+            () => { done.fail('Expected test to fail, but it did not'); },
+            (err) => {
+              expect(err).toEqual('Uncaught (in promise): Failed to load non-existant.html');
+              done();
+            });
         restoreJasmineIt();
       }, 10000);
     });
 
     describe('test component builder', function() {
       it('should allow an external templateUrl',
-         async(inject([TestComponentBuilder],
-                      (tcb: TestComponentBuilder) => {
+         async(inject(
+             [TestComponentBuilder],
+             (tcb: TestComponentBuilder) => {
 
-                        tcb.createAsync(ExternalTemplateComp)
-                            .then((componentFixture) => {
-                              componentFixture.detectChanges();
-                              expect(componentFixture.debugElement.nativeElement)
-                                  .toHaveText('from external template\n');
-                            });
-                      })),
+               tcb.createAsync(ExternalTemplateComp).then((componentFixture) => {
+                 componentFixture.detectChanges();
+                 expect(componentFixture.debugElement.nativeElement)
+                     .toHaveText('from external template\n');
+               });
+             })),
          10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
     });
   });
@@ -187,8 +175,9 @@ export function main() {
 
     it('should build without a problem',
        async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         tcb.createAsync(TestRouterComponent)
-             .then((fixture) => { expect(fixture.nativeElement).toHaveText('one two'); });
+         tcb.createAsync(TestRouterComponent).then((fixture) => {
+           expect(fixture.nativeElement).toHaveText('one two');
+         });
        })));
   });
 }

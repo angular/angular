@@ -1,6 +1,7 @@
-import {AnimationPlayer} from './animation_player';
 import {isPresent, scheduleMicroTask} from '../facade/lang';
 import {Math} from '../facade/math';
+
+import {AnimationPlayer} from './animation_player';
 
 export class AnimationGroupPlayer implements AnimationPlayer {
   private _subscriptions: Function[] = [];
@@ -56,9 +57,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   reset(): void { this._players.forEach(player => player.reset()); }
 
   setPosition(p: any /** TODO #9100 */): void {
-    this._players.forEach(player => {
-      player.setPosition(p);
-    });
+    this._players.forEach(player => { player.setPosition(p); });
   }
 
   getPosition(): number {

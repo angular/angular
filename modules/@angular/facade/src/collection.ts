@@ -1,4 +1,4 @@
-import {isJsObject, global, isPresent, isBlank, isArray, getSymbolIterator} from './lang';
+import {getSymbolIterator, global, isArray, isBlank, isJsObject, isPresent} from './lang';
 
 export var Map = global.Map;
 export var Set = global.Set;
@@ -265,7 +265,7 @@ export class ListWrapper {
     return solution;
   }
 
-  static flatten<T>(list: Array<T | T[]>): T[] {
+  static flatten<T>(list: Array<T|T[]>): T[] {
     var target: any[] /** TODO #???? */ = [];
     _flattenArray(list, target);
     return target;
@@ -296,8 +296,8 @@ function _flattenArray(source: any[], target: any[]): any[] {
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
   return isArray(obj) ||
-         (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
-          getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
+      (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
+       getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
 }
 
 export function areIterablesEqual(a: any, b: any, comparator: Function): boolean {

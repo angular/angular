@@ -1,13 +1,14 @@
-import {isBlank, isPresent, getTypeNameForDebugging} from '../../facade/lang';
-import {BaseException} from '../../facade/exceptions';
+import {OptionalMetadata, Provider, SkipSelfMetadata} from '../../di';
 import {ListWrapper} from '../../facade/collection';
+import {BaseException} from '../../facade/exceptions';
+import {getTypeNameForDebugging, isBlank, isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
-import {Provider, SkipSelfMetadata, OptionalMetadata} from '../../di';
+
 
 /**
  * A strategy for tracking changes over time to an iterable. Used for {@link NgFor} to
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
- * 
+ *
  * @stable
  */
 export interface IterableDiffer {

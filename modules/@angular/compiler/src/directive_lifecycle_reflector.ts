@@ -1,13 +1,4 @@
-import {
-  OnInit,
-  OnDestroy,
-  DoCheck,
-  OnChanges,
-  AfterContentInit,
-  AfterContentChecked,
-  AfterViewInit,
-  AfterViewChecked,
-} from '@angular/core';
+import {OnInit, OnDestroy, DoCheck, OnChanges, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked,} from '@angular/core';
 import {reflector, LifecycleHooks} from '../core_private';
 
 import {Type} from '../src/facade/lang';

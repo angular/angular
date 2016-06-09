@@ -1,12 +1,7 @@
-import {Component, Injectable, ComponentRef} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser';
-import {
-  OnDeactivate,
-  ComponentInstruction,
-  RouteConfig,
-  ROUTER_DIRECTIVES
-} from '@angular/router-deprecated';
 import {APP_BASE_HREF} from '@angular/common';
+import {Component, ComponentRef, Injectable} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser';
+import {ComponentInstruction, OnDeactivate, ROUTER_DIRECTIVES, RouteConfig} from '@angular/router-deprecated';
 
 
 @Injectable()
@@ -57,7 +52,6 @@ export class AppCmp {
 
 export function main(): Promise<ComponentRef<AppCmp>> {
   return bootstrap(AppCmp, [
-    {provide: APP_BASE_HREF, useValue: '/@angular/examples/router/ts/on_deactivate'},
-    LogService
+    {provide: APP_BASE_HREF, useValue: '/@angular/examples/router/ts/on_deactivate'}, LogService
   ]);
 }

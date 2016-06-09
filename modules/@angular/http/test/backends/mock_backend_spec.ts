@@ -1,14 +1,4 @@
-import {
-  afterEach,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ObservableWrapper} from '../../src/facade/async';
 import {BrowserXhr} from '../../src/backends/browser_xhr';
@@ -107,8 +97,8 @@ export function main() {
           let responseObservable: ReplaySubject<Response> =
               backend.createConnection(sampleRequest1).response;
           responseObservable.subscribe(res => expect(res.text()).toBe('response1'));
-          responseObservable.subscribe(res => expect(res.text()).toBe('response2'), null,
-                                       async.done);
+          responseObservable.subscribe(
+              res => expect(res.text()).toBe('response2'), null, async.done);
         }));
 
     // TODO(robwormald): readyStates are leaving?

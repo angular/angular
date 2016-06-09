@@ -1,11 +1,4 @@
-import {
-  inject,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  beforeEachProviders,
-} from '@angular/core/testing/testing_internal';
+import {inject, describe, it, expect, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ObservableWrapper, TimerWrapper} from '../../../src/facade/async';
 import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
@@ -18,15 +11,15 @@ export function main() {
   /**
    * Tests the PostMessageBus in TypeScript and the IsolateMessageBus in Dart
    */
-  describe("MessageBus", () => {
+  describe('MessageBus', () => {
     var bus: MessageBus;
 
     beforeEach(() => { bus = createConnectedMessageBus(); });
 
-    it("should pass messages in the same channel from sink to source",
+    it('should pass messages in the same channel from sink to source',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const CHANNEL = "CHANNEL 1";
-         const MESSAGE = "Test message";
+         const CHANNEL = 'CHANNEL 1';
+         const MESSAGE = 'Test message';
          bus.initChannel(CHANNEL, false);
 
          var fromEmitter = bus.from(CHANNEL);
@@ -38,9 +31,9 @@ export function main() {
          ObservableWrapper.callEmit(toEmitter, MESSAGE);
        }));
 
-    it("should broadcast", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const CHANNEL = "CHANNEL 1";
-         const MESSAGE = "TESTING";
+    it('should broadcast', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         const CHANNEL = 'CHANNEL 1';
+         const MESSAGE = 'TESTING';
          const NUM_LISTENERS = 2;
          bus.initChannel(CHANNEL, false);
 
@@ -62,11 +55,12 @@ export function main() {
          ObservableWrapper.callEmit(toEmitter, MESSAGE);
        }));
 
-    it("should keep channels independent", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const CHANNEL_ONE = "CHANNEL 1";
-         const CHANNEL_TWO = "CHANNEL 2";
-         const MESSAGE_ONE = "This is a message on CHANNEL 1";
-         const MESSAGE_TWO = "This is a message on CHANNEL 2";
+    it('should keep channels independent',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         const CHANNEL_ONE = 'CHANNEL 1';
+         const CHANNEL_TWO = 'CHANNEL 2';
+         const MESSAGE_ONE = 'This is a message on CHANNEL 1';
+         const MESSAGE_TWO = 'This is a message on CHANNEL 2';
          var callCount = 0;
          bus.initChannel(CHANNEL_ONE, false);
          bus.initChannel(CHANNEL_TWO, false);
@@ -96,9 +90,9 @@ export function main() {
        }));
   });
 
-  describe("PostMessageBusSink", () => {
+  describe('PostMessageBusSink', () => {
     var bus: MessageBus;
-    const CHANNEL = "Test Channel";
+    const CHANNEL = 'Test Channel';
 
     function setup(runInZone: boolean, zone: NgZone) {
       bus.attachToZone(zone);
@@ -111,39 +105,39 @@ export function main() {
     // TODO(mlaval): timeout is fragile, test to be rewritten
     function flushMessages(fn: () => void) { TimerWrapper.setTimeout(fn, 50); }
 
-    it("should buffer messages and wait for the zone to exit before sending",
+    it('should buffer messages and wait for the zone to exit before sending',
        withProviders(() => [{provide: NgZone, useClass: MockNgZone}])
-           .inject([AsyncTestCompleter, NgZone],
-                   (async: AsyncTestCompleter, zone: MockNgZone) => {
-                     bus = createConnectedMessageBus();
-                     setup(true, zone);
+           .inject(
+               [AsyncTestCompleter, NgZone],
+               (async: AsyncTestCompleter, zone: MockNgZone) => {
+                 bus = createConnectedMessageBus();
+                 setup(true, zone);
 
-                     var wasCalled = false;
-                     ObservableWrapper.subscribe(bus.from(CHANNEL),
-                                                 (message) => { wasCalled = true; });
-                     ObservableWrapper.callEmit(bus.to(CHANNEL), "hi");
+                 var wasCalled = false;
+                 ObservableWrapper.subscribe(bus.from(CHANNEL), (message) => { wasCalled = true; });
+                 ObservableWrapper.callEmit(bus.to(CHANNEL), 'hi');
 
 
-                     flushMessages(() => {
-                       expect(wasCalled).toBeFalsy();
+                 flushMessages(() => {
+                   expect(wasCalled).toBeFalsy();
 
-                       zone.simulateZoneExit();
-                       flushMessages(() => {
-                         expect(wasCalled).toBeTruthy();
-                         async.done();
-                       });
-                     });
-                   }),
+                   zone.simulateZoneExit();
+                   flushMessages(() => {
+                     expect(wasCalled).toBeTruthy();
+                     async.done();
+                   });
+                 });
+               }),
        500);
 
-    it("should send messages immediatly when run outside the zone",
+    it('should send messages immediatly when run outside the zone',
        inject([AsyncTestCompleter, NgZone], (async: AsyncTestCompleter, zone: MockNgZone) => {
          bus = createConnectedMessageBus();
          setup(false, zone);
 
          var wasCalled = false;
          ObservableWrapper.subscribe(bus.from(CHANNEL), (message) => { wasCalled = true; });
-         ObservableWrapper.callEmit(bus.to(CHANNEL), "hi");
+         ObservableWrapper.callEmit(bus.to(CHANNEL), 'hi');
 
          flushMessages(() => {
            expect(wasCalled).toBeTruthy();

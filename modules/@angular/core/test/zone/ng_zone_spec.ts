@@ -1,22 +1,7 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xdescribe,
-  xit,
-} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
 import {Log} from '@angular/core/testing';
 
-import {
-  PromiseCompleter,
-  PromiseWrapper,
-  TimerWrapper,
-  ObservableWrapper
-} from '../../src/facade/async';
+import {PromiseCompleter, PromiseWrapper, TimerWrapper, ObservableWrapper} from '../../src/facade/async';
 import {BaseException} from '../../src/facade/exceptions';
 import {IS_DART, scheduleMicroTask, isPresent} from '../../src/facade/lang';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
@@ -67,7 +52,7 @@ function runNgZoneNoLog(fn: () => any) {
 }
 
 export function main() {
-  describe("NgZone", () => {
+  describe('NgZone', () => {
 
     function createZone(enableLongStackTrace: boolean) {
       return new NgZone({enableLongStackTrace: enableLongStackTrace});
@@ -90,7 +75,8 @@ export function main() {
 
       commonTests();
 
-      it('should produce long stack traces', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+      it('should produce long stack traces',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            macroTask(() => {
              var c: PromiseCompleter<any> = PromiseWrapper.completer();
 
@@ -120,7 +106,7 @@ export function main() {
                scheduleMicroTask(() => {
                  scheduleMicroTask(() => {
                    c.resolve(null);
-                   throw new BaseException("ddd");
+                   throw new BaseException('ddd');
                  });
                });
              });
@@ -145,7 +131,8 @@ export function main() {
 
       commonTests();
 
-      it('should disable long stack traces', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+      it('should disable long stack traces',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            macroTask(() => {
              var c: PromiseCompleter<any> = PromiseWrapper.completer();
 
@@ -213,13 +200,15 @@ function commonTests() {
   });
 
   describe('run', () => {
-    it('should return the body return value from run', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should return the body return value from run',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          macroTask(() => { expect(_zone.run(() => { return 6; })).toEqual(6); });
 
          macroTask(() => { async.done(); });
        }), testTimeout);
 
-    it('should call onUnstable and onMicrotaskEmpty', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should call onUnstable and onMicrotaskEmpty',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          runNgZoneNoLog(() => macroTask(_log.fn('run')));
          macroTask(() => {
            expect(_log.result()).toEqual('onUnstable; run; onMicrotaskEmpty; onStable');
@@ -227,7 +216,8 @@ function commonTests() {
          });
        }), testTimeout);
 
-    it('should call onStable once at the end of event', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should call onStable once at the end of event',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          // The test is set up in a way that causes the zone loop to run onMicrotaskEmpty twice
          // then verified that onStable is only called once at the end
 
@@ -245,13 +235,15 @@ function commonTests() {
 
          macroTask(() => {
            expect(_log.result())
-               .toEqual('onUnstable; run; onMicrotaskEmpty; onMicrotaskEmpty 1; ' +
-                        'onMicrotaskEmpty; onMicrotaskEmpty 2; onStable');
+               .toEqual(
+                   'onUnstable; run; onMicrotaskEmpty; onMicrotaskEmpty 1; ' +
+                   'onMicrotaskEmpty; onMicrotaskEmpty 2; onStable');
            async.done();
          }, resultTimer);
        }), testTimeout);
 
-    it('should call standalone onStable', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should call standalone onStable',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          runNgZoneNoLog(() => macroTask(_log.fn('run')));
 
          macroTask(() => {
@@ -313,8 +305,9 @@ function commonTests() {
 
          macroTask(() => {
            expect(_log.result())
-               .toEqual('onUnstable; run; onMicrotaskEmpty; onMyMicrotaskEmpty; ' +
-                        'onMicrotaskEmpty; onMyMicrotaskEmpty; onStable');
+               .toEqual(
+                   'onUnstable; run; onMicrotaskEmpty; onMyMicrotaskEmpty; ' +
+                   'onMicrotaskEmpty; onMyMicrotaskEmpty; onStable');
            async.done();
          }, resultTimer);
        }), testTimeout);
@@ -676,8 +669,9 @@ function commonTests() {
 
          macroTask(() => {
            expect(_log.result())
-               .toEqual('onUnstable; zone run; onMicrotaskEmpty; onStable; ' +
-                        'onUnstable; promise then; onMicrotaskEmpty; onStable');
+               .toEqual(
+                   'onUnstable; zone run; onMicrotaskEmpty; onStable; ' +
+                   'onUnstable; promise then; onMicrotaskEmpty; onStable');
            async.done();
          }, resultTimer);
        }), testTimeout);
@@ -708,7 +702,8 @@ function commonTests() {
          });
        }), testTimeout);
 
-    it('should call onError for errors from microtasks', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+    it('should call onError for errors from microtasks',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var exception = new BaseException('async');
 
          macroTask(() => { _zone.run(() => { scheduleMicroTask(() => { throw exception; }); }); });
