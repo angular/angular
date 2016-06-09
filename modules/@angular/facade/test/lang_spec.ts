@@ -1,6 +1,5 @@
 import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing';
-
-import {RegExpMatcherWrapper, RegExpWrapper, StringWrapper, hasConstructor, isPresent, resolveEnumToken} from '../src/lang';
+import {NumberWrapper, RegExpMatcherWrapper, RegExpWrapper, StringWrapper, hasConstructor, isPresent, resolveEnumToken} from '../src/lang';
 
 enum UsefulEnum {
   MyToken,
@@ -48,6 +47,28 @@ export function main() {
     it('should support const expressions both in TS and Dart', () => {
       const numbers = /*@ts2dart_const*/[1, 2, 3];
       expect(numbers).toEqual([1, 2, 3]);
+    });
+  });
+
+  describe('Number', () => {
+    describe('isNumeric', () => {
+      it('should return true when passing correct numeric string',
+         () => { expect(NumberWrapper.isNumeric('2')).toBe(true); });
+
+      it('should return true when passing correct double string',
+         () => { expect(NumberWrapper.isNumeric('1.123')).toBe(true); });
+
+      it('should return true when passing correct negative string',
+         () => { expect(NumberWrapper.isNumeric('-2')).toBe(true); });
+
+      it('should return true when passing correct scientific notation string',
+         () => { expect(NumberWrapper.isNumeric('1e5')).toBe(true); });
+
+      it('should return false when passing incorrect numeric',
+         () => { expect(NumberWrapper.isNumeric('a')).toBe(false); });
+
+      it('should return false when passing parseable but non numeric',
+         () => { expect(NumberWrapper.isNumeric('2a')).toBe(false); });
     });
   });
 

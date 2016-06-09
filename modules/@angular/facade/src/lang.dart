@@ -189,6 +189,13 @@ class NumberWrapper {
 
   static double get NaN => double.NAN;
 
+  static bool isNumeric(value) {
+    if(value == null) {
+      return false;
+    }
+    return double.parse(value, (e) => null) != null;
+  }
+
   static bool isNaN(num value) => value.isNaN;
 
   static bool isInteger(value) => value is int;
