@@ -99,11 +99,11 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]):
 function matchNode(config: Route[], url: TreeNode<UrlSegment>): MatchResult[] {
   const res = [];
   for (let r of config) {
-    if (r.index) {
+    const m = matchWithParts(r, url);
+    if (m) {
+      res.push(m);
+    } else if (r.index) {
       res.push(createIndexMatch(r, [url], url.value));
-    } else {
-      const m = matchWithParts(r, url);
-      if (m) res.push(m);
     }
   }
   return res;
