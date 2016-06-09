@@ -39,18 +39,24 @@ interface DecoratorInvocation {
   args?: any[];
 }
 `;
-  constructor(delegate: ts.CompilerHost) { super(delegate); }
+  constructor(delegate: ts.CompilerHost, private program: ts.Program) { super(delegate); }
 
   getSourceFile =
       (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
         const originalContent = this.delegate.readFile(fileName);
         let newContent = originalContent;
         if (!/\.d\.ts$/.test(fileName)) {
-          const converted = convertDecorators(fileName, originalContent);
-          if (converted.diagnostics) {
-            this.diagnostics.push(...converted.diagnostics);
+          try {
+            const converted = convertDecorators(
+                this.program.getTypeChecker(), this.program.getSourceFile(fileName));
+            if (converted.diagnostics) {
+              this.diagnostics.push(...converted.diagnostics);
+            }
+            newContent = converted.output + this.TSICKLE_SUPPORT;
+          } catch (e) {
+            console.error('Cannot convertDecorators on file', fileName);
+            throw e;
           }
-          newContent = converted.output + this.TSICKLE_SUPPORT;
         }
         return ts.createSourceFile(fileName, newContent, languageVersion, true);
       };
