@@ -1,9 +1,15 @@
 import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '@angular/compiler/src/html_ast';
 import {HtmlTokenType} from '@angular/compiler/src/html_lexer';
-import {HtmlParseTreeResult, HtmlParser, HtmlTreeError} from '@angular/compiler/src/html_parser';
-import {ParseError, ParseLocation} from '@angular/compiler/src/parse_util';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
-
+import {HtmlParser, HtmlParseTreeResult, HtmlTreeError} from '@angular/compiler/src/html_parser';
+import {
+  HtmlElementAst,
+  HtmlAttrAst,
+  HtmlTextAst,
+  HtmlCommentAst,
+  HtmlExpansionAst,
+  HtmlExpansionCaseAst
+} from '@angular/compiler/src/html_ast';
+import {ParseError} from '@angular/compiler/src/parse_util';
 import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './html_ast_spec_utils';
 
 export function main() {
@@ -232,12 +238,15 @@ export function main() {
               `<div>before{messages.length, plural, =0 {You have <b>no</b> messages} =1 {One {{message}}}}after</div>`,
               'TestComp', true);
 
-          expect(humanizeDom(parsed)).toEqual([
-            [HtmlElementAst, 'div', 0], [HtmlTextAst, 'before', 1],
-            [HtmlExpansionAst, 'messages.length', 'plural'], [HtmlExpansionCaseAst, '0'],
-            [HtmlExpansionCaseAst, '1'], [HtmlTextAst, 'after', 1]
-          ]);
-
+          expect(humanizeDom(parsed))
+              .toEqual([
+                [HtmlElementAst, 'div', 0],
+                [HtmlTextAst, 'before', 1],
+                [HtmlExpansionAst, 'messages.length', 'plural'],
+                [HtmlExpansionCaseAst, '=0'],
+                [HtmlExpansionCaseAst, '=1'],
+                [HtmlTextAst, 'after', 1],
+              ]);
           let cases = (<any>parsed.rootNodes[0]).children[1].cases;
 
           expect(humanizeDom(new HtmlParseTreeResult(cases[0].expression, []))).toEqual([
@@ -254,20 +263,20 @@ export function main() {
         it('should parse out nested expansion forms', () => {
           let parsed = parser.parse(
               `{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`, 'TestComp', true);
-
-
-          expect(humanizeDom(parsed)).toEqual([
-            [HtmlExpansionAst, 'messages.length', 'plural'],
-            [HtmlExpansionCaseAst, '0'],
-          ]);
+          expect(humanizeDom(parsed))
+              .toEqual([
+                [HtmlExpansionAst, 'messages.length', 'plural'],
+                [HtmlExpansionCaseAst, '=0'],
+              ]);
 
           let firstCase = (<any>parsed.rootNodes[0]).cases[0];
 
-          expect(humanizeDom(new HtmlParseTreeResult(firstCase.expression, []))).toEqual([
-            [HtmlExpansionAst, 'p.gender', 'gender'],
-            [HtmlExpansionCaseAst, 'm'],
-            [HtmlTextAst, ' ', 0],
-          ]);
+          expect(humanizeDom(new HtmlParseTreeResult(firstCase.expression, [])))
+              .toEqual([
+                [HtmlExpansionAst, 'p.gender', 'gender'],
+                [HtmlExpansionCaseAst, '=m'],
+                [HtmlTextAst, ' ', 0],
+              ]);
         });
 
         it('should error when expansion form is not closed', () => {

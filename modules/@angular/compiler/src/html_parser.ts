@@ -105,7 +105,7 @@ class TreeBuilder {
     let switchValue = this._advance();
 
     let type = this._advance();
-    let cases: any[] /** TODO #9100 */ = [];
+    let cases: HtmlExpansionCaseAst[] = [];
 
     // read =
     while (this.peek.type === HtmlTokenType.EXPANSION_CASE_VALUE) {

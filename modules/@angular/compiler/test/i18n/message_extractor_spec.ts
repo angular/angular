@@ -151,22 +151,23 @@ export function main() {
       ]);
     });
 
-    it('should extract messages from special forms', () => {
-      let res = extractor.extract(
-          `
+    it("should extract messages from expansion forms", () => {
+      let res = extractor.extract(`
         <div>
           {messages.length, plural,
              =0 {You have <b>no</b> messages}
              =1 {You have one message}
+             other {You have messages}
           }
-        </div>
-      `,
-          'someurl');
+        </div>`,
+        "someurl");
 
-      expect(res.messages).toEqual([
-        new Message('You have <ph name="e1">no</ph> messages', 'plural_0', null),
-        new Message('You have one message', 'plural_1', null)
-      ]);
+      expect(res.messages)
+          .toEqual([
+            new Message('You have <ph name="e1">no</ph> messages', "plural_=0", null),
+            new Message('You have one message', "plural_=1", null),
+            new Message('You have messages', "plural_other", null),
+          ]);
     });
 
     it('should remove duplicate messages', () => {

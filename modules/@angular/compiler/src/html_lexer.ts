@@ -108,25 +108,24 @@ class ControlFlowError {
 
 // See http://www.w3.org/TR/html51/syntax.html#writing
 class _HtmlTokenizer {
-  private input: string;
-  private length: number;
+  private _input: string;
+  private _length: number;
   // Note: this is always lowercase!
-  private peek: number = -1;
-  private nextPeek: number = -1;
-  private index: number = -1;
-  private line: number = 0;
-  private column: number = -1;
-  private currentTokenStart: ParseLocation;
-  private currentTokenType: HtmlTokenType;
-
-  private expansionCaseStack: any[] /** TODO #9100 */ = [];
+  private _peek: number = -1;
+  private _nextPeek: number = -1;
+  private _index: number = -1;
+  private _line: number = 0;
+  private _column: number = -1;
+  private _currentTokenStart: ParseLocation;
+  private _currentTokenType: HtmlTokenType;
+  private _expansionCaseStack: HtmlTokenType[] = [];
 
   tokens: HtmlToken[] = [];
   errors: HtmlTokenError[] = [];
 
   constructor(private file: ParseSourceFile, private tokenizeExpansionForms: boolean) {
-    this.input = file.content;
-    this.length = file.content.length;
+    this._input = file.content;
+    this._length = file.content.length;
     this._advance();
   }
 
@@ -139,7 +138,7 @@ class _HtmlTokenizer {
   }
 
   tokenize(): HtmlTokenizeResult {
-    while (this.peek !== $EOF) {
+    while (this._peek !== $EOF) {
       var start = this._getLocation();
       try {
         if (this._attemptCharCode($LT)) {
@@ -156,18 +155,21 @@ class _HtmlTokenizer {
           } else {
             this._consumeTagOpen(start);
           }
-        } else if (isSpecialFormStart(this.peek, this.nextPeek) && this.tokenizeExpansionForms) {
+        } else if (
+            isExpansionFormStart(this._peek, this._nextPeek) && this.tokenizeExpansionForms) {
           this._consumeExpansionFormStart();
 
-        } else if (this.peek === $EQ && this.tokenizeExpansionForms) {
+        } else if (
+            isExpansionCaseStart(this._peek) && this._isInExpansionForm() &&
+            this.tokenizeExpansionForms) {
           this._consumeExpansionCaseStart();
 
-        } else if (
-            this.peek === $RBRACE && this.isInExpansionCase() && this.tokenizeExpansionForms) {
+        } else if (this._peek === $RBRACE && this._isInExpansionCase() &&
+                   this.tokenizeExpansionForms) {
           this._consumeExpansionCaseEnd();
 
-        } else if (
-            this.peek === $RBRACE && this.isInExpansionForm() && this.tokenizeExpansionForms) {
+        } else if (this._peek === $RBRACE && this._isInExpansionForm() &&
+                   this.tokenizeExpansionForms) {
           this._consumeExpansionFormEnd();
 
         } else {
@@ -187,7 +189,7 @@ class _HtmlTokenizer {
   }
 
   private _getLocation(): ParseLocation {
-    return new ParseLocation(this.file, this.index, this.line, this.column);
+    return new ParseLocation(this.file, this._index, this._line, this._column);
   }
 
   private _getSpan(start?: ParseLocation, end?: ParseLocation): ParseSourceSpan {
@@ -204,47 +206,47 @@ class _HtmlTokenizer {
     if (isBlank(start)) {
       start = this._getLocation();
     }
-    this.currentTokenStart = start;
-    this.currentTokenType = type;
+    this._currentTokenStart = start;
+    this._currentTokenType = type;
   }
 
   private _endToken(parts: string[], end: ParseLocation = null): HtmlToken {
     if (isBlank(end)) {
       end = this._getLocation();
     }
-    var token = new HtmlToken(
-        this.currentTokenType, parts, new ParseSourceSpan(this.currentTokenStart, end));
+    var token = new HtmlToken(this._currentTokenType, parts,
+                              new ParseSourceSpan(this._currentTokenStart, end));
     this.tokens.push(token);
-    this.currentTokenStart = null;
-    this.currentTokenType = null;
+    this._currentTokenStart = null;
+    this._currentTokenType = null;
     return token;
   }
 
   private _createError(msg: string, span: ParseSourceSpan): ControlFlowError {
-    var error = new HtmlTokenError(msg, this.currentTokenType, span);
-    this.currentTokenStart = null;
-    this.currentTokenType = null;
+    var error = new HtmlTokenError(msg, this._currentTokenType, span);
+    this._currentTokenStart = null;
+    this._currentTokenType = null;
     return new ControlFlowError(error);
   }
 
   private _advance() {
-    if (this.index >= this.length) {
+    if (this._index >= this._length) {
       throw this._createError(unexpectedCharacterErrorMsg($EOF), this._getSpan());
     }
-    if (this.peek === $LF) {
-      this.line++;
-      this.column = 0;
-    } else if (this.peek !== $LF && this.peek !== $CR) {
-      this.column++;
+    if (this._peek === $LF) {
+      this._line++;
+      this._column = 0;
+    } else if (this._peek !== $LF && this._peek !== $CR) {
+      this._column++;
     }
-    this.index++;
-    this.peek = this.index >= this.length ? $EOF : StringWrapper.charCodeAt(this.input, this.index);
-    this.nextPeek =
-        this.index + 1 >= this.length ? $EOF : StringWrapper.charCodeAt(this.input, this.index + 1);
+    this._index++;
+    this._peek = this._index >= this._length ? $EOF : StringWrapper.charCodeAt(this._input, this._index);
+    this._nextPeek =
+        this._index + 1 >= this._length ? $EOF : StringWrapper.charCodeAt(this._input, this._index + 1);
   }
 
   private _attemptCharCode(charCode: number): boolean {
-    if (this.peek === charCode) {
+    if (this._peek === charCode) {
       this._advance();
       return true;
     }
@@ -252,7 +254,7 @@ class _HtmlTokenizer {
   }
 
   private _attemptCharCodeCaseInsensitive(charCode: number): boolean {
-    if (compareCharCodeCaseInsensitive(this.peek, charCode)) {
+    if (compareCharCodeCaseInsensitive(this._peek, charCode)) {
       this._advance();
       return true;
     }
@@ -262,22 +264,22 @@ class _HtmlTokenizer {
   private _requireCharCode(charCode: number) {
     var location = this._getLocation();
     if (!this._attemptCharCode(charCode)) {
-      throw this._createError(
-          unexpectedCharacterErrorMsg(this.peek), this._getSpan(location, location));
+      throw this._createError(unexpectedCharacterErrorMsg(this._peek),
+                              this._getSpan(location, location));
     }
   }
 
   private _attemptStr(chars: string): boolean {
-    var indexBeforeAttempt = this.index;
-    var columnBeforeAttempt = this.column;
-    var lineBeforeAttempt = this.line;
+    var indexBeforeAttempt = this._index;
+    var columnBeforeAttempt = this._column;
+    var lineBeforeAttempt = this._line;
     for (var i = 0; i < chars.length; i++) {
       if (!this._attemptCharCode(StringWrapper.charCodeAt(chars, i))) {
         // If attempting to parse the string fails, we want to reset the parser
         // to where it was before the attempt
-        this.index = indexBeforeAttempt;
-        this.column = columnBeforeAttempt;
-        this.line = lineBeforeAttempt;
+        this._index = indexBeforeAttempt;
+        this._column = columnBeforeAttempt;
+        this._line = lineBeforeAttempt;
         return false;
       }
     }
@@ -296,12 +298,12 @@ class _HtmlTokenizer {
   private _requireStr(chars: string) {
     var location = this._getLocation();
     if (!this._attemptStr(chars)) {
-      throw this._createError(unexpectedCharacterErrorMsg(this.peek), this._getSpan(location));
+      throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan(location));
     }
   }
 
   private _attemptCharCodeUntilFn(predicate: Function) {
-    while (!predicate(this.peek)) {
+    while (!predicate(this._peek)) {
       this._advance();
     }
   }
@@ -309,24 +311,24 @@ class _HtmlTokenizer {
   private _requireCharCodeUntilFn(predicate: Function, len: number) {
     var start = this._getLocation();
     this._attemptCharCodeUntilFn(predicate);
-    if (this.index - start.offset < len) {
-      throw this._createError(unexpectedCharacterErrorMsg(this.peek), this._getSpan(start, start));
+    if (this._index - start.offset < len) {
+      throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan(start, start));
     }
   }
 
   private _attemptUntilChar(char: number) {
-    while (this.peek !== char) {
+    while (this._peek !== char) {
       this._advance();
     }
   }
 
   private _readChar(decodeEntities: boolean): string {
-    if (decodeEntities && this.peek === $AMPERSAND) {
+    if (decodeEntities && this._peek === $AMPERSAND) {
       return this._decodeEntity();
     } else {
-      var index = this.index;
+      var index = this._index;
       this._advance();
-      return this.input[index];
+      return this._input[index];
     }
   }
 
@@ -337,27 +339,27 @@ class _HtmlTokenizer {
       let isHex = this._attemptCharCode($x) || this._attemptCharCode($X);
       let numberStart = this._getLocation().offset;
       this._attemptCharCodeUntilFn(isDigitEntityEnd);
-      if (this.peek != $SEMICOLON) {
-        throw this._createError(unexpectedCharacterErrorMsg(this.peek), this._getSpan());
+      if (this._peek != $SEMICOLON) {
+        throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan());
       }
       this._advance();
-      let strNum = this.input.substring(numberStart, this.index - 1);
+      let strNum = this._input.substring(numberStart, this._index - 1);
       try {
         let charCode = NumberWrapper.parseInt(strNum, isHex ? 16 : 10);
         return StringWrapper.fromCharCode(charCode);
       } catch (e) {
-        let entity = this.input.substring(start.offset + 1, this.index - 1);
+        let entity = this._input.substring(start.offset + 1, this._index - 1);
         throw this._createError(unknownEntityErrorMsg(entity), this._getSpan(start));
       }
     } else {
       let startPosition = this._savePosition();
       this._attemptCharCodeUntilFn(isNamedEntityEnd);
-      if (this.peek != $SEMICOLON) {
+      if (this._peek != $SEMICOLON) {
         this._restorePosition(startPosition);
         return '&';
       }
       this._advance();
-      let name = this.input.substring(start.offset + 1, this.index - 1);
+      let name = this._input.substring(start.offset + 1, this._index - 1);
       let char = (NAMED_ENTITIES as any /** TODO #9100 */)[name];
       if (isBlank(char)) {
         throw this._createError(unknownEntityErrorMsg(name), this._getSpan(start));
@@ -378,10 +380,10 @@ class _HtmlTokenizer {
       if (this._attemptCharCode(firstCharOfEnd) && attemptEndRest()) {
         break;
       }
-      if (this.index > tagCloseStart.offset) {
-        parts.push(this.input.substring(tagCloseStart.offset, this.index));
+      if (this._index > tagCloseStart.offset) {
+        parts.push(this._input.substring(tagCloseStart.offset, this._index));
       }
-      while (this.peek !== firstCharOfEnd) {
+      while (this._peek !== firstCharOfEnd) {
         parts.push(this._readChar(decodeEntities));
       }
     }
@@ -410,25 +412,25 @@ class _HtmlTokenizer {
     this._beginToken(HtmlTokenType.DOC_TYPE, start);
     this._attemptUntilChar($GT);
     this._advance();
-    this._endToken([this.input.substring(start.offset + 2, this.index - 1)]);
+    this._endToken([this._input.substring(start.offset + 2, this._index - 1)]);
   }
 
   private _consumePrefixAndName(): string[] {
-    var nameOrPrefixStart = this.index;
+    var nameOrPrefixStart = this._index;
     var prefix: any /** TODO #9100 */ = null;
-    while (this.peek !== $COLON && !isPrefixEnd(this.peek)) {
+    while (this._peek !== $COLON && !isPrefixEnd(this._peek)) {
       this._advance();
     }
     var nameStart: any /** TODO #9100 */;
-    if (this.peek === $COLON) {
+    if (this._peek === $COLON) {
       this._advance();
-      prefix = this.input.substring(nameOrPrefixStart, this.index - 1);
-      nameStart = this.index;
+      prefix = this._input.substring(nameOrPrefixStart, this._index - 1);
+      nameStart = this._index;
     } else {
       nameStart = nameOrPrefixStart;
     }
-    this._requireCharCodeUntilFn(isNameEnd, this.index === nameStart ? 1 : 0);
-    var name = this.input.substring(nameStart, this.index);
+    this._requireCharCodeUntilFn(isNameEnd, this._index === nameStart ? 1 : 0);
+    var name = this._input.substring(nameStart, this._index);
     return [prefix, name];
   }
 
@@ -436,14 +438,14 @@ class _HtmlTokenizer {
     let savedPos = this._savePosition();
     let lowercaseTagName: any /** TODO #9100 */;
     try {
-      if (!isAsciiLetter(this.peek)) {
-        throw this._createError(unexpectedCharacterErrorMsg(this.peek), this._getSpan());
+      if (!isAsciiLetter(this._peek)) {
+        throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan());
       }
-      var nameStart = this.index;
+      var nameStart = this._index;
       this._consumeTagOpenStart(start);
-      lowercaseTagName = this.input.substring(nameStart, this.index).toLowerCase();
+      lowercaseTagName = this._input.substring(nameStart, this._index).toLowerCase();
       this._attemptCharCodeUntilFn(isNotWhitespace);
-      while (this.peek !== $SLASH && this.peek !== $GT) {
+      while (this._peek !== $SLASH && this._peek !== $GT) {
         this._consumeAttributeName();
         this._attemptCharCodeUntilFn(isNotWhitespace);
         if (this._attemptCharCode($EQ)) {
@@ -502,19 +504,19 @@ class _HtmlTokenizer {
   private _consumeAttributeValue() {
     this._beginToken(HtmlTokenType.ATTR_VALUE);
     var value: any /** TODO #9100 */;
-    if (this.peek === $SQ || this.peek === $DQ) {
-      var quoteChar = this.peek;
+    if (this._peek === $SQ || this._peek === $DQ) {
+      var quoteChar = this._peek;
       this._advance();
       var parts: any[] /** TODO #9100 */ = [];
-      while (this.peek !== quoteChar) {
+      while (this._peek !== quoteChar) {
         parts.push(this._readChar(true));
       }
       value = parts.join('');
       this._advance();
     } else {
-      var valueStart = this.index;
+      var valueStart = this._index;
       this._requireCharCodeUntilFn(isNameEnd, 1);
-      value = this.input.substring(valueStart, this.index);
+      value = this._input.substring(valueStart, this._index);
     }
     this._endToken([this._processCarriageReturns(value)]);
   }
@@ -554,12 +556,10 @@ class _HtmlTokenizer {
     this._requireCharCode($COMMA);
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
-    this.expansionCaseStack.push(HtmlTokenType.EXPANSION_FORM_START);
+    this._expansionCaseStack.push(HtmlTokenType.EXPANSION_FORM_START);
   }
 
   private _consumeExpansionCaseStart() {
-    this._requireCharCode($EQ);
-
     this._beginToken(HtmlTokenType.EXPANSION_CASE_VALUE, this._getLocation());
     let value = this._readUntil($LBRACE).trim();
     this._endToken([value], this._getLocation());
@@ -570,7 +570,7 @@ class _HtmlTokenizer {
     this._endToken([], this._getLocation());
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
-    this.expansionCaseStack.push(HtmlTokenType.EXPANSION_CASE_EXP_START);
+    this._expansionCaseStack.push(HtmlTokenType.EXPANSION_CASE_EXP_START);
   }
 
   private _consumeExpansionCaseEnd() {
@@ -579,7 +579,7 @@ class _HtmlTokenizer {
     this._endToken([], this._getLocation());
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
-    this.expansionCaseStack.pop();
+    this._expansionCaseStack.pop();
   }
 
   private _consumeExpansionFormEnd() {
@@ -587,7 +587,7 @@ class _HtmlTokenizer {
     this._requireCharCode($RBRACE);
     this._endToken([]);
 
-    this.expansionCaseStack.pop();
+    this._expansionCaseStack.pop();
   }
 
   private _consumeText() {
@@ -597,7 +597,7 @@ class _HtmlTokenizer {
     var parts: any[] /** TODO #9100 */ = [];
     let interpolation = false;
 
-    if (this.peek === $LBRACE && this.nextPeek === $LBRACE) {
+    if (this._peek === $LBRACE && this._nextPeek === $LBRACE) {
       parts.push(this._readChar(true));
       parts.push(this._readChar(true));
       interpolation = true;
@@ -605,12 +605,12 @@ class _HtmlTokenizer {
       parts.push(this._readChar(true));
     }
 
-    while (!this.isTextEnd(interpolation)) {
-      if (this.peek === $LBRACE && this.nextPeek === $LBRACE) {
+    while (!this._isTextEnd(interpolation)) {
+      if (this._peek === $LBRACE && this._nextPeek === $LBRACE) {
         parts.push(this._readChar(true));
         parts.push(this._readChar(true));
         interpolation = true;
-      } else if (this.peek === $RBRACE && this.nextPeek === $RBRACE && interpolation) {
+      } else if (this._peek === $RBRACE && this._nextPeek === $RBRACE && interpolation) {
         parts.push(this._readChar(true));
         parts.push(this._readChar(true));
         interpolation = false;
@@ -621,32 +621,32 @@ class _HtmlTokenizer {
     this._endToken([this._processCarriageReturns(parts.join(''))]);
   }
 
-  private isTextEnd(interpolation: boolean): boolean {
-    if (this.peek === $LT || this.peek === $EOF) return true;
+  private _isTextEnd(interpolation: boolean): boolean {
+    if (this._peek === $LT || this._peek === $EOF) return true;
     if (this.tokenizeExpansionForms) {
-      if (isSpecialFormStart(this.peek, this.nextPeek)) return true;
-      if (this.peek === $RBRACE && !interpolation &&
-          (this.isInExpansionCase() || this.isInExpansionForm()))
+      if (isExpansionFormStart(this._peek, this._nextPeek)) return true;
+      if (this._peek === $RBRACE && !interpolation &&
+          (this._isInExpansionCase() || this._isInExpansionForm()))
         return true;
     }
     return false;
   }
 
   private _savePosition(): number[] {
-    return [this.peek, this.index, this.column, this.line, this.tokens.length];
+    return [this._peek, this._index, this._column, this._line, this.tokens.length];
   }
 
   private _readUntil(char: number): string {
-    let start = this.index;
+    let start = this._index;
     this._attemptUntilChar(char);
-    return this.input.substring(start, this.index);
+    return this._input.substring(start, this._index);
   }
 
   private _restorePosition(position: number[]): void {
-    this.peek = position[0];
-    this.index = position[1];
-    this.column = position[2];
-    this.line = position[3];
+    this._peek = position[0];
+    this._index = position[1];
+    this._column = position[2];
+    this._line = position[3];
     let nbTokens = position[4];
     if (nbTokens < this.tokens.length) {
       // remove any extra tokens
@@ -654,16 +654,16 @@ class _HtmlTokenizer {
     }
   }
 
-  private isInExpansionCase(): boolean {
-    return this.expansionCaseStack.length > 0 &&
-        this.expansionCaseStack[this.expansionCaseStack.length - 1] ===
-        HtmlTokenType.EXPANSION_CASE_EXP_START;
+  private _isInExpansionCase(): boolean {
+    return this._expansionCaseStack.length > 0 &&
+           this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
+               HtmlTokenType.EXPANSION_CASE_EXP_START;
   }
 
-  private isInExpansionForm(): boolean {
-    return this.expansionCaseStack.length > 0 &&
-        this.expansionCaseStack[this.expansionCaseStack.length - 1] ===
-        HtmlTokenType.EXPANSION_FORM_START;
+  private _isInExpansionForm(): boolean {
+    return this._expansionCaseStack.length > 0 &&
+           this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
+               HtmlTokenType.EXPANSION_FORM_START;
   }
 }
 
@@ -692,8 +692,12 @@ function isNamedEntityEnd(code: number): boolean {
   return code == $SEMICOLON || code == $EOF || !isAsciiLetter(code);
 }
 
-function isSpecialFormStart(peek: number, nextPeek: number): boolean {
+function isExpansionFormStart(peek: number, nextPeek: number): boolean {
   return peek === $LBRACE && nextPeek != $LBRACE;
+}
+
+function isExpansionCaseStart(peek: number): boolean {
+  return peek === $EQ || isAsciiLetter(peek);
 }
 
 function isAsciiLetter(code: number): boolean {

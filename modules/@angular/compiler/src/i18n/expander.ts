@@ -12,7 +12,7 @@ import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, Ht
  * { messages.length, plural,
  *   =0 {zero}
  *   =1 {one}
- *   =other {more than one}
+ *   other {more than one}
  * }
  * ```
  *
