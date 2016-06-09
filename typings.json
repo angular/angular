@@ -1,5 +1,5 @@
 {
-  "name": "vladivostok",
+  "name": "@angular/router",
   "version": false,
   "globalDependencies": {
     "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
