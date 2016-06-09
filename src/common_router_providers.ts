@@ -61,9 +61,13 @@ export function provideRouter(config: RouterConfig): any[] {
         // APP_INITIALIZER -> Router)
         setTimeout(_ => {
           const appRef = injector.get(ApplicationRef);
-          appRef.registerBootstrapListener((_) => {
+          if (appRef.componentTypes.length == 0) {
+            appRef.registerBootstrapListener((_) => {
+              injector.get(Router).initialNavigation()
+            });
+          } else {
             injector.get(Router).initialNavigation()
-          });
+          }
         }, 0);
         return _ => null;
       },
