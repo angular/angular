@@ -43,7 +43,7 @@ export function main() {
 
     beforeEach(inject([TestComponentBuilder], (tcBuilder: any /** TODO #9100 */) => { tcb = tcBuilder; }));
 
-    it('should update a[href] attribute', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should update a[href] attribute', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
          tcb.createAsync(TestComponent)
              .then((testComponent) => {
@@ -57,7 +57,7 @@ export function main() {
 
 
     it('should call router.navigate when a link is clicked',
-       inject([AsyncTestCompleter, Router], (async: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Router], (async: AsyncTestCompleter, router: any /** TODO #9100 */) => {
 
          tcb.createAsync(TestComponent)
              .then((testComponent) => {
@@ -71,7 +71,7 @@ export function main() {
        }));
 
     it('should call router.navigate when a link is clicked if target is _self',
-       inject([AsyncTestCompleter, Router], (async: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Router], (async: AsyncTestCompleter, router: any /** TODO #9100 */) => {
 
          tcb.createAsync(TestComponent)
              .then((testComponent) => {
@@ -84,7 +84,7 @@ export function main() {
        }));
 
     it('should NOT call router.navigate when a link is clicked if target is set to other than _self',
-       inject([AsyncTestCompleter, Router], (async: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Router], (async: AsyncTestCompleter, router: any /** TODO #9100 */) => {
 
          tcb.createAsync(TestComponent)
              .then((testComponent) => {

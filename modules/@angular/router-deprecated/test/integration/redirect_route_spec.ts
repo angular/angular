@@ -47,7 +47,7 @@ export function main() {
 
 
     it('should apply when navigating by URL',
-       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([
@@ -65,7 +65,7 @@ export function main() {
 
 
     it('should recognize and apply absolute redirects',
-       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([
@@ -83,7 +83,7 @@ export function main() {
 
 
     it('should recognize and apply relative child redirects',
-       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([
@@ -101,7 +101,7 @@ export function main() {
 
 
     it('should recognize and apply relative parent redirects',
-       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([
@@ -119,7 +119,7 @@ export function main() {
 
 
     it('should not redirect when redirect is less specific than other matching routes',
-       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {rootTC = rtc})
              .then((_) => rtr.config([

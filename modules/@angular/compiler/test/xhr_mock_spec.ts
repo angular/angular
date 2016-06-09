@@ -42,7 +42,7 @@ export function main() {
       PromiseWrapper.then(request, onResponse, onError);
     }
 
-    it('should return a response from the definitions', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should return a response from the definitions', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response = 'bar';
          xhr.when(url, response);
@@ -50,7 +50,7 @@ export function main() {
          xhr.flush();
        }));
 
-    it('should return an error from the definitions', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should return an error from the definitions', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response: any /** TODO #9100 */ = null;
          xhr.when(url, response);
@@ -58,7 +58,7 @@ export function main() {
          xhr.flush();
        }));
 
-    it('should return a response from the expectations', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should return a response from the expectations', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response = 'bar';
          xhr.expect(url, response);
@@ -66,7 +66,7 @@ export function main() {
          xhr.flush();
        }));
 
-    it('should return an error from the expectations', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should return an error from the expectations', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response: any /** TODO #9100 */ = null;
          xhr.expect(url, response);
@@ -83,7 +83,7 @@ export function main() {
       expect(() => { xhr.flush(); }).toThrowError('Unexpected request /foo');
     });
 
-    it('should return expectations before definitions', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should return expectations before definitions', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          xhr.when(url, 'when');
          xhr.expect(url, 'expect');

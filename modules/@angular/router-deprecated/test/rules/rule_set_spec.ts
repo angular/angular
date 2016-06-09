@@ -23,7 +23,7 @@ export function main() {
     beforeEach(() => { recognizer = new RuleSet(); });
 
 
-    it('should recognize a static segment', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should recognize a static segment', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          recognizer.config(new Route({path: '/test', component: DummyCmpA}));
          recognize(recognizer, '/test')
              .then((solutions: RouteMatch[]) => {
@@ -34,7 +34,7 @@ export function main() {
        }));
 
 
-    it('should recognize a single slash', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should recognize a single slash', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          recognizer.config(new Route({path: '/', component: DummyCmpA}));
          recognize(recognizer, '/')
              .then((solutions: RouteMatch[]) => {
@@ -45,7 +45,7 @@ export function main() {
        }));
 
 
-    it('should recognize a dynamic segment', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should recognize a dynamic segment', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          recognizer.config(new Route({path: '/user/:name', component: DummyCmpA}));
          recognize(recognizer, '/user/brian')
              .then((solutions: RouteMatch[]) => {
@@ -57,7 +57,7 @@ export function main() {
        }));
 
 
-    it('should recognize a star segment', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should recognize a star segment', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          recognizer.config(new Route({path: '/first/*rest', component: DummyCmpA}));
          recognize(recognizer, '/first/second/third')
              .then((solutions: RouteMatch[]) => {
@@ -68,7 +68,7 @@ export function main() {
              });
        }));
 
-    it('should recognize a regex', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should recognize a regex', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          function emptySerializer(params: any /** TODO #9100 */): GeneratedUrl { return new GeneratedUrl('', {}); }
 
          recognizer.config(
@@ -83,7 +83,7 @@ export function main() {
              });
        }));
 
-    it('should recognize a regex with named_groups', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should recognize a regex with named_groups', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          function emptySerializer(params: any /** TODO #9100 */): GeneratedUrl { return new GeneratedUrl('', {}); }
 
          recognizer.config(new Route({
@@ -125,7 +125,7 @@ export function main() {
     });
 
 
-    it('should recognize redirects', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should recognize redirects', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          recognizer.config(new Route({path: '/b', component: DummyCmpA}));
          recognizer.config(new Redirect({path: '/a', redirectTo: ['B']}));
          recognize(recognizer, '/a')
@@ -190,7 +190,7 @@ export function main() {
 
     describe('params', () => {
       it('should recognize parameters within the URL path',
-         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            recognizer.config(
                new Route({path: 'profile/:name', component: DummyCmpA, name: 'User'}));
            recognize(recognizer, '/profile/matsko?comments=all')
@@ -216,7 +216,7 @@ export function main() {
 
 
       it('should prefer positional params over query params',
-         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            recognizer.config(
                new Route({path: 'profile/:name', component: DummyCmpA, name: 'User'}));
            recognize(recognizer, '/profile/yegor?name=igor')
@@ -229,7 +229,7 @@ export function main() {
 
 
       it('should ignore matrix params for the top-level component',
-         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            recognizer.config(
                new Route({path: '/home/:subject', component: DummyCmpA, name: 'User'}));
            recognize(recognizer, '/home;sort=asc/zero;one=1?two=2')

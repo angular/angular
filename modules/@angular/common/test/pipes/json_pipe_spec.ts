@@ -53,7 +53,7 @@ export function main() {
 
     describe('integration', () => {
       it('should work with mutable objects',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            tcb.createAsync(TestComp).then((fixture) => {
              let mutable: number[] = [1];
              fixture.debugElement.componentInstance.data = mutable;

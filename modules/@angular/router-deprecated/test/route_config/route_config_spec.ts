@@ -53,7 +53,7 @@ export function main() {
       ];
     });
 
-    it('should bootstrap an app with a hierarchy', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should bootstrap an app with a hierarchy', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(HierarchyAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
@@ -67,7 +67,7 @@ export function main() {
        }));
 
 
-    it('should work in an app with redirects', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should work in an app with redirects', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(RedirectAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
@@ -81,7 +81,7 @@ export function main() {
        }));
 
 
-    it('should work in an app with async components', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should work in an app with async components', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(AsyncAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
@@ -95,7 +95,7 @@ export function main() {
        }));
 
 
-    it('should work in an app with aux routes', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should work in an app with aux routes', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(AuxAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
@@ -110,7 +110,7 @@ export function main() {
 
 
     it('should work in an app with async components defined with "loader"',
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(ConciseAsyncAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
@@ -125,7 +125,7 @@ export function main() {
 
 
     it('should work in an app with a constructor component',
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(ExplicitConstructorAppCmp, testBindings)
              .then((applicationRef) => {
                var router = applicationRef.instance.router;
@@ -141,7 +141,7 @@ export function main() {
     it('should throw if a config is missing a target',
        inject(
            [AsyncTestCompleter],
-           (async: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter) => {
                bootstrap(WrongConfigCmp, testBindings)
                    .catch((e) => {
                      expect(e.originalException)
@@ -154,7 +154,7 @@ export function main() {
     it('should throw if a config has an invalid component type',
        inject(
            [AsyncTestCompleter],
-           (async: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter) => {
                bootstrap(WrongComponentTypeCmp, testBindings)
                    .catch((e) => {
                      expect(e.originalException)
@@ -167,7 +167,7 @@ export function main() {
     it('should throw if a config has an invalid alias name',
        inject(
            [AsyncTestCompleter],
-           (async: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter) => {
                bootstrap(BadAliasNameCmp, testBindings)
                    .catch((e) => {
                      expect(e.originalException)

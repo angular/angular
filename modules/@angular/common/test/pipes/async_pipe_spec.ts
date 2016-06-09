@@ -44,7 +44,7 @@ export function main() {
            () => { expect(pipe.transform(emitter)).toBe(null); });
 
         it("should return the latest available value wrapped",
-           inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
 
              ObservableWrapper.callEmit(emitter, message);
@@ -57,7 +57,7 @@ export function main() {
 
 
         it("should return same value when nothing has changed since the last call",
-           inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
              ObservableWrapper.callEmit(emitter, message);
 
@@ -69,7 +69,7 @@ export function main() {
            }));
 
         it("should dispose of the existing subscription when subscribing to a new observable",
-           inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
 
              var newEmitter = new EventEmitter();
@@ -85,7 +85,7 @@ export function main() {
            }));
 
         it("should request a change detection check upon receiving a new value",
-           inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
              ObservableWrapper.callEmit(emitter, message);
 
@@ -100,7 +100,7 @@ export function main() {
         it("should do nothing when no subscription",
            () => { expect(() => pipe.ngOnDestroy()).not.toThrow(); });
 
-        it("should dispose of the existing subscription", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+        it("should dispose of the existing subscription", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
              pipe.ngOnDestroy();
 
@@ -132,7 +132,7 @@ export function main() {
         it("should return null when subscribing to a promise",
            () => { expect(pipe.transform(completer.promise)).toBe(null); });
 
-        it("should return the latest available value", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+        it("should return the latest available value", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(completer.promise);
 
              completer.resolve(message);
@@ -144,7 +144,7 @@ export function main() {
            }));
 
         it("should return unwrapped value when nothing has changed since the last call",
-           inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(completer.promise);
              completer.resolve(message);
 
@@ -156,7 +156,7 @@ export function main() {
            }));
 
         it("should dispose of the existing subscription when subscribing to a new promise",
-           inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(completer.promise);
 
              var newCompleter = PromiseWrapper.completer();
@@ -172,7 +172,7 @@ export function main() {
            }));
 
         it("should request a change detection check upon receiving a new value",
-           inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              var markForCheck = ref.spy('markForCheck');
              pipe.transform(completer.promise);
              completer.resolve(message);
@@ -187,7 +187,7 @@ export function main() {
           it("should do nothing when no source",
              () => { expect(() => pipe.ngOnDestroy()).not.toThrow(); });
 
-          it("should dispose of the existing source", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+          it("should dispose of the existing source", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
                pipe.transform(completer.promise);
                expect(pipe.transform(completer.promise)).toBe(null);
                completer.resolve(message)

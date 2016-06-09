@@ -41,7 +41,7 @@ function syncRoutesWithoutChildrenWithoutParams() {
     rtr = router;
   }));
 
-  it('should navigate by URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb)
            .then((rtc) => {fixture = rtc})
            .then((_) =>
@@ -54,7 +54,7 @@ function syncRoutesWithoutChildrenWithoutParams() {
            });
      }));
 
-  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb)
            .then((rtc) => {fixture = rtc})
            .then((_) =>
@@ -67,7 +67,7 @@ function syncRoutesWithoutChildrenWithoutParams() {
            });
      }));
 
-  it('should generate a link URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should generate a link URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `<a [routerLink]="['Hello']">go to hello</a> | <router-outlet></router-outlet>`)
            .then((rtc) => {fixture = rtc})
            .then((_) =>
@@ -80,7 +80,7 @@ function syncRoutesWithoutChildrenWithoutParams() {
      }));
 
   it('should navigate from a link click',
-     inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+     inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
        compile(tcb, `<a [routerLink]="['Hello']">go to hello</a> | <router-outlet></router-outlet>`)
            .then((rtc) => {fixture = rtc})
            .then((_) =>
@@ -114,7 +114,7 @@ function syncRoutesWithoutChildrenWithParams() {
     rtr = router;
   }));
 
-  it('should navigate by URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -127,7 +127,7 @@ function syncRoutesWithoutChildrenWithParams() {
            });
      }));
 
-  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -140,7 +140,7 @@ function syncRoutesWithoutChildrenWithParams() {
            });
      }));
 
-  it('should generate a link URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should generate a link URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `<a [routerLink]="['User', {name: 'naomi'}]">greet naomi</a> | <router-outlet></router-outlet>`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -153,7 +153,7 @@ function syncRoutesWithoutChildrenWithParams() {
      }));
 
   it('should navigate from a link click',
-     inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+     inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
        compile(tcb, `<a [routerLink]="['User', {name: 'naomi'}]">greet naomi</a> | <router-outlet></router-outlet>`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -174,7 +174,7 @@ function syncRoutesWithoutChildrenWithParams() {
      }));
 
   it('should navigate between components with different parameters',
-     inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+     inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -206,7 +206,7 @@ function syncRoutesWithSyncChildrenWithoutDefaultRoutesWithoutParams() {
     rtr = router;
   }));
 
-  it('should navigate by URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -219,7 +219,7 @@ function syncRoutesWithSyncChildrenWithoutDefaultRoutesWithoutParams() {
            });
      }));
 
-  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -232,7 +232,7 @@ function syncRoutesWithSyncChildrenWithoutDefaultRoutesWithoutParams() {
            });
      }));
 
-  it('should generate a link URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should generate a link URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `<a [routerLink]="['Parent', 'Child']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -245,7 +245,7 @@ function syncRoutesWithSyncChildrenWithoutDefaultRoutesWithoutParams() {
      }));
 
   it('should navigate from a link click',
-     inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+     inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
        compile(tcb, `<a [routerLink]="['Parent', 'Child']">nav to child</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -280,7 +280,7 @@ function syncRoutesWithSyncChildrenWithoutDefaultRoutesWithParams() {
     rtr = router;
   }));
 
-  it('should navigate by URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `{ <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -294,7 +294,7 @@ function syncRoutesWithSyncChildrenWithoutDefaultRoutesWithParams() {
            });
      }));
 
-  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `{ <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config(
@@ -308,7 +308,7 @@ function syncRoutesWithSyncChildrenWithoutDefaultRoutesWithParams() {
            });
      }));
 
-  it('should generate a link URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should generate a link URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(
            tcb,
            `<a [routerLink]="['/Team', {id: 'angular'}, 'User', {name: 'matias'}]">nav to matias</a> { <router-outlet></router-outlet> }`)
@@ -323,7 +323,7 @@ function syncRoutesWithSyncChildrenWithoutDefaultRoutesWithParams() {
      }));
 
   it('should navigate from a link click',
-     inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+     inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
        compile(
            tcb,
            `<a [routerLink]="['/Team', {id: 'angular'}, 'User', {name: 'matias'}]">nav to matias</a> { <router-outlet></router-outlet> }`)
@@ -360,7 +360,7 @@ function syncRoutesWithSyncChildrenWithDefaultRoutesWithoutParams() {
     rtr = router;
   }));
 
-  it('should navigate by URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then(
@@ -374,7 +374,7 @@ function syncRoutesWithSyncChildrenWithDefaultRoutesWithoutParams() {
            });
      }));
 
-  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate by link DSL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then(
@@ -388,7 +388,7 @@ function syncRoutesWithSyncChildrenWithDefaultRoutesWithoutParams() {
            });
      }));
 
-  it('should generate a link URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should generate a link URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `<a [routerLink]="['/Parent']">link to inner</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then(
@@ -402,7 +402,7 @@ function syncRoutesWithSyncChildrenWithDefaultRoutesWithoutParams() {
      }));
 
   it('should navigate from a link click',
-     inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+     inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
        compile(tcb, `<a [routerLink]="['/Parent']">link to inner</a> | outer { <router-outlet></router-outlet> }`)
            .then((rtc) => {fixture = rtc})
            .then(
@@ -440,7 +440,7 @@ function syncRoutesWithDynamicComponents() {
 
   it('should work',
      inject([AsyncTestCompleter],
-            (async: any /** TODO #9100 */) => {tcb.createAsync(DynamicLoaderCmp)
+            (async: AsyncTestCompleter) => {tcb.createAsync(DynamicLoaderCmp)
                             .then((rtc) => {fixture = rtc})
                             .then((_) => rtr.config([new Route({path: '/', component: HelloCmp})]))
                             .then((_) => {

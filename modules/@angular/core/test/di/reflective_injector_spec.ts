@@ -290,7 +290,7 @@ export function main() {
 
       it('should support overriding factory dependencies', () => {
         var injector = createInjector(
-            [Engine, {provide: Car, useFactory: (e: any /** TODO #9100 */) => new SportsCar(e), deps: [Engine]}]);
+            [Engine, {provide: Car, useFactory: (e: Engine) => new SportsCar(e), deps: [Engine]}]);
 
         var car = injector.get(Car);
         expect(car).toBeAnInstanceOf(SportsCar);
@@ -483,7 +483,7 @@ export function main() {
         it("should return a dependency from self", () => {
           var inj = ReflectiveInjector.resolveAndCreate([
             Engine,
-            {provide: Car, useFactory: (e: any /** TODO #9100 */) => new Car(e), deps: [[Engine, new SelfMetadata()]]}
+            {provide: Car, useFactory: (e: Engine) => new Car(e), deps: [[Engine, new SelfMetadata()]]}
           ]);
 
           expect(inj.get(Car)).toBeAnInstanceOf(Car);
@@ -492,7 +492,7 @@ export function main() {
         it("should throw when not requested provider on self", () => {
           var parent = ReflectiveInjector.resolveAndCreate([Engine]);
           var child = parent.resolveAndCreateChild([
-            {provide: Car, useFactory: (e: any /** TODO #9100 */) => new Car(e), deps: [[Engine, new SelfMetadata()]]}
+            {provide: Car, useFactory: (e: Engine) => new Car(e), deps: [[Engine, new SelfMetadata()]]}
           ]);
 
           expect(() => child.get(Car))
@@ -505,7 +505,7 @@ export function main() {
           var parent = ReflectiveInjector.resolveAndCreate([Engine]);
           var child = parent.resolveAndCreateChild([
             {provide: Engine, useClass: TurboEngine},
-            {provide: Car, useFactory: (e: any /** TODO #9100 */) => new Car(e), deps: [Engine]}
+            {provide: Car, useFactory: (e: Engine) => new Car(e), deps: [Engine]}
           ]);
 
           expect(child.get(Car).engine).toBeAnInstanceOf(TurboEngine);

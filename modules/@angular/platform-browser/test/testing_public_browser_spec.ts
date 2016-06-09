@@ -123,7 +123,7 @@ export function main() {
         beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
 
         it('provides a real XHR instance',
-           inject([XHR], (xhr: any /** TODO #9100 */) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
+           inject([XHR], (xhr: XHR) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
 
         it('should allow the use of fakeAsync', fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
              var value: any /** TODO #9100 */;
@@ -156,7 +156,7 @@ export function main() {
 
         it('should fail with an error from a promise',
            async(inject([TestComponentBuilder],
-                        (tcb: any /** TODO #9100 */) => { return tcb.createAsync(BadTemplateUrl); })));
+                        (tcb: TestComponentBuilder) => { return tcb.createAsync(BadTemplateUrl); })));
 
         itPromise.then(() => { done.fail('Expected test to fail, but it did not'); }, (err) => {
           expect(err).toEqual('Uncaught (in promise): Failed to load non-existant.html');

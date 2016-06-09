@@ -18,7 +18,7 @@ export function main() {
 
     beforeEach(() => { emitter = new EventEmitter(); });
 
-    it("should call the next callback", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it("should call the next callback", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          ObservableWrapper.subscribe(emitter, (value) => {
            expect(value).toEqual(99);
            async.done();
@@ -27,7 +27,7 @@ export function main() {
          ObservableWrapper.callEmit(emitter, 99);
        }));
 
-    it("should call the throw callback", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it("should call the throw callback", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          ObservableWrapper.subscribe(emitter, (_) => {}, (error) => {
            expect(error).toEqual("Boom");
            async.done();
@@ -35,12 +35,12 @@ export function main() {
          ObservableWrapper.callError(emitter, "Boom");
        }));
 
-    it("should work when no throw callback is provided", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it("should work when no throw callback is provided", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          ObservableWrapper.subscribe(emitter, (_) => {}, (_) => { async.done(); });
          ObservableWrapper.callError(emitter, "Boom");
        }));
 
-    it("should call the return callback", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it("should call the return callback", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          ObservableWrapper.subscribe(emitter, (_) => {}, (_) => {}, () => { async.done(); });
 
          ObservableWrapper.callComplete(emitter);
@@ -57,7 +57,7 @@ export function main() {
     // Makes Edge to disconnect when running the full unit test campaign
     // TODO: remove when issue is solved: https://github.com/angular/angular/issues/4756
     if (!browserDetection.isEdge) {
-      it("delivers next and error events synchronously", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+      it("delivers next and error events synchronously", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            let log: any[] /** TODO #9100 */ = [];
            ObservableWrapper.subscribe(emitter,
                                        (x) => {
@@ -96,7 +96,7 @@ export function main() {
       });
     }
 
-    it('delivers events asynchronously when forced to async mode', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('delivers events asynchronously when forced to async mode', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
       var e = new EventEmitter(true);
       var log: any[] /** TODO #9100 */ = [];
       ObservableWrapper.subscribe(e, (x) => {
@@ -149,7 +149,7 @@ export function main() {
   // See ECMAScript 6 Spec 25.4.4.1
   describe("PromiseWrapper", () => {
     describe("#all", () => {
-      it("should combine lists of Promises", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+      it("should combine lists of Promises", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var one = PromiseWrapper.completer();
            var two = PromiseWrapper.completer();
 
@@ -173,7 +173,7 @@ export function main() {
 
       [null, true, false, 10, 'thing', {}, []].forEach(abruptCompletion => {
         it(`should treat "${abruptCompletion}" as an "abrupt completion"`,
-           inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              var one = PromiseWrapper.completer();
 
              var all = PromiseWrapper.all([one.promise, abruptCompletion]);

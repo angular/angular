@@ -43,7 +43,7 @@ export function main() {
     var injector: Injector;
     var sharedStylesHost: SharedStylesHost;
 
-    beforeEach(inject([Injector, SharedStylesHost], (_injector: any /** TODO #9100 */, _sharedStylesHost: any /** TODO #9100 */) => {
+    beforeEach(inject([Injector, SharedStylesHost], (_injector: Injector, _sharedStylesHost: SharedStylesHost) => {
       injector = _injector;
       sharedStylesHost = _sharedStylesHost;
     }));

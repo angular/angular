@@ -39,7 +39,7 @@ export function main() {
   describe('Query API', () => {
     describe("querying by directive type", () => {
       it('should contain all direct child directives in the light dom (constructor)',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<div text="1"></div>' +
                           '<needs-query text="2"><div text="3">' +
                           '<div text="too-deep"></div>' +
@@ -58,7 +58,7 @@ export function main() {
          }));
 
       it('should contain all direct child directives in the content dom',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<needs-content-children #q><div text="foo"></div></needs-content-children>';
 
@@ -79,7 +79,7 @@ export function main() {
          }));
 
       it('should contain the first content child',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<needs-content-child #q><div *ngIf="shouldShow" text="foo"></div></needs-content-child>';
 
@@ -109,7 +109,7 @@ export function main() {
          }));
 
       it('should contain the first view child',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-child #q></needs-view-child>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -136,7 +136,7 @@ export function main() {
          }));
 
       it('should set static view and content children already after the constructor call',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<needs-static-content-view-child #q><div text="contentFoo"></div></needs-static-content-view-child>';
 
@@ -158,7 +158,7 @@ export function main() {
          }));
 
       it('should contain the first view child accross embedded views',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-child #q></needs-view-child>';
            tcb.overrideTemplate(MyComp0, template)
                .overrideTemplate(
@@ -190,7 +190,7 @@ export function main() {
          }));
 
       it('should contain all directives in the light dom when descendants flag is used',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<div text="1"></div>' +
                           '<needs-query-desc text="2"><div text="3">' +
                           '<div text="4"></div>' +
@@ -208,7 +208,7 @@ export function main() {
          }));
 
       it('should contain all directives in the light dom',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<div text="1"></div>' +
                           '<needs-query text="2"><div text="3"></div></needs-query>' +
                           '<div text="4"></div>';
@@ -224,7 +224,7 @@ export function main() {
          }));
 
       it('should reflect dynamically inserted directives',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<div text="1"></div>' +
                '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
@@ -246,7 +246,7 @@ export function main() {
          }));
 
       it('should be cleanly destroyed when a query crosses view boundaries',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<div text="1"></div>' +
                '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
@@ -264,7 +264,7 @@ export function main() {
          }));
 
       it('should reflect moved directives',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<div text="1"></div>' +
                '<needs-query text="2"><div *ngFor="let  i of list" [text]="i"></div></needs-query>' +
@@ -286,7 +286,7 @@ export function main() {
          }));
 
       it('should throw with descriptive error when query selectors are not present',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            tcb.overrideTemplate(MyCompBroken0, '<has-null-query-condition></has-null-query-condition>')
                .createAsync(MyCompBroken0)
                .catch((e) => {
@@ -299,7 +299,7 @@ export function main() {
 
     describe('query for TemplateRef', () => {
       it('should find TemplateRefs in the light and shadow dom',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-tpl><template><div>light</div></template></needs-tpl>';
            tcb.overrideTemplate(MyComp0, template)
                .createAsync(MyComp0)
@@ -317,7 +317,7 @@ export function main() {
          }));
 
       it('should find named TemplateRefs',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<needs-named-tpl><template #tpl><div>light</div></template></needs-named-tpl>';
            tcb.overrideTemplate(MyComp0, template)
@@ -337,7 +337,7 @@ export function main() {
 
     describe('read a different token', () => {
       it('should contain all content children',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<needs-content-children-read #q text="ca"><div #q text="cb"></div></needs-content-children-read>';
 
@@ -356,7 +356,7 @@ export function main() {
          }));
 
       it('should contain the first content child',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<needs-content-child-read><div #q text="ca"></div></needs-content-child-read>';
 
@@ -374,7 +374,7 @@ export function main() {
          }));
 
       it('should contain the first view child',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-child-read></needs-view-child-read>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -391,7 +391,7 @@ export function main() {
          }));
 
       it('should contain all child directives in the view',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-children-read></needs-view-children-read>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -409,7 +409,7 @@ export function main() {
          }));
 
       it('should support reading a ViewContainer',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<needs-viewcontainer-read><template>hello</template></needs-viewcontainer-read>';
 
@@ -430,7 +430,7 @@ export function main() {
 
     describe("changes", () => {
       it('should notify query on change',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-query #q>' +
                           '<div text="1"></div>' +
                           '<div *ngIf="shouldShow" text="2"></div>' +
@@ -454,7 +454,7 @@ export function main() {
          }));
 
       it("should notify child's query before notifying parent's query",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-query-desc #q1>' +
                           '<needs-query-desc #q2>' +
                           '<div text="1"></div>' +
@@ -480,7 +480,7 @@ export function main() {
          }));
 
       it('should correctly clean-up when destroyed together with the directives it is querying',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-query #q *ngIf="shouldShow"><div text="foo"></div></needs-query>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -510,7 +510,7 @@ export function main() {
 
     describe("querying by var binding", () => {
       it('should contain all the child directives in the light dom with the given var binding',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<needs-query-by-ref-binding #q>' +
                '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
@@ -533,7 +533,7 @@ export function main() {
          }));
 
       it('should support querying by multiple var bindings',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-query-by-ref-bindings #q>' +
                           '<div text="one" #textLabel1="textDir"></div>' +
                           '<div text="two" #textLabel2="textDir"></div>' +
@@ -553,7 +553,7 @@ export function main() {
          }));
 
       it('should support dynamically inserted directives',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                '<needs-query-by-ref-binding #q>' +
                '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
@@ -579,7 +579,7 @@ export function main() {
          }));
 
       it('should contain all the elements in the light dom with the given var binding',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-query-by-ref-binding #q>' +
                           '<div template="ngFor: let item of list">' +
                           '<div #textLabel>{{item}}</div>' +
@@ -603,7 +603,7 @@ export function main() {
          }));
 
       it('should contain all the elements in the light dom even if they get projected',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-query-and-project #q>' +
                           '<div text="hello"></div><div text="world"></div>' +
                           '</needs-query-and-project>';
@@ -620,7 +620,7 @@ export function main() {
          }));
 
       it('should support querying the view by using a view query',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-query-by-ref-binding #q></needs-view-query-by-ref-binding>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -636,7 +636,7 @@ export function main() {
          }));
 
       it('should contain all child directives in the view dom',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-children #q></needs-view-children>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -659,7 +659,7 @@ export function main() {
 
     describe("querying in the view", () => {
       it('should contain all the elements in the view with that have the given directive',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-query #q><div text="ignoreme"></div></needs-view-query>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -676,7 +676,7 @@ export function main() {
          }));
 
       it('should not include directive present on the host element',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-query #q text="self"></needs-view-query>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -693,7 +693,7 @@ export function main() {
          }));
 
       it('should reflect changes in the component',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-query-if #q></needs-view-query-if>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -716,7 +716,7 @@ export function main() {
          }));
 
       it('should not be affected by other changes in the component',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-query-nested-if #q></needs-view-query-nested-if>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -741,7 +741,7 @@ export function main() {
 
 
       it('should maintain directives in pre-order depth-first DOM order after dynamic insertion',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-query-order #q></needs-view-query-order>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -764,7 +764,7 @@ export function main() {
          }));
 
       it('should maintain directives in pre-order depth-first DOM order after dynamic insertion',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-query-order-with-p #q></needs-view-query-order-with-p>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -788,7 +788,7 @@ export function main() {
          }));
 
       it('should handle long ngFor cycles',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-view-query-order #q></needs-view-query-order>';
 
            tcb.overrideTemplate(MyComp0, template)
@@ -810,7 +810,7 @@ export function main() {
          }));
 
       it('should support more than three queries',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template = '<needs-four-queries #q><div text="1"></div></needs-four-queries>';
 
            tcb.overrideTemplate(MyComp0, template)

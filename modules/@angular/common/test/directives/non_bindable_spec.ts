@@ -17,7 +17,7 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 export function main() {
   describe('non-bindable', () => {
     it('should not interpolate children',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = '<div>{{text}}<span ngNonBindable>{{text}}</span></div>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -29,7 +29,7 @@ export function main() {
        }));
 
     it('should ignore directives on child nodes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = '<div ngNonBindable><span id=child test-dec>{{text}}</span></div>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -45,7 +45,7 @@ export function main() {
        }));
 
     it('should trigger directives on the same node',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = '<div><span id=child ngNonBindable test-dec>{{text}}</span></div>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)

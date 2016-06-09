@@ -82,7 +82,7 @@ export function main() {
       console = new ArrayConsole();
       return [{provide: Console, useValue: console}];
     });
-    beforeEach(inject([TemplateParser], (parser: any /** TODO #9100 */) => {
+    beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
       var component = CompileDirectiveMetadata.create({
         selector: 'root',
         type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'Root'}),

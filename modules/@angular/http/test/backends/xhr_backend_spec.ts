@@ -385,7 +385,7 @@ export function main() {
            existingXHRs[0].dispatchEvent('load');
          }));
 
-      it('should set ok to true on 200 return', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+      it('should set ok to true on 200 return', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
         var statusCode = 200;
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
           new ResponseOptions({status: statusCode}));
@@ -399,7 +399,7 @@ export function main() {
         existingXHRs[0].dispatchEvent('load');
       }));
 
-      it('should set ok to false on 300 return', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+      it('should set ok to false on 300 return', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
         var statusCode = 300;
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
           new ResponseOptions({status: statusCode}));

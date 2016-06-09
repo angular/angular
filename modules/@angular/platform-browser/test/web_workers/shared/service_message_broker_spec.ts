@@ -38,7 +38,7 @@ export function main() {
       messageBuses.worker.initChannel(CHANNEL);
     });
     it("should call registered method with correct arguments",
-       inject([Serializer], (serializer: any /** TODO #9100 */) => {
+       inject([Serializer], (serializer: Serializer) => {
          var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
          broker.registerMethod(TEST_METHOD, [PRIMITIVE, PRIMITIVE], (arg1, arg2) => {
            expect(arg1).toEqual(PASSED_ARG_1);
@@ -51,7 +51,7 @@ export function main() {
     // TODO(pkozlowski): this fails only in Edge with
     //   "No provider for RenderStore! (Serializer -> RenderStore)"
     if (!browserDetection.isEdge) {
-      it("should return promises to the worker", inject([Serializer], (serializer: any /** TODO #9100 */) => {
+      it("should return promises to the worker", inject([Serializer], (serializer: Serializer) => {
            var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
            broker.registerMethod(TEST_METHOD, [PRIMITIVE], (arg1) => {
              expect(arg1).toEqual(PASSED_ARG_1);
