@@ -5,6 +5,8 @@ import {StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isNumber, isPresent} from '../facade/lang';
 
 import {getDOM} from './dom_adapter';
+import {DomAnimatePlayer} from './dom_animate_player';
+import {dashCaseToCamelCase} from './util';
 import {WebAnimationsPlayer} from './web_animations_player';
 
 export class WebAnimationsDriver implements AnimationDriver {
@@ -13,7 +15,7 @@ export class WebAnimationsDriver implements AnimationDriver {
       duration: number, delay: number, easing: string): AnimationPlayer {
     var anyElm = <any>element;
 
-    var formattedSteps: any[] /** TODO #9100 */ = [];
+    var formattedSteps: {[key: string]: string | number}[] = [];
     var startingStyleLookup: {[key: string]: string | number} = {};
     if (isPresent(startingStyles) && startingStyles.styles.length > 0) {
       startingStyleLookup = _populateStyles(anyElm, startingStyles, {});
@@ -23,7 +25,7 @@ export class WebAnimationsDriver implements AnimationDriver {
 
     keyframes.forEach((keyframe: AnimationKeyframe) => {
       let data = _populateStyles(anyElm, keyframe.styles, startingStyleLookup);
-      (data as any /** TODO #9100 */)['offset'] = keyframe.offset;
+      data['offset'] = keyframe.offset;
       formattedSteps.push(data);
     });
 
@@ -33,44 +35,52 @@ export class WebAnimationsDriver implements AnimationDriver {
     // start/end values is suitable enough for the web-animations API
     if (formattedSteps.length == 1) {
       var start = formattedSteps[0];
-      start.offset = null;
+      start['offset'] = null;
       formattedSteps = [start, start];
     }
 
-    var player = anyElm.animate(
-        formattedSteps,
+    var player = this._triggerWebAnimation(
+        anyElm, formattedSteps,
         {'duration': duration, 'delay': delay, 'easing': easing, 'fill': 'forwards'});
 
     return new WebAnimationsPlayer(player, duration);
   }
+
+  /** @internal */
+  _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {
+    return elm.animate(keyframes, options);
+  }
 }
 
 function _populateStyles(
-    element: any, styles: AnimationStyles, defaultStyles: {[key: string]: string | number}) {
-  var data = {};
+    element: any, styles: AnimationStyles,
+    defaultStyles: {[key: string]: string | number}): {[key: string]: string | number} {
+  var data: {[key: string]: string | number} = {};
   styles.styles.forEach((entry) => {
-    StringMapWrapper.forEach(entry, (val: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-      (data as any /** TODO #9100 */)[prop] = val == AUTO_STYLE ?
-          _computeStyle(element, prop) :
-          val.toString() + _resolveStyleUnit(val, prop);
+    StringMapWrapper.forEach(entry, (val: any, prop: string) => {
+      var formattedProp = dashCaseToCamelCase(prop);
+      data[formattedProp] = val == AUTO_STYLE ?
+          _computeStyle(element, formattedProp) :
+          val.toString() + _resolveStyleUnit(val, prop, formattedProp);
     });
   });
-  StringMapWrapper.forEach(
-      defaultStyles, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-        if (!isPresent((data as any /** TODO #9100 */)[prop])) {
-          (data as any /** TODO #9100 */)[prop] = value;
-        }
-      });
+  StringMapWrapper.forEach(defaultStyles, (value: string, prop: string) => {
+    if (!isPresent(data[prop])) {
+      data[prop] = value;
+    }
+  });
   return data;
 }
 
-function _resolveStyleUnit(val: string | number, prop: string): string {
+function _resolveStyleUnit(
+    val: string | number, userProvidedProp: string, formattedProp: string): string {
   var unit = '';
-  if (_isPixelDimensionStyle(prop) && val != 0 && val != '0') {
+  if (_isPixelDimensionStyle(formattedProp) && val != 0 && val != '0') {
     if (isNumber(val)) {
       unit = 'px';
     } else if (_findDimensionalSuffix(val.toString()).length == 0) {
-      throw new BaseException('Please provide a CSS unit value for ' + prop + ':' + val);
+      throw new BaseException(
+          'Please provide a CSS unit value for ' + userProvidedProp + ':' + val);
     }
   }
   return unit;
@@ -93,32 +103,32 @@ function _isPixelDimensionStyle(prop: string): boolean {
   switch (prop) {
     case 'width':
     case 'height':
-    case 'min-width':
-    case 'min-height':
-    case 'max-width':
-    case 'max-height':
+    case 'minWidth':
+    case 'minHeight':
+    case 'maxWidth':
+    case 'maxHeight':
     case 'left':
     case 'top':
     case 'bottom':
     case 'right':
-    case 'font-size':
-    case 'outline-width':
-    case 'outline-offset':
-    case 'padding-top':
-    case 'padding-left':
-    case 'padding-bottom':
-    case 'padding-right':
-    case 'margin-top':
-    case 'margin-left':
-    case 'margin-bottom':
-    case 'margin-right':
-    case 'border-radius':
-    case 'border-width':
-    case 'border-top-width':
-    case 'border-left-width':
-    case 'border-right-width':
-    case 'border-bottom-width':
-    case 'text-indent':
+    case 'fontSize':
+    case 'outlineWidth':
+    case 'outlineOffset':
+    case 'paddingTop':
+    case 'paddingLeft':
+    case 'paddingBottom':
+    case 'paddingRight':
+    case 'marginTop':
+    case 'marginLeft':
+    case 'marginBottom':
+    case 'marginRight':
+    case 'borderRadius':
+    case 'borderWidth':
+    case 'borderTopWidth':
+    case 'borderLeftWidth':
+    case 'borderRightWidth':
+    case 'borderBottomWidth':
+    case 'textIndent':
       return true;
 
     default:

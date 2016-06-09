@@ -1,40 +1,7 @@
 import {AsyncTestCompleter, MockAnimationPlayer, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
 import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
-import {isPresent} from '../../src/facade/lang';
-
-export class MockDomAnimatePlayer implements DomAnimatePlayer {
-  public captures: {[key: string]: any[]} = {};
-  private _position: number = 0;
-  private _onfinish = () => {};
-  public currentTime: number;
-
-  _capture(method: string, data: any) {
-    if (!isPresent(this.captures[method])) {
-      this.captures[method] = [];
-    }
-    this.captures[method].push(data);
-  }
-
-  cancel() { this._capture('cancel', null); }
-  play() { this._capture('play', null); }
-  pause() { this._capture('pause', null); }
-  finish() {
-    this._capture('finish', null);
-    this._onfinish();
-  }
-  set onfinish(fn) {
-    this._capture('onfinish', fn);
-    this._onfinish = fn;
-  }
-  get onfinish() { return this._onfinish; }
-  set position(val) {
-    this._capture('position', val);
-    this._position = val;
-  }
-  get position() { return this._position; }
-}
+import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
 
 export function main() {
   function makePlayer(): {[key: string]: any} {
