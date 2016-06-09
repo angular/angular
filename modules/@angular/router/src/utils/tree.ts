@@ -70,4 +70,8 @@ function contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {
 
 export class TreeNode<T> {
   constructor(public value: T, public children: TreeNode<T>[]) {}
+
+  toString(): string {
+    return `TreeNode(${this.value})`;
+  }
 }

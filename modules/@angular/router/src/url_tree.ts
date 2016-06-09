@@ -1,6 +1,7 @@
 import {PRIMARY_OUTLET} from './shared';
 import {shallowEqual} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
+import {DefaultUrlSerializer, serializeSegment} from './url_serializer';
 
 export function createEmptyUrlTree() {
   return new UrlTree(
@@ -19,6 +20,10 @@ export class UrlTree extends Tree<UrlSegment> {
       public fragment: string|null) {
     super(root);
   }
+
+  toString(): string {
+    return new DefaultUrlSerializer().serialize(this);
+  }
 }
 
 export class UrlSegment {
@@ -28,16 +33,8 @@ export class UrlSegment {
   constructor(
       public path: string, public parameters: {[key: string]: string}, public outlet: string) {}
 
-  toString() {
-    const params = [];
-    for (let prop in this.parameters) {
-      if (this.parameters.hasOwnProperty(prop)) {
-        params.push(`${prop}=${this.parameters[prop]}`);
-      }
-    }
-    const paramsString = params.length > 0 ? `(${params.join(',')})` : '';
-    const outlet = this.outlet === PRIMARY_OUTLET ? '' : `${this.outlet}:`;
-    return `${outlet}${this.path}${paramsString}`;
+  toString(): string {
+    return serializeSegment(this);
   }
 }
 
