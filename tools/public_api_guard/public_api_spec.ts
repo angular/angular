@@ -987,6 +987,7 @@ const COMMON = [
   'NgSwitchWhen.ngSwitchWhen=(value:any)',
   'NgTemplateOutlet',
   'NgTemplateOutlet.constructor(_viewContainerRef:ViewContainerRef)',
+  'NgTemplateOutlet.ngOutletContext=(context:Object)',
   'NgTemplateOutlet.ngTemplateOutlet=(templateRef:TemplateRef<Object>)',
   'PathLocationStrategy',
   'PathLocationStrategy.back():void',
