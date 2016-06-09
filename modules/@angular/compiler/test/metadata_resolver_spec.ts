@@ -78,6 +78,14 @@ export function main() {
                  .toThrowError(`Expected 'styles' to be an array of strings.`);
            }
          }));
+
+      it('should throw with descriptive error message when provider token can not be resolved',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           if (!IS_DART) {
+             expect(() => resolver.getDirectiveMetadata(MyBrokenComp1))
+                 .toThrowError(`Can't resolve all parameters for MyBrokenComp1: (?).`);
+           }
+         }));
     });
 
     describe('getViewDirectivesMetadata', () => {
@@ -147,4 +155,9 @@ class ComponentWithEverything implements OnChanges,
   ngAfterContentChecked(): void {}
   ngAfterViewInit(): void {}
   ngAfterViewChecked(): void {}
+}
+
+@Component({selector: 'my-broken-comp', template: ''})
+class MyBrokenComp1 {
+  constructor(public dependency: any) {}
 }
