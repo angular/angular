@@ -104,7 +104,7 @@ export class Router {
   constructor(
       private rootComponentType: Type, private resolver: ComponentResolver,
       private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
-      private location: Location, private injector: g Injector, private config: RouterConfig) {
+      private location: Location, private injector: Injector, private config: RouterConfig) {
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
     this.currentRouterState = createEmptyState(this.rootComponentType);
