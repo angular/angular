@@ -12,11 +12,11 @@ import {Control, FormBuilder} from '@angular/common';
 import {PromiseWrapper} from '../../src/facade/promise';
 
 export function main() {
-  function syncValidator(_) { return null; }
-  function asyncValidator(_) { return PromiseWrapper.resolve(null); }
+  function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
+  function asyncValidator(_: any /** TODO #9100 */) { return PromiseWrapper.resolve(null); }
 
   describe("Form Builder", () => {
-    var b;
+    var b: any /** TODO #9100 */;
 
     beforeEach(() => { b = new FormBuilder(); });
 

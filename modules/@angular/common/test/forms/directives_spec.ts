@@ -44,10 +44,10 @@ import {PromiseWrapper} from '../../src/facade/promise';
 import {SimpleChange} from '@angular/core/src/change_detection';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
-  writtenValue;
+  writtenValue: any /** TODO #9100 */;
 
-  registerOnChange(fn) {}
-  registerOnTouched(fn) {}
+  registerOnChange(fn: any /** TODO #9100 */) {}
+  registerOnTouched(fn: any /** TODO #9100 */) {}
 
   writeValue(obj: any): void { this.writtenValue = obj; }
 }
@@ -56,8 +56,8 @@ class CustomValidatorDirective implements Validator {
   validate(c: Control): {[key: string]: any} { return {"custom": true}; }
 }
 
-function asyncValidator(expected, timeout = 0) {
-  return (c) => {
+function asyncValidator(expected: any /** TODO #9100 */, timeout = 0) {
+  return (c: any /** TODO #9100 */) => {
     var completer = PromiseWrapper.completer();
     var res = c.value != expected ? {"async": true} : null;
     if (timeout == 0) {
@@ -120,14 +120,14 @@ export function main() {
 
       describe("composeValidators", () => {
         it("should compose functions", () => {
-          var dummy1 = (_) => ({"dummy1": true});
-          var dummy2 = (_) => ({"dummy2": true});
+          var dummy1 = (_: any /** TODO #9100 */) => ({"dummy1": true});
+          var dummy2 = (_: any /** TODO #9100 */) => ({"dummy2": true});
           var v = composeValidators([dummy1, dummy2]);
           expect(v(new Control(""))).toEqual({"dummy1": true, "dummy2": true});
         });
 
         it("should compose validator directives", () => {
-          var dummy1 = (_) => ({"dummy1": true});
+          var dummy1 = (_: any /** TODO #9100 */) => ({"dummy1": true});
           var v = composeValidators([dummy1, new CustomValidatorDirective()]);
           expect(v(new Control(""))).toEqual({"dummy1": true, "custom": true});
         });
@@ -135,9 +135,9 @@ export function main() {
     });
 
     describe("NgFormModel", () => {
-      var form;
+      var form: any /** TODO #9100 */;
       var formModel: ControlGroup;
-      var loginControlDir;
+      var loginControlDir: any /** TODO #9100 */;
 
       beforeEach(() => {
         form = new NgFormModel([], []);
@@ -215,7 +215,7 @@ export function main() {
       });
 
       describe("addControlGroup", () => {
-        var matchingPasswordsValidator = (g) => {
+        var matchingPasswordsValidator = (g: any /** TODO #9100 */) => {
           if (g.controls["password"].value != g.controls["passwordConfirm"].value) {
             return {"differentPasswords": true};
           } else {
@@ -268,7 +268,7 @@ export function main() {
         });
 
         it("should set up a sync validator", () => {
-          var formValidator = (c) => ({"custom": true});
+          var formValidator = (c: any /** TODO #9100 */) => ({"custom": true});
           var f = new NgFormModel([formValidator], []);
           f.form = formModel;
           f.ngOnChanges({"form": new SimpleChange(null, null)});
@@ -289,10 +289,10 @@ export function main() {
     });
 
     describe("NgForm", () => {
-      var form;
+      var form: any /** TODO #9100 */;
       var formModel: ControlGroup;
-      var loginControlDir;
-      var personControlGroupDir;
+      var loginControlDir: any /** TODO #9100 */;
+      var personControlGroupDir: any /** TODO #9100 */;
 
       beforeEach(() => {
         form = new NgForm([], []);
@@ -348,7 +348,7 @@ export function main() {
       });
 
       it("should set up sync validator", fakeAsync(() => {
-           var formValidator = (c) => ({"custom": true});
+           var formValidator = (c: any /** TODO #9100 */) => ({"custom": true});
            var f = new NgForm([formValidator], []);
 
            tick();
@@ -366,8 +366,8 @@ export function main() {
     });
 
     describe("NgControlGroup", () => {
-      var formModel;
-      var controlGroupDir;
+      var formModel: any /** TODO #9100 */;
+      var controlGroupDir: any /** TODO #9100 */;
 
       beforeEach(() => {
         formModel = new ControlGroup({"login": new Control(null)});
@@ -391,9 +391,9 @@ export function main() {
     });
 
     describe("NgFormControl", () => {
-      var controlDir;
-      var control;
-      var checkProperties = function(control) {
+      var controlDir: any /** TODO #9100 */;
+      var control: any /** TODO #9100 */;
+      var checkProperties = function(control: any /** TODO #9100 */) {
         expect(controlDir.control).toBe(control);
         expect(controlDir.value).toBe(control.value);
         expect(controlDir.valid).toBe(control.valid);
@@ -433,7 +433,7 @@ export function main() {
     });
 
     describe("NgModel", () => {
-      var ngModel;
+      var ngModel: any /** TODO #9100 */;
 
       beforeEach(() => {
         ngModel =
@@ -468,8 +468,8 @@ export function main() {
     });
 
     describe("NgControlName", () => {
-      var formModel;
-      var controlNameDir;
+      var formModel: any /** TODO #9100 */;
+      var controlNameDir: any /** TODO #9100 */;
 
       beforeEach(() => {
         formModel = new Control("name");
