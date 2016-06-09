@@ -1,10 +1,12 @@
 import {Attribute, ComponentFactory, ComponentRef, Directive, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
 import {RouterOutletMap} from '../router_outlet_map';
+import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {
   private activated: ComponentRef<any>|null;
+  private _activatedRoute: ActivatedRoute|null;
   public outletMap: RouterOutletMap;
 
   /**
@@ -21,6 +23,10 @@ export class RouterOutlet {
     if (!this.activated) throw new Error('Outlet is not activated');
     return this.activated.instance;
   }
+  get activatedRoute(): ActivatedRoute {
+    if (!this.activated) throw new Error('Outlet is not activated');
+    return this._activatedRoute;
+  }
 
   deactivate(): void {
     if (this.activated) {
@@ -30,9 +36,10 @@ export class RouterOutlet {
   }
 
   activate(
-      factory: ComponentFactory<any>, providers: ResolvedReflectiveProvider[],
+      factory: ComponentFactory<any>, activatedRoute: ActivatedRoute, providers: ResolvedReflectiveProvider[],
       outletMap: RouterOutletMap): void {
     this.outletMap = outletMap;
+    this._activatedRoute = activatedRoute;
     const inj = ReflectiveInjector.fromResolvedProviders(providers, this.location.parentInjector);
     this.activated = this.location.createComponent(factory, this.location.length, inj, []);
   }
