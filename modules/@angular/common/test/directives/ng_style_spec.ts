@@ -24,7 +24,7 @@ export function main() {
   describe('binding to CSS styles', () => {
 
     it('should add styles specified in an object literal',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = `<div [ngStyle]="{'max-width': '40px'}"></div>`;
 
          tcb.overrideTemplate(TestComponent, template)
@@ -40,7 +40,7 @@ export function main() {
        }));
 
     it('should add and change styles specified in an object expression',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = `<div [ngStyle]="expr"></div>`;
 
          tcb.overrideTemplate(TestComponent, template)
@@ -66,7 +66,7 @@ export function main() {
        }));
 
     it('should remove styles when deleting a key in an object expression',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = `<div [ngStyle]="expr"></div>`;
 
          tcb.overrideTemplate(TestComponent, template)
@@ -89,7 +89,7 @@ export function main() {
        }));
 
     it('should co-operate with the style attribute',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = `<div style="font-size: 12px" [ngStyle]="expr"></div>`;
 
          tcb.overrideTemplate(TestComponent, template)
@@ -118,7 +118,7 @@ export function main() {
        }));
 
     it('should co-operate with the style.[styleName]="expr" special-case in the compiler',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = `<div [style.font-size.px]="12" [ngStyle]="expr"></div>`;
 
          tcb.overrideTemplate(TestComponent, template)

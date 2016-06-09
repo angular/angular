@@ -34,7 +34,7 @@ function auxRoutes() {
     rtr = router;
   }));
 
-  it('should recognize and navigate from the URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should recognize and navigate from the URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
@@ -49,7 +49,7 @@ function auxRoutes() {
            });
      }));
 
-  it('should navigate via the link DSL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate via the link DSL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
@@ -64,7 +64,7 @@ function auxRoutes() {
            });
      }));
 
-  it('should generate a link URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should generate a link URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(
            tcb,
            `<a [routerLink]="['/', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
@@ -81,7 +81,7 @@ function auxRoutes() {
      }));
 
   it('should navigate from a link click',
-     inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+     inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
        compile(
            tcb,
            `<a [routerLink]="['/', ['Modal']]">open modal</a> | <a [routerLink]="['/Hello']">hello</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
@@ -137,7 +137,7 @@ function auxRoutesWithAPrimaryRoute() {
     rtr = router;
   }));
 
-  it('should recognize and navigate from the URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should recognize and navigate from the URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
@@ -152,7 +152,7 @@ function auxRoutesWithAPrimaryRoute() {
            });
      }));
 
-  it('should navigate via the link DSL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should navigate via the link DSL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(tcb, `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
            .then((rtc) => {fixture = rtc})
            .then((_) => rtr.config([
@@ -167,7 +167,7 @@ function auxRoutesWithAPrimaryRoute() {
            });
      }));
 
-  it('should generate a link URL', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+  it('should generate a link URL', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
        compile(
            tcb,
            `<a [routerLink]="['/Hello', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
@@ -184,7 +184,7 @@ function auxRoutesWithAPrimaryRoute() {
      }));
 
   it('should navigate from a link click',
-     inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+     inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
        compile(
            tcb,
            `<a [routerLink]="['/Hello', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)

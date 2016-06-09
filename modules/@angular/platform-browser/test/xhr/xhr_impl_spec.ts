@@ -28,14 +28,14 @@ export function main() {
     beforeEach(() => { xhr = new XHRImpl(); });
 
     it('should resolve the Promise with the file content on success',
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          xhr.get(url200).then((text) => {
            expect(text.trim()).toEqual('<p>hey</p>');
            async.done();
          });
        }), 10000);
 
-    it('should reject the Promise on failure', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should reject the Promise on failure', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          PromiseWrapper.catchError(xhr.get(url404), (e) => {
            expect(e).toEqual(`Failed to load ${url404}`);
            async.done();

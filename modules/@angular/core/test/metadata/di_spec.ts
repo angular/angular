@@ -25,7 +25,7 @@ import {
 export function main() {
   describe('ViewChild', () => {
     it('should support type selector',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideView(ViewChildTypeSelectorComponent,
                           new ViewMetadata(
                               {template: `<simple [marker]="'1'"></simple><simple [marker]="'2'"></simple>`, directives: [Simple]}))
@@ -38,7 +38,7 @@ export function main() {
              });
        }));
     it('should support string selector',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideView(
                 ViewChildStringSelectorComponent,
                 new ViewMetadata({template: `<simple #child></simple>`, directives: [Simple]}))
@@ -52,7 +52,7 @@ export function main() {
   });
   describe('ViewChildren', () => {
     it('should support type selector',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideView(ViewChildrenTypeSelectorComponent,
                           new ViewMetadata({template: `<simple></simple><simple></simple>`, directives: [Simple]}))
              .createAsync(ViewChildrenTypeSelectorComponent)
@@ -64,7 +64,7 @@ export function main() {
              });
        }));
     it('should support string selector',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideView(
                 ViewChildrenStringSelectorComponent,
                 new ViewMetadata({template: `<simple #child1></simple><simple #child2></simple>`, directives: [Simple]}))

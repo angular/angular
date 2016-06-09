@@ -43,7 +43,7 @@ export function main() {
       expect(locationStrategy.path()).toEqual('/my/app/user/btford');
     });
 
-    it('should normalize urls on popstate', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should normalize urls on popstate', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
          location.subscribe((ev: any /** TODO #9100 */) => {
            expect(ev['url']).toEqual('/user/btford');

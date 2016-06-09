@@ -25,7 +25,7 @@ export function main() {
         '<div><copy-me template="ngFor let item of items">{{item.toString()}};</copy-me></div>';
 
     it('should reflect initial elements',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
              .then((fixture) => {
@@ -36,7 +36,7 @@ export function main() {
        }));
 
     it('should reflect added elements',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
              .then((fixture) => {
@@ -51,7 +51,7 @@ export function main() {
        }));
 
     it('should reflect removed elements',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
              .then((fixture) => {
@@ -66,7 +66,7 @@ export function main() {
        }));
 
     it('should reflect moved elements',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
              .then((fixture) => {
@@ -82,7 +82,7 @@ export function main() {
        }));
 
     it('should reflect a mix of all changes (additions/removals/moves)',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
              .then((fixture) => {
@@ -98,7 +98,7 @@ export function main() {
        }));
 
     it('should iterate over an array of objects',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = '<ul><li template="ngFor let item of items">{{item["name"]}};</li></ul>';
 
          tcb.overrideTemplate(TestComponent, template)
@@ -128,7 +128,7 @@ export function main() {
        }));
 
     it('should gracefully handle nulls',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = '<ul><li template="ngFor let item of null">{{item}};</li></ul>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -140,7 +140,7 @@ export function main() {
        }));
 
     it('should gracefully handle ref changing to null and back',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
              .then((fixture) => {
@@ -160,7 +160,7 @@ export function main() {
 
     if (!IS_DART) {
       it('should throw on non-iterable ref and suggest using an array',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            tcb.overrideTemplate(TestComponent, TEMPLATE)
                .createAsync(TestComponent)
                .then((fixture) => {
@@ -177,7 +177,7 @@ export function main() {
     }
 
     it('should throw on ref changing to string',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
              .then((fixture) => {
@@ -191,7 +191,7 @@ export function main() {
        }));
 
     it('should works with duplicates',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
              .then((fixture) => {
@@ -204,7 +204,7 @@ export function main() {
        }));
 
     it('should repeat over nested arrays',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = '<div>' +
                         '<div template="ngFor let item of items">' +
                         '<div template="ngFor let subitem of item">' +
@@ -231,7 +231,7 @@ export function main() {
        }));
 
     it('should repeat over nested arrays with no intermediate element',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template = '<div><template ngFor let-item [ngForOf]="items">' +
                         '<div template="ngFor let subitem of item">' +
                         '{{subitem}}-{{item.length}};' +
@@ -252,7 +252,7 @@ export function main() {
        }));
 
     it('should repeat over nested ngIf that are the last node in the ngFor temlate',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template =
              `<div><template ngFor let-item [ngForOf]="items" let-i="index"><div>{{i}}|</div>` +
              `<div *ngIf="i % 2 == 0">even|</div></template></div>`;
@@ -279,7 +279,7 @@ export function main() {
        }));
 
     it('should display indices correctly',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template =
              '<div><copy-me template="ngFor: let item of items; let i=index">{{i.toString()}}</copy-me></div>';
 
@@ -298,7 +298,7 @@ export function main() {
        }));
 
     it('should display first item correctly',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template =
              '<div><copy-me template="ngFor: let item of items; let isFirst=first">{{isFirst.toString()}}</copy-me></div>';
 
@@ -317,7 +317,7 @@ export function main() {
        }));
 
     it('should display last item correctly',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template =
              '<div><copy-me template="ngFor: let item of items; let isLast=last">{{isLast.toString()}}</copy-me></div>';
 
@@ -336,7 +336,7 @@ export function main() {
        }));
 
     it('should display even items correctly',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template =
              '<div><copy-me template="ngFor: let item of items; let isEven=even">{{isEven.toString()}}</copy-me></div>';
 
@@ -355,7 +355,7 @@ export function main() {
        }));
 
     it('should display odd items correctly',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var template =
              '<div><copy-me template="ngFor: let item of items; let isOdd=odd">{{isOdd.toString()}}</copy-me></div>';
 
@@ -374,7 +374,7 @@ export function main() {
        }));
 
     it('should allow to use a custom template',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(
                 TestComponent,
                 '<ul><template ngFor [ngForOf]="items" [ngForTemplate]="contentTpl"></template></ul>')
@@ -393,7 +393,7 @@ export function main() {
        }));
 
     it('should use a default template if a custom one is null',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, `<ul><template ngFor let-item [ngForOf]="items"
          [ngForTemplate]="contentTpl" let-i="index">{{i}}: {{item}};</template></ul>`)
              .overrideTemplate(ComponentUsingTestComponent, '<test-cmp></test-cmp>')
@@ -409,7 +409,7 @@ export function main() {
        }));
 
     it('should use a custom template when both default and a custom one are present',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          tcb.overrideTemplate(TestComponent, `<ul><template ngFor let-item [ngForOf]="items"
          [ngForTemplate]="contentTpl" let-i="index">{{i}}=> {{item}};</template></ul>`)
              .overrideTemplate(
@@ -428,7 +428,7 @@ export function main() {
 
     describe('track by', function() {
       it('should not replace tracked items',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                `<template ngFor let-item [ngForOf]="items" [ngForTrackBy]="trackById" let-i="index">
                <p>{{items[i]}}</p>
@@ -450,7 +450,7 @@ export function main() {
                });
          }));
       it('should update implicit local variable on view',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                `<div><template ngFor let-item [ngForOf]="items" [ngForTrackBy]="trackById">{{item['color']}}</template></div>`;
            tcb.overrideTemplate(TestComponent, template)
@@ -466,7 +466,7 @@ export function main() {
                });
          }));
       it('should move items around and keep them updated ',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                `<div><template ngFor let-item [ngForOf]="items" [ngForTrackBy]="trackById">{{item['color']}}</template></div>`;
            tcb.overrideTemplate(TestComponent, template)
@@ -485,7 +485,7 @@ export function main() {
          }));
 
       it('should handle added and removed items properly when tracking by index',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var template =
                `<div><template ngFor let-item [ngForOf]="items" [ngForTrackBy]="trackByIndex">{{item}}</template></div>`;
            tcb.overrideTemplate(TestComponent, template)

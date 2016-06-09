@@ -192,7 +192,7 @@ class DirectiveListComp {
 export function main() {
   describe('test component builder', function() {
     it('should instantiate a component with valid DOM',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
          tcb.createAsync(ChildComp).then((componentFixture) => {
            componentFixture.detectChanges();
@@ -203,7 +203,7 @@ export function main() {
        }));
 
     it('should allow changing members of the component',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
          tcb.createAsync(MyIfComp).then((componentFixture) => {
            componentFixture.detectChanges();
@@ -218,7 +218,7 @@ export function main() {
        }));
 
     it('should override a template',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
          tcb.overrideTemplate(MockChildComp, '<span>Mock</span>')
              .createAsync(MockChildComp)
@@ -231,7 +231,7 @@ export function main() {
        }));
 
     it('should override a view',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
          tcb.overrideView(ChildComp,
                           new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
@@ -245,7 +245,7 @@ export function main() {
        }));
 
     it('should override component dependencies',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
          tcb.overrideDirective(ParentComp, ChildComp, MockChildComp)
              .createAsync(ParentComp)
@@ -258,7 +258,7 @@ export function main() {
        }));
 
     it('should override items from a list',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
          tcb.overrideDirective(DirectiveListComp, ListDir1, ListDir1Alt)
              .createAsync(DirectiveListComp)
@@ -271,7 +271,7 @@ export function main() {
        }));
 
     it("should override child component's dependencies",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
          tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
              .overrideDirective(ChildWithChildComp, ChildChildComp, MockChildChildComp)
@@ -286,7 +286,7 @@ export function main() {
        }));
 
     it('should override a provider',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
          tcb.overrideProviders(TestBindingsComp,
                                [{provide: FancyService, useClass: MockFancyService}])
@@ -301,7 +301,7 @@ export function main() {
 
 
     it('should override a viewBinding',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
          tcb.overrideViewProviders(TestViewBindingsComp,
                                    [{provide: FancyService, useClass: MockFancyService}])
@@ -318,7 +318,7 @@ export function main() {
       describe('ComponentFixture', () => {
         it('should auto detect changes if autoDetectChanges is called',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                     tcb.createAsync(AutoDetectComp)
                         .then((componentFixture) => {
@@ -338,7 +338,7 @@ export function main() {
         it('should auto detect changes if ComponentFixtureAutoDetect is provided as true',
            withProviders(() => [{provide: ComponentFixtureAutoDetect, useValue: true}])
                .inject([TestComponentBuilder, AsyncTestCompleter],
-                       (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                       (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                          tcb.createAsync(AutoDetectComp)
                              .then((componentFixture) => {
@@ -354,7 +354,7 @@ export function main() {
 
         it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                     tcb.createAsync(AsyncComp).then((componentFixture) => {
                       componentFixture.autoDetectChanges();
@@ -377,7 +377,7 @@ export function main() {
 
         it('should signal through isStable when the fixture is stable (no autoDetectChanges)',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                     tcb.createAsync(AsyncComp).then((componentFixture) => {
                       componentFixture.detectChanges();
@@ -401,7 +401,7 @@ export function main() {
         it('should wait for macroTask(setTimeout) while checking for whenStable ' +
                '(autoDetectChanges)',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                     tcb.createAsync(AsyncTimeoutComp)
                         .then((componentFixture) => {
@@ -426,7 +426,7 @@ export function main() {
         it('should wait for macroTask(setTimeout) while checking for whenStable ' +
                '(no autoDetectChanges)',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                     tcb.createAsync(AsyncTimeoutComp)
                         .then((componentFixture) => {
@@ -452,7 +452,7 @@ export function main() {
         it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
                '(autoDetectChanges)',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                     tcb.createAsync(NestedAsyncTimeoutComp)
                         .then((componentFixture) => {
@@ -477,7 +477,7 @@ export function main() {
         it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
                '(no autoDetectChanges)',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                     tcb.createAsync(NestedAsyncTimeoutComp)
                         .then((componentFixture) => {
@@ -502,7 +502,7 @@ export function main() {
 
         it('should stabilize after async task in change detection (autoDetectChanges)',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                     tcb.createAsync(AsyncChangeComp)
                         .then((componentFixture) => {
@@ -523,7 +523,7 @@ export function main() {
 
         it('should stabilize after async task in change detection(no autoDetectChanges)',
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                     tcb.createAsync(AsyncChangeComp)
                         .then((componentFixture) => {
@@ -554,7 +554,7 @@ export function main() {
 
           it('calling autoDetectChanges raises an error', () => {
             inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
-                                                                async: any /** TODO #9100 */) => {
+                                                                async: AsyncTestCompleter) => {
               tcb.createAsync(ChildComp).then((componentFixture) => {
                 expect(() => {
                   componentFixture.autoDetectChanges();
@@ -566,7 +566,7 @@ export function main() {
 
           it('should instantiate a component with valid DOM',
              inject([TestComponentBuilder, AsyncTestCompleter],
-                    (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                    (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                       tcb.createAsync(ChildComp).then((componentFixture) => {
                         expect(componentFixture.ngZone).toBeNull();
@@ -578,7 +578,7 @@ export function main() {
 
           it('should allow changing members of the component',
              inject([TestComponentBuilder, AsyncTestCompleter],
-                    (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                    (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                       tcb.createAsync(MyIfComp).then((componentFixture) => {
                         componentFixture.detectChanges();
@@ -596,7 +596,7 @@ export function main() {
         describe('createSync', () => {
           it('should create components',
              inject([ComponentResolver, TestComponentBuilder, AsyncTestCompleter],
-                    (cr: ComponentResolver, tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                    (cr: ComponentResolver, tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                       cr.resolveComponent(MyIfComp).then((cmpFactory) => {
                         let componentFixture = tcb.createSync(cmpFactory);
 

@@ -24,7 +24,7 @@ export function main() {
     beforeEach(() => { bus = createConnectedMessageBus(); });
 
     it("should pass messages in the same channel from sink to source",
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const CHANNEL = "CHANNEL 1";
          const MESSAGE = "Test message";
          bus.initChannel(CHANNEL, false);
@@ -38,7 +38,7 @@ export function main() {
          ObservableWrapper.callEmit(toEmitter, MESSAGE);
        }));
 
-    it("should broadcast", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it("should broadcast", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const CHANNEL = "CHANNEL 1";
          const MESSAGE = "TESTING";
          const NUM_LISTENERS = 2;
@@ -62,7 +62,7 @@ export function main() {
          ObservableWrapper.callEmit(toEmitter, MESSAGE);
        }));
 
-    it("should keep channels independent", inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it("should keep channels independent", inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const CHANNEL_ONE = "CHANNEL 1";
          const CHANNEL_TWO = "CHANNEL 2";
          const MESSAGE_ONE = "This is a message on CHANNEL 1";
@@ -114,7 +114,7 @@ export function main() {
     it("should buffer messages and wait for the zone to exit before sending",
        withProviders(() => [{provide: NgZone, useClass: MockNgZone}])
            .inject([AsyncTestCompleter, NgZone],
-                   (async: any /** TODO #9100 */, zone: MockNgZone) => {
+                   (async: AsyncTestCompleter, zone: MockNgZone) => {
                      bus = createConnectedMessageBus();
                      setup(true, zone);
 
@@ -137,7 +137,7 @@ export function main() {
        500);
 
     it("should send messages immediatly when run outside the zone",
-       inject([AsyncTestCompleter, NgZone], (async: any /** TODO #9100 */, zone: MockNgZone) => {
+       inject([AsyncTestCompleter, NgZone], (async: AsyncTestCompleter, zone: MockNgZone) => {
          bus = createConnectedMessageBus();
          setup(false, zone);
 

@@ -29,7 +29,7 @@ export function main() {
 
     it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
        inject([TestComponentBuilder, Log, AsyncTestCompleter], (tcb: TestComponentBuilder, log: Log,
-                                                                async: any /** TODO #9100 */) => {
+                                                                async: AsyncTestCompleter) => {
          tcb.overrideView(
                 MyComp5,
                 new ViewMetadata(

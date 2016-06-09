@@ -56,7 +56,7 @@ export function main() {
 
     // do not refactor out the `bootstrap` functionality. We still want to
     // keep this test around so we can ensure that bootstrap a router works
-    it('should bootstrap a simple app', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should bootstrap a simple app', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var fakeDoc = getDOM().createHtmlDocument();
          var el = getDOM().createElement('app-cmp', fakeDoc);
          getDOM().appendChild(fakeDoc.body, el);
@@ -83,7 +83,7 @@ export function main() {
       beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: BrokenAppCmp}]);
 
       it('should rethrow exceptions from component constructors',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
+         inject([AsyncTestCompleter, TestComponentBuilder], (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
            tcb.createAsync(AppCmp).then((fixture) => {
              var router = fixture.debugElement.componentInstance.router;
              PromiseWrapper.catchError(router.navigateByUrl('/cause-error'), (error) => {
@@ -98,7 +98,7 @@ export function main() {
       beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp}]);
 
       it('should change the url without pushing a new history state for back navigations',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
+         inject([AsyncTestCompleter, TestComponentBuilder], (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
 
            tcb.createAsync(HierarchyAppCmp)
                .then((fixture) => {
@@ -149,7 +149,7 @@ export function main() {
           () => { return [{provide: ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp}]; });
 
       it('should bootstrap an app with a hierarchy',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
+         inject([AsyncTestCompleter, TestComponentBuilder], (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
 
            tcb.createAsync(HierarchyAppCmp)
                .then((fixture) => {
@@ -170,7 +170,7 @@ export function main() {
         beforeEachProviders(() => { return [{provide: APP_BASE_HREF, useValue: '/my/app'}]; });
         it('should bootstrap',
            inject([AsyncTestCompleter, TestComponentBuilder],
-                  (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
+                  (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
 
                     tcb.createAsync(HierarchyAppCmp)
                         .then((fixture) => {
@@ -194,7 +194,7 @@ export function main() {
           () => { return [{provide: ROUTER_PRIMARY_COMPONENT, useValue: QueryStringAppCmp}]; });
 
       it('should recognize and return querystring params with the injected RouteParams',
-         inject([AsyncTestCompleter, TestComponentBuilder], (async: any /** TODO #9100 */, tcb: TestComponentBuilder) => {
+         inject([AsyncTestCompleter, TestComponentBuilder], (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
            tcb.createAsync(QueryStringAppCmp)
                .then((fixture) => {
                  var router = fixture.debugElement.componentInstance.router;
@@ -223,7 +223,7 @@ export function main() {
                         (testComponentBuilder: any /** TODO #9100 */) => { tcb = testComponentBuilder; }));
 
       it('should get a reference and pass data to components loaded inside of outlets',
-         inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            tcb.createAsync(AppWithOutletListeners)
                .then(fixture => {
                  let appInstance = fixture.debugElement.componentInstance;

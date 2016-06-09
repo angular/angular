@@ -289,7 +289,7 @@ export function main() {
 
     beforeEachProviders(() => [{provide: "appService", useValue: 'appService'}]);
 
-    beforeEach(inject([TestComponentBuilder], (_tcb: any /** TODO #9100 */) => { tcb = _tcb; }));
+    beforeEach(inject([TestComponentBuilder], (_tcb: TestComponentBuilder) => { tcb = _tcb; }));
 
     describe("injection", () => {
       it("should instantiate directives that have no dependencies", fakeAsync(() => {

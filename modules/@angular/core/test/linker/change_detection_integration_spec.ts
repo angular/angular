@@ -19,16 +19,11 @@ import {
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
 import {
-  isPresent,
   isBlank,
-  isNumber,
-  isJsObject,
-  FunctionWrapper,
   NumberWrapper,
-  normalizeBool
 } from '../../src/facade/lang';
-import {BaseException, WrappedException} from '../../src/facade/exceptions';
-import {MapWrapper, StringMapWrapper} from '../../src/facade/collection';
+import {BaseException} from '../../src/facade/exceptions';
+import {StringMapWrapper} from '../../src/facade/collection';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {
@@ -130,7 +125,7 @@ export function main() {
     ]);
 
     beforeEach(inject([TestComponentBuilder, ElementSchemaRegistry, RenderLog, DirectiveLog],
-                      (_tcb: any /** TODO #9100 */, _elSchema: any /** TODO #9100 */, _renderLog: any /** TODO #9100 */, _directiveLog: any /** TODO #9100 */) => {
+                      (_tcb: TestComponentBuilder, _elSchema: MockSchemaRegistry, _renderLog: RenderLog, _directiveLog: DirectiveLog) => {
                         tcb = _tcb;
                         elSchema = _elSchema;
                         renderLog = _renderLog;

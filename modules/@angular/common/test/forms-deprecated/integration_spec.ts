@@ -41,7 +41,7 @@ export function main() {
   describe("integration tests", () => {
 
     it("should initialize DOM elements with the given form object",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var t = `<div [ngFormModel]="form">
                 <input type="text" ngControl="login">
                </div>`;
@@ -60,7 +60,7 @@ export function main() {
        }));
 
     it("should throw if a form isn't passed into ngFormModel",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var t = `<div [ngFormModel]="form">
                 <input type="text" ngControl="login">
                </div>`;
@@ -75,7 +75,7 @@ export function main() {
        }));
 
     it("should update the control group values on DOM change",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var form = new ControlGroup({"login": new Control("oldValue")});
 
          var t = `<div [ngFormModel]="form">
@@ -98,7 +98,7 @@ export function main() {
        }));
 
     it("should ignore the change event for <input type=text>",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var form = new ControlGroup({"login": new Control("oldValue")});
 
          var t = `<div [ngFormModel]="form">
@@ -194,7 +194,7 @@ export function main() {
       })));
 
     it("should work with single controls",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var control = new Control("loginValue");
 
          var t = `<div><input type="text" [ngFormControl]="form"></div>`;
@@ -217,7 +217,7 @@ export function main() {
        }));
 
     it("should update DOM elements when rebinding the control group",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var t = `<div [ngFormModel]="form">
                 <input type="text" ngControl="login">
                </div>`;
@@ -240,7 +240,7 @@ export function main() {
        }));
 
     it("should update DOM elements when updating the value of a control",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var login = new Control("oldValue");
          var form = new ControlGroup({"login": login});
 
@@ -265,7 +265,7 @@ export function main() {
        }));
 
     it("should mark controls as touched after interacting with the DOM control",
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
          var login = new Control("oldValue");
          var form = new ControlGroup({"login": login});
 
@@ -292,7 +292,7 @@ export function main() {
 
     describe("different control types", () => {
       it("should support <input type=text>",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<div [ngFormModel]="form">
                   <input type="text" ngControl="text">
                 </div>`;
@@ -316,7 +316,7 @@ export function main() {
          }));
 
       it("should support <input> without type",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<div [ngFormModel]="form">
                   <input ngControl="text">
                 </div>`;
@@ -339,7 +339,7 @@ export function main() {
          }));
 
       it("should support <textarea>",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<div [ngFormModel]="form">
                   <textarea ngControl="text"></textarea>
                 </div>`;
@@ -363,7 +363,7 @@ export function main() {
          }));
 
       it("should support <type=checkbox>",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<div [ngFormModel]="form">
                   <input type="checkbox" ngControl="checkbox">
                 </div>`;
@@ -388,7 +388,7 @@ export function main() {
          }));
 
       it("should support <type=number>",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<div [ngFormModel]="form">
                   <input type="number" ngControl="num">
                 </div>`;
@@ -412,7 +412,7 @@ export function main() {
          }));
 
       it("should support <type=number> when value is cleared in the UI",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<div [ngFormModel]="form">
                   <input type="number" ngControl="num" required>
                 </div>`;
@@ -442,7 +442,7 @@ export function main() {
 
 
       it("should support <type=number> when value is cleared programmatically",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var form = new ControlGroup({"num": new Control(10)});
            var t = `<div [ngFormModel]="form">
                   <input type="number" ngControl="num" [(ngModel)]="data">
@@ -463,7 +463,7 @@ export function main() {
          }));
 
       it("should support <type=radio>",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<form [ngFormModel]="form">
                   <input type="radio" ngControl="foodChicken" name="food">
                   <input type="radio" ngControl="foodFish" name="food">
@@ -494,7 +494,7 @@ export function main() {
       describe("should support <select>", () => {
         it("with basic selection",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                     var t = `<select>
                       <option value="SF"></option>
                       <option value="NYC"></option>
@@ -516,7 +516,7 @@ export function main() {
 
         it("with basic selection and value bindings",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                     var t = `<select>
                       <option *ngFor="let city of list" [value]="city['id']">
                         {{ city['name'] }}
@@ -542,7 +542,7 @@ export function main() {
 
         it("with ngControl",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                     var t = `<div [ngFormModel]="form">
                     <select ngControl="city">
                       <option value="SF"></option>
@@ -601,7 +601,7 @@ export function main() {
 
         it("with option values that are objects",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
@@ -635,7 +635,7 @@ export function main() {
 
         it("when new options are added (selection through the model)",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
@@ -665,7 +665,7 @@ export function main() {
 
         it("when new options are added (selection through the UI)",
             inject([TestComponentBuilder, AsyncTestCompleter],
-                (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                   var t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
@@ -698,7 +698,7 @@ export function main() {
 
         it("when options are removed",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
@@ -726,7 +726,7 @@ export function main() {
 
         it("when option values change identity while tracking by index",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list; trackBy:customTrackBy" [ngValue]="c">{{c}}</option>
@@ -758,7 +758,7 @@ export function main() {
 
         it("with duplicate option values",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
@@ -789,7 +789,7 @@ export function main() {
 
         it("when option values have same content, but different identities",
            inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                     var t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
@@ -819,7 +819,7 @@ export function main() {
       });
 
       it("should support custom value accessors",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<div [ngFormModel]="form">
                   <input type="text" ngControl="name" wrapped-value>
                 </div>`;
@@ -842,7 +842,7 @@ export function main() {
          }));
 
       it("should support custom value accessors on non builtin input elements that fire a change event without a 'target' property",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<div [ngFormModel]="form">
                   <my-input ngControl="name"></my-input>
                 </div>`;
@@ -870,7 +870,7 @@ export function main() {
 
     describe("validations", () => {
       it("should use sync validators defined in html",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var form = new ControlGroup(
                {"login": new Control(""), "min": new Control(""), "max": new Control("")});
 
@@ -946,7 +946,7 @@ export function main() {
          })));
 
       it("should use sync validators defined in the model",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var form = new ControlGroup({"login": new Control("aa", Validators.required)});
 
            var t = `<div [ngFormModel]="form">
@@ -1007,7 +1007,7 @@ export function main() {
 
     describe("nested forms", () => {
       it("should init DOM with the given form object",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var form =
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
 
@@ -1030,7 +1030,7 @@ export function main() {
          }));
 
       it("should update the control group values on DOM change",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var form =
                new ControlGroup({"nested": new ControlGroup({"login": new Control("value")})});
 
@@ -1141,7 +1141,7 @@ export function main() {
          })));
 
       it("should not create a template-driven form when ngNoForm is used",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<form ngNoForm>
                </form>`;
 
@@ -1322,7 +1322,7 @@ export function main() {
 
     describe("setting status classes", () => {
       it("should work with single fields",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var form = new Control("", Validators.required);
 
            var t = `<div><input type="text" [ngFormControl]="form"></div>`;
@@ -1353,7 +1353,7 @@ export function main() {
          }));
 
       it("should work with complex model-driven forms",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var form = new ControlGroup({"name": new Control("", Validators.required)});
 
            var t = `<form [ngFormModel]="form"><input type="text" ngControl="name"></form>`;
@@ -1384,7 +1384,7 @@ export function main() {
          }));
 
       it("should work with ngModel",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
            var t = `<div><input [(ngModel)]="name" required></div>`;
 
            tcb.overrideTemplate(MyComp8, t)

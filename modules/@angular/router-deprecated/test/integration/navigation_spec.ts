@@ -47,7 +47,7 @@ export function main() {
       cmpInstanceCount = 0;
     }));
 
-    it('should work in a simple case', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should work in a simple case', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
@@ -61,7 +61,7 @@ export function main() {
 
 
     it('should navigate between components with different parameters',
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/user/:name', component: UserCmp})]))
@@ -78,7 +78,7 @@ export function main() {
              });
        }));
 
-    it('should navigate to child routes', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should navigate to child routes', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb, 'outer { <router-outlet></router-outlet> }')
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
@@ -91,7 +91,7 @@ export function main() {
        }));
 
     it('should navigate to child routes that capture an empty path',
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
          compile(tcb, 'outer { <router-outlet></router-outlet> }')
              .then((rtc) => {fixture = rtc})
@@ -105,7 +105,7 @@ export function main() {
        }));
 
     it('should navigate to child routes when the root component has an empty path',
-       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
          compile(tcb, 'outer { <router-outlet></router-outlet> }')
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/...', component: ParentCmp})]))
@@ -118,7 +118,7 @@ export function main() {
              });
        }));
 
-    it('should navigate to child routes of async routes', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should navigate to child routes of async routes', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb, 'outer { <router-outlet></router-outlet> }')
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new AsyncRoute({path: '/a/...', loader: parentLoader})]))
@@ -132,7 +132,7 @@ export function main() {
 
 
     it('should replace state when normalized paths are equal',
-       inject([AsyncTestCompleter, Location], (async: any /** TODO #9100 */, location: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter, Location], (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
              .then((_) => location.setInitialPath("/test/"))
@@ -146,7 +146,7 @@ export function main() {
              });
        }));
 
-    it('should reuse common parent components', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should reuse common parent components', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/team/:id/...', component: TeamCmp})]))
@@ -167,7 +167,7 @@ export function main() {
        }));
 
     it('should not reuse children when parent components change',
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/team/:id/...', component: TeamCmp})]))
@@ -188,7 +188,7 @@ export function main() {
              });
        }));
 
-    it('should inject route data into component', inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+    it('should inject route data into component', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([
@@ -203,7 +203,7 @@ export function main() {
        }));
 
     it('should inject route data into component with AsyncRoute',
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([
@@ -219,7 +219,7 @@ export function main() {
        }));
 
     it('should inject empty object if the route has no data property',
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config(
@@ -233,7 +233,7 @@ export function main() {
        }));
 
     it('should fire an event for each activated component',
-       inject([AsyncTestCompleter], (async: any /** TODO #9100 */) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb, '<router-outlet (activate)="activatedCmp = $event"></router-outlet>')
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))

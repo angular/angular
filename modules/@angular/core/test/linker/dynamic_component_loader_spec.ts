@@ -28,7 +28,7 @@ export function main() {
     describe("loading next to a location", () => {
       it('should work',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                   tcb.createAsync(MyComp3).then((tc) => {
                     tc.detectChanges();
                     loader.loadNextToLocation(DynamicallyLoaded,
@@ -44,7 +44,7 @@ export function main() {
       it('should return a disposable component ref',
          inject(
              [DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-             (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+             (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                tcb.createAsync(MyComp3).then((tc) => {
                  tc.detectChanges();
                  loader.loadNextToLocation(DynamicallyLoaded, tc.componentInstance.viewContainerRef)
@@ -67,7 +67,7 @@ export function main() {
 
       it('should update host properties',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                   tcb.createAsync(MyComp3).then((tc) => {
                     tc.detectChanges();
 
@@ -90,7 +90,7 @@ export function main() {
 
       it('should leave the view tree in a consistent state if hydration fails',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                   tcb.createAsync(MyComp3).then((tc: ComponentFixture<any>) => {
                     tc.detectChanges();
                     PromiseWrapper.catchError(
@@ -107,7 +107,7 @@ export function main() {
 
       it('should allow to pass projectable nodes',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                   tcb.createAsync(MyComp3).then((tc) => {
                     tc.detectChanges();
                     loader.loadNextToLocation(DynamicallyLoadedWithNgContent,
@@ -124,7 +124,7 @@ export function main() {
 
       it('should not throw if not enough projectable nodes are passed in',
          inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
-                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: any /** TODO #9100 */) => {
+                (loader: DynamicComponentLoader, tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                   tcb.createAsync(MyComp3).then((tc) => {
                     tc.detectChanges();
                     loader.loadNextToLocation(DynamicallyLoadedWithNgContent,
@@ -138,7 +138,7 @@ export function main() {
     describe('loadAsRoot', () => {
       it('should allow to create, update and destroy components',
          inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
-                (async: any /** TODO #9100 */, loader: DynamicComponentLoader, doc: any /** TODO #9100 */, injector: Injector) => {
+                (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc: any /** TODO #9100 */, injector: Injector) => {
                   var rootEl = createRootElement(doc, 'child-cmp');
                   getDOM().appendChild(doc.body, rootEl);
                   loader.loadAsRoot(ChildComp, null, injector)
@@ -167,7 +167,7 @@ export function main() {
 
       it('should allow to pass projectable nodes',
          inject([AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
-                (async: any /** TODO #9100 */, loader: DynamicComponentLoader, doc: any /** TODO #9100 */, injector: Injector) => {
+                (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc: any /** TODO #9100 */, injector: Injector) => {
                   var rootEl = createRootElement(doc, 'dummy');
                   getDOM().appendChild(doc.body, rootEl);
                   loader.loadAsRoot(DynamicallyLoadedWithNgContent, null, injector, null,
