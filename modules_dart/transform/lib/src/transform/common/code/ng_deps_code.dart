@@ -158,6 +158,10 @@ abstract class NgDepsWriterMixin
     model.exports.forEach(writeExportModel);
 
     buffer.writeln(templateCode);
+    if (templateCode != null && templateCode.length > 0 &&
+        model.reflectables != null && model.reflectables.isNotEmpty) {
+      writeLocalMetadataMap(model.reflectables);
+    }
 
     buffer
       ..writeln('var _visited = false;')

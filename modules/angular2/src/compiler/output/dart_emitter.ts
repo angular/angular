@@ -22,6 +22,7 @@ import {
 import {getImportModulePath, ImportEnv} from './path_util';
 
 var _debugModuleUrl = 'asset://debug/lib';
+var _METADATA_MAP_VAR = `_METADATA`;
 
 export function debugOutputAstAsDart(ast: o.Statement | o.Expression | o.Type | any[]): string {
   var converter = new _DartEmitterVisitor(_debugModuleUrl);
@@ -217,6 +218,14 @@ class _DartEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisito
         throw new BaseException(`Unknown builtin method: ${method}`);
     }
     return name;
+  }
+  visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
+    if (ast.builtin === o.BuiltinVar.MetadataMap) {
+      ctx.print(_METADATA_MAP_VAR);
+    } else {
+      super.visitReadVarExpr(ast, ctx);
+    }
+    return null;
   }
   visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any {
     ctx.println(`try {`);

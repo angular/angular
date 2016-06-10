@@ -10,10 +10,18 @@ export const CompANgFactory: ComponentFactory = null;
 
 // Generator
 export function main(args: string[]) {
-  var emitter = IS_DART ? new DartEmitter() : new TypeScriptEmitter();
+  var emittedCodeSuffix = '';
+  var emitter;
+  if (IS_DART) {
+    emittedCodeSuffix = `\nconst _METADATA = const [];\n`;
+    emitter = new DartEmitter();
+  } else {
+    emitter = new TypeScriptEmitter();
+  }
+
   compileComp(emitter, compAMetadata)
       .then((source) => {
         // debug: console.error(source);
-        print(source);
+        print(source + emittedCodeSuffix);
       });
 }

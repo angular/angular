@@ -157,6 +157,8 @@ var _getExpressionsStmts: o.Statement[] = [
     ['throwError', o.variable('throwError')],
     ['catchError', o.variable('catchError')],
 
+    ['metadataMap', o.METADATA_MAP],
+
     [
       'operators',
       o.literalMap([

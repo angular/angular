@@ -12,10 +12,17 @@ export function getExpressions(): any {
 
 // Generator
 export function main(args: string[]) {
-  var emitter = IS_DART ? new DartEmitter() : new TypeScriptEmitter();
+  var emitter;
+  var emittedCodeSuffix = '';
+  if (IS_DART) {
+    emitter = new DartEmitter();
+    emittedCodeSuffix = `\nvar _METADATA = const ["someKey", "someValue"];\n`;
+  } else {
+    emitter = new TypeScriptEmitter();
+  }
   var emittedCode =
       emitter.emitStatements('asset:angular2/test/compiler/output/output_emitter_codegen_typed',
-                             codegenStmts, codegenExportsVars);
+                             codegenStmts, codegenExportsVars) + emittedCodeSuffix;
   // debug: console.error(emittedCode);
   print(emittedCode);
 }

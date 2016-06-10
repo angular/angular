@@ -381,6 +381,23 @@ void allTests() {
     expect(_generatedCode(outputs)).toContain('another');
     expect(_generatedCode(outputs)).not.toContain('content');
   });
+
+  it('should store the non angular component metadata in a map.', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '');
+    final someAnnotation = new AnnotationModel()
+      ..name = 'SomeAnnotation';
+    someAnnotation.namedParameters.add(new NamedParameter()
+      ..name = 'someArg'
+      ..value = 'true');
+    fooNgMeta.ngDeps.reflectables.first.annotations.add(someAnnotation);
+
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+    expect(_generatedCode(outputs))
+        ..toContain('const _METADATA = const [FooComponent, const [const SomeAnnotation(someArg: true)]]');
+  });
 }
 
 String _generatedCode(Outputs outputs) {
