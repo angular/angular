@@ -15,7 +15,7 @@ export interface Form {
   /**
    * Add a control to this form.
    */
-  addControl(dir: NgControl): void;
+  addControl(dir: NgControl): Control;
 
   /**
    * Remove a control from this form.

@@ -4,7 +4,7 @@ import {fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
-import {ControlGroup, Control, NgControlName, NgControlGroup, NgFormModel, ControlValueAccessor, Validators, NgForm, NgModel, NgFormControl, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common';
+import {ControlGroup, Control, NgControlName, NgControlGroup, NgFormModel, ControlValueAccessor, Validators, NgForm, NgModel, NgFormControl, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms-deprecated';
 
 
 import {selectValueAccessor, composeValidators} from '@angular/common/src/forms-deprecated/directives/shared';

@@ -1,4 +1,5 @@
-import {Control, ControlGroup, ControlValueAccessor, FORM_DIRECTIVES, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgFor, NgForm, NgIf, RadioButtonState, Validator, Validators} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
+import {Control, ControlGroup, ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, NgModel, RadioButtonState, Validator, Validators} from '@angular/common/src/forms';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {ComponentFixture} from '@angular/compiler/testing';
 import {Component, Directive, EventEmitter, Output} from '@angular/core';
@@ -812,31 +813,32 @@ export function main() {
                });
              }));
 
-      it('should support custom value accessors on non builtin input elements that fire a change event without a \'target\' property',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<div [ngFormModel]="form">
+      // TODO(kara): Revisit when re-writing to ngModelOptions
+      xit('should support custom value accessors on non builtin input elements that fire a change event without a \'target\' property',
+          inject(
+              [TestComponentBuilder, AsyncTestCompleter],
+              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+                var t = `<div [ngFormModel]="form">
                   <my-input ngControl="name"></my-input>
                 </div>`;
 
-               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-                 fixture.debugElement.componentInstance.form =
-                     new ControlGroup({'name': new Control('aa')});
-                 fixture.detectChanges();
-                 var input = fixture.debugElement.query(By.css('my-input'));
-                 expect(input.componentInstance.value).toEqual('!aa!');
+                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                  fixture.debugElement.componentInstance.form =
+                      new ControlGroup({'name': new Control('aa')});
+                  fixture.detectChanges();
+                  var input = fixture.debugElement.query(By.css('my-input'));
+                  expect(input.componentInstance.value).toEqual('!aa!');
 
-                 input.componentInstance.value = '!bb!';
-                 ObservableWrapper.subscribe(input.componentInstance.onInput, (value) => {
-                   expect(fixture.debugElement.componentInstance.form.value).toEqual({
-                     'name': 'bb'
-                   });
-                   async.done();
-                 });
-                 input.componentInstance.dispatchChangeEvent();
-               });
-             }));
+                  input.componentInstance.value = '!bb!';
+                  ObservableWrapper.subscribe(input.componentInstance.onInput, (value) => {
+                    expect(fixture.debugElement.componentInstance.form.value).toEqual({
+                      'name': 'bb'
+                    });
+                    async.done();
+                  });
+                  input.componentInstance.dispatchChangeEvent();
+                });
+              }));
 
     });
 
@@ -1220,6 +1222,42 @@ export function main() {
            expect(fixture.debugElement.componentInstance.name).toEqual('updatedValue');
          })));
 
+      it('should support ngModel registration with a parent form',
+         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           const t = `
+            <form>
+              <input name="first" [(ngModel)]="name" maxlength="4">
+            </form>
+            `;
+
+           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
+           tick();
+           fixture.debugElement.componentInstance.name = 'Nancy';
+           fixture.detectChanges();
+           var form = fixture.debugElement.children[0].inject(NgForm);
+
+           tick();
+           expect(form.value).toEqual({first: 'Nancy'});
+           expect(form.valid).toBe(false);
+
+         })));
+
+
+      it('should throw if ngModel has a parent form but no name attr',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form>
+                  <input [(ngModel)]="name">
+                </form>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(`Name attribute must be set`));
+                 async.done();
+               });
+             }));
+
 
       it('should support <type=radio>',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
@@ -1542,7 +1580,8 @@ class UniqLoginValidator implements Validator {
   template: '',
   directives: [
     FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator, UniqLoginValidator
-  ]
+  ],
+  providers: [FORM_PROVIDERS]
 })
 class MyComp8 {
   form: any;

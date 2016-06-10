@@ -138,11 +138,12 @@ export class NgFormModel extends ControlContainer implements Form,
 
   get path(): string[] { return []; }
 
-  addControl(dir: NgControl): void {
-    var ctrl: any = this.form.find(dir.path);
+  addControl(dir: NgControl): Control {
+    const ctrl: any = this.form.find(dir.path);
     setUpControl(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
+    return ctrl;
   }
 
   getControl(dir: NgControl): Control { return <Control>this.form.find(dir.path); }

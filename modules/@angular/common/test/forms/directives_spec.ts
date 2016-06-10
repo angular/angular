@@ -409,8 +409,8 @@ export function main() {
       var ngModel: any /** TODO #9100 */;
 
       beforeEach(() => {
-        ngModel =
-            new NgModel([Validators.required], [asyncValidator('expected')], [defaultAccessor]);
+        ngModel = new NgModel(
+            null, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
       });
 

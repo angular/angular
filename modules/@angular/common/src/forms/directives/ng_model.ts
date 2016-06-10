@@ -1,12 +1,14 @@
-import {Directive, Inject, OnChanges, Optional, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {BaseException} from '../../facade/exceptions';
 import {Control} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
+import {ControlContainer} from './control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
-import {composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
+import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
 export const formControlBinding: any =
@@ -41,33 +43,34 @@ export const formControlBinding: any =
 @Directive({
   selector: '[ngModel]:not([ngControl]):not([ngFormControl])',
   providers: [formControlBinding],
-  inputs: ['model: ngModel'],
-  outputs: ['update: ngModelChange'],
   exportAs: 'ngForm'
 })
-export class NgModel extends NgControl implements OnChanges {
+export class NgModel extends NgControl implements OnChanges,
+    OnDestroy {
   /** @internal */
-  _control = new Control();
+  _control: Control;
   /** @internal */
   _added = false;
-  update = new EventEmitter();
-  model: any;
   viewModel: any;
 
-  constructor(@Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
+  @Input('ngModel') model: any;
+  @Input() name: string;
+
+  @Output('ngModelChange') update = new EventEmitter();
+
+  constructor(@Optional() @Host() private _parent: ControlContainer,
+              @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
               @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[],
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
                 super();
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);
+                if (!this._parent) this._control = new Control();
               }
 
               ngOnChanges(changes: SimpleChanges) {
-                if (!this._added) {
-                  setUpControl(this._control, this);
-                  this._control.updateValueAndValidity({emitEvent: false});
-                  this._added = true;
-                }
+                this._checkName();
+                if (!this._added) this._addControl();
 
                 if (isPropertyUpdated(changes, this.viewModel)) {
                   this._control.updateValue(this.model);
@@ -75,9 +78,15 @@ export class NgModel extends NgControl implements OnChanges {
                 }
               }
 
+              ngOnDestroy(): void { this.formDirective && this.formDirective.removeControl(this); }
+
               get control(): Control { return this._control; }
 
-              get path(): string[] { return []; }
+              get path(): string[] {
+                return this._parent ? controlPath(this.name, this._parent) : [];
+              }
+
+              get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
               get validator(): ValidatorFn { return composeValidators(this._validators); }
 
@@ -88,5 +97,25 @@ export class NgModel extends NgControl implements OnChanges {
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
                 ObservableWrapper.callEmit(this.update, newValue);
+              }
+
+              private _addControl(): void {
+                this._control = this.formDirective ? this.formDirective.addControl(this) :
+                                                     this._addStandaloneControl();
+                this._added = true;
+              }
+
+              private _addStandaloneControl(): Control {
+                setUpControl(this._control, this);
+                this._control.updateValueAndValidity({emitEvent: false});
+                return this._control;
+              }
+
+              private _checkName() {
+                if (this._parent && !this.name) {
+                  throw new BaseException(
+                      `Name attribute must be set if ngModel is used within a form.
+                      Example: <input [(ngModel)]="person.firstName" name="first">`);
+                }
               }
 }
