@@ -362,7 +362,7 @@ class _HtmlTokenizer {
       }
       this._advance();
       let name = this._input.substring(start.offset + 1, this._index - 1);
-      let char = (NAMED_ENTITIES as any /** TODO #9100 */)[name];
+      let char = (NAMED_ENTITIES as any)[name];
       if (isBlank(char)) {
         throw this._createError(unknownEntityErrorMsg(name), this._getSpan(start));
       }
@@ -372,11 +372,11 @@ class _HtmlTokenizer {
 
   private _consumeRawText(
       decodeEntities: boolean, firstCharOfEnd: number, attemptEndRest: Function): HtmlToken {
-    var tagCloseStart: any /** TODO #9100 */;
+    var tagCloseStart: ParseLocation;
     var textStart = this._getLocation();
     this._beginToken(
         decodeEntities ? HtmlTokenType.ESCAPABLE_RAW_TEXT : HtmlTokenType.RAW_TEXT, textStart);
-    var parts: any[] /** TODO #9100 */ = [];
+    var parts: string[] = [];
     while (true) {
       tagCloseStart = this._getLocation();
       if (this._attemptCharCode(firstCharOfEnd) && attemptEndRest()) {
@@ -419,11 +419,11 @@ class _HtmlTokenizer {
 
   private _consumePrefixAndName(): string[] {
     var nameOrPrefixStart = this._index;
-    var prefix: any /** TODO #9100 */ = null;
+    var prefix: string = null;
     while (this._peek !== $COLON && !isPrefixEnd(this._peek)) {
       this._advance();
     }
-    var nameStart: any /** TODO #9100 */;
+    var nameStart: number;
     if (this._peek === $COLON) {
       this._advance();
       prefix = this._input.substring(nameOrPrefixStart, this._index - 1);
@@ -438,7 +438,7 @@ class _HtmlTokenizer {
 
   private _consumeTagOpen(start: ParseLocation) {
     let savedPos = this._savePosition();
-    let lowercaseTagName: any /** TODO #9100 */;
+    let lowercaseTagName: string;
     try {
       if (!isAsciiLetter(this._peek)) {
         throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan());
@@ -505,11 +505,11 @@ class _HtmlTokenizer {
 
   private _consumeAttributeValue() {
     this._beginToken(HtmlTokenType.ATTR_VALUE);
-    var value: any /** TODO #9100 */;
+    var value: string;
     if (this._peek === $SQ || this._peek === $DQ) {
       var quoteChar = this._peek;
       this._advance();
-      var parts: any[] /** TODO #9100 */ = [];
+      var parts: string[] = [];
       while (this._peek !== quoteChar) {
         parts.push(this._readChar(true));
       }
@@ -534,8 +534,7 @@ class _HtmlTokenizer {
   private _consumeTagClose(start: ParseLocation) {
     this._beginToken(HtmlTokenType.TAG_CLOSE, start);
     this._attemptCharCodeUntilFn(isNotWhitespace);
-    var prefixAndName: any /** TODO #9100 */;
-    prefixAndName = this._consumePrefixAndName();
+    let prefixAndName = this._consumePrefixAndName();
     this._attemptCharCodeUntilFn(isNotWhitespace);
     this._requireCharCode($GT);
     this._endToken(prefixAndName);
@@ -596,7 +595,7 @@ class _HtmlTokenizer {
     var start = this._getLocation();
     this._beginToken(HtmlTokenType.TEXT, start);
 
-    var parts: any[] /** TODO #9100 */ = [];
+    var parts: string[] = [];
     let interpolation = false;
 
     if (this._peek === $LBRACE && this._nextPeek === $LBRACE) {
@@ -719,7 +718,7 @@ function toUpperCaseCharCode(code: number): number {
 }
 
 function mergeTextTokens(srcTokens: HtmlToken[]): HtmlToken[] {
-  let dstTokens: any[] /** TODO #9100 */ = [];
+  let dstTokens: HtmlToken[] = [];
   let lastDstToken: HtmlToken;
   for (let i = 0; i < srcTokens.length; i++) {
     let token = srcTokens[i];

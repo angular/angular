@@ -96,7 +96,7 @@ export class CompileMetadataResolver {
     var meta = this._directiveCache.get(directiveType);
     if (isBlank(meta)) {
       var dirMeta = this._directiveResolver.resolve(directiveType);
-      var templateMeta: any /** TODO #9100 */ = null;
+      var templateMeta: cpl.CompileTemplateMetadata = null;
       var changeDetectionStrategy: any /** TODO #9100 */ = null;
       var viewProviders: any[] /** TODO #9100 */ = [];
       var moduleUrl = staticTypeModuleUrl(directiveType);

@@ -101,7 +101,7 @@ export function getUrlScheme(url: string): string {
 function _buildFromEncodedParts(
     opt_scheme?: string, opt_userInfo?: string, opt_domain?: string, opt_port?: string,
     opt_path?: string, opt_queryData?: string, opt_fragment?: string): string {
-  var out: any[] /** TODO #9100 */ = [];
+  var out: string[] = [];
 
   if (isPresent(opt_scheme)) {
     out.push(opt_scheme + ':');

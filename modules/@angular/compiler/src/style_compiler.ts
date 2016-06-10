@@ -48,7 +48,7 @@ export class StyleCompiler {
       shim: boolean): StylesCompileResult {
     var styleExpressions =
         plainStyles.map(plainStyle => o.literal(this._shimIfNeeded(plainStyle, shim)));
-    var dependencies: any[] /** TODO #9100 */ = [];
+    var dependencies: StylesCompileDependency[] = [];
     for (var i = 0; i < absUrls.length; i++) {
       var identifier = new CompileIdentifierMetadata({name: getStylesVarName(null)});
       dependencies.push(new StylesCompileDependency(absUrls[i], shim, identifier));

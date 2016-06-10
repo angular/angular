@@ -7,7 +7,7 @@ import {HtmlParseTreeResult, HtmlParser} from '../html_parser';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import {expandNodes} from './expander';
-import {id} from './message';
+import {Message, id} from './message';
 import {I18N_ATTR, I18N_ATTR_PREFIX, I18nError, Part, dedupePhName, getPhNameFromBinding, messageFromAttribute, messageFromI18nAttribute, partition} from './shared';
 
 const _PLACEHOLDER_ELEMENT = 'ph';
@@ -260,14 +260,14 @@ export class I18nHtmlParser implements HtmlParser {
   }
 
   private _i18nAttributes(el: HtmlElementAst): HtmlAttrAst[] {
-    let res: any[] /** TODO #9100 */ = [];
+    let res: HtmlAttrAst[] = [];
     let implicitAttrs: string[] =
         isPresent(this._implicitAttrs[el.name]) ? this._implicitAttrs[el.name] : [];
 
     el.attrs.forEach(attr => {
       if (attr.name.startsWith(I18N_ATTR_PREFIX) || attr.name == I18N_ATTR) return;
 
-      let message: any /** TODO #9100 */;
+      let message: Message;
 
       let i18ns = el.attrs.filter(a => a.name == `${I18N_ATTR_PREFIX}${attr.name}`);
 
@@ -314,12 +314,11 @@ export class I18nHtmlParser implements HtmlParser {
   private _replacePlaceholdersWithExpressions(
       message: string, exps: string[], sourceSpan: ParseSourceSpan): string {
     let expMap = this._buildExprMap(exps);
-    return RegExpWrapper.replaceAll(
-        _PLACEHOLDER_EXPANDED_REGEXP, message, (match: any /** TODO #9100 */) => {
-          let nameWithQuotes = match[2];
-          let name = nameWithQuotes.substring(1, nameWithQuotes.length - 1);
-          return this._convertIntoExpression(name, expMap, sourceSpan);
-        });
+    return RegExpWrapper.replaceAll(_PLACEHOLDER_EXPANDED_REGEXP, message, (match: string[]) => {
+      let nameWithQuotes = match[2];
+      let name = nameWithQuotes.substring(1, nameWithQuotes.length - 1);
+      return this._convertIntoExpression(name, expMap, sourceSpan);
+    });
   }
 
   private _buildExprMap(exps: string[]): Map<string, string> {

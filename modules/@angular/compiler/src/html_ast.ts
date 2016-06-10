@@ -59,7 +59,7 @@ export interface HtmlAstVisitor {
 }
 
 export function htmlVisitAll(visitor: HtmlAstVisitor, asts: HtmlAst[], context: any = null): any[] {
-  var result: any[] /** TODO #9100 */ = [];
+  var result: any[] = [];
   asts.forEach(ast => {
     var astResult = ast.visit(visitor, context);
     if (isPresent(astResult)) {

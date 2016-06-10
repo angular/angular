@@ -15,7 +15,7 @@ export class PromiseCompleter<R> {
 export class PromiseWrapper {
   static resolve<T>(obj: T): Promise<T> { return Promise.resolve(obj); }
 
-  static reject(obj: any, _: any /** TODO #9100 */): Promise<any> { return Promise.reject(obj); }
+  static reject(obj: any, _: any): Promise<any> { return Promise.reject(obj); }
 
   // Note: We can't rename this method into `catch`, as this is not a valid
   // method name in Dart.
