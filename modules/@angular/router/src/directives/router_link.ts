@@ -1,4 +1,5 @@
 import {Directive, HostBinding, HostListener, Input, OnChanges} from '@angular/core';
+import {LocationStrategy} from '@angular/common';
 
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
@@ -46,7 +47,7 @@ export class RouterLink implements OnChanges {
   /**
    * @internal
    */
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(private router: Router, private route: ActivatedRoute, private locationStrategy: LocationStrategy) {}
 
   @Input()
   set routerLink(data: any[]|string) {
@@ -59,14 +60,18 @@ export class RouterLink implements OnChanges {
 
   ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
 
-  @HostListener('click')
-  onClick(): boolean {
-    // If no target, or if target is _self, prevent default browser behavior
-    if (!(typeof this.target === 'string') || this.target == '_self') {
-      this.router.navigateByUrl(this.urlTree);
-      return false;
+  @HostListener("click", ["$event.button", "$event.ctrlKey", "$event.metaKey"])
+  onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
+    if (button !== 0 || ctrlKey || metaKey) {
+      return true;
     }
-    return true;
+
+    if (typeof this.target === 'string' && this.target != '_self') {
+      return true;
+    }
+
+    this.router.navigateByUrl(this.urlTree);
+    return false;
   }
 
   private updateTargetUrlAndHref(): void {
@@ -74,7 +79,7 @@ export class RouterLink implements OnChanges {
         this.commands,
         {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
     if (this.urlTree) {
-      this.href = this.router.serializeUrl(this.urlTree);
+      this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
     }
   }
 }
