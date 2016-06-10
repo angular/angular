@@ -53,8 +53,7 @@ function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCo
       normalizer, new TemplateParser(new Parser(new Lexer()), new MockSchemaRegistry({}, {}),
                                      htmlParser, new Console(), []),
       new StyleCompiler(urlResolver), new ViewCompiler(new CompilerConfig(true, true, true)),
-      new InjectorCompiler(),
-      emitter);
+      new InjectorCompiler(), emitter);
 }
 
 export function compileComp(emitter: OutputEmitter,

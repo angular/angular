@@ -5,8 +5,7 @@ import {isBlank, CONST_EXPR, CONST} from 'angular2/src/facade/lang';
 const _UNDEFINED = CONST_EXPR(new Object());
 
 export abstract class CodegenInjector<MODULE> implements Injector {
-  constructor(
-      public parent: Injector, _needsMainModule, public mainModule: MODULE) {
+  constructor(public parent: Injector, _needsMainModule, public mainModule: MODULE) {
     if (_needsMainModule && isBlank(mainModule)) {
       throw new BaseException('This injector needs a main module instance!');
     }

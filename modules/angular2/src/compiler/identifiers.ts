@@ -137,10 +137,16 @@ export class Identifiers {
     moduleUrl: `asset:angular2/lib/src/core/di/injector${MODULE_SUFFIX}`,
     runtime: impInjector
   });
-  static InjectorFactory = new CompileIdentifierMetadata(
-      {name: 'InjectorFactory', moduleUrl: `asset:angular2/lib/src/core/linker/injector_factory${MODULE_SUFFIX}`, runtime: impInjectorFactory});
-  static CodegenInjector = new CompileIdentifierMetadata(
-      {name: 'CodegenInjector', moduleUrl: `asset:angular2/lib/src/core/linker/injector_factory${MODULE_SUFFIX}`, runtime: impCodegenInjector});
+  static InjectorFactory = new CompileIdentifierMetadata({
+    name: 'InjectorFactory',
+    moduleUrl: `asset:angular2/lib/src/core/linker/injector_factory${MODULE_SUFFIX}`,
+    runtime: impInjectorFactory
+  });
+  static CodegenInjector = new CompileIdentifierMetadata({
+    name: 'CodegenInjector',
+    moduleUrl: `asset:angular2/lib/src/core/linker/injector_factory${MODULE_SUFFIX}`,
+    runtime: impCodegenInjector
+  });
   static ViewEncapsulation = new CompileIdentifierMetadata({
     name: 'ViewEncapsulation',
     moduleUrl: 'asset:angular2/lib/src/core/metadata/view' + MODULE_SUFFIX,

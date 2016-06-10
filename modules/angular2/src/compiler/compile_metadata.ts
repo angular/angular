@@ -780,7 +780,8 @@ export class CompileInjectorModuleMetadata implements CompileMetadataWithType, C
   isHost = false;
   value: any;
   diDeps: CompileDiDependencyMetadata[];
-  providers: Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>;
+  providers:
+      Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>;
 
   constructor({runtime, name, moduleUrl, prefix, value, diDeps, providers}: {
     runtime?: Type,

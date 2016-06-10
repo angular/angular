@@ -89,11 +89,10 @@ class NoAnnotations {
 function factoryFn(a) {}
 
 @Injectable()
-class SomeService { }
+class SomeService {
+}
 
-@InjectorModule({
-  providers: [Car]
-})
+@InjectorModule({providers: [Car]})
 class SomeModuleWithProvider {
   constructor() {}
 }
@@ -105,11 +104,9 @@ class SomeModuleWithDeps {
 
 @InjectorModule()
 class SomeModuleWithProp {
-  @Provides(Engine)
-  a: string = 'aChildValue';
+  @Provides(Engine) a: string = 'aChildValue';
 
-  @Provides('multiProp', {multi: true})
-  multiProp = 'aMultiValue';
+  @Provides('multiProp', {multi: true}) multiProp = 'aMultiValue';
 }
 
 
@@ -640,7 +637,8 @@ export function main() {
       });
 
       it('should use the providers of configs (providers)', () => {
-        var injector = createInjector([provide(SomeModuleWithProvider, {useClass: SomeModuleWithProvider}), Engine]);
+        var injector = createInjector(
+            [provide(SomeModuleWithProvider, {useClass: SomeModuleWithProvider}), Engine]);
         expect(injector.get(SomeModuleWithProvider)).toBeAnInstanceOf(SomeModuleWithProvider);
         expect(injector.get(Car)).toBeAnInstanceOf(Car);
       });
@@ -658,7 +656,10 @@ export function main() {
       });
 
       it('should support multi providers', () => {
-        var inj = createInjector([SomeModuleWithProp, new Provider('multiProp', { useValue: 'bMultiValue', multi: true })]);
+        var inj = createInjector([
+          SomeModuleWithProp,
+          new Provider('multiProp', {useValue: 'bMultiValue', multi: true})
+        ]);
         expect(inj.get('multiProp')).toEqual(['aMultiValue', 'bMultiValue']);
       });
 

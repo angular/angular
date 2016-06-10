@@ -1509,12 +1509,8 @@ export var InjectorModule: InjectorModuleMetadataFactory =
  * @experimental
  */
 export interface InjectorModuleMetadataFactory {
-  (obj?: {
-    providers?: any[]
-  }): InjectorModuleDecorator;
-  new (obj: {
-    properties?: string[]
-  }): InjectorModuleMetadata;
+  (obj?: {providers?: any[]}): InjectorModuleDecorator;
+  new (obj: {properties?: string[]}): InjectorModuleMetadata;
 }
 
 /**
@@ -1531,8 +1527,7 @@ export interface InjectorModuleMetadataFactory {
  * ```
  * @experimental
  */
-export var Provides: ProviderPropertyMetadataFactory =
-    makePropDecorator(ProviderPropertyMetadata);
+export var Provides: ProviderPropertyMetadataFactory = makePropDecorator(ProviderPropertyMetadata);
 
 /**
  * {@link ConfigProviderPropertyMetadata} factory for creating decorators.

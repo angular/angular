@@ -4,7 +4,9 @@ export class ParseLocation {
   constructor(public file: ParseSourceFile, public offset: number, public line: number,
               public col: number) {}
 
-  toString(): string { return isPresent(this.offset) ? `${this.file.url}@${this.line}:${this.col}` : this.file.url; }
+  toString(): string {
+    return isPresent(this.offset) ? `${this.file.url}@${this.line}:${this.col}` : this.file.url;
+  }
 }
 
 export class ParseSourceFile {

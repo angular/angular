@@ -472,13 +472,9 @@ export class ViewChildMetadata extends ViewQueryMetadata {
 @CONST()
 export class ProviderPropertyMetadata {
   private _multi: boolean;
-  constructor(public token: any, {multi = false}: {multi?: boolean} = {}) {
-    this._multi = multi;
-  }
+  constructor(public token: any, {multi = false}: {multi?: boolean} = {}) { this._multi = multi; }
 
-  get multi(): boolean {
-    return this._multi;
-  }
+  get multi(): boolean { return this._multi; }
 }
 
 /**
@@ -499,11 +495,9 @@ export class ProviderPropertyMetadata {
 export class InjectorModuleMetadata {
   private _providers: any[];
 
-  constructor({providers = CONST_EXPR([])}:{providers?: any[]} = {}) {
+  constructor({providers = CONST_EXPR([])}: {providers?: any[]} = {}) {
     this._providers = providers;
   }
 
-  get providers(): any[] {
-    return this._providers;
-  }
+  get providers(): any[] { return this._providers; }
 }

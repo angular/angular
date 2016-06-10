@@ -7,9 +7,8 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {InstanceFactory, DynamicInstance} from './output_interpreter';
 
 export class InterpretiveInjectorInstanceFactory implements InstanceFactory {
-  createInstance(
-      superClass: any, clazz: any, args: any[], props: Map<string, any>,
-      getters: Map<string, Function>, methods: Map<string, Function>): any {
+  createInstance(superClass: any, clazz: any, args: any[], props: Map<string, any>,
+                 getters: Map<string, Function>, methods: Map<string, Function>): any {
     if (superClass === CodegenInjector) {
       args = args.concat([null]);
       return new _InterpretiveInjector(args, clazz, props, getters, methods);
@@ -19,9 +18,8 @@ export class InterpretiveInjectorInstanceFactory implements InstanceFactory {
 }
 
 class _InterpretiveInjector extends CodegenInjector<any> implements DynamicInstance {
-  constructor(
-      args: any[], public clazz: any, public props: Map<string, any>,
-      public getters: Map<string, Function>, public methods: Map<string, Function>) {
+  constructor(args: any[], public clazz: any, public props: Map<string, any>,
+              public getters: Map<string, Function>, public methods: Map<string, Function>) {
     super(args[0], args[1], args[2]);
   }
   getInternal(token: any, notFoundResult: any): any {

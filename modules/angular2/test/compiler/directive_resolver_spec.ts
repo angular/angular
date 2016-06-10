@@ -127,7 +127,8 @@ export function main() {
 
     it('should throw if not matching metadata is found', () => {
       expect(() => { resolver.resolve(SomeDirectiveWithoutMetadata); })
-          .toThrowError(`No Directive annotation found on ${stringify(SomeDirectiveWithoutMetadata)}`);
+          .toThrowError(
+              `No Directive annotation found on ${stringify(SomeDirectiveWithoutMetadata)}`);
     });
 
     it('should not read parent class Directive metadata', function() {

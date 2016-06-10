@@ -15,8 +15,12 @@ import {
   CompileIdentifierMetadata,
   CompileTypeMetadata,
 } from '../compile_metadata';
-import {getPropertyInView, createDiTokenExpression, injectFromViewParentInjector,
-  convertValueToOutputAst} from './util';
+import {
+  getPropertyInView,
+  createDiTokenExpression,
+  injectFromViewParentInjector,
+  convertValueToOutputAst
+} from './util';
 import {CompileQuery, createQueryList, addQueryToTokenMap} from './compile_query';
 import {CompileMethod} from './compile_method';
 

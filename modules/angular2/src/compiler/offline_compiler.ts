@@ -48,7 +48,8 @@ export class OfflineCompiler {
     return this._directiveNormalizer.normalizeDirective(directive);
   }
 
-  compile(components: NormalizedComponentWithViewDirectives[], injectorModules: CompileInjectorModuleMetadata[]): SourceModule {
+  compile(components: NormalizedComponentWithViewDirectives[],
+          injectorModules: CompileInjectorModuleMetadata[]): SourceModule {
     var moduleUrl: string;
     if (components.length > 0) {
       moduleUrl = _templateModuleUrl(components[0].component.type);
@@ -84,9 +85,9 @@ export class OfflineCompiler {
       exportedVars.push(compFactoryVar);
     });
 
-    injectorModules.forEach( (injectorModuleMeta) => {
+    injectorModules.forEach((injectorModuleMeta) => {
       var compileResult = this._injectorCompiler.compileInjector(injectorModuleMeta);
-      compileResult.statements.forEach( stmt => statements.push(stmt));
+      compileResult.statements.forEach(stmt => statements.push(stmt));
       exportedVars.push(compileResult.injectorFactoryVar);
     });
     return this._codegenSourceModule(moduleUrl, statements, exportedVars);

@@ -303,17 +303,20 @@ function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisi
 /**
  * Retruns {@link InjectorModuleMetadata} providers for a given token if possible.
  */
-export function getInjectorModuleProviders(token: any):any[] {
+export function getInjectorModuleProviders(token: any): any[] {
   var providers = [];
   var annotations: any[] = isType(token) ? reflector.annotations(resolveForwardRef(token)) : null;
-  var metadata: InjectorModuleMetadata = isPresent(annotations) ? annotations.find((type) => type instanceof InjectorModuleMetadata) : null;
+  var metadata: InjectorModuleMetadata =
+      isPresent(annotations) ? annotations.find((type) => type instanceof InjectorModuleMetadata) :
+                               null;
   if (isPresent(metadata)) {
     var propertyMetadata = reflector.propMetadata(token);
     ListWrapper.addAll(providers, metadata.providers);
     StringMapWrapper.forEach(propertyMetadata, (metadata: any[], propName: string) => {
       metadata.forEach(a => {
         if (a instanceof ProviderPropertyMetadata) {
-          providers.push(new Provider(a.token, {multi: a.multi, useProperty: propName, useExisting: token}));
+          providers.push(
+              new Provider(a.token, {multi: a.multi, useProperty: propName, useExisting: token}));
         }
       });
     });

@@ -11,8 +11,9 @@ import {
   Instruction,
 } from './instruction';
 import {RouterOutlet} from './directives/router_outlet';
-import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
+import {getCanActivateHook} from './utils';
 import {RouteDefinition} from './route_config/route_config_impl';
+import {ComponentFactory} from 'angular2/core';
 
 let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);
@@ -469,7 +470,7 @@ export class RootRouter extends Router {
   _locationSub: Object;
 
   constructor(registry: RouteRegistry, location: Location,
-              @Inject(ROUTER_PRIMARY_COMPONENT) primaryComponent: Type) {
+              @Inject(ROUTER_PRIMARY_COMPONENT) primaryComponent: Type | ComponentFactory) {
     super(registry, null, primaryComponent);
     this.root = this;
     this._location = location;

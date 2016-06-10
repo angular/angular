@@ -61,6 +61,7 @@ export class MapInjector implements Injector {
     if (token === Injector) {
       return this;
     }
-    return this._values.has(token) ? this._values.get(token) : this._parent.get(token, notFoundValue);
+    return this._values.has(token) ? this._values.get(token) :
+                                     this._parent.get(token, notFoundValue);
   }
 }

@@ -34,20 +34,20 @@ import {
 
 import {CompilerConfig} from 'angular2/compiler';
 
-class Engine { }
+class Engine {}
 
 class BrokenEngine {
   constructor() { throw new BaseException("Broken Engine"); }
 }
 
-class DashboardSoftware { }
+class DashboardSoftware {}
 
 @Injectable()
 class Dashboard {
-  constructor(software: DashboardSoftware) { }
+  constructor(software: DashboardSoftware) {}
 }
 
-class TurboEngine extends Engine { }
+class TurboEngine extends Engine {}
 
 @Injectable()
 class Car {
@@ -58,7 +58,7 @@ class Car {
 @Injectable()
 class CarWithOptionalEngine {
   engine;
-  constructor( @Optional() engine: Engine) { this.engine = engine; }
+  constructor(@Optional() engine: Engine) { this.engine = engine; }
 }
 
 @Injectable()
@@ -80,44 +80,40 @@ class SportsCar extends Car {
 @Injectable()
 class CarWithInject {
   engine: Engine;
-  constructor( @Inject(TurboEngine) engine: Engine) { this.engine = engine; }
+  constructor(@Inject(TurboEngine) engine: Engine) { this.engine = engine; }
 }
 
 @Injectable()
 class CyclicEngine {
-  constructor(car: Car) { }
+  constructor(car: Car) {}
 }
 
 class NoAnnotations {
-  constructor(secretDependency) { }
+  constructor(secretDependency) {}
 }
 
-function factoryFn(a) { }
+function factoryFn(a) {}
 
 @Injectable()
-class SomeService { }
+class SomeService {
+}
 
 @InjectorModule()
-class SomeModule {}
+class SomeModule {
+}
 
-@InjectorModule({
-  providers: [SomeService]
-})
+@InjectorModule({providers: [SomeService]})
 class SomeModuleWithProviders {
 }
 
 @InjectorModule()
 class SomeModuleWithProp {
-  @Provides(Engine)
-  a: string = 'aValue';
+  @Provides(Engine) a: string = 'aValue';
 
-  @Provides('multiProp', {multi: true})
-  multiProp = 'aMultiValue';
+  @Provides('multiProp', {multi: true}) multiProp = 'aMultiValue';
 }
 
-@InjectorModule({
-  providers: [Car]
-})
+@InjectorModule({providers: [Car]})
 class SomeChildModuleWithProvider {
   constructor() {}
 }
@@ -129,8 +125,7 @@ class SomeChildModuleWithDeps {
 
 @InjectorModule()
 class SomeChildModuleWithProp {
-  @Provides(Engine)
-  a: string = 'aChildValue';
+  @Provides(Engine) a: string = 'aChildValue';
 }
 
 @InjectorModule()
@@ -144,28 +139,25 @@ export function main() {
   } else {
     describe('jit', () => {
       beforeEachProviders(
-        () => [provide(CompilerConfig, { useValue: new CompilerConfig(true, false, true) })]);
+          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, true)})]);
       declareTests(true);
     });
 
     describe('no jit', () => {
       beforeEachProviders(
-        () => [provide(CompilerConfig, { useValue: new CompilerConfig(true, false, false) })]);
+          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, false)})]);
       declareTests(false);
     });
   }
 }
 
 function declareTests(isJit: boolean) {
-  describe('generated injector integration tests', function () {
+  describe('generated injector integration tests', function() {
     var compiler: ComponentResolver;
 
-    beforeEach(inject([ComponentResolver], (_compiler) => {
-      compiler = _compiler;
-    }));
+    beforeEach(inject([ComponentResolver], (_compiler) => { compiler = _compiler; }));
 
-    function createInjector(providers: any[],
-      parent: Injector = null): Injector {
+    function createInjector(providers: any[], parent: Injector = null): Injector {
       return compiler.createInjectorFactory(SomeModule, providers).create(parent);
     }
 
@@ -194,18 +186,18 @@ function declareTests(isJit: boolean) {
 
     it('should throw when no type and not @Inject (class case)', () => {
       expect(() => createInjector([NoAnnotations]))
-        .toThrowError(
-        "Cannot resolve all parameters for 'NoAnnotations'(?). " +
-        'Make sure that all the parameters are decorated with Inject or have valid type annotations ' +
-        "and that 'NoAnnotations' is decorated with Injectable.");
+          .toThrowError(
+              "Cannot resolve all parameters for 'NoAnnotations'(?). " +
+              'Make sure that all the parameters are decorated with Inject or have valid type annotations ' +
+              "and that 'NoAnnotations' is decorated with Injectable.");
     });
 
     it('should throw when no type and not @Inject (factory case)', () => {
-      expect(() => createInjector([provide("someToken", { useFactory: factoryFn })]))
-        .toThrowError(
-        "Cannot resolve all parameters for 'factoryFn'(?). " +
-        'Make sure that all the parameters are decorated with Inject or have valid type annotations ' +
-        "and that 'factoryFn' is decorated with Injectable.");
+      expect(() => createInjector([provide("someToken", {useFactory: factoryFn})]))
+          .toThrowError(
+              "Cannot resolve all parameters for 'factoryFn'(?). " +
+              'Make sure that all the parameters are decorated with Inject or have valid type annotations ' +
+              "and that 'factoryFn' is decorated with Injectable.");
     });
 
     it('should cache instances', () => {
@@ -218,7 +210,7 @@ function declareTests(isJit: boolean) {
     });
 
     it('should provide to a value', () => {
-      var injector = createInjector([provide(Engine, { useValue: "fake engine" })]);
+      var injector = createInjector([provide(Engine, {useValue: "fake engine"})]);
 
       var engine = injector.get(Engine);
       expect(engine).toEqual("fake engine");
@@ -228,7 +220,7 @@ function declareTests(isJit: boolean) {
       function sportsCarFactory(e) { return new SportsCar(e); }
 
       var injector =
-        createInjector([Engine, provide(Car, { useFactory: sportsCarFactory, deps: [Engine] })]);
+          createInjector([Engine, provide(Car, {useFactory: sportsCarFactory, deps: [Engine]})]);
 
       var car = injector.get(Car);
       expect(car).toBeAnInstanceOf(SportsCar);
@@ -236,7 +228,7 @@ function declareTests(isJit: boolean) {
     });
 
     it('should supporting provider to null', () => {
-      var injector = createInjector([provide(Engine, { useValue: null })]);
+      var injector = createInjector([provide(Engine, {useValue: null})]);
       var engine = injector.get(Engine);
       expect(engine).toBeNull();
     });
@@ -244,8 +236,8 @@ function declareTests(isJit: boolean) {
     it('should provide to an alias', () => {
       var injector = createInjector([
         Engine,
-        provide(SportsCar, { useClass: SportsCar }),
-        provide(Car, { useExisting: SportsCar })
+        provide(SportsCar, {useClass: SportsCar}),
+        provide(Car, {useExisting: SportsCar})
       ]);
 
       var car = injector.get(Car);
@@ -254,26 +246,22 @@ function declareTests(isJit: boolean) {
       expect(car).toBe(sportsCar);
     });
 
-    it(
-      'should support multiProviders', () => {
-        var injector = createInjector([
-          Engine,
-          provide(Car, {useClass: SportsCar, multi: true }),
-          provide(Car, {useClass: CarWithOptionalEngine, multi: true })
-        ]);
-
-        var cars = injector.get(Car);
-        expect(cars.length).toEqual(2);
-        expect(cars[0]).toBeAnInstanceOf(SportsCar);
-        expect(cars[1]).toBeAnInstanceOf(CarWithOptionalEngine);
-      });
-
-    it('should support multiProviders that are created using useExisting', () => {
+    it('should support multiProviders', () => {
       var injector = createInjector([
         Engine,
-        SportsCar,
-        provide(Car, {useExisting: SportsCar, multi: true })
+        provide(Car, {useClass: SportsCar, multi: true}),
+        provide(Car, {useClass: CarWithOptionalEngine, multi: true})
       ]);
+
+      var cars = injector.get(Car);
+      expect(cars.length).toEqual(2);
+      expect(cars[0]).toBeAnInstanceOf(SportsCar);
+      expect(cars[1]).toBeAnInstanceOf(CarWithOptionalEngine);
+    });
+
+    it('should support multiProviders that are created using useExisting', () => {
+      var injector =
+          createInjector([Engine, SportsCar, provide(Car, {useExisting: SportsCar, multi: true})]);
 
       var cars = injector.get(Car);
       expect(cars.length).toEqual(1);
@@ -281,22 +269,22 @@ function declareTests(isJit: boolean) {
     });
 
     it('should throw when the aliased provider does not exist', () => {
-      var injector = createInjector([provide('car', { useExisting: SportsCar })]);
+      var injector = createInjector([provide('car', {useExisting: SportsCar})]);
       var e = `No provider for ${stringify(SportsCar)}!`;
       expect(() => injector.get('car')).toThrowError(e);
     });
 
     it('should handle forwardRef in useExisting', () => {
       var injector = createInjector([
-        provide('originalEngine', { useClass: forwardRef(() => Engine) }),
-        provide('aliasedEngine', { useExisting: <any>forwardRef(() => 'originalEngine') })
+        provide('originalEngine', {useClass: forwardRef(() => Engine)}),
+        provide('aliasedEngine', {useExisting:<any>forwardRef(() => 'originalEngine')})
       ]);
       expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
     });
 
     it('should support overriding factory dependencies', () => {
       var injector = createInjector(
-        [Engine, provide(Car, { useFactory: (e) => new SportsCar(e), deps: [Engine] })]);
+          [Engine, provide(Car, {useFactory: (e) => new SportsCar(e), deps: [Engine]})]);
 
       var car = injector.get(Car);
       expect(car).toBeAnInstanceOf(SportsCar);
@@ -319,21 +307,21 @@ function declareTests(isJit: boolean) {
 
     it("should use the last provider when there are multiple providers for same token", () => {
       var injector = createInjector(
-        [provide(Engine, { useClass: Engine }), provide(Engine, { useClass: TurboEngine })]);
+          [provide(Engine, {useClass: Engine}), provide(Engine, {useClass: TurboEngine})]);
 
       expect(injector.get(Engine)).toBeAnInstanceOf(TurboEngine);
     });
 
     it('should use non-type tokens', () => {
-      var injector = createInjector([provide('token', { useValue: 'value' })]);
+      var injector = createInjector([provide('token', {useValue: 'value'})]);
 
       expect(injector.get('token')).toEqual('value');
     });
 
     it('should throw when given invalid providers', () => {
       expect(() => createInjector(<any>["blah"]))
-        .toThrowError(
-        'Invalid provider - only instances of Provider and Type are allowed, got: blah');
+          .toThrowError(
+              'Invalid provider - only instances of Provider and Type are allowed, got: blah');
     });
 
     it('should provide itself', () => {
@@ -349,12 +337,12 @@ function declareTests(isJit: boolean) {
     });
 
     it('should throw when trying to instantiate a cyclic dependency', () => {
-      expect(() => createInjector([Car, provide(Engine, { useClass: CyclicEngine })]))
-        .toThrowError(/Cannot instantiate cyclic dependency! Car/g);
+      expect(() => createInjector([Car, provide(Engine, {useClass: CyclicEngine})]))
+          .toThrowError(/Cannot instantiate cyclic dependency! Car/g);
     });
 
     it('should support null values', () => {
-      var injector = createInjector([provide('null', { useValue: null })]);
+      var injector = createInjector([provide('null', {useValue: null})]);
       expect(injector.get('null')).toBe(null);
     });
 
@@ -371,17 +359,17 @@ function declareTests(isJit: boolean) {
       });
 
       it("should not use the child providers when resolving the dependencies of a parent provider",
-        () => {
-          var parent = createInjector([Car, Engine]);
-          var child = createInjector([provide(Engine, { useClass: TurboEngine })], parent);
+         () => {
+           var parent = createInjector([Car, Engine]);
+           var child = createInjector([provide(Engine, {useClass: TurboEngine})], parent);
 
-          var carFromChild = child.get(Car);
-          expect(carFromChild.engine).toBeAnInstanceOf(Engine);
-        });
+           var carFromChild = child.get(Car);
+           expect(carFromChild.engine).toBeAnInstanceOf(Engine);
+         });
 
       it('should create new instance in a child injector', () => {
         var parent = createInjector([Engine]);
-        var child = createInjector([provide(Engine, { useClass: TurboEngine })], parent);
+        var child = createInjector([provide(Engine, {useClass: TurboEngine})], parent);
 
         var engineFromParent = parent.get(Engine);
         var engineFromChild = child.get(Engine);
@@ -397,7 +385,7 @@ function declareTests(isJit: boolean) {
         it("should return a dependency from self", () => {
           var inj = createInjector([
             Engine,
-            provide(Car, { useFactory: (e) => new Car(e), deps: [[Engine, new SelfMetadata()]] })
+            provide(Car, {useFactory: (e) => new Car(e), deps: [[Engine, new SelfMetadata()]]})
           ]);
 
           expect(inj.get(Car)).toBeAnInstanceOf(Car);
@@ -405,18 +393,22 @@ function declareTests(isJit: boolean) {
 
         it("should throw when not requested provider on self", () => {
           expect(() => createInjector([
-            provide(Car, { useFactory: (e) => new Car(e), deps: [[Engine, new SelfMetadata()]] })
-          ])).toThrowError(/No provider for Engine/g);
+                   provide(Car,
+                           {useFactory: (e) => new Car(e), deps: [[Engine, new SelfMetadata()]]})
+                 ]))
+              .toThrowError(/No provider for Engine/g);
         });
       });
 
       describe("default", () => {
         it("should not skip self", () => {
           var parent = createInjector([Engine]);
-          var child = createInjector([
-            provide(Engine, { useClass: TurboEngine }),
-            provide(Car, { useFactory: (e) => new Car(e), deps: [Engine] })
-          ], parent);
+          var child = createInjector(
+              [
+                provide(Engine, {useClass: TurboEngine}),
+                provide(Car, {useFactory: (e) => new Car(e), deps: [Engine]})
+              ],
+              parent);
 
           expect(child.get(Car).engine).toBeAnInstanceOf(TurboEngine);
         });
@@ -440,18 +432,24 @@ function declareTests(isJit: boolean) {
       it('should throw when asking for the main config and it was not given', () => {
         var factory = compiler.createInjectorFactory(SomeModule);
         var injector = factory.create();
-        expect( () => injector.get(SomeModule)).toThrowError(`No provider for ${stringify(SomeModule)}!`);
+        expect(() => injector.get(SomeModule))
+            .toThrowError(`No provider for ${stringify(SomeModule)}!`);
       });
 
       it('should use the providers of child configs (types)', () => {
         var injector = createInjector([SomeChildModuleWithProvider, Engine]);
-        expect(injector.get(SomeChildModuleWithProvider)).toBeAnInstanceOf(SomeChildModuleWithProvider);
+        expect(injector.get(SomeChildModuleWithProvider))
+            .toBeAnInstanceOf(SomeChildModuleWithProvider);
         expect(injector.get(Car)).toBeAnInstanceOf(Car);
       });
 
       it('should use the providers of child configs (providers)', () => {
-        var injector = createInjector([provide(SomeChildModuleWithProvider, {useClass: SomeChildModuleWithProvider}), Engine]);
-        expect(injector.get(SomeChildModuleWithProvider)).toBeAnInstanceOf(SomeChildModuleWithProvider);
+        var injector = createInjector([
+          provide(SomeChildModuleWithProvider, {useClass: SomeChildModuleWithProvider}),
+          Engine
+        ]);
+        expect(injector.get(SomeChildModuleWithProvider))
+            .toBeAnInstanceOf(SomeChildModuleWithProvider);
         expect(injector.get(Car)).toBeAnInstanceOf(Car);
       });
 
@@ -464,19 +462,23 @@ function declareTests(isJit: boolean) {
         var factory = compiler.createInjectorFactory(SomeModuleWithUnknownArgs);
         expect(factory.create().get(Injector)).toBeTruthy();
 
-        factory = compiler.createInjectorFactory(SomeModule, [new Provider(SomeModuleWithUnknownArgs, {useValue: new SomeModuleWithUnknownArgs(1,2,3)})]);
+        factory = compiler.createInjectorFactory(SomeModule, [
+          new Provider(SomeModuleWithUnknownArgs,
+                       {useValue: new SomeModuleWithUnknownArgs(1, 2, 3)})
+        ]);
         expect(factory.create().get(Injector)).toBeTruthy();
       });
     });
 
     describe('provider properties', () => {
-      function createInjector(mainModuleType: Type, providers: any[],
-        mainModule = null): Injector {
+      function createInjector(mainModuleType: Type, providers: any[], mainModule = null): Injector {
         return compiler.createInjectorFactory(mainModuleType, providers).create(null, mainModule);
       }
 
       it('should support multi providers', () => {
-        var inj = createInjector(SomeModuleWithProp, [new Provider('multiProp', { useValue: 'bMultiValue', multi: true })], new SomeModuleWithProp());
+        var inj = createInjector(
+            SomeModuleWithProp, [new Provider('multiProp', {useValue: 'bMultiValue', multi: true})],
+            new SomeModuleWithProp());
         expect(inj.get('multiProp')).toEqual(['aMultiValue', 'bMultiValue']);
       });
 
@@ -487,7 +489,8 @@ function declareTests(isJit: boolean) {
         });
 
         it('should throw if the module is missing when the injector is created', () => {
-          expect(() => createInjector(SomeModuleWithProp, [])).toThrowError('This injector needs a main module instance!');
+          expect(() => createInjector(SomeModuleWithProp, []))
+              .toThrowError('This injector needs a main module instance!');
         });
       });
 
@@ -498,11 +501,13 @@ function declareTests(isJit: boolean) {
         });
 
         it('should throw if the module is missing when the value is read', () => {
-          var inj = createInjector(SomeModule, [new Provider(Engine, { useProperty: 'a', useExisting:  SomeChildModuleWithProp})]);
-          expect(() => inj.get(Engine)).toThrowError(`No provider for ${stringify(SomeChildModuleWithProp)}!`);
+          var inj = createInjector(
+              SomeModule,
+              [new Provider(Engine, {useProperty: 'a', useExisting: SomeChildModuleWithProp})]);
+          expect(() => inj.get(Engine))
+              .toThrowError(`No provider for ${stringify(SomeChildModuleWithProp)}!`);
         });
       });
     });
   });
-
 }

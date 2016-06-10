@@ -4,6 +4,7 @@ import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route
 import {CONST_EXPR, Type} from 'angular2/src/facade/lang';
 import {ApplicationRef, OpaqueToken, Provider} from 'angular2/core';
 import {BaseException} from 'angular2/src/facade/exceptions';
+import {ComponentFactory} from 'angular2/core';
 
 /**
  * The Platform agnostic ROUTER PROVIDERS
@@ -23,16 +24,17 @@ export const ROUTER_PROVIDERS_COMMON: any[] = CONST_EXPR([
       {useFactory: routerPrimaryComponentFactory, deps: CONST_EXPR([ApplicationRef])}))
 ]);
 
-function routerFactory(registry: RouteRegistry, location: Location, primaryComponent: Type,
+function routerFactory(registry: RouteRegistry, location: Location,
+                       primaryComponent: Type | ComponentFactory,
                        appRef: ApplicationRef): RootRouter {
   var rootRouter = new RootRouter(registry, location, primaryComponent);
   appRef.registerDisposeListener(() => rootRouter.dispose());
   return rootRouter;
 }
 
-function routerPrimaryComponentFactory(app: ApplicationRef): Type {
-  if (app.componentTypes.length == 0) {
+function routerPrimaryComponentFactory(app: ApplicationRef): Type | ComponentFactory {
+  if (app.componentFactories.length == 0) {
     throw new BaseException("Bootstrap at least one component before injecting Router.");
   }
-  return app.componentTypes[0];
+  return app.componentFactories[0];
 }

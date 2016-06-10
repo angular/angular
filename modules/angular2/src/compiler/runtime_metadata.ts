@@ -137,7 +137,8 @@ export class RuntimeMetadataResolver {
     });
   }
 
-  getFactoryMetadata(factory: Function, moduleUrl: string, deps: any[]): cpl.CompileFactoryMetadata {
+  getFactoryMetadata(factory: Function, moduleUrl: string,
+                     deps: any[]): cpl.CompileFactoryMetadata {
     return new cpl.CompileFactoryMetadata({
       name: this.sanitizeTokenName(factory),
       moduleUrl: moduleUrl,
@@ -241,7 +242,9 @@ export class RuntimeMetadataResolver {
       } else if (provider instanceof Provider) {
         return [
           this.getProviderMetadata(provider),
-          isValidType(provider.token) ? this.getProvidersMetadata(getInjectorModuleProviders(provider.token)) : []
+          isValidType(provider.token) ?
+              this.getProvidersMetadata(getInjectorModuleProviders(provider.token)) :
+              []
         ];
       } else if (isValidType(provider)) {
         return [
@@ -249,7 +252,8 @@ export class RuntimeMetadataResolver {
           this.getProvidersMetadata(getInjectorModuleProviders(provider))
         ];
       } else {
-        throw new BaseException(`Invalid provider - only instances of Provider and Type are allowed, got: ${stringify(provider)}`);
+        throw new BaseException(
+            `Invalid provider - only instances of Provider and Type are allowed, got: ${stringify(provider)}`);
       }
     });
   }
@@ -263,7 +267,9 @@ export class RuntimeMetadataResolver {
     }
     return new cpl.CompileProviderMetadata({
       token: this.getTokenMetadata(provider.token),
-      useClass: isPresent(provider.useClass) ? this.getTypeMetadata(provider.useClass, null, compileDeps) : null,
+      useClass: isPresent(provider.useClass) ?
+                    this.getTypeMetadata(provider.useClass, null, compileDeps) :
+                    null,
       useValue: isPresent(provider.useValue) ?
                     new cpl.CompileIdentifierMetadata({runtime: provider.useValue}) :
                     null,
@@ -305,7 +311,8 @@ export class RuntimeMetadataResolver {
     });
   }
 
-  getInjectorModuleMetadata(config: Type, extraProviders: any[]): cpl.CompileInjectorModuleMetadata {
+  getInjectorModuleMetadata(config: Type,
+                            extraProviders: any[]): cpl.CompileInjectorModuleMetadata {
     var providers = getInjectorModuleProviders(config);
     if (isPresent(extraProviders)) {
       providers = providers.concat(extraProviders);

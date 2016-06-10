@@ -79,19 +79,20 @@ export class RuntimeCompiler implements ComponentResolver {
               private _templateNormalizer: DirectiveNormalizer,
               private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
               private _viewCompiler: ViewCompiler, private _xhr: XHR,
-              private _injectorCompiler: InjectorCompiler,
-              private _genConfig: CompilerConfig) {}
+              private _injectorCompiler: InjectorCompiler, private _genConfig: CompilerConfig) {}
 
-  createInjectorFactory(config: Type, extraProviders: any[] = CONST_EXPR([])): InjectorFactory<any> {
-    var injectorModuleMeta = this._runtimeMetadataResolver.getInjectorModuleMetadata(config, extraProviders);
+  createInjectorFactory(config: Type,
+                        extraProviders: any[] = CONST_EXPR([])): InjectorFactory<any> {
+    var injectorModuleMeta =
+        this._runtimeMetadataResolver.getInjectorModuleMetadata(config, extraProviders);
     var compileResult = this._injectorCompiler.compileInjector(injectorModuleMeta);
     var factory: any;
     if (IS_DART || !this._genConfig.useJit) {
       factory = interpretStatements(compileResult.statements, compileResult.injectorFactoryVar,
                                     new InterpretiveInjectorInstanceFactory());
     } else {
-      factory = jitStatements(`${injectorModuleMeta.type.name}.ngfactory.js`, compileResult.statements,
-                              compileResult.injectorFactoryVar);
+      factory = jitStatements(`${injectorModuleMeta.type.name}.ngfactory.js`,
+                              compileResult.statements, compileResult.injectorFactoryVar);
     }
     return factory;
   }
@@ -100,9 +101,10 @@ export class RuntimeCompiler implements ComponentResolver {
     return unimplemented();
   }
 
-  resolveComponent(component: Type|string): Promise<ComponentFactory> {
+  resolveComponent(component: Type | string): Promise<ComponentFactory> {
     if (isString(component)) {
-      return PromiseWrapper.reject(new BaseException(`Cannot resolve component using '${component}'.`), null);
+      return PromiseWrapper.reject(
+          new BaseException(`Cannot resolve component using '${component}'.`), null);
     }
 
     let componentType = <Type>component;

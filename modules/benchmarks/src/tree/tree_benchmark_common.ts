@@ -88,17 +88,16 @@ export function benchmarkMain(bootstrapClosure: () => Promise<ComponentRef>) {
   function noop() {}
 
   function initNg2() {
-    bootstrapClosure()
-        .then((ref) => {
-          var injector = ref.injector;
-          appRef = injector.get(ApplicationRef);
+    bootstrapClosure().then((ref) => {
+      var injector = ref.injector;
+      appRef = injector.get(ApplicationRef);
 
-          app = ref.instance;
-          bindAction('#ng2DestroyDom', ng2DestroyDom);
-          bindAction('#ng2CreateDom', ng2CreateDom);
-          bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
-          bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
-        });
+      app = ref.instance;
+      bindAction('#ng2DestroyDom', ng2DestroyDom);
+      bindAction('#ng2CreateDom', ng2CreateDom);
+      bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
+      bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
+    });
   }
 
   function baselineDestroyDom() { baselineRootTreeComponent.update(new TreeNode('', null, null)); }
@@ -238,4 +237,5 @@ export class AppComponent {
 }
 
 @InjectorModule({providers: BROWSER_APP_PROVIDERS})
-class AppConfig {}
+class AppConfig {
+}

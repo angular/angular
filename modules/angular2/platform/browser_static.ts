@@ -53,7 +53,7 @@ export function browserStaticPlatform(): PlatformRef {
     tokens.set(Console, new Console());
     tokens.set(BROWSER_PLATFORM_MARKER, true);
     tokens.set(PLATFORM_INITIALIZER, [initDomAdapter])
-    createPlatform(new MapInjector(null, tokens));
+        createPlatform(new MapInjector(null, tokens));
   }
   return assertPlatform(BROWSER_PLATFORM_MARKER);
 }

@@ -1,7 +1,7 @@
 import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isBlank, normalizeBlank, Type, CONST_EXPR} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
-
+import {ComponentFactory} from 'angular2/core';
 
 /**
  * `RouteParams` is an immutable map of parameters for the given route

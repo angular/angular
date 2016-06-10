@@ -23,9 +23,7 @@ function _isDirectiveMetadata(type: any): boolean {
 }
 
 export class NoDirectiveAnnotationError extends BaseException {
-  constructor(type: Type) {
-    super(`No Directive annotation found on ${stringify(type)}`);
-  }
+  constructor(type: Type) { super(`No Directive annotation found on ${stringify(type)}`); }
 }
 
 /*
