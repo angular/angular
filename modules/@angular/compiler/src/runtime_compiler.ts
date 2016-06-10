@@ -62,7 +62,7 @@ export class RuntimeCompiler implements ComponentResolver {
                 compMeta.selector, compiledTemplate.viewFactory, componentType));
   }
 
-  clearCache() {
+  clearCache(): void {
     this._styleCache.clear();
     this._compiledTemplateCache.clear();
     this._compiledTemplateDone.clear();

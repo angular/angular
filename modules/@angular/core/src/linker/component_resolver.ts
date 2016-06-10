@@ -14,7 +14,7 @@ import {ComponentFactory} from './component_factory';
  */
 export abstract class ComponentResolver {
   abstract resolveComponent(component: Type|string): Promise<ComponentFactory<any>>;
-  abstract clearCache(): any /** TODO #9100 */;
+  abstract clearCache(): void;
 }
 
 function _isComponentFactory(type: any): boolean {
@@ -37,5 +37,6 @@ export class ReflectorComponentResolver extends ComponentResolver {
     }
     return PromiseWrapper.resolve(componentFactory);
   }
+
   clearCache() {}
 }
