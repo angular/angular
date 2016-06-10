@@ -181,7 +181,7 @@ class _MockComponentResolver implements ComponentResolver {
 }
 
 class _MockComponentRef extends ComponentRef_ {
-  constructor(private _injector: Injector) { super(null, null); }
+  constructor(private _injector: Injector) { super(null, null, null); }
   get injector(): Injector { return this._injector; }
   get changeDetectorRef(): ChangeDetectorRef { return <any>new SpyChangeDetectorRef(); }
   onDestroy(cb: Function) {}

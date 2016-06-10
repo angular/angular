@@ -6,6 +6,7 @@ import {ViewRef, ViewRef_} from './view_ref';
 import {AppElement} from './element';
 import {ViewUtils} from './view_utils';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
+import {reflector} from 'angular2/src/core/reflection/reflection';
 
 /**
  * Represents an instance of a Component created via a {@link ComponentFactory}.
@@ -57,13 +58,14 @@ export abstract class ComponentRef {
 }
 
 export class ComponentRef_ extends ComponentRef {
-  constructor(private _hostElement: AppElement, private _componentType: Type) { super(); }
+  constructor(private _hostElement: AppElement, private _componentType: Type, private _metadata: any[]) { super(); }
   get location(): ElementRef { return this._hostElement.elementRef; }
   get injector(): Injector { return this._hostElement.injector; }
   get instance(): any { return this._hostElement.component; };
   get hostView(): ViewRef { return this._hostElement.parentView.ref; };
   get changeDetectorRef(): ChangeDetectorRef { return this._hostElement.parentView.ref; };
   get componentType(): Type { return this._componentType; }
+  get metadata(): any[] { return this._metadata; }
 
   destroy(): void { this._hostElement.parentView.destroy(); }
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
@@ -71,10 +73,28 @@ export class ComponentRef_ extends ComponentRef {
 
 @CONST()
 export class ComponentFactory {
-  constructor(public selector: string, private _viewFactory: Function,
-              private _componentType: Type) {}
+  static cloneWithMetadata(original: ComponentFactory,
+                           metadata: any[]): ComponentFactory {
+    return new ComponentFactory(original.selector, original._viewFactory, original._componentType,
+                                [original.componentType, metadata]);
+  }
+
+  constructor(public selector: string, private _viewFactory: Function, private _componentType: Type,
+              private _metadataPairs: Array<Type | any[]> = null) {}
 
   get componentType(): Type { return this._componentType; }
+  get metadata(): any[] {
+    if (isPresent(this._metadataPairs)) {
+      for (var i=0; i<this._metadataPairs.length; i+=2) {
+        if (this._metadataPairs[i] === this._componentType) {
+          return <any[]>this._metadataPairs[i+1];
+        }
+      }
+      return [];
+    } else {
+      return reflector.annotations(this._componentType);
+    }
+  }
 
   /**
    * Creates a new component.
@@ -88,6 +108,6 @@ export class ComponentFactory {
     // Note: Host views don't need a declarationAppElement!
     var hostView = this._viewFactory(vu, injector, null);
     var hostElement = hostView.create(projectableNodes, rootSelectorOrNode);
-    return new ComponentRef_(hostElement, this._componentType);
+    return new ComponentRef_(hostElement, this.componentType, this.metadata);
   }
 }

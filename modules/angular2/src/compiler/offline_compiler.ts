@@ -75,7 +75,8 @@ export class OfflineCompiler {
                                        [
                                          o.literal(compMeta.selector),
                                          o.variable(hostViewFactoryVar),
-                                         o.importExpr(compMeta.type)
+                                         o.importExpr(compMeta.type),
+                                         o.METADATA_MAP
                                        ],
                                        o.importType(_COMPONENT_FACTORY_IDENTIFIER, null,
                                                     [o.TypeModifier.Const])))

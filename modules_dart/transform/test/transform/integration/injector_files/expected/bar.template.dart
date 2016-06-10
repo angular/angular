@@ -15,11 +15,8 @@ void initReflector() {
   if (_visited) return;
   _visited = true;
   _ngRef.reflector
-    ..registerType(
-        MyModule,
-        new _ngRef.ReflectionInfo(const [
-          const InjectorModule(providers: const [ServiceDep])
-        ], const [], () => new MyModule()));
+    ..registerType(MyModule,
+        new _ngRef.ReflectionInfo(const [], const [], () => new MyModule()));
   i0.initReflector();
   i1.initReflector();
 }
