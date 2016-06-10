@@ -18,7 +18,7 @@ export {MdIconRegistry} from './icon-registry';
 /** Exception thrown when an invalid icon name is passed to an md-icon component. */
 export class MdIconInvalidNameError extends MdError {
   constructor(iconName: string) {
-      super(`Invalid icon name: "${name}"`);
+      super(`Invalid icon name: "${iconName}"`);
   }
 }
 

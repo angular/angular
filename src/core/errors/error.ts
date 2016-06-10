@@ -6,6 +6,6 @@
 export class MdError extends Error {
   constructor(value: string) {
     super();
-    super.message = value;
+    this.message = value;
   }
 }

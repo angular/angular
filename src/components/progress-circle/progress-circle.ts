@@ -251,8 +251,8 @@ function clamp(v: number) {
  * Returns the current timestamp either based on the performance global or a date object.
  */
 function now() {
-  if (typeof performance !== 'undefined' && performance.now) {
-    return performance.now();
+  if (window.performance && window.performance.now) {
+    return window.performance.now();
   }
   return Date.now();
 }

@@ -25,6 +25,24 @@ let defaultPositionList = [
 
 
 /**
+ * Directive applied to an element to make it usable as an origin for an Overlay using a
+ * ConnectedPositionStrategy.
+ */
+@Directive({
+  selector: '[overlay-origin]',
+  exportAs: 'overlayOrigin',
+})
+export class OverlayOrigin {
+  constructor(private _elementRef: ElementRef) { }
+
+  get elementRef() {
+    return this._elementRef;
+  }
+}
+
+
+
+/**
  * Directive to facilitate declarative creation of an Overlay using a ConnectedPositionStrategy.
  */
 @Directive({
@@ -82,23 +100,6 @@ export class ConnectedOverlayDirective implements OnInit, OnDestroy {
   /** Destroys the overlay created by this directive. */
   private _destroyOverlay() {
     this._overlayRef.dispose();
-  }
-}
-
-
-/**
- * Directive applied to an element to make it usable as an origin for an Overlay using a
- * ConnectedPositionStrategy.
- */
-@Directive({
-  selector: '[overlay-origin]',
-  exportAs: 'overlayOrigin',
-})
-export class OverlayOrigin {
-  constructor(private _elementRef: ElementRef) { }
-
-  get elementRef() {
-    return this._elementRef;
   }
 }
 
