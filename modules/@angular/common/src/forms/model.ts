@@ -7,17 +7,17 @@ import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 
 
 /**
- * Indicates that a Control is valid, i.e. that no errors exist in the input value.
+ * Indicates that a FormControl is valid, i.e. that no errors exist in the input value.
  */
 export const VALID = 'VALID';
 
 /**
- * Indicates that a Control is invalid, i.e. that an error exists in the input value.
+ * Indicates that a FormControl is invalid, i.e. that an error exists in the input value.
  */
 export const INVALID = 'INVALID';
 
 /**
- * Indicates that a Control is pending, i.e. that async validation is occurring and
+ * Indicates that a FormControl is pending, i.e. that async validation is occurring and
  * errors are not yet available for the input value.
  */
 export const PENDING = 'PENDING';
@@ -35,9 +35,9 @@ function _find(control: AbstractControl, path: Array<string|number>| string) {
   if (path instanceof Array && ListWrapper.isEmpty(path)) return null;
 
   return (<Array<string|number>>path).reduce((v, name) => {
-    if (v instanceof ControlGroup) {
+    if (v instanceof FormGroup) {
       return isPresent(v.controls[name]) ? v.controls[name] : null;
-    } else if (v instanceof ControlArray) {
+    } else if (v instanceof FormArray) {
       var index = <number>name;
       return isPresent(v.at(index)) ? v.at(index) : null;
     } else {
@@ -63,7 +63,7 @@ export abstract class AbstractControl {
   private _errors: {[key: string]: any};
   private _pristine: boolean = true;
   private _touched: boolean = false;
-  private _parent: ControlGroup|ControlArray;
+  private _parent: FormGroup|FormArray;
   private _asyncValidationSubscription: any;
 
   constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn) {}
@@ -113,7 +113,7 @@ export abstract class AbstractControl {
     }
   }
 
-  setParent(parent: ControlGroup|ControlArray): void { this._parent = parent; }
+  setParent(parent: FormGroup|FormArray): void { this._parent = parent; }
 
   updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
       void {
@@ -160,7 +160,7 @@ export abstract class AbstractControl {
   }
 
   /**
-   * Sets errors on a control.
+   * Sets errors on a form control.
    *
    * This is used when validations are run not automatically, but manually by the user.
    *
@@ -169,7 +169,7 @@ export abstract class AbstractControl {
    * ## Usage
    *
    * ```
-   * var login = new Control("someLogin");
+   * var login = new FormControl("someLogin");
    * login.setErrors({
    *   "notUnique": true
    * });
@@ -253,24 +253,26 @@ export abstract class AbstractControl {
 }
 
 /**
- * Defines a part of a form that cannot be divided into other controls. `Control`s have values and
+ * Defines a part of a form that cannot be divided into other controls. `FormControl`s have values
+ * and
  * validation state, which is determined by an optional validation function.
  *
- * `Control` is one of the three fundamental building blocks used to define forms in Angular, along
- * with {@link ControlGroup} and {@link ControlArray}.
+ * `FormControl` is one of the three fundamental building blocks used to define forms in Angular,
+ * along
+ * with {@link FormGroup} and {@link FormArray}.
  *
  * ## Usage
  *
- * By default, a `Control` is created for every `<input>` or other form component.
- * With {@link NgFormControl} or {@link NgFormModel} an existing {@link Control} can be
- * bound to a DOM element instead. This `Control` can be configured with a custom
+ * By default, a `FormControl` is created for every `<input>` or other form component.
+ * With {@link NgFormControl} or {@link NgFormModel} an existing {@link FormControl} can be
+ * bound to a DOM element instead. This `FormControl` can be configured with a custom
  * validation function.
  *
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  *
  * @experimental
  */
-export class Control extends AbstractControl {
+export class FormControl extends AbstractControl {
   /** @internal */
   _onChange: Function;
 
@@ -283,11 +285,11 @@ export class Control extends AbstractControl {
   }
 
   /**
-   * Set the value of the control to `value`.
+   * Set the value of the form control to `value`.
    *
-   * If `onlySelf` is `true`, this change will only affect the validation of this `Control`
+   * If `onlySelf` is `true`, this change will only affect the validation of this `FormControl`
    * and not its parent component. If `emitEvent` is `true`, this change will cause a
-   * `valueChanges` event on the `Control` to be emitted. Both of these options default to
+   * `valueChanges` event on the `FormControl` to be emitted. Both of these options default to
    * `false`.
    *
    * If `emitModelToViewChange` is `true`, the view will be notified about the new value
@@ -324,20 +326,20 @@ export class Control extends AbstractControl {
 /**
  * Defines a part of a form, of fixed length, that can contain other controls.
  *
- * A `ControlGroup` aggregates the values of each {@link Control} in the group.
- * The status of a `ControlGroup` depends on the status of its children.
+ * A `FormGroup` aggregates the values of each {@link FormControl} in the group.
+ * The status of a `FormGroup` depends on the status of its children.
  * If one of the controls in a group is invalid, the entire group is invalid.
  * Similarly, if a control changes its value, the entire group changes as well.
  *
- * `ControlGroup` is one of the three fundamental building blocks used to define forms in Angular,
- * along with {@link Control} and {@link ControlArray}. {@link ControlArray} can also contain other
+ * `FormGroup` is one of the three fundamental building blocks used to define forms in Angular,
+ * along with {@link FormControl} and {@link FormArray}. {@link FormArray} can also contain other
  * controls, but is of variable length.
  *
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  *
  * @experimental
  */
-export class ControlGroup extends AbstractControl {
+export class FormGroup extends AbstractControl {
   private _optionals: {[key: string]: boolean};
 
   constructor(
@@ -446,28 +448,28 @@ export class ControlGroup extends AbstractControl {
 /**
  * Defines a part of a form, of variable length, that can contain other controls.
  *
- * A `ControlArray` aggregates the values of each {@link Control} in the group.
- * The status of a `ControlArray` depends on the status of its children.
+ * A `FormArray` aggregates the values of each {@link FormControl} in the group.
+ * The status of a `FormArray` depends on the status of its children.
  * If one of the controls in a group is invalid, the entire array is invalid.
  * Similarly, if a control changes its value, the entire array changes as well.
  *
- * `ControlArray` is one of the three fundamental building blocks used to define forms in Angular,
- * along with {@link Control} and {@link ControlGroup}. {@link ControlGroup} can also contain
+ * `FormArray` is one of the three fundamental building blocks used to define forms in Angular,
+ * along with {@link FormControl} and {@link FormGroup}. {@link FormGroup} can also contain
  * other controls, but is of fixed length.
  *
  * ## Adding or removing controls
  *
  * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
- * in `ControlArray` itself. These methods ensure the controls are properly tracked in the
+ * in `FormArray` itself. These methods ensure the controls are properly tracked in the
  * form's hierarchy. Do not modify the array of `AbstractControl`s used to instantiate
- * the `ControlArray` directly, as that will result in strange and unexpected behavior such
+ * the `FormArray` directly, as that will result in strange and unexpected behavior such
  * as broken change detection.
  *
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  *
  * @experimental
  */
-export class ControlArray extends AbstractControl {
+export class FormArray extends AbstractControl {
   constructor(
       public controls: AbstractControl[], validator: ValidatorFn = null,
       asyncValidator: AsyncValidatorFn = null) {

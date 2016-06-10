@@ -1,4 +1,4 @@
-import {Control, FormBuilder} from '@angular/common';
+import {FormBuilder, FormControl} from '@angular/common/src/forms';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
 import {PromiseWrapper} from '../../src/facade/promise';

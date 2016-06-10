@@ -1,7 +1,7 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {fakeAsync, flushMicrotasks, Log, tick} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {ControlGroup, Control, ControlArray, Validators} from '@angular/common';
+import {ControlGroup, Control, ControlArray, Validators} from '@angular/common/src/forms-deprecated';
 import {IS_DART, isPresent} from '../../src/facade/lang';
 import {PromiseWrapper} from '../../src/facade/promise';
 import {TimerWrapper, ObservableWrapper, EventEmitter} from '../../src/facade/async';

@@ -1,4 +1,4 @@
-import {AbstractControl, Control, ControlArray, ControlGroup, Validators} from '@angular/common';
+import {AbstractControl, Control, ControlArray, ControlGroup, Validators} from '@angular/common/src/forms-deprecated';
 import {Log, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 

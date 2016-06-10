@@ -1,7 +1,7 @@
 import {ListWrapper, StringMapWrapper} from '../../facade/collection';
 import {BaseException} from '../../facade/exceptions';
 import {hasConstructor, isBlank, isPresent, looseIdentical} from '../../facade/lang';
-import {Control, ControlGroup} from '../model';
+import {FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
 
 import {AbstractControlDirective} from './abstract_control_directive';
@@ -24,7 +24,7 @@ export function controlPath(name: string, parent: ControlContainer): string[] {
   return p;
 }
 
-export function setUpControl(control: Control, dir: NgControl): void {
+export function setUpControl(control: FormControl, dir: NgControl): void {
   if (isBlank(control)) _throwError(dir, 'Cannot find control');
   if (isBlank(dir.valueAccessor)) _throwError(dir, 'No value accessor for');
 
@@ -46,7 +46,7 @@ export function setUpControl(control: Control, dir: NgControl): void {
   dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
 }
 
-export function setUpControlGroup(control: ControlGroup, dir: NgControlGroup) {
+export function setUpFormGroup(control: FormGroup, dir: NgControlGroup) {
   if (isBlank(control)) _throwError(dir, 'Cannot find control');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);

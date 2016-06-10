@@ -10,7 +10,7 @@ import * as modelModule from './model';
 
 
 /**
- * Providers for validators to be used for {@link Control}s in a form.
+ * Providers for validators to be used for {@link FormControl}s in a form.
  *
  * Provide this using `multi: true` to add validators.
  *
@@ -22,7 +22,7 @@ import * as modelModule from './model';
 export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('NgValidators');
 
 /**
- * Providers for asynchronous validators to be used for {@link Control}s
+ * Providers for asynchronous validators to be used for {@link FormControl}s
  * in a form.
  *
  * Provide this using `multi: true` to add validators.
@@ -37,13 +37,13 @@ export const NG_ASYNC_VALIDATORS: OpaqueToken =
 /**
  * Provides a set of validators used by form controls.
  *
- * A validator is a function that processes a {@link Control} or collection of
+ * A validator is a function that processes a {@link FormControl} or collection of
  * controls and returns a map of errors. A null map means that validation has passed.
  *
  * ### Example
  *
  * ```typescript
- * var loginControl = new Control("", Validators.required)
+ * var loginControl = new FormControl("", Validators.required)
  * ```
  *
  * @experimental

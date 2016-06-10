@@ -1,4 +1,5 @@
-import {Control, ControlGroup, ControlValueAccessor, FORM_DIRECTIVES, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgFor, NgForm, NgIf, RadioButtonState, Validator, Validators} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
+import {Control, ControlGroup, ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, RadioButtonState, Validator, Validators} from '@angular/common/src/forms-deprecated';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {ComponentFixture} from '@angular/compiler/testing';
 import {Component, Directive, EventEmitter, Output} from '@angular/core';
@@ -1542,7 +1543,8 @@ class UniqLoginValidator implements Validator {
   template: '',
   directives: [
     FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator, UniqLoginValidator
-  ]
+  ],
+  providers: [FORM_PROVIDERS]
 })
 class MyComp8 {
   form: any;

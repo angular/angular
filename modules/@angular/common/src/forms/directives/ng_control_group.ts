@@ -1,6 +1,6 @@
 import {Directive, Host, Inject, OnDestroy, OnInit, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
 
-import {ControlGroup} from '../model';
+import {FormGroup} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
@@ -26,7 +26,7 @@ export const controlGroupProvider: any =
  *   selector: 'my-app',
  *   template: `
  *     <div>
- *       <h2>Angular Control &amp; ControlGroup Example</h2>
+ *       <h2>Angular FormControl &amp; FormGroup Example</h2>
  *       <form #f="ngForm">
  *         <div ngControlGroup="name" #cgName="ngForm">
  *           <h3>Enter your name:</h3>
@@ -79,14 +79,14 @@ export class NgControlGroup extends ControlContainer implements OnInit,
     this._parent = parent;
   }
 
-  ngOnInit(): void { this.formDirective.addControlGroup(this); }
+  ngOnInit(): void { this.formDirective.addFormGroup(this); }
 
-  ngOnDestroy(): void { this.formDirective.removeControlGroup(this); }
+  ngOnDestroy(): void { this.formDirective.removeFormGroup(this); }
 
   /**
-   * Get the {@link ControlGroup} backing this binding.
+   * Get the {@link FormGroup} backing this binding.
    */
-  get control(): ControlGroup { return this.formDirective.getControlGroup(this); }
+  get control(): FormGroup { return this.formDirective.getFormGroup(this); }
 
   /**
    * Get the path to this control group.

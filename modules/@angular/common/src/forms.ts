@@ -1,9 +1,10 @@
 /**
  * @module
  * @description
- * This module is used for handling user input, by defining and building a {@link ControlGroup} that
+ * This module is used for handling user input, by defining and building a {@link FormGroup} that
  * consists of
- * {@link Control} objects, and mapping them onto the DOM. {@link Control} objects can then be used
+ * {@link FormControl} objects, and mapping them onto the DOM. {@link FormControl} objects can then
+ * be used
  * to read information
  * from the form DOM elements.
  *
@@ -33,8 +34,9 @@ export {NgModel} from './forms/directives/ng_model';
 export {NgSelectOption, SelectControlValueAccessor} from './forms/directives/select_control_value_accessor';
 export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator, Validator} from './forms/directives/validators';
 export {FormBuilder} from './forms/form_builder';
-export {AbstractControl, Control, ControlArray, ControlGroup} from './forms/model';
+export {AbstractControl, FormArray, FormControl, FormGroup} from './forms/model';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './forms/validators';
+
 
 
 /**

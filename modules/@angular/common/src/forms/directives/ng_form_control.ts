@@ -2,7 +2,7 @@ import {Directive, Inject, OnChanges, Optional, Self, SimpleChanges, forwardRef}
 
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
-import {Control} from '../model';
+import {FormControl} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
@@ -73,7 +73,7 @@ export const formControlBinding: any =
   exportAs: 'ngForm'
 })
 export class NgFormControl extends NgControl implements OnChanges {
-  form: Control;
+  form: FormControl;
   update = new EventEmitter();
   model: any;
   viewModel: any;
@@ -107,7 +107,7 @@ export class NgFormControl extends NgControl implements OnChanges {
                 return composeAsyncValidators(this._asyncValidators);
               }
 
-              get control(): Control { return this.form; }
+              get control(): FormControl { return this.form; }
 
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;

@@ -4,14 +4,14 @@ import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {ListWrapper, StringMapWrapper} from '../../facade/collection';
 import {BaseException} from '../../facade/exceptions';
 import {isBlank} from '../../facade/lang';
-import {Control, ControlGroup} from '../model';
+import {FormControl, FormGroup} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../validators';
 
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
-import {composeAsyncValidators, composeValidators, setUpControl, setUpControlGroup} from './shared';
+import {composeAsyncValidators, composeValidators, setUpControl, setUpFormGroup} from './shared';
 
 export const formDirectiveProvider: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
@@ -24,7 +24,7 @@ export const formDirectiveProvider: any =
  *
  * ### Example ([live demo](http://plnkr.co/edit/jqrVirudY8anJxTMUjTP?p=preview))
  *
- * In this example, we bind the control group to the form element, and we bind the login and
+ * In this example, we bind the form group to the form element, and we bind the login and
  * password controls to the login and password elements.
  *
  *  ```typescript
@@ -44,12 +44,12 @@ export const formDirectiveProvider: any =
  *   directives: [FORM_DIRECTIVES]
  * })
  * export class App {
- *   loginForm: ControlGroup;
+ *   loginForm: FormGroup;
  *
  *   constructor() {
- *     this.loginForm = new ControlGroup({
- *       login: new Control(""),
- *       password: new Control("")
+ *     this.loginForm = new FormGroup({
+ *       login: new FormControl(""),
+ *       password: new FormControl("")
  *     });
  *   }
  *
@@ -75,12 +75,12 @@ export const formDirectiveProvider: any =
  *      })
  * class LoginComp {
  *  credentials: {login: string, password: string};
- *  loginForm: ControlGroup;
+ *  loginForm: FormGroup;
  *
  *  constructor() {
- *    this.loginForm = new ControlGroup({
- *      login: new Control(""),
- *      password: new Control("")
+ *    this.loginForm = new FormGroup({
+ *      login: new FormControl(""),
+ *      password: new FormControl("")
  *    });
  *  }
  *
@@ -105,7 +105,7 @@ export class NgFormModel extends ControlContainer implements Form,
     OnChanges {
   private _submitted: boolean = false;
 
-  form: ControlGroup = null;
+  form: FormGroup = null;
   directives: NgControl[] = [];
   ngSubmit = new EventEmitter();
 
@@ -134,11 +134,11 @@ export class NgFormModel extends ControlContainer implements Form,
 
   get formDirective(): Form { return this; }
 
-  get control(): ControlGroup { return this.form; }
+  get control(): FormGroup { return this.form; }
 
   get path(): string[] { return []; }
 
-  addControl(dir: NgControl): Control {
+  addControl(dir: NgControl): FormControl {
     const ctrl: any = this.form.find(dir.path);
     setUpControl(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
@@ -146,24 +146,22 @@ export class NgFormModel extends ControlContainer implements Form,
     return ctrl;
   }
 
-  getControl(dir: NgControl): Control { return <Control>this.form.find(dir.path); }
+  getControl(dir: NgControl): FormControl { return <FormControl>this.form.find(dir.path); }
 
   removeControl(dir: NgControl): void { ListWrapper.remove(this.directives, dir); }
 
-  addControlGroup(dir: NgControlGroup) {
+  addFormGroup(dir: NgControlGroup) {
     var ctrl: any = this.form.find(dir.path);
-    setUpControlGroup(ctrl, dir);
+    setUpFormGroup(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
-  removeControlGroup(dir: NgControlGroup) {}
+  removeFormGroup(dir: NgControlGroup) {}
 
-  getControlGroup(dir: NgControlGroup): ControlGroup {
-    return <ControlGroup>this.form.find(dir.path);
-  }
+  getFormGroup(dir: NgControlGroup): FormGroup { return <FormGroup>this.form.find(dir.path); }
 
   updateModel(dir: NgControl, value: any): void {
-    var ctrl  = <Control>this.form.find(dir.path);
+    var ctrl  = <FormControl>this.form.find(dir.path);
     ctrl.updateValue(value);
   }
 

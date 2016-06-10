@@ -1,7 +1,7 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {fakeAsync, flushMicrotasks, Log, tick} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {ControlGroup, Control, ControlArray, Validators} from '@angular/common';
+import {FormGroup, FormControl, FormArray, Validators} from '@angular/common/src/forms';
 import {IS_DART, isPresent} from '../../src/facade/lang';
 import {PromiseWrapper} from '../../src/facade/promise';
 import {TimerWrapper, ObservableWrapper, EventEmitter} from '../../src/facade/async';
@@ -32,33 +32,33 @@ export function main() {
   }
 
   describe('Form Model', () => {
-    describe('Control', () => {
+    describe('FormControl', () => {
       it('should default the value to null', () => {
-        var c = new Control();
+        var c = new FormControl();
         expect(c.value).toBe(null);
       });
 
       describe('validator', () => {
         it('should run validator with the initial value', () => {
-          var c = new Control('value', Validators.required);
+          var c = new FormControl('value', Validators.required);
           expect(c.valid).toEqual(true);
         });
 
         it('should rerun the validator when the value changes', () => {
-          var c = new Control('value', Validators.required);
+          var c = new FormControl('value', Validators.required);
           c.updateValue(null);
           expect(c.valid).toEqual(false);
         });
 
         it('should return errors', () => {
-          var c = new Control(null, Validators.required);
+          var c = new FormControl(null, Validators.required);
           expect(c.errors).toEqual({'required': true});
         });
       });
 
       describe('asyncValidator', () => {
         it('should run validator with the initial value', fakeAsync(() => {
-             var c = new Control('value', null, asyncValidator('expected'));
+             var c = new FormControl('value', null, asyncValidator('expected'));
              tick();
 
              expect(c.valid).toEqual(false);
@@ -66,7 +66,7 @@ export function main() {
            }));
 
         it('should support validators returning observables', fakeAsync(() => {
-             var c = new Control('value', null, asyncValidatorReturningObservable);
+             var c = new FormControl('value', null, asyncValidatorReturningObservable);
              tick();
 
              expect(c.valid).toEqual(false);
@@ -74,7 +74,7 @@ export function main() {
            }));
 
         it('should rerun the validator when the value changes', fakeAsync(() => {
-             var c = new Control('value', null, asyncValidator('expected'));
+             var c = new FormControl('value', null, asyncValidator('expected'));
 
              c.updateValue('expected');
              tick();
@@ -83,7 +83,7 @@ export function main() {
            }));
 
         it('should run the async validator only when the sync validator passes', fakeAsync(() => {
-             var c = new Control('', Validators.required, asyncValidator('expected'));
+             var c = new FormControl('', Validators.required, asyncValidator('expected'));
              tick();
 
              expect(c.errors).toEqual({'required': true});
@@ -96,7 +96,7 @@ export function main() {
 
         it('should mark the control as pending while running the async validation',
            fakeAsync(() => {
-             var c = new Control('', null, asyncValidator('expected'));
+             var c = new FormControl('', null, asyncValidator('expected'));
 
              expect(c.pending).toEqual(true);
 
@@ -106,8 +106,8 @@ export function main() {
            }));
 
         it('should only use the latest async validation run', fakeAsync(() => {
-             var c =
-                 new Control('', null, asyncValidator('expected', {'long': 200, 'expected': 100}));
+             var c = new FormControl(
+                 '', null, asyncValidator('expected', {'long': 200, 'expected': 100}));
 
              c.updateValue('long');
              c.updateValue('expected');
@@ -120,12 +120,12 @@ export function main() {
 
       describe('dirty', () => {
         it('should be false after creating a control', () => {
-          var c = new Control('value');
+          var c = new FormControl('value');
           expect(c.dirty).toEqual(false);
         });
 
         it('should be true after changing the value of the control', () => {
-          var c = new Control('value');
+          var c = new FormControl('value');
           c.markAsDirty();
           expect(c.dirty).toEqual(true);
         });
@@ -134,8 +134,8 @@ export function main() {
       describe('updateValue', () => {
         var g: any /** TODO #9100 */, c: any /** TODO #9100 */;
         beforeEach(() => {
-          c = new Control('oldValue');
-          g = new ControlGroup({'one': c});
+          c = new FormControl('oldValue');
+          g = new FormGroup({'one': c});
         });
 
         it('should update the value of the control', () => {
@@ -191,7 +191,7 @@ export function main() {
       describe('valueChanges & statusChanges', () => {
         var c: any /** TODO #9100 */;
 
-        beforeEach(() => { c = new Control('old', Validators.required); });
+        beforeEach(() => { c = new FormControl('old', Validators.required); });
 
         it('should fire an event after the value has been updated',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -214,7 +214,7 @@ export function main() {
            }));
 
         it('should fire an event after the status has been updated to pending', fakeAsync(() => {
-             var c = new Control('old', Validators.required, asyncValidator('expected'));
+             var c = new FormControl('old', Validators.required, asyncValidator('expected'));
 
              var log: any[] /** TODO #9100 */ = [];
              ObservableWrapper.subscribe(c.valueChanges, (value) => log.push(`value: '${value}'`));
@@ -269,7 +269,7 @@ export function main() {
 
       describe('setErrors', () => {
         it('should set errors on a control', () => {
-          var c = new Control('someValue');
+          var c = new FormControl('someValue');
 
           c.setErrors({'someError': true});
 
@@ -278,7 +278,7 @@ export function main() {
         });
 
         it('should reset the errors and validity when the value changes', () => {
-          var c = new Control('someValue', Validators.required);
+          var c = new FormControl('someValue', Validators.required);
 
           c.setErrors({'someError': true});
           c.updateValue('');
@@ -287,8 +287,8 @@ export function main() {
         });
 
         it('should update the parent group\'s validity', () => {
-          var c = new Control('someValue');
-          var g = new ControlGroup({'one': c});
+          var c = new FormControl('someValue');
+          var g = new FormGroup({'one': c});
 
           expect(g.valid).toEqual(true);
 
@@ -298,8 +298,8 @@ export function main() {
         });
 
         it('should not reset parent\'s errors', () => {
-          var c = new Control('someValue');
-          var g = new ControlGroup({'one': c});
+          var c = new FormControl('someValue');
+          var g = new FormGroup({'one': c});
 
           g.setErrors({'someGroupError': true});
           c.setErrors({'someError': true});
@@ -308,8 +308,8 @@ export function main() {
         });
 
         it('should reset errors when updating a value', () => {
-          var c = new Control('oldValue');
-          var g = new ControlGroup({'one': c});
+          var c = new FormControl('oldValue');
+          var g = new FormGroup({'one': c});
 
           g.setErrors({'someGroupError': true});
           c.setErrors({'someError': true});
@@ -322,24 +322,26 @@ export function main() {
       });
     });
 
-    describe('ControlGroup', () => {
+    describe('FormGroup', () => {
       describe('value', () => {
         it('should be the reduced value of the child controls', () => {
-          var g = new ControlGroup({'one': new Control('111'), 'two': new Control('222')});
+          var g = new FormGroup({'one': new FormControl('111'), 'two': new FormControl('222')});
           expect(g.value).toEqual({'one': '111', 'two': '222'});
         });
 
         it('should be empty when there are no child controls', () => {
-          var g = new ControlGroup({});
+          var g = new FormGroup({});
           expect(g.value).toEqual({});
         });
 
         it('should support nested groups', () => {
-          var g = new ControlGroup(
-              {'one': new Control('111'), 'nested': new ControlGroup({'two': new Control('222')})});
+          var g = new FormGroup({
+            'one': new FormControl('111'),
+            'nested': new FormGroup({'two': new FormControl('222')})
+          });
           expect(g.value).toEqual({'one': '111', 'nested': {'two': '222'}});
 
-          (<Control>(g.controls['nested'].find('two'))).updateValue('333');
+          (<FormControl>(g.controls['nested'].find('two'))).updateValue('333');
 
           expect(g.value).toEqual({'one': '111', 'nested': {'two': '333'}});
         });
@@ -347,19 +349,19 @@ export function main() {
 
       describe('adding and removing controls', () => {
         it('should update value and validity when control is added', () => {
-          var g = new ControlGroup({'one': new Control('1')});
+          var g = new FormGroup({'one': new FormControl('1')});
           expect(g.value).toEqual({'one': '1'});
           expect(g.valid).toBe(true);
 
-          g.addControl('two', new Control('2', Validators.minLength(10)));
+          g.addControl('two', new FormControl('2', Validators.minLength(10)));
 
           expect(g.value).toEqual({'one': '1', 'two': '2'});
           expect(g.valid).toBe(false);
         });
 
         it('should update value and validity when control is removed', () => {
-          var g = new ControlGroup(
-              {'one': new Control('1'), 'two': new Control('2', Validators.minLength(10))});
+          var g = new FormGroup(
+              {'one': new FormControl('1'), 'two': new FormControl('2', Validators.minLength(10))});
           expect(g.value).toEqual({'one': '1', 'two': '2'});
           expect(g.valid).toBe(false);
 
@@ -375,8 +377,8 @@ export function main() {
           var simpleValidator = (c: any /** TODO #9100 */) =>
               c.controls['one'].value != 'correct' ? {'broken': true} : null;
 
-          var c = new Control(null);
-          var g = new ControlGroup({'one': c}, null, simpleValidator);
+          var c = new FormControl(null);
+          var g = new FormGroup({'one': c}, null, simpleValidator);
 
           c.updateValue('correct');
 
@@ -394,8 +396,8 @@ export function main() {
         var c: any /** TODO #9100 */, g: any /** TODO #9100 */;
 
         beforeEach(() => {
-          c = new Control('value');
-          g = new ControlGroup({'one': c});
+          c = new FormControl('value');
+          g = new FormGroup({'one': c});
         });
 
         it('should be false after creating a control', () => { expect(g.dirty).toEqual(false); });
@@ -412,10 +414,10 @@ export function main() {
           var group: any /** TODO #9100 */;
 
           beforeEach(() => {
-            group = new ControlGroup(
+            group = new FormGroup(
                 {
-                  'required': new Control('requiredValue'),
-                  'optional': new Control('optionalValue')
+                  'required': new FormControl('requiredValue'),
+                  'optional': new FormControl('optionalValue')
                 },
                 {'optional': false});
           });
@@ -437,8 +439,11 @@ export function main() {
         });
 
         it('should not include an inactive component into the group value', () => {
-          var group = new ControlGroup(
-              {'required': new Control('requiredValue'), 'optional': new Control('optionalValue')},
+          var group = new FormGroup(
+              {
+                'required': new FormControl('requiredValue'),
+                'optional': new FormControl('optionalValue')
+              },
               {'optional': false});
 
           expect(group.value).toEqual({'required': 'requiredValue'});
@@ -449,10 +454,10 @@ export function main() {
         });
 
         it('should not run Validators on an inactive component', () => {
-          var group = new ControlGroup(
+          var group = new FormGroup(
               {
-                'required': new Control('requiredValue', Validators.required),
-                'optional': new Control('', Validators.required)
+                'required': new FormControl('requiredValue', Validators.required),
+                'optional': new FormControl('', Validators.required)
               },
               {'optional': false});
 
@@ -468,9 +473,9 @@ export function main() {
         var g: any /** TODO #9100 */, c1: any /** TODO #9100 */, c2: any /** TODO #9100 */;
 
         beforeEach(() => {
-          c1 = new Control('old1');
-          c2 = new Control('old2');
-          g = new ControlGroup({'one': c1, 'two': c2}, {'two': true});
+          c1 = new FormControl('old1');
+          c2 = new FormControl('old2');
+          g = new FormGroup({'one': c1, 'two': c2}, {'two': true});
         });
 
         it('should fire an event after the value has been updated',
@@ -548,15 +553,15 @@ export function main() {
 
       describe('getError', () => {
         it('should return the error when it is present', () => {
-          var c = new Control('', Validators.required);
-          var g = new ControlGroup({'one': c});
+          var c = new FormControl('', Validators.required);
+          var g = new FormGroup({'one': c});
           expect(c.getError('required')).toEqual(true);
           expect(g.getError('required', ['one'])).toEqual(true);
         });
 
         it('should return null otherwise', () => {
-          var c = new Control('not empty', Validators.required);
-          var g = new ControlGroup({'one': c});
+          var c = new FormControl('not empty', Validators.required);
+          var g = new FormGroup({'one': c});
           expect(c.getError('invalid')).toEqual(null);
           expect(g.getError('required', ['one'])).toEqual(null);
           expect(g.getError('required', ['invalid'])).toEqual(null);
@@ -565,8 +570,8 @@ export function main() {
 
       describe('asyncValidator', () => {
         it('should run the async validator', fakeAsync(() => {
-             var c = new Control('value');
-             var g = new ControlGroup({'one': c}, null, null, asyncValidator('expected'));
+             var c = new FormControl('value');
+             var g = new FormGroup({'one': c}, null, null, asyncValidator('expected'));
 
              expect(g.pending).toEqual(true);
 
@@ -577,8 +582,8 @@ export function main() {
            }));
 
         it('should set the parent group\'s status to pending', fakeAsync(() => {
-             var c = new Control('value', null, asyncValidator('expected'));
-             var g = new ControlGroup({'one': c});
+             var c = new FormControl('value', null, asyncValidator('expected'));
+             var g = new FormGroup({'one': c});
 
              expect(g.pending).toEqual(true);
 
@@ -589,8 +594,8 @@ export function main() {
 
         it('should run the parent group\'s async validator when children are pending',
            fakeAsync(() => {
-             var c = new Control('value', null, asyncValidator('expected'));
-             var g = new ControlGroup({'one': c}, null, null, asyncValidator('expected'));
+             var c = new FormControl('value', null, asyncValidator('expected'));
+             var g = new FormGroup({'one': c}, null, null, asyncValidator('expected'));
 
              tick(1);
 
@@ -600,16 +605,16 @@ export function main() {
       })
     });
 
-    describe('ControlArray', () => {
+    describe('FormArray', () => {
       describe('adding/removing', () => {
-        var a: ControlArray;
+        var a: FormArray;
         var c1: any /** TODO #9100 */, c2: any /** TODO #9100 */, c3: any /** TODO #9100 */;
 
         beforeEach(() => {
-          a = new ControlArray([]);
-          c1 = new Control(1);
-          c2 = new Control(2);
-          c3 = new Control(3);
+          a = new FormArray([]);
+          c1 = new FormControl(1);
+          c2 = new FormControl(2);
+          c3 = new FormControl(3);
         });
 
         it('should support pushing', () => {
@@ -640,12 +645,12 @@ export function main() {
 
       describe('value', () => {
         it('should be the reduced value of the child controls', () => {
-          var a = new ControlArray([new Control(1), new Control(2)]);
+          var a = new FormArray([new FormControl(1), new FormControl(2)]);
           expect(a.value).toEqual([1, 2]);
         });
 
         it('should be an empty array when there are no child controls', () => {
-          var a = new ControlArray([]);
+          var a = new FormArray([]);
           expect(a.value).toEqual([]);
         });
       });
@@ -655,8 +660,8 @@ export function main() {
           var simpleValidator = (c: any /** TODO #9100 */) =>
               c.controls[0].value != 'correct' ? {'broken': true} : null;
 
-          var c = new Control(null);
-          var g = new ControlArray([c], simpleValidator);
+          var c = new FormControl(null);
+          var g = new FormArray([c], simpleValidator);
 
           c.updateValue('correct');
 
@@ -672,12 +677,12 @@ export function main() {
 
 
       describe('dirty', () => {
-        var c: Control;
-        var a: ControlArray;
+        var c: FormControl;
+        var a: FormArray;
 
         beforeEach(() => {
-          c = new Control('value');
-          a = new ControlArray([c]);
+          c = new FormControl('value');
+          a = new FormArray([c]);
         });
 
         it('should be false after creating a control', () => { expect(a.dirty).toEqual(false); });
@@ -690,12 +695,12 @@ export function main() {
       });
 
       describe('pending', () => {
-        var c: Control;
-        var a: ControlArray;
+        var c: FormControl;
+        var a: FormArray;
 
         beforeEach(() => {
-          c = new Control('value');
-          a = new ControlArray([c]);
+          c = new FormControl('value');
+          a = new FormArray([c]);
         });
 
         it('should be false after creating a control', () => {
@@ -719,13 +724,13 @@ export function main() {
       });
 
       describe('valueChanges', () => {
-        var a: ControlArray;
+        var a: FormArray;
         var c1: any /** TODO #9100 */, c2: any /** TODO #9100 */;
 
         beforeEach(() => {
-          c1 = new Control('old1');
-          c2 = new Control('old2');
-          a = new ControlArray([c1, c2]);
+          c1 = new FormControl('old1');
+          c2 = new FormControl('old2');
+          a = new FormArray([c1, c2]);
         });
 
         it('should fire an event after the value has been updated',
@@ -778,23 +783,25 @@ export function main() {
 
       describe('find', () => {
         it('should return null when path is null', () => {
-          var g = new ControlGroup({});
+          var g = new FormGroup({});
           expect(g.find(null)).toEqual(null);
         });
 
         it('should return null when path is empty', () => {
-          var g = new ControlGroup({});
+          var g = new FormGroup({});
           expect(g.find([])).toEqual(null);
         });
 
         it('should return null when path is invalid', () => {
-          var g = new ControlGroup({});
+          var g = new FormGroup({});
           expect(g.find(['one', 'two'])).toEqual(null);
         });
 
         it('should return a child of a control group', () => {
-          var g = new ControlGroup(
-              {'one': new Control('111'), 'nested': new ControlGroup({'two': new Control('222')})});
+          var g = new FormGroup({
+            'one': new FormControl('111'),
+            'nested': new FormGroup({'two': new FormControl('222')})
+          });
 
           expect(g.find(['nested', 'two']).value).toEqual('222');
           expect(g.find(['one']).value).toEqual('111');
@@ -803,7 +810,7 @@ export function main() {
         });
 
         it('should return an element of an array', () => {
-          var g = new ControlGroup({'array': new ControlArray([new Control('111')])});
+          var g = new FormGroup({'array': new FormArray([new FormControl('111')])});
 
           expect(g.find(['array', 0]).value).toEqual('111');
         });
@@ -811,8 +818,8 @@ export function main() {
 
       describe('asyncValidator', () => {
         it('should run the async validator', fakeAsync(() => {
-             var c = new Control('value');
-             var g = new ControlArray([c], null, asyncValidator('expected'));
+             var c = new FormControl('value');
+             var g = new FormArray([c], null, asyncValidator('expected'));
 
              expect(g.pending).toEqual(true);
 

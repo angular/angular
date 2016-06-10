@@ -31,7 +31,7 @@ import * as modelModule from './model';
  *   directives: [FORM_DIRECTIVES]
  * })
  * export class App {
- *   loginForm: ControlGroup;
+ *   loginForm: FormGroup;
  *
  *   constructor(builder: FormBuilder) {
  *     this.loginForm = builder.group({
@@ -54,38 +54,38 @@ import * as modelModule from './model';
 @Injectable()
 export class FormBuilder {
   /**
-   * Construct a new {@link ControlGroup} with the given map of configuration.
+   * Construct a new {@link FormGroup} with the given map of configuration.
    * Valid keys for the `extra` parameter map are `optionals` and `validator`.
    *
-   * See the {@link ControlGroup} constructor for more details.
+   * See the {@link FormGroup} constructor for more details.
    */
   group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any} = null):
-      modelModule.ControlGroup {
+      modelModule.FormGroup {
     var controls = this._reduceControls(controlsConfig);
     var optionals = <{[key: string]: boolean}>(
         isPresent(extra) ? StringMapWrapper.get(extra, 'optionals') : null);
     var validator: ValidatorFn = isPresent(extra) ? StringMapWrapper.get(extra, 'validator') : null;
     var asyncValidator: AsyncValidatorFn =
         isPresent(extra) ? StringMapWrapper.get(extra, 'asyncValidator') : null;
-    return new modelModule.ControlGroup(controls, optionals, validator, asyncValidator);
+    return new modelModule.FormGroup(controls, optionals, validator, asyncValidator);
   }
   /**
-   * Construct a new {@link Control} with the given `value`,`validator`, and `asyncValidator`.
+   * Construct a new {@link FormControl} with the given `value`,`validator`, and `asyncValidator`.
    */
   control(value: Object, validator: ValidatorFn = null, asyncValidator: AsyncValidatorFn = null):
-      modelModule.Control {
-    return new modelModule.Control(value, validator, asyncValidator);
+      modelModule.FormControl {
+    return new modelModule.FormControl(value, validator, asyncValidator);
   }
 
   /**
-   * Construct an array of {@link Control}s from the given `controlsConfig` array of
+   * Construct an array of {@link FormControl}s from the given `controlsConfig` array of
    * configuration, with the given optional `validator` and `asyncValidator`.
    */
   array(
       controlsConfig: any[], validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null): modelModule.ControlArray {
+      asyncValidator: AsyncValidatorFn = null): modelModule.FormArray {
     var controls = controlsConfig.map(c => this._createControl(c));
-    return new modelModule.ControlArray(controls, validator, asyncValidator);
+    return new modelModule.FormArray(controls, validator, asyncValidator);
   }
 
   /** @internal */
@@ -100,9 +100,9 @@ export class FormBuilder {
 
   /** @internal */
   _createControl(controlConfig: any): modelModule.AbstractControl {
-    if (controlConfig instanceof modelModule.Control ||
-        controlConfig instanceof modelModule.ControlGroup ||
-        controlConfig instanceof modelModule.ControlArray) {
+    if (controlConfig instanceof modelModule.FormControl ||
+        controlConfig instanceof modelModule.FormGroup ||
+        controlConfig instanceof modelModule.FormArray) {
       return controlConfig;
 
     } else if (isArray(controlConfig)) {

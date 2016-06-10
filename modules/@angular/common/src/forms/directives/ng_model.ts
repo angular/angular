@@ -2,7 +2,7 @@ import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, 
 
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {BaseException} from '../../facade/exceptions';
-import {Control} from '../model';
+import {FormControl} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
@@ -48,7 +48,7 @@ export const formControlBinding: any =
 export class NgModel extends NgControl implements OnChanges,
     OnDestroy {
   /** @internal */
-  _control: Control;
+  _control: FormControl;
   /** @internal */
   _added = false;
   viewModel: any;
@@ -65,7 +65,7 @@ export class NgModel extends NgControl implements OnChanges,
               valueAccessors: ControlValueAccessor[]) {
                 super();
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);
-                if (!this._parent) this._control = new Control();
+                if (!this._parent) this._control = new FormControl();
               }
 
               ngOnChanges(changes: SimpleChanges) {
@@ -80,7 +80,7 @@ export class NgModel extends NgControl implements OnChanges,
 
               ngOnDestroy(): void { this.formDirective && this.formDirective.removeControl(this); }
 
-              get control(): Control { return this._control; }
+              get control(): FormControl { return this._control; }
 
               get path(): string[] {
                 return this._parent ? controlPath(this.name, this._parent) : [];
@@ -105,7 +105,7 @@ export class NgModel extends NgControl implements OnChanges,
                 this._added = true;
               }
 
-              private _addStandaloneControl(): Control {
+              private _addStandaloneControl(): FormControl {
                 setUpControl(this._control, this);
                 this._control.updateValueAndValidity({emitEvent: false});
                 return this._control;
