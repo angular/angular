@@ -128,7 +128,7 @@ export function isNumber(obj: any): boolean {
   return typeof obj === 'number';
 }
 
-export function isString(obj: any): boolean {
+export function isString(obj: any): obj is String {
   return typeof obj === 'string';
 }
 
