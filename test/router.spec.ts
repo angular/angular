@@ -18,7 +18,7 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 import { ComponentResolver } from '@angular/core';
 import { SpyLocation } from '@angular/common/testing';
 import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES, Params,
- RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, RoutesRecognized, RouterConfig } from '../src/index';
+  RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, RoutesRecognized, RouterConfig } from '../src/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import {of} from 'rxjs/observable/of';
@@ -79,7 +79,7 @@ describe("Integration", () => {
       expect(location.path()).toEqual('/team/33');
     })));
 
-  xit('should navigate back and forward',
+  it('should navigate back and forward',
     fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
@@ -347,6 +347,32 @@ describe("Integration", () => {
         [RoutesRecognized, '/user/fedor'],
         [NavigationEnd, '/user/fedor']
       ]);
+    })));
+
+  it('should replace state when path is equal to current path',
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      const fixture = tcb.createFakeAsync(RootCmp);
+      advance(fixture);
+
+      router.resetConfig([
+        { path: 'team/:id', component: TeamCmp, children: [
+          { path: 'simple', component: SimpleCmp },
+          { path: 'user/:name', component: UserCmp }
+        ] }
+      ]);
+
+      router.navigateByUrl('/team/33/simple');
+      advance(fixture);
+
+      router.navigateByUrl('/team/22/user/victor');
+      advance(fixture);
+
+      router.navigateByUrl('/team/22/user/victor');
+      advance(fixture);
+
+      location.back();
+      advance(fixture);
+      expect(location.path()).toEqual('/team/33/simple');
     })));
   
   describe("router links", () => {
