@@ -22,7 +22,8 @@ export function main(args: string[]) {
   }
   var emittedCode =
       emitter.emitStatements('asset:angular2/test/compiler/output/output_emitter_codegen_typed',
-                             codegenStmts, codegenExportsVars) + emittedCodeSuffix;
+                             codegenStmts, codegenExportsVars) +
+      emittedCodeSuffix;
   // debug: console.error(emittedCode);
   print(emittedCode);
 }

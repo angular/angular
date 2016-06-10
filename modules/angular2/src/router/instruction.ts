@@ -2,7 +2,6 @@ import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facad
 import {isPresent, isBlank, normalizeBlank, Type, CONST_EXPR} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 
-
 /**
  * `RouteParams` is an immutable map of parameters for the given route
  * based on the url matcher and optional parameters for that route.

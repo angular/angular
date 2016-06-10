@@ -1,8 +1,7 @@
-import {Type} from 'angular2/src/facade/lang';
 import {RouteData} from '../../instruction';
 
 export interface RouteHandler {
-  componentType: Type;
+  componentType: any /*Type | ComponentFactory*/;
   resolveComponentType(): Promise<any>;
   data: RouteData;
 }

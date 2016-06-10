@@ -58,7 +58,10 @@ export abstract class ComponentRef {
 }
 
 export class ComponentRef_ extends ComponentRef {
-  constructor(private _hostElement: AppElement, private _componentType: Type, private _metadata: any[]) { super(); }
+  constructor(private _hostElement: AppElement, private _componentType: Type,
+              private _metadata: any[]) {
+    super();
+  }
   get location(): ElementRef { return this._hostElement.elementRef; }
   get injector(): Injector { return this._hostElement.injector; }
   get instance(): any { return this._hostElement.component; };

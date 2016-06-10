@@ -260,6 +260,11 @@ export abstract class ApplicationRef {
    * Get a list of component types registered to this application.
    */
   get componentTypes(): Type[] { return <Type[]>unimplemented(); };
+
+  /**
+   * Get a list of component factories registered to this application.
+   */
+  get componentFactories(): ComponentFactory[] { return <ComponentFactory[]>unimplemented(); };
 }
 
 @Injectable()
@@ -274,7 +279,7 @@ export class ApplicationRef_ extends ApplicationRef {
   /** @internal */
   private _rootComponents: ComponentRef[] = [];
   /** @internal */
-  private _rootComponentTypes: Type[] = [];
+  private _rootComponentFactories: ComponentFactory[] = [];
   /** @internal */
   private _changeDetectorRefs: ChangeDetectorRef[] = [];
   /** @internal */
@@ -369,7 +374,7 @@ export class ApplicationRef_ extends ApplicationRef {
           'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using waitForAsyncInitializers().');
     }
     return this.run(() => {
-      this._rootComponentTypes.push(componentFactory.componentType);
+      this._rootComponentFactories.push(componentFactory);
       var compRef = componentFactory.create(this._injector, [], componentFactory.selector);
       compRef.onDestroy(() => { this._unloadComponent(compRef); });
       var testability = compRef.injector.get(Testability, null);
@@ -434,7 +439,11 @@ export class ApplicationRef_ extends ApplicationRef {
     this._platform._applicationDisposed(this);
   }
 
-  get componentTypes(): Type[] { return this._rootComponentTypes; }
+  get componentTypes(): Type[] {
+    return this._rootComponentFactories.map(factory => factory.componentType);
+  }
+
+  get componentFactories(): ComponentFactory[] { return this._rootComponentFactories; };
 }
 
 /**
