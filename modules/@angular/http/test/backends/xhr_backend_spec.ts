@@ -212,6 +212,18 @@ export function main() {
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('X-Multi', 'a,b');
       });
 
+      it('should skip content type detection if custom content type header is set', () => {
+        let headers = new Headers({'Content-Type': 'text/plain'});
+        let body = {test: 'val'};
+        let base = new BaseRequestOptions();
+        let connection = new XHRConnection(
+            new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
+            new MockBrowserXHR());
+        connection.response.subscribe();
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/plain');
+        expect(setRequestHeaderSpy).not.toHaveBeenCalledWith('Content-Type', 'application/json');
+      });
+
       it('should use object body and detect content type header to the request', () => {
         var body = {test: 'val'};
         var base = new BaseRequestOptions();
