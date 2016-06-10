@@ -23,7 +23,6 @@ const components = [
   'toolbar'
 ];
 
-
 /** Map relative paths to URLs. */
 const map: any = {
   '@angular2-material/core': 'core',
@@ -45,6 +44,7 @@ components.forEach(name => {
   };
 });
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************
  * Everything underneath this line is managed by the CLI.
@@ -63,8 +63,13 @@ const barrels: string[] = [
   'rxjs',
 
   // App specific barrels.
-  'app',
-  'app/shared',
+  'demo-app',
+  'button-toggle',
+  'gestures',
+  'live-announcer',
+  'portal',
+  'overlay',
+  ...components
   /** @cli-barrel */
 ];
 

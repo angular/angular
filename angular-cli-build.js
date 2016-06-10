@@ -101,10 +101,10 @@ function _buildAppTree(defaults) {
     vendorNpmFiles: [
       'systemjs/dist/system-polyfills.js',
       'systemjs/dist/system.src.js',
-      'zone.js/dist/*.js',
+      'zone.js/dist/*.+(js|js.map)',
       'core-js/client/core.js',
-      'rxjs/**/*.js',
-      '@angular/**/*.js',
+      'rxjs/**/*.+(js|js.map)',
+      '@angular/**/*.+(js|js.map)',
       'hammerjs/*.min.+(js|js.map)'
     ]
   });
