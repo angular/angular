@@ -17,6 +17,7 @@ md-card {
   border-radius: $md-card-border-radius;
   font-family: $md-font-family;
   background: md-color($md-background, card);
+  color: md-color($md-foreground, base);
 }
 
 md-card:hover {

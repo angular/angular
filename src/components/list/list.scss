@@ -42,6 +42,7 @@ based on whether the list is in dense mode.
     font-size: $font-size;
     height: $base-height;
     padding: 0 $md-list-side-padding;
+    color: md-color($md-foreground, base);
   }
 
   &.md-list-avatar .md-list-item {
