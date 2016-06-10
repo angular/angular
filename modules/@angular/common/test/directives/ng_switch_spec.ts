@@ -3,12 +3,41 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {Component} from '@angular/core';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
-import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
+import {NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 
 export function main() {
   describe('switch', () => {
     describe('switch value changes', () => {
       it('should switch amongst when values',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               var template = '<div>' +
+                   '<ul [ngSwitch]="switchValue">' +
+                   '<template ngSwitchCase="a"><li>when a</li></template>' +
+                   '<template ngSwitchCase="b"><li>when b</li></template>' +
+                   '</ul></div>';
+
+               tcb.overrideTemplate(TestComponent, template)
+                   .createAsync(TestComponent)
+                   .then((fixture) => {
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('');
+
+                     fixture.debugElement.componentInstance.switchValue = 'a';
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('when a');
+
+                     fixture.debugElement.componentInstance.switchValue = 'b';
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('when b');
+
+                     async.done();
+                   });
+             }));
+
+      // TODO(robwormald): deprecate and remove
+      it('should switch amongst when values using switchWhen',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
@@ -42,7 +71,7 @@ export function main() {
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                var template = '<div>' +
                    '<ul [ngSwitch]="switchValue">' +
-                   '<li template="ngSwitchWhen \'a\'">when a</li>' +
+                   '<li template="ngSwitchCase \'a\'">when a</li>' +
                    '<li template="ngSwitchDefault">when default</li>' +
                    '</ul></div>';
 
@@ -70,10 +99,10 @@ export function main() {
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                var template = '<div>' +
                    '<ul [ngSwitch]="switchValue">' +
-                   '<template ngSwitchWhen="a"><li>when a1;</li></template>' +
-                   '<template ngSwitchWhen="b"><li>when b1;</li></template>' +
-                   '<template ngSwitchWhen="a"><li>when a2;</li></template>' +
-                   '<template ngSwitchWhen="b"><li>when b2;</li></template>' +
+                   '<template ngSwitchCase="a"><li>when a1;</li></template>' +
+                   '<template ngSwitchCase="b"><li>when b1;</li></template>' +
+                   '<template ngSwitchCase="a"><li>when a2;</li></template>' +
+                   '<template ngSwitchCase="b"><li>when b2;</li></template>' +
                    '<template ngSwitchDefault><li>when default1;</li></template>' +
                    '<template ngSwitchDefault><li>when default2;</li></template>' +
                    '</ul></div>';
@@ -105,8 +134,8 @@ export function main() {
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                var template = '<div>' +
                    '<ul [ngSwitch]="switchValue">' +
-                   '<template [ngSwitchWhen]="when1"><li>when 1;</li></template>' +
-                   '<template [ngSwitchWhen]="when2"><li>when 2;</li></template>' +
+                   '<template [ngSwitchCase]="when1"><li>when 1;</li></template>' +
+                   '<template [ngSwitchCase]="when2"><li>when 2;</li></template>' +
                    '<template ngSwitchDefault><li>when default;</li></template>' +
                    '</ul></div>';
 
@@ -143,7 +172,7 @@ export function main() {
 }
 
 @Component(
-    {selector: 'test-cmp', directives: [NgSwitch, NgSwitchWhen, NgSwitchDefault], template: ''})
+    {selector: 'test-cmp', directives: [NgSwitch, NgSwitchCase, NgSwitchDefault], template: ''})
 class TestComponent {
   switchValue: any;
   when1: any;
