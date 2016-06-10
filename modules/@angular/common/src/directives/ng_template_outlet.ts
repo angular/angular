@@ -1,5 +1,7 @@
-import {Directive, Input, TemplateRef, ViewContainerRef, EmbeddedViewRef} from '@angular/core';
+import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+
 import {isPresent} from '../facade/lang';
+
 
 
 /**
@@ -11,7 +13,8 @@ import {isPresent} from '../facade/lang';
  * Note: using the key `$implicit` in the context object will set it's value as default.
  *
  * ### Syntax
- * - `<template [ngTemplateOutlet]="templateRefExpression" [ngOutletContext]="objectExpression"></template>`
+ * - `<template [ngTemplateOutlet]="templateRefExpression"
+ * [ngOutletContext]="objectExpression"></template>`
  *
  * @experimental
  */
