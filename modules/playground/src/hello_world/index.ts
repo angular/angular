@@ -1,4 +1,4 @@
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {Renderer, ElementRef, Component, Directive, Injectable} from '@angular/core';
 
 export function main() {

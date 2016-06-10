@@ -57,6 +57,10 @@ System.config({
       main: 'index.js',
       defaultExtension: 'js'
     },
+    '@angular/platform-browser-dynamic': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
     '@angular/platform-server': {
       main: 'index.js',
       defaultExtension: 'js'
@@ -69,11 +73,11 @@ System.config({
 // method and kick off Karma (Jasmine).
 System.import('@angular/core/testing')
   .then(function(coreTesting){
-    return System.import('@angular/platform-browser/testing')
+    return System.import('@angular/platform-browser-dynamic/testing')
       .then(function(browserTesting){
          coreTesting.setBaseTestProviders(
-          browserTesting.TEST_BROWSER_PLATFORM_PROVIDERS,
-          browserTesting.TEST_BROWSER_APPLICATION_PROVIDERS
+          browserTesting.TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
+          browserTesting.TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS
         );
       });
   })

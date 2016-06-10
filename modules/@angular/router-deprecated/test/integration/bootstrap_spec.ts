@@ -2,16 +2,15 @@ import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, injec
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
-import {Component, Directive} from '@angular/core/src/metadata';
+import {Component} from '@angular/core/src/metadata';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Console} from '@angular/core/src/console';
-import {provide} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {RouteConfig, Route, Redirect, AuxRoute} from '../../src/route_config/route_config_decorator';
+import {RouteConfig, Route, AuxRoute} from '../../src/route_config/route_config_decorator';
 import {PromiseWrapper} from '../../src/facade/async';
-import {BaseException, WrappedException} from '../../src/facade/exceptions';
+import {BaseException} from '../../src/facade/exceptions';
 import {ROUTER_PROVIDERS, ROUTER_PRIMARY_COMPONENT, RouteParams, Router, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
 
 import {MockLocationStrategy} from '@angular/common/testing';

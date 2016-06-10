@@ -2,7 +2,7 @@ import {APPLICATION_COMMON_PROVIDERS, APP_INITIALIZER, ApplicationRef, Exception
 
 import {AnimationDriver, NoOpAnimationDriver, wtfInit} from '../core_private';
 
-import {BROWSER_APP_COMPILER_PROVIDERS, BROWSER_SANITIZATION_PROVIDERS} from './browser';
+import {BROWSER_SANITIZATION_PROVIDERS} from './browser';
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from './browser/testability';
 import {getDOM} from './dom/dom_adapter';
@@ -13,9 +13,8 @@ import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {HAMMER_GESTURE_CONFIG, HammerGestureConfig, HammerGesturesPlugin} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
-import {PromiseWrapper} from './facade/async';
 import {BaseException} from './facade/exceptions';
-import {isBlank, isPresent} from './facade/lang';
+import {isBlank} from './facade/lang';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
 import {MessageBus} from './web_workers/shared/message_bus';
@@ -101,22 +100,6 @@ export function initializeGenericWorkerRenderer(injector: Injector) {
   // initialize message services after the bus has been created
   let services = injector.get(WORKER_RENDER_STARTABLE_MESSAGING_SERVICE);
   zone.runGuarded(() => { services.forEach((svc: any /** TODO #9100 */) => { svc.start(); }); });
-}
-
-export function bootstrapRender(
-    workerScriptUri: string,
-    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ApplicationRef> {
-  var app = ReflectiveInjector.resolveAndCreate(
-      [
-        WORKER_RENDER_APPLICATION_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS,
-        {provide: WORKER_SCRIPT, useValue: workerScriptUri},
-        isPresent(customProviders) ? customProviders : []
-      ],
-      workerRenderPlatform().injector);
-  // Return a promise so that we keep the same semantics as Dart,
-  // and we might want to wait for the app side to come up
-  // in the future...
-  return PromiseWrapper.resolve(app.get(ApplicationRef));
 }
 
 function messageBusFactory(instance: WebWorkerInstance): MessageBus {

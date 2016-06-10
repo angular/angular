@@ -19,7 +19,9 @@
       "@angular/compiler": ["../../../dist/packages-dist/compiler/"],
       "@angular/compiler/testing": ["../../../dist/packages-dist/compiler/testing"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser/"],
-      "@angular/platform-browser/testing": ["../../../dist/packages-dist/platform-browser/testing"]
+      "@angular/platform-browser/testing": ["../../../dist/packages-dist/platform-browser/testing"],
+      "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"],
+      "@angular/platform-browser-dynamic/testing": ["../../../dist/packages-dist/platform-browser-dynamic/testing"]
     },
     "rootDir": ".",
     "sourceMap": true,

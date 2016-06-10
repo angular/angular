@@ -1,5 +1,5 @@
-import {Component, provide} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {Observable, Subscriber} from 'rxjs/Rx';
 
 // #docregion AsyncPipePromise

@@ -1483,9 +1483,6 @@ const UPGRADE = [
 ];
 
 const PLATFORM_BROWSER = [
-  'bootstrap(appComponentType:Type, customProviders?:Array<any>):Promise<ComponentRef<any>>',
-  'bootstrapApp(appComponentType:Type, customProviders?:Array<any>):Promise<ComponentRef<any>>',
-  'bootstrapRender(workerScriptUri:string, customProviders?:Array<any>):Promise<ApplicationRef>',
   'browserPlatform():PlatformRef',
   'BrowserPlatformLocation',
   'BrowserPlatformLocation.back():void',
@@ -1509,12 +1506,10 @@ const PLATFORM_BROWSER = [
   'ClientMessageBroker.runOnService(args:UiArguments, returnType:Type):Promise<any>',
   'ClientMessageBrokerFactory',
   'ClientMessageBrokerFactory.createMessageBroker(channel:string, runInZone?:boolean):ClientMessageBroker',
-  'const BROWSER_APP_COMPILER_PROVIDERS:Array<any>',
   'const BROWSER_APP_PROVIDERS:Array<any>',
   'const BROWSER_PLATFORM_PROVIDERS:Array<any>',
   'const BROWSER_PROVIDERS:any[]',
   'const BROWSER_SANITIZATION_PROVIDERS:Array<any>',
-  'const CACHED_TEMPLATE_PROVIDER:Array<any>',
   'const DOCUMENT:OpaqueToken',
   'const ELEMENT_PROBE_PROVIDERS:any[]',
   'const EVENT_MANAGER_PLUGINS:OpaqueToken',
@@ -1597,6 +1592,7 @@ const PLATFORM_BROWSER = [
   'UiArguments.args?:FnArg[]',
   'UiArguments.constructor(method:string, args?:FnArg[])',
   'UiArguments.method:string',
+  'var __platform_browser_private__:any',
   'var SecurityContext:unknown',
   'WebWorkerInstance',
   'WebWorkerInstance.bus:MessageBus',
@@ -1619,16 +1615,9 @@ const PLATFORM_BROWSER_TESTING = [
   'BrowserDetection.isWebkit:boolean',
   'BrowserDetection.setup():any',
   'BrowserDetection.supportsIntlApi:boolean',
-  'const ADDITIONAL_TEST_BROWSER_PROVIDERS:any',
-  'const ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS:Array<any>',
   'const TEST_BROWSER_APPLICATION_PROVIDERS:Array<any>',
   'const TEST_BROWSER_PLATFORM_PROVIDERS:Array<any>',
-  'const TEST_BROWSER_STATIC_APPLICATION_PROVIDERS:Array<any>',
-  'const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS:Array<any>',
   'dispatchEvent(element:any, eventType:any):void',
-  'DOMTestComponentRenderer',
-  'DOMTestComponentRenderer.constructor(_doc:any)',
-  'DOMTestComponentRenderer.insertRootElement(rootElId:string):any',
   'el(html:string):HTMLElement',
   'NgMatchers',
   'NgMatchers.not:NgMatchers',
@@ -1653,6 +1642,23 @@ const PLATFORM_BROWSER_TESTING_E2E = [
   'var browser:IBrowser',
   'verifyNoBrowserErrors():any',
 ];
+
+
+const PLATFORM_BROWSER_DYNAMIC = [
+  'bootstrap(appComponentType:Type, customProviders?:Array<any>):Promise<ComponentRef<any>>',
+  'bootstrapApp(appComponentType:Type, customProviders?:Array<any>):Promise<ComponentRef<any>>',
+  'bootstrapRender(workerScriptUri:string, customProviders?:Array<any>):Promise<ApplicationRef>',
+  'const BROWSER_APP_COMPILER_PROVIDERS:Array<any>',
+  'const CACHED_TEMPLATE_PROVIDER:Array<any>',
+];
+
+
+const PLATFORM_BROWSER_DYNAMIC_TESTING = [
+  'const TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS:Array<any>',
+  'const TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS:Array<any>',
+];
+
+
 
 const PLATFORM_SERVER = [
   'const SERVER_APPLICATION_PROVIDERS:Array<any>',
@@ -1854,6 +1860,8 @@ describe('public API', () => {
   check('@angular/platform-browser/index.ts', PLATFORM_BROWSER);
   check('@angular/platform-browser/testing.ts', PLATFORM_BROWSER_TESTING);
   check('@angular/platform-browser/testing_e2e.ts', PLATFORM_BROWSER_TESTING_E2E);
+  check('@angular/platform-browser-dynamic/index.ts', PLATFORM_BROWSER_DYNAMIC);
+  check('@angular/platform-browser-dynamic/testing.ts', PLATFORM_BROWSER_DYNAMIC_TESTING);
   check('@angular/platform-server/index.ts', PLATFORM_SERVER);
   check('@angular/platform-server/testing.ts', PLATFORM_SERVER_TESTING);
   check('@angular/http/index.ts', HTTP);

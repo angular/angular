@@ -5,7 +5,8 @@ import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {Log} from '@angular/core/testing';
 import {AsyncTestCompleter, afterEach, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
-import {BROWSER_APP_COMPILER_PROVIDERS, BROWSER_APP_PROVIDERS, BROWSER_PLATFORM_PROVIDERS, bootstrap} from '@angular/platform-browser';
+import {BROWSER_APP_PROVIDERS, BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
+import {BROWSER_APP_COMPILER_PROVIDERS, bootstrap} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 

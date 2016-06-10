@@ -17,7 +17,7 @@ import {EventEmitter, ObservableWrapper} from '../../src/facade/async';
 
 
 import {Component, DebugElement, Directive, TemplateRef, ChangeDetectorRef, ViewContainerRef, Input, Output, forwardRef, ViewMetadata, Pipe, RootRenderer, Renderer, RenderComponentType, Injectable, provide, OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked} from '@angular/core';
-import {NgFor} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {AsyncPipe} from '@angular/common';
 

@@ -1,6 +1,6 @@
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
 
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
 import {Component, Directive} from '@angular/core/src/metadata';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';

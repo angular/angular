@@ -1,4 +1,4 @@
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {Component, Directive, Host} from '@angular/core';
 import {
   ControlGroup,

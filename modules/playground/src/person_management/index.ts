@@ -1,4 +1,4 @@
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {Component, Injectable} from '@angular/core';
 import {NgIf, NgFor, FORM_DIRECTIVES} from '@angular/common';
 

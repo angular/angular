@@ -1,10 +1,10 @@
 import {TestComponentRenderer} from '@angular/compiler/testing';
 import {Inject, Injectable} from '@angular/core';
+import {DOCUMENT} from '@angular/platform-browser';
+import {el} from '@angular/platform-browser/testing';
 
-import {getDOM} from '../src/dom/dom_adapter';
-import {DOCUMENT} from '../src/dom/dom_tokens';
+import {getDOM} from '../platform_browser_private';
 
-import {el} from './browser_util';
 
 
 /**

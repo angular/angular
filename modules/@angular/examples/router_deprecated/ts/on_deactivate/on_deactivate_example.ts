@@ -1,6 +1,6 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {Component, ComponentRef, Injectable} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {ComponentInstruction, OnDeactivate, ROUTER_DIRECTIVES, RouteConfig} from '@angular/router-deprecated';
 
 

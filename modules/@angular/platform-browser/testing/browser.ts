@@ -1,30 +1,50 @@
-import {DirectiveResolver, ViewResolver} from '@angular/compiler';
-import {MockDirectiveResolver, MockViewResolver, TestComponentBuilder, TestComponentRenderer} from '@angular/compiler/testing';
+import {LocationStrategy} from '@angular/common';
+import {MockLocationStrategy} from '@angular/common/testing';
+import {APP_ID, NgZone, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER} from '@angular/core';
+import {Log} from '@angular/core/testing';
 
-import {BROWSER_APP_COMPILER_PROVIDERS, BROWSER_APP_PROVIDERS} from '../index';
+import {AnimationDriver, NoOpAnimationDriver} from '../core_private';
+import {BROWSER_APP_PROVIDERS} from '../src/browser';
+import {BrowserDomAdapter} from '../src/browser/browser_adapter';
+import {ELEMENT_PROBE_PROVIDERS} from '../src/dom/debug/ng_probe';
 
-import {ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS, TEST_BROWSER_STATIC_PLATFORM_PROVIDERS} from './browser_static';
-import {DOMTestComponentRenderer} from './dom_test_component_renderer';
+import {BrowserDetection} from './browser_util';
+
+
+/**
+ * Default platform providers for testing without a compiler.
+ */
+const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
+  PLATFORM_COMMON_PROVIDERS,
+  {provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true}
+];
+
+const ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
+  {provide: APP_ID, useValue: 'a'}, ELEMENT_PROBE_PROVIDERS, Log,
+  {provide: NgZone, useFactory: createNgZone},
+  {provide: LocationStrategy, useClass: MockLocationStrategy},
+  {provide: AnimationDriver, useClass: NoOpAnimationDriver}
+];
+
+
+function initBrowserTests() {
+  BrowserDomAdapter.makeCurrent();
+  BrowserDetection.setup();
+}
+
+function createNgZone(): NgZone {
+  return new NgZone({enableLongStackTrace: true});
+}
 
 
 /**
  * Default platform providers for testing.
  */
 export const TEST_BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    [TEST_BROWSER_STATIC_PLATFORM_PROVIDERS];
-
-
-export const ADDITIONAL_TEST_BROWSER_PROVIDERS = [
-  {provide: DirectiveResolver, useClass: MockDirectiveResolver},
-  {provide: ViewResolver, useClass: MockViewResolver},
-  TestComponentBuilder,
-  {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
-];
+    TEST_BROWSER_STATIC_PLATFORM_PROVIDERS;
 
 /**
- * Default application providers for testing.
+ * Default application providers for testing without a compiler.
  */
-export const TEST_BROWSER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS, ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS,
-  ADDITIONAL_TEST_BROWSER_PROVIDERS
-];
+export const TEST_BROWSER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+    [BROWSER_APP_PROVIDERS, ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS];

@@ -22,6 +22,7 @@ declare var System: any;
           '@angular/common': '/packages-dist/common/bundles/common.umd.js',
           '@angular/compiler': '/packages-dist/compiler/bundles/compiler.umd.js',
           '@angular/platform-browser': '/packages-dist/platform-browser/bundles/platform-browser.umd.js',
+          '@angular/platform-browser-dynamic': '/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
           '@angular/http': '/packages-dist/http/bundles/http.umd.js',
           '@angular/upgrade': '/packages-dist/upgrade/bundles/upgrade.umd.js',
           '@angular/router': '/packages-dist/router/bundles/router.umd.js',
@@ -49,6 +50,7 @@ declare var System: any;
           '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
           '@angular/common': {main: 'index.js', defaultExtension: 'js'},
           '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
+          '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
           '@angular/router': {main: 'index.js', defaultExtension: 'js'},
           // 'rxjs': {
           //   defaultExtension: 'js'

@@ -1,4 +1,4 @@
-import {bootstrap} from '@angular/platform-browser';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {Component} from '@angular/core';
 import {KeyEventsPlugin} from '@angular/platform-browser';
 
