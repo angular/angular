@@ -24,7 +24,17 @@ $ ./node_modules/.bin/ngc -p path/to/project
 In order to write a `bootstrap` that imports the generated code, you should first write your
 top-level component, and run `ngc` once to produce a generated `.ngfactory.ts` file.
 Then you can add an import statement in the `bootstrap` allowing you to bootstrap off the
-generated code.
+generated code:
+
+```typescript
+import {ComponentResolver, ReflectiveInjector, coreBootstrap} from '@angular/core';
+import {BROWSER_APP_PROVIDERS, browserPlatform} from '@angular/platform-browser';
+
+import {MyComponentNgFactory} from './mycomponent.ngfactory';
+
+const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
+coreBootstrap(MyComponentNgFactory, appInjector);
+```
 
 ## Configuration
 
