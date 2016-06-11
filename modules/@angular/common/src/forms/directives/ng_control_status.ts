@@ -12,7 +12,7 @@ import {NgControl} from './ng_control';
  * @experimental
  */
 @Directive({
-  selector: '[ngControl],[ngModel],[ngFormControl]',
+  selector: '[ngControl],[ngModel],[formControl]',
   host: {
     '[class.ng-untouched]': 'ngClassUntouched',
     '[class.ng-touched]': 'ngClassTouched',

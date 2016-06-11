@@ -46,7 +46,7 @@ export const REQUIRED_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ 
  * @experimental
  */
 @Directive({
-  selector: '[required][ngControl],[required][ngFormControl],[required][ngModel]',
+  selector: '[required][ngControl],[required][formControl],[required][ngModel]',
   providers: [REQUIRED_VALIDATOR]
 })
 export class RequiredValidator {
@@ -72,12 +72,12 @@ export const MIN_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
 
 /**
  * A directive which installs the {@link MinLengthValidator} for any `ngControl`,
- * `ngFormControl`, or control with `ngModel` that also has a `minlength` attribute.
+ * `formControl`, or control with `ngModel` that also has a `minlength` attribute.
  *
  * @experimental
  */
 @Directive({
-  selector: '[minlength][ngControl],[minlength][ngFormControl],[minlength][ngModel]',
+  selector: '[minlength][ngControl],[minlength][formControl],[minlength][ngModel]',
   providers: [MIN_LENGTH_VALIDATOR]
 })
 export class MinLengthValidator implements Validator {
@@ -104,13 +104,13 @@ export const MAX_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
 };
 
 /**
- * A directive which installs the {@link MaxLengthValidator} for any `ngControl, `ngFormControl`,
+ * A directive which installs the {@link MaxLengthValidator} for any `ngControl, `formControl`,
  * or control with `ngModel` that also has a `maxlength` attribute.
  *
  * @experimental
  */
 @Directive({
-  selector: '[maxlength][ngControl],[maxlength][ngFormControl],[maxlength][ngModel]',
+  selector: '[maxlength][ngControl],[maxlength][formControl],[maxlength][ngModel]',
   providers: [MAX_LENGTH_VALIDATOR]
 })
 export class MaxLengthValidator implements Validator {
@@ -145,7 +145,7 @@ export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
  * @experimental
  */
 @Directive({
-  selector: '[pattern][ngControl],[pattern][ngFormControl],[pattern][ngModel]',
+  selector: '[pattern][ngControl],[pattern][formControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR]
 })
 export class PatternValidator implements Validator {

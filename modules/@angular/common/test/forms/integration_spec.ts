@@ -1,11 +1,11 @@
 import {NgFor, NgIf} from '@angular/common';
-import {ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, FormControl, FormGroup, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, NgModel, RadioButtonState, Validator, Validators} from '@angular/common/src/forms';
+import {ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, FormControl, FormControlDirective, FormGroup, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, NgModel, RadioButtonState, Validator, Validators} from '@angular/common/src/forms';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {ComponentFixture} from '@angular/compiler/testing';
 import {Component, Directive, EventEmitter, Output} from '@angular/core';
 import {Input, Provider, forwardRef} from '@angular/core';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -16,7 +16,7 @@ import {ListWrapper} from '../../src/facade/collection';
 import {PromiseWrapper} from '../../src/facade/promise';
 
 export function main() {
-  describe('integration tests', () => {
+  xdescribe('integration tests', () => {
 
     it('should initialize DOM elements with the given form object',
        inject(
@@ -179,7 +179,7 @@ export function main() {
            (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
              var control = new FormControl('loginValue');
 
-             var t = `<div><input type="text" [ngFormControl]="form"></div>`;
+             const t = `<div><input type="text" [formControl]="form"></div>`;
 
              tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                fixture.debugElement.componentInstance.form = control;
@@ -1062,7 +1062,7 @@ export function main() {
        fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
          var form = new FormControl('');
 
-         var t = `<div><input type="text" [ngFormControl]="form" [(ngModel)]="name"></div>`;
+         const t = `<div><input type="text" [formControl]="form" [(ngModel)]="name"></div>`;
 
          let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
          tick();
@@ -1341,7 +1341,7 @@ export function main() {
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                var form = new FormControl('', Validators.required);
 
-               var t = `<div><input type="text" [ngFormControl]="form"></div>`;
+               const t = `<div><input type="text" [formControl]="form"></div>`;
 
                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                  fixture.debugElement.componentInstance.form = form;
@@ -1438,7 +1438,7 @@ export function main() {
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
            var form = new FormControl('');
 
-           var t = `<div><input type="text" [ngFormControl]="form" [(ngModel)]="name"></div>`;
+           const t = `<div><input type="text" [formControl]="form" [(ngModel)]="name"></div>`;
            let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.form = form;
@@ -1583,7 +1583,8 @@ class UniqLoginValidator implements Validator {
   selector: 'my-comp',
   template: '',
   directives: [
-    FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator, UniqLoginValidator
+    FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator, UniqLoginValidator,
+    FormControlDirective
   ],
   providers: [FORM_PROVIDERS]
 })

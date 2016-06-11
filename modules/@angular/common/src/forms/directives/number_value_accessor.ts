@@ -12,7 +12,7 @@ export const NUMBER_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider
 
 /**
  * The accessor for writing a number value and listening to changes that is used by the
- * {@link NgModel}, {@link NgFormControl}, and {@link NgControlName} directives.
+ * {@link NgModel}, {@link FormControlDirective}, and {@link NgControlName} directives.
  *
  *  ### Example
  *  ```
@@ -21,7 +21,7 @@ export const NUMBER_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider
  */
 @Directive({
   selector:
-      'input[type=number][ngControl],input[type=number][ngFormControl],input[type=number][ngModel]',
+      'input[type=number][ngControl],input[type=number][formControl],input[type=number][ngModel]',
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',

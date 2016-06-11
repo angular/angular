@@ -1,4 +1,4 @@
-import {Directive, Inject, OnChanges, Optional, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
@@ -13,14 +13,12 @@ import {AsyncValidatorFn, ValidatorFn} from './validators';
 export const formControlBinding: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
       provide: NgControl,
-      useExisting: forwardRef(() => NgFormControl)
+      useExisting: forwardRef(() => FormControlDirective)
     };
 
 /**
- * Binds an existing {@link Control} to a DOM element.
- *
- * ### Example ([live demo](http://plnkr.co/edit/jcQlZ2tTh22BZZ2ucNAT?p=preview))
- *
+ * Binds an existing {@link FormControl} to a DOM element.
+ **
  * In this example, we bind the control to an input element. When the value of the input element
  * changes, the value of the control will reflect that change. Likewise, if the value of the
  * control changes, the input element reflects that change.
@@ -30,53 +28,47 @@ export const formControlBinding: any =
  *   selector: 'my-app',
  *   template: `
  *     <div>
- *       <h2>NgFormControl Example</h2>
+ *       <h2>Bind existing control example</h2>
  *       <form>
  *         <p>Element with existing control: <input type="text"
- * [ngFormControl]="loginControl"></p>
+ * [formControl]="loginControl"></p>
  *         <p>Value of existing control: {{loginControl.value}}</p>
  *       </form>
  *     </div>
  *   `,
- *   directives: [CORE_DIRECTIVES, FORM_DIRECTIVES]
+ *   directives: [REACTIVE_FORM_DIRECTIVES]
  * })
  * export class App {
- *   loginControl: Control = new Control('');
+ *   loginControl: FormControl = new FormControl('');
  * }
  *  ```
  *
  * ### ngModel
  *
  * We can also use `ngModel` to bind a domain model to the form.
- *
- * ### Example ([live demo](http://plnkr.co/edit/yHMLuHO7DNgT8XvtjTDH?p=preview))
- *
+ **
  *  ```typescript
  * @Component({
  *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
- *      template: "<input type='text' [ngFormControl]='loginControl' [(ngModel)]='login'>"
+ *      template: "<input type='text' [formControl]='loginControl' [(ngModel)]='login'>"
  *      })
  * class LoginComp {
- *  loginControl: Control = new Control('');
+ *  loginControl: FormControl = new FormControl('');
  *  login:string;
  * }
  *  ```
  *
  *  @experimental
  */
-@Directive({
-  selector: '[ngFormControl]',
-  providers: [formControlBinding],
-  inputs: ['form: ngFormControl', 'model: ngModel'],
-  outputs: ['update: ngModelChange'],
-  exportAs: 'ngForm'
-})
-export class NgFormControl extends NgControl implements OnChanges {
-  form: FormControl;
-  update = new EventEmitter();
-  model: any;
+@Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
+
+export class FormControlDirective extends NgControl implements OnChanges {
   viewModel: any;
+
+  @Input('formControl') form: FormControl;
+  @Input('ngModel') model: any;
+  @Output('ngModelChange') update = new EventEmitter();
 
   constructor(@Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
                   /* Array<Validator|Function> */ any[],

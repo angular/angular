@@ -20,7 +20,7 @@ export const CHECKBOX_VALUE_ACCESSOR: any = /*@ts2dart_const*/ {
  */
 @Directive({
   selector:
-      'input[type=checkbox][ngControl],input[type=checkbox][ngFormControl],input[type=checkbox][ngModel]',
+      'input[type=checkbox][ngControl],input[type=checkbox][formControl],input[type=checkbox][ngModel]',
   host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
   providers: [CHECKBOX_VALUE_ACCESSOR]
 })

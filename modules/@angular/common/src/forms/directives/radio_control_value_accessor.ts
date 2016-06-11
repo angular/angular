@@ -60,7 +60,7 @@ export class RadioButtonState {
 
 /**
  * The accessor for writing a radio control value and listening to changes that is used by the
- * {@link NgModel}, {@link NgFormControl}, and {@link NgControlName} directives.
+ * {@link NgModel}, {@link FormControlDirective}, and {@link NgControlName} directives.
  *
  *  ### Example
  *  ```
@@ -78,7 +78,7 @@ export class RadioButtonState {
  */
 @Directive({
   selector:
-      'input[type=radio][ngControl],input[type=radio][ngFormControl],input[type=radio][ngModel]',
+      'input[type=radio][ngControl],input[type=radio][formControl],input[type=radio][ngModel]',
   host: {'(change)': 'onChange()', '(blur)': 'onTouched()'},
   providers: [RADIO_VALUE_ACCESSOR]
 })

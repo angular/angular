@@ -4,7 +4,7 @@ import {fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
-import {FormGroup, FormControl, NgControlName, NgControlGroup, NgFormModel, ControlValueAccessor, Validators, NgForm, NgModel, NgFormControl, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms';
+import {FormGroup, FormControl, NgControlName, NgControlGroup, NgFormModel, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms';
 
 
 import {selectValueAccessor, composeValidators} from '@angular/common/src/forms/directives/shared';
@@ -363,7 +363,7 @@ export function main() {
       });
     });
 
-    describe('NgFormControl', () => {
+    describe('FormControlDirective', () => {
       var controlDir: any /** TODO #9100 */;
       var control: any /** TODO #9100 */;
       var checkProperties = function(control: any /** TODO #9100 */) {
@@ -378,7 +378,7 @@ export function main() {
       };
 
       beforeEach(() => {
-        controlDir = new NgFormControl([Validators.required], [], [defaultAccessor]);
+        controlDir = new FormControlDirective([Validators.required], [], [defaultAccessor]);
         controlDir.valueAccessor = new DummyControlValueAccessor();
 
         control = new FormControl(null);
