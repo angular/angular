@@ -264,8 +264,8 @@ export abstract class AbstractControl {
  * ## Usage
  *
  * By default, a `FormControl` is created for every `<input>` or other form component.
- * With {@link FormControlDirective} or {@link NgFormModel} an existing {@link FormControl} can be
- * bound to a DOM element instead. This `FormControl` can be configured with a custom
+ * With {@link FormControlDirective} or {@link FormGroupDirective} an existing {@link FormControl}
+ * can be bound to a DOM element instead. This `FormControl` can be configured with a custom
  * validation function.
  *
  * @experimental

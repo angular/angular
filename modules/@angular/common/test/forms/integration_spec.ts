@@ -1,5 +1,5 @@
 import {NgFor, NgIf} from '@angular/common';
-import {ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, FormControl, FormControlDirective, FormGroup, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, NgModel, RadioButtonState, Validator, Validators} from '@angular/common/src/forms';
+import {ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, FormControl, FormControlDirective, FormGroup, FormGroupDirective, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, NgModel, RadioButtonState, Validator, Validators} from '@angular/common/src/forms';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {ComponentFixture} from '@angular/compiler/testing';
 import {Component, Directive, EventEmitter, Output} from '@angular/core';
@@ -22,7 +22,7 @@ export function main() {
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
            (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             var t = `<div [ngFormModel]="form">
+             const t = `<div [formGroup]="form">
                 <input type="text" ngControl="login">
                </div>`;
 
@@ -37,17 +37,17 @@ export function main() {
              });
            }));
 
-    it('should throw if a form isn\'t passed into ngFormModel',
+    it('should throw if a form isn\'t passed into formGroup',
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
            (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             var t = `<div [ngFormModel]="form">
+             const t = `<div [formGroup]="form">
                 <input type="text" ngControl="login">
                </div>`;
 
              tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                expect(() => fixture.detectChanges())
-                   .toThrowError(new RegExp(`ngFormModel expects a form. Please pass one in.`));
+                   .toThrowError(new RegExp(`formGroup expects a FormGroup instance`));
                async.done();
              });
            }));
@@ -58,7 +58,7 @@ export function main() {
            (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
              var form = new FormGroup({'login': new FormControl('oldValue')});
 
-             var t = `<div [ngFormModel]="form">
+             const t = `<div [formGroup]="form">
                 <input type="text" ngControl="login">
               </div>`;
 
@@ -81,7 +81,7 @@ export function main() {
            (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
              var form = new FormGroup({'login': new FormControl('oldValue')});
 
-             var t = `<div [ngFormModel]="form">
+             const t = `<div [formGroup]="form">
                 <input type="text" ngControl="login">
               </div>`;
 
@@ -102,8 +102,8 @@ export function main() {
 
     it('should emit ngSubmit event on submit',
        fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         var t = `<div>
-                      <form [ngFormModel]="form" (ngSubmit)="name='updated'"></form>
+         const t = `<div>
+                      <form [formGroup]="form" (ngSubmit)="name='updated'"></form>
                       <span>{{name}}</span>
                     </div>`;
 
@@ -124,7 +124,7 @@ export function main() {
 
     it('should mark NgForm as submitted on submit event',
        inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-                var t = `<div>
+                const t = `<div>
                       <form #f="ngForm" (ngSubmit)="data=f.submitted"></form>
                       <span>{{data}}</span>
                     </div>`;
@@ -147,10 +147,10 @@ export function main() {
                 expect(fixture.debugElement.componentInstance.data).toEqual(true);
               })));
 
-    it('should mark NgFormModel as submitted on submit event',
+    it('should mark formGroup as submitted on submit event',
        inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-                var t = `<div>
-                      <form #f="ngForm" [ngFormModel]="form" (ngSubmit)="data=f.submitted"></form>
+                const t = `<div>
+                      <form #f="ngForm" [formGroup]="form" (ngSubmit)="data=f.submitted"></form>
                       <span>{{data}}</span>
                     </div>`;
 
@@ -200,7 +200,7 @@ export function main() {
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
            (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             var t = `<div [ngFormModel]="form">
+             const t = `<div [formGroup]="form">
                 <input type="text" ngControl="login">
                </div>`;
 
@@ -226,7 +226,7 @@ export function main() {
              var login = new FormControl('oldValue');
              var form = new FormGroup({'login': login});
 
-             var t = `<div [ngFormModel]="form">
+             const t = `<div [formGroup]="form">
                 <input type="text" ngControl="login">
                </div>`;
 
@@ -251,7 +251,7 @@ export function main() {
              var login = new FormControl('oldValue');
              var form = new FormGroup({'login': login});
 
-             var t = `<div [ngFormModel]="form">
+             const t = `<div [formGroup]="form">
                 <input type="text" ngControl="login">
                </div>`;
 
@@ -275,7 +275,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <input type="text" ngControl="text">
                 </div>`;
 
@@ -299,7 +299,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <input ngControl="text">
                 </div>`;
 
@@ -322,7 +322,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <textarea ngControl="text"></textarea>
                 </div>`;
 
@@ -346,7 +346,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <input type="checkbox" ngControl="checkbox">
                 </div>`;
 
@@ -372,7 +372,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <input type="number" ngControl="num">
                 </div>`;
 
@@ -396,7 +396,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <input type="number" ngControl="num" required>
                 </div>`;
 
@@ -427,7 +427,7 @@ export function main() {
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                var form = new FormGroup({'num': new FormControl(10)});
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <input type="number" ngControl="num" [(ngModel)]="data">
                 </div>`;
 
@@ -447,7 +447,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<form [ngFormModel]="form">
+               const t = `<form [formGroup]="form">
                   <input type="radio" ngControl="foodChicken" name="food">
                   <input type="radio" ngControl="foodFish" name="food">
                 </form>`;
@@ -477,7 +477,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<select>
+                 const t = `<select>
                       <option value="SF"></option>
                       <option value="NYC"></option>
                     </select>`;
@@ -498,7 +498,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<select>
+                 const t = `<select>
                       <option *ngFor="let city of list" [value]="city['id']">
                         {{ city['name'] }}
                       </option>
@@ -523,7 +523,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<div [ngFormModel]="form">
+                 const t = `<div [formGroup]="form">
                     <select ngControl="city">
                       <option value="SF"></option>
                       <option value="NYC"></option>
@@ -555,7 +555,7 @@ export function main() {
 
         it('with a dynamic list of options',
            fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-             var t = `<div [ngFormModel]="form">
+             const t = `<div [formGroup]="form">
                       <select ngControl="city">
                         <option *ngFor="let c of data" [value]="c"></option>
                       </select>
@@ -582,7 +582,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<div>
+                 const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
                       </select>
@@ -615,7 +615,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<div>
+                 const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
                       </select>
@@ -644,7 +644,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<div>
+                 const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
                       </select>
@@ -676,7 +676,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<div>
+                 const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
                       </select>
@@ -703,7 +703,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<div>
+                 const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list; trackBy:customTrackBy" [ngValue]="c">{{c}}</option>
                       </select>
@@ -734,7 +734,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<div>
+                 const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
                       </select>
@@ -764,7 +764,7 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 var t = `<div>
+                 const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
                       </select>
@@ -794,7 +794,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <input type="text" ngControl="name" wrapped-value>
                 </div>`;
 
@@ -813,32 +813,31 @@ export function main() {
                });
              }));
 
-      // TODO(kara): Revisit when re-writing to ngModelOptions
-      xit('should support custom value accessors on non builtin input elements that fire a change event without a \'target\' property',
-          inject(
-              [TestComponentBuilder, AsyncTestCompleter],
-              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                var t = `<div [ngFormModel]="form">
+      it('should support custom value accessors on non builtin input elements that fire a change event without a \'target\' property',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<div [formGroup]="form">
                   <my-input ngControl="name"></my-input>
                 </div>`;
 
-                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-                  fixture.debugElement.componentInstance.form =
-                      new FormGroup({'name': new FormControl('aa')});
-                  fixture.detectChanges();
-                  var input = fixture.debugElement.query(By.css('my-input'));
-                  expect(input.componentInstance.value).toEqual('!aa!');
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new FormGroup({'name': new FormControl('aa')});
+                 fixture.detectChanges();
+                 var input = fixture.debugElement.query(By.css('my-input'));
+                 expect(input.componentInstance.value).toEqual('!aa!');
 
-                  input.componentInstance.value = '!bb!';
-                  ObservableWrapper.subscribe(input.componentInstance.onInput, (value) => {
-                    expect(fixture.debugElement.componentInstance.form.value).toEqual({
-                      'name': 'bb'
-                    });
-                    async.done();
-                  });
-                  input.componentInstance.dispatchChangeEvent();
-                });
-              }));
+                 input.componentInstance.value = '!bb!';
+                 ObservableWrapper.subscribe(input.componentInstance.onInput, (value) => {
+                   expect(fixture.debugElement.componentInstance.form.value).toEqual({
+                     'name': 'bb'
+                   });
+                   async.done();
+                 });
+                 input.componentInstance.dispatchChangeEvent();
+               });
+             }));
 
     });
 
@@ -853,7 +852,7 @@ export function main() {
                  'max': new FormControl('')
                });
 
-               var t = `<div [ngFormModel]="form" login-is-empty-validator>
+               const t = `<div [formGroup]="form" login-is-empty-validator>
                     <input type="text" ngControl="login" required>
                     <input type="text" ngControl="min" minlength="3">
                     <input type="text" ngControl="max" maxlength="3">
@@ -897,7 +896,7 @@ export function main() {
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
            var form = new FormGroup({'login': new FormControl('')});
 
-           var t = `<div [ngFormModel]="form">
+           const t = `<div [formGroup]="form">
                     <input type="text" ngControl="login" uniq-login-validator="expected">
                  </div>`;
 
@@ -928,7 +927,7 @@ export function main() {
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                var form = new FormGroup({'login': new FormControl('aa', Validators.required)});
 
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <input type="text" ngControl="login">
                  </div>`;
 
@@ -953,7 +952,7 @@ export function main() {
                new FormControl('', Validators.required, uniqLoginAsyncValidator('expected'));
            var form = new FormGroup({'login': control});
 
-           var t = `<div [ngFormModel]="form">
+           const t = `<div [formGroup]="form">
                   <input type="text" ngControl="login">
                  </div>`;
 
@@ -991,7 +990,7 @@ export function main() {
                var form =
                    new FormGroup({'nested': new FormGroup({'login': new FormControl('value')})});
 
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                   <div ngControlGroup="nested">
                     <input type="text" ngControl="login">
                   </div>
@@ -1014,7 +1013,7 @@ export function main() {
                var form =
                    new FormGroup({'nested': new FormGroup({'login': new FormControl('value')})});
 
-               var t = `<div [ngFormModel]="form">
+               const t = `<div [formGroup]="form">
                     <div ngControlGroup="nested">
                       <input type="text" ngControl="login">
                     </div>
@@ -1038,8 +1037,8 @@ export function main() {
        fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
          var form = new FormGroup({'name': new FormControl('')});
 
-         var t =
-             `<div [ngFormModel]="form"><input type="text" ngControl="name" [(ngModel)]="name"></div>`;
+         const t =
+             `<div [formGroup]="form"><input type="text" ngControl="name" [(ngModel)]="name"></div>`;
 
          let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
          tick();
@@ -1083,7 +1082,7 @@ export function main() {
     describe('template-driven forms', () => {
       it('should add new controls and control groups',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           var t = `<form>
+           const t = `<form>
                      <div ngControlGroup="user">
                       <input type="text" ngControl="login">
                      </div>
@@ -1105,7 +1104,7 @@ export function main() {
 
       it('should emit ngSubmit event on submit',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           var t = `<div><form (ngSubmit)="name='updated'"></form></div>`;
+           const t = `<div><form (ngSubmit)="name='updated'"></form></div>`;
 
            let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
@@ -1122,7 +1121,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<form ngNoForm>
+               const t = `<form ngNoForm>
                </form>`;
 
                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
@@ -1136,7 +1135,7 @@ export function main() {
 
       it('should remove controls',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           var t = `<form>
+           const t = `<form>
                     <div *ngIf="name == 'show'">
                       <input type="text" ngControl="login">
                     </div>
@@ -1161,7 +1160,7 @@ export function main() {
 
       it('should remove control groups',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           var t = `<form>
+           const t = `<form>
                      <div *ngIf="name=='show'" ngControlGroup="user">
                       <input type="text" ngControl="login">
                      </div>
@@ -1186,7 +1185,7 @@ export function main() {
 
       it('should support ngModel for complex forms',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           var t = `<form>
+           const t = `<form>
                       <input type="text" ngControl="name" [(ngModel)]="name">
                </form>`;
 
@@ -1209,7 +1208,7 @@ export function main() {
 
       it('should support ngModel for single fields',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           var t = `<div><input type="text" [(ngModel)]="name"></div>`;
+           const t = `<div><input type="text" [(ngModel)]="name"></div>`;
 
            let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
@@ -1374,7 +1373,7 @@ export function main() {
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
                var form = new FormGroup({'name': new FormControl('', Validators.required)});
 
-               var t = `<form [ngFormModel]="form"><input type="text" ngControl="name"></form>`;
+               const t = `<form [formGroup]="form"><input type="text" ngControl="name"></form>`;
 
                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                  fixture.debugElement.componentInstance.form = form;
@@ -1405,7 +1404,7 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var t = `<div><input [(ngModel)]="name" required></div>`;
+               const t = `<div><input [(ngModel)]="name" required></div>`;
 
                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                  fixture.debugElement.componentInstance.name = '';
@@ -1458,7 +1457,7 @@ export function main() {
 
       it('should update the view when the model is set back to what used to be in the view',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           var t = `<input type="text" [(ngModel)]="name">`;
+           const t = `<input type="text" [(ngModel)]="name">`;
            let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
            fixture.debugElement.componentInstance.name = '';
@@ -1491,7 +1490,7 @@ export function main() {
            // {{x.valid}} used to crash because valid() tried to read a property
            // from form.control before it was set. This test verifies this bug is
            // fixed.
-           var t = `<form><div ngControlGroup="x" #x="ngForm">
+           const t = `<form><div ngControlGroup="x" #x="ngForm">
                   <input type="text" ngControl="test"></div>{{x.valid}}</form>`;
            let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();
@@ -1523,7 +1522,7 @@ class WrappedValue implements ControlValueAccessor {
 
 @Component({selector: 'my-input', template: ''})
 class MyInput implements ControlValueAccessor {
-  @Output('input') onInput: EventEmitter<any> = new EventEmitter();
+  @Output('input') onInput = new EventEmitter();
   value: string;
 
   constructor(cd: NgControl) { cd.valueAccessor = this; }
@@ -1584,7 +1583,7 @@ class UniqLoginValidator implements Validator {
   template: '',
   directives: [
     FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator, UniqLoginValidator,
-    FormControlDirective
+    FormControlDirective, FormGroupDirective
   ],
   providers: [FORM_PROVIDERS]
 })

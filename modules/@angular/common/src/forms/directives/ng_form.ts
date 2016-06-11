@@ -77,7 +77,7 @@ export const formDirectiveProvider: any =
  *  @experimental
  */
 @Directive({
-  selector: 'form:not([ngNoForm]):not([ngFormModel]),ngForm,[ngForm]',
+  selector: 'form:not([ngNoForm]):not([formGroup]),ngForm,[ngForm]',
   providers: [formDirectiveProvider],
   host: {
     '(submit)': 'onSubmit()',

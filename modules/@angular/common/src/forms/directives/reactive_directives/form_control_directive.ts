@@ -1,14 +1,14 @@
 import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '../../facade/async';
-import {StringMapWrapper} from '../../facade/collection';
-import {FormControl} from '../model';
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+import {EventEmitter, ObservableWrapper} from '../../../facade/async';
+import {StringMapWrapper} from '../../../facade/collection';
+import {FormControl} from '../../model';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {NgControl} from './ng_control';
-import {composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
-import {AsyncValidatorFn, ValidatorFn} from './validators';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
+import {NgControl} from '../ng_control';
+import {composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
+import {AsyncValidatorFn, ValidatorFn} from '../validators';
 
 export const formControlBinding: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {

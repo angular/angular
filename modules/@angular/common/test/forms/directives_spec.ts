@@ -4,7 +4,7 @@ import {fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
-import {FormGroup, FormControl, NgControlName, NgControlGroup, NgFormModel, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms';
+import {FormGroup, FormControl, NgControlName, NgControlGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms';
 
 
 import {selectValueAccessor, composeValidators} from '@angular/common/src/forms/directives/shared';
@@ -105,13 +105,13 @@ export function main() {
       });
     });
 
-    describe('NgFormModel', () => {
+    describe('formGroup', () => {
       var form: any /** TODO #9100 */;
       var formModel: FormGroup;
       var loginControlDir: any /** TODO #9100 */;
 
       beforeEach(() => {
-        form = new NgFormModel([], []);
+        form = new FormGroupDirective([], []);
         formModel = new FormGroup({
           'login': new FormControl(),
           'passwords': new FormGroup(
@@ -242,7 +242,7 @@ export function main() {
 
         it('should set up a sync validator', () => {
           var formValidator = (c: any /** TODO #9100 */) => ({'custom': true});
-          var f = new NgFormModel([formValidator], []);
+          var f = new FormGroupDirective([formValidator], []);
           f.form = formModel;
           f.ngOnChanges({'form': new SimpleChange(null, null)});
 
@@ -250,7 +250,7 @@ export function main() {
         });
 
         it('should set up an async validator', fakeAsync(() => {
-             var f = new NgFormModel([], [asyncValidator('expected')]);
+             var f = new FormGroupDirective([], [asyncValidator('expected')]);
              f.form = formModel;
              f.ngOnChanges({'form': new SimpleChange(null, null)});
 
@@ -345,7 +345,7 @@ export function main() {
       beforeEach(() => {
         formModel = new FormGroup({'login': new FormControl(null)});
 
-        var parent = new NgFormModel([], []);
+        var parent = new FormGroupDirective([], []);
         parent.form = new FormGroup({'group': formModel});
         controlGroupDir = new NgControlGroup(parent, [], []);
         controlGroupDir.name = 'group';
@@ -447,7 +447,7 @@ export function main() {
       beforeEach(() => {
         formModel = new FormControl('name');
 
-        var parent = new NgFormModel([], []);
+        var parent = new FormGroupDirective([], []);
         parent.form = new FormGroup({'name': formModel});
         controlNameDir = new NgControlName(parent, [], [], [defaultAccessor]);
         controlNameDir.name = 'name';

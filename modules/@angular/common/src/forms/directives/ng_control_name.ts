@@ -18,9 +18,9 @@ export const controlNameBinding: any =
     };
 
 /**
- * Creates and binds a control with a specified name to a DOM element.
+ * Creates and binds a form control with a specified name to a DOM element.
  *
- * This directive can only be used as a child of {@link NgForm} or {@link NgFormModel}.
+ * This directive can only be used as a child of {@link NgForm} or {@link FormGroupDirective}.
 
  * ### Example
  *

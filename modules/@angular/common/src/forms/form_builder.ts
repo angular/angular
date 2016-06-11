@@ -11,14 +11,12 @@ import * as modelModule from './model';
 /**
  * Creates a form object from a user-specified configuration.
  *
- * ### Example ([live demo](http://plnkr.co/edit/ENgZo8EuIECZNensZCVr?p=preview))
- *
  * ```typescript
  * @Component({
  *   selector: 'my-app',
  *   viewProviders: [FORM_BINDINGS]
  *   template: `
- *     <form [ngFormModel]="loginForm">
+ *     <form [formGroup]="loginForm">
  *       <p>Login <input ngControl="login"></p>
  *       <div ngControlGroup="passwordRetry">
  *         <p>Password <input type="password" ngControl="password"></p>

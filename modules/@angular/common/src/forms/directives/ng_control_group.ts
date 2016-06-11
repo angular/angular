@@ -17,9 +17,7 @@ export const controlGroupProvider: any =
 /**
  * Creates and binds a control group to a DOM element.
  *
- * This directive can only be used as a child of {@link NgForm} or {@link NgFormModel}.
- *
- * ### Example ([live demo](http://plnkr.co/edit/7EJ11uGeaggViYM6T5nq?p=preview))
+ * This directive can only be used as a child of {@link NgForm} or {@link FormGroupDirective}.
  *
  * ```typescript
  * @Component({
