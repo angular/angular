@@ -13,7 +13,7 @@ import {PromiseWrapper} from '../../src/facade/promise';
 import {SimpleChange} from '@angular/core/src/change_detection';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
-  writtenValue: any /** TODO #9100 */;
+  writtenValue: any;
 
   registerOnChange(fn: any /** TODO #9100 */) {}
   registerOnTouched(fn: any /** TODO #9100 */) {}

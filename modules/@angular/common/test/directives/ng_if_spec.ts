@@ -276,8 +276,6 @@ class TestComponent {
     this.nestedBooleanCondition = true;
     this.numberCondition = 1;
     this.stringCondition = 'foo';
-    this.functionCondition = function(s: any /** TODO #9100 */, n: any /** TODO #9100 */) {
-      return s == 'foo' && n == 1;
-    };
+    this.functionCondition = function(s: any, n: any): boolean { return s == 'foo' && n == 1; };
   }
 }

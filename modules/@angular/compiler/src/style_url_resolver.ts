@@ -21,17 +21,16 @@ export function isStyleUrlResolvable(url: string): boolean {
  */
 export function extractStyleUrls(
     resolver: UrlResolver, baseUrl: string, cssText: string): StyleWithImports {
-  var foundUrls: any[] /** TODO #9100 */ = [];
-  var modifiedCssText =
-      StringWrapper.replaceAllMapped(cssText, _cssImportRe, (m: any /** TODO #9100 */) => {
-        var url = isPresent(m[1]) ? m[1] : m[2];
-        if (!isStyleUrlResolvable(url)) {
-          // Do not attempt to resolve non-package absolute URLs with URI scheme
-          return m[0];
-        }
-        foundUrls.push(resolver.resolve(baseUrl, url));
-        return '';
-      });
+  var foundUrls: string[] = [];
+  var modifiedCssText = StringWrapper.replaceAllMapped(cssText, _cssImportRe, (m: string[]) => {
+    var url = isPresent(m[1]) ? m[1] : m[2];
+    if (!isStyleUrlResolvable(url)) {
+      // Do not attempt to resolve non-package absolute URLs with URI scheme
+      return m[0];
+    }
+    foundUrls.push(resolver.resolve(baseUrl, url));
+    return '';
+  });
   return new StyleWithImports(modifiedCssText, foundUrls);
 }
 

@@ -40,7 +40,7 @@ export function deserializeXmb(content: string, url: string): XmbDeserialization
   }
 
   let bundleEl = <HtmlElementAst>parsed.rootNodes[0];  // test this
-  let errors: any[] /** TODO #9100 */ = [];
+  let errors: ParseError[] = [];
   let messages: {[key: string]: HtmlAst[]} = {};
 
   _createMessages(bundleEl.children, messages, errors);
@@ -90,7 +90,7 @@ function _serializeMessage(m: Message): string {
 }
 
 function _expandPlaceholder(input: string): string {
-  return RegExpWrapper.replaceAll(_PLACEHOLDER_REGEXP, input, (match: any /** TODO #9100 */) => {
+  return RegExpWrapper.replaceAll(_PLACEHOLDER_REGEXP, input, (match: string[]) => {
     let nameWithQuotes = match[2];
     return `<ph name=${nameWithQuotes}></ph>`;
   });

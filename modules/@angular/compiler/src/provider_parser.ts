@@ -149,7 +149,7 @@ export class ProviderElementContext {
     var transformedProviders = resolvedProvider.providers.map((provider) => {
       var transformedUseValue = provider.useValue;
       var transformedUseExisting = provider.useExisting;
-      var transformedDeps: any /** TODO #9100 */;
+      var transformedDeps: CompileDiDependencyMetadata[];
       if (isPresent(provider.useExisting)) {
         var existingDiDep = this._getDependency(
             resolvedProvider.providerType,

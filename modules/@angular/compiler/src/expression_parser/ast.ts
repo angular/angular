@@ -94,7 +94,7 @@ export class BindingPipe extends AST {
 }
 
 export class LiteralPrimitive extends AST {
-  constructor(public value: any /** TODO #9100 */) { super(); }
+  constructor(public value: any) { super(); }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitLiteralPrimitive(this, context);
   }

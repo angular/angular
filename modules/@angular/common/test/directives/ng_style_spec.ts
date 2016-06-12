@@ -48,7 +48,7 @@ export function main() {
                        .toEqual('40px');
 
                    expr = fixture.debugElement.componentInstance.expr;
-                   (expr as any /** TODO #9100 */)['max-width'] = '30%';
+                   (expr as any)['max-width'] = '30%';
                    fixture.detectChanges();
                    expect(getDOM().getStyle(
                               fixture.debugElement.children[0].nativeElement, 'max-width'))
@@ -153,5 +153,5 @@ export function main() {
 
 @Component({selector: 'test-cmp', directives: [NgStyle], template: ''})
 class TestComponent {
-  expr: any /** TODO #9100 */;
+  expr: any;
 }

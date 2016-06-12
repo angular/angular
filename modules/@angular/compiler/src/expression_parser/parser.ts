@@ -85,7 +85,7 @@ export class Parser {
     let split = this.splitInterpolation(input, location);
     if (split == null) return null;
 
-    let expressions: any[] /** TODO #9100 */ = [];
+    let expressions: AST[] = [];
 
     for (let i = 0; i < split.expressions.length; ++i) {
       var tokens = this._lexer.tokenize(this._stripComments(split.expressions[i]));
@@ -101,8 +101,8 @@ export class Parser {
     if (parts.length <= 1) {
       return null;
     }
-    var strings: any[] /** TODO #9100 */ = [];
-    var expressions: any[] /** TODO #9100 */ = [];
+    var strings: string[] = [];
+    var expressions: string[] = [];
 
     for (var i = 0; i < parts.length; i++) {
       var part: string = parts[i];
@@ -130,7 +130,7 @@ export class Parser {
   }
 
   private _commentStart(input: string): number {
-    var outerQuote: any /** TODO #9100 */ = null;
+    var outerQuote: number = null;
     for (var i = 0; i < input.length - 1; i++) {
       let char = StringWrapper.charCodeAt(input, i);
       let nextChar = StringWrapper.charCodeAt(input, i + 1);
@@ -238,7 +238,7 @@ export class _ParseAST {
   }
 
   parseChain(): AST {
-    var exprs: any[] /** TODO #9100 */ = [];
+    var exprs: AST[] = [];
     while (this.index < this.tokens.length) {
       var expr = this.parsePipe();
       exprs.push(expr);
@@ -267,7 +267,7 @@ export class _ParseAST {
 
       do {
         var name = this.expectIdentifierOrKeyword();
-        var args: any[] /** TODO #9100 */ = [];
+        var args: AST[] = [];
         while (this.optionalCharacter($COLON)) {
           args.push(this.parseExpression());
         }
@@ -472,8 +472,8 @@ export class _ParseAST {
     throw new BaseException('Fell through all cases in parsePrimary');
   }
 
-  parseExpressionList(terminator: number): any[] {
-    var result: any[] /** TODO #9100 */ = [];
+  parseExpressionList(terminator: number): AST[] {
+    var result: AST[] = [];
     if (!this.next.isCharacter(terminator)) {
       do {
         result.push(this.parsePipe());
@@ -483,8 +483,8 @@ export class _ParseAST {
   }
 
   parseLiteralMap(): LiteralMap {
-    var keys: any[] /** TODO #9100 */ = [];
-    var values: any[] /** TODO #9100 */ = [];
+    var keys: string[] = [];
+    var values: AST[] = [];
     this.expectCharacter($LBRACE);
     if (!this.optionalCharacter($RBRACE)) {
       do {
@@ -532,33 +532,12 @@ export class _ParseAST {
 
   parseCallArguments(): BindingPipe[] {
     if (this.next.isCharacter($RPAREN)) return [];
-    var positionals: any[] /** TODO #9100 */ = [];
+    var positionals: AST[] = [];
     do {
       positionals.push(this.parsePipe());
     } while (this.optionalCharacter($COMMA));
-    return positionals;
+    return positionals as BindingPipe[];
   }
-
-  parseBlockContent(): AST {
-    if (!this.parseAction) {
-      this.error('Binding expression cannot contain chained expression');
-    }
-    var exprs: any[] /** TODO #9100 */ = [];
-    while (this.index < this.tokens.length && !this.next.isCharacter($RBRACE)) {
-      var expr = this.parseExpression();
-      exprs.push(expr);
-
-      if (this.optionalCharacter($SEMICOLON)) {
-        while (this.optionalCharacter($SEMICOLON)) {
-        }  // read all semicolons
-      }
-    }
-    if (exprs.length == 0) return new EmptyExpr();
-    if (exprs.length == 1) return exprs[0];
-
-    return new Chain(exprs);
-  }
-
 
   /**
    * An identifier, a keyword, a string with an optional `-` inbetween.
@@ -579,7 +558,7 @@ export class _ParseAST {
 
   parseTemplateBindings(): TemplateBindingParseResult {
     var bindings: TemplateBinding[] = [];
-    var prefix: any /** TODO #9100 */ = null;
+    var prefix: string = null;
     var warnings: string[] = [];
     while (this.index < this.tokens.length) {
       var keyIsVar: boolean = this.peekKeywordLet();
@@ -603,8 +582,8 @@ export class _ParseAST {
         }
       }
       this.optionalCharacter($COLON);
-      var name: any /** TODO #9100 */ = null;
-      var expression: any /** TODO #9100 */ = null;
+      var name: string = null;
+      var expression: ASTWithSource = null;
       if (keyIsVar) {
         if (this.optionalOperator('=')) {
           name = this.expectTemplateBindingKey();

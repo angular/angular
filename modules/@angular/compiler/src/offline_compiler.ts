@@ -47,8 +47,8 @@ export class OfflineCompiler {
     if (components.length === 0) {
       throw new BaseException('No components given');
     }
-    var statements: any[] /** TODO #9100 */ = [];
-    var exportedVars: any[] /** TODO #9100 */ = [];
+    var statements: o.DeclareVarStmt[] = [];
+    var exportedVars: string[] = [];
     var moduleUrl = _templateModuleUrl(components[0].component);
     components.forEach(componentWithDirs => {
       var compMeta = <CompileDirectiveMetadata>componentWithDirs.component;
@@ -81,7 +81,7 @@ export class OfflineCompiler {
       Promise<StyleSheetSourceWithImports> {
     return this._xhr.get(stylesheetUrl).then((cssText) => {
       var compileResult = this._styleCompiler.compileStylesheet(stylesheetUrl, cssText, shim);
-      var importedUrls: any[] /** TODO #9100 */ = [];
+      var importedUrls: string[] = [];
       compileResult.dependencies.forEach((dep) => {
         importedUrls.push(dep.moduleUrl);
         dep.valuePlaceholder.moduleUrl = _stylesModuleUrl(dep.moduleUrl, dep.isShimmed, suffix);

@@ -157,13 +157,13 @@ export function isArray(obj: any): boolean {
   return Array.isArray(obj);
 }
 
-export function isDate(obj: any /** TODO #9100 */): boolean {
+export function isDate(obj: any): obj is Date {
   return obj instanceof Date && !isNaN(obj.valueOf());
 }
 
 export function noop() {}
 
-export function stringify(token: any /** TODO #9100 */): string {
+export function stringify(token: any): string {
   if (typeof token === 'string') {
     return token;
   }
@@ -187,16 +187,15 @@ export function stringify(token: any /** TODO #9100 */): string {
 // serialize / deserialize enum exist only for consistency with dart API
 // enums in typescript don't need to be serialized
 
-export function serializeEnum(val: any /** TODO #9100 */): number {
+export function serializeEnum(val: any): number {
   return val;
 }
 
-export function deserializeEnum(val: any /** TODO #9100 */, values: Map<number, any>): any {
+export function deserializeEnum(val: any, values: Map<number, any>): any {
   return val;
 }
 
-export function resolveEnumToken(
-    enumValue: any /** TODO #9100 */, val: any /** TODO #9100 */): string {
+export function resolveEnumToken(enumValue: any, val: any): string {
   return enumValue[val];
 }
 
@@ -246,7 +245,7 @@ export class StringWrapper {
   }
 
   static replaceAllMapped(s: string, from: RegExp, cb: Function): string {
-    return s.replace(from, function(...matches: any[] /** TODO #9100 */) {
+    return s.replace(from, function(...matches: any[]) {
       // Remove offset & string from the result array
       matches.splice(-2, 2);
       // The callback receives match, p1, ..., pn
@@ -268,7 +267,7 @@ export class StringWrapper {
 }
 
 export class StringJoiner {
-  constructor(public parts: any[] /** TODO #9100 */ = []) {}
+  constructor(public parts: string[] = []) {}
 
   add(part: string): void { this.parts.push(part); }
 
@@ -379,7 +378,7 @@ export class FunctionWrapper {
 }
 
 // JS has NaN !== NaN
-export function looseIdentical(a: any /** TODO #9100 */, b: any /** TODO #9100 */): boolean {
+export function looseIdentical(a: any, b: any): boolean {
   return a === b || typeof a === 'number' && typeof b === 'number' && isNaN(a) && isNaN(b);
 }
 
@@ -449,8 +448,8 @@ export function setValueOnPath(global: any, path: string, value: any) {
 }
 
 // When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
-declare var Symbol: any /** TODO #9100 */;
-var _symbolIterator: any /** TODO #9100 */ = null;
+declare var Symbol: any;
+var _symbolIterator: any = null;
 export function getSymbolIterator(): string|symbol {
   if (isBlank(_symbolIterator)) {
     if (isPresent((<any>globalScope).Symbol) && isPresent(Symbol.iterator)) {
@@ -461,7 +460,7 @@ export function getSymbolIterator(): string|symbol {
       for (var i = 0; i < keys.length; ++i) {
         var key = keys[i];
         if (key !== 'entries' && key !== 'size' &&
-            (Map as any /** TODO #9100 */).prototype[key] === Map.prototype['entries']) {
+            (Map as any).prototype[key] === Map.prototype['entries']) {
           _symbolIterator = key;
         }
       }
@@ -473,8 +472,8 @@ export function getSymbolIterator(): string|symbol {
 export function evalExpression(
     sourceUrl: string, expr: string, declarations: string, vars: {[key: string]: any}): any {
   var fnBody = `${declarations}\nreturn ${expr}\n//# sourceURL=${sourceUrl}`;
-  var fnArgNames: any[] /** TODO #9100 */ = [];
-  var fnArgValues: any[] /** TODO #9100 */ = [];
+  var fnArgNames: string[] = [];
+  var fnArgValues: any[] = [];
   for (var argName in vars) {
     fnArgNames.push(argName);
     fnArgValues.push(vars[argName]);

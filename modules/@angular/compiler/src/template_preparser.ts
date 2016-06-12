@@ -15,9 +15,9 @@ const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
 export function preparseElement(ast: HtmlElementAst): PreparsedElement {
-  var selectAttr: any /** TODO #9100 */ = null;
-  var hrefAttr: any /** TODO #9100 */ = null;
-  var relAttr: any /** TODO #9100 */ = null;
+  var selectAttr: string = null;
+  var hrefAttr: string = null;
+  var relAttr: string = null;
   var nonBindable = false;
   var projectAs: string = null;
   ast.attrs.forEach(attr => {
