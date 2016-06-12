@@ -17,7 +17,7 @@ import * as modelModule from './model';
  *   template: `
  *     <form [formGroup]="loginForm">
  *       <p>Login <input formControlName="login"></p>
- *       <div ngControlGroup="passwordRetry">
+ *       <div formGroupName="passwordRetry">
  *         <p>Password <input type="password" formControlName="password"></p>
  *         <p>Confirm password <input type="password" formControlName="passwordConfirmation"></p>
  *       </div>

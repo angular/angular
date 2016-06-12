@@ -991,7 +991,7 @@ export function main() {
                    new FormGroup({'nested': new FormGroup({'login': new FormControl('value')})});
 
                const t = `<div [formGroup]="form">
-                  <div ngControlGroup="nested">
+                  <div formGroupName="nested">
                     <input type="text" formControlName="login">
                   </div>
               </div>`;
@@ -1014,7 +1014,7 @@ export function main() {
                    new FormGroup({'nested': new FormGroup({'login': new FormControl('value')})});
 
                const t = `<div [formGroup]="form">
-                    <div ngControlGroup="nested">
+                    <div formGroupName="nested">
                       <input type="text" formControlName="login">
                     </div>
                 </div>`;
@@ -1083,8 +1083,8 @@ export function main() {
       it('should add new controls and control groups',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
            const t = `<form>
-                     <div ngControlGroup="user">
-                      <input type="text" formControlName="login">
+                     <div ngModelGroup="user">
+                      <input type="text" name="login" ngModel>
                      </div>
                </form>`;
 
@@ -1137,7 +1137,7 @@ export function main() {
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
            const t = `<form>
                     <div *ngIf="name == 'show'">
-                      <input type="text" formControlName="login">
+                      <input type="text" name="login" ngModel>
                     </div>
                   </form>`;
 
@@ -1161,7 +1161,7 @@ export function main() {
       it('should remove control groups',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
            const t = `<form>
-                     <div *ngIf="name=='show'" ngControlGroup="user">
+                     <div *ngIf="name=='show'" ngModelGroup="user">
                       <input type="text" name="login" ngModel>
                      </div>
                </form>`;
@@ -1492,7 +1492,7 @@ export function main() {
            // {{x.valid}} used to crash because valid() tried to read a property
            // from form.control before it was set. This test verifies this bug is
            // fixed.
-           const t = `<form><div ngControlGroup="x" #x="ngForm">
+           const t = `<form><div ngModelGroup="x" #x="ngModelGroup">
                   <input type="text" name="test" ngModel></div>{{x.valid}}</form>`;
            let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
            tick();

@@ -1,14 +1,14 @@
 import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '../../facade/async';
-import {FormControl} from '../model';
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+import {EventEmitter, ObservableWrapper} from '../../../facade/async';
+import {FormControl} from '../../model';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 
-import {ControlContainer} from './control_container';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {NgControl} from './ng_control';
-import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from './shared';
-import {AsyncValidatorFn, ValidatorFn} from './validators';
+import {ControlContainer} from '../control_container';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
+import {NgControl} from '../ng_control';
+import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
+import {AsyncValidatorFn, ValidatorFn} from '../validators';
 
 
 export const controlNameBinding: any =
@@ -18,9 +18,9 @@ export const controlNameBinding: any =
     };
 
 /**
- * Creates and binds a form control with a specified name to a DOM element.
+ * Syncs an existing form control with the specified name to a DOM element.
  *
- * This directive can only be used as a child of {@link NgForm} or {@link FormGroupDirective}.
+ * This directive can only be used as a child of {@link FormGroupDirective}.
 
  * ### Example
  *

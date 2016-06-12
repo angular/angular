@@ -6,12 +6,12 @@ import {BaseException} from '../../../facade/exceptions';
 import {isBlank} from '../../../facade/lang';
 import {FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
-
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {NgControl} from '../ng_control';
-import {NgControlGroup} from '../ng_control_group';
 import {composeAsyncValidators, composeValidators, setUpControl, setUpFormGroup} from '../shared';
+
+import {FormGroupName} from './form_group_name';
 
 export const formDirectiveProvider: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
@@ -148,15 +148,15 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   removeControl(dir: NgControl): void { ListWrapper.remove(this.directives, dir); }
 
-  addFormGroup(dir: NgControlGroup) {
+  addFormGroup(dir: FormGroupName) {
     var ctrl: any = this.form.find(dir.path);
     setUpFormGroup(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
-  removeFormGroup(dir: NgControlGroup) {}
+  removeFormGroup(dir: FormGroupName) {}
 
-  getFormGroup(dir: NgControlGroup): FormGroup { return <FormGroup>this.form.find(dir.path); }
+  getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.find(dir.path); }
 
   updateModel(dir: NgControl, value: any): void {
     var ctrl  = <FormControl>this.form.find(dir.path);

@@ -9,7 +9,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {NgControl} from './ng_control';
-import {NgControlGroup} from './ng_control_group';
+import {NgModelGroup} from './ng_model_group';
 import {composeAsyncValidators, composeValidators, setUpControl, setUpFormGroup} from './shared';
 
 export const formDirectiveProvider: any =
@@ -44,12 +44,12 @@ export const formDirectiveProvider: any =
  *       <h2>NgForm demo</h2>
  *       <form #f="ngForm" (ngSubmit)="onSubmit(f.value)">
  *         <h3>Control group: credentials</h3>
- *         <div ngControlGroup="credentials">
+ *         <div ngModelGroup="credentials">
  *           <p>Login: <input type="text" name="login" ngModel></p>
  *           <p>Password: <input type="password" name="password" ngModel></p>
  *         </div>
  *         <h3>Control group: person</h3>
- *         <div ngControlGroup="person">
+ *         <div ngModelGroup="person">
  *           <p>First name: <input type="text" name="firstName" ngModel></p>
  *           <p>Last name: <input type="text" name="lastName" ngModel></p>
  *         </div>
@@ -129,7 +129,7 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
-  addFormGroup(dir: NgControlGroup): void {
+  addFormGroup(dir: NgModelGroup): void {
     PromiseWrapper.scheduleMicrotask(() => {
       var container = this._findContainer(dir.path);
       var group = new FormGroup({});
@@ -139,7 +139,7 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
-  removeFormGroup(dir: NgControlGroup): void {
+  removeFormGroup(dir: NgModelGroup): void {
     PromiseWrapper.scheduleMicrotask(() => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
@@ -148,7 +148,7 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
-  getFormGroup(dir: NgControlGroup): FormGroup { return <FormGroup>this.form.find(dir.path); }
+  getFormGroup(dir: NgModelGroup): FormGroup { return <FormGroup>this.form.find(dir.path); }
 
   updateModel(dir: NgControl, value: any): void {
     PromiseWrapper.scheduleMicrotask(() => {

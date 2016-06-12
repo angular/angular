@@ -4,8 +4,7 @@ import {fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
-import {FormGroup, FormControl, FormControlName, NgControlGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms';
-
+import {FormGroup, FormControl, FormControlName, FormGroupName, NgModelGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms';
 
 import {selectValueAccessor, composeValidators} from '@angular/common/src/forms/directives/shared';
 import {TimerWrapper} from '../../src/facade/async';
@@ -195,7 +194,7 @@ export function main() {
         };
 
         it('should set up validator', fakeAsync(() => {
-             var group = new NgControlGroup(
+             var group = new FormGroupName(
                  form, [matchingPasswordsValidator], [asyncValidator('expected')]);
              group.name = 'passwords';
              form.addFormGroup(group);
@@ -271,7 +270,7 @@ export function main() {
         form = new NgForm([], []);
         formModel = form.form;
 
-        personControlGroupDir = new NgControlGroup(form, [], []);
+        personControlGroupDir = new NgModelGroup(form, [], []);
         personControlGroupDir.name = 'person';
 
         loginControlDir = new FormControlName(personControlGroupDir, null, null, [defaultAccessor]);
@@ -338,7 +337,7 @@ export function main() {
          }));
     });
 
-    describe('NgControlGroup', () => {
+    describe('FormGroupName', () => {
       var formModel: any /** TODO #9100 */;
       var controlGroupDir: any /** TODO #9100 */;
 
@@ -347,7 +346,7 @@ export function main() {
 
         var parent = new FormGroupDirective([], []);
         parent.form = new FormGroup({'group': formModel});
-        controlGroupDir = new NgControlGroup(parent, [], []);
+        controlGroupDir = new FormGroupName(parent, [], []);
         controlGroupDir.name = 'group';
       });
 

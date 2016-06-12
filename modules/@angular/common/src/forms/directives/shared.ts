@@ -5,12 +5,12 @@ import {FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
 
 import {AbstractControlDirective} from './abstract_control_directive';
+import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 import {DefaultValueAccessor} from './default_value_accessor';
 import {NgControl} from './ng_control';
-import {NgControlGroup} from './ng_control_group';
 import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator';
 import {NumberValueAccessor} from './number_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
@@ -46,7 +46,7 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
 }
 
-export function setUpFormGroup(control: FormGroup, dir: NgControlGroup) {
+export function setUpFormGroup(control: FormGroup, dir: AbstractFormGroupDirective) {
   if (isBlank(control)) _throwError(dir, 'Cannot find control');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
