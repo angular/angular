@@ -13,18 +13,18 @@ export const DEFAULT_VALUE_ACCESSOR: any = /*@ts2dart_const*/
 
 /**
  * The default accessor for writing a value and listening to changes that is used by the
- * {@link NgModel}, {@link FormControlDirective}, and {@link NgControlName} directives.
+ * {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName} directives.
  *
  *  ### Example
  *  ```
- *  <input type="text" ngControl="searchQuery">
+ *  <input type="text" name="searchQuery" ngModel>
  *  ```
  *
  *  @experimental
  */
 @Directive({
   selector:
-      'input:not([type=checkbox])[ngControl],textarea[ngControl],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
+      'input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
   // TODO: vsavkin replace the above selector with the one below it once
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngControl],[ngModel],[ngFormControl]',

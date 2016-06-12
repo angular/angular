@@ -1,4 +1,4 @@
-import {Directive, Host, Inject, OnChanges, OnDestroy, Optional, Self, SimpleChanges, SkipSelf, forwardRef} from '@angular/core';
+import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf, forwardRef} from '@angular/core';
 
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {FormControl} from '../model';
@@ -14,7 +14,7 @@ import {AsyncValidatorFn, ValidatorFn} from './validators';
 export const controlNameBinding: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
       provide: NgControl,
-      useExisting: forwardRef(() => NgControlName)
+      useExisting: forwardRef(() => FormControlName)
     };
 
 /**
@@ -31,39 +31,50 @@ export const controlNameBinding: any =
  *  ```
  * @Component({
  *      selector: "login-comp",
- *      directives: [FORM_DIRECTIVES],
+ *      directives: [REACTIVE_FORM_DIRECTIVES],
  *      template: `
- *        <form #f="ngForm" (submit)='onLogIn(f.value)'>
- *          Login <input type='text' ngControl='login' #l="ngForm">
- *          <div *ngIf="!l.valid">Login is invalid</div>
- *
- *          Password <input type='password' ngControl='password'>
- *          <button type='submit'>Log in!</button>
+ *        <form [formGroup]="myForm" (submit)="onLogIn()">
+ *          Login <input type="text" formControlName="login">
+ *          <div *ngIf="!loginCtrl.valid">Login is invalid</div>
+ *          Password <input type="password" formControlName="password">
+ *          <button type="submit">Log in!</button>
  *        </form>
  *      `})
  * class LoginComp {
- *  onLogIn(value): void {
+ *  loginCtrl = new Control();
+ *  passwordCtrl = new Control();
+ *  myForm = new FormGroup({
+ *     login: loginCtrl,
+ *     password: passwordCtrl
+ *  });
+ *  onLogIn(): void {
  *    // value === {login: 'some login', password: 'some password'}
  *  }
  * }
  *  ```
  *
- * We can also use ngModel to bind a domain model to the form.
+ * TODO(kara): Remove ngModel example with reactive paradigm
+ * We can also use ngModel to bind a domain model to the form, if you don't want to provide
+ * individual init values to each control.
  *
  *  ```
  * @Component({
  *      selector: "login-comp",
- *      directives: [FORM_DIRECTIVES],
+ *      directives: [REACTIVE_FORM_DIRECTIVES],
  *      template: `
- *        <form (submit)='onLogIn()'>
- *          Login <input type='text' ngControl='login' [(ngModel)]="credentials.login">
- *          Password <input type='password' ngControl='password'
+ *        <form [formGroup]="myForm" (submit)='onLogIn()'>
+ *          Login <input type='text' formControlName='login' [(ngModel)]="credentials.login">
+ *          Password <input type='password' formControlName='password'
  *                          [(ngModel)]="credentials.password">
  *          <button type='submit'>Log in!</button>
  *        </form>
  *      `})
  * class LoginComp {
  *  credentials: {login:string, password:string};
+ *  myForm = new FormGroup({
+ *    login: new Control(this.credentials.login),
+ *    password: new Control(this.credentials.password)
+ *  });
  *
  *  onLogIn(): void {
  *    // this.credentials.login === "some login"
@@ -74,20 +85,17 @@ export const controlNameBinding: any =
  *
  *  @experimental
  */
-@Directive({
-  selector: '[ngControl]',
-  providers: [controlNameBinding],
-  inputs: ['name: ngControl', 'model: ngModel'],
-  outputs: ['update: ngModelChange'],
-  exportAs: 'ngForm'
-})
-export class NgControlName extends NgControl implements OnChanges,
-    OnDestroy {
+@Directive({selector: '[formControlName]', providers: [controlNameBinding]})
+export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   /** @internal */
-  update = new EventEmitter();
-  model: any;
   viewModel: any;
   private _added = false;
+
+  @Input('formControlName') name: string;
+
+  // TODO(kara):  Replace ngModel with reactive API
+  @Input('ngModel') model: any;
+  @Output('ngModelChange') update = new EventEmitter();
 
   constructor(@Host() @SkipSelf() private _parent: ControlContainer,
               @Optional() @Self() @Inject(NG_VALIDATORS) private _validators:

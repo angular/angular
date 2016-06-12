@@ -41,7 +41,7 @@ export const formControlBinding: any =
  *  @experimental
  */
 @Directive({
-  selector: '[ngModel]:not([ngControl]):not([formControl])',
+  selector: '[ngModel]:not([formControlName]):not([formControl])',
   providers: [formControlBinding],
   exportAs: 'ngForm'
 })

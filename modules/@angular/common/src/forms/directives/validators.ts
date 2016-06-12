@@ -40,13 +40,13 @@ export const REQUIRED_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ 
  * ### Example
  *
  * ```
- * <input ngControl="fullName" required>
+ * <input name="fullName" ngModel required>
  * ```
  *
  * @experimental
  */
 @Directive({
-  selector: '[required][ngControl],[required][formControl],[required][ngModel]',
+  selector: '[required][formControlName],[required][formControl],[required][ngModel]',
   providers: [REQUIRED_VALIDATOR]
 })
 export class RequiredValidator {
@@ -71,13 +71,13 @@ export const MIN_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
 };
 
 /**
- * A directive which installs the {@link MinLengthValidator} for any `ngControl`,
+ * A directive which installs the {@link MinLengthValidator} for any `formControlName`,
  * `formControl`, or control with `ngModel` that also has a `minlength` attribute.
  *
  * @experimental
  */
 @Directive({
-  selector: '[minlength][ngControl],[minlength][formControl],[minlength][ngModel]',
+  selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
   providers: [MIN_LENGTH_VALIDATOR]
 })
 export class MinLengthValidator implements Validator {
@@ -104,13 +104,14 @@ export const MAX_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
 };
 
 /**
- * A directive which installs the {@link MaxLengthValidator} for any `ngControl, `formControl`,
+ * A directive which installs the {@link MaxLengthValidator} for any `formControlName,
+ * `formControl`,
  * or control with `ngModel` that also has a `maxlength` attribute.
  *
  * @experimental
  */
 @Directive({
-  selector: '[maxlength][ngControl],[maxlength][formControl],[maxlength][ngModel]',
+  selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
   providers: [MAX_LENGTH_VALIDATOR]
 })
 export class MaxLengthValidator implements Validator {
@@ -140,12 +141,12 @@ export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
  * ### Example
  *
  * ```
- * <input [ngControl]="fullName" pattern="[a-zA-Z ]*">
+ * <input [name]="fullName" pattern="[a-zA-Z ]*" ngModel>
  * ```
  * @experimental
  */
 @Directive({
-  selector: '[pattern][ngControl],[pattern][formControl],[pattern][ngModel]',
+  selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR]
 })
 export class PatternValidator implements Validator {

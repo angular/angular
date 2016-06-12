@@ -38,7 +38,8 @@ abstract class HTMLCollection {
  * The accessor for writing a value and listening to changes on a select element.
  */
 @Directive({
-  selector: 'select[multiple][ngControl],select[multiple][formControl],select[multiple][ngModel]',
+  selector:
+      'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
   host: {'(input)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
 })
@@ -118,7 +119,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
  * ### Example
  *
  * ```
- * <select multiple ngControl="city">
+ * <select multiple name="city" ngModel>
  *   <option *ngFor="let c of cities" [value]="c"></option>
  * </select>
  * ```

@@ -35,8 +35,6 @@ export const formDirectiveProvider: any =
  *
  * The `ngSubmit` event signals when the user triggers a form submission.
  *
- * ### Example ([live demo](http://plnkr.co/edit/ltdgYj4P0iY64AR71EpL?p=preview))
- *
  *  ```typescript
  * @Component({
  *   selector: 'my-app',
@@ -47,13 +45,13 @@ export const formDirectiveProvider: any =
  *       <form #f="ngForm" (ngSubmit)="onSubmit(f.value)">
  *         <h3>Control group: credentials</h3>
  *         <div ngControlGroup="credentials">
- *           <p>Login: <input type="text" ngControl="login"></p>
- *           <p>Password: <input type="password" ngControl="password"></p>
+ *           <p>Login: <input type="text" name="login" ngModel></p>
+ *           <p>Password: <input type="password" name="password" ngModel></p>
  *         </div>
  *         <h3>Control group: person</h3>
  *         <div ngControlGroup="person">
- *           <p>First name: <input type="text" ngControl="firstName"></p>
- *           <p>Last name: <input type="text" ngControl="lastName"></p>
+ *           <p>First name: <input type="text" name="firstName" ngModel></p>
+ *           <p>Last name: <input type="text" name="lastName" ngModel></p>
  *         </div>
  *         <button type="submit">Submit Form</button>
  *       <p>Form data submitted:</p>
@@ -61,7 +59,7 @@ export const formDirectiveProvider: any =
  *       <pre>{{data}}</pre>
  *     </div>
  * `,
- *   directives: [CORE_DIRECTIVES, FORM_DIRECTIVES]
+ *   directives: []
  * })
  * export class App {
  *   constructor() {}

@@ -28,15 +28,15 @@ export const controlGroupProvider: any =
  *       <form #f="ngForm">
  *         <div ngControlGroup="name" #cgName="ngForm">
  *           <h3>Enter your name:</h3>
- *           <p>First: <input ngControl="first" required></p>
- *           <p>Middle: <input ngControl="middle"></p>
- *           <p>Last: <input ngControl="last" required></p>
+ *           <p>First: <input name="first" ngModel required></p>
+ *           <p>Middle: <input name="middle" ngModel></p>
+ *           <p>Last: <input name="last" ngModel required></p>
  *         </div>
  *         <h3>Name value:</h3>
  *         <pre>{{valueOf(cgName)}}</pre>
  *         <p>Name is {{cgName?.control?.valid ? "valid" : "invalid"}}</p>
  *         <h3>What's your favorite food?</h3>
- *         <p><input ngControl="food"></p>
+ *         <p><input name="food" ngModel></p>
  *         <h3>Form value</h3>
  *         <pre>{{valueOf(f)}}</pre>
  *       </form>

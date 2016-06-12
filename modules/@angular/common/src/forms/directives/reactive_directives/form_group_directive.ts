@@ -34,14 +34,14 @@ export const formDirectiveProvider: any =
  *     <div>
  *       <h2>Binding an existing form group</h2>
  *       <form [formGroup]="loginForm">
- *         <p>Login: <input type="text" ngControl="login"></p>
- *         <p>Password: <input type="password" ngControl="password"></p>
+ *         <p>Login: <input type="text" formControlName="login"></p>
+ *         <p>Password: <input type="password" formControlName="password"></p>
  *       </form>
  *       <p>Value:</p>
  *       <pre>{{value}}</pre>
  *     </div>
  *   `,
- *   directives: [FORM_DIRECTIVES]
+ *   directives: [REACTIVE_FORM_DIRECTIVES]
  * })
  * export class App {
  *   loginForm: FormGroup;
@@ -64,11 +64,11 @@ export const formDirectiveProvider: any =
  *  ```typescript
  * @Component({
  *      selector: "login-comp",
- *      directives: [FORM_DIRECTIVES],
+ *      directives: [REACTIVE_FORM_DIRECTIVES],
  *      template: `
  *        <form [formGroup]='loginForm'>
- *          Login <input type='text' ngControl='login' [(ngModel)]='credentials.login'>
- *          Password <input type='password' ngControl='password'
+ *          Login <input type='text' formControlName='login' [(ngModel)]='credentials.login'>
+ *          Password <input type='password' formControlName='password'
  *                          [(ngModel)]='credentials.password'>
  *          <button (click)="onLogin()">Login</button>
  *        </form>`

@@ -22,10 +22,10 @@ export {CheckboxControlValueAccessor} from './forms/directives/checkbox_value_ac
 export {ControlContainer} from './forms/directives/control_container';
 export {ControlValueAccessor, NG_VALUE_ACCESSOR} from './forms/directives/control_value_accessor';
 export {DefaultValueAccessor} from './forms/directives/default_value_accessor';
+export {FormControlName} from './forms/directives/form_control_name';
 export {Form} from './forms/directives/form_interface';
 export {NgControl} from './forms/directives/ng_control';
 export {NgControlGroup} from './forms/directives/ng_control_group';
-export {NgControlName} from './forms/directives/ng_control_name';
 export {NgControlStatus} from './forms/directives/ng_control_status';
 export {NgForm} from './forms/directives/ng_form';
 export {NgModel} from './forms/directives/ng_model';

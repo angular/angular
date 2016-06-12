@@ -4,7 +4,7 @@ import {fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
-import {FormGroup, FormControl, NgControlName, NgControlGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms';
+import {FormGroup, FormControl, FormControlName, NgControlGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms';
 
 
 import {selectValueAccessor, composeValidators} from '@angular/common/src/forms/directives/shared';
@@ -119,7 +119,7 @@ export function main() {
         });
         form.form = formModel;
 
-        loginControlDir = new NgControlName(
+        loginControlDir = new FormControlName(
             form, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
         loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
@@ -138,7 +138,7 @@ export function main() {
 
       describe('addControl', () => {
         it('should throw when no control found', () => {
-          var dir = new NgControlName(form, null, null, [defaultAccessor]);
+          var dir = new FormControlName(form, null, null, [defaultAccessor]);
           dir.name = 'invalidName';
 
           expect(() => form.addControl(dir))
@@ -146,7 +146,7 @@ export function main() {
         });
 
         it('should throw when no value accessor', () => {
-          var dir = new NgControlName(form, null, null, null);
+          var dir = new FormControlName(form, null, null, null);
           dir.name = 'login';
 
           expect(() => form.addControl(dir))
@@ -274,7 +274,7 @@ export function main() {
         personControlGroupDir = new NgControlGroup(form, [], []);
         personControlGroupDir.name = 'person';
 
-        loginControlDir = new NgControlName(personControlGroupDir, null, null, [defaultAccessor]);
+        loginControlDir = new FormControlName(personControlGroupDir, null, null, [defaultAccessor]);
         loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -440,7 +440,7 @@ export function main() {
          }));
     });
 
-    describe('NgControlName', () => {
+    describe('FormControlName', () => {
       var formModel: any /** TODO #9100 */;
       var controlNameDir: any /** TODO #9100 */;
 
@@ -449,7 +449,7 @@ export function main() {
 
         var parent = new FormGroupDirective([], []);
         parent.form = new FormGroup({'name': formModel});
-        controlNameDir = new NgControlName(parent, [], [], [defaultAccessor]);
+        controlNameDir = new FormControlName(parent, [], [], [defaultAccessor]);
         controlNameDir.name = 'name';
       });
 

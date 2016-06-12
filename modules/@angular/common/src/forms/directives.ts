@@ -2,8 +2,8 @@ import {Type} from '@angular/core';
 
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 import {DefaultValueAccessor} from './directives/default_value_accessor';
+import {FormControlName} from './directives/form_control_name';
 import {NgControlGroup} from './directives/ng_control_group';
-import {NgControlName} from './directives/ng_control_name';
 import {NgControlStatus} from './directives/ng_control_status';
 import {NgForm} from './directives/ng_form';
 import {NgModel} from './directives/ng_model';
@@ -18,9 +18,9 @@ import {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValida
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 export {ControlValueAccessor} from './directives/control_value_accessor';
 export {DefaultValueAccessor} from './directives/default_value_accessor';
+export {FormControlName} from './directives/form_control_name';
 export {NgControl} from './directives/ng_control';
 export {NgControlGroup} from './directives/ng_control_group';
-export {NgControlName} from './directives/ng_control_name';
 export {NgControlStatus} from './directives/ng_control_status';
 export {NgForm} from './directives/ng_form';
 export {NgModel} from './directives/ng_model';
@@ -52,7 +52,7 @@ export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValida
  * @experimental
  */
 export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
-  NgControlName, NgControlGroup,
+  NgControlGroup,
 
   NgModel, NgForm,
 
@@ -64,4 +64,4 @@ export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
 ];
 
 export const REACTIVE_FORM_DIRECTIVES: Type[] =
-    /*@ts2dart_const*/[FormControlDirective, FormGroupDirective];
+    /*@ts2dart_const*/[FormControlDirective, FormGroupDirective, FormControlName];
