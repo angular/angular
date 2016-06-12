@@ -81,7 +81,7 @@ let _PLACEHOLDER_EXPANDED_REGEXP = /<ph(\s)+name=("(\w)+")><\/ph>/gi;
  * and the translated tree, where all the elements are replaced with placeholders.
  * 3. Use the original tree to create a mapping Index:number -> HtmlAst.
  * 4. Walk the translated tree.
- * 5. If we encounter a placeholder element, get is name property.
+ * 5. If we encounter a placeholder element, get its name property.
  * 6. Get the type and the index of the node using the name property.
  * 7. If the type is 'e', which means element, then:
  *     - translate the attributes of the original element
