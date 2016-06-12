@@ -1,6 +1,6 @@
 import {Parser} from '../expression_parser/parser';
 import {StringMapWrapper} from '../facade/collection';
-import {isPresent} from '../facade/lang';
+import {isPresent, isArray} from '../facade/lang';
 import {HtmlAst, HtmlElementAst} from '../html_ast';
 import {HtmlParser} from '../html_parser';
 import {ParseError} from '../parse_util';
@@ -112,7 +112,7 @@ export class MessageExtractor {
   }
 
   private _extractMessagesFromPart(p: Part): void {
-    if (p.hasI18n) {
+    if (p.hasI18n && isPresent(p.children) && isArray(p.children) && p.children.length > 0) {
       this.messages.push(p.createMessage(this._parser));
       this._recurseToExtractMessagesFromAttributes(p.children);
     } else {

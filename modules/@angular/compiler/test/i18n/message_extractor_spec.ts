@@ -66,6 +66,22 @@ export function main() {
       expect(res.messages).toEqual([new Message('message1', 'meaning1', 'desc1')]);
     });
 
+    it('should not create a new message when there is not child nodes', () => {
+      let res = extractor.extract(
+          '<div i18n></div>',
+          'someUrl');
+
+      expect(res.messages).toEqual([]);
+    });
+
+    it('should not create a new message when there is not child nodes (comment)', () => {
+      let res = extractor.extract(
+          '<!-- i18n--><!-- /i18n -->',
+          'someUrl');
+
+      expect(res.messages).toEqual([]);
+    });
+
     it('should replace interpolation with placeholders (text nodes)', () => {
       let res = extractor.extract('<div i18n>Hi {{one}} and {{two}}</div>', 'someurl');
       expect(res.messages).toEqual([new Message(
