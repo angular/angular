@@ -26,6 +26,15 @@ export function main() {
     });
 
 
+    it('should encode special characters in params', () => {
+      var searchParams = new URLSearchParams();
+      searchParams.append('a', '1+1');
+      searchParams.append('b c', '2');
+      searchParams.append('d%', '3$');
+      expect(searchParams.toString()).toEqual('a=1%2B1&b%20c=2&d%25=3%24');
+    });
+
+
     it('should support map-like merging operation via setAll()', () => {
       var mapA = new URLSearchParams('a=1&a=2&a=3&c=8');
       var mapB = new URLSearchParams('a=4&a=5&a=6&b=7');
