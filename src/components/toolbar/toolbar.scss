@@ -11,7 +11,7 @@ $md-toolbar-padding: 16px !default;
   color: md-color($palette, default-contrast);
 }
 
-:host {
+md-toolbar {
   display: flex;
   box-sizing: border-box;
 

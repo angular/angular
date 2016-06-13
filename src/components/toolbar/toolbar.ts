@@ -1,7 +1,8 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  Input
+  Input,
+  ViewEncapsulation
 } from '@angular/core';
 import {Renderer} from '@angular/core';
 import {ElementRef} from '@angular/core';
@@ -12,6 +13,7 @@ import {ElementRef} from '@angular/core';
   templateUrl: 'toolbar.html',
   styleUrls: ['toolbar.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class MdToolbar {
 
