@@ -256,7 +256,7 @@ to some whitespace difference.
   commit a change. In the angular repo, run
 
 ```
-    $ echo -e '#!/bin/sh\nexec git clang-format' > .git/hooks/pre-commit
+    $ echo -e '#!/bin/sh\nexec git clang-format --style file' > .git/hooks/pre-commit
     $ chmod u+x !$
 ```
 
