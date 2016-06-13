@@ -248,7 +248,7 @@ var Reflect = global.Reflect;
 })();
 
 export function makeDecorator(
-    annotationCls: any /** TODO #9100 */,
+    annotationCls: any /* TODO #9100 */,
     chainFn: (fn: Function) => void = null): (...args: any[]) => (cls: any) => any {
   function DecoratorFactory(objOrType: any /** TODO #9100 */): (cls: any) => any {
     var annotationInstance = new (<any>annotationCls)(objOrType);
