@@ -15,25 +15,23 @@ import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe
 
 export function main() {
   if (IS_DART) {
-    declareTests();
+    declareTests({useJit: false});
   } else {
-    describe('jit', () => {
-      beforeEachProviders(
-          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, true)}]);
-      declareTests();
-    });
+    describe('jit', () => { declareTests({useJit: true}); });
 
-    describe('no jit', () => {
-      beforeEachProviders(
-          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, false)}]);
-      declareTests();
-    });
+    describe('no jit', () => { declareTests({useJit: false}); });
   }
 }
 
-function declareTests() {
+function declareTests({useJit}: {useJit: boolean}) {
   describe('animation tests', function() {
-    beforeEachProviders(() => [{provide: AnimationDriver, useClass: MockAnimationDriver}]);
+    beforeEachProviders(
+        () =>
+            [{
+              provide: CompilerConfig,
+              useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
+            },
+             {provide: AnimationDriver, useClass: MockAnimationDriver}]);
 
     var makeAnimationCmp =
         (tcb: TestComponentBuilder, tpl: string,

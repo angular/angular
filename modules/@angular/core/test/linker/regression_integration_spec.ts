@@ -10,23 +10,15 @@ import {CompilerConfig} from '@angular/compiler';
 
 export function main() {
   if (IS_DART) {
-    declareTests(false);
+    declareTests({useJit: false});
   } else {
-    describe('jit', () => {
-      beforeEachProviders(
-          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, true)}]);
-      declareTests(true);
-    });
+    describe('jit', () => { declareTests({useJit: true}); });
 
-    describe('no jit', () => {
-      beforeEachProviders(
-          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, false)}]);
-      declareTests(false);
-    });
+    describe('no jit', () => { declareTests({useJit: false}); });
   }
 }
 
-function declareTests(isJit: boolean) {
+function declareTests({useJit}: {useJit: boolean}) {
   // Place to put reproductions for regressions
   describe('regressions', () => {
 
@@ -34,7 +26,8 @@ function declareTests(isJit: boolean) {
       beforeEachProviders(
           () => [{
             provide: CompilerConfig,
-            useValue: new CompilerConfig(true, false, isJit, null, null, [PlatformPipe])
+            useValue: new CompilerConfig(
+                {genDebugInfo: true, useJit: useJit, platformPipes: [PlatformPipe]})
           }]);
 
       it('should overwrite them by custom pipes',

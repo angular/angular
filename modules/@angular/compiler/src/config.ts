@@ -1,7 +1,7 @@
 import {ViewEncapsulation} from '@angular/core';
 
 import {unimplemented} from '../src/facade/exceptions';
-import {Type, isBlank} from '../src/facade/lang';
+import {Type, assertionsEnabled, isBlank} from '../src/facade/lang';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers} from './identifiers';
@@ -9,19 +9,31 @@ import {Identifiers} from './identifiers';
 export class CompilerConfig {
   public renderTypes: RenderTypes;
   public defaultEncapsulation: ViewEncapsulation;
+  public genDebugInfo: boolean;
+  public logBindingUpdate: boolean;
+  public useJit: boolean;
+  public platformDirectives: any[];
+  public platformPipes: any[];
 
   constructor(
-      public genDebugInfo: boolean, public logBindingUpdate: boolean, public useJit: boolean,
-      renderTypes: RenderTypes = null, defaultEncapsulation: ViewEncapsulation = null,
-      public platformDirectives: any[] = [], public platformPipes: any[] = []) {
-    if (isBlank(renderTypes)) {
-      renderTypes = new DefaultRenderTypes();
-    }
+      {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
+       genDebugInfo = assertionsEnabled(), logBindingUpdate = assertionsEnabled(), useJit = true,
+       platformDirectives = [], platformPipes = []}: {
+        renderTypes?: RenderTypes,
+        defaultEncapsulation?: ViewEncapsulation,
+        genDebugInfo?: boolean,
+        logBindingUpdate?: boolean,
+        useJit?: boolean,
+        platformDirectives?: any[],
+        platformPipes?: any[]
+      } = {}) {
     this.renderTypes = renderTypes;
-    if (isBlank(defaultEncapsulation)) {
-      defaultEncapsulation = ViewEncapsulation.Emulated;
-    }
     this.defaultEncapsulation = defaultEncapsulation;
+    this.genDebugInfo = genDebugInfo;
+    this.logBindingUpdate = logBindingUpdate;
+    this.useJit = useJit;
+    this.platformDirectives = platformDirectives;
+    this.platformPipes = platformPipes;
   }
 }
 

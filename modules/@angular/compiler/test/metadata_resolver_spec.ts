@@ -72,11 +72,11 @@ export function main() {
          }));
 
       describe('platform directives', () => {
-        beforeEachProviders(
-            () => [{
-              provide: CompilerConfig,
-              useValue: new CompilerConfig(true, false, true, null, null, [ADirective])
-            }]);
+        beforeEachProviders(() => [{
+                              provide: CompilerConfig,
+                              useValue: new CompilerConfig(
+                                  {genDebugInfo: true, platformDirectives: [ADirective]})
+                            }]);
 
         it('should include platform directives when available',
            inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {

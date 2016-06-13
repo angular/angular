@@ -40,15 +40,13 @@ function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCo
   var urlResolver = createOfflineCompileUrlResolver();
   xhr.when(`${THIS_MODULE_PATH}/offline_compiler_compa.html`, 'Hello World {{user}}!');
   var htmlParser = new HtmlParser();
-  var config = new CompilerConfig(true, true, true);
-  var normalizer =
-      new DirectiveNormalizer(xhr, urlResolver, htmlParser, new CompilerConfig(true, true, true));
+  var config = new CompilerConfig({genDebugInfo: true, useJit: true});
+  var normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
   return new OfflineCompiler(
       normalizer,
       new TemplateParser(
           new Parser(new Lexer()), new MockSchemaRegistry({}, {}), htmlParser, new Console(), []),
-      new StyleCompiler(urlResolver), new ViewCompiler(new CompilerConfig(true, true, true)),
-      emitter, xhr);
+      new StyleCompiler(urlResolver), new ViewCompiler(config), emitter, xhr);
 }
 
 export function compileComp(

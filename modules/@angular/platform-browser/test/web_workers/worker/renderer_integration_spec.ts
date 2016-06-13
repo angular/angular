@@ -70,7 +70,7 @@ export function main() {
       var domRootRenderer = uiInjector.get(DomRootRenderer);
       workerRenderStore = new RenderStore();
       return [
-        Serializer, {provide: CompilerConfig, useValue: new CompilerConfig(true, true, false)},
+        Serializer, {provide: CompilerConfig, useValue: new CompilerConfig({genDebugInfo: true})},
         {provide: RenderStore, useValue: workerRenderStore}, {
           provide: RootRenderer,
           useFactory: (workerSerializer: Serializer) => {

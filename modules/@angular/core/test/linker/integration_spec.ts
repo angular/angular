@@ -34,26 +34,24 @@ const ANCHOR_ELEMENT = /*@ts2dart_const*/ new OpaqueToken('AnchorElement');
 
 export function main() {
   if (IS_DART) {
-    declareTests(false);
+    declareTests({useJit: false});
   } else {
-    describe('jit', () => {
-      beforeEachProviders(
-          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, true)}]);
-      declareTests(true);
-    });
+    describe('jit', () => { declareTests({useJit: true}); });
 
-    describe('no jit', () => {
-      beforeEachProviders(
-          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, false)}]);
-      declareTests(false);
-    });
+    describe('no jit', () => { declareTests({useJit: false}); });
   }
 }
 
-function declareTests(isJit: boolean) {
+function declareTests({useJit}: {useJit: boolean}) {
   describe('integration tests', function() {
 
-    beforeEachProviders(() => [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]);
+    beforeEachProviders(
+        () =>
+            [{
+              provide: CompilerConfig,
+              useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
+            },
+             {provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]);
 
     describe('react to record changes', function() {
       it('should consume text node changes',
@@ -1788,8 +1786,10 @@ function declareTests(isJit: boolean) {
     });
 
     describe('logging property updates', () => {
-      beforeEachProviders(
-          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, true, isJit)}]);
+      beforeEachProviders(() => [{
+                            provide: CompilerConfig,
+                            useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
+                          }]);
 
       it('should reflect property values as attributes',
          inject(

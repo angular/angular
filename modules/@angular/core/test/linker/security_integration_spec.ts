@@ -15,19 +15,11 @@ const ANCHOR_ELEMENT = /*@ts2dart_const*/ new OpaqueToken('AnchorElement');
 
 export function main() {
   if (IS_DART) {
-    declareTests(false);
+    declareTests({useJit: false});
   } else {
-    describe('jit', () => {
-      beforeEachProviders(
-          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, true)}]);
-      declareTests(true);
-    });
+    describe('jit', () => { declareTests({useJit: true}); });
 
-    describe('no jit', () => {
-      beforeEachProviders(
-          () => [{provide: CompilerConfig, useValue: new CompilerConfig(true, false, false)}]);
-      declareTests(false);
-    });
+    describe('no jit', () => { declareTests({useJit: false}); });
   }
 }
 
@@ -52,10 +44,16 @@ function itAsync(
   }
 }
 
-function declareTests(isJit: boolean) {
+function declareTests({useJit}: {useJit: boolean}) {
   describe('security integration tests', function() {
 
-    beforeEachProviders(() => [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]);
+    beforeEachProviders(
+        () =>
+            [{
+              provide: CompilerConfig,
+              useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
+            },
+             {provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]);
 
     let originalLog: (msg: any) => any;
     beforeEach(() => {
