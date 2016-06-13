@@ -26,11 +26,10 @@ export const formControlBinding: any =
  * two-way binding, use `[(ngModel)]` to ensure the model updates in
  * both directions.
  *
- * ### Example ([live demo](http://plnkr.co/edit/R3UX5qDaUqFO2VYR0UzH?p=preview))
  *  ```typescript
  * @Component({
  *      selector: "search-comp",
- *      directives: [FORM_DIRECTIVES],
+ *      directives: [],
  *      template: `<input type='text' [(ngModel)]="searchQuery">`
  *      })
  * class SearchComp {
@@ -55,7 +54,7 @@ export class NgModel extends NgControl implements OnChanges,
 
   @Input('ngModel') model: any;
   @Input() name: string;
-
+  @Input('ngModelOptions') options: {name?: string};
   @Output('ngModelChange') update = new EventEmitter();
 
   constructor(@Optional() @Host() private _parent: ControlContainer,
@@ -112,6 +111,8 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _checkName() {
+                if (this.options && this.options.name) this.name = this.options.name;
+
                 if (this._parent && !this.name) {
                   throw new BaseException(
                       `Name attribute must be set if ngModel is used within a form.

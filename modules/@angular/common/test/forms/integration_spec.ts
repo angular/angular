@@ -16,6 +16,7 @@ import {ListWrapper} from '../../src/facade/collection';
 import {PromiseWrapper} from '../../src/facade/promise';
 
 export function main() {
+  // TODO(kara): Turn these tests on in CI when we flip the switch on new forms module
   xdescribe('integration tests', () => {
 
     it('should initialize DOM elements with the given form object',
@@ -1261,6 +1262,23 @@ export function main() {
                });
              }));
 
+      it('should override name attribute with ngModelOptions name if provided',
+         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           const t = `
+            <form>
+              <input name="one" [(ngModel)]="data" [ngModelOptions]="{name: 'two'}">
+            </form>
+            `;
+
+           const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
+           tick();
+           fixture.debugElement.componentInstance.data = 'some data';
+           fixture.detectChanges();
+           const form = fixture.debugElement.children[0].inject(NgForm);
+
+           tick();
+           expect(form.value).toEqual({two: 'some data'});
+         })));
 
       // TODO(kara): Fix when re-doing radio buttons
       xit('should support <type=radio>',
