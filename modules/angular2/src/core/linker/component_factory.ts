@@ -76,8 +76,7 @@ export class ComponentRef_ extends ComponentRef {
 
 @CONST()
 export class ComponentFactory {
-  static cloneWithMetadata(original: ComponentFactory,
-                           metadata: any[]): ComponentFactory {
+  static cloneWithMetadata(original: ComponentFactory, metadata: any[]): ComponentFactory {
     return new ComponentFactory(original.selector, original._viewFactory, original._componentType,
                                 [original.componentType, metadata]);
   }
@@ -88,9 +87,9 @@ export class ComponentFactory {
   get componentType(): Type { return this._componentType; }
   get metadata(): any[] {
     if (isPresent(this._metadataPairs)) {
-      for (var i=0; i<this._metadataPairs.length; i+=2) {
+      for (var i = 0; i < this._metadataPairs.length; i += 2) {
         if (this._metadataPairs[i] === this._componentType) {
-          return <any[]>this._metadataPairs[i+1];
+          return <any[]>this._metadataPairs[i + 1];
         }
       }
       return [];

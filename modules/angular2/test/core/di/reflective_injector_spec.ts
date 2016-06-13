@@ -667,7 +667,8 @@ export function main() {
         var inj = createInjector(
             [new Provider(Engine, {useProperty: 'a', useExisting: SomeModuleWithProp})]);
         expect(() => inj.get(Engine))
-            .toThrowError(`No provider for ${stringify(SomeModuleWithProp)}! (Engine -> SomeModuleWithProp)`);
+            .toThrowError(
+                `No provider for ${stringify(SomeModuleWithProp)}! (Engine -> SomeModuleWithProp)`);
       });
     });
   });

@@ -133,9 +133,9 @@ export class CompileElement extends CompileNode {
       var providerValueExpressions = resolvedProvider.providers.map((provider) => {
         var providerValue: o.Expression;
         if (isPresent(provider.useExisting)) {
-          providerValue = this._getDependency(
-              resolvedProvider.providerType,
-              new CompileDiDependencyMetadata({token: provider.useExisting}));
+          providerValue =
+              this._getDependency(resolvedProvider.providerType,
+                                  new CompileDiDependencyMetadata({token: provider.useExisting}));
         } else if (isPresent(provider.useFactory)) {
           var deps = isPresent(provider.deps) ? provider.deps : provider.useFactory.diDeps;
           var depsExpr = deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep));
@@ -144,7 +144,7 @@ export class CompileElement extends CompileNode {
           var deps = isPresent(provider.deps) ? provider.deps : provider.useClass.diDeps;
           var depsExpr = deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep));
           providerValue = o.importExpr(provider.useClass)
-              .instantiate(depsExpr, o.importType(provider.useClass));
+                              .instantiate(depsExpr, o.importType(provider.useClass));
         } else {
           providerValue = convertValueToOutputAst(provider.useValue);
         }

@@ -720,43 +720,70 @@ export function main() {
 
     describe('configs', () => {
       it('should use the providers of configs (types)', fakeAsync(() => {
-        var injector = createComp('', tcb.overrideProviders(TestComp, [SomeModuleWithProvider, Engine]), TestComp).injector;
-        expect(injector.get(SomeModuleWithProvider)).toBeAnInstanceOf(SomeModuleWithProvider);
-        expect(injector.get(Car)).toBeAnInstanceOf(Car);
-      }));
+           var injector =
+               createComp('', tcb.overrideProviders(TestComp, [SomeModuleWithProvider, Engine]),
+                          TestComp)
+                   .injector;
+           expect(injector.get(SomeModuleWithProvider)).toBeAnInstanceOf(SomeModuleWithProvider);
+           expect(injector.get(Car)).toBeAnInstanceOf(Car);
+         }));
 
       it('should use the providers of configs (providers)', fakeAsync(() => {
-        var injector = createComp('', tcb.overrideProviders(TestComp, [provide(SomeModuleWithProvider, {useClass: SomeModuleWithProvider}), Engine]), TestComp).injector;
-        expect(injector.get(SomeModuleWithProvider)).toBeAnInstanceOf(SomeModuleWithProvider);
-        expect(injector.get(Car)).toBeAnInstanceOf(Car);
-      }));
+           var injector =
+               createComp('', tcb.overrideProviders(TestComp,
+                                                    [
+                                                      provide(SomeModuleWithProvider,
+                                                              {useClass: SomeModuleWithProvider}),
+                                                      Engine
+                                                    ]),
+                          TestComp)
+                   .injector;
+           expect(injector.get(SomeModuleWithProvider)).toBeAnInstanceOf(SomeModuleWithProvider);
+           expect(injector.get(Car)).toBeAnInstanceOf(Car);
+         }));
 
       it('should inject deps into configs', fakeAsync(() => {
-        var injector = createComp('', tcb.overrideProviders(TestComp, [SomeModuleWithDeps, SomeService]), TestComp).injector;
-        expect(injector.get(SomeModuleWithDeps).someService).toBeAnInstanceOf(SomeService);
-      }));
+           var injector =
+               createComp('', tcb.overrideProviders(TestComp, [SomeModuleWithDeps, SomeService]),
+                          TestComp)
+                   .injector;
+           expect(injector.get(SomeModuleWithDeps).someService).toBeAnInstanceOf(SomeService);
+         }));
     });
 
     describe('provider properties', () => {
       it('should support provider properties', fakeAsync(() => {
-        var inj = createComp('', tcb.overrideProviders(TestComp, [SomeModuleWithProp]), TestComp).injector;
-        expect(inj.get(Engine)).toBe('aChildValue');
-      }));
+           var inj = createComp('', tcb.overrideProviders(TestComp, [SomeModuleWithProp]), TestComp)
+                         .injector;
+           expect(inj.get(Engine)).toBe('aChildValue');
+         }));
 
       it('should support multi providers', fakeAsync(() => {
-        var inj = createComp('', tcb.overrideProviders(TestComp, [
-          SomeModuleWithProp,
-          new Provider('multiProp', {useValue: 'bMultiValue', multi: true})
-        ]), TestComp).injector;
-        expect(inj.get('multiProp')).toEqual(['aMultiValue', 'bMultiValue']);
-      }));
+           var inj =
+               createComp('',
+                          tcb.overrideProviders(
+                              TestComp,
+                              [
+                                SomeModuleWithProp,
+                                new Provider('multiProp', {useValue: 'bMultiValue', multi: true})
+                              ]),
+                          TestComp)
+                   .injector;
+           expect(inj.get('multiProp')).toEqual(['aMultiValue', 'bMultiValue']);
+         }));
 
       it('should throw if the module is missing when the value is read', fakeAsync(() => {
-        var inj = createComp('', tcb.overrideProviders(TestComp,
-            [new Provider(Engine, {useProperty: 'a', useExisting: SomeModuleWithProp})]), TestComp).injector;
-        expect(() => inj.get(Engine))
-            .toThrowError(containsRegexp(`No provider for ${stringify(SomeModuleWithProp)}!`));
-      }));
+           var inj =
+               createComp(
+                   '',
+                   tcb.overrideProviders(
+                       TestComp,
+                       [new Provider(Engine, {useProperty: 'a', useExisting: SomeModuleWithProp})]),
+                   TestComp)
+                   .injector;
+           expect(() => inj.get(Engine))
+               .toThrowError(containsRegexp(`No provider for ${stringify(SomeModuleWithProp)}!`));
+         }));
     });
   });
 }

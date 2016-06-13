@@ -6,7 +6,7 @@ export const THROW_IF_NOT_FOUND = CONST_EXPR(_THROW_IF_NOT_FOUND);
 
 class _NullInjector implements Injector {
   get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
-    if (notFoundValue === _THROW_IF_NOT_FOUND) {
+    if (notFoundValue === THROW_IF_NOT_FOUND) {
       throw new BaseException(`No provider for ${stringify(token)}!`);
     }
     return notFoundValue;
@@ -57,7 +57,7 @@ export class MapInjector implements Injector {
       this._parent = Injector.NULL;
     }
   }
-  get(token: any, notFoundValue?: any): any {
+  get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
     if (token === Injector) {
       return this;
     }
