@@ -69,8 +69,9 @@ export class FormBuilder {
   /**
    * Construct a new {@link FormControl} with the given `value`,`validator`, and `asyncValidator`.
    */
-  control(value: Object, validator: ValidatorFn = null, asyncValidator: AsyncValidatorFn = null):
-      modelModule.FormControl {
+  control(
+      value: Object, validator: ValidatorFn|ValidatorFn[] = null,
+      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null): modelModule.FormControl {
     return new modelModule.FormControl(value, validator, asyncValidator);
   }
 

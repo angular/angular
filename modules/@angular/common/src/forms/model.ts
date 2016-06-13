@@ -3,7 +3,9 @@ import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent, normalizeBool} from '../facade/lang';
 import {PromiseWrapper} from '../facade/promise';
 
+import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
+
 
 
 /**
@@ -48,6 +50,15 @@ function _find(control: AbstractControl, path: Array<string|number>| string) {
 
 function toObservable(r: any): Observable<any> {
   return PromiseWrapper.isPromise(r) ? ObservableWrapper.fromPromise(r) : r;
+}
+
+function coerceToValidator(validator: ValidatorFn | ValidatorFn[]): ValidatorFn {
+  return Array.isArray(validator) ? composeValidators(validator) : validator;
+}
+
+function coerceToAsyncValidator(asyncValidator: AsyncValidatorFn | AsyncValidatorFn[]):
+    AsyncValidatorFn {
+  return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) : asyncValidator;
 }
 
 /**
@@ -275,8 +286,9 @@ export class FormControl extends AbstractControl {
   _onChange: Function;
 
   constructor(
-      value: any = null, validator: ValidatorFn = null, asyncValidator: AsyncValidatorFn = null) {
-    super(validator, asyncValidator);
+      value: any = null, validator: ValidatorFn|ValidatorFn[] = null,
+      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null) {
+    super(coerceToValidator(validator), coerceToAsyncValidator(asyncValidator));
     this._value = value;
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._initObservables();

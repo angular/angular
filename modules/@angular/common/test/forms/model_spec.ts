@@ -31,6 +31,8 @@ export function main() {
     return e;
   }
 
+  function otherAsyncValidator() { return PromiseWrapper.resolve({'other': true}); }
+
   describe('Form Model', () => {
     describe('FormControl', () => {
       it('should default the value to null', () => {
@@ -48,6 +50,15 @@ export function main() {
           var c = new FormControl('value', Validators.required);
           c.updateValue(null);
           expect(c.valid).toEqual(false);
+        });
+
+        it('should support arrays of validator functions if passed', () => {
+          const c = new FormControl('value', [Validators.required, Validators.minLength(3)]);
+          c.updateValue('a');
+          expect(c.valid).toEqual(false);
+
+          c.updateValue('aaa');
+          expect(c.valid).toEqual(true);
         });
 
         it('should return errors', () => {
@@ -115,6 +126,14 @@ export function main() {
              tick(300);
 
              expect(c.valid).toEqual(true);
+           }));
+
+        it('should support arrays of async validator functions if passed', fakeAsync(() => {
+             const c =
+                 new FormControl('value', null, [asyncValidator('expected'), otherAsyncValidator]);
+             tick();
+
+             expect(c.errors).toEqual({'async': true, 'other': true});
            }));
       });
 
