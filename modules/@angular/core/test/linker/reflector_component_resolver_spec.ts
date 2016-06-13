@@ -7,7 +7,7 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('Compiler', () => {
-    var someCompFactory: any /** TODO #9100 */;
+    var someCompFactory: any /* TODO #9100 */;
 
     beforeEachProviders(() => [{provide: ComponentResolver, useClass: ReflectorComponentResolver}]);
 

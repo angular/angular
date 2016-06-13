@@ -819,7 +819,7 @@ function declareTests(isJit: boolean) {
 
                var cmpEl = fixture.debugElement.children[0];
                var cmp: PushCmpWithHostEvent = cmpEl.inject(PushCmpWithHostEvent);
-               cmp.ctxCallback = (_: any /** TODO #9100 */) => fixture.destroy();
+               cmp.ctxCallback = (_: any /* TODO #9100 */) => fixture.destroy();
 
                expect(() => cmpEl.triggerEventHandler('click', <Event>{})).not.toThrow();
              })));
@@ -1486,7 +1486,7 @@ function declareTests(isJit: boolean) {
              }));
 
       it('should report a meaningful error when a component is missing view annotation',
-         inject([TestComponentBuilder], (tcb: TestComponentBuilder): any /** TODO #9100 */ => {
+         inject([TestComponentBuilder], (tcb: TestComponentBuilder): any /* TODO #9100 */ => {
            try {
              tcb.createAsync(ComponentWithoutView);
            } catch (e) {
@@ -1615,7 +1615,7 @@ function declareTests(isJit: boolean) {
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
-                 var undefinedValue: any /** TODO #9100 */;
+                 var undefinedValue: any /* TODO #9100 */;
 
                  tcb = tcb.overrideView(
                      MyComp, new ViewMetadata({directives: [undefinedValue], template: ''}));
@@ -1691,7 +1691,7 @@ function declareTests(isJit: boolean) {
        inject(
            [TestComponentBuilder, AsyncTestCompleter, ANCHOR_ELEMENT],
            (tcb: TestComponentBuilder, async: AsyncTestCompleter,
-            anchorElement: any /** TODO #9100 */) => {
+            anchorElement: any /* TODO #9100 */) => {
              tcb.overrideView(MyComp, new ViewMetadata({
                                 template: '<div><div *someImpvp="ctxBoolProp">hello</div></div>',
                                 directives: [SomeImperativeViewport]
@@ -2028,7 +2028,7 @@ class MyService {
 @Component({selector: 'simple-imp-cmp', template: ''})
 @Injectable()
 class SimpleImperativeViewComponent {
-  done: any /** TODO #9100 */;
+  done: any /* TODO #9100 */;
 
   constructor(self: ElementRef, renderer: Renderer) {
     var hostElement = self.nativeElement;
@@ -2084,7 +2084,7 @@ class EventCmp {
 @Injectable()
 class PushCmp {
   numberOfChecks: number;
-  prop: any /** TODO #9100 */;
+  prop: any /* TODO #9100 */;
 
   constructor() { this.numberOfChecks = 0; }
 
@@ -2106,7 +2106,7 @@ class PushCmp {
 class PushCmpWithRef {
   numberOfChecks: number;
   ref: ChangeDetectorRef;
-  prop: any /** TODO #9100 */;
+  prop: any /* TODO #9100 */;
 
   constructor(ref: ChangeDetectorRef) {
     this.numberOfChecks = 0;
@@ -2128,7 +2128,7 @@ class PushCmpWithRef {
   template: ''
 })
 class PushCmpWithHostEvent {
-  ctxCallback: Function = (_: any /** TODO #9100 */) => {};
+  ctxCallback: Function = (_: any /* TODO #9100 */) => {};
 }
 
 @Component({
@@ -2153,7 +2153,7 @@ class PushCmpWithAsyncPipe {
     return this.promise;
   }
 
-  resolve(value: any /** TODO #9100 */) { this.completer.resolve(value); }
+  resolve(value: any /* TODO #9100 */) { this.completer.resolve(value); }
 }
 
 @Component({selector: 'my-comp', directives: []})
@@ -2246,7 +2246,7 @@ class SomeViewport {
 @Pipe({name: 'double'})
 class DoublePipe implements PipeTransform, OnDestroy {
   ngOnDestroy() {}
-  transform(value: any /** TODO #9100 */) { return `${value}${value}`; }
+  transform(value: any /* TODO #9100 */) { return `${value}${value}`; }
 }
 
 @Directive({selector: '[emitter]', outputs: ['event']})
@@ -2319,13 +2319,13 @@ class DirectiveListeningDomEventOther {
 @Directive({selector: '[listenerprevent]', host: {'(click)': 'onEvent($event)'}})
 @Injectable()
 class DirectiveListeningDomEventPrevent {
-  onEvent(event: any /** TODO #9100 */) { return false; }
+  onEvent(event: any /* TODO #9100 */) { return false; }
 }
 
 @Directive({selector: '[listenernoprevent]', host: {'(click)': 'onEvent($event)'}})
 @Injectable()
 class DirectiveListeningDomEventNoPrevent {
-  onEvent(event: any /** TODO #9100 */) { return true; }
+  onEvent(event: any /* TODO #9100 */) { return true; }
 }
 
 @Directive({selector: '[id]', inputs: ['id']})
@@ -2344,9 +2344,9 @@ class EventDir {
 @Directive({selector: '[static]'})
 @Injectable()
 class NeedsAttribute {
-  typeAttribute: any /** TODO #9100 */;
-  staticAttribute: any /** TODO #9100 */;
-  fooAttribute: any /** TODO #9100 */;
+  typeAttribute: any /* TODO #9100 */;
+  staticAttribute: any /* TODO #9100 */;
+  fooAttribute: any /* TODO #9100 */;
   constructor(
       @Attribute('type') typeAttribute: String, @Attribute('static') staticAttribute: String,
       @Attribute('foo') fooAttribute: String) {
@@ -2418,9 +2418,9 @@ class ToolbarComponent {
 @Injectable()
 class DirectiveWithTwoWayBinding {
   controlChange = new EventEmitter();
-  control: any /** TODO #9100 */ = null;
+  control: any /* TODO #9100 */ = null;
 
-  triggerChange(value: any /** TODO #9100 */) {
+  triggerChange(value: any /* TODO #9100 */) {
     ObservableWrapper.callEmit(this.controlChange, value);
   }
 }
@@ -2479,9 +2479,9 @@ class DirectiveProvidingInjectableInHostAndView {
 @Component({selector: 'directive-consuming-injectable', template: ''})
 @Injectable()
 class DirectiveConsumingInjectable {
-  injectable: any /** TODO #9100 */;
+  injectable: any /* TODO #9100 */;
 
-  constructor(@Host() @Inject(InjectableService) injectable: any /** TODO #9100 */) {
+  constructor(@Host() @Inject(InjectableService) injectable: any /* TODO #9100 */) {
     this.injectable = injectable;
   }
 }
@@ -2491,13 +2491,13 @@ class DirectiveConsumingInjectable {
 @Component({selector: 'directive-containing-directive-consuming-an-injectable'})
 @Injectable()
 class DirectiveContainingDirectiveConsumingAnInjectable {
-  directive: any /** TODO #9100 */;
+  directive: any /* TODO #9100 */;
 }
 
 @Component({selector: 'directive-consuming-injectable-unbounded', template: ''})
 @Injectable()
 class DirectiveConsumingInjectableUnbounded {
-  injectable: any /** TODO #9100 */;
+  injectable: any /* TODO #9100 */;
 
   constructor(
       injectable: InjectableService,
@@ -2531,7 +2531,7 @@ class GrandParentProvidingEventBus {
   constructor(bus: EventBus) { this.bus = bus; }
 }
 
-function createParentBus(peb: any /** TODO #9100 */) {
+function createParentBus(peb: any /* TODO #9100 */) {
   return new EventBus(peb, 'parent');
 }
 
@@ -2564,10 +2564,10 @@ class ChildConsumingEventBus {
 @Injectable()
 class SomeImperativeViewport {
   view: EmbeddedViewRef<Object>;
-  anchor: any /** TODO #9100 */;
+  anchor: any /* TODO #9100 */;
   constructor(
       public vc: ViewContainerRef, public templateRef: TemplateRef<Object>,
-      @Inject(ANCHOR_ELEMENT) anchor: any /** TODO #9100 */) {
+      @Inject(ANCHOR_ELEMENT) anchor: any /* TODO #9100 */) {
     this.view = null;
     this.anchor = anchor;
   }
@@ -2626,16 +2626,16 @@ class ComponentWithTemplate {
 
 @Directive({selector: 'with-prop-decorators'})
 class DirectiveWithPropDecorators {
-  target: any /** TODO #9100 */;
+  target: any /* TODO #9100 */;
 
   @Input('elProp') dirProp: string;
   @Output('elEvent') event = new EventEmitter();
 
   @HostBinding('attr.my-attr') myAttr: string;
   @HostListener('click', ['$event.target'])
-  onClick(target: any /** TODO #9100 */) { this.target = target; }
+  onClick(target: any /* TODO #9100 */) { this.target = target; }
 
-  fireEvent(msg: any /** TODO #9100 */) { ObservableWrapper.callEmit(this.event, msg); }
+  fireEvent(msg: any /* TODO #9100 */) { ObservableWrapper.callEmit(this.event, msg); }
 }
 
 @Component({selector: 'some-cmp'})

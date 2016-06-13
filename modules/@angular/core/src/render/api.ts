@@ -62,15 +62,15 @@ export abstract class Renderer {
       void;
 
   abstract setElementClass(renderElement: any, className: string, isAdd: boolean): any
-      /** TODO #9100 */;
+      /* TODO #9100 */;
 
   abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): any
-      /** TODO #9100 */;
+      /* TODO #9100 */;
 
   abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): any
-      /** TODO #9100 */;
+      /* TODO #9100 */;
 
-  abstract setText(renderNode: any, text: string): any /** TODO #9100 */;
+  abstract setText(renderNode: any, text: string): any /* TODO #9100 */;
 
   abstract animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],

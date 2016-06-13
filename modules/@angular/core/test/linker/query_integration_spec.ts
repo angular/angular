@@ -838,7 +838,7 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   }
 
   get child() { return this._child; }
-  logs: any[] /** TODO #9100 */ = [];
+  logs: any[] /* TODO #9100 */ = [];
 
   ngAfterContentInit() { this.logs.push(['init', isPresent(this.child) ? this.child.text : null]); }
 
@@ -867,7 +867,7 @@ class NeedsViewChild implements AfterViewInit,
   }
 
   get child() { return this._child; }
-  logs: any[] /** TODO #9100 */ = [];
+  logs: any[] /* TODO #9100 */ = [];
 
   ngAfterViewInit() { this.logs.push(['init', isPresent(this.child) ? this.child.text : null]); }
 
@@ -1106,7 +1106,7 @@ class NeedsViewContainerWithRead {
 
 @Component({selector: 'has-null-query-condition', template: '<div></div>'})
 class HasNullQueryCondition {
-  @ContentChildren(null) errorTrigger: any /** TODO #9100 */;
+  @ContentChildren(null) errorTrigger: any /* TODO #9100 */;
 }
 
 @Component({
@@ -1146,7 +1146,7 @@ class HasNullQueryCondition {
 @Injectable()
 class MyComp0 {
   shouldShow: boolean;
-  list: any /** TODO #9100 */;
+  list: any /* TODO #9100 */;
   constructor() {
     this.shouldShow = false;
     this.list = ['1d', '2d', '3d'];

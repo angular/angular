@@ -13,9 +13,9 @@ export function main() {
   describe('AsyncPipe', () => {
 
     describe('Observable', () => {
-      var emitter: any /** TODO #9100 */;
-      var pipe: any /** TODO #9100 */;
-      var ref: any /** TODO #9100 */;
+      var emitter: any /* TODO #9100 */;
+      var pipe: any /* TODO #9100 */;
+      var ref: any /* TODO #9100 */;
       var message = new Object();
 
       beforeEach(() => {

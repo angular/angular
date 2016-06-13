@@ -38,7 +38,7 @@ function _normalizeCommands(commands: any[]): _NormalizedNavigationCommands {
 
   let numberOfDoubleDots = 0;
   let isAbsolute = false;
-  let res: any[] /** TODO #9100 */ = [];
+  let res: any[] /* TODO #9100 */ = [];
 
   for (let i = 0; i < commands.length; ++i) {
     let c = commands[i];
@@ -170,8 +170,8 @@ function _update(node: TreeNode<UrlSegment>, commands: any[]): TreeNode<UrlSegme
 function _stringify(params: {[key: string]: any}): {[key: string]: string} {
   let res = {};
   StringMapWrapper.forEach(
-      params, (v: any /** TODO #9100 */, k: any /** TODO #9100 */) =>
-                  (res as any /** TODO #9100 */)[k] = v.toString());
+      params, (v: any /* TODO #9100 */, k: any /* TODO #9100 */) =>
+                  (res as any /* TODO #9100 */)[k] = v.toString());
   return res;
 }
 

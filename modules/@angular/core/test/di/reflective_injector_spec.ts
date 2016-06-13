@@ -33,7 +33,7 @@ class Car {
 
 @Injectable()
 class CarWithOptionalEngine {
-  engine: any /** TODO #9100 */;
+  engine: any /* TODO #9100 */;
   constructor(@Optional() engine: Engine) { this.engine = engine; }
 }
 
@@ -65,10 +65,10 @@ class CyclicEngine {
 }
 
 class NoAnnotations {
-  constructor(secretDependency: any /** TODO #9100 */) {}
+  constructor(secretDependency: any /* TODO #9100 */) {}
 }
 
-function factoryFn(a: any /** TODO #9100 */) {}
+function factoryFn(a: any /* TODO #9100 */) {}
 
 export function main() {
   var dynamicProviders = [
@@ -157,7 +157,7 @@ export function main() {
       });
 
       it('should provide to a factory', () => {
-        function sportsCarFactory(e: any /** TODO #9100 */) { return new SportsCar(e); }
+        function sportsCarFactory(e: any /* TODO #9100 */) { return new SportsCar(e); }
 
         var injector =
             createInjector([Engine, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
@@ -557,7 +557,7 @@ export function main() {
       it('should support overriding factory dependencies with dependency annotations', () => {
         var providers = ReflectiveInjector.resolve([{
           provide: 'token',
-          useFactory: (e: any /** TODO #9100 */) => 'result',
+          useFactory: (e: any /* TODO #9100 */) => 'result',
           deps: [[new InjectMetadata('dep'), new CustomDependencyMetadata()]]
         }]);
 
@@ -572,12 +572,12 @@ export function main() {
       it('should allow declaring dependencies with flat arrays', () => {
         var resolved = ReflectiveInjector.resolve([{
           provide: 'token',
-          useFactory: (e: any /** TODO #9100 */) => e,
+          useFactory: (e: any /* TODO #9100 */) => e,
           deps: [new InjectMetadata('dep')]
         }]);
         var nestedResolved = ReflectiveInjector.resolve([{
           provide: 'token',
-          useFactory: (e: any /** TODO #9100 */) => e,
+          useFactory: (e: any /* TODO #9100 */) => e,
           deps: [[new InjectMetadata('dep')]]
         }]);
         expect(resolved[0].resolvedFactories[0].dependencies[0].key.token)

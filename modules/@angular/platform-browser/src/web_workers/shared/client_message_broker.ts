@@ -43,7 +43,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   public _serializer: Serializer;
 
   constructor(
-      messageBus: MessageBus, _serializer: Serializer, public channel: any /** TODO #9100 */) {
+      messageBus: MessageBus, _serializer: Serializer, public channel: any /* TODO #9100 */) {
     super();
     this._sink = messageBus.to(channel);
     this._serializer = _serializer;
@@ -56,7 +56,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     var time: string = stringify(DateWrapper.toMillis(DateWrapper.now()));
     var iteration: number = 0;
     var id: string = name + time + stringify(iteration);
-    while (isPresent((this as any /** TODO #9100 */)._pending[id])) {
+    while (isPresent((this as any /* TODO #9100 */)._pending[id])) {
       id = `${name}${time}${iteration}`;
       iteration++;
     }
@@ -64,7 +64,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   }
 
   runOnService(args: UiArguments, returnType: Type): Promise<any> {
-    var fnArgs: any[] /** TODO #9100 */ = [];
+    var fnArgs: any[] /* TODO #9100 */ = [];
     if (isPresent(args.args)) {
       args.args.forEach(argument => {
         if (argument.type != null) {
@@ -100,7 +100,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     // TODO(jteplitz602): Create a class for these messages so we don't keep using StringMap #3685
     var message = {'method': args.method, 'args': fnArgs};
     if (id != null) {
-      (message as any /** TODO #9100 */)['id'] = id;
+      (message as any /* TODO #9100 */)['id'] = id;
     }
     ObservableWrapper.callEmit(this._sink, message);
 
@@ -149,7 +149,7 @@ class MessageData {
 }
 
 export class FnArg {
-  constructor(public value: any /** TODO #9100 */, public type: Type) {}
+  constructor(public value: any /* TODO #9100 */, public type: Type) {}
 }
 
 export class UiArguments {

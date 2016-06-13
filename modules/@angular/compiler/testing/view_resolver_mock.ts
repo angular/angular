@@ -72,7 +72,7 @@ export class MockViewResolver extends ViewResolver {
       view = super.resolve(component);
     }
 
-    var directives: any[] /** TODO #9100 */ = [];
+    var directives: any[] /* TODO #9100 */ = [];
     if (isPresent(view.directives)) {
       flattenArray(view.directives, directives);
     }

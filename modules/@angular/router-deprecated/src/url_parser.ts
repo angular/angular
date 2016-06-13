@@ -3,14 +3,13 @@ import {BaseException} from '../src/facade/exceptions';
 import {RegExpWrapper, isBlank, isPresent} from '../src/facade/lang';
 
 export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
-  var paramsArray: any[] /** TODO #9100 */ = [];
+  var paramsArray: any[] /* TODO #9100 */ = [];
   if (isBlank(urlParams)) {
     return [];
   }
-  StringMapWrapper.forEach(
-      urlParams, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
-        paramsArray.push((value === true) ? key : key + '=' + value);
-      });
+  StringMapWrapper.forEach(urlParams, (value: any /* TODO #9100 */, key: any /* TODO #9100 */) => {
+    paramsArray.push((value === true) ? key : key + '=' + value);
+  });
   return paramsArray;
 }
 
@@ -129,7 +128,7 @@ export class UrlParser {
       // TODO: should these params just be dropped?
       this.parseMatrixParams();
     }
-    var child: any /** TODO #9100 */ = null;
+    var child: any /* TODO #9100 */ = null;
     if (this.peekStartsWith('/') && !this.peekStartsWith('//')) {
       this.capture('/');
       child = this.parseSegment();

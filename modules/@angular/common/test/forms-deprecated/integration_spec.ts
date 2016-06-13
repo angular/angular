@@ -561,7 +561,7 @@ export function main() {
                       </select>
                   </div>`;
 
-             var fixture: any /** TODO #9100 */;
+             var fixture: any /* TODO #9100 */;
              tcb.overrideTemplate(MyComp8, t)
                  .createAsync(MyComp8)
                  .then((compFixture) => fixture = compFixture);
@@ -897,7 +897,7 @@ export function main() {
                     <input type="text" ngControl="login" uniq-login-validator="expected">
                  </div>`;
 
-           var rootTC: any /** TODO #9100 */;
+           var rootTC: any /* TODO #9100 */;
            tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((root) => rootTC = root);
            tick();
 
@@ -952,7 +952,7 @@ export function main() {
                   <input type="text" ngControl="login">
                  </div>`;
 
-           var fixture: any /** TODO #9100 */;
+           var fixture: any /* TODO #9100 */;
            tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((root) => fixture = root);
            tick();
 
@@ -1465,17 +1465,17 @@ export function main() {
   host: {'(input)': 'handleOnInput($event.target.value)', '[value]': 'value'}
 })
 class WrappedValue implements ControlValueAccessor {
-  value: any /** TODO #9100 */;
+  value: any /* TODO #9100 */;
   onChange: Function;
 
   constructor(cd: NgControl) { cd.valueAccessor = this; }
 
-  writeValue(value: any /** TODO #9100 */) { this.value = `!${value}!`; }
+  writeValue(value: any /* TODO #9100 */) { this.value = `!${value}!`; }
 
-  registerOnChange(fn: any /** TODO #9100 */) { this.onChange = fn; }
-  registerOnTouched(fn: any /** TODO #9100 */) {}
+  registerOnChange(fn: any /* TODO #9100 */) { this.onChange = fn; }
+  registerOnTouched(fn: any /* TODO #9100 */) {}
 
-  handleOnInput(value: any /** TODO #9100 */) {
+  handleOnInput(value: any /* TODO #9100 */) {
     this.onChange(value.substring(1, value.length - 1));
   }
 }
@@ -1487,11 +1487,11 @@ class MyInput implements ControlValueAccessor {
 
   constructor(cd: NgControl) { cd.valueAccessor = this; }
 
-  writeValue(value: any /** TODO #9100 */) { this.value = `!${value}!`; }
+  writeValue(value: any /* TODO #9100 */) { this.value = `!${value}!`; }
 
-  registerOnChange(fn: any /** TODO #9100 */) { ObservableWrapper.subscribe(this.onInput, fn); }
+  registerOnChange(fn: any /* TODO #9100 */) { ObservableWrapper.subscribe(this.onInput, fn); }
 
-  registerOnTouched(fn: any /** TODO #9100 */) {}
+  registerOnTouched(fn: any /* TODO #9100 */) {}
 
   dispatchChangeEvent() {
     ObservableWrapper.callEmit(this.onInput, this.value.substring(1, this.value.length - 1));
@@ -1499,7 +1499,7 @@ class MyInput implements ControlValueAccessor {
 }
 
 function uniqLoginAsyncValidator(expectedValue: string) {
-  return (c: any /** TODO #9100 */) => {
+  return (c: any /* TODO #9100 */) => {
     var completer = PromiseWrapper.completer();
     var res = (c.value == expectedValue) ? null : {'uniqLogin': true};
     completer.resolve(res);
@@ -1533,9 +1533,9 @@ class LoginIsEmptyValidator {
   }]
 })
 class UniqLoginValidator implements Validator {
-  @Input('uniq-login-validator') expected: any /** TODO #9100 */;
+  @Input('uniq-login-validator') expected: any /* TODO #9100 */;
 
-  validate(c: any /** TODO #9100 */) { return uniqLoginAsyncValidator(this.expected)(c); }
+  validate(c: any /* TODO #9100 */) { return uniqLoginAsyncValidator(this.expected)(c); }
 }
 
 @Component({
@@ -1555,7 +1555,7 @@ class MyComp8 {
   customTrackBy(index: number, obj: any): number { return index; };
 }
 
-function sortedClassList(el: any /** TODO #9100 */) {
+function sortedClassList(el: any /* TODO #9100 */) {
   var l = getDOM().classList(el);
   ListWrapper.sort(l);
   return l;

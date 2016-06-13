@@ -13,7 +13,7 @@ import {AsyncRoute, AuxRoute, Redirect, Route, RouteConfig} from '../../src/rout
 
 import {RootCmp, TEST_ROUTER_PROVIDERS, compile} from './util';
 
-var cmpInstanceCount: any /** TODO #9100 */;
+var cmpInstanceCount: any /* TODO #9100 */;
 var log: string[];
 var eventBus: EventEmitter<any>;
 var completer: PromiseCompleter<any>;

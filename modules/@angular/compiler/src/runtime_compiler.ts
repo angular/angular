@@ -193,8 +193,8 @@ class CompiledTemplate {
   proxyViewFactory: Function;
   constructor() {
     this.proxyViewFactory =
-        (viewUtils: any /** TODO #9100 */, childInjector: any /** TODO #9100 */,
-         contextEl: any /** TODO #9100 */) => this.viewFactory(viewUtils, childInjector, contextEl);
+        (viewUtils: any /* TODO #9100 */, childInjector: any /* TODO #9100 */,
+         contextEl: any /* TODO #9100 */) => this.viewFactory(viewUtils, childInjector, contextEl);
   }
 
   init(viewFactory: Function) { this.viewFactory = viewFactory; }

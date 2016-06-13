@@ -5,10 +5,10 @@ import {RegExpWrapper} from '../../router/src/facade/lang';
 import {beforeEach, containsRegexp, ddescribe, describe, expect, iit, it, tick} from '../testing';
 
 class TestObj {
-  prop: any /** TODO #9100 */;
-  constructor(prop: any /** TODO #9100 */) { this.prop = prop; }
+  prop: any /* TODO #9100 */;
+  constructor(prop: any /* TODO #9100 */) { this.prop = prop; }
   someFunc(): number { return -1; }
-  someComplexFunc(a: any /** TODO #9100 */) { return a; }
+  someComplexFunc(a: any /* TODO #9100 */) { return a; }
 }
 
 class SpyTestObj extends SpyObject {
@@ -69,7 +69,7 @@ export function main() {
     });
 
     describe('spy objects', () => {
-      var spyObj: any /** TODO #9100 */;
+      var spyObj: any /* TODO #9100 */;
 
       beforeEach(() => { spyObj = <any>new SpyTestObj(); });
 
@@ -78,7 +78,7 @@ export function main() {
 
       it('should record function calls', () => {
         spyObj.spy('someFunc')
-            .andCallFake((a: any /** TODO #9100 */, b: any /** TODO #9100 */) => {return a + b});
+            .andCallFake((a: any /* TODO #9100 */, b: any /* TODO #9100 */) => {return a + b});
 
         expect(spyObj.someFunc(1, 2)).toEqual(3);
         expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(1, 2);

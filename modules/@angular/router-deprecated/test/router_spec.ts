@@ -314,7 +314,7 @@ export function main() {
 }
 
 
-function stringifyInstruction(instruction: any /** TODO #9100 */): string {
+function stringifyInstruction(instruction: any /* TODO #9100 */): string {
   return instruction.toRootUrl();
 }
 
@@ -330,12 +330,11 @@ class DummyParentComp {
 
 function makeDummyOutlet(): RouterOutlet {
   var ref = new SpyRouterOutlet();
-  ref.spy('canActivate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
-  ref.spy('routerCanReuse')
-      .andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(false));
+  ref.spy('canActivate').andCallFake((_: any /* TODO #9100 */) => PromiseWrapper.resolve(true));
+  ref.spy('routerCanReuse').andCallFake((_: any /* TODO #9100 */) => PromiseWrapper.resolve(false));
   ref.spy('routerCanDeactivate')
-      .andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
-  ref.spy('activate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
+      .andCallFake((_: any /* TODO #9100 */) => PromiseWrapper.resolve(true));
+  ref.spy('activate').andCallFake((_: any /* TODO #9100 */) => PromiseWrapper.resolve(true));
   return <any>ref;
 }
 

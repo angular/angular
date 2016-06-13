@@ -9,9 +9,9 @@ import {JsonPipe} from '@angular/common';
 export function main() {
   describe('JsonPipe', () => {
     var regNewLine = '\n';
-    var inceptionObj: any /** TODO #9100 */;
-    var inceptionObjString: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var inceptionObj: any /* TODO #9100 */;
+    var inceptionObjString: any /* TODO #9100 */;
+    var pipe: any /* TODO #9100 */;
 
     function normalize(obj: string): string { return StringWrapper.replace(obj, regNewLine, ''); }
 

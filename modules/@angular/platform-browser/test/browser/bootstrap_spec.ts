@@ -31,16 +31,16 @@ class HelloRootCmp2 {
 
 @Component({selector: 'hello-app', template: ''})
 class HelloRootCmp3 {
-  appBinding: any /** TODO #9100 */;
+  appBinding: any /* TODO #9100 */;
 
-  constructor(@Inject('appBinding') appBinding: any /** TODO #9100 */) {
+  constructor(@Inject('appBinding') appBinding: any /* TODO #9100 */) {
     this.appBinding = appBinding;
   }
 }
 
 @Component({selector: 'hello-app', template: ''})
 class HelloRootCmp4 {
-  appRef: any /** TODO #9100 */;
+  appRef: any /* TODO #9100 */;
 
   constructor(@Inject(ApplicationRef) appRef: ApplicationRef) { this.appRef = appRef; }
 }
@@ -71,13 +71,13 @@ class _ArrayLogger {
 
 
 class DummyConsole implements Console {
-  log(message: any /** TODO #9100 */) {}
-  warn(message: any /** TODO #9100 */) {}
+  log(message: any /* TODO #9100 */) {}
+  warn(message: any /* TODO #9100 */) {}
 }
 
 export function main() {
-  var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, el2: any /** TODO #9100 */,
-      testProviders: any /** TODO #9100 */, lightDom: any /** TODO #9100 */;
+  var fakeDoc: any /* TODO #9100 */, el: any /* TODO #9100 */, el2: any /* TODO #9100 */,
+      testProviders: any /* TODO #9100 */, lightDom: any /* TODO #9100 */;
 
   describe('bootstrap factory method', () => {
     beforeEach(() => {

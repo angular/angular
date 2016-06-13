@@ -44,18 +44,18 @@ export class BrowserGetTestability implements GetTestability {
 
     global.getAllAngularRootElements = () => registry.getAllRootElements();
 
-    var whenAllStable = (callback: any /** TODO #9100 */) => {
+    var whenAllStable = (callback: any /* TODO #9100 */) => {
       var testabilities = global.getAllAngularTestabilities();
       var count = testabilities.length;
       var didWork = false;
-      var decrement = function(didWork_: any /** TODO #9100 */) {
+      var decrement = function(didWork_: any /* TODO #9100 */) {
         didWork = didWork || didWork_;
         count--;
         if (count == 0) {
           callback(didWork);
         }
       };
-      testabilities.forEach(function(testability: any /** TODO #9100 */) {
+      testabilities.forEach(function(testability: any /* TODO #9100 */) {
         testability.whenStable(decrement);
       });
     };

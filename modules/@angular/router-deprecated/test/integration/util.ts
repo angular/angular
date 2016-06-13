@@ -37,13 +37,13 @@ export var TEST_ROUTER_PROVIDERS: any[] = [
   {provide: ROUTER_PRIMARY_COMPONENT, useValue: RootCmp}, {provide: Router, useClass: RootRouter}
 ];
 
-export function clickOnElement(anchorEl: any /** TODO #9100 */) {
+export function clickOnElement(anchorEl: any /* TODO #9100 */) {
   var dispatchedEvent = getDOM().createMouseEvent('click');
   getDOM().dispatchEvent(anchorEl, dispatchedEvent);
   return dispatchedEvent;
 }
 
-export function getHref(elt: any /** TODO #9100 */) {
+export function getHref(elt: any /* TODO #9100 */) {
   return getDOM().getAttribute(elt, 'href');
 }
 
@@ -52,7 +52,7 @@ export function getHref(elt: any /** TODO #9100 */) {
  * Router integration suite DSL
  */
 
-var specNameBuilder: any[] /** TODO #9100 */ = [];
+var specNameBuilder: any[] /* TODO #9100 */ = [];
 
 // we add the specs themselves onto this map
 export var specs = {};
@@ -100,7 +100,7 @@ function descriptionToSpecName(description: string): string {
 export function itShouldRoute() {
   var specSuiteName = spaceCaseToCamelCase(specNameBuilder.join(' '));
 
-  var spec = (specs as any /** TODO #9100 */)[specSuiteName];
+  var spec = (specs as any /* TODO #9100 */)[specSuiteName];
   if (isBlank(spec)) {
     throw new BaseException(`Router integration spec suite "${specSuiteName}" was not found.`);
   } else {

@@ -1,7 +1,7 @@
 declare var System: any;
 
 
-(function(global: any /** TODO #9100 */) {
+(function(global: any /* TODO #9100 */) {
 
   writeScriptTag('/all/playground/vendor/es6-shim.js');
   writeScriptTag('/all/playground/vendor/zone.js');
@@ -59,11 +59,13 @@ declare var System: any;
 
 
     // BOOTSTRAP the app!
-    System.import('index').then(function(m: any /** TODO #9100 */) { m.main(); }, console.error.bind(console));
+    System.import('index').then(function(m: any /* TODO #9100 */) {
+      m.main();
+    }, console.error.bind(console));
   }
 
 
-  function writeScriptTag(scriptUrl: any /** TODO #9100 */, onload?: any /** TODO #9100 */) {
+  function writeScriptTag(scriptUrl: any /* TODO #9100 */, onload?: any /* TODO #9100 */) {
     document.write(`<script src="${scriptUrl}" onload="${onload}"></script>`);
   }
 }(window));

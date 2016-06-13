@@ -25,7 +25,7 @@ var MOCK_SCHEMA_REGISTRY = [{
 let zeConsole = console;
 
 export function main() {
-  var ngIf: any /** TODO #9100 */;
+  var ngIf: any /* TODO #9100 */;
   var parse:
       (template: string, directives: CompileDirectiveMetadata[], pipes?: CompilePipeMetadata[]) =>
           TemplateAst[];
@@ -441,10 +441,10 @@ export function main() {
       });
 
       describe('providers', () => {
-        var nextProviderId: any /** TODO #9100 */;
+        var nextProviderId: any /* TODO #9100 */;
 
         function createToken(value: string): CompileTokenMetadata {
-          var token: any /** TODO #9100 */;
+          var token: any /* TODO #9100 */;
           if (value.startsWith('type:')) {
             token = new CompileTokenMetadata({
               identifier:
@@ -970,7 +970,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
     });
 
     describe('content projection', () => {
-      var compCounter: any /** TODO #9100 */;
+      var compCounter: any /* TODO #9100 */;
       beforeEach(() => { compCounter = 0; });
 
       function createComp(

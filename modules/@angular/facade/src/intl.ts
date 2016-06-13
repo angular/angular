@@ -128,12 +128,12 @@ function hour12Modify(
 
 function digitCondition(prop: string, len: number): Intl.DateTimeFormatOptions {
   var result = {};
-  (result as any /** TODO #9100 */)[prop] = len == 2 ? '2-digit' : 'numeric';
+  (result as any /* TODO #9100 */)[prop] = len == 2 ? '2-digit' : 'numeric';
   return result;
 }
 function nameCondition(prop: string, len: number): Intl.DateTimeFormatOptions {
   var result = {};
-  (result as any /** TODO #9100 */)[prop] = len < 4 ? 'short' : 'long';
+  (result as any /* TODO #9100 */)[prop] = len < 4 ? 'short' : 'long';
   return result;
 }
 
@@ -157,11 +157,11 @@ var datePartsFormatterCache: Map<string, string[]> = new Map<string, string[]>()
 
 function dateFormatter(format: string, date: Date, locale: string): string {
   var text = '';
-  var match: any /** TODO #9100 */;
-  var fn: any /** TODO #9100 */;
+  var match: any /* TODO #9100 */;
+  var fn: any /* TODO #9100 */;
   var parts: string[] = [];
-  if ((PATTERN_ALIASES as any /** TODO #9100 */)[format]) {
-    return (PATTERN_ALIASES as any /** TODO #9100 */)[format](date, locale);
+  if ((PATTERN_ALIASES as any /* TODO #9100 */)[format]) {
+    return (PATTERN_ALIASES as any /* TODO #9100 */)[format](date, locale);
   }
 
 
@@ -185,7 +185,7 @@ function dateFormatter(format: string, date: Date, locale: string): string {
   }
 
   parts.forEach(part => {
-    fn = (DATE_FORMATS as any /** TODO #9100 */)[part];
+    fn = (DATE_FORMATS as any /* TODO #9100 */)[part];
     text += fn ? fn(date, locale) :
                  part === '\'\'' ? '\'' : part.replace(/(^'|'$)/g, '').replace(/''/g, '\'');
   });
@@ -195,8 +195,8 @@ function dateFormatter(format: string, date: Date, locale: string): string {
 
 var slice = [].slice;
 function concat(
-    array1: any /** TODO #9100 */, array2: any /** TODO #9100 */,
-    index: any /** TODO #9100 */): string[] {
+    array1: any /* TODO #9100 */, array2: any /* TODO #9100 */,
+    index: any /* TODO #9100 */): string[] {
   return array1.concat(slice.call(array2, index));
 }
 

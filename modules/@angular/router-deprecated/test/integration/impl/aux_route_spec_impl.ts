@@ -16,11 +16,11 @@ function getLinkElement(rtc: ComponentFixture<any>, linkIndex: number = 0) {
 function auxRoutes() {
   var tcb: TestComponentBuilder;
   var fixture: ComponentFixture<any>;
-  var rtr: any /** TODO #9100 */;
+  var rtr: any /* TODO #9100 */;
 
   beforeEach(inject(
       [TestComponentBuilder, Router],
-      (tcBuilder: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
+      (tcBuilder: any /* TODO #9100 */, router: any /* TODO #9100 */) => {
         tcb = tcBuilder;
         rtr = router;
       }));
@@ -80,7 +80,7 @@ function auxRoutes() {
   it('should navigate from a link click',
      inject(
          [AsyncTestCompleter, Location],
-         (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
+         (async: AsyncTestCompleter, location: any /* TODO #9100 */) => {
            compile(
                tcb,
                `<a [routerLink]="['/', ['Modal']]">open modal</a> | <a [routerLink]="['/Hello']">hello</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
@@ -96,7 +96,7 @@ function auxRoutes() {
 
                  var navCount = 0;
 
-                 rtr.subscribe((_: any /** TODO #9100 */) => {
+                 rtr.subscribe((_: any /* TODO #9100 */) => {
                    navCount += 1;
                    fixture.detectChanges();
                    if (navCount == 1) {
@@ -129,11 +129,11 @@ function auxRoutes() {
 function auxRoutesWithAPrimaryRoute() {
   var tcb: TestComponentBuilder;
   var fixture: ComponentFixture<any>;
-  var rtr: any /** TODO #9100 */;
+  var rtr: any /* TODO #9100 */;
 
   beforeEach(inject(
       [TestComponentBuilder, Router],
-      (tcBuilder: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
+      (tcBuilder: any /* TODO #9100 */, router: any /* TODO #9100 */) => {
         tcb = tcBuilder;
         rtr = router;
       }));
@@ -193,7 +193,7 @@ function auxRoutesWithAPrimaryRoute() {
   it('should navigate from a link click',
      inject(
          [AsyncTestCompleter, Location],
-         (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
+         (async: AsyncTestCompleter, location: any /* TODO #9100 */) => {
            compile(
                tcb,
                `<a [routerLink]="['/Hello', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
@@ -207,7 +207,7 @@ function auxRoutesWithAPrimaryRoute() {
                  expect(fixture.debugElement.nativeElement)
                      .toHaveText('open modal | main {} | aux {}');
 
-                 rtr.subscribe((_: any /** TODO #9100 */) => {
+                 rtr.subscribe((_: any /* TODO #9100 */) => {
                    fixture.detectChanges();
                    expect(fixture.debugElement.nativeElement)
                        .toHaveText('open modal | main {hello} | aux {modal}');
@@ -221,8 +221,8 @@ function auxRoutesWithAPrimaryRoute() {
 }
 
 export function registerSpecs() {
-  (specs as any /** TODO #9100 */)['auxRoutes'] = auxRoutes;
-  (specs as any /** TODO #9100 */)['auxRoutesWithAPrimaryRoute'] = auxRoutesWithAPrimaryRoute;
+  (specs as any /* TODO #9100 */)['auxRoutes'] = auxRoutes;
+  (specs as any /* TODO #9100 */)['auxRoutesWithAPrimaryRoute'] = auxRoutesWithAPrimaryRoute;
 }
 
 

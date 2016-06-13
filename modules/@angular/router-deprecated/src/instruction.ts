@@ -199,7 +199,7 @@ export abstract class Instruction {
 
   /** @internal */
   _stringifyAux(): string {
-    var routes: any[] /** TODO #9100 */ = [];
+    var routes: any[] /* TODO #9100 */ = [];
     StringMapWrapper.forEach(this.auxInstruction, (auxInstruction: Instruction, _: string) => {
       routes.push(auxInstruction._stringifyPathMatrixAux());
     });
@@ -316,7 +316,7 @@ export class ComponentInstruction {
    */
   constructor(
       public urlPath: string, public urlParams: string[], data: RouteData,
-      public componentType: any /** TODO #9100 */, public terminal: boolean,
+      public componentType: any /* TODO #9100 */, public terminal: boolean,
       public specificity: string, public params: {[key: string]: string} = null,
       public routeName: string) {
     this.routeData = isPresent(data) ? data : BLANK_ROUTE_DATA;

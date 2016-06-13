@@ -285,8 +285,8 @@ export class ApplicationRef_ extends ApplicationRef {
     zone.run(() => { this._exceptionHandler = _injector.get(ExceptionHandler); });
     this._asyncInitDonePromise = this.run(() => {
       let inits: Function[] = _injector.get(APP_INITIALIZER, null);
-      var asyncInitResults: any[] /** TODO #9100 */ = [];
-      var asyncInitDonePromise: any /** TODO #9100 */;
+      var asyncInitResults: any[] /* TODO #9100 */ = [];
+      var asyncInitDonePromise: any /* TODO #9100 */;
       if (isPresent(inits)) {
         for (var i = 0; i < inits.length; i++) {
           var initResult = inits[i]();
@@ -330,7 +330,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   run(callback: Function): any {
     var zone = this.injector.get(NgZone);
-    var result: any /** TODO #9100 */;
+    var result: any /* TODO #9100 */;
     // Note: Don't use zone.runGuarded as we want to know about
     // the thrown exception!
     // Note: the completer needs to be created outside

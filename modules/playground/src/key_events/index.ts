@@ -18,12 +18,12 @@ class KeyEventsApp {
   lastKey: string = '(none)';
   shiftEnter: boolean = false;
 
-  onKeyDown(event: any /** TODO #9100 */): void {
+  onKeyDown(event: any /* TODO #9100 */): void {
     this.lastKey = KeyEventsPlugin.getEventFullKey(event);
     event.preventDefault();
   }
 
-  onShiftEnter(event: any /** TODO #9100 */): void {
+  onShiftEnter(event: any /* TODO #9100 */): void {
     this.shiftEnter = true;
     event.preventDefault();
   }

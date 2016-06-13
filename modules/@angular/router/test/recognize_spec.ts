@@ -14,7 +14,7 @@ export function main() {
     it('should handle position args',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('b/paramB/c/paramC/d'), emptyRouteTree)
                  .then(r => {
                    let a = r.root;
@@ -40,7 +40,7 @@ export function main() {
     it('should support empty routes',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('f'), emptyRouteTree).then(r => {
                let a = r.root;
                expect(stringifyUrl(a.urlSegments)).toEqual(['']);
@@ -61,7 +61,7 @@ export function main() {
     it('should handle aux routes',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('b/paramB(/d//right:d)'), emptyRouteTree)
                  .then(r => {
                    let c = r.children(r.root);
@@ -84,7 +84,7 @@ export function main() {
     it('should error when two segments with the same outlet name',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('b/paramB(right:d//right:e)'), emptyRouteTree)
                  .catch(e => {
                    expect(e.message).toEqual(
@@ -96,7 +96,7 @@ export function main() {
     it('should handle nested aux routes',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('b/paramB(/d(right:e))'), emptyRouteTree)
                  .then(r => {
                    let c = r.children(r.root);
@@ -119,7 +119,7 @@ export function main() {
     it('should handle non top-level aux routes',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('b/paramB/d(e)'), emptyRouteTree).then(r => {
                let c = r.children(r.firstChild(r.root));
                expect(stringifyUrl(c[0].urlSegments)).toEqual(['d']);
@@ -137,7 +137,7 @@ export function main() {
     it('should handle matrix parameters',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(
                  resolver, ComponentA, tree('b/paramB;b1=1;b2=2(/d;d1=1;d2=2)'), emptyRouteTree)
                  .then(r => {
@@ -152,7 +152,7 @@ export function main() {
     it('should match a wildcard',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentG, tree('a;aa=1/b;bb=2'), emptyRouteTree).then(r => {
                let c = r.children(r.root);
                expect(c.length).toEqual(1);
@@ -166,7 +166,7 @@ export function main() {
     it('should error when no matching routes',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('invalid'), emptyRouteTree).catch(e => {
                expect(e.message).toContain('Cannot match any routes');
                async.done();
@@ -176,7 +176,7 @@ export function main() {
     it('should handle no matching routes (too short)',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('b'), emptyRouteTree).catch(e => {
                expect(e.message).toContain('Cannot match any routes');
                async.done();
@@ -186,7 +186,7 @@ export function main() {
     it('should error when a component doesn\'t have @Routes',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('d/invalid'), emptyRouteTree).catch(e => {
                expect(e.message).toEqual(
                    'Component \'ComponentD\' does not have route configuration');
@@ -197,7 +197,7 @@ export function main() {
     it('should reuse existing segments',
        inject(
            [AsyncTestCompleter, ComponentResolver],
-           (async: AsyncTestCompleter, resolver: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, resolver: any /* TODO #9100 */) => {
              recognize(resolver, ComponentA, tree('/b/1/d'), emptyRouteTree).then(t1 => {
                recognize(resolver, ComponentA, tree('/b/1/e'), t1).then(t2 => {
                  expect(t1.root).toBe(t2.root);

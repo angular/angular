@@ -22,7 +22,7 @@ export class ReflectiveDependency {
   }
 }
 
-const _EMPTY_LIST: any[] /** TODO #9100 */ = /*@ts2dart_const*/[];
+const _EMPTY_LIST: any[] /* TODO #9100 */ = /*@ts2dart_const*/[];
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.
@@ -95,13 +95,13 @@ export class ResolvedReflectiveFactory {
  */
 export function resolveReflectiveFactory(provider: Provider): ResolvedReflectiveFactory {
   var factoryFn: Function;
-  var resolvedDeps: any /** TODO #9100 */;
+  var resolvedDeps: any /* TODO #9100 */;
   if (isPresent(provider.useClass)) {
     var useClass = resolveForwardRef(provider.useClass);
     factoryFn = reflector.factory(useClass);
     resolvedDeps = _dependenciesFor(useClass);
   } else if (isPresent(provider.useExisting)) {
-    factoryFn = (aliasInstance: any /** TODO #9100 */) => aliasInstance;
+    factoryFn = (aliasInstance: any /* TODO #9100 */) => aliasInstance;
     resolvedDeps = [ReflectiveDependency.fromKey(ReflectiveKey.get(provider.useExisting))];
   } else if (isPresent(provider.useFactory)) {
     factoryFn = provider.useFactory;
@@ -159,7 +159,7 @@ export function mergeResolvedReflectiveProviders(
         normalizedProvidersMap.set(provider.key.id, provider);
       }
     } else {
-      var resolvedProvider: any /** TODO #9100 */;
+      var resolvedProvider: any /* TODO #9100 */;
       if (provider.multiProvider) {
         resolvedProvider = new ResolvedReflectiveProvider_(
             provider.key, ListWrapper.clone(provider.resolvedFactories), provider.multiProvider);
@@ -219,10 +219,10 @@ function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
 }
 
 function _extractToken(
-    typeOrFunc: any /** TODO #9100 */, metadata: any /** TODO #9100 */ /*any[] | any*/,
+    typeOrFunc: any /* TODO #9100 */, metadata: any /* TODO #9100 */ /*any[] | any*/,
     params: any[][]): ReflectiveDependency {
-  var depProps: any[] /** TODO #9100 */ = [];
-  var token: any /** TODO #9100 */ = null;
+  var depProps: any[] /* TODO #9100 */ = [];
+  var token: any /* TODO #9100 */ = null;
   var optional = false;
 
   if (!isArray(metadata)) {
@@ -233,8 +233,8 @@ function _extractToken(
     }
   }
 
-  var lowerBoundVisibility: any /** TODO #9100 */ = null;
-  var upperBoundVisibility: any /** TODO #9100 */ = null;
+  var lowerBoundVisibility: any /* TODO #9100 */ = null;
+  var upperBoundVisibility: any /* TODO #9100 */ = null;
 
   for (var i = 0; i < metadata.length; ++i) {
     var paramMetadata = metadata[i];
@@ -275,9 +275,9 @@ function _extractToken(
 }
 
 function _createDependency(
-    token: any /** TODO #9100 */, optional: any /** TODO #9100 */,
-    lowerBoundVisibility: any /** TODO #9100 */, upperBoundVisibility: any /** TODO #9100 */,
-    depProps: any /** TODO #9100 */): ReflectiveDependency {
+    token: any /* TODO #9100 */, optional: any /* TODO #9100 */,
+    lowerBoundVisibility: any /* TODO #9100 */, upperBoundVisibility: any /* TODO #9100 */,
+    depProps: any /* TODO #9100 */): ReflectiveDependency {
   return new ReflectiveDependency(
       ReflectiveKey.get(token), optional, lowerBoundVisibility, upperBoundVisibility, depProps);
 }

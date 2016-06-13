@@ -170,6 +170,6 @@ export class Request {
 
 const noop = function() {};
 const w = typeof window == 'object' ? window : noop;
-const FormData = (w as any /** TODO #9100 */)['FormData'] || noop;
-const Blob = (w as any /** TODO #9100 */)['Blob'] || noop;
-const ArrayBuffer = (w as any /** TODO #9100 */)['ArrayBuffer'] || noop;
+const FormData = (w as any /* TODO #9100 */)['FormData'] || noop;
+const Blob = (w as any /* TODO #9100 */)['Blob'] || noop;
+const ArrayBuffer = (w as any /* TODO #9100 */)['ArrayBuffer'] || noop;

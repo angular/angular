@@ -54,7 +54,7 @@ export function main() {
     if (!browserDetection.isEdge) {
       it('delivers next and error events synchronously',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           let log: any[] /** TODO #9100 */ = [];
+           let log: any[] /* TODO #9100 */ = [];
            ObservableWrapper.subscribe(
                emitter,
                (x) => {
@@ -74,7 +74,7 @@ export function main() {
          }));
 
       it('delivers next and complete events synchronously', () => {
-        let log: any[] /** TODO #9100 */ = [];
+        let log: any[] /* TODO #9100 */ = [];
         ObservableWrapper.subscribe(
             emitter,
             (x) => {
@@ -98,7 +98,7 @@ export function main() {
     it('delivers events asynchronously when forced to async mode',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var e = new EventEmitter(true);
-         var log: any[] /** TODO #9100 */ = [];
+         var log: any[] /* TODO #9100 */ = [];
          ObservableWrapper.subscribe(e, (x) => {
            log.push(x);
            expect(log).toEqual([1, 3, 2]);

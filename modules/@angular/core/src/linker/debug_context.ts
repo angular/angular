@@ -62,8 +62,8 @@ export class DebugContext implements RenderDebugInfo {
     if (isPresent(staticNodeInfo)) {
       var refs = staticNodeInfo.refTokens;
       StringMapWrapper.forEach(
-          refs, (refToken: any /** TODO #9100 */, refName: any /** TODO #9100 */) => {
-            var varValue: any /** TODO #9100 */;
+          refs, (refToken: any /* TODO #9100 */, refName: any /* TODO #9100 */) => {
+            var varValue: any /* TODO #9100 */;
             if (isBlank(refToken)) {
               varValue =
                   isPresent(this._view.allNodes) ? this._view.allNodes[this._nodeIndex] : null;

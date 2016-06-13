@@ -11,7 +11,7 @@ import {AppView} from './view';
 export abstract class ViewRef {
   get destroyed(): boolean { return <boolean>unimplemented(); }
 
-  abstract onDestroy(callback: Function): any /** TODO #9100 */;
+  abstract onDestroy(callback: Function): any /* TODO #9100 */;
 }
 
 /**
@@ -76,7 +76,7 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
   /**
    * Destroys the view and all of the data structures associated with it.
    */
-  abstract destroy(): any /** TODO #9100 */;
+  abstract destroy(): any /* TODO #9100 */;
 }
 
 export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {

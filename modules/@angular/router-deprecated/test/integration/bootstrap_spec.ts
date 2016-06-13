@@ -20,8 +20,8 @@ import {MockApplicationRef} from '@angular/core/testing';
 
 // noinspection JSAnnotator
 class DummyConsole implements Console {
-  log(message: any /** TODO #9100 */) {}
-  warn(message: any /** TODO #9100 */) {}
+  log(message: any /* TODO #9100 */) {}
+  warn(message: any /* TODO #9100 */) {}
 }
 
 export function main() {
@@ -46,7 +46,7 @@ export function main() {
            {provide: DOCUMENT, useValue: fakeDoc}, {provide: Console, useClass: DummyConsole}
          ]).then((applicationRef) => {
            var router = applicationRef.instance.router;
-           router.subscribe((_: any /** TODO #9100 */) => {
+           router.subscribe((_: any /* TODO #9100 */) => {
              expect(el).toHaveText('outer { hello }');
              expect(applicationRef.instance.location.path()).toEqual('');
              async.done();
@@ -89,7 +89,7 @@ export function main() {
                    ['/parent/child', 'root { parent { hello } }', false]
                  ];
 
-                 router.subscribe((_: any /** TODO #9100 */) => {
+                 router.subscribe((_: any /* TODO #9100 */) => {
                    var location = fixture.debugElement.componentInstance.location;
                    var element = fixture.debugElement.nativeElement;
                    var path = location.path();
@@ -134,7 +134,7 @@ export function main() {
 
                tcb.createAsync(HierarchyAppCmp).then((fixture) => {
                  var router = fixture.debugElement.componentInstance.router;
-                 router.subscribe((_: any /** TODO #9100 */) => {
+                 router.subscribe((_: any /* TODO #9100 */) => {
                    expect(fixture.debugElement.nativeElement)
                        .toHaveText('root { parent { hello } }');
                    expect(fixture.debugElement.componentInstance.location.path())
@@ -155,7 +155,7 @@ export function main() {
 
                  tcb.createAsync(HierarchyAppCmp).then((fixture) => {
                    var router = fixture.debugElement.componentInstance.router;
-                   router.subscribe((_: any /** TODO #9100 */) => {
+                   router.subscribe((_: any /* TODO #9100 */) => {
                      expect(fixture.debugElement.nativeElement)
                          .toHaveText('root { parent { hello } }');
                      expect(fixture.debugElement.componentInstance.location.path())
@@ -179,7 +179,7 @@ export function main() {
              (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
                tcb.createAsync(QueryStringAppCmp).then((fixture) => {
                  var router = fixture.debugElement.componentInstance.router;
-                 router.subscribe((_: any /** TODO #9100 */) => {
+                 router.subscribe((_: any /* TODO #9100 */) => {
                    fixture.detectChanges();
 
                    expect(fixture.debugElement.nativeElement)
@@ -200,7 +200,7 @@ export function main() {
 
       beforeEachProviders(() => [{provide: ROUTER_PRIMARY_COMPONENT, useValue: AppCmp}]);
 
-      beforeEach(inject([TestComponentBuilder], (testComponentBuilder: any /** TODO #9100 */) => {
+      beforeEach(inject([TestComponentBuilder], (testComponentBuilder: any /* TODO #9100 */) => {
         tcb = testComponentBuilder;
       }));
 
@@ -210,7 +210,7 @@ export function main() {
              let appInstance = fixture.debugElement.componentInstance;
              let router = appInstance.router;
 
-             router.subscribe((_: any /** TODO #9100 */) => {
+             router.subscribe((_: any /* TODO #9100 */) => {
                fixture.detectChanges();
 
                expect(appInstance.helloCmp).toBeAnInstanceOf(HelloCmp);

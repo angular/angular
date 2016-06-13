@@ -8,7 +8,7 @@ import {MockLocationStrategy} from '@angular/common/testing';
 export function main() {
   describe('Location', () => {
 
-    var locationStrategy: any /** TODO #9100 */, location: any /** TODO #9100 */;
+    var locationStrategy: any /* TODO #9100 */, location: any /* TODO #9100 */;
 
     function makeLocation(
         baseHref: string = '/my/app', provider: any = /*@ts2dart_const*/[]): Location {
@@ -37,7 +37,7 @@ export function main() {
     it('should normalize urls on popstate',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
-         location.subscribe((ev: any /** TODO #9100 */) => {
+         location.subscribe((ev: any /* TODO #9100 */) => {
            expect(ev['url']).toEqual('/user/btford');
            async.done();
          });
@@ -48,7 +48,7 @@ export function main() {
       var locationStrategy = new MockLocationStrategy();
       var location = new Location(locationStrategy);
 
-      function assertUrl(path: any /** TODO #9100 */) { expect(location.path()).toEqual(path); }
+      function assertUrl(path: any /* TODO #9100 */) { expect(location.path()).toEqual(path); }
 
       location.go('/ready');
       assertUrl('/ready');

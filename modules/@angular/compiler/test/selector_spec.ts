@@ -6,9 +6,9 @@ import {el} from '@angular/platform-browser/testing';
 
 export function main() {
   describe('SelectorMatcher', () => {
-    var matcher: any /** TODO #9100 */, selectableCollector: any /** TODO #9100 */,
-        s1: any /** TODO #9100 */, s2: any /** TODO #9100 */, s3: any /** TODO #9100 */,
-        s4: any /** TODO #9100 */;
+    var matcher: any /* TODO #9100 */, selectableCollector: any /* TODO #9100 */,
+        s1: any /* TODO #9100 */, s2: any /* TODO #9100 */, s3: any /* TODO #9100 */,
+        s4: any /* TODO #9100 */;
     var matched: any[];
 
     function reset() { matched = []; }
@@ -16,7 +16,7 @@ export function main() {
     beforeEach(() => {
       reset();
       s1 = s2 = s3 = s4 = null;
-      selectableCollector = (selector: any /** TODO #9100 */, context: any /** TODO #9100 */) => {
+      selectableCollector = (selector: any /* TODO #9100 */, context: any /* TODO #9100 */) => {
         matched.push(selector);
         matched.push(context);
       };

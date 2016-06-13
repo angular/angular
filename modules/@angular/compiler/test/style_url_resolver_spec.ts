@@ -4,7 +4,7 @@ import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/co
 
 export function main() {
   describe('extractStyleUrls', () => {
-    var urlResolver: any /** TODO #9100 */;
+    var urlResolver: any /* TODO #9100 */;
 
     beforeEach(() => { urlResolver = new UrlResolver(); });
 

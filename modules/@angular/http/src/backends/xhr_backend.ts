@@ -106,7 +106,7 @@ export class XHRConnection implements Connection {
     });
   }
 
-  setDetectedContentType(req: any /** TODO #9100 */, _xhr: any /** TODO #9100 */) {
+  setDetectedContentType(req: any /* TODO #9100 */, _xhr: any /* TODO #9100 */) {
     // Skip if a custom Content-Type header is provided
     if (isPresent(req.headers) && isPresent(req.headers.get('Content-Type'))) {
       return;

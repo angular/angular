@@ -47,7 +47,7 @@ export function expectBrokerCall(
       expect(args.args.length).toEqual(vals.length);
       ListWrapper.forEachWithIndex(vals, (v, i) => {expect(v).toEqual(args.args[i].value)});
     }
-    var promise: any /** TODO #9100 */ = null;
+    var promise: any /* TODO #9100 */ = null;
     if (isPresent(handler)) {
       let givenValues = args.args.map((arg) => {arg.value});
       if (givenValues.length > 0) {

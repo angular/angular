@@ -3,9 +3,9 @@ import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '
 
 export function main() {
   describe('LowerCasePipe', () => {
-    var upper: any /** TODO #9100 */;
-    var lower: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var upper: any /* TODO #9100 */;
+    var lower: any /* TODO #9100 */;
+    var pipe: any /* TODO #9100 */;
 
     beforeEach(() => {
       lower = 'something';

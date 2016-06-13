@@ -7,7 +7,7 @@ import {CompileMetadataResolver} from '../../src/metadata_resolver';
 
 export function main() {
   describe('RuntimeAnimationCompiler', () => {
-    var resolver: any /** TODO #9100 */;
+    var resolver: any /* TODO #9100 */;
     beforeEach(
         inject([CompileMetadataResolver], (res: CompileMetadataResolver) => { resolver = res; }));
 

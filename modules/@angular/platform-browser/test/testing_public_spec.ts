@@ -101,7 +101,7 @@ export function main() {
 
     it('should run normal tests', () => { actuallyDone = true; });
 
-    it('should run normal async tests', (done: any /** TODO #9100 */) => {
+    it('should run normal async tests', (done: any /* TODO #9100 */) => {
       setTimeout(() => {
         actuallyDone = true;
         done();
@@ -121,28 +121,28 @@ export function main() {
     describe('setting up Providers', () => {
       beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
 
-      it('should use set up providers', inject([FancyService], (service: any /** TODO #9100 */) => {
+      it('should use set up providers', inject([FancyService], (service: any /* TODO #9100 */) => {
            expect(service.value).toEqual('real value');
          }));
 
       it('should wait until returned promises',
-         async(inject([FancyService], (service: any /** TODO #9100 */) => {
+         async(inject([FancyService], (service: any /* TODO #9100 */) => {
            service.getAsyncValue().then(
-               (value: any /** TODO #9100 */) => { expect(value).toEqual('async value'); });
+               (value: any /* TODO #9100 */) => { expect(value).toEqual('async value'); });
            service.getTimeoutValue().then(
-               (value: any /** TODO #9100 */) => { expect(value).toEqual('timeout value'); });
+               (value: any /* TODO #9100 */) => { expect(value).toEqual('timeout value'); });
          })));
 
       it('should allow the use of fakeAsync',
-         fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
-           var value: any /** TODO #9100 */;
-           service.getAsyncValue().then(function(val: any /** TODO #9100 */) { value = val; });
+         fakeAsync(inject([FancyService], (service: any /* TODO #9100 */) => {
+           var value: any /* TODO #9100 */;
+           service.getAsyncValue().then(function(val: any /* TODO #9100 */) { value = val; });
            tick();
            expect(value).toEqual('async value');
          })));
 
-      it('should allow use of "done"', (done: any /** TODO #9100 */) => {
-        inject([FancyService], (service: any /** TODO #9100 */) => {
+      it('should allow use of "done"', (done: any /* TODO #9100 */) => {
+        inject([FancyService], (service: any /* TODO #9100 */) => {
           let count = 0;
           let id = setInterval(() => {
             count++;
@@ -155,24 +155,23 @@ export function main() {
       });
 
       describe('using beforeEach', () => {
-        beforeEach(inject([FancyService], (service: any /** TODO #9100 */) => {
+        beforeEach(inject([FancyService], (service: any /* TODO #9100 */) => {
           service.value = 'value modified in beforeEach';
         }));
 
         it('should use modified providers',
-           inject([FancyService], (service: any /** TODO #9100 */) => {
+           inject([FancyService], (service: any /* TODO #9100 */) => {
              expect(service.value).toEqual('value modified in beforeEach');
            }));
       });
 
       describe('using async beforeEach', () => {
-        beforeEach(async(inject([FancyService], (service: any /** TODO #9100 */) => {
-          service.getAsyncValue().then(
-              (value: any /** TODO #9100 */) => { service.value = value; });
+        beforeEach(async(inject([FancyService], (service: any /* TODO #9100 */) => {
+          service.getAsyncValue().then((value: any /* TODO #9100 */) => { service.value = value; });
         })));
 
         it('should use asynchronously modified value',
-           inject([FancyService], (service: any /** TODO #9100 */) => {
+           inject([FancyService], (service: any /* TODO #9100 */) => {
              expect(service.value).toEqual('async value');
            }));
       });
@@ -181,13 +180,13 @@ export function main() {
     describe('per test providers', () => {
       it('should allow per test providers',
          withProviders(() => [{provide: FancyService, useValue: new FancyService()}])
-             .inject([FancyService], (service: any /** TODO #9100 */) => {
+             .inject([FancyService], (service: any /* TODO #9100 */) => {
                expect(service.value).toEqual('real value');
              }));
 
       it('should return value from inject', () => {
         let retval = withProviders(() => [{provide: FancyService, useValue: new FancyService()}])
-                         .inject([FancyService], (service: any /** TODO #9100 */) => {
+                         .inject([FancyService], (service: any /* TODO #9100 */) => {
                            expect(service.value).toEqual('real value');
                            return 10;
                          })();
@@ -203,9 +202,9 @@ export function main() {
     var patchJasmineIt = () => {
       var deferred = PromiseWrapper.completer();
       originalJasmineIt = jasmine.getEnv().it;
-      jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
+      jasmine.getEnv().it = (description: string, fn: any /* TODO #9100 */) => {
         var done = () => { deferred.resolve() };
-        (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err) };
+        (<any>done).fail = (err: any /* TODO #9100 */) => { deferred.reject(err) };
         fn(done);
         return null;
       };
@@ -219,7 +218,7 @@ export function main() {
       originalJasmineBeforeEach = jasmine.getEnv().beforeEach;
       jasmine.getEnv().beforeEach = (fn: any) => {
         var done = () => { deferred.resolve() };
-        (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err) };
+        (<any>done).fail = (err: any /* TODO #9100 */) => { deferred.reject(err) };
         fn(done);
         return null;
       };
@@ -229,7 +228,7 @@ export function main() {
     var restoreJasmineBeforeEach =
         () => { jasmine.getEnv().beforeEach = originalJasmineBeforeEach; };
 
-    it('should fail when an asynchronous error is thrown', (done: any /** TODO #9100 */) => {
+    it('should fail when an asynchronous error is thrown', (done: any /* TODO #9100 */) => {
       var itPromise = patchJasmineIt();
 
       it('throws an async error',
@@ -244,7 +243,7 @@ export function main() {
       restoreJasmineIt();
     });
 
-    it('should fail when a returned promise is rejected', (done: any /** TODO #9100 */) => {
+    it('should fail when a returned promise is rejected', (done: any /* TODO #9100 */) => {
       var itPromise = patchJasmineIt();
 
       it('should fail with an error from a promise', async(inject([], () => {
@@ -267,7 +266,7 @@ export function main() {
     describe('using beforeEachProviders', () => {
       beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
 
-      beforeEach(inject([FancyService], (service: any /** TODO #9100 */) => {
+      beforeEach(inject([FancyService], (service: any /* TODO #9100 */) => {
         expect(service.value).toEqual('real value');
       }));
 

@@ -268,7 +268,7 @@ export function main() {
                 'Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
       });
 
-      if ((global as any /** TODO #9100 */)['Blob']) {
+      if ((global as any /* TODO #9100 */)['Blob']) {
         it('should use FormData body and detect content type header to the request', () => {
           var body = new FormData();
           body.append('test1', 'val1');

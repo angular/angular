@@ -83,7 +83,7 @@ export class CssScannerError extends BaseException {
   public rawMessage: string;
   public message: string;
 
-  constructor(public token: CssToken, message: any /** TODO #9100 */) {
+  constructor(public token: CssToken, message: any /* TODO #9100 */) {
     super('Css Parse Error: ' + message);
     this.rawMessage = message;
   }
@@ -197,7 +197,7 @@ export class CssScanner {
       next = new CssToken(0, 0, 0, CssTokenType.EOF, 'end of file');
     }
 
-    var isMatchingType: any /** TODO #9100 */;
+    var isMatchingType: any /* TODO #9100 */;
     if (type == CssTokenType.IdentifierOrNumber) {
       // TODO (matsko): implement array traversal for lookup here
       isMatchingType = next.type == CssTokenType.Number || next.type == CssTokenType.Identifier;
@@ -209,7 +209,7 @@ export class CssScanner {
     // mode so that the parser can recover...
     this.setMode(mode);
 
-    var error: any /** TODO #9100 */ = null;
+    var error: any /* TODO #9100 */ = null;
     if (!isMatchingType || (isPresent(value) && value != next.strValue)) {
       var errorMessage = resolveEnumToken(CssTokenType, next.type) + ' does not match expected ' +
           resolveEnumToken(CssTokenType, type) + ' value';
@@ -688,7 +688,7 @@ function isValidCssCharacter(code: number, mode: CssLexerMode): boolean {
   }
 }
 
-function charCode(input: any /** TODO #9100 */, index: any /** TODO #9100 */): number {
+function charCode(input: any /* TODO #9100 */, index: any /* TODO #9100 */): number {
   return index >= input.length ? $EOF : StringWrapper.charCodeAt(input, index);
 }
 
@@ -696,7 +696,7 @@ function charStr(code: number): string {
   return StringWrapper.fromCharCode(code);
 }
 
-export function isNewline(code: any /** TODO #9100 */): boolean {
+export function isNewline(code: any /* TODO #9100 */): boolean {
   switch (code) {
     case $FF:
     case $CR:

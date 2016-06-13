@@ -232,7 +232,7 @@ export function Class(clsDef: ClassDefinition): ConcreteType {
   }
 
   if (!constructor['name']) {
-    (constructor as any /** TODO #9100 */)['overriddenName'] = `class${_nextClassId++}`;
+    (constructor as any /* TODO #9100 */)['overriddenName'] = `class${_nextClassId++}`;
   }
 
   return <ConcreteType>constructor;
@@ -248,9 +248,9 @@ var Reflect = global.Reflect;
 })();
 
 export function makeDecorator(
-    annotationCls: any /** TODO #9100 */,
+    annotationCls: any /* TODO #9100 */,
     chainFn: (fn: Function) => void = null): (...args: any[]) => (cls: any) => any {
-  function DecoratorFactory(objOrType: any /** TODO #9100 */): (cls: any) => any {
+  function DecoratorFactory(objOrType: any /* TODO #9100 */): (cls: any) => any {
     var annotationInstance = new (<any>annotationCls)(objOrType);
     if (this instanceof annotationCls) {
       return annotationInstance;
@@ -259,7 +259,7 @@ export function makeDecorator(
           isFunction(this) && this.annotations instanceof Array ? this.annotations : [];
       chainAnnotation.push(annotationInstance);
       var TypeDecorator: TypeDecorator =
-          <TypeDecorator>function TypeDecorator(cls: any /** TODO #9100 */) {
+          <TypeDecorator>function TypeDecorator(cls: any /* TODO #9100 */) {
             var annotations = Reflect.getOwnMetadata('annotations', cls);
             annotations = annotations || [];
             annotations.push(annotationInstance);
@@ -277,8 +277,8 @@ export function makeDecorator(
   return DecoratorFactory;
 }
 
-export function makeParamDecorator(annotationCls: any /** TODO #9100 */): any {
-  function ParamDecoratorFactory(...args: any[] /** TODO #9100 */): any {
+export function makeParamDecorator(annotationCls: any /* TODO #9100 */): any {
+  function ParamDecoratorFactory(...args: any[] /* TODO #9100 */): any {
     var annotationInstance = Object.create(annotationCls.prototype);
     annotationCls.apply(annotationInstance, args);
     if (this instanceof annotationCls) {
@@ -290,8 +290,8 @@ export function makeParamDecorator(annotationCls: any /** TODO #9100 */): any {
 
 
     function ParamDecorator(
-        cls: any /** TODO #9100 */, unusedKey: any /** TODO #9100 */,
-        index: any /** TODO #9100 */): any {
+        cls: any /* TODO #9100 */, unusedKey: any /* TODO #9100 */,
+        index: any /* TODO #9100 */): any {
       var parameters: any[][] = Reflect.getMetadata('parameters', cls);
       parameters = parameters || [];
 
@@ -314,8 +314,8 @@ export function makeParamDecorator(annotationCls: any /** TODO #9100 */): any {
   return ParamDecoratorFactory;
 }
 
-export function makePropDecorator(annotationCls: any /** TODO #9100 */): any {
-  function PropDecoratorFactory(...args: any[] /** TODO #9100 */): any {
+export function makePropDecorator(annotationCls: any /* TODO #9100 */): any {
+  function PropDecoratorFactory(...args: any[] /* TODO #9100 */): any {
     var decoratorInstance = Object.create(annotationCls.prototype);
     annotationCls.apply(decoratorInstance, args);
 

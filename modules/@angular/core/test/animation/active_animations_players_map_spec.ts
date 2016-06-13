@@ -9,8 +9,8 @@ import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject
 
 export function main() {
   describe('ActiveAnimationsPlayersMap', function() {
-    var playersMap: any /** TODO #9100 */;
-    var elementNode: any /** TODO #9100 */;
+    var playersMap: any /* TODO #9100 */;
+    var elementNode: any /* TODO #9100 */;
     var animationName = 'animationName';
 
     beforeEach(() => {
