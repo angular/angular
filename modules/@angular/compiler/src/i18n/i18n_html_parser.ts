@@ -113,16 +113,16 @@ export class I18nHtmlParser implements HtmlParser {
     } else {
       let expanded = expandNodes(res.rootNodes);
       let nodes = this._recurse(expanded.nodes);
-      this.errors = this.errors.concat(expanded.errors);
+      this.errors.push(...expanded.errors);
 
       return this.errors.length > 0 ? new HtmlParseTreeResult([], this.errors) :
                                       new HtmlParseTreeResult(nodes, []);
     }
   }
 
-  private _processI18nPart(p: Part): HtmlAst[] {
+  private _processI18nPart(part: Part): HtmlAst[] {
     try {
-      return p.hasI18n ? this._mergeI18Part(p) : this._recurseIntoI18nPart(p);
+      return part.hasI18n ? this._mergeI18Part(part) : this._recurseIntoI18nPart(part);
     } catch (e) {
       if (e instanceof I18nError) {
         this.errors.push(e);
@@ -133,16 +133,17 @@ export class I18nHtmlParser implements HtmlParser {
     }
   }
 
-  private _mergeI18Part(p: Part): HtmlAst[] {
-    let message = p.createMessage(this._parser);
+  private _mergeI18Part(part: Part): HtmlAst[] {
+    let message = part.createMessage(this._parser);
     let messageId = id(message);
     if (!StringMapWrapper.contains(this._messages, messageId)) {
       throw new I18nError(
-          p.sourceSpan, `Cannot find message for id '${messageId}', content '${message.content}'.`);
+          part.sourceSpan,
+          `Cannot find message for id '${messageId}', content '${message.content}'.`);
     }
 
     let parsedMessage = this._messages[messageId];
-    return this._mergeTrees(p, parsedMessage, p.children);
+    return this._mergeTrees(part, parsedMessage, part.children);
   }
 
   private _recurseIntoI18nPart(p: Part): HtmlAst[] {
@@ -166,8 +167,8 @@ export class I18nHtmlParser implements HtmlParser {
   }
 
   private _recurse(nodes: HtmlAst[]): HtmlAst[] {
-    let ps = partition(nodes, this.errors, this._implicitTags);
-    return ListWrapper.flatten(ps.map(p => this._processI18nPart(p)));
+    let parts = partition(nodes, this.errors, this._implicitTags);
+    return ListWrapper.flatten(parts.map(p => this._processI18nPart(p)));
   }
 
   private _mergeTrees(p: Part, translated: HtmlAst[], original: HtmlAst[]): HtmlAst[] {
