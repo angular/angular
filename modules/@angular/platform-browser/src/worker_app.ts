@@ -45,14 +45,13 @@ export function workerAppPlatform(): PlatformRef {
   return assertPlatform(WORKER_APP_PLATFORM_MARKER);
 }
 
-function _createCompilerConfig() {
-  return new CompilerConfig(
-      assertionsEnabled(), false, true, null, null, COMMON_DIRECTIVES, COMMON_PIPES);
-}
-
-export const WORKER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
+const WORKER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   COMPILER_PROVIDERS,
-  {provide: CompilerConfig, useFactory: _createCompilerConfig, deps: []},
+  {
+    provide: CompilerConfig,
+    useValue:
+        new CompilerConfig({platformDirectives: COMMON_DIRECTIVES, platformPipes: COMMON_PIPES})
+  },
   {provide: XHR, useClass: XHRImpl},
 ];
 

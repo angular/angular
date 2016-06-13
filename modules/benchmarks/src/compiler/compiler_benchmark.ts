@@ -29,7 +29,7 @@ function _createBindings(): any[] {
     },
     // Use interpretative mode as Dart does not support JIT and
     // we want to be able to compare the numbers between JS and Dart
-    {provide: CompilerConfig, useValue: new CompilerConfig(false, false, false)}
+    {provide: CompilerConfig, useValue: new CompilerConfig({genDebugInfo: false, useJit: false, logBindingUpdate: false})}
   ];
 }
 

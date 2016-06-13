@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import * as tsc from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as compiler from '@angular/compiler';
+import {ViewEncapsulation} from '@angular/core';
 
 import {StaticReflector} from './static_reflector';
 import {CompileMetadataResolver, HtmlParser, DirectiveNormalizer, Lexer, Parser, TemplateParser, DomElementSchemaRegistry, StyleCompiler, ViewCompiler, TypeScriptEmitter, MessageExtractor, removeDuplicates, ExtractionResult, Message, ParseError, serializeXmb,} from './compiler_private';
@@ -136,7 +137,14 @@ class Extractor {
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser = new HtmlParser();
-    const config = new compiler.CompilerConfig(true, true, true);
+    const config = new compiler.CompilerConfig({
+      genDebugInfo: true,
+      defaultEncapsulation: ViewEncapsulation.Emulated,
+      logBindingUpdate: false,
+      useJit: false,
+      platformDirectives: [],
+      platformPipes: []
+    });
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const parser = new Parser(new Lexer());
     const tmplParser = new TemplateParser(
@@ -147,7 +155,7 @@ class Extractor {
         new TypeScriptEmitter(reflectorHost), xhr);
     const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        new compiler.ViewResolver(staticReflector), null, null, staticReflector);
+        new compiler.ViewResolver(staticReflector), config, staticReflector);
 
     // TODO(vicb): handle implicit
     const extractor = new MessageExtractor(htmlParser, parser, [], {});

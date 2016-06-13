@@ -151,19 +151,25 @@ export class CodeGenerator {
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser = new HtmlParser();
-    const config = new compiler.CompilerConfig(true, true, true);
+    const config = new compiler.CompilerConfig({
+      genDebugInfo: true,
+      defaultEncapsulation: ViewEncapsulation.Emulated,
+      logBindingUpdate: false,
+      useJit: false,
+      platformDirectives: [],
+      platformPipes: []
+    });
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const parser = new Parser(new Lexer());
     const tmplParser = new TemplateParser(
         parser, new DomElementSchemaRegistry(), htmlParser,
         /*console*/ null, []);
     const offlineCompiler = new compiler.OfflineCompiler(
-        normalizer, tmplParser, new StyleCompiler(urlResolver),
-        new ViewCompiler(new compiler.CompilerConfig(true, true, true)),
+        normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
         new TypeScriptEmitter(reflectorHost), xhr);
     const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        new compiler.ViewResolver(staticReflector), null, null, staticReflector);
+        new compiler.ViewResolver(staticReflector), config, staticReflector);
 
     return new CodeGenerator(
         options, program, compilerHost, staticReflector, resolver, offlineCompiler, reflectorHost);
