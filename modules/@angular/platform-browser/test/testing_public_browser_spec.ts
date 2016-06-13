@@ -110,9 +110,9 @@ export function main() {
            inject([XHR], (xhr: XHR) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
 
         it('should allow the use of fakeAsync',
-           fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
-             var value: any /** TODO #9100 */;
-             service.getAsyncValue().then(function(val: any /** TODO #9100 */) { value = val; });
+           fakeAsync(inject([FancyService], (service: any /* TODO #9100 */) => {
+             var value: any /* TODO #9100 */;
+             service.getAsyncValue().then(function(val: any /* TODO #9100 */) { value = val; });
              tick();
              expect(value).toEqual('async value');
            })));
@@ -125,9 +125,9 @@ export function main() {
       var patchJasmineIt = () => {
         var deferred = PromiseWrapper.completer();
         originalJasmineIt = jasmine.getEnv().it;
-        jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
+        jasmine.getEnv().it = (description: string, fn: any /* TODO #9100 */) => {
           var done = () => { deferred.resolve() };
-          (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err) };
+          (<any>done).fail = (err: any /* TODO #9100 */) => { deferred.reject(err) };
           fn(done);
           return null;
         };
@@ -136,7 +136,7 @@ export function main() {
 
       var restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
-      it('should fail when an XHR fails', (done: any /** TODO #9100 */) => {
+      it('should fail when an XHR fails', (done: any /* TODO #9100 */) => {
         var itPromise = patchJasmineIt();
 
         it('should fail with an error from a promise',

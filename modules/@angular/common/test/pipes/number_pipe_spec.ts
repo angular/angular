@@ -9,7 +9,7 @@ export function main() {
     // https://github.com/angular/angular/issues/3333
     if (browserDetection.supportsIntlApi) {
       describe('DecimalPipe', () => {
-        var pipe: any /** TODO #9100 */;
+        var pipe: any /* TODO #9100 */;
 
         beforeEach(() => { pipe = new DecimalPipe(); });
 
@@ -30,7 +30,7 @@ export function main() {
       });
 
       describe('PercentPipe', () => {
-        var pipe: any /** TODO #9100 */;
+        var pipe: any /* TODO #9100 */;
 
         beforeEach(() => { pipe = new PercentPipe(); });
 
@@ -46,7 +46,7 @@ export function main() {
       });
 
       describe('CurrencyPipe', () => {
-        var pipe: any /** TODO #9100 */;
+        var pipe: any /* TODO #9100 */;
 
         beforeEach(() => { pipe = new CurrencyPipe(); });
 

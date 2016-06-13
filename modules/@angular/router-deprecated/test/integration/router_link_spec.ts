@@ -32,7 +32,7 @@ export function main() {
 
     beforeEach(inject(
         [TestComponentBuilder, Router, Location],
-        (tcBuilder: any /** TODO #9100 */, rtr: Router, loc: Location) => {
+        (tcBuilder: any /* TODO #9100 */, rtr: Router, loc: Location) => {
           tcb = tcBuilder;
           router = rtr;
           location = loc;
@@ -325,7 +325,7 @@ export function main() {
 
     describe('when clicked', () => {
 
-      var clickOnElement = function(view: any /** TODO #9100 */) {
+      var clickOnElement = function(view: any /* TODO #9100 */) {
         var anchorEl = fixture.debugElement.query(By.css('a')).nativeElement;
         var dispatchedEvent = getDOM().createMouseEvent('click');
         getDOM().dispatchEvent(anchorEl, dispatchedEvent);
@@ -383,7 +383,7 @@ function getHref(tc: ComponentFixture<any>) {
 
 @Component({selector: 'my-comp', template: '', directives: [ROUTER_DIRECTIVES]})
 class MyComp7 {
-  name: any /** TODO #9100 */;
+  name: any /* TODO #9100 */;
 }
 
 @Component({selector: 'user-cmp', template: 'hello {{user}}'})

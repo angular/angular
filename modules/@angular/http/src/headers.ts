@@ -122,12 +122,12 @@ export class Headers {
   toJSON(): {[key: string]: any} {
     let serializableHeaders = {};
     this._headersMap.forEach((values: string[], name: string) => {
-      let list: any[] /** TODO #9100 */ = [];
+      let list: any[] /* TODO #9100 */ = [];
 
       iterateListLike(
-          values, (val: any /** TODO #9100 */) => list = ListWrapper.concat(list, val.split(',')));
+          values, (val: any /* TODO #9100 */) => list = ListWrapper.concat(list, val.split(',')));
 
-      (serializableHeaders as any /** TODO #9100 */)[name] = list;
+      (serializableHeaders as any /* TODO #9100 */)[name] = list;
     });
     return serializableHeaders;
   }

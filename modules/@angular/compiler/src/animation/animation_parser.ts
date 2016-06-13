@@ -13,7 +13,7 @@ const _TERMINAL_KEYFRAME = 1;
 const _ONE_SECOND = 1000;
 
 export class AnimationParseError extends ParseError {
-  constructor(message: any /** TODO #9100 */) { super(null, message); }
+  constructor(message: any /* TODO #9100 */) { super(null, message); }
   toString(): string { return `${this.msg}`; }
 }
 
@@ -26,7 +26,7 @@ export function parseAnimationEntry(entry: CompileAnimationEntryMetadata): Parse
   var stateStyles: {[key: string]: AnimationStylesAst} = {};
   var transitions: CompileAnimationStateTransitionMetadata[] = [];
 
-  var stateDeclarationAsts: any[] /** TODO #9100 */ = [];
+  var stateDeclarationAsts: any[] /* TODO #9100 */ = [];
   entry.definitions.forEach(def => {
     if (def instanceof CompileAnimationStateDeclarationMetadata) {
       _parseAnimationDeclarationStates(def, errors).forEach(ast => {
@@ -69,7 +69,7 @@ function _parseAnimationStateTransition(
     stateStyles: {[key: string]: AnimationStylesAst},
     errors: AnimationParseError[]): AnimationStateTransitionAst {
   var styles = new StylesCollection();
-  var transitionExprs: any[] /** TODO #9100 */ = [];
+  var transitionExprs: any[] /* TODO #9100 */ = [];
   var transitionStates = transitionStateMetadata.stateChangeExpr.split(/\s*,\s*/);
   transitionStates.forEach(expr => {
     _parseAnimationTransitionExpr(expr, errors).forEach(transExpr => {
@@ -92,7 +92,7 @@ function _parseAnimationStateTransition(
 
 function _parseAnimationTransitionExpr(
     eventStr: string, errors: AnimationParseError[]): AnimationStateTransitionExpression[] {
-  var expressions: any[] /** TODO #9100 */ = [];
+  var expressions: any[] /* TODO #9100 */ = [];
   var match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
   if (!isPresent(match) || match.length < 4) {
     errors.push(new AnimationParseError(`the provided ${eventStr} is not of a supported format`));
@@ -130,7 +130,7 @@ function _normalizeAnimationEntry(entry: CompileAnimationMetadata | CompileAnima
 function _normalizeStyleMetadata(
     entry: CompileAnimationStyleMetadata, stateStyles: {[key: string]: AnimationStylesAst},
     errors: AnimationParseError[]): Array<{[key: string]: string | number}> {
-  var normalizedStyles: any[] /** TODO #9100 */ = [];
+  var normalizedStyles: any[] /* TODO #9100 */ = [];
   entry.styles.forEach(styleEntry => {
     if (isString(styleEntry)) {
       ListWrapper.addAll(
@@ -270,7 +270,7 @@ function _parseAnimationKeyframes(
 
   var limit = totalEntries - 1;
   var margin = totalOffsets == 0 ? (1 / limit) : 0;
-  var rawKeyframes: any[] /** TODO #9100 */ = [];
+  var rawKeyframes: any[] /* TODO #9100 */ = [];
   var index = 0;
   var doSortKeyframes = false;
   var lastOffset = 0;
@@ -280,7 +280,7 @@ function _parseAnimationKeyframes(
     styleMetadata.styles.forEach(entry => {
       StringMapWrapper.forEach(
           <{[key: string]: string | number}>entry,
-          (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
+          (value: any /* TODO #9100 */, prop: any /* TODO #9100 */) => {
             if (prop != 'offset') {
               keyframeStyles[prop] = value;
             }
@@ -302,7 +302,7 @@ function _parseAnimationKeyframes(
     ListWrapper.sort(rawKeyframes, (a, b) => a[0] <= b[0] ? -1 : 1);
   }
 
-  var i: any /** TODO #9100 */;
+  var i: any /* TODO #9100 */;
   var firstKeyframe = rawKeyframes[0];
   if (firstKeyframe[0] != _INITIAL_KEYFRAME) {
     ListWrapper.insert(rawKeyframes, 0, firstKeyframe = [_INITIAL_KEYFRAME, {}]);
@@ -321,24 +321,22 @@ function _parseAnimationKeyframes(
     let entry = rawKeyframes[i];
     let styles = entry[1];
 
-    StringMapWrapper.forEach(
-        styles, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-          if (!isPresent(firstKeyframeStyles[prop])) {
-            firstKeyframeStyles[prop] = FILL_STYLE_FLAG;
-          }
-        });
+    StringMapWrapper.forEach(styles, (value: any /* TODO #9100 */, prop: any /* TODO #9100 */) => {
+      if (!isPresent(firstKeyframeStyles[prop])) {
+        firstKeyframeStyles[prop] = FILL_STYLE_FLAG;
+      }
+    });
   }
 
   for (i = limit - 1; i >= 0; i--) {
     let entry = rawKeyframes[i];
     let styles = entry[1];
 
-    StringMapWrapper.forEach(
-        styles, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-          if (!isPresent(lastKeyframeStyles[prop])) {
-            lastKeyframeStyles[prop] = value;
-          }
-        });
+    StringMapWrapper.forEach(styles, (value: any /* TODO #9100 */, prop: any /* TODO #9100 */) => {
+      if (!isPresent(lastKeyframeStyles[prop])) {
+        lastKeyframeStyles[prop] = value;
+      }
+    });
   }
 
   return rawKeyframes.map(
@@ -348,14 +346,14 @@ function _parseAnimationKeyframes(
 function _parseTransitionAnimation(
     entry: CompileAnimationMetadata, currentTime: number, collectedStyles: StylesCollection,
     stateStyles: {[key: string]: AnimationStylesAst}, errors: AnimationParseError[]): AnimationAst {
-  var ast: any /** TODO #9100 */;
+  var ast: any /* TODO #9100 */;
   var playTime = 0;
   var startingTime = currentTime;
   if (entry instanceof CompileAnimationWithStepsMetadata) {
     var maxDuration = 0;
-    var steps: any[] /** TODO #9100 */ = [];
+    var steps: any[] /* TODO #9100 */ = [];
     var isGroup = entry instanceof CompileAnimationGroupMetadata;
-    var previousStyles: any /** TODO #9100 */;
+    var previousStyles: any /* TODO #9100 */;
     entry.steps.forEach(entry => {
       // these will get picked up by the next step...
       var time = isGroup ? startingTime : currentTime;
@@ -364,7 +362,7 @@ function _parseTransitionAnimation(
           // by this point we know that we only have stringmap values
           var map = <{[key: string]: string | number}>stylesEntry;
           StringMapWrapper.forEach(
-              map, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
+              map, (value: any /* TODO #9100 */, prop: any /* TODO #9100 */) => {
                 collectedStyles.insertAtTime(prop, time, value);
               });
         });
@@ -405,7 +403,7 @@ function _parseTransitionAnimation(
     var timings = _parseTimeExpression(entry.timings, errors);
     var styles = entry.styles;
 
-    var keyframes: any /** TODO #9100 */;
+    var keyframes: any /* TODO #9100 */;
     if (styles instanceof CompileAnimationKeyframesSequenceMetadata) {
       keyframes =
           _parseAnimationKeyframes(styles, currentTime, collectedStyles, stateStyles, errors);
@@ -423,9 +421,9 @@ function _parseTransitionAnimation(
     currentTime += playTime;
 
     keyframes.forEach(
-        (keyframe: any /** TODO #9100 */) => keyframe.styles.styles.forEach(
-            (entry: any /** TODO #9100 */) => StringMapWrapper.forEach(
-                entry, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) =>
+        (keyframe: any /* TODO #9100 */) => keyframe.styles.styles.forEach(
+            (entry: any /* TODO #9100 */) => StringMapWrapper.forEach(
+                entry, (value: any /* TODO #9100 */, prop: any /* TODO #9100 */) =>
                            collectedStyles.insertAtTime(prop, currentTime, value))));
   } else {
     // if the code reaches this stage then an error
@@ -502,12 +500,12 @@ function _createStartKeyframeFromEndKeyframe(
   var values: {[key: string]: string | number} = {};
   var endTime = startTime + duration;
   endKeyframe.styles.styles.forEach((styleData: {[key: string]: string | number}) => {
-    StringMapWrapper.forEach(styleData, (val: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
+    StringMapWrapper.forEach(styleData, (val: any /* TODO #9100 */, prop: any /* TODO #9100 */) => {
       if (prop == 'offset') return;
 
       var resultIndex = collectedStyles.indexOfAtOrBeforeTime(prop, startTime);
-      var resultEntry: any /** TODO #9100 */, nextEntry: any /** TODO #9100 */,
-          value: any /** TODO #9100 */;
+      var resultEntry: any /* TODO #9100 */, nextEntry: any /* TODO #9100 */,
+          value: any /* TODO #9100 */;
       if (isPresent(resultIndex)) {
         resultEntry = collectedStyles.getByIndex(prop, resultIndex);
         value = resultEntry.value;

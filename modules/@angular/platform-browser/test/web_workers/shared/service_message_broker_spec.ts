@@ -19,7 +19,7 @@ export function main() {
   beforeEachProviders(() => [Serializer, {provide: ON_WEB_WORKER, useValue: true}, RenderStore]);
 
   describe('UIMessageBroker', () => {
-    var messageBuses: any /** TODO #9100 */;
+    var messageBuses: any /* TODO #9100 */;
 
     beforeEach(() => {
       messageBuses = createPairedMessageBuses();

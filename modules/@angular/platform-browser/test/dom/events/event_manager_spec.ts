@@ -7,7 +7,7 @@ import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/do
 import {el} from '../../../testing/browser_util';
 
 export function main() {
-  var domEventPlugin: any /** TODO #9100 */;
+  var domEventPlugin: any /* TODO #9100 */;
 
   describe('EventManager', () => {
 
@@ -16,7 +16,7 @@ export function main() {
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
        () => {
          var element = el('<div></div>');
-         var handler = (e: any /** TODO #9100 */) => e;
+         var handler = (e: any /* TODO #9100 */) => e;
          var plugin = new FakeEventManagerPlugin(['click']);
          var manager = new EventManager([domEventPlugin, plugin], new FakeNgZone());
          manager.addEventListener(element, 'click', handler);
@@ -25,8 +25,8 @@ export function main() {
 
     it('should delegate event bindings to the first plugin supporting the event', () => {
       var element = el('<div></div>');
-      var clickHandler = (e: any /** TODO #9100 */) => e;
-      var dblClickHandler = (e: any /** TODO #9100 */) => e;
+      var clickHandler = (e: any /* TODO #9100 */) => e;
+      var dblClickHandler = (e: any /* TODO #9100 */) => e;
       var plugin1 = new FakeEventManagerPlugin(['dblclick']);
       var plugin2 = new FakeEventManagerPlugin(['click', 'dblclick']);
       var manager = new EventManager([plugin2, plugin1], new FakeNgZone());
@@ -53,8 +53,8 @@ export function main() {
 
       var child = getDOM().firstChild(element);
       var dispatchedEvent = getDOM().createMouseEvent('click');
-      var receivedEvent: any /** TODO #9100 */ = null;
-      var handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
+      var receivedEvent: any /* TODO #9100 */ = null;
+      var handler = (e: any /* TODO #9100 */) => { receivedEvent = e; };
       var manager = new EventManager([domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, 'click', handler);
       getDOM().dispatchEvent(child, dispatchedEvent);
@@ -66,8 +66,8 @@ export function main() {
       var element = el('<div><div></div></div>');
       getDOM().appendChild(getDOM().defaultDoc().body, element);
       var dispatchedEvent = getDOM().createMouseEvent('click');
-      var receivedEvent: any /** TODO #9100 */ = null;
-      var handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
+      var receivedEvent: any /* TODO #9100 */ = null;
+      var handler = (e: any /* TODO #9100 */) => { receivedEvent = e; };
       var manager = new EventManager([domEventPlugin], new FakeNgZone());
 
       var remover = manager.addGlobalEventListener('document', 'click', handler);
@@ -88,7 +88,7 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 
   supports(eventName: string): boolean { return ListWrapper.contains(this._supports, eventName); }
 
-  addEventListener(element: any /** TODO #9100 */, eventName: string, handler: Function) {
+  addEventListener(element: any /* TODO #9100 */, eventName: string, handler: Function) {
     this._eventHandler.set(eventName, handler);
     return () => { this._eventHandler.delete(eventName); };
   }
@@ -96,7 +96,7 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 
 class FakeNgZone extends NgZone {
   constructor() { super({enableLongStackTrace: false}); }
-  run(fn: any /** TODO #9100 */) { fn(); }
+  run(fn: any /* TODO #9100 */) { fn(); }
 
-  runOutsideAngular(fn: any /** TODO #9100 */) { return fn(); }
+  runOutsideAngular(fn: any /* TODO #9100 */) { return fn(); }
 }

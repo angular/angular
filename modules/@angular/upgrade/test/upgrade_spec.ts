@@ -54,8 +54,8 @@ export function main() {
       it('should interleave scope and component expressions',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var ng1Module = angular.module('ng1', []);
-           var log: any[] /** TODO #9100 */ = [];
-           var l = function(value: any /** TODO #9100 */) {
+           var log: any[] /* TODO #9100 */ = [];
+           var l = function(value: any /* TODO #9100 */) {
              log.push(value);
              return value + ';';
            };
@@ -63,7 +63,7 @@ export function main() {
 
            ng1Module.directive('ng1a', () => { return {template: '{{ l(\'ng1a\') }}'}; });
            ng1Module.directive('ng1b', () => { return {template: '{{ l(\'ng1b\') }}'}; });
-           ng1Module.run(($rootScope: any /** TODO #9100 */) => {
+           ng1Module.run(($rootScope: any /* TODO #9100 */) => {
              $rootScope.l = l;
              $rootScope.reset = () => log.length = 0;
            });
@@ -96,7 +96,7 @@ export function main() {
            var adapter: UpgradeAdapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
-           ng1Module.run(($rootScope: any /** TODO #9100 */) => {
+           ng1Module.run(($rootScope: any /* TODO #9100 */) => {
              $rootScope.dataA = 'A';
              $rootScope.dataB = 'B';
              $rootScope.modelA = 'initModelA';
@@ -131,14 +131,14 @@ export function main() {
                this.twoWayAEmitter = new EventEmitter();
                this.twoWayBEmitter = new EventEmitter();
              },
-             ngOnChanges: function(changes: any /** TODO #9100 */) {
-               var assert = (prop: any /** TODO #9100 */, value: any /** TODO #9100 */) => {
+             ngOnChanges: function(changes: any /* TODO #9100 */) {
+               var assert = (prop: any /* TODO #9100 */, value: any /* TODO #9100 */) => {
                  if (this[prop] != value) {
                    throw new Error(`Expected: '${prop}' to be '${value}' but was '${this[prop]}'`);
                  }
                };
 
-               var assertChange = (prop: any /** TODO #9100 */, value: any /** TODO #9100 */) => {
+               var assertChange = (prop: any /* TODO #9100 */, value: any /* TODO #9100 */) => {
                  assert(prop, value);
                  if (!changes[prop]) {
                    throw new Error(`Changes record for '${prop}' not found.`);
@@ -207,7 +207,7 @@ export function main() {
              return {
                template: '<div ng-if="!destroyIt"><ng2></ng2></div>',
                controller: function(
-                   $rootScope: any /** TODO #9100 */, $timeout: any /** TODO #9100 */) {
+                   $rootScope: any /* TODO #9100 */, $timeout: any /* TODO #9100 */) {
                  $timeout(function() { $rootScope.destroyIt = true; });
                }
              };
@@ -233,11 +233,11 @@ export function main() {
 
            ng1Module.directive('ng1', [
              '$compile',
-             ($compile: any /** TODO #9100 */) => {
+             ($compile: any /* TODO #9100 */) => {
                return {
                  link: function(
-                     $scope: any /** TODO #9100 */, $element: any /** TODO #9100 */,
-                     $attrs: any /** TODO #9100 */) {
+                     $scope: any /* TODO #9100 */, $element: any /* TODO #9100 */,
+                     $attrs: any /* TODO #9100 */) {
                    var compiled = $compile('<ng2></ng2>');
                    var template = compiled($scope);
                    $element.append(template);
@@ -268,8 +268,8 @@ export function main() {
              return {
                template: 'Hello {{fullName}}; A: {{dataA}}; B: {{dataB}}; | ',
                scope: {fullName: '@', modelA: '=dataA', modelB: '=dataB', event: '&'},
-               link: function(scope: any /** TODO #9100 */) {
-                 scope.$watch('dataB', (v: any /** TODO #9100 */) => {
+               link: function(scope: any /* TODO #9100 */) {
+                 scope.$watch('dataB', (v: any /* TODO #9100 */) => {
                    if (v == 'Savkin') {
                      scope.dataB = 'SAVKIN';
                      scope.event('WORKS');
@@ -323,7 +323,7 @@ export function main() {
                restrict: 'E',
                template: '{{someText}} - Length: {{data.length}}',
                scope: {data: '='},
-               controller: function($scope: any /** TODO #9100 */) {
+               controller: function($scope: any /* TODO #9100 */) {
                  $scope.someText = 'ng1 - Data: ' + $scope.data;
                }
              };
@@ -367,7 +367,7 @@ export function main() {
                restrict: 'E',
                template: '{{someText}} - Length: {{data.length}}',
                scope: {data: '='},
-               link: function($scope: any /** TODO #9100 */) {
+               link: function($scope: any /* TODO #9100 */) {
                  $scope.someText = 'ng1 - Data: ' + $scope.data;
                }
              };
@@ -406,9 +406,9 @@ export function main() {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
            ng1Module.value(
-               '$httpBackend', (method: any /** TODO #9100 */, url: any /** TODO #9100 */,
-                                post: any /** TODO #9100 */,
-                                cbFn: any /** TODO #9100 */) => { cbFn(200, `${method}:${url}`); });
+               '$httpBackend',
+               (method: any /* TODO #9100 */, url: any /* TODO #9100 */, post: any /* TODO #9100 */,
+                cbFn: any /* TODO #9100 */) => { cbFn(200, `${method}:${url}`); });
 
            var ng1 = function() { return {templateUrl: 'url.html'}; };
            ng1Module.directive('ng1', ng1);
@@ -431,9 +431,9 @@ export function main() {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
            ng1Module.value(
-               '$httpBackend', (method: any /** TODO #9100 */, url: any /** TODO #9100 */,
-                                post: any /** TODO #9100 */,
-                                cbFn: any /** TODO #9100 */) => { cbFn(200, `${method}:${url}`); });
+               '$httpBackend',
+               (method: any /* TODO #9100 */, url: any /* TODO #9100 */, post: any /* TODO #9100 */,
+                cbFn: any /* TODO #9100 */) => { cbFn(200, `${method}:${url}`); });
 
            var ng1 = function() { return {templateUrl() { return 'url.html' }}; };
            ng1Module.directive('ng1', ng1);
@@ -498,7 +498,7 @@ export function main() {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
            ng1Module.run(
-               ($templateCache: any /** TODO #9100 */) => $templateCache.put('url.html', 'WORKS'));
+               ($templateCache: any /* TODO #9100 */) => $templateCache.put('url.html', 'WORKS'));
 
            var ng1 = function() { return {templateUrl: 'url.html'}; };
            ng1Module.directive('ng1', ng1);
@@ -529,7 +529,7 @@ export function main() {
                controllerAs: 'ctl',
                controller: Class({
                  constructor: function(
-                     $scope: any /** TODO #9100 */, $element: any /** TODO #9100 */) {
+                     $scope: any /* TODO #9100 */, $element: any /* TODO #9100 */) {
                    (<any>this).verifyIAmAClass();
                    this.scope = $scope.$parent.$parent == $scope.$root ? 'scope' : 'wrong-scope';
                    this.hasElement = $element[0].nodeName;
@@ -620,7 +620,7 @@ export function main() {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
-           var ng1 = function($rootScope: any /** TODO #9100 */) {
+           var ng1 = function($rootScope: any /* TODO #9100 */) {
              return {
                scope: {title: '@'},
                bindToController: true,
@@ -629,8 +629,8 @@ export function main() {
                controllerAs: 'ctrl',
                controller: Class({constructor: function() { this.status = 'WORKS'; }}),
                link: function(
-                   scope: any /** TODO #9100 */, element: any /** TODO #9100 */,
-                   attrs: any /** TODO #9100 */, linkController: any /** TODO #9100 */) {
+                   scope: any /* TODO #9100 */, element: any /* TODO #9100 */,
+                   attrs: any /* TODO #9100 */, linkController: any /* TODO #9100 */) {
                  expect(scope.$root).toEqual($rootScope);
                  expect(element[0].nodeName).toEqual('NG1');
                  expect(linkController.status).toEqual('WORKS');
@@ -670,8 +670,8 @@ export function main() {
                controllerAs: 'ctrl',
                controller: Class({constructor: function() { this.status = 'WORKS'; }}),
                link: function(
-                   scope: any /** TODO #9100 */, element: any /** TODO #9100 */,
-                   attrs: any /** TODO #9100 */, linkControllers: any /** TODO #9100 */) {
+                   scope: any /* TODO #9100 */, element: any /* TODO #9100 */,
+                   attrs: any /* TODO #9100 */, linkControllers: any /* TODO #9100 */) {
                  expect(linkControllers[0].status).toEqual('WORKS');
                  expect(linkControllers[1].parent).toEqual('PARENT');
                  expect(linkControllers[2]).toBe(undefined);

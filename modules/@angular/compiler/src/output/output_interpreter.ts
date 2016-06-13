@@ -177,7 +177,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   visitInvokeMethodExpr(expr: o.InvokeMethodExpr, ctx: _ExecutionContext): any {
     var receiver = expr.receiver.visitExpression(this, ctx);
     var args = this.visitAllExpressions(expr.args, ctx);
-    var result: any /** TODO #9100 */;
+    var result: any /* TODO #9100 */;
     if (isPresent(expr.builtin)) {
       switch (expr.builtin) {
         case o.BuiltinMethod.ConcatArray:
@@ -329,7 +329,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     }
   }
   visitReadPropExpr(ast: o.ReadPropExpr, ctx: _ExecutionContext): any {
-    var result: any /** TODO #9100 */;
+    var result: any /* TODO #9100 */;
     var receiver = ast.receiver.visitExpression(this, ctx);
     if (isDynamicInstance(receiver)) {
       var di = <DynamicInstance>receiver;
@@ -358,7 +358,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: _ExecutionContext): any {
     var result = {};
     ast.entries.forEach(
-        (entry) => (result as any /** TODO #9100 */)[<string>entry[0]] =
+        (entry) => (result as any /* TODO #9100 */)[<string>entry[0]] =
             (<o.Expression>entry[1]).visitExpression(this, ctx));
     return result;
   }
@@ -386,51 +386,51 @@ function _declareFn(
     case 0:
       return () => _executeFunctionStatements(varNames, [], statements, ctx, visitor);
     case 1:
-      return (d0: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */) =>
                  _executeFunctionStatements(varNames, [d0], statements, ctx, visitor);
     case 2:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */, d1: any /* TODO #9100 */) =>
                  _executeFunctionStatements(varNames, [d0, d1], statements, ctx, visitor);
     case 3:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */, d1: any /* TODO #9100 */, d2: any /* TODO #9100 */) =>
                  _executeFunctionStatements(varNames, [d0, d1, d2], statements, ctx, visitor);
     case 4:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
-              d3: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */, d1: any /* TODO #9100 */, d2: any /* TODO #9100 */,
+              d3: any /* TODO #9100 */) =>
                  _executeFunctionStatements(varNames, [d0, d1, d2, d3], statements, ctx, visitor);
     case 5:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
-              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */, d1: any /* TODO #9100 */, d2: any /* TODO #9100 */,
+              d3: any /* TODO #9100 */, d4: any /* TODO #9100 */) =>
                  _executeFunctionStatements(
                      varNames, [d0, d1, d2, d3, d4], statements, ctx, visitor);
     case 6:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
-              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */, d1: any /* TODO #9100 */, d2: any /* TODO #9100 */,
+              d3: any /* TODO #9100 */, d4: any /* TODO #9100 */, d5: any /* TODO #9100 */) =>
                  _executeFunctionStatements(
                      varNames, [d0, d1, d2, d3, d4, d5], statements, ctx, visitor);
     case 7:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
-              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */,
-              d6: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */, d1: any /* TODO #9100 */, d2: any /* TODO #9100 */,
+              d3: any /* TODO #9100 */, d4: any /* TODO #9100 */, d5: any /* TODO #9100 */,
+              d6: any /* TODO #9100 */) =>
                  _executeFunctionStatements(
                      varNames, [d0, d1, d2, d3, d4, d5, d6], statements, ctx, visitor);
     case 8:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
-              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */,
-              d6: any /** TODO #9100 */, d7: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */, d1: any /* TODO #9100 */, d2: any /* TODO #9100 */,
+              d3: any /* TODO #9100 */, d4: any /* TODO #9100 */, d5: any /* TODO #9100 */,
+              d6: any /* TODO #9100 */, d7: any /* TODO #9100 */) =>
                  _executeFunctionStatements(
                      varNames, [d0, d1, d2, d3, d4, d5, d6, d7], statements, ctx, visitor);
     case 9:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
-              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */,
-              d6: any /** TODO #9100 */, d7: any /** TODO #9100 */, d8: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */, d1: any /* TODO #9100 */, d2: any /* TODO #9100 */,
+              d3: any /* TODO #9100 */, d4: any /* TODO #9100 */, d5: any /* TODO #9100 */,
+              d6: any /* TODO #9100 */, d7: any /* TODO #9100 */, d8: any /* TODO #9100 */) =>
                  _executeFunctionStatements(
                      varNames, [d0, d1, d2, d3, d4, d5, d6, d7, d8], statements, ctx, visitor);
     case 10:
-      return (d0: any /** TODO #9100 */, d1: any /** TODO #9100 */, d2: any /** TODO #9100 */,
-              d3: any /** TODO #9100 */, d4: any /** TODO #9100 */, d5: any /** TODO #9100 */,
-              d6: any /** TODO #9100 */, d7: any /** TODO #9100 */, d8: any /** TODO #9100 */,
-              d9: any /** TODO #9100 */) =>
+      return (d0: any /* TODO #9100 */, d1: any /* TODO #9100 */, d2: any /* TODO #9100 */,
+              d3: any /* TODO #9100 */, d4: any /* TODO #9100 */, d5: any /* TODO #9100 */,
+              d6: any /* TODO #9100 */, d7: any /* TODO #9100 */, d8: any /* TODO #9100 */,
+              d9: any /* TODO #9100 */) =>
                  _executeFunctionStatements(
                      varNames, [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9], statements, ctx, visitor);
     default:

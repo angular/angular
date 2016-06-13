@@ -143,7 +143,7 @@ export function main() {
       it('should allow to create, update and destroy components',
          inject(
              [AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
-             (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc: any /** TODO #9100 */,
+             (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc: any /* TODO #9100 */,
               injector: Injector) => {
                var rootEl = createRootElement(doc, 'child-cmp');
                getDOM().appendChild(doc.body, rootEl);
@@ -173,7 +173,7 @@ export function main() {
       it('should allow to pass projectable nodes',
          inject(
              [AsyncTestCompleter, DynamicComponentLoader, DOCUMENT, Injector],
-             (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc: any /** TODO #9100 */,
+             (async: AsyncTestCompleter, loader: DynamicComponentLoader, doc: any /* TODO #9100 */,
               injector: Injector) => {
                var rootEl = createRootElement(doc, 'dummy');
                getDOM().appendChild(doc.body, rootEl);

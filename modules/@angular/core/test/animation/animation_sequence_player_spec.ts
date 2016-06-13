@@ -6,7 +6,7 @@ import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject
 
 export function main() {
   describe('AnimationSequencePlayer', function() {
-    var players: any /** TODO #9100 */;
+    var players: any /* TODO #9100 */;
     beforeEach(() => {
       players = [
         new MockAnimationPlayer(),

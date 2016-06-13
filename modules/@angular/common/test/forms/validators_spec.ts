@@ -9,7 +9,7 @@ export function main() {
   function validator(key: string, error: any) {
     return function(c: AbstractControl) {
       var r = {};
-      (r as any /** TODO #9100 */)[key] = error;
+      (r as any /* TODO #9100 */)[key] = error;
       return r;
     }
   }
@@ -107,8 +107,8 @@ export function main() {
     });
 
     describe('composeAsync', () => {
-      function asyncValidator(expected: any /** TODO #9100 */, response: any /** TODO #9100 */) {
-        return (c: any /** TODO #9100 */) => {
+      function asyncValidator(expected: any /* TODO #9100 */, response: any /* TODO #9100 */) {
+        return (c: any /* TODO #9100 */) => {
           var emitter = new EventEmitter();
           var res = c.value != expected ? response : null;
 
@@ -131,7 +131,7 @@ export function main() {
              asyncValidator('expected', {'one': true}), asyncValidator('expected', {'two': true})
            ]);
 
-           var value: any /** TODO #9100 */ = null;
+           var value: any /* TODO #9100 */ = null;
            (<Promise<any>>c(new FormControl('invalid'))).then(v => value = v);
 
            tick(1);
@@ -142,7 +142,7 @@ export function main() {
       it('should return null when no errors', fakeAsync(() => {
            var c = Validators.composeAsync([asyncValidator('expected', {'one': true})]);
 
-           var value: any /** TODO #9100 */ = null;
+           var value: any /* TODO #9100 */ = null;
            (<Promise<any>>c(new FormControl('expected'))).then(v => value = v);
 
            tick(1);
@@ -153,7 +153,7 @@ export function main() {
       it('should ignore nulls', fakeAsync(() => {
            var c = Validators.composeAsync([asyncValidator('expected', {'one': true}), null]);
 
-           var value: any /** TODO #9100 */ = null;
+           var value: any /* TODO #9100 */ = null;
            (<Promise<any>>c(new FormControl('invalid'))).then(v => value = v);
 
            tick(1);

@@ -276,7 +276,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: any): any;
 
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): any {
-    var opStr: any /** TODO #9100 */;
+    var opStr: any /* TODO #9100 */;
     switch (ast.operator) {
       case o.BinaryOperator.Equals:
         opStr = '==';
@@ -360,7 +360,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     var useNewLine = ast.entries.length > 1;
     ctx.print(`{`, useNewLine);
     ctx.incIndent();
-    this.visitAllObjects((entry: any /** TODO #9100 */) => {
+    this.visitAllObjects((entry: any /* TODO #9100 */) => {
       ctx.print(`${escapeSingleQuoteString(entry[0], this._escapeDollarInStrings)}: `);
       entry[1].visitExpression(this, ctx);
     }, ast.entries, ctx, ',', useNewLine);
@@ -373,7 +373,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string,
       newLine: boolean = false): void {
     this.visitAllObjects(
-        (expr: any /** TODO #9100 */) => expr.visitExpression(this, ctx), expressions, ctx,
+        (expr: any /* TODO #9100 */) => expr.visitExpression(this, ctx), expressions, ctx,
         separator, newLine);
   }
 
@@ -401,7 +401,7 @@ export function escapeSingleQuoteString(input: string, escapeDollar: boolean): a
     return null;
   }
   var body = StringWrapper.replaceAllMapped(
-      input, _SINGLE_QUOTE_ESCAPE_STRING_RE, (match: any /** TODO #9100 */) => {
+      input, _SINGLE_QUOTE_ESCAPE_STRING_RE, (match: any /* TODO #9100 */) => {
         if (match[0] == '$') {
           return escapeDollar ? '\\$' : '$';
         } else if (match[0] == '\n') {

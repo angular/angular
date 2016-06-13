@@ -6,7 +6,7 @@ import {StringMapWrapper} from '../../src/facade/collection';
 import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
 
 export class MockAnimationDriver extends AnimationDriver {
-  log: any[] /** TODO #9100 */ = [];
+  log: any[] /* TODO #9100 */ = [];
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string): AnimationPlayer {
@@ -33,8 +33,8 @@ function _serializeStyles(styles: AnimationStyles): {[key: string]: any} {
   var flatStyles = {};
   styles.styles.forEach(
       entry => StringMapWrapper.forEach(
-          entry, (val: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-            (flatStyles as any /** TODO #9100 */)[prop] = val;
+          entry, (val: any /* TODO #9100 */, prop: any /* TODO #9100 */) => {
+            (flatStyles as any /* TODO #9100 */)[prop] = val;
           }));
   return flatStyles;
 }

@@ -16,7 +16,7 @@ export function main() {
     describe('without APP_BASE_HREF', () => {
       beforeEach(inject(
           [PlatformLocation, HashLocationStrategy],
-          (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
+          (pl: any /* TODO #9100 */, ls: any /* TODO #9100 */) => {
             platformLocation = pl;
             locationStrategy = ls;
             platformLocation.spy('pushState');
@@ -58,7 +58,7 @@ export function main() {
 
       beforeEach(inject(
           [PlatformLocation, HashLocationStrategy],
-          (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
+          (pl: any /* TODO #9100 */, ls: any /* TODO #9100 */) => {
             platformLocation = pl;
             locationStrategy = ls;
             platformLocation.spy('pushState');
@@ -93,7 +93,7 @@ export function main() {
 
       beforeEach(inject(
           [PlatformLocation, HashLocationStrategy],
-          (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
+          (pl: any /* TODO #9100 */, ls: any /* TODO #9100 */) => {
             platformLocation = pl;
             locationStrategy = ls;
             platformLocation.spy('pushState');
@@ -128,7 +128,7 @@ export function main() {
 
       beforeEach(inject(
           [PlatformLocation, HashLocationStrategy],
-          (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
+          (pl: any /* TODO #9100 */, ls: any /* TODO #9100 */) => {
             platformLocation = pl;
             locationStrategy = ls;
             platformLocation.spy('pushState');
@@ -161,7 +161,7 @@ export function main() {
     describe('hashLocationStrategy bugs', () => {
       beforeEach(inject(
           [PlatformLocation, HashLocationStrategy],
-          (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
+          (pl: any /* TODO #9100 */, ls: any /* TODO #9100 */) => {
             platformLocation = pl;
             locationStrategy = ls;
             platformLocation.spy('pushState');

@@ -14,7 +14,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {browserDetection} from '@angular/platform-browser/testing'
 
 export function main() {
-  var outputDefs: any[] /** TODO #9100 */ = []; outputDefs.push({
+  var outputDefs: any[] /* TODO #9100 */ = []; outputDefs.push({
     'getExpressions': () => interpretStatements(
                           codegenStmts, 'getExpressions', new DynamicClassInstanceFactory()),
     'name': 'interpreted'
@@ -38,7 +38,7 @@ export function main() {
       () => {
         outputDefs.forEach((outputDef) => {
           describe(`${outputDef['name']}`, () => {
-            var expressions: any /** TODO #9100 */;
+            var expressions: any /* TODO #9100 */;
             beforeEach(() => { expressions = outputDef['getExpressions']()(); });
 
             it('should support literals', () => {
@@ -113,8 +113,8 @@ export function main() {
             });
 
             describe('operators', () => {
-              var ops: any /** TODO #9100 */;
-              var aObj: any /** TODO #9100 */, bObj: any /** TODO #9100 */;
+              var ops: any /* TODO #9100 */;
+              var aObj: any /* TODO #9100 */, bObj: any /* TODO #9100 */;
               beforeEach(() => {
                 ops = expressions['operators'];
                 aObj = new Object();

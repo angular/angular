@@ -21,7 +21,7 @@ export function main() {
       log = '';
     });
 
-    function logAppend(item: any /** TODO #9100 */) { log += (log.length == 0 ? '' : ', ') + item; }
+    function logAppend(item: any /* TODO #9100 */) { log += (log.length == 0 ? '' : ', ') + item; }
 
     it('should support resetting and iterating over the new objects', () => {
       queryList.reset(['one']);
@@ -50,7 +50,7 @@ export function main() {
     if (!IS_DART) {
       it('should support filter', () => {
         queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList).filter((x: any /** TODO #9100 */) => x == 'one')).toEqual([
+        expect((<_JsQueryList>queryList).filter((x: any /* TODO #9100 */) => x == 'one')).toEqual([
           'one'
         ]);
       });
@@ -58,14 +58,14 @@ export function main() {
       it('should support reduce', () => {
         queryList.reset(['one', 'two']);
         expect((<_JsQueryList>queryList)
-                   .reduce((a: any /** TODO #9100 */, x: any /** TODO #9100 */) => a + x, 'start:'))
+                   .reduce((a: any /* TODO #9100 */, x: any /* TODO #9100 */) => a + x, 'start:'))
             .toEqual('start:onetwo');
       });
 
       it('should support toArray', () => {
         queryList.reset(['one', 'two']);
         expect((<_JsQueryList>queryList)
-                   .reduce((a: any /** TODO #9100 */, x: any /** TODO #9100 */) => a + x, 'start:'))
+                   .reduce((a: any /* TODO #9100 */, x: any /* TODO #9100 */) => a + x, 'start:'))
             .toEqual('start:onetwo');
       });
 
@@ -106,7 +106,7 @@ export function main() {
            }));
 
         it('should provides query list as an argument', fakeAsync(() => {
-             var recorded: any /** TODO #9100 */;
+             var recorded: any /* TODO #9100 */;
              ObservableWrapper.subscribe(queryList.changes, (v: any) => { recorded = v; });
 
              queryList.reset(['one']);

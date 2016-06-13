@@ -21,14 +21,13 @@ class _ArrayLogger {
 }
 
 class DummyConsole implements Console {
-  log(message: any /** TODO #9100 */) {}
-  warn(message: any /** TODO #9100 */) {}
+  log(message: any /* TODO #9100 */) {}
+  warn(message: any /* TODO #9100 */) {}
 }
 
 export function main() {
   describe('RouteConfig with POJO arguments', () => {
-    var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */,
-        testBindings: any /** TODO #9100 */;
+    var fakeDoc: any /* TODO #9100 */, el: any /* TODO #9100 */, testBindings: any /* TODO #9100 */;
     beforeEach(() => {
       fakeDoc = getDOM().createHtmlDocument();
       el = getDOM().createElement('app-cmp', fakeDoc);
@@ -47,7 +46,7 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(HierarchyAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
-           router.subscribe((_: any /** TODO #9100 */) => {
+           router.subscribe((_: any /* TODO #9100 */) => {
              expect(el).toHaveText('root { parent { hello } }');
              expect(applicationRef.instance.location.path()).toEqual('/parent/child');
              async.done();
@@ -61,7 +60,7 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(RedirectAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
-           router.subscribe((_: any /** TODO #9100 */) => {
+           router.subscribe((_: any /* TODO #9100 */) => {
              expect(el).toHaveText('root { hello }');
              expect(applicationRef.instance.location.path()).toEqual('/after');
              async.done();
@@ -75,7 +74,7 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(AsyncAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
-           router.subscribe((_: any /** TODO #9100 */) => {
+           router.subscribe((_: any /* TODO #9100 */) => {
              expect(el).toHaveText('root { hello }');
              expect(applicationRef.instance.location.path()).toEqual('/hello');
              async.done();
@@ -89,7 +88,7 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(AuxAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
-           router.subscribe((_: any /** TODO #9100 */) => {
+           router.subscribe((_: any /* TODO #9100 */) => {
              expect(el).toHaveText('root { hello } aside { hello }');
              expect(applicationRef.instance.location.path()).toEqual('/hello(aside)');
              async.done();
@@ -103,7 +102,7 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(ConciseAsyncAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
-           router.subscribe((_: any /** TODO #9100 */) => {
+           router.subscribe((_: any /* TODO #9100 */) => {
              expect(el).toHaveText('root { hello }');
              expect(applicationRef.instance.location.path()).toEqual('/hello');
              async.done();
@@ -117,7 +116,7 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          bootstrap(ExplicitConstructorAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
-           router.subscribe((_: any /** TODO #9100 */) => {
+           router.subscribe((_: any /* TODO #9100 */) => {
              expect(el).toHaveText('root { hello }');
              expect(applicationRef.instance.location.path()).toEqual('/hello');
              async.done();

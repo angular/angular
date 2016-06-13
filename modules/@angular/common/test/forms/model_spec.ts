@@ -7,11 +7,11 @@ import {PromiseWrapper} from '../../src/facade/promise';
 import {TimerWrapper, ObservableWrapper, EventEmitter} from '../../src/facade/async';
 
 export function main() {
-  function asyncValidator(expected: any /** TODO #9100 */, timeouts = /*@ts2dart_const*/ {}) {
-    return (c: any /** TODO #9100 */) => {
+  function asyncValidator(expected: any /* TODO #9100 */, timeouts = /*@ts2dart_const*/ {}) {
+    return (c: any /* TODO #9100 */) => {
       var completer = PromiseWrapper.completer();
-      var t = isPresent((timeouts as any /** TODO #9100 */)[c.value]) ?
-          (timeouts as any /** TODO #9100 */)[c.value] :
+      var t = isPresent((timeouts as any /* TODO #9100 */)[c.value]) ?
+          (timeouts as any /* TODO #9100 */)[c.value] :
           0;
       var res = c.value != expected ? {'async': true} : null;
 
@@ -25,7 +25,7 @@ export function main() {
     };
   }
 
-  function asyncValidatorReturningObservable(c: any /** TODO #9100 */) {
+  function asyncValidatorReturningObservable(c: any /* TODO #9100 */) {
     var e = new EventEmitter();
     PromiseWrapper.scheduleMicrotask(() => ObservableWrapper.callEmit(e, {'async': true}));
     return e;
@@ -151,7 +151,7 @@ export function main() {
       });
 
       describe('updateValue', () => {
-        var g: any /** TODO #9100 */, c: any /** TODO #9100 */;
+        var g: any /* TODO #9100 */, c: any /* TODO #9100 */;
         beforeEach(() => {
           c = new FormControl('oldValue');
           g = new FormGroup({'one': c});
@@ -163,8 +163,8 @@ export function main() {
         });
 
         it('should invoke ngOnChanges if it is present', () => {
-          var ngOnChanges: any /** TODO #9100 */;
-          c.registerOnChange((v: any /** TODO #9100 */) => ngOnChanges = ['invoked', v]);
+          var ngOnChanges: any /* TODO #9100 */;
+          c.registerOnChange((v: any /* TODO #9100 */) => ngOnChanges = ['invoked', v]);
 
           c.updateValue('newValue');
 
@@ -172,8 +172,8 @@ export function main() {
         });
 
         it('should not invoke on change when explicitly specified', () => {
-          var onChange: any /** TODO #9100 */ = null;
-          c.registerOnChange((v: any /** TODO #9100 */) => onChange = ['invoked', v]);
+          var onChange: any /* TODO #9100 */ = null;
+          c.registerOnChange((v: any /* TODO #9100 */) => onChange = ['invoked', v]);
 
           c.updateValue('newValue', {emitModelToViewChange: false});
 
@@ -208,7 +208,7 @@ export function main() {
       });
 
       describe('valueChanges & statusChanges', () => {
-        var c: any /** TODO #9100 */;
+        var c: any /* TODO #9100 */;
 
         beforeEach(() => { c = new FormControl('old', Validators.required); });
 
@@ -235,7 +235,7 @@ export function main() {
         it('should fire an event after the status has been updated to pending', fakeAsync(() => {
              var c = new FormControl('old', Validators.required, asyncValidator('expected'));
 
-             var log: any[] /** TODO #9100 */ = [];
+             var log: any[] /* TODO #9100 */ = [];
              ObservableWrapper.subscribe(c.valueChanges, (value) => log.push(`value: '${value}'`));
              ObservableWrapper.subscribe(
                  c.statusChanges, (status) => log.push(`status: '${status}'`));
@@ -266,7 +266,7 @@ export function main() {
         if (!IS_DART) {
           it('should update set errors and status before emitting an event',
              inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-               c.valueChanges.subscribe((value: any /** TODO #9100 */) => {
+               c.valueChanges.subscribe((value: any /* TODO #9100 */) => {
                  expect(c.valid).toEqual(false);
                  expect(c.errors).toEqual({'required': true});
                  async.done();
@@ -393,7 +393,7 @@ export function main() {
 
       describe('errors', () => {
         it('should run the validator when the value changes', () => {
-          var simpleValidator = (c: any /** TODO #9100 */) =>
+          var simpleValidator = (c: any /* TODO #9100 */) =>
               c.controls['one'].value != 'correct' ? {'broken': true} : null;
 
           var c = new FormControl(null);
@@ -412,7 +412,7 @@ export function main() {
       });
 
       describe('dirty', () => {
-        var c: any /** TODO #9100 */, g: any /** TODO #9100 */;
+        var c: any /* TODO #9100 */, g: any /* TODO #9100 */;
 
         beforeEach(() => {
           c = new FormControl('value');
@@ -430,7 +430,7 @@ export function main() {
 
       describe('optional components', () => {
         describe('contains', () => {
-          var group: any /** TODO #9100 */;
+          var group: any /* TODO #9100 */;
 
           beforeEach(() => {
             group = new FormGroup(
@@ -489,7 +489,7 @@ export function main() {
       });
 
       describe('valueChanges', () => {
-        var g: any /** TODO #9100 */, c1: any /** TODO #9100 */, c2: any /** TODO #9100 */;
+        var g: any /* TODO #9100 */, c1: any /* TODO #9100 */, c2: any /* TODO #9100 */;
 
         beforeEach(() => {
           c1 = new FormControl('old1');
@@ -546,7 +546,7 @@ export function main() {
 
         it('should fire an event every time a control is updated',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             var loggedValues: any[] /** TODO #9100 */ = [];
+             var loggedValues: any[] /* TODO #9100 */ = [];
 
              ObservableWrapper.subscribe(g.valueChanges, (value) => {
                loggedValues.push(value);
@@ -627,7 +627,7 @@ export function main() {
     describe('FormArray', () => {
       describe('adding/removing', () => {
         var a: FormArray;
-        var c1: any /** TODO #9100 */, c2: any /** TODO #9100 */, c3: any /** TODO #9100 */;
+        var c1: any /* TODO #9100 */, c2: any /* TODO #9100 */, c3: any /* TODO #9100 */;
 
         beforeEach(() => {
           a = new FormArray([]);
@@ -676,7 +676,7 @@ export function main() {
 
       describe('errors', () => {
         it('should run the validator when the value changes', () => {
-          var simpleValidator = (c: any /** TODO #9100 */) =>
+          var simpleValidator = (c: any /* TODO #9100 */) =>
               c.controls[0].value != 'correct' ? {'broken': true} : null;
 
           var c = new FormControl(null);
@@ -744,7 +744,7 @@ export function main() {
 
       describe('valueChanges', () => {
         var a: FormArray;
-        var c1: any /** TODO #9100 */, c2: any /** TODO #9100 */;
+        var c1: any /* TODO #9100 */, c2: any /* TODO #9100 */;
 
         beforeEach(() => {
           c1 = new FormControl('old1');

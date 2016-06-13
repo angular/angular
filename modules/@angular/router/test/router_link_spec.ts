@@ -15,8 +15,8 @@ export function main() {
              {provide: LocationStrategy, useClass: MockLocationStrategy}, {
                provide: Router,
                useFactory:
-                   (resolver: any /** TODO #9100 */, urlParser: any /** TODO #9100 */,
-                    outletMap: any /** TODO #9100 */, location: any /** TODO #9100 */) =>
+                   (resolver: any /* TODO #9100 */, urlParser: any /* TODO #9100 */,
+                    outletMap: any /* TODO #9100 */, location: any /* TODO #9100 */) =>
                        new Router(
                            'RootComponent', RootCmp, resolver, urlParser, outletMap, location),
                deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
@@ -26,7 +26,7 @@ export function main() {
       it('should accept an array of commands',
          inject(
              [Router, LocationStrategy],
-             (router: any /** TODO #9100 */, locationStrategy: any /** TODO #9100 */) => {
+             (router: any /* TODO #9100 */, locationStrategy: any /* TODO #9100 */) => {
                let link = new RouterLink(null, router, locationStrategy);
                link.routerLink = ['/one', 11];
                expect(link.href).toEqual('/one/11');
@@ -35,7 +35,7 @@ export function main() {
       it('should accept a single command',
          inject(
              [Router, LocationStrategy],
-             (router: any /** TODO #9100 */, locationStrategy: any /** TODO #9100 */) => {
+             (router: any /* TODO #9100 */, locationStrategy: any /* TODO #9100 */) => {
                let link = new RouterLink(null, router, locationStrategy);
                link.routerLink = '/one/11';
                expect(link.href).toEqual('/one/11');

@@ -29,7 +29,7 @@ export const ROUTER_FAKE_PROVIDERS: any[] = /*@ts2dart_const*/[
   },
   /*@ts2dart_Provider*/ {
     provide: RouteSegment,
-    useFactory: (r: any /** TODO #9100 */) => r.routeTree.root,
+    useFactory: (r: any /* TODO #9100 */) => r.routeTree.root,
     deps: [Router]
   }
 ];

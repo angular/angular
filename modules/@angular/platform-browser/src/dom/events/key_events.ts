@@ -89,7 +89,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
 
   static eventCallback(element: HTMLElement, fullKey: any, handler: Function, zone: NgZone):
       Function {
-    return (event: any /** TODO #9100 */) => {
+    return (event: any /* TODO #9100 */) => {
       if (StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
         zone.runGuarded(() => handler(event));
       }

@@ -14,7 +14,7 @@ import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()
 export class WebWorkerRootRenderer implements RootRenderer {
-  private _messageBroker: any /** TODO #9100 */;
+  private _messageBroker: any /* TODO #9100 */;
   public globalEvents: NamedEventEmitter = new NamedEventEmitter();
   private _componentRenderers: Map<string, WebWorkerRenderer> =
       new Map<string, WebWorkerRenderer>();

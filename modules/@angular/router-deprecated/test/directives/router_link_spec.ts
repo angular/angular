@@ -23,7 +23,7 @@ export function main() {
                         }]);
 
     beforeEach(
-        inject([TestComponentBuilder], (tcBuilder: any /** TODO #9100 */) => { tcb = tcBuilder; }));
+        inject([TestComponentBuilder], (tcBuilder: any /* TODO #9100 */) => { tcb = tcBuilder; }));
 
     it('should update a[href] attribute',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -41,7 +41,7 @@ export function main() {
     it('should call router.navigate when a link is clicked',
        inject(
            [AsyncTestCompleter, Router],
-           (async: AsyncTestCompleter, router: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, router: any /* TODO #9100 */) => {
 
              tcb.createAsync(TestComponent).then((testComponent) => {
                testComponent.detectChanges();
@@ -56,7 +56,7 @@ export function main() {
     it('should call router.navigate when a link is clicked if target is _self',
        inject(
            [AsyncTestCompleter, Router],
-           (async: AsyncTestCompleter, router: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, router: any /* TODO #9100 */) => {
 
              tcb.createAsync(TestComponent).then((testComponent) => {
                testComponent.detectChanges();
@@ -70,7 +70,7 @@ export function main() {
     it('should NOT call router.navigate when a link is clicked if target is set to other than _self',
        inject(
            [AsyncTestCompleter, Router],
-           (async: AsyncTestCompleter, router: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, router: any /* TODO #9100 */) => {
 
              tcb.createAsync(TestComponent).then((testComponent) => {
                testComponent.detectChanges();
@@ -115,14 +115,14 @@ class TestComponent {
 
 function makeDummyLocation() {
   var dl = new SpyLocation();
-  dl.spy('prepareExternalUrl').andCallFake((url: any /** TODO #9100 */) => url);
+  dl.spy('prepareExternalUrl').andCallFake((url: any /* TODO #9100 */) => url);
   return dl;
 }
 
 function makeDummyRouter() {
   var dr = new SpyRouter();
-  dr.spy('generate').andCallFake((routeParams: any /** TODO #9100 */) => dummyInstruction);
-  dr.spy('isRouteActive').andCallFake((_: any /** TODO #9100 */) => false);
+  dr.spy('generate').andCallFake((routeParams: any /* TODO #9100 */) => dummyInstruction);
+  dr.spy('isRouteActive').andCallFake((_: any /* TODO #9100 */) => false);
   dr.spy('navigateInstruction');
   return dr;
 }

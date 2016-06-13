@@ -23,7 +23,7 @@ export class Provider {
   /**
    * Token used when retrieving this provider. Usually, it is a type {@link Type}.
    */
-  token: any /** TODO #9100 */;
+  token: any /* TODO #9100 */;
 
   /**
    * Binds a DI token to an implementation class.
@@ -69,7 +69,7 @@ export class Provider {
    * expect(injector.get("message")).toEqual('Hello');
    * ```
    */
-  useValue: any /** TODO #9100 */;
+  useValue: any /* TODO #9100 */;
 
   /**
    * Binds a DI token to an existing token.
@@ -103,7 +103,7 @@ export class Provider {
    * expect(injectorClass.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  useExisting: any /** TODO #9100 */;
+  useExisting: any /* TODO #9100 */;
 
   /**
    * Binds a DI token to a function which computes the value.
@@ -150,7 +150,7 @@ export class Provider {
   _multi: boolean;
 
   constructor(
-      token: any /** TODO #9100 */, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+      token: any /* TODO #9100 */, {useClass, useValue, useExisting, useFactory, deps, multi}: {
         useClass?: Type,
         useValue?: any,
         useExisting?: any,
@@ -207,7 +207,7 @@ export class Provider {
  * @ts2dart_const
  */
 export class Binding extends Provider {
-  constructor(token: any /** TODO #9100 */, {toClass, toValue, toAlias, toFactory, deps, multi}: {
+  constructor(token: any /* TODO #9100 */, {toClass, toValue, toAlias, toFactory, deps, multi}: {
     toClass?: Type,
     toValue?: any,
     toAlias?: any,
@@ -256,7 +256,7 @@ export class Binding extends Provider {
  *
  * @deprecated
  */
-export function bind(token: any /** TODO #9100 */): ProviderBuilder {
+export function bind(token: any /* TODO #9100 */): ProviderBuilder {
   return new ProviderBuilder(token);
 }
 
@@ -265,7 +265,7 @@ export function bind(token: any /** TODO #9100 */): ProviderBuilder {
  * @deprecated
  */
 export class ProviderBuilder {
-  constructor(public token: any /** TODO #9100 */) {}
+  constructor(public token: any /* TODO #9100 */) {}
 
   /**
    * Binds a DI token to a class.
@@ -391,7 +391,7 @@ export class ProviderBuilder {
  * @deprecated
  */
 export function provide(
-    token: any /** TODO #9100 */, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+    token: any /* TODO #9100 */, {useClass, useValue, useExisting, useFactory, deps, multi}: {
       useClass?: Type,
       useValue?: any,
       useExisting?: any,

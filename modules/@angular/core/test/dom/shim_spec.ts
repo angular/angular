@@ -4,8 +4,8 @@ export function main() {
   describe('Shim', () => {
 
     it('should provide correct function.name ', () => {
-      var functionWithoutName = identity(() => function(_: any /** TODO #9100 */) {});
-      function foo(_: any /** TODO #9100 */){};
+      var functionWithoutName = identity(() => function(_: any /* TODO #9100 */) {});
+      function foo(_: any /* TODO #9100 */){};
 
       expect((<any>functionWithoutName).name).toBeFalsy();
       expect((<any>foo).name).toEqual('foo');
@@ -14,6 +14,6 @@ export function main() {
   });
 }
 
-function identity(a: any /** TODO #9100 */) {
+function identity(a: any /* TODO #9100 */) {
   return a;
 }

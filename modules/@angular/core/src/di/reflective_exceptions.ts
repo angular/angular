@@ -6,7 +6,7 @@ import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';
 
 function findFirstClosedCycle(keys: any[]): any[] {
-  var res: any[] /** TODO #9100 */ = [];
+  var res: any[] /* TODO #9100 */ = [];
   for (var i = 0; i < keys.length; ++i) {
     if (ListWrapper.contains(res, keys[i])) {
       res.push(keys[i]);
@@ -148,8 +148,8 @@ export class InstantiationError extends WrappedException {
   injectors: ReflectiveInjector[];
 
   constructor(
-      injector: ReflectiveInjector, originalException: any /** TODO #9100 */,
-      originalStack: any /** TODO #9100 */, key: ReflectiveKey) {
+      injector: ReflectiveInjector, originalException: any /* TODO #9100 */,
+      originalStack: any /* TODO #9100 */, key: ReflectiveKey) {
     super('DI Exception', originalException, originalStack, null);
     this.keys = [key];
     this.injectors = [injector];
@@ -182,7 +182,7 @@ export class InstantiationError extends WrappedException {
  * @stable
  */
 export class InvalidProviderError extends BaseException {
-  constructor(provider: any /** TODO #9100 */) {
+  constructor(provider: any /* TODO #9100 */) {
     super(`Invalid provider - only instances of Provider and Type are allowed, got: ${provider}`);
   }
 }
@@ -217,12 +217,12 @@ export class InvalidProviderError extends BaseException {
  * @stable
  */
 export class NoAnnotationError extends BaseException {
-  constructor(typeOrFunc: any /** TODO #9100 */, params: any[][]) {
+  constructor(typeOrFunc: any /* TODO #9100 */, params: any[][]) {
     super(NoAnnotationError._genMessage(typeOrFunc, params));
   }
 
-  private static _genMessage(typeOrFunc: any /** TODO #9100 */, params: any[][]) {
-    var signature: any[] /** TODO #9100 */ = [];
+  private static _genMessage(typeOrFunc: any /* TODO #9100 */, params: any[][]) {
+    var signature: any[] /* TODO #9100 */ = [];
     for (var i = 0, ii = params.length; i < ii; i++) {
       var parameter = params[i];
       if (isBlank(parameter) || parameter.length == 0) {
@@ -253,7 +253,7 @@ export class NoAnnotationError extends BaseException {
  * @stable
  */
 export class OutOfBoundsError extends BaseException {
-  constructor(index: any /** TODO #9100 */) { super(`Index ${index} is out-of-bounds.`); }
+  constructor(index: any /* TODO #9100 */) { super(`Index ${index} is out-of-bounds.`); }
 }
 
 // TODO: add a working example after alpha38 is released
@@ -270,7 +270,7 @@ export class OutOfBoundsError extends BaseException {
  * ```
  */
 export class MixingMultiProvidersWithRegularProvidersError extends BaseException {
-  constructor(provider1: any /** TODO #9100 */, provider2: any /** TODO #9100 */) {
+  constructor(provider1: any /* TODO #9100 */, provider2: any /* TODO #9100 */) {
     super(
         'Cannot mix multi providers and regular providers, got: ' + provider1.toString() + ' ' +
         provider2.toString());

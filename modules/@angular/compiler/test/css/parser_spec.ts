@@ -4,7 +4,7 @@ import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '
 
 import {BaseException} from '../../src/facade/exceptions';
 
-export function assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9100 */) {
+export function assertTokens(tokens: any /* TODO #9100 */, valuesArr: any /* TODO #9100 */) {
   for (var i = 0; i < tokens.length; i++) {
     expect(tokens[i].strValue == valuesArr[i]);
   }
@@ -12,14 +12,14 @@ export function assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** T
 
 export function main() {
   describe('CssParser', () => {
-    function parse(css: any /** TODO #9100 */): ParsedCssResult {
+    function parse(css: any /* TODO #9100 */): ParsedCssResult {
       var lexer = new CssLexer();
       var scanner = lexer.scan(css);
       var parser = new CssParser(scanner, 'some-fake-file-name.css');
       return parser.parse();
     }
 
-    function makeAST(css: any /** TODO #9100 */): CssStyleSheetAST {
+    function makeAST(css: any /* TODO #9100 */): CssStyleSheetAST {
       var output = parse(css);
       var errors = output.errors;
       if (errors.length > 0) {

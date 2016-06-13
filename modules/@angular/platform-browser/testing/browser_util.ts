@@ -53,7 +53,7 @@ export class BrowserDetection {
 BrowserDetection.setup();
 
 export function dispatchEvent(
-    element: any /** TODO #9100 */, eventType: any /** TODO #9100 */): void {
+    element: any /* TODO #9100 */, eventType: any /* TODO #9100 */): void {
   getDOM().dispatchEvent(element, getDOM().createEvent(eventType));
 }
 
@@ -68,14 +68,14 @@ export function normalizeCSS(css: string): string {
   css = StringWrapper.replaceAll(css, / }/g, '}');
   css = StringWrapper.replaceAllMapped(
       css, /url\((\"|\s)(.+)(\"|\s)\)(\s*)/g,
-      (match: any /** TODO #9100 */) => `url("${match[2]}")`);
+      (match: any /* TODO #9100 */) => `url("${match[2]}")`);
   css = StringWrapper.replaceAllMapped(
-      css, /\[(.+)=([^"\]]+)\]/g, (match: any /** TODO #9100 */) => `[${match[1]}="${match[2]}"]`);
+      css, /\[(.+)=([^"\]]+)\]/g, (match: any /* TODO #9100 */) => `[${match[1]}="${match[2]}"]`);
   return css;
 }
 
 var _singleTagWhitelist = ['br', 'hr', 'input'];
-export function stringifyElement(el: any /** TODO #9100 */): string {
+export function stringifyElement(el: any /* TODO #9100 */): string {
   var result = '';
   if (getDOM().isElementNode(el)) {
     var tagName = getDOM().tagName(el).toLowerCase();
@@ -85,7 +85,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
     // Attributes in an ordered way
     var attributeMap = getDOM().attributeMap(el);
-    var keys: any[] /** TODO #9100 */ = [];
+    var keys: any[] /* TODO #9100 */ = [];
     attributeMap.forEach((v, k) => keys.push(k));
     ListWrapper.sort(keys);
     for (let i = 0; i < keys.length; i++) {

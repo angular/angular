@@ -150,8 +150,8 @@ export class CssParser {
   }
 
   /** @internal */
-  _parseStyleSheet(delimiters: any /** TODO #9100 */): CssStyleSheetAST {
-    var results: any[] /** TODO #9100 */ = [];
+  _parseStyleSheet(delimiters: any /* TODO #9100 */): CssStyleSheetAST {
+    var results: any[] /* TODO #9100 */ = [];
     this._scanner.consumeEmptyStatements();
     while (this._scanner.peek != $EOF) {
       this._scanner.setMode(CssLexerMode.BLOCK);
@@ -178,7 +178,7 @@ export class CssParser {
         token.type == CssTokenType.AtKeyword,
         `The CSS Rule ${token.strValue} is not a valid [@] rule.`, token);
 
-    var block: any /** TODO #9100 */, type = this._resolveBlockType(token);
+    var block: any /* TODO #9100 */, type = this._resolveBlockType(token);
     switch (type) {
       case BlockType.Charset:
       case BlockType.Namespace:
@@ -213,7 +213,7 @@ export class CssParser {
 
       // if a custom @rule { ... } is used it should still tokenize the insides
       default:
-        var listOfTokens: any[] /** TODO #9100 */ = [];
+        var listOfTokens: any[] /* TODO #9100 */ = [];
         this._scanner.setMode(CssLexerMode.ALL);
         this._error(
             generateErrorMessage(
@@ -247,7 +247,7 @@ export class CssParser {
   _parseSelectors(delimiters: number): CssSelectorAST[] {
     delimiters = bitWiseOr([delimiters, LBRACE_DELIM]);
 
-    var selectors: any[] /** TODO #9100 */ = [];
+    var selectors: any[] /* TODO #9100 */ = [];
     var isParsingSelectors = true;
     while (isParsingSelectors) {
       selectors.push(this._parseSelector(delimiters));
@@ -292,7 +292,7 @@ export class CssParser {
 
     this._consume(CssTokenType.Character, '{');
 
-    var definitions: any[] /** TODO #9100 */ = [];
+    var definitions: any[] /* TODO #9100 */ = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       definitions.push(this._parseKeyframeDefinition(delimiters));
     }
@@ -304,7 +304,7 @@ export class CssParser {
 
   /** @internal */
   _parseKeyframeDefinition(delimiters: number): CssKeyframeDefinitionAST {
-    var stepTokens: any[] /** TODO #9100 */ = [];
+    var stepTokens: any[] /* TODO #9100 */ = [];
     delimiters = bitWiseOr([delimiters, LBRACE_DELIM]);
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       stepTokens.push(this._parseKeyframeLabel(bitWiseOr([delimiters, COMMA_DELIM])));
@@ -328,11 +328,11 @@ export class CssParser {
     delimiters = bitWiseOr([delimiters, COMMA_DELIM, LBRACE_DELIM]);
     this._scanner.setMode(CssLexerMode.SELECTOR);
 
-    var selectorCssTokens: any[] /** TODO #9100 */ = [];
+    var selectorCssTokens: any[] /* TODO #9100 */ = [];
     var isComplex = false;
-    var wsCssToken: any /** TODO #9100 */;
+    var wsCssToken: any /* TODO #9100 */;
 
-    var previousToken: any /** TODO #9100 */;
+    var previousToken: any /* TODO #9100 */;
     var parenCount = 0;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       var code = this._scanner.peek;
@@ -425,10 +425,10 @@ export class CssParser {
     this._scanner.setMode(CssLexerMode.STYLE_VALUE);
 
     var strValue = '';
-    var tokens: any[] /** TODO #9100 */ = [];
+    var tokens: any[] /* TODO #9100 */ = [];
     var previous: CssToken;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
-      var token: any /** TODO #9100 */;
+      var token: any /* TODO #9100 */;
       if (isPresent(previous) && previous.type == CssTokenType.Identifier &&
           this._scanner.peek == $LPAREN) {
         token = this._consume(CssTokenType.Character, '(');
@@ -475,7 +475,7 @@ export class CssParser {
 
   /** @internal */
   _collectUntilDelim(delimiters: number, assertType: CssTokenType = null): CssToken[] {
-    var tokens: any[] /** TODO #9100 */ = [];
+    var tokens: any[] /* TODO #9100 */ = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       var val = isPresent(assertType) ? this._consume(assertType) : this._scan();
       tokens.push(val);
@@ -492,7 +492,7 @@ export class CssParser {
     this._consume(CssTokenType.Character, '{');
     this._scanner.consumeEmptyStatements();
 
-    var results: any[] /** TODO #9100 */ = [];
+    var results: any[] /* TODO #9100 */ = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       results.push(this._parseRule(delimiters));
     }
@@ -514,7 +514,7 @@ export class CssParser {
     this._consume(CssTokenType.Character, '{');
     this._scanner.consumeEmptyStatements();
 
-    var definitions: any[] /** TODO #9100 */ = [];
+    var definitions: any[] /* TODO #9100 */ = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       definitions.push(this._parseDefinition(delimiters));
       this._scanner.consumeEmptyStatements();
@@ -533,7 +533,7 @@ export class CssParser {
     this._scanner.setMode(CssLexerMode.STYLE_BLOCK);
 
     var prop = this._consume(CssTokenType.Identifier);
-    var parseValue: any /** TODO #9100 */, value: any /** TODO #9100 */ = null;
+    var parseValue: any /* TODO #9100 */, value: any /* TODO #9100 */ = null;
 
     // the colon value separates the prop from the style.
     // there are a few cases as to what could happen if it
@@ -627,7 +627,7 @@ export class CssKeyframeRuleAST extends CssBlockRuleAST {
 }
 
 export class CssKeyframeDefinitionAST extends CssBlockRuleAST {
-  public steps: any /** TODO #9100 */;
+  public steps: any /* TODO #9100 */;
   constructor(_steps: CssToken[], block: CssBlockAST) {
     super(BlockType.Keyframes, block, mergeTokens(_steps, ','));
     this.steps = _steps;
@@ -677,7 +677,7 @@ export class CssDefinitionAST extends CssAST {
 }
 
 export class CssSelectorAST extends CssAST {
-  public strValue: any /** TODO #9100 */;
+  public strValue: any /* TODO #9100 */;
   constructor(public tokens: CssToken[], public isComplex: boolean = false) {
     super();
     this.strValue = tokens.map(token => token.strValue).join('');
@@ -709,6 +709,6 @@ export class CssParseError extends ParseError {
 }
 
 export class CssUnknownTokenListAST extends CssRuleAST {
-  constructor(public name: any /** TODO #9100 */, public tokens: CssToken[]) { super(); }
+  constructor(public name: any /* TODO #9100 */, public tokens: CssToken[]) { super(); }
   visit(visitor: CssASTVisitor, context?: any) { visitor.visitUnkownRule(this, context); }
 }

@@ -119,7 +119,7 @@ export function main() {
                  .createAsync(MyComp2)
                  .then((fixture) => {
                    var checkSetters =
-                       (componentRef: any /** TODO #9100 */, workerEl: any /** TODO #9100 */) => {
+                       (componentRef: any /* TODO #9100 */, workerEl: any /* TODO #9100 */) => {
                          var renderer = getRenderer(componentRef);
                          var el = getRenderElement(workerEl);
                          renderer.setElementProperty(workerEl, 'tabIndex', 1);
@@ -236,7 +236,7 @@ export function main() {
 @Injectable()
 class MyComp2 {
   ctxProp: string;
-  ctxNumProp: any /** TODO #9100 */;
+  ctxNumProp: any /* TODO #9100 */;
   ctxBoolProp: boolean;
   constructor() {
     this.ctxProp = 'initial value';

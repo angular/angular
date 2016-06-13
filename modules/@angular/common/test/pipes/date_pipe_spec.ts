@@ -7,8 +7,8 @@ import {DateWrapper} from '../../src/facade/lang';
 
 export function main() {
   describe('DatePipe', () => {
-    var date: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var date: any /* TODO #9100 */;
+    var pipe: any /* TODO #9100 */;
 
     beforeEach(() => {
       date = DateWrapper.create(2015, 6, 15, 21, 43, 11);

@@ -4,7 +4,7 @@ import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '
 
 export function main() {
   describe('I18nPluralPipe', () => {
-    var pipe: any /** TODO #9100 */;
+    var pipe: any /* TODO #9100 */;
     var mapping = {'=0': 'No messages.', '=1': 'One message.', 'other': 'There are some messages.'};
     var interpolatedMapping = {
       '=0': 'No messages.',
@@ -39,7 +39,7 @@ export function main() {
       });
 
       it('should use \'other\' if value is undefined', () => {
-        var messageLength: any /** TODO #9100 */;
+        var messageLength: any /* TODO #9100 */;
         var val = pipe.transform(messageLength, interpolatedMapping);
         expect(val).toEqual('There are  messages, that is .');
       });

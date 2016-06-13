@@ -5,12 +5,12 @@ import {isPresent} from '../../src/facade/lang';
 
 export function main() {
   function tokenize(
-      code: any /** TODO #9100 */, trackComments: boolean = false,
+      code: any /* TODO #9100 */, trackComments: boolean = false,
       mode: CssLexerMode = CssLexerMode.ALL): CssToken[] {
     var scanner = new CssLexer().scan(code, trackComments);
     scanner.setMode(mode);
 
-    var tokens: any[] /** TODO #9100 */ = [];
+    var tokens: any[] /* TODO #9100 */ = [];
     var output = scanner.scan();
     while (output != null) {
       var error = output.error;
@@ -268,7 +268,7 @@ export function main() {
       it('should throw an error if a selector is being parsed while in the wrong mode', () => {
         var cssCode = '.class > tag';
 
-        var capturedMessage: any /** TODO #9100 */;
+        var capturedMessage: any /* TODO #9100 */;
         try {
           tokenize(cssCode, false, CssLexerMode.STYLE_BLOCK);
         } catch (e) {
@@ -292,7 +292,7 @@ export function main() {
     describe('Attribute Mode', () => {
       it('should consider attribute selectors as valid input and throw when an invalid modifier is used',
          () => {
-           function tokenizeAttr(modifier: any /** TODO #9100 */) {
+           function tokenizeAttr(modifier: any /* TODO #9100 */) {
              var cssCode = 'value' + modifier + '=\'something\'';
              return tokenize(cssCode, false, CssLexerMode.ATTRIBUTE_SELECTOR);
            }
@@ -310,7 +310,7 @@ export function main() {
 
     describe('Media Query Mode', () => {
       it('should validate media queries with a reduced subset of valid characters', () => {
-        function tokenizeQuery(code: any /** TODO #9100 */) {
+        function tokenizeQuery(code: any /* TODO #9100 */) {
           return tokenize(code, false, CssLexerMode.MEDIA_QUERY);
         }
 
@@ -331,7 +331,7 @@ export function main() {
     describe('Pseudo Selector Mode', () => {
       it('should validate pseudo selector identifiers with a reduced subset of valid characters',
          () => {
-           function tokenizePseudo(code: any /** TODO #9100 */) {
+           function tokenizePseudo(code: any /* TODO #9100 */) {
              return tokenize(code, false, CssLexerMode.PSEUDO_SELECTOR);
            }
 
@@ -348,7 +348,7 @@ export function main() {
     describe('Pseudo Selector Mode', () => {
       it('should validate pseudo selector identifiers with a reduced subset of valid characters',
          () => {
-           function tokenizePseudo(code: any /** TODO #9100 */) {
+           function tokenizePseudo(code: any /* TODO #9100 */) {
              return tokenize(code, false, CssLexerMode.PSEUDO_SELECTOR);
            }
 
@@ -366,7 +366,7 @@ export function main() {
         'Style Block Mode', () => {
           it('should style blocks with a reduced subset of valid characters',
              () => {
-               function tokenizeStyles(code: any /** TODO #9100 */) {
+               function tokenizeStyles(code: any /* TODO #9100 */) {
                  return tokenize(code, false, CssLexerMode.STYLE_BLOCK);
                }
 

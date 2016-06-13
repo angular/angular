@@ -9,8 +9,8 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  * A differ that tracks changes made to an object over time.
  */
 export interface KeyValueDiffer {
-  diff(object: any): any /** TODO #9100 */;
-  onDestroy(): any /** TODO #9100 */;
+  diff(object: any): any /* TODO #9100 */;
+  onDestroy(): any /* TODO #9100 */;
 }
 
 /**

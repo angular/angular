@@ -12,7 +12,7 @@ export function main() {
 
     function expectResponse(
         request: Promise<string>, url: string, response: string,
-        done: any /** TODO #9100 */ = null) {
+        done: any /* TODO #9100 */ = null) {
       function onResponse(text: string): string {
         if (response === null) {
           throw `Unexpected response ${url} -> ${text}`;
@@ -48,7 +48,7 @@ export function main() {
     it('should return an error from the definitions',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
-         var response: any /** TODO #9100 */ = null;
+         var response: any /* TODO #9100 */ = null;
          xhr.when(url, response);
          expectResponse(xhr.get(url), url, response, () => async.done());
          xhr.flush();
@@ -66,7 +66,7 @@ export function main() {
     it('should return an error from the expectations',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
-         var response: any /** TODO #9100 */ = null;
+         var response: any /* TODO #9100 */ = null;
          xhr.expect(url, response);
          expectResponse(xhr.get(url), url, response, () => async.done());
          xhr.flush();

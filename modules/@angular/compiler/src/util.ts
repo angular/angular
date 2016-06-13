@@ -54,8 +54,8 @@ export class ValueTransformer implements ValueVisitor {
   }
   visitStringMap(map: {[key: string]: any}, context: any): any {
     var result = {};
-    StringMapWrapper.forEach(map, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
-      (result as any /** TODO #9100 */)[key] = visitValue(value, this, context);
+    StringMapWrapper.forEach(map, (value: any /* TODO #9100 */, key: any /* TODO #9100 */) => {
+      (result as any /* TODO #9100 */)[key] = visitValue(value, this, context);
     });
     return result;
   }

@@ -335,7 +335,7 @@ export function main() {
                               }))
                  .createAsync(MainComp)
                  .then((main) => {
-                   var sourceDirective: any /** TODO #9100 */;
+                   var sourceDirective: any /* TODO #9100 */;
 
                    // We can't use the child nodes to get a hold of this because it's not in the dom
                    // at

@@ -12,22 +12,22 @@ class SomeChildDirective extends SomeDirective {
 
 @Directive({selector: 'someDirective', inputs: ['c']})
 class SomeDirectiveWithInputs {
-  @Input() a: any /** TODO #9100 */;
-  @Input('renamed') b: any /** TODO #9100 */;
-  c: any /** TODO #9100 */;
+  @Input() a: any /* TODO #9100 */;
+  @Input('renamed') b: any /* TODO #9100 */;
+  c: any /* TODO #9100 */;
 }
 
 @Directive({selector: 'someDirective', outputs: ['c']})
 class SomeDirectiveWithOutputs {
-  @Output() a: any /** TODO #9100 */;
-  @Output('renamed') b: any /** TODO #9100 */;
-  c: any /** TODO #9100 */;
+  @Output() a: any /* TODO #9100 */;
+  @Output('renamed') b: any /* TODO #9100 */;
+  c: any /* TODO #9100 */;
 }
 
 
 @Directive({selector: 'someDirective', outputs: ['a']})
 class SomeDirectiveWithDuplicateOutputs {
-  @Output() a: any /** TODO #9100 */;
+  @Output() a: any /* TODO #9100 */;
 }
 
 @Directive({selector: 'someDirective', properties: ['a']})
@@ -41,20 +41,20 @@ class SomeDirectiveWithEvents {
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithSetterProps {
   @Input('renamed')
-  set a(value: any /** TODO #9100 */) {}
+  set a(value: any /* TODO #9100 */) {}
 }
 
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithGetterOutputs {
   @Output('renamed')
-  get a(): any /** TODO #9100 */ { return null; }
+  get a(): any /* TODO #9100 */ { return null; }
 }
 
 @Directive({selector: 'someDirective', host: {'[c]': 'c'}})
 class SomeDirectiveWithHostBindings {
-  @HostBinding() a: any /** TODO #9100 */;
-  @HostBinding('renamed') b: any /** TODO #9100 */;
-  c: any /** TODO #9100 */;
+  @HostBinding() a: any /* TODO #9100 */;
+  @HostBinding('renamed') b: any /* TODO #9100 */;
+  c: any /* TODO #9100 */;
 }
 
 @Directive({selector: 'someDirective', host: {'(c)': 'onC()'}})
@@ -62,31 +62,31 @@ class SomeDirectiveWithHostListeners {
   @HostListener('a')
   onA() {}
   @HostListener('b', ['$event.value'])
-  onB(value: any /** TODO #9100 */) {}
+  onB(value: any /* TODO #9100 */) {}
 }
 
 @Directive({selector: 'someDirective', queries: {'cs': new ContentChildren('c')}})
 class SomeDirectiveWithContentChildren {
   @ContentChildren('a') as: any;
-  c: any /** TODO #9100 */;
+  c: any /* TODO #9100 */;
 }
 
 @Directive({selector: 'someDirective', queries: {'cs': new ViewChildren('c')}})
 class SomeDirectiveWithViewChildren {
   @ViewChildren('a') as: any;
-  c: any /** TODO #9100 */;
+  c: any /* TODO #9100 */;
 }
 
 @Directive({selector: 'someDirective', queries: {'c': new ContentChild('c')}})
 class SomeDirectiveWithContentChild {
   @ContentChild('a') a: any;
-  c: any /** TODO #9100 */;
+  c: any /* TODO #9100 */;
 }
 
 @Directive({selector: 'someDirective', queries: {'c': new ViewChild('c')}})
 class SomeDirectiveWithViewChild {
   @ViewChild('a') a: any;
-  c: any /** TODO #9100 */;
+  c: any /* TODO #9100 */;
 }
 
 class SomeDirectiveWithoutMetadata {}

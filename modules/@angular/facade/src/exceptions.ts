@@ -24,8 +24,8 @@ export class WrappedException extends BaseWrappedException {
   private _wrapperStack: any;
 
   constructor(
-      private _wrapperMessage: string, private _originalException: any /** TODO #9100 */,
-      private _originalStack?: any /** TODO #9100 */, private _context?: any /** TODO #9100 */) {
+      private _wrapperMessage: string, private _originalException: any /* TODO #9100 */,
+      private _originalStack?: any /* TODO #9100 */, private _context?: any /* TODO #9100 */) {
     super(_wrapperMessage);
     this._wrapperStack = (<any>new Error(_wrapperMessage)).stack;
   }

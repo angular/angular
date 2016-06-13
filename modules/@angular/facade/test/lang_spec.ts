@@ -15,8 +15,8 @@ export function main() {
     it('should expose the index for each match', () => {
       var re = /(!)/g;
       var matcher = RegExpWrapper.matcher(re, '0!23!567!!');
-      var indexes: any[] /** TODO #9100 */ = [];
-      var m: any /** TODO #9100 */;
+      var indexes: any[] /* TODO #9100 */ = [];
+      var m: any /* TODO #9100 */;
 
       while (isPresent(m = RegExpMatcherWrapper.next(matcher))) {
         indexes.push(m.index);
@@ -39,7 +39,7 @@ export function main() {
     it('should implement replace all', () => {
       let re = /(\d)+/g;
       let m =
-          RegExpWrapper.replaceAll(re, 'a1b2c', (match: any /** TODO #9100 */) => `!${match[1]}!`);
+          RegExpWrapper.replaceAll(re, 'a1b2c', (match: any /* TODO #9100 */) => `!${match[1]}!`);
       expect(m).toEqual('a!1!b!2!c');
     });
   });
@@ -52,7 +52,7 @@ export function main() {
   });
 
   describe('String', () => {
-    var s: any /** TODO #9100 */;
+    var s: any /* TODO #9100 */;
 
     describe('slice', () => {
       beforeEach(() => { s = 'abcdefghij'; });

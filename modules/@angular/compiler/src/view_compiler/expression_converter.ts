@@ -28,7 +28,7 @@ export function convertCdExpressionToIr(
 export function convertCdStatementToIr(
     nameResolver: NameResolver, implicitReceiver: o.Expression, stmt: cdAst.AST): o.Statement[] {
   var visitor = new _AstToIrVisitor(nameResolver, implicitReceiver, null);
-  var statements: any[] /** TODO #9100 */ = [];
+  var statements: any[] /* TODO #9100 */ = [];
   flattenStatements(stmt.visit(visitor, _Mode.Statement), statements);
   return statements;
 }
@@ -66,7 +66,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       private _valueUnwrapper: o.ReadVarExpr) {}
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
-    var op: any /** TODO #9100 */;
+    var op: any /* TODO #9100 */;
     switch (ast.operation) {
       case '+':
         op = o.BinaryOperator.Plus;
@@ -174,7 +174,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         mode, this._nameResolver.createLiteralArray(this.visitAll(ast.expressions, mode)));
   }
   visitLiteralMap(ast: cdAst.LiteralMap, mode: _Mode): any {
-    var parts: any[] /** TODO #9100 */ = [];
+    var parts: any[] /* TODO #9100 */ = [];
     for (var i = 0; i < ast.keys.length; i++) {
       parts.push([ast.keys[i], ast.values[i].visit(this, _Mode.Expression)]);
     }
@@ -185,7 +185,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
   visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
     var args = this.visitAll(ast.args, _Mode.Expression);
-    var result: any /** TODO #9100 */ = null;
+    var result: any /* TODO #9100 */ = null;
     var receiver = ast.receiver.visit(this, _Mode.Expression);
     if (receiver === IMPLICIT_RECEIVER) {
       var varExpr = this._nameResolver.getLocal(ast.name);
@@ -204,7 +204,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(mode, o.not(ast.expression.visit(this, _Mode.Expression)));
   }
   visitPropertyRead(ast: cdAst.PropertyRead, mode: _Mode): any {
-    var result: any /** TODO #9100 */ = null;
+    var result: any /* TODO #9100 */ = null;
     var receiver = ast.receiver.visit(this, _Mode.Expression);
     if (receiver === IMPLICIT_RECEIVER) {
       result = this._nameResolver.getLocal(ast.name);

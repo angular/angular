@@ -7,11 +7,13 @@ class GesturesCmp {
   pinchScale: number = 1;
   rotateAngle: number = 0;
 
-  onSwipe(event: any /** TODO #9100 */): void { this.swipeDirection = event.deltaX > 0 ? 'right' : 'left'; }
+  onSwipe(event: any /* TODO #9100 */): void {
+    this.swipeDirection = event.deltaX > 0 ? 'right' : 'left';
+  }
 
-  onPinch(event: any /** TODO #9100 */): void { this.pinchScale = event.scale; }
+  onPinch(event: any /* TODO #9100 */): void { this.pinchScale = event.scale; }
 
-  onRotate(event: any /** TODO #9100 */): void { this.rotateAngle = event.rotation; }
+  onRotate(event: any /* TODO #9100 */): void { this.rotateAngle = event.rotation; }
 }
 
 export function main() {

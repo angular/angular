@@ -52,5 +52,7 @@ export class HelloCmp {
 
   changeGreeting(): void { this.greeting = 'howdy'; }
 
-  onKeyDown(event: any /** TODO #9100 */): void { this.lastKey = StringWrapper.fromCharCode(event.keyCode); }
+  onKeyDown(event: any /* TODO #9100 */): void {
+    this.lastKey = StringWrapper.fromCharCode(event.keyCode);
+  }
 }

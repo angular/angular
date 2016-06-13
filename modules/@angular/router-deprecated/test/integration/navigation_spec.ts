@@ -10,21 +10,21 @@ import {AsyncRoute, AuxRoute, Redirect, Route, RouteConfig} from '../../src/rout
 
 import {RootCmp, TEST_ROUTER_PROVIDERS, compile} from './util';
 
-var cmpInstanceCount: any /** TODO #9100 */;
-var childCmpInstanceCount: any /** TODO #9100 */;
+var cmpInstanceCount: any /* TODO #9100 */;
+var childCmpInstanceCount: any /* TODO #9100 */;
 
 export function main() {
   describe('navigation', () => {
 
     var tcb: TestComponentBuilder;
     var fixture: ComponentFixture<any>;
-    var rtr: any /** TODO #9100 */;
+    var rtr: any /* TODO #9100 */;
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
 
     beforeEach(inject(
         [TestComponentBuilder, Router],
-        (tcBuilder: any /** TODO #9100 */, router: any /** TODO #9100 */) => {
+        (tcBuilder: any /* TODO #9100 */, router: any /* TODO #9100 */) => {
           tcb = tcBuilder;
           rtr = router;
           childCmpInstanceCount = 0;
@@ -92,7 +92,7 @@ export function main() {
     it('should navigate to child routes when the root component has an empty path',
        inject(
            [AsyncTestCompleter, Location],
-           (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, location: any /* TODO #9100 */) => {
              compile(tcb, 'outer { <router-outlet></router-outlet> }')
                  .then((rtc) => {fixture = rtc})
                  .then((_) => rtr.config([new Route({path: '/...', component: ParentCmp})]))
@@ -123,7 +123,7 @@ export function main() {
     it('should replace state when normalized paths are equal',
        inject(
            [AsyncTestCompleter, Location],
-           (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
+           (async: AsyncTestCompleter, location: any /* TODO #9100 */) => {
              compile(tcb)
                  .then((rtc) => {fixture = rtc})
                  .then((_) => location.setInitialPath('/test/'))

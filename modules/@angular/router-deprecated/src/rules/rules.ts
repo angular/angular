@@ -21,7 +21,7 @@ export class PathMatch extends RouteMatch {
 }
 
 export class RedirectMatch extends RouteMatch {
-  constructor(public redirectTo: any[], public specificity: any /** TODO #9100 */) { super(); }
+  constructor(public redirectTo: any[], public specificity: any /* TODO #9100 */) { super(); }
 }
 
 // Rules are responsible for recognizing URL segments and generating instructions
@@ -46,7 +46,7 @@ export class RedirectRule implements AbstractRule {
    * Returns `null` or a `ParsedUrl` representing the new path to match
    */
   recognize(beginningSegment: Url): Promise<RouteMatch> {
-    var match: any /** TODO #9100 */ = null;
+    var match: any /* TODO #9100 */ = null;
     if (isPresent(this._pathRecognizer.matchUrl(beginningSegment))) {
       match = new RedirectMatch(this.redirectTo, this._pathRecognizer.specificity);
     }

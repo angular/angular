@@ -10,8 +10,8 @@ import {SlicePipe} from '@angular/common';
 export function main() {
   describe('SlicePipe', () => {
     var list: number[];
-    var str: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var str: any /* TODO #9100 */;
+    var pipe: any /* TODO #9100 */;
 
     beforeEach(() => {
       list = [1, 2, 3, 4, 5];

@@ -5,7 +5,7 @@ import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '
 import {BaseException} from '../../src/facade/exceptions';
 import {NumberWrapper, StringWrapper, isPresent} from '../../src/facade/lang';
 
-function _assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9100 */) {
+function _assertTokens(tokens: any /* TODO #9100 */, valuesArr: any /* TODO #9100 */) {
   for (var i = 0; i < tokens.length; i++) {
     expect(tokens[i].strValue == valuesArr[i]);
   }
@@ -14,19 +14,18 @@ function _assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9
 class MyVisitor implements CssASTVisitor {
   captures: {[key: string]: any[]} = {};
 
-  _capture(
-      method: any /** TODO #9100 */, ast: any /** TODO #9100 */, context: any /** TODO #9100 */) {
+  _capture(method: any /* TODO #9100 */, ast: any /* TODO #9100 */, context: any /* TODO #9100 */) {
     this.captures[method] = isPresent(this.captures[method]) ? this.captures[method] : [];
     this.captures[method].push([ast, context]);
   }
 
   constructor(ast: CssStyleSheetAST, context?: any) { ast.visit(this, context); }
 
-  visitCssValue(ast: any /** TODO #9100 */, context?: any): void {
+  visitCssValue(ast: any /* TODO #9100 */, context?: any): void {
     this._capture('visitCssValue', ast, context);
   }
 
-  visitInlineCssRule(ast: any /** TODO #9100 */, context?: any): void {
+  visitInlineCssRule(ast: any /* TODO #9100 */, context?: any): void {
     this._capture('visitInlineCssRule', ast, context);
   }
 
@@ -89,7 +88,7 @@ export function main() {
   }
 
   describe('CSS parsing and visiting', () => {
-    var ast: any /** TODO #9100 */;
+    var ast: any /* TODO #9100 */;
     var context = {};
 
     beforeEach(() => {

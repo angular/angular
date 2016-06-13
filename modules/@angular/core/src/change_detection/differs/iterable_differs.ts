@@ -13,7 +13,7 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  */
 export interface IterableDiffer {
   diff(object: any): any;
-  onDestroy(): any /** TODO #9100 */;
+  onDestroy(): any /* TODO #9100 */;
 }
 
 /**

@@ -88,7 +88,7 @@ export abstract class AppView<T> {
   create(context: T, givenProjectableNodes: Array<any|any[]>, rootSelectorOrNode: string|any):
       AppElement {
     this.context = context;
-    var projectableNodes: any /** TODO #9100 */;
+    var projectableNodes: any /* TODO #9100 */;
     switch (this.type) {
       case ViewType.COMPONENT:
         projectableNodes = ensureSlotCount(givenProjectableNodes, this.componentType.slotCount);
@@ -130,7 +130,7 @@ export abstract class AppView<T> {
 
   selectOrCreateHostElement(
       elementName: string, rootSelectorOrNode: string|any, debugInfo: RenderDebugInfo): any {
-    var hostElement: any /** TODO #9100 */;
+    var hostElement: any /* TODO #9100 */;
     if (isPresent(rootSelectorOrNode)) {
       hostElement = this.renderer.selectRootElement(rootSelectorOrNode, debugInfo);
     } else {
@@ -395,7 +395,7 @@ export class DebugAppView<T> extends AppView<T> {
 
   eventHandler(cb: Function): Function {
     var superHandler = super.eventHandler(cb);
-    return (event: any /** TODO #9100 */) => {
+    return (event: any /* TODO #9100 */) => {
       this._resetDebug();
       try {
         return superHandler(event);
@@ -408,7 +408,7 @@ export class DebugAppView<T> extends AppView<T> {
 }
 
 function _findLastRenderNode(node: any): any {
-  var lastNode: any /** TODO #9100 */;
+  var lastNode: any /* TODO #9100 */;
   if (node instanceof AppElement) {
     var appEl = <AppElement>node;
     lastNode = appEl.nativeElement;

@@ -7,8 +7,8 @@ import {RegExpWrapper, StringJoiner} from '../../src/facade/lang';
 export function main() {
   describe('ReplacePipe', () => {
     var someNumber: number;
-    var str: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var str: any /* TODO #9100 */;
+    var pipe: any /* TODO #9100 */;
 
     beforeEach(() => {
       someNumber = 42;
@@ -42,7 +42,7 @@ export function main() {
 
         var result3 = pipe.transform(str, RegExpWrapper.create('a', 'i'), '_');
 
-        var f = ((x: any /** TODO #9100 */) => { return 'Adams!'; });
+        var f = ((x: any /* TODO #9100 */) => { return 'Adams!'; });
 
         var result4 = pipe.transform(str, 'Adams', f);
 

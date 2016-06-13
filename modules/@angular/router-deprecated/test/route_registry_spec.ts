@@ -313,7 +313,7 @@ export function main() {
   });
 }
 
-function stringifyInstruction(instruction: any /** TODO #9100 */): string {
+function stringifyInstruction(instruction: any /* TODO #9100 */): string {
   return instruction.toRootUrl();
 }
 

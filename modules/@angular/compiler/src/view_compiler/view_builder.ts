@@ -152,7 +152,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
 
   visitElement(ast: ElementAst, parent: CompileElement): any {
     var nodeIndex = this.view.nodes.length;
-    var createRenderNodeExpr: any /** TODO #9100 */;
+    var createRenderNodeExpr: any /* TODO #9100 */;
     var debugContextExpr = this.view.createMethod.resetDebugInfoExpr(nodeIndex, ast);
     if (nodeIndex === 0 && this.view.viewType === ViewType.HOST) {
       createRenderNodeExpr = o.THIS_EXPR.callMethod(
@@ -206,7 +206,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     compileElement.afterChildren(this.view.nodes.length - nodeIndex - 1);
 
     if (isPresent(compViewExpr)) {
-      var codeGenContentNodes: any /** TODO #9100 */;
+      var codeGenContentNodes: any /* TODO #9100 */;
       if (this.view.component.type.isHost) {
         codeGenContentNodes = ViewProperties.projectableNodes;
       } else {
@@ -281,11 +281,10 @@ function _mergeHtmlAndDirectiveAttrs(
   var result: {[key: string]: string} = {};
   StringMapWrapper.forEach(
       declaredHtmlAttrs,
-      (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => { result[key] = value; });
+      (value: any /* TODO #9100 */, key: any /* TODO #9100 */) => { result[key] = value; });
   directives.forEach(directiveMeta => {
     StringMapWrapper.forEach(
-        directiveMeta.hostAttributes,
-        (value: any /** TODO #9100 */, name: any /** TODO #9100 */) => {
+        directiveMeta.hostAttributes, (value: any /* TODO #9100 */, name: any /* TODO #9100 */) => {
           var prevValue = result[name];
           result[name] = isPresent(prevValue) ? mergeAttributeValue(name, prevValue, value) : value;
         });
@@ -308,14 +307,14 @@ function mergeAttributeValue(attrName: string, attrValue1: string, attrValue2: s
 }
 
 function mapToKeyValueArray(data: {[key: string]: string}): string[][] {
-  var entryArray: any[] /** TODO #9100 */ = [];
-  StringMapWrapper.forEach(data, (value: any /** TODO #9100 */, name: any /** TODO #9100 */) => {
+  var entryArray: any[] /* TODO #9100 */ = [];
+  StringMapWrapper.forEach(data, (value: any /* TODO #9100 */, name: any /* TODO #9100 */) => {
     entryArray.push([name, value]);
   });
   // We need to sort to get a defined output order
   // for tests and for caching generated artifacts...
   ListWrapper.sort(entryArray, (entry1, entry2) => StringWrapper.compare(entry1[0], entry2[0]));
-  var keyValueArray: any[] /** TODO #9100 */ = [];
+  var keyValueArray: any[] /* TODO #9100 */ = [];
   entryArray.forEach((entry) => { keyValueArray.push([entry[0], entry[1]]); });
   return keyValueArray;
 }
@@ -351,7 +350,7 @@ function createStaticNodeDebugInfo(node: CompileNode): o.Expression {
   var compileElement = node instanceof CompileElement ? node : null;
   var providerTokens: o.Expression[] = [];
   var componentToken: o.Expression = o.NULL_EXPR;
-  var varTokenEntries: any[] /** TODO #9100 */ = [];
+  var varTokenEntries: any[] /* TODO #9100 */ = [];
   if (isPresent(compileElement)) {
     providerTokens = compileElement.getProviderTokens();
     if (isPresent(compileElement.component)) {
@@ -359,7 +358,7 @@ function createStaticNodeDebugInfo(node: CompileNode): o.Expression {
     }
     StringMapWrapper.forEach(
         compileElement.referenceTokens,
-        (token: any /** TODO #9100 */, varName: any /** TODO #9100 */) => {
+        (token: any /* TODO #9100 */, varName: any /* TODO #9100 */) => {
           varTokenEntries.push(
               [varName, isPresent(token) ? createDiTokenExpression(token) : o.NULL_EXPR]);
         });
@@ -429,8 +428,8 @@ function createViewFactory(
     new o.FnParam(ViewConstructorVars.parentInjector.name, o.importType(Identifiers.Injector)),
     new o.FnParam(ViewConstructorVars.declarationEl.name, o.importType(Identifiers.AppElement))
   ];
-  var initRenderCompTypeStmts: any[] /** TODO #9100 */ = [];
-  var templateUrlInfo: any /** TODO #9100 */;
+  var initRenderCompTypeStmts: any[] /* TODO #9100 */ = [];
+  var templateUrlInfo: any /* TODO #9100 */;
   if (view.component.template.templateUrl == view.component.type.moduleUrl) {
     templateUrlInfo =
         `${view.component.type.moduleUrl} class ${view.component.type.name} - inline template`;
@@ -461,7 +460,7 @@ function createViewFactory(
 
 function generateCreateMethod(view: CompileView): o.Statement[] {
   var parentRenderNodeExpr: o.Expression = o.NULL_EXPR;
-  var parentRenderNodeStmts: any[] /** TODO #9100 */ = [];
+  var parentRenderNodeStmts: any[] /* TODO #9100 */ = [];
   if (view.viewType === ViewType.COMPONENT) {
     parentRenderNodeExpr = ViewProperties.renderer.callMethod(
         'createViewRoot', [o.THIS_EXPR.prop('declarationAppElement').prop('nativeElement')]);
@@ -491,7 +490,7 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
 }
 
 function generateDetectChangesMethod(view: CompileView): o.Statement[] {
-  var stmts: any[] /** TODO #9100 */ = [];
+  var stmts: any[] /* TODO #9100 */ = [];
   if (view.detectChangesInInputsMethod.isEmpty() && view.updateContentQueriesMethod.isEmpty() &&
       view.afterContentLifecycleCallbacksMethod.isEmpty() &&
       view.detectChangesRenderPropertiesMethod.isEmpty() &&
@@ -516,7 +515,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
     stmts.push(new o.IfStmt(o.not(DetectChangesVars.throwOnChange), afterViewStmts));
   }
 
-  var varStmts: any[] /** TODO #9100 */ = [];
+  var varStmts: any[] /* TODO #9100 */ = [];
   var readVars = o.findReadVarNames(stmts);
   if (SetWrapper.has(readVars, DetectChangesVars.changed.name)) {
     varStmts.push(DetectChangesVars.changed.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE));

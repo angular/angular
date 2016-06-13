@@ -61,7 +61,7 @@ export function main() {
        }));
 
     it('should recognize a regex', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         function emptySerializer(params: any /** TODO #9100 */): GeneratedUrl {
+         function emptySerializer(params: any /* TODO #9100 */): GeneratedUrl {
            return new GeneratedUrl('', {});
          }
 
@@ -78,7 +78,7 @@ export function main() {
 
     it('should recognize a regex with named_groups',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         function emptySerializer(params: any /** TODO #9100 */): GeneratedUrl {
+         function emptySerializer(params: any /* TODO #9100 */): GeneratedUrl {
            return new GeneratedUrl('', {});
          }
 
@@ -151,7 +151,7 @@ export function main() {
 
 
     it('should generate using a serializer', () => {
-      function simpleSerializer(params: any /** TODO #9100 */): GeneratedUrl {
+      function simpleSerializer(params: any /* TODO #9100 */): GeneratedUrl {
         var extra = {c: params['c']};
         return new GeneratedUrl(`/${params['a']}/${params['b']}`, extra);
       }

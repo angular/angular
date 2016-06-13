@@ -6,7 +6,7 @@ import {SpyPlatformLocation} from '../spies';
 
 export function main() {
   describe('PathLocationStrategy', () => {
-    var platformLocation: any /** TODO #9100 */, locationStrategy: any /** TODO #9100 */;
+    var platformLocation: any /* TODO #9100 */, locationStrategy: any /* TODO #9100 */;
 
     beforeEachProviders(() => [PathLocationStrategy, {
                           provide: PlatformLocation,
@@ -26,7 +26,7 @@ export function main() {
     describe('without APP_BASE_HREF', () => {
       beforeEach(inject(
           [PlatformLocation, PathLocationStrategy],
-          (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
+          (pl: any /* TODO #9100 */, ls: any /* TODO #9100 */) => {
             platformLocation = pl;
             locationStrategy = ls;
           }));
@@ -59,7 +59,7 @@ export function main() {
 
       beforeEach(inject(
           [PlatformLocation, PathLocationStrategy],
-          (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
+          (pl: any /* TODO #9100 */, ls: any /* TODO #9100 */) => {
             platformLocation = pl;
             locationStrategy = ls;
             platformLocation.spy('pushState');
@@ -94,7 +94,7 @@ export function main() {
 
       beforeEach(inject(
           [PlatformLocation, PathLocationStrategy],
-          (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
+          (pl: any /* TODO #9100 */, ls: any /* TODO #9100 */) => {
             platformLocation = pl;
             locationStrategy = ls;
             platformLocation.spy('pushState');
@@ -129,7 +129,7 @@ export function main() {
 
       beforeEach(inject(
           [PlatformLocation, PathLocationStrategy],
-          (pl: any /** TODO #9100 */, ls: any /** TODO #9100 */) => {
+          (pl: any /* TODO #9100 */, ls: any /* TODO #9100 */) => {
             platformLocation = pl;
             locationStrategy = ls;
             platformLocation.spy('pushState');
