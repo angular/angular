@@ -1,4 +1,4 @@
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ComponentMetadata, HostMetadata, Inject, InjectMetadata, Injectable, Optional, OptionalMetadata, PLATFORM_DIRECTIVES, PLATFORM_PIPES, Provider, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewMetadata, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ComponentMetadata, HostMetadata, Inject, InjectMetadata, Injectable, Optional, OptionalMetadata, Provider, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewMetadata, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
 
 import {LIFECYCLE_HOOKS_VALUES, ReflectorReader, createProvider, isProviderLiteral, reflector} from '../core_private';
 import {StringMapWrapper} from '../src/facade/collection';
@@ -7,13 +7,13 @@ import {Type, isArray, isBlank, isPresent, isString, isStringMap, stringify} fro
 
 import {assertArrayOfStrings} from './assertions';
 import * as cpl from './compile_metadata';
+import {CompilerConfig} from './config';
 import {hasLifecycleHook} from './directive_lifecycle_reflector';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {getUrlScheme} from './url_resolver';
 import {MODULE_SUFFIX, ValueTransformer, sanitizeIdentifier, visitValue} from './util';
 import {ViewResolver} from './view_resolver';
-
 
 @Injectable()
 export class CompileMetadataResolver {
@@ -25,9 +25,7 @@ export class CompileMetadataResolver {
 
   constructor(
       private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
-      private _viewResolver: ViewResolver,
-      @Optional() @Inject(PLATFORM_DIRECTIVES) private _platformDirectives: Type[],
-      @Optional() @Inject(PLATFORM_PIPES) private _platformPipes: Type[],
+      private _viewResolver: ViewResolver, private _config: CompilerConfig,
       _reflector?: ReflectorReader) {
     if (isPresent(_reflector)) {
       this._reflector = _reflector;
@@ -206,7 +204,7 @@ export class CompileMetadataResolver {
 
   getViewDirectivesMetadata(component: Type): cpl.CompileDirectiveMetadata[] {
     var view = this._viewResolver.resolve(component);
-    var directives = flattenDirectives(view, this._platformDirectives);
+    var directives = flattenDirectives(view, this._config.platformDirectives);
     for (var i = 0; i < directives.length; i++) {
       if (!isValidType(directives[i])) {
         throw new BaseException(
@@ -218,7 +216,7 @@ export class CompileMetadataResolver {
 
   getViewPipesMetadata(component: Type): cpl.CompilePipeMetadata[] {
     var view = this._viewResolver.resolve(component);
-    var pipes = flattenPipes(view, this._platformPipes);
+    var pipes = flattenPipes(view, this._config.platformPipes);
     for (var i = 0; i < pipes.length; i++) {
       if (!isValidType(pipes[i])) {
         throw new BaseException(

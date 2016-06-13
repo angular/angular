@@ -4,7 +4,7 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {IS_DART} from '../../src/facade/lang';
 
-import {Component, Pipe, PipeTransform, provide, ViewMetadata, PLATFORM_PIPES, OpaqueToken, Injector} from '@angular/core';
+import {Component, Pipe, PipeTransform, provide, ViewMetadata, OpaqueToken, Injector} from '@angular/core';
 import {NgIf, NgClass} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
 
@@ -31,7 +31,11 @@ function declareTests(isJit: boolean) {
   describe('regressions', () => {
 
     describe('platform pipes', () => {
-      beforeEachProviders(() => [{provide: PLATFORM_PIPES, useValue: [PlatformPipe], multi: true}]);
+      beforeEachProviders(
+          () => [{
+            provide: CompilerConfig,
+            useValue: new CompilerConfig(true, false, isJit, null, null, [PlatformPipe])
+          }]);
 
       it('should overwrite them by custom pipes',
          inject(

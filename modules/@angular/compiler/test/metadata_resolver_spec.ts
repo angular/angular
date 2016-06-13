@@ -7,7 +7,7 @@ import {CompileMetadataResolver} from '../src/metadata_resolver';
 import {Component, Directive, ViewEncapsulation, ChangeDetectionStrategy, OnChanges, OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, SimpleChanges,} from '@angular/core';
 
 import {TEST_PROVIDERS} from './test_bindings';
-import {PLATFORM_DIRECTIVES} from '@angular/core/src/platform_directives_and_pipes';
+import {CompilerConfig} from '@angular/compiler/src/config';
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 
 export function main() {
@@ -73,7 +73,10 @@ export function main() {
 
       describe('platform directives', () => {
         beforeEachProviders(
-            () => [{provide: PLATFORM_DIRECTIVES, useValue: [ADirective], multi: true}]);
+            () => [{
+              provide: CompilerConfig,
+              useValue: new CompilerConfig(true, false, true, null, null, [ADirective])
+            }]);
 
         it('should include platform directives when available',
            inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {

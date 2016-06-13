@@ -1,7 +1,7 @@
 import {ViewEncapsulation} from '@angular/core';
 
 import {unimplemented} from '../src/facade/exceptions';
-import {isBlank} from '../src/facade/lang';
+import {Type, isBlank} from '../src/facade/lang';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers} from './identifiers';
@@ -12,7 +12,8 @@ export class CompilerConfig {
 
   constructor(
       public genDebugInfo: boolean, public logBindingUpdate: boolean, public useJit: boolean,
-      renderTypes: RenderTypes = null, defaultEncapsulation: ViewEncapsulation = null) {
+      renderTypes: RenderTypes = null, defaultEncapsulation: ViewEncapsulation = null,
+      public platformDirectives: any[] = [], public platformPipes: any[] = []) {
     if (isBlank(renderTypes)) {
       renderTypes = new DefaultRenderTypes();
     }
