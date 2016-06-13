@@ -2,7 +2,6 @@ import {Parser} from '../expression_parser/parser';
 import {StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../html_ast';
 import {ParseError, ParseSourceSpan} from '../parse_util';
-
 import {Message} from './message';
 
 export const I18N_ATTR = 'i18n';
@@ -25,7 +24,7 @@ export function partition(nodes: HtmlAst[], errors: ParseError[], implicitTags: 
     let n = nodes[i];
     let temp: HtmlAst[] = [];
     if (_isOpeningComment(n)) {
-      let i18n = (<HtmlCommentAst>n).value.substring(5).trim();
+      let i18n = (<HtmlCommentAst>n).value.replace(/^i18n:?/, '').trim();
       i++;
       while (!_isClosingComment(nodes[i])) {
         temp.push(nodes[i++]);
@@ -69,7 +68,7 @@ export class Part {
 }
 
 function _isOpeningComment(n: HtmlAst): boolean {
-  return n instanceof HtmlCommentAst && isPresent(n.value) && n.value.startsWith('i18n:');
+  return n instanceof HtmlCommentAst && isPresent(n.value) && n.value.startsWith('i18n');
 }
 
 function _isClosingComment(n: HtmlAst): boolean {
