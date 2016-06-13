@@ -1,6 +1,8 @@
 import * as common from '@angular/common';
 import {Component, Inject, OpaqueToken} from '@angular/core';
 
+import {wrapInArray} from './funcs';
+
 export const SOME_OPAQUE_TOKEN = new OpaqueToken('opaqueToken');
 
 @Component({
@@ -23,7 +25,7 @@ export class CompWithProviders {
     <input #a>{{a.value}}
     <div *ngIf="true">{{a.value}}</div>
   `,
-  directives: [common.NgIf]
+  directives: [wrapInArray(common.NgIf)]
 })
 export class CompWithReferences {
 }

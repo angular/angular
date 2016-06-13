@@ -6,6 +6,7 @@ import {ClassMetadata, ConstructorMetadata, ModuleMetadata} from '../src/schema'
 import {Directory, Host, expectValidSources} from './typescript.mocks';
 
 describe('Collector', () => {
+  let documentRegistry = ts.createDocumentRegistry();
   let host: ts.LanguageServiceHost;
   let service: ts.LanguageService;
   let program: ts.Program;
@@ -14,9 +15,9 @@ describe('Collector', () => {
   beforeEach(() => {
     host = new Host(FILES, [
       '/app/app.component.ts', '/app/cases-data.ts', '/app/error-cases.ts', '/promise.ts',
-      '/unsupported-1.ts', '/unsupported-2.ts', 'import-star.ts'
+      '/unsupported-1.ts', '/unsupported-2.ts', 'import-star.ts', 'exported-functions.ts'
     ]);
-    service = ts.createLanguageService(host);
+    service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
     collector = new MetadataCollector();
   });
@@ -246,6 +247,75 @@ describe('Collector', () => {
       {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
     ]);
   });
+
+  it('should be able to record functions', () => {
+    let exportedFunctions = program.getSourceFile('/exported-functions.ts');
+    let metadata = collector.getMetadata(exportedFunctions);
+    expect(metadata).toEqual({
+      __symbolic: 'module',
+      version: 1,
+      metadata: {
+        one: {
+          __symbolic: 'function',
+          parameters: ['a', 'b', 'c'],
+          value: {
+            a: {__symbolic: 'reference', name: 'a'},
+            b: {__symbolic: 'reference', name: 'b'},
+            c: {__symbolic: 'reference', name: 'c'}
+          }
+        },
+        two: {
+          __symbolic: 'function',
+          parameters: ['a', 'b', 'c'],
+          value: {
+            a: {__symbolic: 'reference', name: 'a'},
+            b: {__symbolic: 'reference', name: 'b'},
+            c: {__symbolic: 'reference', name: 'c'}
+          }
+        },
+        three: {
+          __symbolic: 'function',
+          parameters: ['a', 'b', 'c'],
+          value: [
+            {__symbolic: 'reference', name: 'a'}, {__symbolic: 'reference', name: 'b'},
+            {__symbolic: 'reference', name: 'c'}
+          ]
+        },
+        supportsState: {
+          __symbolic: 'function',
+          parameters: [],
+          value: {
+            __symbolic: 'pre',
+            operator: '!',
+            operand: {
+              __symbolic: 'pre',
+              operator: '!',
+              operand: {
+                __symbolic: 'select',
+                expression: {
+                  __symbolic: 'select',
+                  expression: {__symbolic: 'reference', name: 'window'},
+                  member: 'history'
+                },
+                member: 'pushState'
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+
+  it('should be able to handle import star type references', () => {
+    let importStar = program.getSourceFile('/import-star.ts');
+    let metadata = collector.getMetadata(importStar);
+    let someClass = <ClassMetadata>metadata.metadata['SomeClass'];
+    let ctor = <ConstructorMetadata>someClass.members['__ctor__'][0];
+    let parameters = ctor.parameters;
+    expect(parameters).toEqual([
+      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
+    ]);
+  });
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -447,9 +517,9 @@ const FILES: Directory = {
   `,
   'unsupported-2.ts': `
     import {Injectable} from 'angular2/core';
- 
+
     class Foo {}
-    
+
     @Injectable()
     export class Bar {
       constructor(private f: Foo) {}
@@ -462,6 +532,20 @@ const FILES: Directory = {
     @Injectable()
     export class SomeClass {
       constructor(private f: common.NgFor) {}
+    }
+  `,
+  'exported-functions.ts': `
+    export function one(a: string, b: string, c: string) {
+      return {a: a, b: b, c: c};
+    }
+    export function two(a: string, b: string, c: string) {
+      return {a, b, c};
+    }
+    export function three({a, b, c}: {a: string, b: string, c: string}) {
+      return [a, b, c];
+    }
+    export function supportsState(): boolean {
+     return !!window.history.pushState;
     }
   `,
   'node_modules': {
