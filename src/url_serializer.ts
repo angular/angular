@@ -1,6 +1,7 @@
 import {PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlTree} from './url_tree';
-import {TreeNode} from './utils/tree';
+import {UrlPathWithParams, UrlSegment, UrlTree} from './url_tree';
+import {forEach} from './utils/collection';
+
 
 
 /**
@@ -28,37 +29,65 @@ export class DefaultUrlSerializer implements UrlSerializer {
   }
 
   serialize(tree: UrlTree): string {
-    const node = serializeUrlTreeNode(tree._root);
+    const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
     const fragment = tree.fragment !== null ? `#${tree.fragment}` : '';
-    return `${node}${query}${fragment}`;
+    return `${segment}${query}${fragment}`;
   }
 }
 
-function serializeUrlTreeNode(node: TreeNode<UrlSegment>): string {
-  return `${serializeSegment(node.value)}${serializeChildren(node)}`;
+export function serializePaths(segment: UrlSegment): string {
+  return segment.pathsWithParams.map(p => serializePath(p)).join('/');
 }
 
-function serializeUrlTreeNodes(nodes: TreeNode<UrlSegment>[]): string {
-  const primary = serializeSegment(nodes[0].value);
-  const secondaryNodes = nodes.slice(1);
-  const secondary =
-      secondaryNodes.length > 0 ? `(${secondaryNodes.map(serializeUrlTreeNode).join("//")})` : '';
-  const children = serializeChildren(nodes[0]);
-  return `${primary}${secondary}${children}`;
+function serializeSegment(segment: UrlSegment, root: boolean): string {
+  if (segment.children[PRIMARY_OUTLET] && root) {
+    const primary = serializeSegment(segment.children[PRIMARY_OUTLET], false);
+    const children = [];
+    forEach(segment.children, (v, k) => {
+      if (k !== PRIMARY_OUTLET) {
+        children.push(`${k}:${serializeSegment(v, false)}`);
+      }
+    });
+    if (children.length > 0) {
+      return `${primary}(${children.join('//')})`;
+    } else {
+      return `${primary}`;
+    }
+  } else if (segment.children[PRIMARY_OUTLET] && !root) {
+    const children = [serializeSegment(segment.children[PRIMARY_OUTLET], false)];
+    forEach(segment.children, (v, k) => {
+      if (k !== PRIMARY_OUTLET) {
+        children.push(`${k}:${serializeSegment(v, false)}`);
+      }
+    });
+    return `${serializePaths(segment)}/(${children.join('//')})`;
+  } else {
+    return serializePaths(segment);
+  }
 }
 
-function serializeChildren(node: TreeNode<UrlSegment>): string {
-  if (node.children.length > 0) {
-    return `/${serializeUrlTreeNodes(node.children)}`;
+function serializeChildren(segment: UrlSegment) {
+  if (segment.children[PRIMARY_OUTLET]) {
+    const primary = serializePaths(segment.children[PRIMARY_OUTLET]);
+
+    const secondary = [];
+    forEach(segment.children, (v, k) => {
+      if (k !== PRIMARY_OUTLET) {
+        secondary.push(`${k}:${serializePaths(v)}${serializeChildren(v)}`);
+      }
+    });
+    const secondaryStr = secondary.length > 0 ? `(${secondary.join('//')})` : '';
+    const primaryChildren = serializeChildren(segment.children[PRIMARY_OUTLET]);
+    const primaryChildrenStr = primaryChildren ? `/${primaryChildren}` : '';
+    return `${primary}${secondaryStr}${primaryChildrenStr}`;
   } else {
     return '';
   }
 }
 
-export function serializeSegment(segment: UrlSegment): string {
-  const outlet = segment.outlet === PRIMARY_OUTLET ? '' : `${segment.outlet}:`;
-  return `${outlet}${segment.path}${serializeParams(segment.parameters)}`;
+export function serializePath(path: UrlPathWithParams): string {
+  return `${path.path}${serializeParams(path.parameters)}`;
 }
 
 function serializeParams(params: {[key: string]: string}): string {
@@ -84,7 +113,7 @@ function pairs<T>(obj: {[key: string]: T}): Pair<string, T>[] {
 }
 
 const SEGMENT_RE = /^[^\/\(\)\?;=&#]+/;
-function matchUrlSegment(str: string): string {
+function matchPathWithParams(str: string): string {
   SEGMENT_RE.lastIndex = 0;
   var match = SEGMENT_RE.exec(str);
   return match ? match[0] : '';
@@ -109,61 +138,53 @@ class UrlParser {
     this.remaining = this.remaining.substring(str.length);
   }
 
-  parseRootSegment(): TreeNode<UrlSegment> {
-    if (this.remaining == '' || this.remaining == '/') {
-      return new TreeNode<UrlSegment>(new UrlSegment('', {}, PRIMARY_OUTLET), []);
+  parseRootSegment(): UrlSegment {
+    if (this.remaining === '' || this.remaining === '/') {
+      return new UrlSegment([], {});
     } else {
-      const segments = this.parseSegments(false);
-      return new TreeNode<UrlSegment>(new UrlSegment('', {}, PRIMARY_OUTLET), segments);
+      return new UrlSegment([], this.parseSegmentChildren());
     }
   }
 
-  parseSegments(hasOutletName: boolean): TreeNode<UrlSegment>[] {
+  parseSegmentChildren(): {[key: string]: UrlSegment} {
     if (this.remaining.length == 0) {
-      return [];
+      return {};
     }
+
     if (this.peekStartsWith('/')) {
       this.capture('/');
     }
-    let path = matchUrlSegment(this.remaining);
-    this.capture(path);
 
-    let outletName;
-    if (hasOutletName) {
-      if (path.indexOf(':') === -1) {
-        throw new Error('Not outlet name is provided');
-      }
-      if (path.indexOf(':') > -1 && hasOutletName) {
-        let parts = path.split(':');
-        outletName = parts[0];
-        path = parts[1];
-      }
-    } else {
-      if (path.indexOf(':') > -1) {
-        throw new Error('Not outlet name is allowed');
-      }
-      outletName = PRIMARY_OUTLET;
+    const paths = [this.parsePathWithParams()];
+
+    while (this.peekStartsWith('/') && !this.peekStartsWith('//') && !this.peekStartsWith('/(')) {
+      this.capture('/');
+      paths.push(this.parsePathWithParams());
     }
 
+    let children = {};
+    if (this.peekStartsWith('/(')) {
+      this.capture('/');
+      children = this.parseParens(true);
+    }
+
+    let res: {[key: string]: UrlSegment} = {};
+    if (this.peekStartsWith('(')) {
+      res = this.parseParens(false);
+    }
+
+    res[PRIMARY_OUTLET] = new UrlSegment(paths, children);
+    return res;
+  }
+
+  parsePathWithParams(): UrlPathWithParams {
+    let path = matchPathWithParams(this.remaining);
+    this.capture(path);
     let matrixParams: {[key: string]: any} = {};
     if (this.peekStartsWith(';')) {
       matrixParams = this.parseMatrixParams();
     }
-
-    let secondary = [];
-    if (this.peekStartsWith('(')) {
-      secondary = this.parseSecondarySegments();
-    }
-
-    let children: TreeNode<UrlSegment>[] = [];
-    if (this.peekStartsWith('/') && !this.peekStartsWith('//')) {
-      this.capture('/');
-      children = this.parseSegments(false);
-    }
-
-    const segment = new UrlSegment(path, matrixParams, outletName);
-    const node = new TreeNode<UrlSegment>(segment, children);
-    return [node].concat(secondary);
+    return new UrlPathWithParams(path, matrixParams);
   }
 
   parseQueryParams(): {[key: string]: any} {
@@ -197,7 +218,7 @@ class UrlParser {
   }
 
   parseParam(params: {[key: string]: any}): void {
-    var key = matchUrlSegment(this.remaining);
+    var key = matchPathWithParams(this.remaining);
     if (!key) {
       return;
     }
@@ -205,7 +226,7 @@ class UrlParser {
     var value: any = 'true';
     if (this.peekStartsWith('=')) {
       this.capture('=');
-      var valueMatch = matchUrlSegment(this.remaining);
+      var valueMatch = matchPathWithParams(this.remaining);
       if (valueMatch) {
         value = valueMatch;
         this.capture(value);
@@ -216,7 +237,7 @@ class UrlParser {
   }
 
   parseQueryParam(params: {[key: string]: any}): void {
-    var key = matchUrlSegment(this.remaining);
+    var key = matchPathWithParams(this.remaining);
     if (!key) {
       return;
     }
@@ -233,12 +254,25 @@ class UrlParser {
     params[key] = value;
   }
 
-  parseSecondarySegments(): TreeNode<UrlSegment>[] {
-    var segments = [];
+  parseParens(allowPrimary: boolean): {[key: string]: UrlSegment} {
+    const segments = {};
     this.capture('(');
 
     while (!this.peekStartsWith(')') && this.remaining.length > 0) {
-      segments = segments.concat(this.parseSegments(true));
+      let path = matchPathWithParams(this.remaining);
+      let outletName;
+      if (path.indexOf(':') > -1) {
+        outletName = path.substr(0, path.indexOf(':'));
+        this.capture(outletName);
+        this.capture(':');
+      } else if (allowPrimary) {
+        outletName = PRIMARY_OUTLET;
+      }
+
+      const children = this.parseSegmentChildren();
+      segments[outletName] = Object.keys(children).length === 1 ? children[PRIMARY_OUTLET] :
+                                                                  new UrlSegment([], children);
+
       if (this.peekStartsWith('//')) {
         this.capture('//');
       }

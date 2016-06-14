@@ -4,7 +4,7 @@ import {Observable} from 'rxjs/Observable';
 
 import {Route} from './config';
 import {PRIMARY_OUTLET, Params} from './shared';
-import {UrlSegment} from './url_tree';
+import {UrlPathWithParams, UrlSegment, UrlTree} from './url_tree';
 import {shallowEqual} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
@@ -37,9 +37,9 @@ export class RouterState extends Tree<ActivatedRoute> {
   toString(): string { return this.snapshot.toString(); }
 }
 
-export function createEmptyState(rootComponent: Type): RouterState {
-  const snapshot = createEmptyStateSnapshot(rootComponent);
-  const emptyUrl = new BehaviorSubject([new UrlSegment('', {}, PRIMARY_OUTLET)]);
+export function createEmptyState(urlTree: UrlTree, rootComponent: Type): RouterState {
+  const snapshot = createEmptyStateSnapshot(urlTree, rootComponent);
+  const emptyUrl = new BehaviorSubject([new UrlPathWithParams('', {})]);
   const emptyParams = new BehaviorSubject({});
   const emptyQueryParams = new BehaviorSubject({});
   const fragment = new BehaviorSubject('');
@@ -50,16 +50,14 @@ export function createEmptyState(rootComponent: Type): RouterState {
       new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment, snapshot);
 }
 
-function createEmptyStateSnapshot(rootComponent: Type): RouterStateSnapshot {
-  const rootUrlSegment = new UrlSegment('', {}, PRIMARY_OUTLET);
-  const emptyUrl = [rootUrlSegment];
+function createEmptyStateSnapshot(urlTree: UrlTree, rootComponent: Type): RouterStateSnapshot {
   const emptyParams = {};
   const emptyQueryParams = {};
   const fragment = '';
   const activated = new ActivatedRouteSnapshot(
-      emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, null, rootUrlSegment);
+      [], emptyParams, PRIMARY_OUTLET, rootComponent, null, urlTree.root, -1);
   return new RouterStateSnapshot(
-      new TreeNode<ActivatedRouteSnapshot>(activated, []), emptyQueryParams, fragment);
+      '', new TreeNode<ActivatedRouteSnapshot>(activated, []), emptyQueryParams, fragment);
 }
 
 /**
@@ -86,7 +84,7 @@ export class ActivatedRoute {
    * @internal
    */
   constructor(
-      public urlSegments: Observable<UrlSegment[]>, public params: Observable<Params>,
+      public url: Observable<UrlPathWithParams[]>, public params: Observable<Params>,
       public outlet: string, public component: Type|string,
       futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
@@ -120,20 +118,24 @@ export class ActivatedRouteSnapshot {
   _routeConfig: Route|null;
 
   /** @internal **/
-  _lastUrlSegment: UrlSegment;
+  _urlSegment: UrlSegment;
+
+  _lastPathIndex: number;
 
   /**
    * @internal
    */
   constructor(
-      public urlSegments: UrlSegment[], public params: Params, public outlet: string,
-      public component: Type|string, routeConfig: Route|null, lastUrlSegment: UrlSegment) {
+      public url: UrlPathWithParams[], public params: Params, public outlet: string,
+      public component: Type|string, routeConfig: Route|null, urlSegment: UrlSegment,
+      lastPathIndex: number) {
     this._routeConfig = routeConfig;
-    this._lastUrlSegment = lastUrlSegment;
+    this._urlSegment = urlSegment;
+    this._lastPathIndex = lastPathIndex;
   }
 
   toString(): string {
-    const url = this.urlSegments.map(s => s.toString()).join('/');
+    const url = this.url.map(s => s.toString()).join('/');
     const matched = this._routeConfig ? this._routeConfig.path : '';
     return `Route(url:'${url}', path:'${matched}')`;
   }
@@ -157,7 +159,7 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
    * @internal
    */
   constructor(
-      root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params,
+      public url: string, root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params,
       public fragment: string|null) {
     super(root);
   }
@@ -179,7 +181,7 @@ function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
 export function advanceActivatedRoute(route: ActivatedRoute): void {
   if (route.snapshot && !shallowEqual(route.snapshot.params, route._futureSnapshot.params)) {
     route.snapshot = route._futureSnapshot;
-    (<any>route.urlSegments).next(route.snapshot.urlSegments);
+    (<any>route.url).next(route.snapshot.url);
     (<any>route.params).next(route.snapshot.params);
   } else {
     route.snapshot = route._futureSnapshot;

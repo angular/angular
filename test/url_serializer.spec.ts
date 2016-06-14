@@ -1,76 +1,80 @@
-import {DefaultUrlSerializer, serializeSegment} from '../src/url_serializer';
+import {DefaultUrlSerializer, serializePath} from '../src/url_serializer';
 import {UrlSegment} from '../src/url_tree';
+import {PRIMARY_OUTLET} from '../src/shared';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
 
   it('should parse the root url', () => {
     const tree = url.parse("/");
+    
     expectSegment(tree.root, "");
-    expect(url.serialize(tree)).toEqual("");
+    expect(url.serialize(tree)).toEqual("/");
   });
 
   it('should parse non-empty urls', () => {
     const tree = url.parse("one/two");
-    const one = tree.firstChild(tree.root);
-
-    expectSegment(one, "one");
-    expectSegment(tree.firstChild(<any>one), "two");
+    expectSegment(tree.root.children[PRIMARY_OUTLET], "one/two");
     expect(url.serialize(tree)).toEqual("/one/two");
   });
 
   it("should parse multiple secondary segments", () => {
-    const tree = url.parse("/one/two(left:three//right:four)/five");
-    const c = tree.children(<any>tree.firstChild(tree.root));
+    const tree = url.parse("/one/two(left:three//right:four)");
 
-    expectSegment(c[0], "two");
-    expectSegment(c[1], "left:three");
-    expectSegment(c[2], "right:four");
+    expectSegment(tree.root.children[PRIMARY_OUTLET], "one/two");
+    expectSegment(tree.root.children['left'], "three");
+    expectSegment(tree.root.children['right'], "four");
 
-    expectSegment(tree.firstChild(c[0]), "five");
-
-    expect(url.serialize(tree)).toEqual("/one/two(left:three//right:four)/five");
+    expect(url.serialize(tree)).toEqual("/one/two(left:three//right:four)");
   });
 
-  it("should parse secondary segments that have secondary segments", () => {
-    const tree = url.parse("/one(left:two(right:three))");
-    const c = tree.children(tree.root);
+  it("should parse scoped secondary segments", () => {
+    const tree = url.parse("/one/(two//left:three)");
 
-    expectSegment(c[0], "one");
-    expectSegment(c[1], "left:two");
-    expectSegment(c[2], "right:three");
+    const primary = tree.root.children[PRIMARY_OUTLET];
+    expectSegment(primary, "one", true);
 
-    expect(url.serialize(tree)).toEqual("/one(left:two//right:three)");
+    expectSegment(primary.children[PRIMARY_OUTLET], "two");
+    expectSegment(primary.children["left"], "three");
+
+    expect(url.serialize(tree)).toEqual("/one/(two//left:three)");
+  });
+
+  it("should parse scoped secondary segments with unscoped ones", () => {
+    const tree = url.parse("/one/(two//left:three)(right:four)");
+
+    const primary = tree.root.children[PRIMARY_OUTLET];
+    expectSegment(primary, "one", true);
+    expectSegment(primary.children[PRIMARY_OUTLET], "two");
+    expectSegment(primary.children["left"], "three");
+    expectSegment(tree.root.children["right"], "four");
+
+    expect(url.serialize(tree)).toEqual("/one/(two//left:three)(right:four)");
   });
 
   it("should parse secondary segments that have children", () => {
     const tree = url.parse("/one(left:two/three)");
-    const c = tree.children(tree.root);
 
-    expectSegment(c[0], "one");
-    expectSegment(c[1], "left:two");
-    expectSegment(tree.firstChild(c[1]), "three");
+    expectSegment(tree.root.children[PRIMARY_OUTLET], "one");
+    expectSegment(tree.root.children['left'], "two/three");
 
     expect(url.serialize(tree)).toEqual("/one(left:two/three)");
   });
 
   it("should parse an empty secondary segment group", () => {
     const tree = url.parse("/one()");
-    const c = tree.children(tree.root);
 
-    expectSegment(c[0], "one");
-    expect(tree.children(c[0]).length).toEqual(0);
+    expectSegment(tree.root.children[PRIMARY_OUTLET], "one");
 
     expect(url.serialize(tree)).toEqual("/one");
   });
 
   it("should parse key-value matrix params", () => {
     const tree = url.parse("/one;a=11a;b=11b(left:two;c=22//right:three;d=33)");
-    const c = tree.children(tree.root);
 
-    expectSegment(c[0], "one;a=11a;b=11b");
-    expectSegment(c[1], "left:two;c=22");
-    expectSegment(c[2], "right:three;d=33");
+    expectSegment(tree.root.children[PRIMARY_OUTLET], "one;a=11a;b=11b");
+    expectSegment(tree.root.children["left"], "two;c=22");
+    expectSegment(tree.root.children["right"], "three;d=33");
 
     expect(url.serialize(tree)).toEqual("/one;a=11a;b=11b(left:two;c=22//right:three;d=33)");
   });
@@ -78,8 +82,7 @@ describe('url serializer', () => {
   it("should parse key only matrix params", () => {
     const tree = url.parse("/one;a");
 
-    const c = tree.firstChild(tree.root);
-    expectSegment(c, "one;a=true");
+    expectSegment(tree.root.children[PRIMARY_OUTLET], "one;a=true");
 
     expect(url.serialize(tree)).toEqual("/one;a=true");
   });
@@ -112,6 +115,8 @@ describe('url serializer', () => {
   });
 });
 
-function expectSegment(segment:UrlSegment | null, expected:string):void {
-  expect(segment ? serializeSegment(segment) : null).toEqual(expected);
+function expectSegment(segment:UrlSegment, expected:string, hasChildren: boolean = false):void {
+  const p = segment.pathsWithParams.map(p => serializePath(p)).join("/");
+  expect(p).toEqual(expected);
+  expect(Object.keys(segment.children).length > 0).toEqual(hasChildren);
 }

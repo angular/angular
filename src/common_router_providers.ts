@@ -72,9 +72,7 @@ export function provideRouter(config: RouterConfig, opts: ExtraOptions): any[] {
         setTimeout(_ => {
           const appRef = injector.get(ApplicationRef);
           if (appRef.componentTypes.length == 0) {
-            appRef.registerBootstrapListener((_) => {
-              injector.get(Router).initialNavigation();
-            });
+            appRef.registerBootstrapListener((_) => { injector.get(Router).initialNavigation(); });
           } else {
             injector.get(Router).initialNavigation();
           }
