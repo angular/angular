@@ -4,7 +4,6 @@
  */
 import * as compiler from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
-import {Parse5DomAdapter} from '@angular/platform-server';
 import {AngularCompilerOptions} from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -106,8 +105,6 @@ export class CodeGenerator {
   }
 
   codegen(): Promise<any> {
-    Parse5DomAdapter.makeCurrent();
-
     let stylesheetPromises: Promise<any>[] = [];
     const generateOneFile = (absSourcePath: string) =>
         Promise.all(this.readComponents(absSourcePath))

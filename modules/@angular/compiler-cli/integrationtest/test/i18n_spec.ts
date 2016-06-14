@@ -1,8 +1,6 @@
 // Only needed to satisfy the check in core/src/util/decorators.ts
 // TODO(alexeagle): maybe remove that check?
 require('reflect-metadata');
-
-require('@angular/platform-server/src/parse5_adapter.js').Parse5DomAdapter.makeCurrent();
 require('zone.js/dist/zone-node.js');
 require('zone.js/dist/long-stack-trace-zone.js');
 let serializer = require('@angular/compiler/src/i18n/xmb_serializer.js');
