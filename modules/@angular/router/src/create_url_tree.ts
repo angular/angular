@@ -195,7 +195,7 @@ function prefixedWith(segment: UrlSegment, startIndex: number, commands: any[]) 
     currentPathIndex++;
   }
 
-  return { match: true, lastIndex: currentCommandIndex };
+  return {match: true, lastIndex: currentCommandIndex};
 }
 
 function createNewSegment(segment: UrlSegment, startIndex: number, commands: any[]): UrlSegment {
