@@ -90,6 +90,17 @@ describe('applyRedirects', () => {
     });
   });
 
+  it("should redirect empty path (global redirect)", () => {
+    checkRedirect([
+      {path: 'a', component: ComponentA, children: [
+        {path: 'b', component: ComponentB},
+      ]},
+      {path: '', redirectTo: '/a/b'}
+    ], "", t => {
+      compareTrees(t, tree('a/b'));
+    });
+  });
+
   xit("should support nested redirects", () => {
     checkRedirect([
       {path: 'a', component: ComponentA, children: [
