@@ -128,6 +128,26 @@ describe("Integration", () => {
       expect(fixture.debugElement.nativeElement).toHaveText('team 22 { user fedor, right:  }');
     })));
 
+  it('should update the location when the matched route does not change',
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      const fixture = tcb.createFakeAsync(RootCmp);
+      advance(fixture);
+
+      router.resetConfig([
+        { path: '**', component: SimpleCmp }
+      ]);
+
+      router.navigateByUrl('/one/two');
+      advance(fixture);
+      expect(location.path()).toEqual('/one/two');
+      expect(fixture.debugElement.nativeElement).toHaveText('simple');
+
+      router.navigateByUrl('/three/four');
+      advance(fixture);
+      expect(location.path()).toEqual('/three/four');
+      expect(fixture.debugElement.nativeElement).toHaveText('simple');
+    })));
+
   it('should support secondary routes',
     fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
       const fixture = tcb.createFakeAsync(RootCmp);
