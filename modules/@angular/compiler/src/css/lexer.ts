@@ -1,9 +1,9 @@
-import {$$, $0, $9, $A, $AMPERSAND, $AT, $BACKSLASH, $BANG, $CARET, $COLON, $COMMA, $CR, $DQ, $EOF, $EQ, $FF, $GT, $HASH, $LBRACE, $LBRACKET, $LF, $LPAREN, $MINUS, $PERCENT, $PERIOD, $PIPE, $PLUS, $QUESTION, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SQ, $STAR, $TILDA, $VTAB, $Z, $_, $a, $z, isWhitespace} from '@angular/compiler/src/chars';
+import {$$, $0, $9, $A, $AMPERSAND, $AT, $BACKSLASH, $BANG, $CARET, $COLON, $COMMA, $CR, $DQ, $EOF, $EQ, $FF, $GT, $HASH, $LBRACE, $LBRACKET, $LF, $LPAREN, $MINUS, $PERCENT, $PERIOD, $PIPE, $PLUS, $QUESTION, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SQ, $STAR, $TILDA, $VTAB, $Z, $_, $a, $z, isWhitespace} from '../chars';
 
 import {BaseException} from '../facade/exceptions';
-import {NumberWrapper, StringWrapper, isPresent, resolveEnumToken} from '../facade/lang';
+import {StringWrapper, isPresent, resolveEnumToken} from '../facade/lang';
 
-export {$AT, $COLON, $COMMA, $EOF, $LBRACE, $LBRACKET, $LPAREN, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, isWhitespace} from '@angular/compiler/src/chars';
+export {$AT, $COLON, $COMMA, $EOF, $GT, $LBRACE, $LBRACKET, $LPAREN, $PLUS, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SPACE, $TAB, $TILDA, isWhitespace} from '../chars';
 
 export enum CssTokenType {
   EOF,
@@ -23,6 +23,7 @@ export enum CssLexerMode {
   ALL_TRACK_WS,
   SELECTOR,
   PSEUDO_SELECTOR,
+  PSEUDO_SELECTOR_WITH_ARGUMENTS,
   ATTRIBUTE_SELECTOR,
   AT_RULE_QUERY,
   MEDIA_QUERY,
@@ -94,6 +95,7 @@ export class CssScannerError extends BaseException {
 function _trackWhitespace(mode: CssLexerMode) {
   switch (mode) {
     case CssLexerMode.SELECTOR:
+    case CssLexerMode.PSEUDO_SELECTOR:
     case CssLexerMode.ALL_TRACK_WS:
     case CssLexerMode.STYLE_VALUE:
       return true;
@@ -126,7 +128,7 @@ export class CssScanner {
 
   setMode(mode: CssLexerMode) {
     if (this._currentMode != mode) {
-      if (_trackWhitespace(this._currentMode)) {
+      if (_trackWhitespace(this._currentMode) && !_trackWhitespace(mode)) {
         this.consumeWhitespace();
       }
       this._currentMode = mode;
@@ -178,21 +180,25 @@ export class CssScanner {
 
   consume(type: CssTokenType, value: string = null): LexedCssResult {
     var mode = this._currentMode;
-    this.setMode(CssLexerMode.ALL);
+
+    this.setMode(_trackWhitespace(mode) ? CssLexerMode.ALL_TRACK_WS : CssLexerMode.ALL);
 
     var previousIndex = this.index;
     var previousLine = this.line;
     var previousColumn = this.column;
 
+    var next: CssToken;
     var output = this.scan();
+    if (isPresent(output)) {
+      // just incase the inner scan method returned an error
+      if (isPresent(output.error)) {
+        this.setMode(mode);
+        return output;
+      }
 
-    // just incase the inner scan method returned an error
-    if (isPresent(output.error)) {
-      this.setMode(mode);
-      return output;
+      next = output.token;
     }
 
-    var next = output.token;
     if (!isPresent(next)) {
       next = new CssToken(0, 0, 0, CssTokenType.EOF, 'end of file');
     }
@@ -563,6 +569,8 @@ function isValidSelectorCharacter(code: number): boolean {
     case $COLON:
     case $PIPE:
     case $COMMA:
+    case $LBRACKET:
+    case $RBRACKET:
       return true;
     default:
       return false;
@@ -658,7 +666,7 @@ function isValidCssCharacter(code: number, mode: CssLexerMode): boolean {
     case CssLexerMode.SELECTOR:
       return isValidSelectorCharacter(code);
 
-    case CssLexerMode.PSEUDO_SELECTOR:
+    case CssLexerMode.PSEUDO_SELECTOR_WITH_ARGUMENTS:
       return isValidPseudoSelectorCharacter(code);
 
     case CssLexerMode.ATTRIBUTE_SELECTOR:

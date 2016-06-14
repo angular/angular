@@ -52,7 +52,7 @@ export function main() {
       expect(value.tokens[0].strValue).toEqual('value123');
     });
 
-    it('should parse mutliple CSS selectors sharing the same set of styles', () => {
+    it('should parse multiple CSS selectors sharing the same set of styles', () => {
       var styles = `
         .class, #id, tag, [attr], key + value, * value, :-moz-any-link {
           prop: value123;
@@ -65,13 +65,26 @@ export function main() {
       var rule = <CssSelectorRuleAST>ast.rules[0];
       expect(rule.selectors.length).toBe(7);
 
-      assertTokens(rule.selectors[0].tokens, ['.', 'class']);
-      assertTokens(rule.selectors[1].tokens, ['#', 'id']);
-      assertTokens(rule.selectors[2].tokens, ['tag']);
-      assertTokens(rule.selectors[3].tokens, ['[', 'attr', ']']);
-      assertTokens(rule.selectors[4].tokens, ['key', ' ', '+', ' ', 'value']);
-      assertTokens(rule.selectors[5].tokens, ['*', ' ', 'value']);
-      assertTokens(rule.selectors[6].tokens, [':', '-moz-any-link']);
+      var classRule = rule.selectors[0];
+      var idRule = rule.selectors[1];
+      var tagRule = rule.selectors[2];
+      var attrRule = rule.selectors[3];
+      var plusOpRule = rule.selectors[4];
+      var starOpRule = rule.selectors[5];
+      var mozRule = rule.selectors[6];
+
+      assertTokens(classRule.selectorParts[0].tokens, ['.', 'class']);
+      assertTokens(idRule.selectorParts[0].tokens, ['.', 'class']);
+      assertTokens(attrRule.selectorParts[0].tokens, ['[', 'attr', ']']);
+
+      assertTokens(plusOpRule.selectorParts[0].tokens, ['key']);
+      expect(plusOpRule.selectorParts[0].operator.strValue).toEqual('+');
+      assertTokens(plusOpRule.selectorParts[1].tokens, ['value']);
+
+      assertTokens(starOpRule.selectorParts[0].tokens, ['*']);
+      assertTokens(starOpRule.selectorParts[1].tokens, ['value']);
+
+      assertTokens(mozRule.selectorParts[0].pseudoSelectors[0].tokens, [':', '-moz-any-link']);
 
       var style1 = <CssDefinitionAST>rule.block.entries[0];
       expect(style1.property.strValue).toEqual('prop');
@@ -324,11 +337,13 @@ export function main() {
       var rules = ast.rules;
 
       var pageRule1 = <CssBlockDefinitionRuleAST>rules[0];
-      expect(pageRule1.strValue).toEqual('one');
+      expect(pageRule1.query.strValue).toEqual('@page one');
+      expect(pageRule1.query.tokens[0].strValue).toEqual('one');
       expect(pageRule1.type).toEqual(BlockType.Page);
 
       var pageRule2 = <CssBlockDefinitionRuleAST>rules[1];
-      expect(pageRule2.strValue).toEqual('two');
+      expect(pageRule2.query.strValue).toEqual('@page two');
+      expect(pageRule2.query.tokens[0].strValue).toEqual('two');
       expect(pageRule2.type).toEqual(BlockType.Page);
 
       var selectorOne = <CssSelectorRuleAST>pageRule1.block.entries[0];
@@ -424,7 +439,8 @@ export function main() {
       var errors = output.errors;
 
       expect(errors[0].msg)
-          .toMatchPattern(/Unbalanced pseudo selector function value at column 0:10/g);
+          .toMatchPattern(
+              /Character does not match expected Character value \("{" should match "\)"\)/);
     });
 
     it('should raise an error when a semi colon is missing from a CSS style/pair that isn\'t the last entry',
@@ -458,8 +474,37 @@ export function main() {
       var rule1 = <CssSelectorRuleAST>ast.rules[0];
       expect(rule1.selectors.length).toEqual(1);
 
-      var selector = rule1.selectors[0];
-      assertTokens(selector.tokens, ['div', ':', 'not', '(', '.', 'ignore-this-div', ')']);
+      var simpleSelector = rule1.selectors[0].selectorParts[0];
+      assertTokens(simpleSelector.tokens, ['div']);
+
+      var pseudoSelector = simpleSelector.pseudoSelectors[0];
+      expect(pseudoSelector.name).toEqual('not');
+      assertTokens(pseudoSelector.tokens, ['.', 'ignore-this-div']);
+    });
+
+    it('should parse the inner selectors of a :host-context selector', () => {
+      var styles = `body > :host-context(.a, .b, .c:hover) {
+        prop: value;
+      }`;
+
+      var output = parse(styles);
+      var errors = output.errors;
+      var ast = output.ast;
+
+      expect(errors.length).toEqual(0);
+
+      var rule1 = <CssSelectorRuleAST>ast.rules[0];
+      expect(rule1.selectors.length).toEqual(1);
+
+      var simpleSelector = rule1.selectors[0].selectorParts[1];
+      var innerSelectors = simpleSelector.pseudoSelectors[0].innerSelectors;
+
+      assertTokens(innerSelectors[0].selectorParts[0].tokens, ['.', 'a']);
+      assertTokens(innerSelectors[1].selectorParts[0].tokens, ['.', 'b']);
+
+      var finalSelector = innerSelectors[2].selectorParts[0];
+      assertTokens(finalSelector.tokens, ['.', 'c', ':', 'hover']);
+      assertTokens(finalSelector.pseudoSelectors[0].tokens, [':', 'hover']);
     });
 
     it('should raise parse errors when CSS key/value pairs are invalid', () => {

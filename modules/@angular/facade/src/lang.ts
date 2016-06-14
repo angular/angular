@@ -497,6 +497,10 @@ export function bitWiseAnd(values: number[]): number {
   return values.reduce((a, b) => { return a & b; });
 }
 
+export function bitWiseNot(value: number): number {
+  return ~value;
+}
+
 export function escape(s: string): string {
   return _global.encodeURI(s);
 }
