@@ -39,7 +39,7 @@ export interface NavigationExtras {
  * An event triggered when a navigation starts
  */
 export class NavigationStart {
-  constructor(public id: number, public url: UrlTree) {}
+  constructor(public id: number, public url: string) {}
 
   toString(): string { return `NavigationStart(id: ${this.id}, url: '${this.url}')`; }
 }
@@ -48,16 +48,18 @@ export class NavigationStart {
  * An event triggered when a navigation ends successfully
  */
 export class NavigationEnd {
-  constructor(public id: number, public url: UrlTree) {}
+  constructor(public id: number, public url: string, public urlAfterRedirects: string) {}
 
-  toString(): string { return `NavigationEnd(id: ${this.id}, url: '${this.url}')`; }
+  toString(): string {
+    return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}')`;
+  }
 }
 
 /**
  * An event triggered when a navigation is canceled
  */
 export class NavigationCancel {
-  constructor(public id: number, public url: UrlTree) {}
+  constructor(public id: number, public url: string) {}
 
   toString(): string { return `NavigationCancel(id: ${this.id}, url: '${this.url}')`; }
 }
@@ -66,7 +68,7 @@ export class NavigationCancel {
  * An event triggered when a navigation fails due to unexpected error
  */
 export class NavigationError {
-  constructor(public id: number, public url: UrlTree, public error: any) {}
+  constructor(public id: number, public url: string, public error: any) {}
 
   toString(): string {
     return `NavigationError(id: ${this.id}, url: '${this.url}', error: ${this.error})`;
@@ -78,7 +80,7 @@ export class NavigationError {
  */
 export class RoutesRecognized {
   constructor(
-      public id: number, public url: UrlTree, public urlAfterRedirects: UrlTree,
+      public id: number, public url: string, public urlAfterRedirects: string,
       public state: RouterStateSnapshot) {}
 
   toString(): string {
@@ -107,7 +109,7 @@ export class Router {
       private location: Location, private injector: Injector, private config: RouterConfig) {
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
-    this.currentRouterState = createEmptyState(this.rootComponentType);
+    this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
   }
 
   /**
@@ -124,9 +126,9 @@ export class Router {
   get routerState(): RouterState { return this.currentRouterState; }
 
   /**
-   * Returns the current url tree.
+   * Returns the current url.
    */
-  get urlTree(): UrlTree { return this.currentUrlTree; }
+  get url(): string { return this.serializeUrl(this.currentUrlTree); }
 
   /**
    * Returns an observable of route events
@@ -210,7 +212,6 @@ export class Router {
     return createUrlTree(a, this.currentUrlTree, commands, queryParams, fragment);
   }
 
-
   /**
    * Navigate based on the provided array of commands and a starting point.
    * If no starting route is provided, the navigation is absolute.
@@ -242,7 +243,7 @@ export class Router {
 
   private scheduleNavigation(url: UrlTree, pop: boolean): Promise<boolean> {
     const id = ++this.navigationId;
-    this.routerEvents.next(new NavigationStart(id, url));
+    this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
     return Promise.resolve().then((_) => this.runNavigate(url, false, id));
   }
 
@@ -255,7 +256,7 @@ export class Router {
   private runNavigate(url: UrlTree, pop: boolean, id: number): Promise<boolean> {
     if (id !== this.navigationId) {
       this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
-      this.routerEvents.next(new NavigationCancel(id, url));
+      this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url)));
       return Promise.resolve(false);
     }
 
@@ -265,12 +266,13 @@ export class Router {
       applyRedirects(url, this.config)
           .mergeMap(u => {
             updatedUrl = u;
-            return recognize(this.rootComponentType, this.config, updatedUrl);
+            return recognize(
+                this.rootComponentType, this.config, updatedUrl, this.serializeUrl(updatedUrl));
           })
 
           .mergeMap((newRouterStateSnapshot) => {
-            this.routerEvents.next(
-                new RoutesRecognized(id, url, updatedUrl, newRouterStateSnapshot));
+            this.routerEvents.next(new RoutesRecognized(
+                id, this.serializeUrl(url), this.serializeUrl(updatedUrl), newRouterStateSnapshot));
             return resolve(this.resolver, newRouterStateSnapshot);
 
           })
@@ -290,13 +292,13 @@ export class Router {
           .forEach((shouldActivate) => {
             if (!shouldActivate || id !== this.navigationId) {
               this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
-              this.routerEvents.next(new NavigationCancel(id, url));
+              this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url)));
               return Promise.resolve(false);
             }
 
             new ActivateRoutes(state, this.currentRouterState).activate(this.outletMap);
 
-            this.currentUrlTree = url;
+            this.currentUrlTree = updatedUrl;
             this.currentRouterState = state;
             if (!pop) {
               this.location.go(this.urlSerializer.serialize(updatedUrl));
@@ -304,12 +306,13 @@ export class Router {
           })
           .then(
               () => {
-                this.routerEvents.next(new NavigationEnd(id, url));
+                this.routerEvents.next(
+                    new NavigationEnd(id, this.serializeUrl(url), this.serializeUrl(updatedUrl)));
                 resolvePromise(true);
 
               },
               e => {
-                this.routerEvents.next(new NavigationError(id, url, e));
+                this.routerEvents.next(new NavigationError(id, this.serializeUrl(url), e));
                 rejectPromise(e);
               });
     });
@@ -380,9 +383,11 @@ class GuardChecks {
 
   private deactivateOutletAndItChildren(route: ActivatedRouteSnapshot, outlet: RouterOutlet): void {
     if (outlet && outlet.isActivated) {
-      forEach(
-          outlet.outletMap._outlets,
-          (v, k) => this.deactivateOutletAndItChildren(v.activatedRoute.snapshot, v));
+      forEach(outlet.outletMap._outlets, (v, k) => {
+        if (v.isActivated) {
+          this.deactivateOutletAndItChildren(v.activatedRoute.snapshot, v);
+        }
+      });
       this.checks.push(new CanDeactivate(outlet.component, route));
     }
   }
@@ -455,6 +460,7 @@ class ActivateRoutes {
       parentOutletMap: RouterOutletMap): void {
     const future = futureNode.value;
     const curr = currNode ? currNode.value : null;
+
     const outlet = getOutlet(parentOutletMap, futureNode.value);
 
     if (future === curr) {
@@ -506,10 +512,11 @@ function nodeChildrenAsMap(node: TreeNode<any>| null) {
 function getOutlet(outletMap: RouterOutletMap, route: ActivatedRoute): RouterOutlet {
   let outlet = outletMap._outlets[route.outlet];
   if (!outlet) {
+    const componentName = (<any>route.component).name;
     if (route.outlet === PRIMARY_OUTLET) {
-      throw new Error(`Cannot find primary outlet`);
+      throw new Error(`Cannot find primary outlet to load '${componentName}'`);
     } else {
-      throw new Error(`Cannot find the outlet ${route.outlet}`);
+      throw new Error(`Cannot find the outlet ${route.outlet} to load '${componentName}'`);
     }
   }
   return outlet;

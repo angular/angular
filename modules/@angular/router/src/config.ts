@@ -5,6 +5,7 @@ export type RouterConfig = Route[];
 export interface Route {
   index?: boolean;
   path?: string;
+  terminal?: boolean;
   component?: Type|string;
   outlet?: string;
   canActivate?: any[];

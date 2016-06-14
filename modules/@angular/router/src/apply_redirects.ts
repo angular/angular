@@ -3,158 +3,202 @@ import {of } from 'rxjs/observable/of';
 
 import {Route, RouterConfig} from './config';
 import {PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlTree} from './url_tree';
-import {first} from './utils/collection';
-import {TreeNode} from './utils/tree';
+import {UrlPathWithParams, UrlSegment, UrlTree, mapChildren} from './url_tree';
 
-class NoMatch {}
+class NoMatch {
+  constructor(public segment: UrlSegment = null) {}
+}
 class GlobalRedirect {
-  constructor(public segments: UrlSegment[]) {}
+  constructor(public paths: UrlPathWithParams[]) {}
 }
 
 export function applyRedirects(urlTree: UrlTree, config: RouterConfig): Observable<UrlTree> {
   try {
-    const transformedChildren = urlTree._root.children.map(c => applyNode(config, c));
-    return createUrlTree(urlTree, transformedChildren);
+    return createUrlTree(urlTree, expandSegment(config, urlTree.root, PRIMARY_OUTLET));
   } catch (e) {
     if (e instanceof GlobalRedirect) {
-      return createUrlTree(urlTree, [constructNodes(e.segments, [], [])]);
+      return createUrlTree(
+          urlTree, new UrlSegment([], {[PRIMARY_OUTLET]: new UrlSegment(e.paths, {})}));
     } else if (e instanceof NoMatch) {
-      return new Observable<UrlTree>(obs => obs.error(new Error('Cannot match any routes')));
+      return new Observable<UrlTree>(
+          obs => obs.error(new Error(`Cannot match any routes: '${e.segment}'`)));
     } else {
       return new Observable<UrlTree>(obs => obs.error(e));
     }
   }
 }
 
-function createUrlTree(urlTree: UrlTree, children: TreeNode<UrlSegment>[]): Observable<UrlTree> {
-  const transformedRoot = new TreeNode<UrlSegment>(urlTree.root, children);
-  return of (new UrlTree(transformedRoot, urlTree.queryParams, urlTree.fragment));
+function createUrlTree(urlTree: UrlTree, root: UrlSegment): Observable<UrlTree> {
+  return of (new UrlTree(root, urlTree.queryParams, urlTree.fragment));
 }
 
-function applyNode(config: Route[], url: TreeNode<UrlSegment>): TreeNode<UrlSegment> {
-  for (let r of config) {
+function expandSegment(routes: Route[], segment: UrlSegment, outlet: string): UrlSegment {
+  if (segment.pathsWithParams.length === 0 && Object.keys(segment.children).length > 0) {
+    return new UrlSegment([], expandSegmentChildren(routes, segment));
+  } else {
+    return expandPathsWithParams(segment, routes, segment.pathsWithParams, outlet, true);
+  }
+}
+
+function expandSegmentChildren(routes: Route[], segment: UrlSegment): {[name: string]: UrlSegment} {
+  return mapChildren(segment, (child, childOutlet) => expandSegment(routes, child, childOutlet));
+}
+
+function expandPathsWithParams(
+    segment: UrlSegment, routes: Route[], paths: UrlPathWithParams[], outlet: string,
+    allowRedirects: boolean): UrlSegment {
+  for (let r of routes) {
     try {
-      return matchNode(config, r, url);
+      return expandPathsWithParamsAgainstRoute(segment, routes, r, paths, outlet, allowRedirects);
     } catch (e) {
       if (!(e instanceof NoMatch)) throw e;
     }
   }
-  throw new NoMatch();
+  throw new NoMatch(segment);
 }
 
-function matchNode(config: Route[], route: Route, url: TreeNode<UrlSegment>): TreeNode<UrlSegment> {
-  if (!route.path) throw new NoMatch();
-  if ((route.outlet ? route.outlet : PRIMARY_OUTLET) !== url.value.outlet) {
-    throw new NoMatch();
-  }
+function expandPathsWithParamsAgainstRoute(
+    segment: UrlSegment, routes: Route[], route: Route, paths: UrlPathWithParams[], outlet: string,
+    allowRedirects: boolean): UrlSegment {
+  if ((route.outlet ? route.outlet : PRIMARY_OUTLET) !== outlet) throw new NoMatch();
+  if (route.redirectTo && !allowRedirects) throw new NoMatch();
 
+  if (route.redirectTo) {
+    return expandPathsWithParamsAgainstRouteUsingRedirect(segment, routes, route, paths, outlet);
+  } else {
+    return matchPathsWithParamsAgainstRoute(segment, route, paths);
+  }
+}
+
+function expandPathsWithParamsAgainstRouteUsingRedirect(
+    segment: UrlSegment, routes: Route[], route: Route, paths: UrlPathWithParams[],
+    outlet: string): UrlSegment {
   if (route.path === '**') {
-    const newSegments = applyRedirectCommands([], route.redirectTo, {});
-    return constructNodes(newSegments, [], []);
+    return expandWildCardWithParamsAgainstRouteUsingRedirect(route);
+  } else {
+    return expandRegularPathWithParamsAgainstRouteUsingRedirect(
+        segment, routes, route, paths, outlet);
   }
-
-  const m = match(route, url);
-  if (!m) throw new NoMatch();
-  const {consumedUrlSegments, lastSegment, lastParent, positionalParamSegments} = m;
-
-  const newSegments =
-      applyRedirectCommands(consumedUrlSegments, route.redirectTo, positionalParamSegments);
-
-  const childConfig = route.children ? route.children : [];
-  const transformedChildren = lastSegment.children.map(c => applyNode(childConfig, c));
-
-  const secondarySubtrees = lastParent ? lastParent.children.slice(1) : [];
-  const transformedSecondarySubtrees = secondarySubtrees.map(c => applyNode(config, c));
-
-  return constructNodes(newSegments, transformedChildren, transformedSecondarySubtrees);
 }
 
-export function match(route: Route, url: TreeNode<UrlSegment>) {
+function expandWildCardWithParamsAgainstRouteUsingRedirect(route: Route): UrlSegment {
+  const newPaths = applyRedirectCommands([], route.redirectTo, {});
+  if (route.redirectTo.startsWith('/')) {
+    throw new GlobalRedirect(newPaths);
+  } else {
+    return new UrlSegment(newPaths, {});
+  }
+}
+function expandRegularPathWithParamsAgainstRouteUsingRedirect(
+    segment: UrlSegment, routes: Route[], route: Route, paths: UrlPathWithParams[],
+    outlet: string): UrlSegment {
+  const {consumedPaths, lastChild, positionalParamSegments} = match(segment, route, paths);
+  const newPaths = applyRedirectCommands(consumedPaths, route.redirectTo, positionalParamSegments);
+  if (route.redirectTo.startsWith('/')) {
+    throw new GlobalRedirect(newPaths);
+  } else {
+    return expandPathsWithParams(
+        segment, routes, newPaths.concat(paths.slice(lastChild)), outlet, false);
+  }
+}
+
+function matchPathsWithParamsAgainstRoute(
+    segment: UrlSegment, route: Route, paths: UrlPathWithParams[]): UrlSegment {
+  if (route.path === '**') {
+    return new UrlSegment(paths, {});
+  } else {
+    const {consumedPaths, lastChild} = match(segment, route, paths);
+    const childConfig = route.children ? route.children : [];
+    const slicedPath = paths.slice(lastChild);
+
+    if (childConfig.length === 0 && slicedPath.length === 0) {
+      return new UrlSegment(consumedPaths, {});
+
+      // TODO: check that the right segment is present
+    } else if (slicedPath.length === 0 && Object.keys(segment.children).length > 0) {
+      const children = expandSegmentChildren(childConfig, segment);
+      return new UrlSegment(consumedPaths, children);
+
+    } else {
+      const cs = expandPathsWithParams(segment, childConfig, slicedPath, PRIMARY_OUTLET, true);
+      return new UrlSegment(consumedPaths.concat(cs.pathsWithParams), cs.children);
+    }
+  }
+}
+
+function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
+  if (route.index || route.path === '' || route.path === '/') {
+    if (route.terminal && (Object.keys(segment.children).length > 0 || paths.length > 0)) {
+      throw new NoMatch();
+    } else {
+      return {consumedPaths: [], lastChild: 0, positionalParamSegments: {}};
+    }
+  }
+
   const path = route.path.startsWith('/') ? route.path.substring(1) : route.path;
   const parts = path.split('/');
   const positionalParamSegments = {};
-  const consumedUrlSegments = [];
+  const consumedPaths = [];
 
-  let lastParent: TreeNode<UrlSegment>|null = null;
-  let lastSegment: TreeNode<UrlSegment>|null = null;
+  let currentIndex = 0;
 
-  let current: TreeNode<UrlSegment>|null = url;
   for (let i = 0; i < parts.length; ++i) {
-    if (!current) return null;
+    if (currentIndex >= paths.length) throw new NoMatch();
+    const current = paths[currentIndex];
 
     const p = parts[i];
-    const isLastSegment = i === parts.length - 1;
-    const isLastParent = i === parts.length - 2;
     const isPosParam = p.startsWith(':');
 
-    if (!isPosParam && p != current.value.path) return null;
-    if (isLastSegment) {
-      lastSegment = current;
-    }
-    if (isLastParent) {
-      lastParent = current;
-    }
+    if (!isPosParam && p !== current.path) throw new NoMatch();
     if (isPosParam) {
-      positionalParamSegments[p.substring(1)] = current.value;
+      positionalParamSegments[p.substring(1)] = current;
     }
-    consumedUrlSegments.push(current.value);
-    current = first(current.children);
+    consumedPaths.push(current);
+    currentIndex++;
   }
-  if (!lastSegment) throw 'Cannot be reached';
-  return {consumedUrlSegments, lastSegment, lastParent, positionalParamSegments};
-}
 
-function constructNodes(
-    segments: UrlSegment[], children: TreeNode<UrlSegment>[],
-    secondary: TreeNode<UrlSegment>[]): TreeNode<UrlSegment> {
-  let prevChildren = children;
-  for (let i = segments.length - 1; i >= 0; --i) {
-    if (i === segments.length - 2) {
-      prevChildren = [new TreeNode<UrlSegment>(segments[i], prevChildren.concat(secondary))];
-    } else {
-      prevChildren = [new TreeNode<UrlSegment>(segments[i], prevChildren)];
-    }
+  if (route.terminal && (Object.keys(segment.children).length > 0 || currentIndex < paths.length)) {
+    throw new NoMatch();
   }
-  return prevChildren[0];
+
+  return {consumedPaths, lastChild: currentIndex, positionalParamSegments};
 }
 
 function applyRedirectCommands(
-    segments: UrlSegment[], redirectTo: string,
-    posParams: {[k: string]: UrlSegment}): UrlSegment[] {
-  if (!redirectTo) return segments;
-
+    paths: UrlPathWithParams[], redirectTo: string,
+    posParams: {[k: string]: UrlPathWithParams}): UrlPathWithParams[] {
   if (redirectTo.startsWith('/')) {
     const parts = redirectTo.substring(1).split('/');
-    throw new GlobalRedirect(createSegments(redirectTo, parts, segments, posParams));
+    throw new GlobalRedirect(createPaths(redirectTo, parts, paths, posParams));
   } else {
-    return createSegments(redirectTo, redirectTo.split('/'), segments, posParams);
+    return createPaths(redirectTo, redirectTo.split('/'), paths, posParams);
   }
 }
 
-function createSegments(
-    redirectTo: string, parts: string[], segments: UrlSegment[],
-    posParams: {[k: string]: UrlSegment}): UrlSegment[] {
+function createPaths(
+    redirectTo: string, parts: string[], segments: UrlPathWithParams[],
+    posParams: {[k: string]: UrlPathWithParams}): UrlPathWithParams[] {
   return parts.map(
-      p => p.startsWith(':') ? findPosParamSegment(p, posParams, redirectTo) :
-                               findOrCreateSegment(p, segments));
+      p => p.startsWith(':') ? findPosParam(p, posParams, redirectTo) :
+                               findOrCreatePath(p, segments));
 }
 
-function findPosParamSegment(
-    part: string, posParams: {[k: string]: UrlSegment}, redirectTo: string): UrlSegment {
+function findPosParam(
+    part: string, posParams: {[k: string]: UrlPathWithParams},
+    redirectTo: string): UrlPathWithParams {
   const paramName = part.substring(1);
   const pos = posParams[paramName];
   if (!pos) throw new Error(`Cannot redirect to '${redirectTo}'. Cannot find '${part}'.`);
   return pos;
 }
 
-function findOrCreateSegment(part: string, segments: UrlSegment[]): UrlSegment {
-  const matchingIndex = segments.findIndex(s => s.path === part);
+function findOrCreatePath(part: string, paths: UrlPathWithParams[]): UrlPathWithParams {
+  const matchingIndex = paths.findIndex(s => s.path === part);
   if (matchingIndex > -1) {
-    const r = segments[matchingIndex];
-    segments.splice(matchingIndex);
+    const r = paths[matchingIndex];
+    paths.splice(matchingIndex);
     return r;
   } else {
-    return new UrlSegment(part, {}, PRIMARY_OUTLET);
+    return new UrlPathWithParams(part, {});
   }
 }

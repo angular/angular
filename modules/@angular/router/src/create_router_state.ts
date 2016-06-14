@@ -41,7 +41,7 @@ function createOrReuseChildren(
 
 function createActivatedRoute(c: ActivatedRouteSnapshot) {
   return new ActivatedRoute(
-      new BehaviorSubject(c.urlSegments), new BehaviorSubject(c.params), c.outlet, c.component, c);
+      new BehaviorSubject(c.url), new BehaviorSubject(c.params), c.outlet, c.component, c);
 }
 
 function equalRouteSnapshots(a: ActivatedRouteSnapshot, b: ActivatedRouteSnapshot): boolean {

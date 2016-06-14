@@ -1,30 +1,32 @@
 import {DefaultUrlSerializer} from '../src/url_serializer';
 import {TreeNode} from '../src/utils/tree';
-import {UrlTree, UrlSegment, equalUrlSegments} from '../src/url_tree';
-import {Params, PRIMARY_OUTLET} from '../src/shared';
+import {UrlTree, UrlSegment, equalPathsWithParams} from '../src/url_tree';
+import {RouterConfig} from '../src/config';
 import {applyRedirects} from '../src/apply_redirects';
 
 describe('applyRedirects', () => {
   it("should return the same url tree when no redirects", () => {
-    applyRedirects(tree("/a/b"), [
+    checkRedirect([
       {path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}
-    ]).forEach(t => {
+    ], "/a/b", t => {
       compareTrees(t, tree('/a/b'));
     });
   });
 
   it("should add new segments when needed", () => {
-    applyRedirects(tree("/a/b"), [
-      {path: 'a/b', redirectTo: 'a/b/c'}
-    ]).forEach(t => {
+    checkRedirect([
+      {path: 'a/b', redirectTo: 'a/b/c'},
+      {path: '**', component: ComponentC}
+    ], "/a/b", t => {
       compareTrees(t, tree('/a/b/c'));
     });
   });
 
   it("should handle positional parameters", () => {
-    applyRedirects(tree("/a/1/b/2"), [
-      {path: 'a/:aid/b/:bid', redirectTo: 'newa/:aid/newb/:bid'}
-    ]).forEach(t => {
+    checkRedirect([
+      {path: 'a/:aid/b/:bid', redirectTo: 'newa/:aid/newb/:bid'},
+      {path: '**', component: ComponentC}
+    ], "/a/1/b/2", t => {
       compareTrees(t, tree('/newa/1/newb/2'));
     });
   });
@@ -38,49 +40,121 @@ describe('applyRedirects', () => {
   });
 
   it("should pass matrix parameters", () => {
-    applyRedirects(tree("/a;p1=1/1;p2=2"), [
-      {path: 'a/:id', redirectTo: 'd/a/:id/e'}
-    ]).forEach(t => {
+    checkRedirect([
+      {path: 'a/:id', redirectTo: 'd/a/:id/e'},
+      {path: '**', component: ComponentC}
+    ], "/a;p1=1/1;p2=2", t => {
       compareTrees(t, tree('/d/a;p1=1/1;p2=2/e'));
     });
   });
 
   it("should handle preserve secondary routes", () => {
-    applyRedirects(tree("/a/1(aux:c/d)"), [
+    checkRedirect([
       {path: 'a/:id', redirectTo: 'd/a/:id/e'},
-      {path: 'c/d', component: ComponentA, outlet: 'aux'}
-    ]).forEach(t => {
+      {path: 'c/d', component: ComponentA, outlet: 'aux'},
+      {path: '**', component: ComponentC}
+    ], "/a/1(aux:c/d)", t => {
       compareTrees(t, tree('/d/a/1/e(aux:c/d)'));
     });
   });
 
   it("should redirect secondary routes", () => {
-    applyRedirects(tree("/a/1(aux:c/d)"), [
+    checkRedirect([
       {path: 'a/:id', component: ComponentA},
-      {path: 'c/d', redirectTo: 'f/c/d/e', outlet: 'aux'}
-    ]).forEach(t => {
+      {path: 'c/d', redirectTo: 'f/c/d/e', outlet: 'aux'},
+      {path: '**', component: ComponentC, outlet: 'aux'}
+    ], "/a/1(aux:c/d)", t => {
       compareTrees(t, tree('/a/1(aux:f/c/d/e)'));
     });
   });
 
+  it("should use the configuration of the route redirected to", () => {
+    checkRedirect([
+      {path: 'a', component: ComponentA, children: [
+        {path: 'b', component: ComponentB},
+      ]},
+      {path: 'c', redirectTo: 'a'}
+    ], "c/b", t => {
+      compareTrees(t, tree('a/b'));
+    });
+  });
+
+  it("should redirect empty path", () => {
+    checkRedirect([
+      {path: 'a', component: ComponentA, children: [
+        {path: 'b', component: ComponentB},
+      ]},
+      {path: '', redirectTo: 'a'}
+    ], "b", t => {
+      compareTrees(t, tree('a/b'));
+    });
+  });
+
+  xit("should support nested redirects", () => {
+    checkRedirect([
+      {path: 'a', component: ComponentA, children: [
+        {path: 'b', component: ComponentB},
+        {path: '', redirectTo: 'b'}
+      ]},
+      {path: '', redirectTo: 'a'}
+    ], "", t => {
+      compareTrees(t, tree('a/b'));
+    });
+  });
+
+  xit("should support nested redirects (when redirected to an empty path)", () => {
+    checkRedirect([
+      {path: '', component: ComponentA, children: [
+        {path: 'b', component: ComponentB},
+        {path: '', redirectTo: 'b'}
+      ]},
+      {path: 'a', redirectTo: ''}
+    ], "a", t => {
+      compareTrees(t, tree('b'));
+    });
+  });
+
+  it("should redirect empty path route only when terminal", () => {
+    const config = [
+      {path: 'a', component: ComponentA, children: [
+        {path: 'b', component: ComponentB},
+      ]},
+      {path: '', redirectTo: 'a', terminal: true}
+    ];
+
+    applyRedirects(tree("b"), config).subscribe((_) => {
+      throw "Should not be reached";
+    }, e => {
+      expect(e.message).toEqual("Cannot match any routes: 'b'");
+    });
+  });
+
   it("should redirect wild cards", () => {
-    applyRedirects(tree("/a/1(aux:c/d)"), [
+    checkRedirect([
+      {path: '404', component: ComponentA},
       {path: '**', redirectTo: '/404'},
-    ]).forEach(t => {
+    ], "/a/1(aux:c/d)", t => {
       compareTrees(t, tree('/404'));
     });
   });
 
   it("should support global redirects", () => {
-    applyRedirects(tree("/a/b/1"), [
+    checkRedirect([
       {path: 'a', component: ComponentA, children: [
         {path: 'b/:id', redirectTo: '/global/:id'}
       ]},
-    ]).forEach(t => {
+      {path: '**', component: ComponentC}
+    ], "/a/b/1", t => {
       compareTrees(t, tree('/global/1'));
     });
   });
 });
+
+function checkRedirect(config: RouterConfig, url: string, callback: any): void {
+  applyRedirects(tree(url), config).subscribe(callback, e => {
+    throw e;
+  });
+}
 
 function tree(url: string): UrlTree {
   return new DefaultUrlSerializer().parse(url);
@@ -89,19 +163,18 @@ function tree(url: string): UrlTree {
 function compareTrees(actual: UrlTree, expected: UrlTree): void{
   const serializer = new DefaultUrlSerializer();
   const error = `"${serializer.serialize(actual)}" is not equal to "${serializer.serialize(expected)}"`;
-  compareNode(actual._root, expected._root, error);
+  compareSegments(actual.root, expected.root, error);
 }
 
-function compareNode(actual: TreeNode<UrlSegment>, expected: TreeNode<UrlSegment>, error: string): void{
-  expect(equalUrlSegments([actual.value], [expected.value])).toEqual(true, error);
+function compareSegments(actual: UrlSegment, expected: UrlSegment, error: string): void{
+  expect(actual).toBeDefined(error);
+  expect(equalPathsWithParams(actual.pathsWithParams, expected.pathsWithParams)).toEqual(true, error);
 
-  expect(actual.children.length).toEqual(expected.children.length, error);
+  expect(Object.keys(actual.children).length).toEqual(Object.keys(expected.children).length, error);
 
-  if (actual.children.length === expected.children.length) {
-    for (let i = 0; i < actual.children.length; ++i) {
-      compareNode(actual.children[i], expected.children[i], error);
-    }
-  }
+  Object.keys(expected.children).forEach(key => {
+    compareSegments(actual.children[key], expected.children[key], error);
+  });
 }
 
 class ComponentA {}
