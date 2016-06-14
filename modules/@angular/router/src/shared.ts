@@ -8,5 +8,5 @@ export const PRIMARY_OUTLET = 'PRIMARY_OUTLET';
  * A collection of parameters.
  */
 export type Params = {
-  [key: string]: string
+  [key: string]: any
 };
