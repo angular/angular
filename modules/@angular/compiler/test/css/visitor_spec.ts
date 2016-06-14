@@ -1,11 +1,12 @@
 import {CssLexer} from '@angular/compiler/src/css/lexer';
-import {BlockType, CssAST, CssASTVisitor, CssBlockAST, CssBlockDefinitionRuleAST, CssBlockRuleAST, CssDefinitionAST, CssInlineRuleAST, CssKeyframeDefinitionAST, CssKeyframeRuleAST, CssMediaQueryRuleAST, CssParseError, CssParser, CssRuleAST, CssSelectorAST, CssSelectorRuleAST, CssStyleSheetAST, CssStyleValueAST, CssToken, CssUnknownTokenListAST} from '@angular/compiler/src/css/parser';
+import {BlockType, CssAST, CssASTVisitor, CssAtRulePredicateAST, CssBlockAST, CssBlockDefinitionRuleAST, CssBlockRuleAST, CssDefinitionAST, CssInlineRuleAST, CssKeyframeDefinitionAST, CssKeyframeRuleAST, CssMediaQueryRuleAST, CssParseError, CssParser, CssPseudoSelectorAST, CssRuleAST, CssSelectorAST, CssSelectorRuleAST, CssSimpleSelectorAST, CssStyleSheetAST, CssStyleValueAST, CssStylesBlockAST, CssToken, CssUnknownRuleAST, CssUnknownTokenListAST} from '@angular/compiler/src/css/parser';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
 import {BaseException} from '../../src/facade/exceptions';
 import {NumberWrapper, StringWrapper, isPresent} from '../../src/facade/lang';
 
-function _assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9100 */) {
+function _assertTokens(tokens: CssToken[], valuesArr: string[]): void {
+  expect(tokens.length).toEqual(valuesArr.length);
   for (var i = 0; i < tokens.length; i++) {
     expect(tokens[i].strValue == valuesArr[i]);
   }
@@ -14,75 +15,101 @@ function _assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9
 class MyVisitor implements CssASTVisitor {
   captures: {[key: string]: any[]} = {};
 
-  _capture(
-      method: any /** TODO #9100 */, ast: any /** TODO #9100 */, context: any /** TODO #9100 */) {
+  _capture(method: string, ast: CssAST, context: any) {
     this.captures[method] = isPresent(this.captures[method]) ? this.captures[method] : [];
     this.captures[method].push([ast, context]);
   }
 
-  constructor(ast: CssStyleSheetAST, context?: any) { ast.visit(this, context); }
+  constructor(ast: CssStyleSheetAST, context: any) { ast.visit(this, context); }
 
-  visitCssValue(ast: any /** TODO #9100 */, context?: any): void {
+  visitCssValue(ast: CssStyleValueAST, context: any): void {
     this._capture('visitCssValue', ast, context);
   }
 
-  visitInlineCssRule(ast: any /** TODO #9100 */, context?: any): void {
+  visitInlineCssRule(ast: CssInlineRuleAST, context: any): void {
     this._capture('visitInlineCssRule', ast, context);
   }
 
-  visitCssKeyframeRule(ast: CssKeyframeRuleAST, context?: any): void {
+  visitCssAtRulePredicate(ast: CssAtRulePredicateAST, context: any): void {
+    this._capture('visitCssAtRulePredicate', ast, context);
+  }
+
+  visitCssKeyframeRule(ast: CssKeyframeRuleAST, context: any): void {
     this._capture('visitCssKeyframeRule', ast, context);
     ast.block.visit(this, context);
   }
 
-  visitCssKeyframeDefinition(ast: CssKeyframeDefinitionAST, context?: any): void {
+  visitCssKeyframeDefinition(ast: CssKeyframeDefinitionAST, context: any): void {
     this._capture('visitCssKeyframeDefinition', ast, context);
     ast.block.visit(this, context);
   }
 
-  visitCssMediaQueryRule(ast: CssMediaQueryRuleAST, context?: any): void {
+  visitCssMediaQueryRule(ast: CssMediaQueryRuleAST, context: any): void {
     this._capture('visitCssMediaQueryRule', ast, context);
+    ast.query.visit(this, context);
     ast.block.visit(this, context);
   }
 
-  visitCssSelectorRule(ast: CssSelectorRuleAST, context?: any): void {
+  visitCssSelectorRule(ast: CssSelectorRuleAST, context: any): void {
     this._capture('visitCssSelectorRule', ast, context);
     ast.selectors.forEach((selAST: CssSelectorAST) => { selAST.visit(this, context); });
     ast.block.visit(this, context);
   }
 
-  visitCssSelector(ast: CssSelectorAST, context?: any): void {
+  visitCssSelector(ast: CssSelectorAST, context: any): void {
     this._capture('visitCssSelector', ast, context);
+    ast.selectorParts.forEach(
+        (simpleAst: CssSimpleSelectorAST) => { simpleAst.visit(this, context); });
   }
 
-  visitCssDefinition(ast: CssDefinitionAST, context?: any): void {
+  visitCssSimpleSelector(ast: CssSimpleSelectorAST, context: any): void {
+    this._capture('visitCssSimpleSelector', ast, context);
+    ast.pseudoSelectors.forEach(
+        (pseudoAst: CssPseudoSelectorAST) => { pseudoAst.visit(this, context); });
+  }
+
+  visitCssDefinition(ast: CssDefinitionAST, context: any): void {
     this._capture('visitCssDefinition', ast, context);
     ast.value.visit(this, context);
   }
 
-  visitCssBlock(ast: CssBlockAST, context?: any): void {
+  visitCssBlock(ast: CssBlockAST, context: any): void {
     this._capture('visitCssBlock', ast, context);
     ast.entries.forEach((entryAST: CssAST) => { entryAST.visit(this, context); });
   }
 
-  visitCssStyleSheet(ast: CssStyleSheetAST, context?: any): void {
+  visitCssStylesBlock(ast: CssStylesBlockAST, context: any): void {
+    this._capture('visitCssStylesBlock', ast, context);
+    ast.definitions.forEach(
+        (definitionAst: CssDefinitionAST) => { definitionAst.visit(this, context); });
+  }
+
+  visitCssStyleSheet(ast: CssStyleSheetAST, context: any): void {
     this._capture('visitCssStyleSheet', ast, context);
     ast.rules.forEach((ruleAST: CssRuleAST) => { ruleAST.visit(this, context); });
   }
 
-  visitUnkownRule(ast: CssUnknownTokenListAST, context?: any): void {
-    // nothing
+  visitUnknownRule(ast: CssUnknownRuleAST, context: any): void {
+    this._capture('visitUnknownRule', ast, context);
+  }
+
+  visitUnknownTokenList(ast: CssUnknownTokenListAST, context: any): void {
+    this._capture('visitUnknownTokenList', ast, context);
+  }
+
+  visitCssPseudoSelector(ast: CssPseudoSelectorAST, context: any): void {
+    this._capture('visitCssPseudoSelector', ast, context);
   }
 }
 
 export function main() {
-  function parse(cssCode: string) {
+  function parse(cssCode: string, ignoreErrors: boolean = false) {
     var lexer = new CssLexer();
     var scanner = lexer.scan(cssCode);
     var parser = new CssParser(scanner, 'some-fake-file-name.css');
     var output = parser.parse();
     var errors = output.errors;
-    if (errors.length > 0) {
+    if (errors.length > 0 && !ignoreErrors) {
       throw new BaseException(errors.map((error: CssParseError) => error.msg).join(', '));
     }
     return output.ast;
@@ -134,15 +161,24 @@ export function main() {
 
       var rule1 = <CssSelectorRuleAST>captures[0][0];
       expect(rule1).toEqual(ast.rules[0]);
-      _assertTokens(rule1.selectors[0].tokens, ['.', 'rule1']);
+
+      var firstSelector = rule1.selectors[0];
+      var firstSimpleSelector = firstSelector.selectorParts[0];
+      _assertTokens(firstSimpleSelector.tokens, ['.', 'rule1']);
 
       var rule2 = <CssSelectorRuleAST>captures[1][0];
       expect(rule2).toEqual(ast.rules[1]);
-      _assertTokens(rule2.selectors[0].tokens, ['.', 'rule2']);
+
+      var secondSelector = rule2.selectors[0];
+      var secondSimpleSelector = secondSelector.selectorParts[0];
+      _assertTokens(secondSimpleSelector.tokens, ['.', 'rule2']);
 
       var rule3 = captures[2][0];
       expect(rule3).toEqual((<CssMediaQueryRuleAST>ast.rules[2]).block.entries[0]);
-      _assertTokens(rule3.selectors[0].tokens, ['#', 'rule3']);
+
+      var thirdSelector = rule3.selectors[0];
+      var thirdSimpleSelector = thirdSelector.selectorParts[0];
+      _assertTokens(thirdSimpleSelector.tokens, ['#', 'rule3']);
     });
 
     it('should parse and visit each of the stylesheet style key/value definitions', () => {
@@ -179,8 +215,18 @@ export function main() {
       expect(captures.length).toEqual(1);
 
       var query1 = <CssMediaQueryRuleAST>captures[0][0];
-      _assertTokens(query1.query, ['all', 'and', '(', 'max-width', '100', 'px', ')']);
+      _assertTokens(query1.query.tokens, ['all', 'and', '(', 'max-width', '100', 'px', ')']);
       expect(query1.block.entries.length).toEqual(1);
+    });
+
+    it('should capture the media query predicate', () => {
+      var visitor = new MyVisitor(ast, context);
+      var captures = visitor.captures['visitCssAtRulePredicate'];
+
+      expect(captures.length).toEqual(1);
+
+      var predicate = <CssAtRulePredicateAST>captures[0][0];
+      expect(predicate.strValue).toEqual('@media all (max-width: 100px)');
     });
 
     it('should parse and visit the associated "@inline" rule values', () => {
@@ -218,6 +264,48 @@ export function main() {
       var def2 = <CssKeyframeDefinitionAST>captures[1][0];
       _assertTokens(def2.steps, ['50%', '100%']);
       expect(def2.block.entries.length).toEqual(1);
+    });
+
+    it('should visit an unknown `@` rule', () => {
+      var cssCode = `
+        @someUnknownRule param {
+          one two three
+        }
+      `;
+      ast = parse(cssCode, true);
+      var visitor = new MyVisitor(ast, context);
+      var captures = visitor.captures['visitUnknownRule'];
+
+      expect(captures.length).toEqual(1);
+
+      var rule = <CssUnknownRuleAST>captures[0][0];
+      expect(rule.ruleName).toEqual('@someUnknownRule');
+
+      _assertTokens(rule.tokens, ['param', '{', 'one', 'two', 'three', '}']);
+    });
+
+    it('should collect an invalid list of tokens before a valid selector', () => {
+      var cssCode = 'one two three four five; selector { }';
+      ast = parse(cssCode, true);
+      var visitor = new MyVisitor(ast, context);
+      var captures = visitor.captures['visitUnknownTokenList'];
+
+      expect(captures.length).toEqual(1);
+
+      var rule = <CssUnknownTokenListAST>captures[0][0];
+      _assertTokens(rule.tokens, ['one', 'two', 'three', 'four', 'five']);
+    });
+
+    it('should collect an invalid list of tokens after a valid selector', () => {
+      var cssCode = 'selector { } six seven eight';
+      ast = parse(cssCode, true);
+      var visitor = new MyVisitor(ast, context);
+      var captures = visitor.captures['visitUnknownTokenList'];
+
+      expect(captures.length).toEqual(1);
+
+      var rule = <CssUnknownTokenListAST>captures[0][0];
+      _assertTokens(rule.tokens, ['six', 'seven', 'eight']);
     });
   });
 }
