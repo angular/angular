@@ -21,6 +21,7 @@ import {AnimationCompiler} from '../animation/animation_compiler';
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
+const NG_CONTAINER_TAG = 'ng-container';
 
 var parentRenderNodeVar = o.variable('parentRenderNode');
 var rootSelectorVar = o.variable('rootSelector');
@@ -60,8 +61,10 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
 
   private _isRootNode(parent: CompileElement): boolean { return parent.view !== this.view; }
 
-  private _addRootNodeAndProject(
-      node: CompileNode, ngContentIndex: number, parent: CompileElement) {
+  private _addRootNodeAndProject(node: CompileNode) {
+    var projectedNode = _getOuterContainerOrSelf(node);
+    var parent = projectedNode.parent;
+    var ngContentIndex = (<any>projectedNode.sourceAst).ngContentIndex;
     var vcAppEl =
         (node instanceof CompileElement && node.hasViewContainer) ? node.appElement : null;
     if (this._isRootNode(parent)) {
@@ -75,6 +78,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   }
 
   private _getParentRenderNode(parent: CompileElement): o.Expression {
+    parent = <CompileElement>_getOuterContainerParentOrSelf(parent);
     if (this._isRootNode(parent)) {
       if (this.view.viewType === ViewType.COMPONENT) {
         return parentRenderNodeVar;
@@ -91,14 +95,12 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   }
 
   visitBoundText(ast: BoundTextAst, parent: CompileElement): any {
-    return this._visitText(ast, '', ast.ngContentIndex, parent);
+    return this._visitText(ast, '', parent);
   }
   visitText(ast: TextAst, parent: CompileElement): any {
-    return this._visitText(ast, ast.value, ast.ngContentIndex, parent);
+    return this._visitText(ast, ast.value, parent);
   }
-  private _visitText(
-      ast: TemplateAst, value: string, ngContentIndex: number,
-      parent: CompileElement): o.Expression {
+  private _visitText(ast: TemplateAst, value: string, parent: CompileElement): o.Expression {
     var fieldName = `_text_${this.view.nodes.length}`;
     this.view.fields.push(
         new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderText)));
@@ -115,7 +117,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
             .toStmt();
     this.view.nodes.push(compileNode);
     this.view.createMethod.addStmt(createRenderNode);
-    this._addRootNodeAndProject(compileNode, ngContentIndex, parent);
+    this._addRootNodeAndProject(compileNode);
     return renderNode;
   }
 
@@ -158,9 +160,14 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
       createRenderNodeExpr = o.THIS_EXPR.callMethod(
           'selectOrCreateHostElement', [o.literal(ast.name), rootSelectorVar, debugContextExpr]);
     } else {
-      createRenderNodeExpr = ViewProperties.renderer.callMethod(
-          'createElement',
-          [this._getParentRenderNode(parent), o.literal(ast.name), debugContextExpr]);
+      if (ast.name === NG_CONTAINER_TAG) {
+        createRenderNodeExpr = ViewProperties.renderer.callMethod(
+            'createTemplateAnchor', [this._getParentRenderNode(parent), debugContextExpr]);
+      } else {
+        createRenderNodeExpr = ViewProperties.renderer.callMethod(
+            'createElement',
+            [this._getParentRenderNode(parent), o.literal(ast.name), debugContextExpr]);
+      }
     }
     var fieldName = `_el_${nodeIndex}`;
     this.view.fields.push(
@@ -201,7 +208,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
               .toDeclStmt());
     }
     compileElement.beforeChildren();
-    this._addRootNodeAndProject(compileElement, ast.ngContentIndex, parent);
+    this._addRootNodeAndProject(compileElement);
     templateVisitAll(this, ast.children, compileElement);
     compileElement.afterChildren(this.view.nodes.length - nodeIndex - 1);
 
@@ -257,7 +264,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     this.nestedViewCount += buildView(embeddedView, ast.children, this.targetDependencies);
 
     compileElement.beforeChildren();
-    this._addRootNodeAndProject(compileElement, ast.ngContentIndex, parent);
+    this._addRootNodeAndProject(compileElement);
     compileElement.afterChildren(0);
 
     return null;
@@ -274,6 +281,46 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
   visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }
 }
+
+/**
+ * Walks up the nodes while the direct parent is a container.
+ *
+ * Returns the outer container or the node itself when it is not a direct child of a container.
+ *
+ * @internal
+ */
+function _getOuterContainerOrSelf(node: CompileNode): CompileNode {
+  const view = node.view;
+
+  while (_isNgContainer(node.parent, view)) {
+    node = node.parent;
+  }
+
+  return node;
+}
+
+/**
+ * Walks up the nodes while they are container and returns the first parent which is not.
+ *
+ * Returns the parent of the outer container or the node itself when it is not a container.
+ *
+ * @internal
+ */
+function _getOuterContainerParentOrSelf(el: CompileElement): CompileElement {
+  const view = el.view;
+
+  while (_isNgContainer(el, view)) {
+    el = el.parent;
+  }
+
+  return el;
+}
+
+function _isNgContainer(node: CompileNode, view: CompileView): boolean {
+  return !node.isNull() && (<ElementAst>node.sourceAst).name === NG_CONTAINER_TAG &&
+      node.view === view;
+}
+
 
 function _mergeHtmlAndDirectiveAttrs(
     declaredHtmlAttrs: {[key: string]: string},
