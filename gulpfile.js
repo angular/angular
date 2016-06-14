@@ -262,23 +262,31 @@ gulp.task('!build/remove-pub-symlinks', function(done) {
 gulp.task('build/analyze.dart', () => {
   var dartanalyzer = require('./tools/build/dartanalyzer');
 
-  return dartanalyzer(gulp, gulpPlugins, {dest: CONFIG.dest.dart, command: DART_SDK.ANALYZER});
+  return dartanalyzer(
+      gulp, gulpPlugins,
+      {dest: ['dist/dart/angular2', 'dist/dart/benchpress'], command: DART_SDK.ANALYZER});
 });
 
 
 gulp.task('build/analyze.ddc.dart', () => {
   var dartanalyzer = require('./tools/build/dartanalyzer');
 
-  return dartanalyzer(gulp, gulpPlugins,
-                      {dest: CONFIG.dest.dart, command: DART_SDK.ANALYZER, use_ddc: true});
+  return dartanalyzer(gulp, gulpPlugins, {
+    dest: ['dist/dart/angular2', 'dist/dart/benchpress'],
+    command: DART_SDK.ANALYZER,
+    use_ddc: true
+  });
 });
 
 
 gulp.task('build/check.apidocs.dart', () => {
   var dartapidocs = require('./tools/build/dartapidocs');
 
-  return dartapidocs(gulp, gulpPlugins,
-                     {dest: CONFIG.dest.dart, output: os.tmpdir(), command: DART_SDK.DARTDOCGEN});
+  return dartapidocs(gulp, gulpPlugins, {
+    dest: ['dist/dart/angular2', 'dist/dart/benchpress'],
+    output: os.tmpdir(),
+    command: DART_SDK.DARTDOCGEN
+  });
 });
 
 

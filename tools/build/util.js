@@ -27,12 +27,14 @@ function forEachSubDir(dir, callback) {
 };
 
 function forEachSubDirSequential(dir, callback) {
-  var dirs = subDirs(dir);
+  var dirs = dir instanceof Array ? dir : subDirs(dir).map(
+    function(localDir) { return path.join(dir, localDir); }
+  );
   return next(0);
 
   function next(index) {
     if (index < dirs.length) {
-      return callback(path.join(dir, dirs[index])).then(function() {
+      return callback(dirs[index]).then(function() {
         return next(index+1);
       });
     } else {
