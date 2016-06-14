@@ -5,7 +5,7 @@ import {APPLICATION_COMMON_PROVIDERS, APP_ID, NgZone, PLATFORM_COMMON_PROVIDERS,
 import {BrowserDetection, DOMTestComponentRenderer} from '@angular/platform-browser/testing';
 
 import {AnimationDriver, NoOpAnimationDriver} from '../core_private';
-import {Parse5DomAdapter} from '../index';
+import {Parse5DomAdapter} from '../src/parse5_adapter';
 
 import {DOCUMENT, BROWSER_SANITIZATION_PROVIDERS, EventManager, EVENT_MANAGER_PLUGINS, ELEMENT_PROBE_PROVIDERS, DomEventsPlugin,} from '@angular/platform-browser';
 import {getDOM, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, SharedStylesHost} from '../platform_browser_private';
