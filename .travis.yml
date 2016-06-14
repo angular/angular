@@ -50,7 +50,6 @@ env:
     - MODE=browserstack_optional
     - MODE=dart_ddc
     - MODE=js
-    - MODE=router
     - MODE=build_only
     - MODE=lint
 
