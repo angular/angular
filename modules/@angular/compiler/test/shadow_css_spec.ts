@@ -91,6 +91,7 @@ export function main() {
 
     it('should handle :host', () => {
       expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}');
+      expect(s(':host.a {}', 'a', 'a-host')).toEqual('.a[a-host] {}');
       expect(s(':host(.x,.y) {}', 'a', 'a-host')).toEqual('[a-host].x, [a-host].y {}');
       expect(s(':host(.x,.y) > .z {}', 'a', 'a-host'))
           .toEqual('[a-host].x > .z, [a-host].y > .z {}');
@@ -103,19 +104,19 @@ export function main() {
     });
 
     it('should support polyfill-next-selector', () => {
-      var css = s('polyfill-next-selector {content: \'x > y\'} z {}', 'a');
-      expect(css).toEqual('x[a] > y[a]{}');
+      var css = s('polyfill-next-selector {content: \'x > y\'} z {o}', 'a');
+      expect(css).toEqual('x[a] > y[a] {o}');
 
-      css = s('polyfill-next-selector {content: "x > y"} z {}', 'a');
-      expect(css).toEqual('x[a] > y[a]{}');
+      css = s('polyfill-next-selector {content: "x > y"} z {o}', 'a');
+      expect(css).toEqual('x[a] > y[a] {o}');
     });
 
     it('should support polyfill-unscoped-rule', () => {
       var css = s('polyfill-unscoped-rule {content: \'#menu > .bar\';color: blue;}', 'a');
-      expect(StringWrapper.contains(css, '#menu > .bar {;color:blue;}')).toBeTruthy();
+      expect(StringWrapper.contains(css, '#menu > .bar {color:blue}')).toBeTruthy();
 
       css = s('polyfill-unscoped-rule {content: "#menu > .bar";color: blue;}', 'a');
-      expect(StringWrapper.contains(css, '#menu > .bar {;color:blue;}')).toBeTruthy();
+      expect(StringWrapper.contains(css, '#menu > .bar {color:blue}')).toBeTruthy();
     });
 
     it('should support multiple instances polyfill-unscoped-rule', () => {
@@ -123,16 +124,16 @@ export function main() {
           s('polyfill-unscoped-rule {content: \'foo\';color: blue;}' +
                 'polyfill-unscoped-rule {content: \'bar\';color: blue;}',
             'a');
-      expect(StringWrapper.contains(css, 'foo {;color:blue;}')).toBeTruthy();
-      expect(StringWrapper.contains(css, 'bar {;color:blue;}')).toBeTruthy();
+      expect(StringWrapper.contains(css, 'foo {color:blue}')).toBeTruthy();
+      expect(StringWrapper.contains(css, 'bar {color:blue}')).toBeTruthy();
     });
 
     it('should support polyfill-rule', () => {
       var css = s('polyfill-rule {content: \':host.foo .bar\';color: blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {;color:blue;}');
+      expect(css).toEqual('.foo[a-host] .bar {color:blue}');
 
       css = s('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {;color:blue;}');
+      expect(css).toEqual('.foo[a-host] .bar {color:blue}');
     });
 
     it('should handle ::shadow', () => {
@@ -168,21 +169,23 @@ export function main() {
       expect(css).toEqual('div[a] {height:calc(100% - 55px);}');
     });
 
-    it('should strip comments', () => { expect(s('/* x */b {c}', 'a')).toEqual('b[a] {c}'); });
+    it('should strip comments', () => { expect(s('/* x */b {c:v}', 'a')).toEqual('b[a] {c:v}'); });
 
     it('should ignore special characters in comments',
-       () => { expect(s('/* {;, */b {c}', 'a')).toEqual('b[a] {c}'); });
+       () => { expect(s('/* {;, */b {c:v}', 'a')).toEqual('b[a] {c:v}'); });
 
     it('should support multiline comments',
-       () => { expect(s('/* \n */b {c}', 'a')).toEqual('b[a] {c}'); });
+       () => { expect(s('/* \n */b {c:v}', 'a')).toEqual('b[a] {c:v}'); });
   });
 
   describe('processRules', () => {
     describe('parse rules', () => {
       function captureRules(input: string): CssRule[] {
-        var result: any[] /** TODO #9100 */ = [];
-        processRules(input, (cssRule: any /** TODO #9100 */) => {
-          result.push(cssRule);
+        var result: CssRule[] = [];
+        processRules(input, (cssRule: CssRule) => {
+          // we do this so that toEqual doesn't need to be altered
+          // when comparing target data for CssRule
+          result.push(new CssRule(cssRule.selector, cssRule.content));
           return cssRule;
         });
         return result;
@@ -197,8 +200,8 @@ export function main() {
          () => { expect(captureRules('a {b}')).toEqual([new CssRule('a', 'b')]); });
 
       it('should capture css rules with nested rules', () => {
-        expect(captureRules('a {b {c}} d {e}')).toEqual([
-          new CssRule('a', 'b {c}'), new CssRule('d', 'e')
+        expect(captureRules('@media(all) {b {c}} d {e}')).toEqual([
+          new CssRule('b', 'c'), new CssRule('d', 'e')
         ]);
       });
 
@@ -212,15 +215,15 @@ export function main() {
     describe('modify rules', () => {
       it('should allow to change the selector while preserving whitespaces', () => {
         expect(processRules(
-                   '@import a; b {c {d}} e {f}', (cssRule: any /** TODO #9100 */) => new CssRule(
-                                                     cssRule.selector + '2', cssRule.content)))
-            .toEqual('@import a2; b2 {c {d}} e2 {f}');
+                   '@import a; @media(all and max-width: 100px) {c {d}} e {f}',
+                   (cssRule: CssRule) => new CssRule(cssRule.selector + '2', cssRule.content)))
+            .toEqual('@import a2; @media(all and max-width: 100px) {c2 {d}} e2 {f}');
       });
 
       it('should allow to change the content', () => {
         expect(processRules(
-                   'a {b}', (cssRule: any /** TODO #9100 */) =>
-                                new CssRule(cssRule.selector, cssRule.content + '2')))
+                   'a {b}',
+                   (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2')))
             .toEqual('a {b2}');
       });
     });

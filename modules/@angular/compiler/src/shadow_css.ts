@@ -1,5 +1,9 @@
-import {ListWrapper} from '../src/facade/collection';
-import {RegExp, RegExpMatcherWrapper, RegExpWrapper, StringWrapper, isBlank, isPresent} from '../src/facade/lang';
+import {BaseException} from './facade/exceptions';
+import {ListWrapper} from './facade/collection';
+import {RegExp, RegExpMatcherWrapper, RegExpWrapper, StringWrapper, isBlank, isPresent} from './facade/lang';
+
+import {CssLexer, CssTokenType} from './css/lexer';
+import {BlockType, CssAST, CssASTVisitor, CssAtRulePredicateAST, CssBlockAST, CssBlockDefinitionRuleAST, CssBlockRuleAST, CssDefinitionAST, CssInlineRuleAST, CssKeyframeDefinitionAST, CssKeyframeRuleAST, CssMediaQueryRuleAST, CssParseError, CssParser, CssPseudoSelectorAST, CssRuleAST, CssSelectorAST, CssSelectorRuleAST, CssSimpleSelectorAST, CssStyleSheetAST, CssStyleValueAST, CssStylesBlockAST, CssToken, CssUnknownRuleAST, CssUnknownTokenListAST, ParsedCssResult} from './css/parser';
 
 /**
  * This file is a port of shadowCSS from webcomponents.js to TypeScript.
@@ -137,382 +141,775 @@ export class ShadowCss {
   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
   *
   * When strictStyling is true:
-  * - selector is the attribute added to all elements inside the host,
+  * - scopeSelector is the attribute added to all elements inside the host,
   * - hostSelector is the attribute added to the host itself.
   */
-  shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
+  shimCssText(cssText: string, scopeSelector: string, hostSelector: string = ''): string {
     cssText = stripComments(cssText);
-    cssText = this._insertDirectives(cssText);
-    return this._scopeCssText(cssText, selector, hostSelector);
-  }
 
-  private _insertDirectives(cssText: string): string {
-    cssText = this._insertPolyfillDirectivesInCssText(cssText);
-    return this._insertPolyfillRulesInCssText(cssText);
-  }
+    var cssFileName = 'some-fake-file-name.css';  // TODO (matsko): get the name in here
+    var output = _parseCssCode(cssFileName, cssText);
 
-  /*
-   * Process styles to convert native ShadowDOM rules that will trip
-   * up the css parser; we rely on decorating the stylesheet with inert rules.
-   *
-   * For example, we convert this rule:
-   *
-   * polyfill-next-selector { content: ':host menu-item'; }
-   * ::content menu-item {
-   *
-   * to this:
-   *
-   * scopeName menu-item {
-   *
-  **/
-  private _insertPolyfillDirectivesInCssText(cssText: string): string {
-    // Difference with webcomponents.js: does not handle comments
-    return StringWrapper.replaceAllMapped(
-        cssText, _cssContentNextSelectorRe,
-        function(m: any /** TODO #9100 */) { return m[1] + '{'; });
-  }
+    // var errors = output.errors;
+    // if (errors.length > 0) {
+    // throw new BaseException(errors.map((error: CssParseError) => error.msg).join(', '));
+    //}
 
-  /*
-   * Process styles to add rules which will only apply under the polyfill
-   *
-   * For example, we convert this rule:
-   *
-   * polyfill-rule {
-   *   content: ':host menu-item';
-   * ...
-   * }
-   *
-   * to this:
-   *
-   * scopeName menu-item {...}
-   *
-  **/
-  private _insertPolyfillRulesInCssText(cssText: string): string {
-    // Difference with webcomponents.js: does not handle comments
-    return StringWrapper.replaceAllMapped(
-        cssText, _cssContentRuleRe, function(m: any /** TODO #9100 */) {
-          var rule = m[0];
-          rule = StringWrapper.replace(rule, m[1], '');
-          rule = StringWrapper.replace(rule, m[2], '');
-          return m[3] + rule;
-        });
-  }
+    var context =
+        new _CssShimSourceContext(cssText, scopeSelector, hostSelector, this.strictStyling);
 
-  /* Ensure styles are scoped. Pseudo-scoping takes a rule like:
-   *
-   *  .foo {... }
-   *
-   *  and converts this to
-   *
-   *  scopeName .foo { ... }
-  */
-  private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
-    var unscoped = this._extractUnscopedRulesFromCssText(cssText);
-    cssText = this._insertPolyfillHostInCssText(cssText);
-    cssText = this._convertColonHost(cssText);
-    cssText = this._convertColonHostContext(cssText);
-    cssText = this._convertShadowDOMSelectors(cssText);
-    if (isPresent(scopeSelector)) {
-      cssText = this._scopeSelectors(cssText, scopeSelector, hostSelector);
-    }
-    cssText = cssText + '\n' + unscoped;
-    return cssText.trim();
-  }
+    var visitor = new _ShadowShimVisitor(cssText, output.ast);
+    cssText = visitor.transformCssText(context);
 
-  /*
-   * Process styles to add rules which will only apply under the polyfill
-   * and do not process via CSSOM. (CSSOM is destructive to rules on rare
-   * occasions, e.g. -webkit-calc on Safari.)
-   * For example, we convert this rule:
-   *
-   * @polyfill-unscoped-rule {
-   *   content: 'menu-item';
-   * ... }
-   *
-   * to this:
-   *
-   * menu-item {...}
-   *
-  **/
-  private _extractUnscopedRulesFromCssText(cssText: string): string {
-    // Difference with webcomponents.js: does not handle comments
-    var r = '', m: any /** TODO #9100 */;
-    var matcher = RegExpWrapper.matcher(_cssContentUnscopedRuleRe, cssText);
-    while (isPresent(m = RegExpMatcherWrapper.next(matcher))) {
-      var rule = m[0];
-      rule = StringWrapper.replace(rule, m[2], '');
-      rule = StringWrapper.replace(rule, m[1], m[3]);
-      r += rule + '\n\n';
-    }
-    return r;
-  }
-
-  /*
-   * convert a rule like :host(.foo) > .bar { }
-   *
-   * to
-   *
-   * scopeName.foo > .bar
-  */
-  private _convertColonHost(cssText: string): string {
-    return this._convertColonRule(cssText, _cssColonHostRe, this._colonHostPartReplacer);
-  }
-
-  /*
-   * convert a rule like :host-context(.foo) > .bar { }
-   *
-   * to
-   *
-   * scopeName.foo > .bar, .foo scopeName > .bar { }
-   *
-   * and
-   *
-   * :host-context(.foo:host) .bar { ... }
-   *
-   * to
-   *
-   * scopeName.foo .bar { ... }
-  */
-  private _convertColonHostContext(cssText: string): string {
-    return this._convertColonRule(
-        cssText, _cssColonHostContextRe, this._colonHostContextPartReplacer);
-  }
-
-  private _convertColonRule(cssText: string, regExp: RegExp, partReplacer: Function): string {
-    // p1 = :host, p2 = contents of (), p3 rest of rule
-    return StringWrapper.replaceAllMapped(cssText, regExp, function(m: any /** TODO #9100 */) {
-      if (isPresent(m[2])) {
-        var parts = m[2].split(','), r: any[] /** TODO #9100 */ = [];
-        for (var i = 0; i < parts.length; i++) {
-          var p = parts[i];
-          if (isBlank(p)) break;
-          p = p.trim();
-          r.push(partReplacer(_polyfillHostNoCombinator, p, m[3]));
-        }
-        return r.join(',');
-      } else {
-        return _polyfillHostNoCombinator + m[3];
-      }
-    });
-  }
-
-  private _colonHostContextPartReplacer(host: string, part: string, suffix: string): string {
-    if (StringWrapper.contains(part, _polyfillHost)) {
-      return this._colonHostPartReplacer(host, part, suffix);
-    } else {
-      return host + part + suffix + ', ' + part + ' ' + host + suffix;
-    }
-  }
-
-  private _colonHostPartReplacer(host: string, part: string, suffix: string): string {
-    return host + StringWrapper.replace(part, _polyfillHost, '') + suffix;
-  }
-
-  /*
-   * Convert combinators like ::shadow and pseudo-elements like ::content
-   * by replacing with space.
-  */
-  private _convertShadowDOMSelectors(cssText: string): string {
-    for (var i = 0; i < _shadowDOMSelectorsRe.length; i++) {
-      cssText = StringWrapper.replaceAll(cssText, _shadowDOMSelectorsRe[i], ' ');
-    }
     return cssText;
   }
+}
 
-  // change a selector like 'div' to 'name div'
-  private _scopeSelectors(cssText: string, scopeSelector: string, hostSelector: string): string {
-    return processRules(cssText, (rule: CssRule) => {
-      var selector = rule.selector;
-      var content = rule.content;
-      if (rule.selector[0] != '@' || rule.selector.startsWith('@page')) {
-        selector =
-            this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
-      } else if (rule.selector.startsWith('@media') || rule.selector.startsWith('@supports')) {
-        content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
+const COMMENT_RE = /\/\*[\s\S]*?\*\//g;
+function stripComments(input: string): string {
+  return StringWrapper.replaceAllMapped(input, COMMENT_RE, (_: any) => '');
+}
+
+export class CssRule {
+  constructor(
+      public selector: string, public content: string, private _selectorAst: CssAST = null,
+      private _contentAst: CssAST = null) {}
+
+  get selectorAST(): CssAST { return this._selectorAst; }
+  get contentAST(): CssAST { return this._contentAst; }
+}
+
+export function processRules(input: string, ruleCallback: Function): string {
+  var fakeCssFile = 'process-rules-inline.css';
+  var output = _parseCssCode(fakeCssFile, input);
+  var ast = output.ast;
+
+  var visitor = new CssRuleCaptureVisitor();
+  var cssTextContext = new _CssSourceContext(input);
+  visitor.collectRules(ast).forEach(rule => {
+    var newRule = <CssRule>ruleCallback(rule);
+    if (newRule.selector != rule.selector) {
+      var start = rule.selectorAST.start;
+      var end = rule.selectorAST.end;
+      cssTextContext.replaceText(start, end, newRule.selector);
+    }
+    if (newRule.content != rule.content) {
+      var start = rule.contentAST.start;
+      var end = rule.contentAST.end;
+      cssTextContext.replaceText(start, end, '{' + newRule.content + '}');
+    }
+  });
+
+  return cssTextContext.cssText;
+}
+
+class CssRuleCaptureVisitor implements CssASTVisitor {
+  collectRules(ast: CssStyleSheetAST): CssRule[] { return ast.visit(this, null); }
+
+  visitCssStyleSheet(ast: CssStyleSheetAST, context: any): CssRule[] {
+    var combinedRules: CssRule[] = [];
+    ast.rules.forEach(ruleAst => {
+      var ruleResults = <CssRule[]>ruleAst.visit(this, context);
+      if (isPresent(ruleResults) && ruleResults.length > 0) {
+        ListWrapper.addAll(combinedRules, ruleResults);
       }
-      return new CssRule(selector, content);
+    });
+    return combinedRules;
+  }
+
+  visitCssSelectorRule(ast: CssSelectorRuleAST, context: any): CssRule[] {
+    var blockAst = ast.block;
+    var contentStr = blockAst.visit(this, context);
+    return ast.selectors.map(selectorAst => {
+      var selectorStr = selectorAst.visit(this, context);
+      return new CssRule(selectorStr, contentStr, selectorAst, blockAst);
     });
   }
 
-  private _scopeSelector(
-      selector: string, scopeSelector: string, hostSelector: string, strict: boolean): string {
-    var r: any[] /** TODO #9100 */ = [], parts = selector.split(',');
+  visitUnknownTokenList(ast: CssUnknownTokenListAST, context: _CssShimSourceContext): CssRule[] {
+    var rules: CssRule[] = [];
+    var ruleStr = '';
+    ast.tokens.forEach(token => { ruleStr += token.strValue; });
+    if (ruleStr.length > 0) {
+      rules.push(new CssRule(ruleStr, ''));
+    }
+    return rules;
+  }
+
+  visitCssSelector(ast: CssSelectorAST, context: any): string { return ast.strValue; }
+
+  visitCssBlock(ast: CssBlockAST, context: any): CssRule[] {
+    var combinedRules: CssRule[] = [];
+    ast.entries.forEach(entryAst => {
+      entryAst.visit(this, context).forEach((rule: CssRule) => { combinedRules.push(rule); });
+    });
+    return combinedRules;
+  }
+
+  visitCssStylesBlock(ast: CssStylesBlockAST, context: any): string {
+    var defStrings = ast.definitions.map((defAst: CssDefinitionAST) => defAst.visit(this, context));
+    return defStrings.join(';');
+  }
+
+  visitCssDefinition(ast: CssDefinitionAST, context: any): string {
+    var styleValue = isPresent(ast.value) ? ast.value.visit(this, context) : '';
+    return _formatStyle(ast.property.strValue, styleValue);
+  }
+
+  visitCssValue(ast: CssStyleValueAST, context: any): string { return ast.strValue; }
+
+  visitInlineCssRule(ast: CssInlineRuleAST, context: any): CssRule[] {
+    var selector = '';
+    var value = '';
+    var rules: CssRule[] = [];
+    switch (ast.type) {
+      case BlockType.Import:
+        selector = `@import ${ast.value.strValue}`;
+        break;
+    }
+    if (selector.length > 0) {
+      rules.push(new CssRule(selector, value, ast, ast.value));
+    }
+    return rules;
+  }
+
+  visitCssAtRulePredicate(ast: CssAtRulePredicateAST, context: any): string { return ast.strValue; }
+
+  visitCssMediaQueryRule(ast: CssMediaQueryRuleAST, context: any): CssRule[] {
+    return ast.block.visit(this, context);
+  }
+
+  visitUnknownRule(ast: CssUnknownRuleAST, context: any): any { return null; }
+  visitCssKeyframeRule(ast: CssKeyframeRuleAST, context: any): any { return null; }
+  visitCssKeyframeDefinition(ast: CssKeyframeDefinitionAST, context: any): any { return null; }
+  visitCssSimpleSelector(ast: CssSimpleSelectorAST, context: any): any { return null; }
+  visitCssPseudoSelector(ast: CssPseudoSelectorAST, context: any): any { return null; }
+}
+
+class _CssSourceContext {
+  public indexOffset: number = 0;
+
+  constructor(public cssText: string) {}
+
+  replaceText(start: number, end: number, value: string) {
+    if (start == -1 || end == -1) return;
+
+    end++;
+
+    var oldLength = end - start;
+    var newLength = value.length;
+
+    start += this.indexOffset;
+    end += this.indexOffset;
+
+    this.indexOffset += newLength - oldLength;
+
+    var inner = this.cssText.substring(start, end);
+
+    var lhs = this.cssText.substring(0, start);
+    var rhs = this.cssText.substring(end);
+    this.cssText = lhs + value + rhs;
+  }
+}
+
+class _CssShimSourceContext extends _CssSourceContext {
+  constructor(
+      cssText: string, public scopeSelector: string, public hostSelector: string,
+      public strictStyling: boolean) {
+    super(cssText);
+  }
+  public nextSelectorRuleAst: CssSelectorRuleAST;
+  public skipNextRule: boolean = false;
+}
+
+class _ShadowShimVisitor implements CssASTVisitor {
+  constructor(public cssText: string, public ast: CssStyleSheetAST) {}
+
+  visitCssValue(ast: CssStyleValueAST, context: _CssShimSourceContext): void {
+    // nothing yet
+  }
+
+  visitInlineCssRule(ast: CssInlineRuleAST, context: _CssShimSourceContext): void {
+    // nothing yet
+  }
+
+  visitCssAtRulePredicate(ast: CssAtRulePredicateAST, context: any): void {
+    // nothing
+  }
+
+  visitCssKeyframeRule(ast: CssKeyframeRuleAST, context: _CssShimSourceContext): void {
+    ast.block.visit(this, context);
+  }
+
+  visitCssKeyframeDefinition(ast: CssKeyframeDefinitionAST, context: _CssShimSourceContext): void {
+    ast.block.visit(this, context);
+  }
+
+  visitCssMediaQueryRule(ast: CssMediaQueryRuleAST, context: _CssShimSourceContext): void {
+    ast.block.visit(this, context);
+  }
+
+  visitCssSelectorRule(ast: CssSelectorRuleAST, context: _CssShimSourceContext): void {
+    var transformer = _resolveCssRuleTransformer(ast, context.nextSelectorRuleAst);
+    var skipNextRule = false;
+    if (isPresent(transformer)) {
+      skipNextRule = transformer.skipNextRule();
+      this._replaceUsingTransformer(transformer, context);
+    } else {
+      ast.selectors.forEach((selAST: CssSelectorAST) => { selAST.visit(this, context); });
+      ast.block.visit(this, context);
+    }
+    context.skipNextRule = skipNextRule;
+  }
+
+  visitCssSelector(ast: CssSelectorAST, context: _CssShimSourceContext): void {
+    var transformer = _resolveCssSelectorTransformer(ast);
+    this._replaceUsingTransformer(transformer, context);
+  }
+
+  /** @internal */
+  _replaceUsingTransformer(transformer: CssSourceTransformer, context: _CssShimSourceContext):
+      void {
+    if (context.strictStyling) {
+      var hostReplacementSelector: string = '';
+      var scopeReplacementSelector: string = '';
+
+      if (context.hostSelector.length > 0) {
+        hostReplacementSelector = '[' + context.hostSelector + ']';
+      }
+
+      if (context.scopeSelector.length > 0) {
+        scopeReplacementSelector = '[' + context.scopeSelector + ']';
+      }
+
+      var replaceDetails =
+          transformer.generateCssString(hostReplacementSelector, scopeReplacementSelector);
+      context.replaceText(replaceDetails.start, replaceDetails.end, replaceDetails.content);
+    }
+  }
+
+  visitCssSimpleSelector(ast: CssSimpleSelectorAST, context: any): any {
+    // nothing
+  }
+
+  visitCssPseudoSelector(ast: CssPseudoSelectorAST, context: _CssShimSourceContext): void {
+    // nothing
+  }
+
+  visitUnknownRule(ast: CssUnknownRuleAST, context: _CssShimSourceContext): void {
+    // nothing
+  }
+
+  visitUnknownTokenList(ast: CssUnknownTokenListAST, context: _CssShimSourceContext): void {
+    // nothing
+  }
+
+  visitCssDefinition(ast: CssDefinitionAST, context: _CssShimSourceContext): void {
+    if (isPresent(ast.value)) {
+      ast.value.visit(this, context);
+    }
+  }
+
+  visitCssBlock(ast: CssBlockAST, context: _CssShimSourceContext): void {
+    ast.entries.forEach((entryAST: CssAST) => { entryAST.visit(this, context); });
+  }
+
+  visitCssStylesBlock(ast: CssStylesBlockAST, context: any): void {
+    ast.definitions.forEach((defAst: CssDefinitionAST) => { defAst.visit(this, context); });
+  }
+
+  visitCssStyleSheet(ast: CssStyleSheetAST, context: _CssShimSourceContext): void {
+    var rules = ast.rules;
+    var limit = rules.length - 1;
+    for (var i = 0; i <= limit; i++) {
+      let ruleAst = rules[i];
+      let nextRuleAst: CssRuleAST = i < limit ? rules[i + 1] : null;
+      if (isPresent(nextRuleAst) && nextRuleAst instanceof CssSelectorRuleAST) {
+        context.nextSelectorRuleAst = nextRuleAst;
+      }
+      ruleAst.visit(this, context);
+      if (context.skipNextRule) {
+        i++;
+      }
+    }
+  }
+
+  transformCssText(context: _CssShimSourceContext) {
+    this.ast.visit(this, context);
+    return context.cssText;
+  }
+}
+
+function _resolveCssSelectorTransformer(ast: CssSelectorAST): CssSourceTransformer {
+  if (ast.selectorParts.length == 0) return new NoOpSelectorTransformer(ast);
+
+  var firstPart = ast.selectorParts[0];
+  var totalPseudos = firstPart.pseudoSelectors.length;
+
+  if (totalPseudos > 0) {
+    var pseudo = firstPart.pseudoSelectors[0];
+    var first = pseudo.tokens[0];
+    var second = pseudo.tokens[1];
+    if (first.strValue == ':') {
+      var nameToken = second;
+      if (second.strValue == ':') {
+        nameToken = pseudo.tokens[2];
+      }
+      var pseudoName = nameToken.strValue.toLowerCase();
+      switch (pseudoName) {
+        case 'host':
+          return new CssHostLevelTransformer(ast);
+
+        case 'host-context':
+          return new CssHostContextTransformer(ast);
+
+        case 'shadow':
+          return new CssShadowSelectorTransformer(ast);
+      }
+    }
+  }
+
+  return new CssSelectorTransformer(ast);
+}
+
+function _parseCssCode(cssFileName: string, cssText: string): ParsedCssResult {
+  var lexer = new CssLexer();
+  var scanner = lexer.scan(cssText);
+  var parser = new CssParser(scanner, cssFileName);
+  return parser.parse();
+}
+
+function _resolveCssRuleTransformer(
+    ruleAst: CssSelectorRuleAST, nextRuleAst: CssSelectorRuleAST): CssSourceTransformer {
+  var firstRuleName: string;
+  var firstSelector: CssSelectorAST;
+  try {
+    firstSelector = ruleAst.selectors[0];
+    var firstPart = firstSelector.selectorParts[0];
+    var firstToken = firstPart.tokens[0];
+    firstRuleName = firstToken.strValue.toLowerCase();
+  } catch (e) {
+    firstRuleName = '';
+  }
+
+  // match for "polyfill-" selector
+  if (firstRuleName.substring(0, 9) == 'polyfill-') {
+    return new CssPolyfillRuleTransformer(firstRuleName, ruleAst, nextRuleAst);
+  }
+
+  if (isPresent(firstSelector)) {
+    // match for "/deep/" selector
+    var parts = firstSelector.selectorParts;
     for (var i = 0; i < parts.length; i++) {
-      var p = parts[i].trim();
-      var deepParts = StringWrapper.split(p, _shadowDeepSelectors);
-      var shallowPart = deepParts[0];
-      if (this._selectorNeedsScoping(shallowPart, scopeSelector)) {
-        deepParts[0] = strict && !StringWrapper.contains(shallowPart, _polyfillHostNoCombinator) ?
-            this._applyStrictSelectorScope(shallowPart, scopeSelector) :
-            this._applySelectorScope(shallowPart, scopeSelector, hostSelector);
+      let part = parts[i];
+      let operator = part.operator;
+      if (isPresent(part.operator)) {
+        let operatorStr = part.operator.strValue.toLowerCase();
+        switch (operatorStr) {
+          case TRIPLE_GT_OPERATOR:
+          case DEEP_OPERATOR:
+            return new CssShadowOperatorTransformer(firstSelector);
+        }
       }
-      // replace /deep/ with a space for child selectors
-      r.push(deepParts.join(' '));
     }
-    return r.join(', ');
   }
 
-  private _selectorNeedsScoping(selector: string, scopeSelector: string): boolean {
-    var re = this._makeScopeMatcher(scopeSelector);
-    return !isPresent(RegExpWrapper.firstMatch(re, selector));
+  return null;
+}
+
+const SPACE_OPERATOR = ' ';
+const DEEP_OPERATOR = '/deep/';
+const TRIPLE_GT_OPERATOR = '>>>';
+
+interface CssSourceTransformer {
+  skipNextRule(): boolean;
+  generateCssString(hostReplacementSelector: string, scopeReplacementSelector: string):
+      _SourceReplacementEntry;
+}
+
+class NoOpSelectorTransformer implements CssSourceTransformer {
+  constructor(public selector: CssSelectorAST) {}
+
+  skipNextRule(): boolean { return false; }
+
+  // input = a
+  // output = a
+  generateCssString(hostReplacementSelector: string, scopeReplacementSelector: string):
+      _SourceReplacementEntry {
+    return new _SourceReplacementEntry(
+        this.selector.start, this.selector.end, this.selector.strValue);
+  }
+}
+
+class CssShadowSelectorTransformer implements CssSourceTransformer {
+  constructor(public selector: CssSelectorAST) {}
+
+  skipNextRule(): boolean { return false; }
+
+  // input = x::shadow > y {}
+  // output = x[a] > y[a] {}
+  generateCssString(hostReplacementSelector: string, scopeReplacementSelector: string):
+      _SourceReplacementEntry {
+    var content = _transformSimpleSelectorsWithSuffix(
+        this.selector.selectorParts, scopeReplacementSelector, true);
+    return new _SourceReplacementEntry(this.selector.start, this.selector.end, content);
+  }
+}
+
+class CssShadowOperatorTransformer implements CssSourceTransformer {
+  public targets = [DEEP_OPERATOR, TRIPLE_GT_OPERATOR];
+
+  constructor(public selector: CssSelectorAST) {}
+
+  skipNextRule(): boolean { return false; }
+
+  // input = x /deep/ y {}
+  // output = x[a] y {}
+  // input = x >>> y {}
+  // output = x[a] y {}
+  generateCssString(hostReplacementSelector: string, scopeReplacementSelector: string):
+      _SourceReplacementEntry {
+    var cssText = '';
+
+    // we always compare the first operator with the next
+    // value (which we expect to be a OPERATOR value). If so
+    // then we decorate the first value with accordingly.
+    this.selector.selectorParts.forEach(part => {
+      if (cssText.length > 0) {
+        cssText += ' ';
+      }
+
+      var suffix = '';
+      if (isPresent(part.operator) && this.targets.indexOf(part.operator.strValue) >= 0) {
+        suffix = scopeReplacementSelector;
+      }
+      cssText += _transformSimpleSelectorsWithSuffix([part], suffix, true, true);
+    });
+
+    return new _SourceReplacementEntry(this.selector.start, this.selector.end, cssText);
+  }
+}
+
+class CssHostContextTransformer implements CssSourceTransformer {
+  constructor(public selector: CssSelectorAST) {}
+
+  skipNextRule(): boolean { return false; }
+
+  // input = host-context(a)
+  // output = [a]a, a [a]
+  generateCssString(hostReplacementSelector: string, scopeReplacementSelector: string):
+      _SourceReplacementEntry {
+    var remainingSelectorStr = '';
+    var parts = this.selector.selectorParts;
+    var limit = parts.length - 1;
+    parts.forEach((part, index) => {
+      // the first part will always only be ":host"
+      // and, since that is only a pseudoSelector, there
+      // will never be any simpleSelectors attached to it
+      // therefore we can skip the first part entirely
+      if (index > 0) {
+        remainingSelectorStr += part.strValue;
+      }
+
+      if (index < limit) {
+        var operator = part.operator;
+        if (isPresent(operator) && operator.type != CssTokenType.Whitespace) {
+          remainingSelectorStr += ' ' + operator.strValue + ' ';
+        }
+      }
+    });
+
+
+    var firstPart = parts[0];
+    var hostPseudo = firstPart.pseudoSelectors[0];
+    var hostSelectors = hostPseudo.innerSelectors;
+
+    var replacementStr = '';
+
+    hostSelectors.forEach((selector, index) => {
+      if (index > 0) {
+        replacementStr += ', ';
+      }
+      replacementStr += this._generateAttrHostContext(hostReplacementSelector, selector.strValue);
+      replacementStr += remainingSelectorStr;
+      replacementStr += ', ';
+      replacementStr += this._generateParentHostContext(hostReplacementSelector, selector.strValue);
+      replacementStr += remainingSelectorStr;
+    });
+
+    return new _SourceReplacementEntry(this.selector.start, this.selector.end, replacementStr);
   }
 
-  private _makeScopeMatcher(scopeSelector: string): RegExp {
-    var lre = /\[/g;
-    var rre = /\]/g;
-    scopeSelector = StringWrapper.replaceAll(scopeSelector, lre, '\\[');
-    scopeSelector = StringWrapper.replaceAll(scopeSelector, rre, '\\]');
-    return RegExpWrapper.create('^(' + scopeSelector + ')' + _selectorReSuffix, 'm');
+  /** @internal */
+  _generateAttrHostContext(hostReplacementSelector: string, innerSelectorVal: string): string {
+    return hostReplacementSelector + innerSelectorVal;
   }
 
-  private _applySelectorScope(selector: string, scopeSelector: string, hostSelector: string):
-      string {
-    // Difference from webcomponentsjs: scopeSelector could not be an array
-    return this._applySimpleSelectorScope(selector, scopeSelector, hostSelector);
+  /** @internal */
+  _generateParentHostContext(hostReplacementSelector: string, innerSelectorVal: string): string {
+    return innerSelectorVal + ' ' + hostReplacementSelector;
   }
+}
 
-  // scope via name and [is=name]
-  private _applySimpleSelectorScope(selector: string, scopeSelector: string, hostSelector: string):
-      string {
-    if (isPresent(RegExpWrapper.firstMatch(_polyfillHostRe, selector))) {
-      var replaceBy = this.strictStyling ? `[${hostSelector}]` : scopeSelector;
-      selector = StringWrapper.replace(selector, _polyfillHostNoCombinator, replaceBy);
-      return StringWrapper.replaceAll(selector, _polyfillHostRe, replaceBy + ' ');
+class CssHostLevelTransformer implements CssSourceTransformer {
+  constructor(public selector: CssSelectorAST) {}
+
+  skipNextRule(): boolean { return false; }
+
+  // input = :host(a,.b,[c]) > d
+  // output = [a]a > d, [a].b > d, [a][c] > d
+  generateCssString(hostReplacementSelector: string, scopeReplacementSelector: string):
+      _SourceReplacementEntry {
+    var parts = this.selector.selectorParts;
+
+    // the first part will always only be ":host"
+    // but in the event that there are classes/tags
+    // associated with it then it should be fully valid
+    // to place those properties on the same selector
+    var hostLevelSelectorStr = '';
+    var firstPart = parts[0];
+    firstPart.tokens.forEach(token => { hostLevelSelectorStr += token.strValue; });
+
+    var remainingSelectorStr = '';
+    var limit = parts.length - 1;
+    parts.forEach((part, index) => {
+      if (index > 0) {
+        remainingSelectorStr += part.strValue;
+      }
+      if (index < limit) {
+        var operator = part.operator;
+        if (isPresent(operator) && operator.type != CssTokenType.Whitespace) {
+          remainingSelectorStr += ' ' + operator.strValue + ' ';
+        }
+      }
+    });
+
+    var firstPart = parts[0];
+    var hostPseudo = firstPart.pseudoSelectors[0];
+    var hostSelectors = hostPseudo.innerSelectors;
+
+    var replacementStr = hostLevelSelectorStr;
+
+    if (hostSelectors.length > 0) {
+      hostSelectors.forEach((selector, index) => {
+        if (index > 0) {
+          replacementStr += ', ';
+        }
+        replacementStr += hostReplacementSelector + selector.strValue;
+        if (remainingSelectorStr.length > 0) {
+          replacementStr += ' ' + remainingSelectorStr;
+        }
+      });
     } else {
-      return scopeSelector + ' ' + selector;
+      // special case for ":host" or ":host()" values
+      replacementStr += hostReplacementSelector;
+      if (remainingSelectorStr.length > 0) {
+        replacementStr += ' ' + remainingSelectorStr;
+      }
+    }
+
+    return new _SourceReplacementEntry(this.selector.start, this.selector.end, replacementStr);
+  }
+}
+
+class CssSelectorTransformer implements CssSourceTransformer {
+  constructor(public selector: CssSelectorAST) {}
+
+  skipNextRule(): boolean { return false; }
+
+  // input = .a > [b] > d
+  // output = .a[a] > [b][a] > d[a]
+  generateCssString(hostReplacementSelector: string, scopeReplacementSelector: string):
+      _SourceReplacementEntry {
+    var cssText =
+        _transformSimpleSelectorsWithSuffix(this.selector.selectorParts, scopeReplacementSelector);
+    return new _SourceReplacementEntry(this.selector.start, this.selector.end, cssText);
+  }
+}
+
+class CssPolyfillRuleTransformer implements CssSourceTransformer {
+  public block: CssBlockAST;
+  public selector: CssSimpleSelectorAST;
+  public start: number;
+  public end: number;
+
+  skipNextRule(): boolean { return this.name == 'polyfill-next-selector'; }
+
+  constructor(
+      public name: string, public rule: CssSelectorRuleAST, public nextRule: CssSelectorRuleAST) {
+    this.block = rule.block;
+    this.selector = rule.selectors[0].selectorParts[0];
+  }
+
+  generateCssString(hostReplacementSelector: string, scopeReplacementSelector: string):
+      _SourceReplacementEntry {
+    switch (this.name) {
+      case 'polyfill-next-selector':
+        return this._generatePolyfillNextSelector(scopeReplacementSelector);
+
+      case 'polyfill-unscoped-rule':
+        return this._generatePolyfillUnscopedRule();
+
+      case 'polyfill-rule':
+        return this._generatePolyfillScopedRule(hostReplacementSelector, scopeReplacementSelector);
+
+      default:
+        return new _SourceReplacementEntry(0, 0, '');
     }
   }
 
-  // return a selector with [name] suffix on each simple selector
-  // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]  /** @internal */
-  private _applyStrictSelectorScope(selector: string, scopeSelector: string): string {
-    var isRe = /\[is=([^\]]*)\]/g;
-    scopeSelector =
-        StringWrapper.replaceAllMapped(scopeSelector, isRe, (m: any /** TODO #9100 */) => m[1]);
-    var splits = [' ', '>', '+', '~'], scoped = selector, attrName = '[' + scopeSelector + ']';
-    for (var i = 0; i < splits.length; i++) {
-      var sep = splits[i];
-      var parts = scoped.split(sep);
-      scoped = parts
-                   .map(p => {
-                     // remove :host since it should be unnecessary
-                     var t = StringWrapper.replaceAll(p.trim(), _polyfillHostRe, '');
-                     if (t.length > 0 && !ListWrapper.contains(splits, t) &&
-                         !StringWrapper.contains(t, attrName)) {
-                       var re = /([^:]*)(:*)(.*)/g;
-                       var m = RegExpWrapper.firstMatch(re, t);
-                       if (isPresent(m)) {
-                         p = m[1] + attrName + m[2] + m[3];
-                       }
-                     }
-                     return p;
-                   })
-                   .join(sep);
-    }
-    return scoped;
+  /** @internal */
+  _parseCssIntoAST(cssText: string): CssStyleSheetAST {
+    var fakeCssFile = this.name + '.css';
+    var output = _parseCssCode(fakeCssFile, cssText);
+    return <CssStyleSheetAST>output.ast;
   }
 
-  private _insertPolyfillHostInCssText(selector: string): string {
-    selector = StringWrapper.replaceAll(selector, _colonHostContextRe, _polyfillHostContext);
-    selector = StringWrapper.replaceAll(selector, _colonHostRe, _polyfillHost);
-    return selector;
+  /** @internal */
+  _generatePolyfillUnscopedRuleContent(): string {
+    var entry = _extractPolyfillRuleContentAndStyles(this.block);
+    return _formatCssRuleFromExtractedEntry(entry);
+  }
+
+  // input = polyfill-unscoped-rule {content: '#menu > .bar';color: blue;}
+  // output = #menu > .bar {;color:blue;}
+  /** @internal */
+  _generatePolyfillUnscopedRule(): _SourceReplacementEntry {
+    var entry = _extractPolyfillRuleContentAndStyles(this.block);
+    var cssText = this._generatePolyfillUnscopedRuleContent();
+    return new _SourceReplacementEntry(this.rule.start, this.rule.end, cssText);
+  }
+
+  // input = polyfill-next-selector {content: 'x > y'} z {}
+  // output = x[a] > y[a]{}
+  /** @internal */
+  _generatePolyfillNextSelector(hostContainerVal: string): _SourceReplacementEntry {
+    var unscopedCss = this._generatePolyfillUnscopedRuleContent();
+    var ast = this._parseCssIntoAST(unscopedCss);
+    var rule = <CssSelectorRuleAST>ast.rules[0];
+    var selectorParts = rule.selectors[0].selectorParts;
+
+    var nextRule = this.nextRule;
+    var start = this.rule.start;
+    var end = this.rule.end;
+
+    try {
+      var nextRuleLastSelector = nextRule.selectors[nextRule.selectors.length - 1];
+      var nextRuleLastSelectorPart =
+          nextRuleLastSelector.selectorParts[nextRuleLastSelector.selectorParts.length - 1];
+      end = nextRuleLastSelectorPart.end;
+    } catch (e) {
+      throw new BaseException(
+          'polyfill-next-selector must be followed by a valid CSS selector rule');
+    }
+
+    var cssText = _transformSimpleSelectorsWithSuffix(selectorParts, hostContainerVal);
+    return new _SourceReplacementEntry(start, end, cssText);
+  }
+
+  // input = polyfill-rule {content: ':host.foo .bar';color: blue;}
+  // output = [a-host].foo .bar {;color:blue;}
+  /** @internal */
+  _generatePolyfillScopedRule(hostReplacementSelector: string, scopeReplacementSelector: string):
+      _SourceReplacementEntry {
+    var entry = _extractPolyfillRuleContentAndStyles(this.block);
+    var unscopedCssRuleText = _formatCssRuleFromExtractedEntry(entry);
+    var ast = this._parseCssIntoAST(unscopedCssRuleText);
+    var rule = <CssSelectorRuleAST>ast.rules[0];
+    var firstSelector = rule.selectors[0];
+
+    var cssText = unscopedCssRuleText;
+    var transformer = _resolveCssSelectorTransformer(firstSelector);
+    if (isPresent(transformer)) {
+      var scopedCssSelectorReplacement =
+          transformer.generateCssString(hostReplacementSelector, scopeReplacementSelector);
+      cssText = _formatRule(scopedCssSelectorReplacement.content, entry.valuesStr);
+    }
+
+    return new _SourceReplacementEntry(this.rule.start, this.rule.end, cssText);
   }
 }
-var _cssContentNextSelectorRe =
-    /polyfill-next-selector[^}]*content:[\s]*?['"](.*?)['"][;\s]*}([^{]*?){/gim;
-var _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*['"](.*?)['"])[;\s]*[^}]*}/gim;
-var _cssContentUnscopedRuleRe =
-    /(polyfill-unscoped-rule)[^}]*(content:[\s]*['"](.*?)['"])[;\s]*[^}]*}/gim;
-var _polyfillHost = '-shadowcsshost';
-// note: :host-context pre-processed to -shadowcsshostcontext.
-var _polyfillHostContext = '-shadowcsscontext';
-var _parenSuffix = ')(?:\\((' +
-    '(?:\\([^)(]*\\)|[^)(]*)+?' +
-    ')\\))?([^,{]*)';
-var _cssColonHostRe = RegExpWrapper.create('(' + _polyfillHost + _parenSuffix, 'im');
-var _cssColonHostContextRe = RegExpWrapper.create('(' + _polyfillHostContext + _parenSuffix, 'im');
-var _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
-var _shadowDOMSelectorsRe = [
-  /::shadow/g, /::content/g,
-  // Deprecated selectors
-  // TODO(vicb): see https://github.com/angular/clang-format/issues/16
-  // clang-format off
-  /\/shadow-deep\//g,  // former /deep/
-  /\/shadow\//g,       // former ::shadow
-  // clanf-format on
-];
-var _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)/g;
-var _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
-var _polyfillHostRe = RegExpWrapper.create(_polyfillHost, 'im');
-var _colonHostRe = /:host/gim;
-var _colonHostContextRe = /:host-context/gim;
 
-var _commentRe = /\/\*[\s\S]*?\*\//g;
-
-function stripComments(input:string):string {
-  return StringWrapper.replaceAllMapped(input, _commentRe, (_: any /** TODO #9100 */) => '');
+class _PolyfillContentValuesEntry {
+  constructor(public contentSelectorStr: string, public valuesStr: string) {}
 }
 
-var _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
-var _curlyRe = /([{}])/g;
-const OPEN_CURLY = '{';
-const CLOSE_CURLY = '}';
-const BLOCK_PLACEHOLDER = '%BLOCK%';
-
-export class CssRule {
-  constructor(public selector:string, public content:string) {}
-}
-
-export function processRules(input:string, ruleCallback:Function):string {
-  var inputWithEscapedBlocks = escapeBlocks(input);
-  var nextBlockIndex = 0;
-  return StringWrapper.replaceAllMapped(inputWithEscapedBlocks.escapedString, _ruleRe, function(m: any /** TODO #9100 */) {
-    var selector = m[2];
-    var content = '';
-    var suffix = m[4];
-    var contentPrefix = '';
-    if (isPresent(m[4]) && m[4].startsWith('{'+BLOCK_PLACEHOLDER)) {
-      content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
-      suffix = m[4].substring(BLOCK_PLACEHOLDER.length+1);
-      contentPrefix = '{';
+function _extractPolyfillRuleContentAndStyles(block: CssBlockAST): _PolyfillContentValuesEntry {
+  var contentSelectorStr: string;
+  var valuesStr: string = '';
+  block.entries.forEach(entry => {
+    var definition = <CssDefinitionAST>entry;
+    var prop = definition.property.strValue;
+    var value = definition.value.strValue;
+    if (prop.toLowerCase() == 'content') {
+      contentSelectorStr = _deQuote(value);
+    } else {
+      if (valuesStr.length > 0) {
+        valuesStr += '; ';
+      }
+      valuesStr += _formatStyle(prop, value);
     }
-    var rule = ruleCallback(new CssRule(selector, content));
-    return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
   });
+  return new _PolyfillContentValuesEntry(contentSelectorStr, valuesStr);
 }
 
-class StringWithEscapedBlocks {
-  constructor(public escapedString:string, public blocks:string[]) {}
+function _formatCssRuleFromExtractedEntry(entry: _PolyfillContentValuesEntry): string {
+  return _formatRule(entry.contentSelectorStr, entry.valuesStr);
 }
 
-function escapeBlocks(input:string):StringWithEscapedBlocks {
-  var inputParts = StringWrapper.split(input, _curlyRe);
-  var resultParts: any[] /** TODO #9100 */ = [];
-  var escapedBlocks: any[] /** TODO #9100 */ = [];
-  var bracketCount = 0;
-  var currentBlockParts: any[] /** TODO #9100 */ = [];
-  for (var partIndex = 0; partIndex<inputParts.length; partIndex++) {
-    var part = inputParts[partIndex];
-    if (part == CLOSE_CURLY) {
-      bracketCount--;
+function _formatStyle(prop: string, value: string): string {
+  var result = prop;
+  if (value.length > 0) {
+    result += ':' + value;
+  }
+  return result;
+}
+
+function _formatRule(selectorText: string, stylesText: string) {
+  return selectorText + ' {' + stylesText + '}';
+}
+
+function _deQuote(text: string) {
+  var SQ = '\'';
+  var DQ = '"';
+  var start = 0;
+  var firstChar = text[start];
+  var end = text.length;
+  var lastChar = text[end - 1];
+  var expectedQuote: string = null;
+  if (firstChar == SQ || firstChar == DQ) {
+    expectedQuote = firstChar;
+    start++;
+  }
+  if (lastChar == expectedQuote) {
+    end--;
+  }
+  return text.substring(start, end);
+}
+
+function _transformSimpleSelectorsWithSuffix(
+    selectorParts: CssSimpleSelectorAST[], suffix: string, ignorePseudoSelectors = false,
+    ignoreOperator = false): string {
+  var selectorText = '';
+  selectorParts.forEach(part => {
+    part.tokens.forEach(token => { selectorText += token.strValue; });
+    selectorText += suffix;
+
+    if (!ignorePseudoSelectors) {
+      part.pseudoSelectors.forEach(pseudo => { selectorText += pseudo.strValue; });
     }
-    if (bracketCount > 0) {
-      currentBlockParts.push(part);
-    } else {
-      if (currentBlockParts.length > 0) {
-        escapedBlocks.push(currentBlockParts.join(''));
-        resultParts.push(BLOCK_PLACEHOLDER);
-        currentBlockParts = [];
+
+    var operator = part.operator;
+    if (!ignoreOperator && isPresent(operator)) {
+      selectorText += ' ';
+      if (operator.type != CssTokenType.Whitespace) {
+        selectorText += operator.strValue + ' ';
       }
-      resultParts.push(part);
     }
-    if (part == OPEN_CURLY) {
-      bracketCount++;
-    }
-  }
-  if (currentBlockParts.length > 0) {
-    escapedBlocks.push(currentBlockParts.join(''));
-    resultParts.push(BLOCK_PLACEHOLDER);
-  }
-  return new StringWithEscapedBlocks(resultParts.join(''), escapedBlocks);
+  });
+  return selectorText;
+}
+
+class _SourceReplacementEntry {
+  constructor(public start: number, public end: number, public content: string) {}
 }
