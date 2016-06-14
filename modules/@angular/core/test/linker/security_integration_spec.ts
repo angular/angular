@@ -24,7 +24,6 @@ export function main() {
 }
 
 @Component({selector: 'my-comp', directives: []})
-@Injectable()
 class SecuredComponent {
   ctxProp: string;
   constructor() { this.ctxProp = 'some value'; }

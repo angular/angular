@@ -48,7 +48,7 @@ export function main() {
 
   function queryDirs(el: DebugElement, dirType: Type): any {
     var nodes = el.queryAllNodes(By.directive(dirType));
-    return nodes.map(node => node.inject(dirType));
+    return nodes.map(node => node.injector.get(dirType));
   }
 
   function _bindSimpleProp(

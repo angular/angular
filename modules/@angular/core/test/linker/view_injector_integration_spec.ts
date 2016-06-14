@@ -266,13 +266,13 @@ export function main() {
     describe('injection', () => {
       it('should instantiate directives that have no dependencies', fakeAsync(() => {
            var el = createComp('<div simpleDirective>', tcb);
-           expect(el.children[0].inject(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
+           expect(el.children[0].injector.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
          }));
 
       it('should instantiate directives that depend on another directive', fakeAsync(() => {
            var el = createComp('<div simpleDirective needsDirective>', tcb);
 
-           var d = el.children[0].inject(NeedsDirective);
+           var d = el.children[0].injector.get(NeedsDirective);
 
            expect(d).toBeAnInstanceOf(NeedsDirective);
            expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
@@ -289,14 +289,14 @@ export function main() {
              {provide: 'instance', useValue: new TestValue('a')},
              {provide: 'nested', useValue: [{'a': [1]}, new TestValue('b')]},
            ]));
-           expect(el.inject('numLiteral')).toBe(0);
-           expect(el.inject('boolLiteral')).toBe(true);
-           expect(el.inject('strLiteral')).toBe('a');
-           expect(el.inject('null')).toBe(null);
-           expect(el.inject('array')).toEqual([1]);
-           expect(el.inject('map')).toEqual({'a': 1});
-           expect(el.inject('instance')).toEqual(new TestValue('a'));
-           expect(el.inject('nested')).toEqual([{'a': [1]}, new TestValue('b')]);
+           expect(el.injector.get('numLiteral')).toBe(0);
+           expect(el.injector.get('boolLiteral')).toBe(true);
+           expect(el.injector.get('strLiteral')).toBe('a');
+           expect(el.injector.get('null')).toBe(null);
+           expect(el.injector.get('array')).toEqual([1]);
+           expect(el.injector.get('map')).toEqual({'a': 1});
+           expect(el.injector.get('instance')).toEqual(new TestValue('a'));
+           expect(el.injector.get('nested')).toEqual([{'a': [1]}, new TestValue('b')]);
          }));
 
       it('should instantiate providers that have dependencies with SkipSelf', fakeAsync(() => {
@@ -311,7 +311,7 @@ export function main() {
                        deps: [[new InjectMetadata('injectable1'), new SkipSelfMetadata()]]
                      }
                    ]));
-           expect(el.children[0].children[0].inject('injectable2'))
+           expect(el.children[0].children[0].injector.get('injectable2'))
                .toEqual('injectable1-injectable2');
          }));
 
@@ -325,7 +325,7 @@ export function main() {
            ];
            var el = createComp(
                '<div simpleDirective></div>', tcb.overrideProviders(SimpleDirective, providers));
-           expect(el.children[0].inject('injectable2')).toEqual('injectable1-injectable2');
+           expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
          }));
 
       it('should instantiate viewProviders that have dependencies', fakeAsync(() => {
@@ -340,7 +340,7 @@ export function main() {
            var el = createComp(
                '<div simpleComponent></div>',
                tcb.overrideViewProviders(SimpleComponent, viewProviders));
-           expect(el.children[0].inject('injectable2')).toEqual('injectable1-injectable2');
+           expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
          }));
 
       it('should instantiate components that depend on viewProviders providers', fakeAsync(() => {
@@ -348,7 +348,7 @@ export function main() {
                '<div needsServiceComponent></div>',
                tcb.overrideViewProviders(
                    NeedsServiceComponent, [{provide: 'service', useValue: 'service'}]));
-           expect(el.children[0].inject(NeedsServiceComponent).service).toEqual('service');
+           expect(el.children[0].injector.get(NeedsServiceComponent).service).toEqual('service');
          }));
 
       it('should instantiate multi providers', fakeAsync(() => {
@@ -358,7 +358,9 @@ export function main() {
            ];
            var el = createComp(
                '<div simpleDirective></div>', tcb.overrideProviders(SimpleDirective, providers));
-           expect(el.children[0].inject('injectable1')).toEqual(['injectable11', 'injectable12']);
+           expect(el.children[0].injector.get('injectable1')).toEqual([
+             'injectable11', 'injectable12'
+           ]);
          }));
 
       it('should instantiate providers lazily', fakeAsync(() => {
@@ -370,7 +372,7 @@ export function main() {
 
            expect(created).toBe(false);
 
-           el.children[0].inject('service');
+           el.children[0].injector.get('service');
 
            expect(created).toBe(true);
          }));
@@ -384,7 +386,7 @@ export function main() {
 
            expect(created).toBe(false);
 
-           el.children[0].inject('service');
+           el.children[0].injector.get('service');
 
            expect(created).toBe(true);
          }));
@@ -405,7 +407,8 @@ export function main() {
                '<div simpleDirective><div needsService></div></div>',
                tcb.overrideProviders(
                    SimpleDirective, [{provide: 'service', useValue: 'parentService'}]));
-           expect(el.children[0].children[0].inject(NeedsService).service).toEqual('parentService');
+           expect(el.children[0].children[0].injector.get(NeedsService).service)
+               .toEqual('parentService');
          }));
 
       it('should instantiate directives that depend on providers in a parent view',
@@ -414,7 +417,8 @@ export function main() {
                '<div simpleDirective><template [ngIf]="true"><div *ngIf="true" needsService></div></template></div>',
                tcb.overrideProviders(
                    SimpleDirective, [{provide: 'service', useValue: 'parentService'}]));
-           expect(el.children[0].children[0].inject(NeedsService).service).toEqual('parentService');
+           expect(el.children[0].children[0].injector.get(NeedsService).service)
+               .toEqual('parentService');
          }));
 
       it('should instantiate directives that depend on providers of a component', fakeAsync(() => {
@@ -423,7 +427,8 @@ export function main() {
                tcb.overrideTemplate(SimpleComponent, '<div needsService></div>')
                    .overrideProviders(
                        SimpleComponent, [{provide: 'service', useValue: 'hostService'}]));
-           expect(el.children[0].children[0].inject(NeedsService).service).toEqual('hostService');
+           expect(el.children[0].children[0].injector.get(NeedsService).service)
+               .toEqual('hostService');
          }));
 
       it('should instantiate directives that depend on view providers of a component',
@@ -433,7 +438,8 @@ export function main() {
                tcb.overrideTemplate(SimpleComponent, '<div needsService></div>')
                    .overrideViewProviders(
                        SimpleComponent, [{provide: 'service', useValue: 'hostService'}]));
-           expect(el.children[0].children[0].inject(NeedsService).service).toEqual('hostService');
+           expect(el.children[0].children[0].injector.get(NeedsService).service)
+               .toEqual('hostService');
          }));
 
       it('should instantiate directives in a root embedded view that depend on view providers of a component',
@@ -443,13 +449,14 @@ export function main() {
                tcb.overrideTemplate(SimpleComponent, '<div *ngIf="true" needsService></div>')
                    .overrideViewProviders(
                        SimpleComponent, [{provide: 'service', useValue: 'hostService'}]));
-           expect(el.children[0].children[0].inject(NeedsService).service).toEqual('hostService');
+           expect(el.children[0].children[0].injector.get(NeedsService).service)
+               .toEqual('hostService');
          }));
 
       it('should instantiate directives that depend on instances in the app injector',
          fakeAsync(() => {
            var el = createComp('<div needsAppService></div>', tcb);
-           expect(el.children[0].inject(NeedsAppService).service).toEqual('appService');
+           expect(el.children[0].injector.get(NeedsAppService).service).toEqual('appService');
          }));
 
       it('should not instantiate a directive with cyclic dependencies', fakeAsync(() => {
@@ -495,7 +502,7 @@ export function main() {
 
       it('should instantiate directives that depend on other directives', fakeAsync(() => {
            var el = createComp('<div simpleDirective><div needsDirective></div></div>', tcb);
-           var d = el.children[0].children[0].inject(NeedsDirective);
+           var d = el.children[0].children[0].injector.get(NeedsDirective);
 
            expect(d).toBeAnInstanceOf(NeedsDirective);
            expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
@@ -508,7 +515,7 @@ export function main() {
 
       it('should inject null when an optional dependency cannot be resolved', fakeAsync(() => {
            var el = createComp('<div optionallyNeedsDirective></div>', tcb);
-           var d = el.children[0].inject(OptionallyNeedsDirective);
+           var d = el.children[0].injector.get(OptionallyNeedsDirective);
            expect(d.dependency).toEqual(null);
          }));
 
@@ -516,7 +523,7 @@ export function main() {
            var el = createComp(
                '<div simpleComponent></div>',
                tcb.overrideTemplate(SimpleComponent, '<div needsComponentFromHost></div>'));
-           var d = el.children[0].children[0].inject(NeedsComponentFromHost);
+           var d = el.children[0].children[0].injector.get(NeedsComponentFromHost);
            expect(d.dependency).toBeAnInstanceOf(SimpleComponent);
          }));
 
@@ -540,7 +547,7 @@ export function main() {
     describe('static attributes', () => {
       it('should be injectable', fakeAsync(() => {
            var el = createComp('<div needsAttribute type="text" title></div>', tcb);
-           var needsAttribute = el.children[0].inject(NeedsAttribute);
+           var needsAttribute = el.children[0].injector.get(NeedsAttribute);
 
            expect(needsAttribute.typeAttribute).toEqual('text');
            expect(needsAttribute.titleAttribute).toEqual('');
@@ -549,7 +556,7 @@ export function main() {
 
       it('should be injectable without type annotation', fakeAsync(() => {
            var el = createComp('<div needsAttributeNoType foo="bar"></div>', tcb);
-           var needsAttribute = el.children[0].inject(NeedsAttributeNoType);
+           var needsAttribute = el.children[0].injector.get(NeedsAttributeNoType);
 
            expect(needsAttribute.fooAttribute).toEqual('bar');
          }));
@@ -558,7 +565,7 @@ export function main() {
     describe('refs', () => {
       it('should inject ElementRef', fakeAsync(() => {
            var el = createComp('<div needsElementRef></div>', tcb);
-           expect(el.children[0].inject(NeedsElementRef).elementRef.nativeElement)
+           expect(el.children[0].injector.get(NeedsElementRef).elementRef.nativeElement)
                .toBe(el.children[0].nativeElement);
          }));
 
@@ -567,7 +574,7 @@ export function main() {
            var cf = createCompFixture('<div componentNeedsChangeDetectorRef></div>', tcb);
            cf.detectChanges();
            var compEl = cf.debugElement.children[0];
-           var comp = compEl.inject(PushComponentNeedsChangeDetectorRef);
+           var comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
            comp.counter = 1;
            cf.detectChanges();
            expect(compEl.nativeElement).toHaveText('0');
@@ -586,13 +593,15 @@ export function main() {
            cf.detectChanges();
            var compEl = cf.debugElement.children[0];
            var comp: PushComponentNeedsChangeDetectorRef =
-               compEl.inject(PushComponentNeedsChangeDetectorRef);
+               compEl.injector.get(PushComponentNeedsChangeDetectorRef);
            comp.counter = 1;
            cf.detectChanges();
            expect(compEl.nativeElement).toHaveText('0');
-           expect(compEl.children[0].inject(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
+           expect(
+               compEl.children[0].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
                .toBe(comp.changeDetectorRef);
-           expect(compEl.children[1].inject(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
+           expect(
+               compEl.children[1].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
                .toBe(comp.changeDetectorRef);
            comp.changeDetectorRef.markForCheck();
            cf.detectChanges();
@@ -601,14 +610,16 @@ export function main() {
 
       it('should inject ViewContainerRef', fakeAsync(() => {
            var el = createComp('<div needsViewContainerRef></div>', tcb);
-           expect(el.children[0].inject(NeedsViewContainerRef).viewContainer.element.nativeElement)
+           expect(el.children[0]
+                      .injector.get(NeedsViewContainerRef)
+                      .viewContainer.element.nativeElement)
                .toBe(el.children[0].nativeElement);
          }));
 
       it('should inject TemplateRef', fakeAsync(() => {
            var el = createComp('<template needsViewContainerRef needsTemplateRef></template>', tcb);
-           expect(el.childNodes[0].inject(NeedsTemplateRef).templateRef.elementRef)
-               .toEqual(el.childNodes[0].inject(NeedsViewContainerRef).viewContainer.element);
+           expect(el.childNodes[0].injector.get(NeedsTemplateRef).templateRef.elementRef)
+               .toEqual(el.childNodes[0].injector.get(NeedsViewContainerRef).viewContainer.element);
          }));
 
       it('should throw if there is no TemplateRef', fakeAsync(() => {
@@ -619,7 +630,7 @@ export function main() {
       it('should inject null if there is no TemplateRef when the dependency is optional',
          fakeAsync(() => {
            var el = createComp('<div optionallyNeedsTemplateRef></div>', tcb);
-           var instance = el.children[0].inject(OptionallyNeedsTemplateRef);
+           var instance = el.children[0].injector.get(OptionallyNeedsTemplateRef);
            expect(instance.templateRef).toBeNull();
          }));
     });
@@ -629,20 +640,23 @@ export function main() {
            var el = createComp(
                '<div [simpleDirective]="true | pipeNeedsService"></div>',
                tcb.overrideProviders(TestComp, [{provide: 'service', useValue: 'pipeService'}]));
-           expect(el.children[0].inject(SimpleDirective).value.service).toEqual('pipeService');
+           expect(el.children[0].injector.get(SimpleDirective).value.service)
+               .toEqual('pipeService');
          }));
 
       it('should overwrite pipes with later entry in the pipes array', fakeAsync(() => {
            var el = createComp('<div [simpleDirective]="true | duplicatePipe"></div>', tcb);
-           expect(el.children[0].inject(SimpleDirective).value).toBeAnInstanceOf(DuplicatePipe2);
+           expect(el.children[0].injector.get(SimpleDirective).value)
+               .toBeAnInstanceOf(DuplicatePipe2);
          }));
 
       it('should inject ChangeDetectorRef into pipes', fakeAsync(() => {
            var el = createComp(
                '<div [simpleDirective]="true | pipeNeedsChangeDetectorRef" directiveNeedsChangeDetectorRef></div>',
                tcb);
-           var cdRef = el.children[0].inject(DirectiveNeedsChangeDetectorRef).changeDetectorRef;
-           expect(el.children[0].inject(SimpleDirective).value.changeDetectorRef).toBe(cdRef);
+           var cdRef =
+               el.children[0].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef;
+           expect(el.children[0].injector.get(SimpleDirective).value.changeDetectorRef).toBe(cdRef);
          }));
 
       it('should cache pure pipes', fakeAsync(() => {
@@ -650,10 +664,10 @@ export function main() {
                '<div [simpleDirective]="true | purePipe"></div><div [simpleDirective]="true | purePipe"></div>' +
                    '<div *ngFor="let x of [1,2]" [simpleDirective]="true | purePipe"></div>',
                tcb);
-           var purePipe1 = el.children[0].inject(SimpleDirective).value;
-           var purePipe2 = el.children[1].inject(SimpleDirective).value;
-           var purePipe3 = el.children[2].inject(SimpleDirective).value;
-           var purePipe4 = el.children[3].inject(SimpleDirective).value;
+           var purePipe1 = el.children[0].injector.get(SimpleDirective).value;
+           var purePipe2 = el.children[1].injector.get(SimpleDirective).value;
+           var purePipe3 = el.children[2].injector.get(SimpleDirective).value;
+           var purePipe4 = el.children[3].injector.get(SimpleDirective).value;
            expect(purePipe1).toBeAnInstanceOf(PurePipe);
            expect(purePipe2).toBe(purePipe1);
            expect(purePipe3).toBe(purePipe1);
@@ -665,10 +679,10 @@ export function main() {
                '<div [simpleDirective]="true | impurePipe"></div><div [simpleDirective]="true | impurePipe"></div>' +
                    '<div *ngFor="let x of [1,2]" [simpleDirective]="true | impurePipe"></div>',
                tcb);
-           var purePipe1 = el.children[0].inject(SimpleDirective).value;
-           var purePipe2 = el.children[1].inject(SimpleDirective).value;
-           var purePipe3 = el.children[2].inject(SimpleDirective).value;
-           var purePipe4 = el.children[3].inject(SimpleDirective).value;
+           var purePipe1 = el.children[0].injector.get(SimpleDirective).value;
+           var purePipe2 = el.children[1].injector.get(SimpleDirective).value;
+           var purePipe3 = el.children[2].injector.get(SimpleDirective).value;
+           var purePipe4 = el.children[3].injector.get(SimpleDirective).value;
            expect(purePipe1).toBeAnInstanceOf(ImpurePipe);
            expect(purePipe2).toBeAnInstanceOf(ImpurePipe);
            expect(purePipe2).not.toBe(purePipe1);

@@ -5,7 +5,7 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {isPresent, stringify} from '../../src/facade/lang';
 import {ObservableWrapper} from '../../src/facade/async';
 
-import {Component, Directive, Injectable, Optional, TemplateRef, Query, QueryList, ViewQuery, ContentChildren, ViewChildren, ContentChild, ViewChild, AfterContentInit, AfterViewInit, AfterContentChecked, AfterViewChecked} from '@angular/core';
+import {Component, Directive, TemplateRef, Query, QueryList, ViewQuery, ContentChildren, ViewChildren, ContentChild, ViewChild, AfterContentInit, AfterViewInit, AfterContentChecked, AfterViewChecked} from '@angular/core';
 import {NgIf, NgFor} from '@angular/common';
 import {asNativeElements, ViewContainerRef} from '@angular/core';
 
@@ -275,7 +275,7 @@ export function main() {
                var template = '<needs-tpl><template><div>light</div></template></needs-tpl>';
                tcb.overrideTemplate(MyComp0, template).createAsync(MyComp0).then((view) => {
                  view.detectChanges();
-                 var needsTpl: NeedsTpl = view.debugElement.children[0].inject(NeedsTpl);
+                 var needsTpl: NeedsTpl = view.debugElement.children[0].injector.get(NeedsTpl);
 
                  expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).rootNodes[0])
                      .toHaveText('light');
@@ -294,7 +294,8 @@ export function main() {
                    '<needs-named-tpl><template #tpl><div>light</div></template></needs-named-tpl>';
                tcb.overrideTemplate(MyComp0, template).createAsync(MyComp0).then((view) => {
                  view.detectChanges();
-                 var needsTpl: NeedsNamedTpl = view.debugElement.children[0].inject(NeedsNamedTpl);
+                 var needsTpl: NeedsNamedTpl =
+                     view.debugElement.children[0].injector.get(NeedsNamedTpl);
                  expect(needsTpl.vc.createEmbeddedView(needsTpl.contentTpl).rootNodes[0])
                      .toHaveText('light');
                  expect(needsTpl.vc.createEmbeddedView(needsTpl.viewTpl).rootNodes[0])
@@ -317,7 +318,7 @@ export function main() {
                  view.detectChanges();
 
                  var comp: NeedsContentChildrenWithRead =
-                     view.debugElement.children[0].inject(NeedsContentChildrenWithRead);
+                     view.debugElement.children[0].injector.get(NeedsContentChildrenWithRead);
                  expect(comp.textDirChildren.map(textDirective => textDirective.text)).toEqual([
                    'ca', 'cb'
                  ]);
@@ -337,7 +338,7 @@ export function main() {
                  view.detectChanges();
 
                  var comp: NeedsContentChildWithRead =
-                     view.debugElement.children[0].inject(NeedsContentChildWithRead);
+                     view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
                  expect(comp.textDirChild.text).toEqual('ca');
 
                  async.done();
@@ -354,7 +355,7 @@ export function main() {
                  view.detectChanges();
 
                  var comp: NeedsViewChildWithRead =
-                     view.debugElement.children[0].inject(NeedsViewChildWithRead);
+                     view.debugElement.children[0].injector.get(NeedsViewChildWithRead);
                  expect(comp.textDirChild.text).toEqual('va');
 
                  async.done();
@@ -371,7 +372,7 @@ export function main() {
                  view.detectChanges();
 
                  var comp: NeedsViewChildrenWithRead =
-                     view.debugElement.children[0].inject(NeedsViewChildrenWithRead);
+                     view.debugElement.children[0].injector.get(NeedsViewChildrenWithRead);
                  expect(comp.textDirChildren.map(textDirective => textDirective.text)).toEqual([
                    'va', 'vb'
                  ]);
@@ -391,7 +392,7 @@ export function main() {
                  view.detectChanges();
 
                  var comp: NeedsViewContainerWithRead =
-                     view.debugElement.children[0].inject(NeedsViewContainerWithRead);
+                     view.debugElement.children[0].injector.get(NeedsViewContainerWithRead);
                  comp.createView();
                  expect(view.debugElement.children[0].nativeElement).toHaveText('hello');
 
@@ -804,7 +805,6 @@ export function main() {
 }
 
 @Directive({selector: '[text]', inputs: ['text'], exportAs: 'textDir'})
-@Injectable()
 class TextDirective {
   text: string;
   constructor() {}
@@ -890,7 +890,6 @@ class NeedsStaticContentAndViewChild {
 }
 
 @Directive({selector: '[dir]'})
-@Injectable()
 class InertDirective {
   constructor() {}
 }
@@ -900,7 +899,6 @@ class InertDirective {
   directives: [NgFor, TextDirective],
   template: '<div text="ignoreme"></div><b *ngFor="let  dir of query">{{dir.text}}|</b>'
 })
-@Injectable()
 class NeedsQuery {
   query: QueryList<TextDirective>;
   constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
@@ -919,7 +917,6 @@ class NeedsFourQueries {
   directives: [NgFor],
   template: '<ng-content></ng-content><div *ngFor="let  dir of query">{{dir.text}}|</div>'
 })
-@Injectable()
 class NeedsQueryDesc {
   query: QueryList<TextDirective>;
   constructor(@Query(TextDirective, {descendants: true}) query: QueryList<TextDirective>) {
@@ -928,7 +925,6 @@ class NeedsQueryDesc {
 }
 
 @Component({selector: 'needs-query-by-ref-binding', directives: [], template: '<ng-content>'})
-@Injectable()
 class NeedsQueryByLabel {
   query: QueryList<any>;
   constructor(@Query('textLabel', {descendants: true}) query: QueryList<any>) {
@@ -941,14 +937,12 @@ class NeedsQueryByLabel {
   directives: [],
   template: '<div #textLabel>text</div>'
 })
-@Injectable()
 class NeedsViewQueryByLabel {
   query: QueryList<any>;
   constructor(@ViewQuery('textLabel') query: QueryList<any>) { this.query = query; }
 }
 
 @Component({selector: 'needs-query-by-ref-bindings', directives: [], template: '<ng-content>'})
-@Injectable()
 class NeedsQueryByTwoLabels {
   query: QueryList<any>;
   constructor(@Query('textLabel1,textLabel2', {descendants: true}) query: QueryList<any>) {
@@ -961,7 +955,6 @@ class NeedsQueryByTwoLabels {
   directives: [NgFor],
   template: '<div *ngFor="let  dir of query">{{dir.text}}|</div><ng-content></ng-content>'
 })
-@Injectable()
 class NeedsQueryAndProject {
   query: QueryList<TextDirective>;
   constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
@@ -973,7 +966,6 @@ class NeedsQueryAndProject {
   template: '<div text="1"><div text="2"></div></div>' +
       '<div text="3"></div><div text="4"></div>'
 })
-@Injectable()
 class NeedsViewQuery {
   query: QueryList<TextDirective>;
   constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
@@ -984,7 +976,6 @@ class NeedsViewQuery {
   directives: [NgIf, TextDirective],
   template: '<div *ngIf="show" text="1"></div>'
 })
-@Injectable()
 class NeedsViewQueryIf {
   show: boolean;
   query: QueryList<TextDirective>;
@@ -1000,7 +991,6 @@ class NeedsViewQueryIf {
   directives: [NgIf, InertDirective, TextDirective],
   template: '<div text="1"><div *ngIf="show"><div dir></div></div></div>'
 })
-@Injectable()
 class NeedsViewQueryNestedIf {
   show: boolean;
   query: QueryList<TextDirective>;
@@ -1017,7 +1007,6 @@ class NeedsViewQueryNestedIf {
       '<div *ngFor="let  i of list" [text]="i"></div>' +
       '<div text="4"></div>'
 })
-@Injectable()
 class NeedsViewQueryOrder {
   query: QueryList<TextDirective>;
   list: string[];
@@ -1034,7 +1023,6 @@ class NeedsViewQueryOrder {
       '<div *ngFor="let  i of list" [text]="i"></div>' +
       '<div text="4"></div></div>'
 })
-@Injectable()
 class NeedsViewQueryOrderWithParent {
   query: QueryList<TextDirective>;
   list: string[];
@@ -1143,7 +1131,6 @@ class HasNullQueryCondition {
   ],
   template: ''
 })
-@Injectable()
 class MyComp0 {
   shouldShow: boolean;
   list: any /** TODO #9100 */;
@@ -1154,6 +1141,5 @@ class MyComp0 {
 }
 
 @Component({selector: 'my-comp', directives: [HasNullQueryCondition], template: ''})
-@Injectable()
 class MyCompBroken0 {
 }

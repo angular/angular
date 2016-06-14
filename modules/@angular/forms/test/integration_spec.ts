@@ -1201,7 +1201,7 @@ export function main() {
            fixture.debugElement.componentInstance.name = null;
            fixture.detectChanges();
 
-           var form = fixture.debugElement.children[0].inject(NgForm);
+           var form = fixture.debugElement.children[0].injector.get(NgForm);
            expect(form.controls['user']).not.toBeDefined();
 
            tick();
@@ -1257,7 +1257,7 @@ export function main() {
            fixture.debugElement.componentInstance.name = 'show';
            fixture.detectChanges();
            tick();
-           var form = fixture.debugElement.children[0].inject(NgForm);
+           var form = fixture.debugElement.children[0].injector.get(NgForm);
 
 
            expect(form.controls['login']).toBeDefined();
@@ -1283,7 +1283,7 @@ export function main() {
            fixture.debugElement.componentInstance.name = 'show';
            fixture.detectChanges();
            tick();
-           var form = fixture.debugElement.children[0].inject(NgForm);
+           var form = fixture.debugElement.children[0].injector.get(NgForm);
 
            expect(form.controls['user']).toBeDefined();
 
@@ -1348,7 +1348,7 @@ export function main() {
            tick();
            fixture.debugElement.componentInstance.name = 'Nancy';
            fixture.detectChanges();
-           var form = fixture.debugElement.children[0].inject(NgForm);
+           var form = fixture.debugElement.children[0].injector.get(NgForm);
 
            tick();
            expect(form.value).toEqual({first: 'Nancy'});
@@ -1387,7 +1387,7 @@ export function main() {
            tick();
            fixture.debugElement.componentInstance.data = 'some data';
            fixture.detectChanges();
-           const form = fixture.debugElement.children[0].inject(NgForm);
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
 
            tick();
            expect(form.value).toEqual({two: 'some data'});

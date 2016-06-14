@@ -22,7 +22,6 @@ class Logger {
 }
 
 @Directive({selector: '[message]', inputs: ['message']})
-@Injectable()
 class MessageDir {
   logger: Logger;
 
@@ -39,7 +38,6 @@ class MessageDir {
              <span class="child" [innerHtml]="childBinding"></span>`,
   directives: [MessageDir],
 })
-@Injectable()
 class ChildComp {
   childBinding: string;
 
@@ -56,14 +54,12 @@ class ChildComp {
              <child-comp class="child-comp-class"></child-comp>`,
   directives: [ChildComp, MessageDir],
 })
-@Injectable()
 class ParentComp {
   parentBinding: string;
   constructor() { this.parentBinding = 'OriginalParent'; }
 }
 
 @Directive({selector: 'custom-emitter', outputs: ['myevent']})
-@Injectable()
 class CustomEmitter {
   myevent: EventEmitter<any>;
 
@@ -76,7 +72,6 @@ class CustomEmitter {
              <custom-emitter (myevent)="handleCustom()"></custom-emitter>`,
   directives: [CustomEmitter],
 })
-@Injectable()
 class EventsComp {
   clicked: boolean;
   customed: boolean;
@@ -97,7 +92,6 @@ class EventsComp {
   template: `<div class="child" message="child" *ngIf="myBool"><ng-content></ng-content></div>`,
   directives: [NgIf, MessageDir],
 })
-@Injectable()
 class ConditionalContentComp {
   myBool: boolean = false;
 }
@@ -111,7 +105,6 @@ class ConditionalContentComp {
             </cond-content-comp>`,
   directives: [ConditionalContentComp],
 })
-@Injectable()
 class ConditionalParentComp {
   parentBinding: string;
   constructor() { this.parentBinding = 'OriginalParent'; }
@@ -126,7 +119,6 @@ class ConditionalParentComp {
             </ul>`,
   directives: [NgFor, MessageDir],
 })
-@Injectable()
 class UsingFor {
   stuff: string[];
   constructor() { this.stuff = ['one', 'two', 'three']; }
@@ -387,9 +379,8 @@ export function main() {
              tcb.createAsync(ParentComp).then((fixture) => {
                fixture.detectChanges();
 
-               expect((<Logger>(fixture.debugElement.children[0].inject(Logger))).logs).toEqual([
-                 'parent', 'nestedparent', 'child', 'nestedchild'
-               ]);
+               expect((<Logger>(fixture.debugElement.children[0].injector.get(Logger))).logs)
+                   .toEqual(['parent', 'nestedparent', 'child', 'nestedchild']);
 
                async.done();
              });

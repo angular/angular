@@ -185,7 +185,7 @@ export function main() {
                    var viewportDirectives =
                        main.debugElement.children[0]
                            .childNodes.filter(By.directive(ManualViewportDirective))
-                           .map(de => de.inject(ManualViewportDirective));
+                           .map(de => de.injector.get(ManualViewportDirective));
 
                    expect(main.debugElement.nativeElement).toHaveText('(, B)');
                    viewportDirectives.forEach(d => d.show());
@@ -234,7 +234,7 @@ export function main() {
 
                    var viewportDirective =
                        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0]
-                           .inject(ManualViewportDirective);
+                           .injector.get(ManualViewportDirective);
 
                    expect(main.debugElement.nativeElement)
                        .toHaveText('OUTER(INNER(INNERINNER(,BC)))');
@@ -263,7 +263,7 @@ export function main() {
 
                    var viewportDirective =
                        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0]
-                           .inject(ManualViewportDirective);
+                           .injector.get(ManualViewportDirective);
 
                    expect(main.debugElement.nativeElement).toHaveText('(, BC)');
 
@@ -342,13 +342,13 @@ export function main() {
                    // all.
                    getAllDebugNodes().forEach((debug) => {
                      if (debug.providerTokens.indexOf(ManualViewportDirective) !== -1) {
-                       sourceDirective = debug.inject(ManualViewportDirective);
+                       sourceDirective = debug.injector.get(ManualViewportDirective);
                      }
                    });
 
                    var projectDirective: ProjectDirective =
-                       main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].inject(
-                           ProjectDirective);
+                       main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0]
+                           .injector.get(ProjectDirective);
 
                    expect(main.debugElement.nativeElement).toHaveText('START()END');
 
@@ -373,10 +373,10 @@ export function main() {
 
                    var sourceDirective: ManualViewportDirective =
                        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0]
-                           .inject(ManualViewportDirective);
+                           .injector.get(ManualViewportDirective);
                    var projectDirective: ProjectDirective =
-                       main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].inject(
-                           ProjectDirective);
+                       main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0]
+                           .injector.get(ProjectDirective);
                    expect(main.debugElement.nativeElement).toHaveText('SIMPLE()START()END');
 
                    projectDirective.show(sourceDirective.templateRef);
@@ -405,10 +405,10 @@ export function main() {
 
                    var sourceDirective: ManualViewportDirective =
                        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0]
-                           .inject(ManualViewportDirective);
+                           .injector.get(ManualViewportDirective);
                    var projectDirective: ProjectDirective =
-                       main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].inject(
-                           ProjectDirective);
+                       main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0]
+                           .injector.get(ProjectDirective);
                    expect(main.debugElement.nativeElement).toHaveText('(, B)START()END');
 
                    projectDirective.show(sourceDirective.templateRef);
@@ -438,7 +438,7 @@ export function main() {
                    main.detectChanges();
                    var manualDirective: ManualViewportDirective =
                        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0]
-                           .inject(ManualViewportDirective);
+                           .injector.get(ManualViewportDirective);
                    expect(main.debugElement.nativeElement).toHaveText('TREE(0:)');
                    manualDirective.show();
                    main.detectChanges();
@@ -470,14 +470,14 @@ export function main() {
 
                    var tree = main.debugElement.query(By.directive(Tree));
                    var manualDirective: ManualViewportDirective = tree.queryAllNodes(By.directive(
-                       ManualViewportDirective))[0].inject(ManualViewportDirective);
+                       ManualViewportDirective))[0].injector.get(ManualViewportDirective);
                    manualDirective.show();
                    main.detectChanges();
                    expect(main.debugElement.nativeElement).toHaveText('TREE(0:TREE2(1:))');
 
                    var tree2 = main.debugElement.query(By.directive(Tree2));
                    manualDirective =
-                       tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].inject(
+                       tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
                            ManualViewportDirective);
                    manualDirective.show();
                    main.detectChanges();
@@ -568,12 +568,12 @@ export function main() {
 
                    var viewportElement =
                        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0];
-                   viewportElement.inject(ManualViewportDirective).show();
+                   viewportElement.injector.get(ManualViewportDirective).show();
                    expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST())');
 
                    viewportElement =
                        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[1];
-                   viewportElement.inject(ManualViewportDirective).show();
+                   viewportElement.injector.get(ManualViewportDirective).show();
                    expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
 
                    async.done();
@@ -639,7 +639,7 @@ export function main() {
 
                    var viewViewportDir =
                        conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0]
-                           .inject(ManualViewportDirective);
+                           .injector.get(ManualViewportDirective);
 
                    expect(main.debugElement.nativeElement).toHaveText('(, D)');
                    expect(main.debugElement.nativeElement).toHaveText('(, D)');

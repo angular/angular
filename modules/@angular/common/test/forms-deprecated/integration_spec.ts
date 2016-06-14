@@ -1089,7 +1089,7 @@ export function main() {
            fixture.debugElement.componentInstance.name = null;
            fixture.detectChanges();
 
-           var form = fixture.debugElement.children[0].inject(NgForm);
+           var form = fixture.debugElement.children[0].injector.get(NgForm);
            expect(form.controls['user']).not.toBeDefined();
 
            tick();
@@ -1142,7 +1142,7 @@ export function main() {
            fixture.debugElement.componentInstance.name = 'show';
            fixture.detectChanges();
            tick();
-           var form = fixture.debugElement.children[0].inject(NgForm);
+           var form = fixture.debugElement.children[0].injector.get(NgForm);
 
 
            expect(form.controls['login']).toBeDefined();
@@ -1168,7 +1168,7 @@ export function main() {
            fixture.debugElement.componentInstance.name = 'show';
            fixture.detectChanges();
            tick();
-           var form = fixture.debugElement.children[0].inject(NgForm);
+           var form = fixture.debugElement.children[0].injector.get(NgForm);
 
            expect(form.controls['user']).toBeDefined();
 
