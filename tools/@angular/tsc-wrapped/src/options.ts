@@ -15,6 +15,9 @@ interface Options extends ts.CompilerOptions {
 
   // Print extra information while running the compiler
   trace: boolean;
+
+  // Information for offline compilation entry points
+  componentResolver: any;
 }
 
 export default Options;

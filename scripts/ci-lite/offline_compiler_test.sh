@@ -9,6 +9,7 @@ LINKABLE_PKGS=(
 PKGS=(
   reflect-metadata
   typescript@next
+  ejs
   zone.js
   rxjs
   @types/{node,jasmine}

@@ -1,8 +1,13 @@
 {
     "angularCompilerOptions": {
-      // For TypeScript 1.8, we have to lay out generated files
-      // in the same source directory with your code.
-      "genDir": "."
+      "genDir": ".",
+      "componentResolver": {
+        "out": "./tmp/generated_component_resolver.ts",
+        "imports": {
+          "src/animate": "AnimateCmp",
+          "src/features": ["CompWithProviders", "CompWithReferences"]
+        }
+      }
     },
 
     "compilerOptions": {
