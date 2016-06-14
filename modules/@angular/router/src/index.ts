@@ -10,6 +10,6 @@ export {provideRouter} from './router_providers';
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
 export {PRIMARY_OUTLET, Params} from './shared';
 export {DefaultUrlSerializer, UrlSerializer} from './url_serializer';
-export {UrlSegment, UrlTree} from './url_tree';
+export {UrlPathWithParams, UrlTree} from './url_tree';
 
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];

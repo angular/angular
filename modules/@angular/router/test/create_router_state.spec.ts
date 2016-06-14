@@ -1,5 +1,5 @@
 import {DefaultUrlSerializer} from '../src/url_serializer';
-import {UrlTree} from '../src/url_tree';
+import {UrlTree, UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {ActivatedRoute, RouterState, RouterStateSnapshot, createEmptyState, advanceActivatedRoute} from '../src/router_state';
@@ -8,7 +8,7 @@ import {recognize} from '../src/recognize';
 import {RouterConfig} from '../src/config';
 
 describe('create router state', () => {
-  const emptyState = () => createEmptyState(RootComponent);
+  const emptyState = () => createEmptyState(new UrlTree(new UrlSegment([], {}), {}, null), RootComponent);
 
   it('should work create new state', () => {
     const state = createRouterState(createState([
@@ -57,7 +57,7 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
 
 function createState(config: RouterConfig, url: string): RouterStateSnapshot {
   let res;
-  recognize(RootComponent, config, tree(url)).forEach(s => res = s);
+  recognize(RootComponent, config, tree(url), url).forEach(s => res = s);
   return res;
 }
 
