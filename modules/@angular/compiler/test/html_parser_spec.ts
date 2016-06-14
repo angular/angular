@@ -234,9 +234,9 @@ export function main() {
           expect(humanizeDom(parsed)).toEqual([
             [HtmlElementAst, 'div', 0],
             [HtmlTextAst, 'before', 1],
-            [HtmlExpansionAst, 'messages.length', 'plural'],
-            [HtmlExpansionCaseAst, '=0'],
-            [HtmlExpansionCaseAst, '=1'],
+            [HtmlExpansionAst, 'messages.length', 'plural', 1],
+            [HtmlExpansionCaseAst, '=0', 2],
+            [HtmlExpansionCaseAst, '=1', 2],
             [HtmlTextAst, 'after', 1],
           ]);
           let cases = (<any>parsed.rootNodes[0]).children[1].cases;
@@ -256,15 +256,15 @@ export function main() {
           let parsed = parser.parse(
               `{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`, 'TestComp', true);
           expect(humanizeDom(parsed)).toEqual([
-            [HtmlExpansionAst, 'messages.length', 'plural'],
-            [HtmlExpansionCaseAst, '=0'],
+            [HtmlExpansionAst, 'messages.length', 'plural', 0],
+            [HtmlExpansionCaseAst, '=0', 1],
           ]);
 
           let firstCase = (<any>parsed.rootNodes[0]).cases[0];
 
           expect(humanizeDom(new HtmlParseTreeResult(firstCase.expression, []))).toEqual([
-            [HtmlExpansionAst, 'p.gender', 'gender'],
-            [HtmlExpansionCaseAst, '=m'],
+            [HtmlExpansionAst, 'p.gender', 'gender', 0],
+            [HtmlExpansionCaseAst, '=m', 1],
             [HtmlTextAst, ' ', 0],
           ]);
         });
