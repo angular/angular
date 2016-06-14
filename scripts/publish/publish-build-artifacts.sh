@@ -60,7 +60,7 @@ function publishRepo {
 if [[ "$TRAVIS_REPO_SLUG" == "angular/angular" && \
       "$TRAVIS_PULL_REQUEST" == "false" && \
       "$CI_MODE" == "e2e" ]]; then
-  for dir in dist/packages-dist/*/
+  for dir in dist/packages-dist/*/ dist/tools/@angular/tsc-wrapped
   do
     COMPONENT="$(basename ${dir})"
 
