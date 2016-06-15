@@ -1,7 +1,7 @@
 import {COMMON_DIRECTIVES, COMMON_PIPES} from '@angular/common';
 import {COMPILER_PROVIDERS, CompilerConfig, XHR} from '@angular/compiler';
 import {ApplicationRef, ComponentRef, PLATFORM_DIRECTIVES, PLATFORM_PIPES, ReflectiveInjector, Type, coreLoadAndBootstrap} from '@angular/core';
-import {BROWSER_APP_PROVIDERS, WORKER_APP_APPLICATION_PROVIDERS, WORKER_RENDER_APPLICATION_PROVIDERS, WORKER_SCRIPT, browserPlatform, workerAppPlatform, workerRenderPlatform} from '@angular/platform-browser';
+import {BROWSER_APP_PROVIDERS, WORKER_APP_APPLICATION_PROVIDERS, WORKER_SCRIPT, WORKER_UI_APPLICATION_PROVIDERS, browserPlatform, workerAppPlatform, workerUiPlatform} from '@angular/platform-browser';
 
 import {ReflectionCapabilities, reflector} from './core_private';
 import {PromiseWrapper} from './src/facade/async';
@@ -110,16 +110,16 @@ export function bootstrap(
 }
 
 
-export function bootstrapRender(
+export function bootstrapWorkerUi(
     workerScriptUri: string,
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ApplicationRef> {
   var app = ReflectiveInjector.resolveAndCreate(
       [
-        WORKER_RENDER_APPLICATION_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS,
+        WORKER_UI_APPLICATION_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS,
         {provide: WORKER_SCRIPT, useValue: workerScriptUri},
         isPresent(customProviders) ? customProviders : []
       ],
-      workerRenderPlatform().injector);
+      workerUiPlatform().injector);
   // Return a promise so that we keep the same semantics as Dart,
   // and we might want to wait for the app side to come up
   // in the future...
@@ -141,7 +141,7 @@ const WORKER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
 ];
 
 
-export function bootstrapApp(
+export function bootstrapWorkerApp(
     appComponentType: Type,
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<any>> {
   var appInjector = ReflectiveInjector.resolveAndCreate(

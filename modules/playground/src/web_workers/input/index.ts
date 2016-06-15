@@ -1,5 +1,5 @@
-import {bootstrapRender} from '@angular/platform-browser-dynamic';
+import {bootstrapWorkerUi} from '@angular/platform-browser-dynamic';
 
 export function main() {
-  bootstrapRender("loader.js");
+  bootstrapWorkerUi("loader.js");
 }

@@ -18,7 +18,7 @@ export {ReceivedMessage, ServiceMessageBroker, ServiceMessageBrokerFactory} from
 export {PRIMITIVE} from './src/web_workers/shared/serializer';
 export * from './src/web_workers/shared/message_bus';
 export {WORKER_APP_LOCATION_PROVIDERS} from './src/web_workers/worker/location_providers';
-export {WORKER_RENDER_LOCATION_PROVIDERS} from './src/web_workers/ui/location_providers';
+export {WORKER_UI_LOCATION_PROVIDERS} from './src/web_workers/ui/location_providers';
 
 export * from './src/worker_render';
 export * from './src/worker_app';

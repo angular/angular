@@ -1,11 +1,11 @@
 import {ApplicationRef} from '@angular/core';
 import {UiArguments, FnArg, PRIMITIVE, ClientMessageBrokerFactory} from '@angular/platform-browser';
-import {bootstrapRender} from "@angular/platform-browser-dynamic";
+import {bootstrapWorkerUi} from "@angular/platform-browser-dynamic";
 
 const ECHO_CHANNEL = "ECHO";
 
 export function main() {
-  bootstrapRender("loader.js").then((ref) => afterBootstrap(ref));
+  bootstrapWorkerUi("loader.js").then((ref) => afterBootstrap(ref));
 }
 
 function afterBootstrap(ref: ApplicationRef) {
