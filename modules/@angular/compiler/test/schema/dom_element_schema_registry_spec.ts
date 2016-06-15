@@ -72,6 +72,16 @@ export function main() {
       expect(registry.securityContext('p', 'formAction')).toBe(SecurityContext.URL);
     });
 
+    describe('Angular custom elements', () => {
+      it('should support <ng-container>',
+         () => { expect(registry.hasProperty('ng-container', 'id')).toBeFalsy(); });
+
+      it('should support <ng-content>', () => {
+        expect(registry.hasProperty('ng-content', 'id')).toBeFalsy();
+        expect(registry.hasProperty('ng-content', 'select')).toBeFalsy();
+      });
+    });
+
     if (browserDetection.isChromeDesktop) {
       it('generate a new schema', () => {
         let schema = '\n';

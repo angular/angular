@@ -265,7 +265,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
   hasProperty(tagName: string, propName: string): boolean {
     if (tagName.indexOf('-') !== -1) {
-      // can't tell now as we don't know which properties a custom element will get
+      if (tagName === 'ng-container' || tagName === 'ng-content') {
+        return false;
+      }
+
+      // Can't tell now as we don't know which properties a custom element will get
       // once it is instantiated
       return true;
     } else {
