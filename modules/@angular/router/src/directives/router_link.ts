@@ -1,6 +1,7 @@
 import {Directive, HostBinding, HostListener, Input, OnChanges} from '@angular/core';
 
 import {Router} from '../router';
+import {UrlTree} from '../url_tree';
 import {ActivatedRoute} from '../router_state';
 
 
@@ -39,6 +40,8 @@ export class RouterLink implements OnChanges {
   // the url displayed on the anchor element.
   @HostBinding() href: string;
 
+  private urlTree: UrlTree;
+
   /**
    * @internal
    */
@@ -59,20 +62,18 @@ export class RouterLink implements OnChanges {
   onClick(): boolean {
     // If no target, or if target is _self, prevent default browser behavior
     if (!(typeof this.target === 'string') || this.target == '_self') {
-      this.router.navigate(
-          this.commands,
-          {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
+      this.router.navigateByUrl(this.urlTree);
       return false;
     }
     return true;
   }
 
   private updateTargetUrlAndHref(): void {
-    const tree = this.router.createUrlTree(
+    this.urlTree = this.router.createUrlTree(
         this.commands,
         {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
-    if (tree) {
-      this.href = this.router.serializeUrl(tree);
+    if (this.urlTree) {
+      this.href = this.router.serializeUrl(this.urlTree);
     }
   }
 }
