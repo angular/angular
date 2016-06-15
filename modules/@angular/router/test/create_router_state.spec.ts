@@ -56,7 +56,7 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
 }
 
 function createState(config: RouterConfig, url: string): RouterStateSnapshot {
-  let res;
+  let res: RouterStateSnapshot;
   recognize(RootComponent, config, tree(url), url).forEach(s => res = s);
   return res;
 }

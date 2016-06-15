@@ -39,11 +39,11 @@ function tree(
 function replaceSegment(
     current: UrlSegment, oldSegment: UrlSegment, newSegment: UrlSegment): UrlSegment {
   const children: {[key: string]: UrlSegment} = {};
-  forEach(current.children, (c, k) => {
+  forEach(current.children, (c: UrlSegment, outletName: string) => {
     if (c === oldSegment) {
-      children[k] = newSegment;
+      children[outletName] = newSegment;
     } else {
-      children[k] = replaceSegment(c, oldSegment, newSegment);
+      children[outletName] = replaceSegment(c, oldSegment, newSegment);
     }
   });
   return new UrlSegment(current.pathsWithParams, children);
@@ -66,7 +66,7 @@ function normalizeCommands(commands: any[]): NormalizedNavigationCommands {
 
   let numberOfDoubleDots = 0;
   let isAbsolute = false;
-  const res = [];
+  const res: any[] = [];
 
   for (let i = 0; i < commands.length; ++i) {
     const c = commands[i];
@@ -164,7 +164,7 @@ function updateSegmentChildren(
     const outlet = getOutlet(commands);
     const children: {[key: string]: UrlSegment} = {};
     children[outlet] = updateSegment(segment.children[outlet], startIndex, commands);
-    forEach(segment.children, (child, childOutlet) => {
+    forEach(segment.children, (child: UrlSegment, childOutlet: string) => {
       if (childOutlet !== outlet) {
         children[childOutlet] = child;
       }
@@ -224,7 +224,7 @@ function createNewSegment(segment: UrlSegment, startIndex: number, commands: any
 
 function stringify(params: {[key: string]: any}): {[key: string]: string} {
   const res: {[key: string]: string} = {};
-  forEach(params, (v, k) => res[k] = `${v}`);
+  forEach(params, (v: any, k: string) => res[k] = `${v}`);
   return res;
 }
 

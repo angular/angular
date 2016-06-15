@@ -13,7 +13,9 @@ export const ROUTER_OPTIONS = new OpaqueToken('ROUTER_OPTIONS');
 export interface ExtraOptions { enableTracing?: boolean; }
 
 export function setupRouter(
-    ref, resolver, urlSerializer, outletMap, location, injector, config, opts) {
+    ref: ApplicationRef, resolver: ComponentResolver, urlSerializer: UrlSerializer,
+    outletMap: RouterOutletMap, location: Location, injector: Injector, config: RouterConfig,
+    opts: ExtraOptions) {
   if (ref.componentTypes.length == 0) {
     throw new Error('Bootstrap at least one component before injecting Router.');
   }
@@ -38,15 +40,15 @@ export function setupRouterInitializer(injector: Injector) {
   // https://github.com/angular/angular/issues/9101
   // Delay the router instantiation to avoid circular dependency (ApplicationRef ->
   // APP_INITIALIZER -> Router)
-  setTimeout(_ => {
+  setTimeout(() => {
     const appRef = injector.get(ApplicationRef);
     if (appRef.componentTypes.length == 0) {
-      appRef.registerBootstrapListener((_) => { injector.get(Router).initialNavigation(); });
+      appRef.registerBootstrapListener(() => { injector.get(Router).initialNavigation(); });
     } else {
       injector.get(Router).initialNavigation();
     }
   }, 0);
-  return _ => null;
+  return (): any => null;
 }
 
 /**
@@ -83,7 +85,7 @@ export function provideRouter(_config: RouterConfig, _opts: ExtraOptions): any[]
     },
 
     RouterOutletMap,
-    {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
+    {provide: ActivatedRoute, useFactory: (r: Router) => r.routerState.root, deps: [Router]},
 
     // Trigger initial navigation
     {provide: APP_INITIALIZER, multi: true, useFactory: setupRouterInitializer, deps: [Injector]}

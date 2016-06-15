@@ -1,11 +1,11 @@
 export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): boolean {
-  var k1 = Object.keys(a);
-  var k2 = Object.keys(b);
+  const k1 = Object.keys(a);
+  const k2 = Object.keys(b);
   if (k1.length != k2.length) {
     return false;
   }
-  var key;
-  for (var i = 0; i < k1.length; i++) {
+  let key: string;
+  for (let i = 0; i < k1.length; i++) {
     key = k1[i];
     if (a[key] !== b[key]) {
       return false;
@@ -15,7 +15,7 @@ export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): bool
 }
 
 export function flatten<T>(a: T[][]): T[] {
-  const target = [];
+  const target: T[] = [];
   for (let i = 0; i < a.length; ++i) {
     for (let j = 0; j < a[i].length; ++j) {
       target.push(a[i][j]);
