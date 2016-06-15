@@ -28,3 +28,11 @@ A basic tab group would have the following markup.
 | Name | Type | Description |
 | --- | --- | --- |
 | `selectedIndex` | `number` | The index of the currently active tab. |
+| `focusIndex` | `number` | The index of the currently active tab. |
+
+### Events
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `focusChange` | `Event` | Fired when focus changes from one label to another |
+| `selectedChange` | `Event` | Fired when the selected tab changes |

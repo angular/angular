@@ -4,7 +4,9 @@ import {
     beforeEach,
     inject,
     describe,
-    async
+    async,
+    fakeAsync,
+    tick
 } from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {MD_TABS_DIRECTIVES, MdTabGroup} from './tabs';
@@ -47,44 +49,80 @@ describe('MdTabGroup', () => {
       checkSelectedIndex(2);
     });
 
-    it('should cycle through tab focus with focusNextTab/focusPreviousTab functions', () => {
+    it('should cycle through tab focus with focusNextTab/focusPreviousTab functions',
+        fakeAsync(() => {
+      let testComponent = fixture.componentInstance;
       let tabComponent = fixture.debugElement.query(By.css('md-tab-group')).componentInstance;
+
+      spyOn(testComponent, 'handleFocus').and.callThrough();
+      fixture.detectChanges();
+
       tabComponent.focusIndex = 0;
       fixture.detectChanges();
+      tick();
       expect(tabComponent.focusIndex).toBe(0);
+      expect(testComponent.handleFocus).toHaveBeenCalledTimes(1);
+      expect(testComponent.focusEvent.index).toBe(0);
 
       tabComponent.focusNextTab();
       fixture.detectChanges();
+      tick();
       expect(tabComponent.focusIndex).toBe(1);
+      expect(testComponent.handleFocus).toHaveBeenCalledTimes(2);
+      expect(testComponent.focusEvent.index).toBe(1);
 
       tabComponent.focusNextTab();
       fixture.detectChanges();
+      tick();
       expect(tabComponent.focusIndex).toBe(2);
+      expect(testComponent.handleFocus).toHaveBeenCalledTimes(3);
+      expect(testComponent.focusEvent.index).toBe(2);
 
       tabComponent.focusNextTab();
       fixture.detectChanges();
+      tick();
       expect(tabComponent.focusIndex).toBe(2); // should stop at 2
+      expect(testComponent.handleFocus).toHaveBeenCalledTimes(3);
+      expect(testComponent.focusEvent.index).toBe(2);
 
       tabComponent.focusPreviousTab();
       fixture.detectChanges();
+      tick();
       expect(tabComponent.focusIndex).toBe(1);
+      expect(testComponent.handleFocus).toHaveBeenCalledTimes(4);
+      expect(testComponent.focusEvent.index).toBe(1);
 
       tabComponent.focusPreviousTab();
       fixture.detectChanges();
+      tick();
       expect(tabComponent.focusIndex).toBe(0);
+      expect(testComponent.handleFocus).toHaveBeenCalledTimes(5);
+      expect(testComponent.focusEvent.index).toBe(0);
 
       tabComponent.focusPreviousTab();
       fixture.detectChanges();
+      tick();
       expect(tabComponent.focusIndex).toBe(0); // should stop at 0
-    });
+      expect(testComponent.handleFocus).toHaveBeenCalledTimes(5);
+      expect(testComponent.focusEvent.index).toBe(0);
+    }));
 
-    it('should change tabs based on selectedIndex', () => {
-      let component = fixture.debugElement.componentInstance;
+    it('should change tabs based on selectedIndex', fakeAsync(() => {
+      let component = fixture.componentInstance;
+      let tabComponent = fixture.debugElement.query(By.css('md-tab-group')).componentInstance;
+
+      spyOn(component, 'handleSelection').and.callThrough();
+
       checkSelectedIndex(1);
 
-      component.selectedIndex = 2;
+      tabComponent.selectedIndex = 2;
+
       checkSelectedIndex(2);
-    });
+      tick();
+
+      expect(component.handleSelection).toHaveBeenCalledTimes(1);
+      expect(component.selectEvent.index).toBe(2);
+    }));
   });
 
   describe('async tabs', () => {
@@ -131,7 +169,10 @@ describe('MdTabGroup', () => {
 @Component({
   selector: 'test-app',
   template: `
-    <md-tab-group class="tab-group" [selectedIndex]="selectedIndex">
+    <md-tab-group class="tab-group"
+        [selectedIndex]="selectedIndex"
+        (focusChange)="handleFocus($event)"
+        (selectChange)="handleSelection($event)">
       <md-tab>
         <template md-tab-label>Tab One</template>
         <template md-tab-content>Tab one content</template>
@@ -150,6 +191,14 @@ describe('MdTabGroup', () => {
 })
 class SimpleTabsTestApp {
   selectedIndex: number = 1;
+  focusEvent: any;
+  selectEvent: any;
+  handleFocus(event: any) {
+    this.focusEvent = event;
+  }
+  handleSelection(event: any) {
+    this.selectEvent = event;
+  }
 }
 
 @Component({

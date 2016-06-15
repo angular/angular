@@ -1,4 +1,13 @@
-import {Component, Input, ViewChildren, NgZone} from '@angular/core';
+import {
+    ContentChild,
+    Directive,
+    Component,
+    Input,
+    Output,
+    ViewChildren,
+    NgZone,
+    EventEmitter
+} from '@angular/core';
 import {QueryList} from '@angular/core';
 import {ContentChildren} from '@angular/core';
 import {PortalHostDirective} from '@angular2-material/core/portal/portal-directives';
@@ -6,9 +15,24 @@ import {MdTabLabel} from './tab-label';
 import {MdTabContent} from './tab-content';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
+import {Observable} from 'rxjs/Observable';
 
 /** Used to generate unique ID's for each tab component */
 let nextId = 0;
+
+/** A simple change event emitted on focus or selection changes. */
+export class MdTabChangeEvent {
+  index: number;
+  tab: MdTab;
+}
+
+@Directive({
+  selector: 'md-tab'
+})
+export class MdTab {
+  @ContentChild(MdTabLabel) label: MdTabLabel;
+  @ContentChild(MdTabContent) content: MdTabContent;
+}
 
 /**
  * Material design tab-group component.  Supports basic tab pairs (label + content) and includes
@@ -24,15 +48,35 @@ let nextId = 0;
 })
 export class MdTabGroup {
   /** @internal */
-  @ContentChildren(MdTabLabel) labels: QueryList<MdTabLabel>;
-
-  /** @internal */
-  @ContentChildren(MdTabContent) contents: QueryList<MdTabContent>;
+  @ContentChildren(MdTab) tabs: QueryList<MdTab>;
 
   @ViewChildren(MdTabLabelWrapper) private _labelWrappers: QueryList<MdTabLabelWrapper>;
   @ViewChildren(MdInkBar) private _inkBar: QueryList<MdInkBar>;
 
-  @Input() selectedIndex: number = 0;
+  private _isInitialized: boolean = false;
+
+  private _selectedIndex: number = 0;
+  @Input()
+  set selectedIndex(value: number) {
+    this._selectedIndex = value;
+
+    if (this._isInitialized) {
+      this._onSelectChange.emit(this._createChangeEvent(value));
+    }
+  }
+  get selectedIndex(): number {
+    return this._selectedIndex;
+  }
+
+  private _onFocusChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
+  @Output('focusChange') get focusChange(): Observable<MdTabChangeEvent> {
+    return this._onFocusChange.asObservable();
+  }
+
+  private _onSelectChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
+  @Output('selectChange') get selectChange(): Observable<MdTabChangeEvent> {
+    return this._onSelectChange.asObservable();
+  }
 
   private _focusIndex: number = 0;
   private _groupId: number;
@@ -52,6 +96,7 @@ export class MdTabGroup {
         this._updateInkBar();
       });
     });
+    this._isInitialized = true;
   }
 
   /** Tells the ink-bar to align itself to the current label wrapper */
@@ -77,9 +122,23 @@ export class MdTabGroup {
   /** When the focus index is set, we must manually send focus to the correct label */
   set focusIndex(value: number) {
     this._focusIndex = value;
+
+    if (this._isInitialized) {
+      this._onFocusChange.emit(this._createChangeEvent(value));
+    }
+
     if (this._labelWrappers && this._labelWrappers.length) {
       this._labelWrappers.toArray()[value].focus();
     }
+  }
+
+  private _createChangeEvent(index: number): MdTabChangeEvent {
+    const event = new MdTabChangeEvent;
+    event.index = index;
+    if (this.tabs && this.tabs.length) {
+      event.tab = this.tabs.toArray()[index];
+    }
+    return event;
   }
 
   /**
@@ -113,4 +172,4 @@ export class MdTabGroup {
   }
 }
 
-export const MD_TABS_DIRECTIVES = [MdTabGroup, MdTabLabel, MdTabContent];
+export const MD_TABS_DIRECTIVES = [MdTabGroup, MdTabLabel, MdTabContent, MdTab];
