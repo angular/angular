@@ -1,19 +1,13 @@
 import {StringMapWrapper} from './facade/collection';
-import {IS_DART, Math, StringWrapper, isArray, isBlank, isPrimitive, isStrictStringMap} from './facade/lang';
+import {IS_DART, StringWrapper, isArray, isBlank, isPrimitive, isStrictStringMap} from './facade/lang';
 
 export var MODULE_SUFFIX = IS_DART ? '.dart' : '';
 
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
-var DASH_CASE_REGEXP = /-([a-z])/g;
 
 export function camelCaseToDashCase(input: string): string {
   return StringWrapper.replaceAllMapped(
       input, CAMEL_CASE_REGEXP, (m: string[]) => { return '-' + m[1].toLowerCase(); });
-}
-
-export function dashCaseToCamelCase(input: string): string {
-  return StringWrapper.replaceAllMapped(
-      input, DASH_CASE_REGEXP, (m: string[]) => { return m[1].toUpperCase(); });
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
