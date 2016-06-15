@@ -658,6 +658,90 @@ describe("Integration", () => {
         })));
     });
   });
+
+  describe("routerActiveLink", () => {
+    it("should set the class when the link is active (exact = true)",
+      fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      const fixture = tcb.createFakeAsync(RootCmp);
+      advance(fixture);
+
+      router.resetConfig([
+        { path: 'team/:id', component: TeamCmp, children: [
+          { path: 'link', component: DummyLinkCmp, children: [
+            {path: 'simple', component: SimpleCmp},
+            {path: '', component: BlankCmp}
+          ] }
+        ] }
+      ]);
+
+      router.navigateByUrl('/team/22/link');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link');
+
+      const native = fixture.debugElement.nativeElement.querySelector("a");
+      expect(native.className).toEqual("active");
+
+      router.navigateByUrl('/team/22/link/simple');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link/simple');
+      expect(native.className).toEqual("");
+    })));
+
+    it("should set the class on a parent element when the link is active (exact = true)",
+      fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      const fixture = tcb.createFakeAsync(RootCmp);
+      advance(fixture);
+
+      router.resetConfig([
+        { path: 'team/:id', component: TeamCmp, children: [
+          { path: 'link', component: DummyLinkWithParentCmp, children: [
+            {path: 'simple', component: SimpleCmp},
+            {path: '', component: BlankCmp}
+          ] }
+        ] }
+      ]);
+
+      router.navigateByUrl('/team/22/link');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link');
+
+      const native = fixture.debugElement.nativeElement.querySelector("link-parent");
+      expect(native.className).toEqual("active");
+
+      router.navigateByUrl('/team/22/link/simple');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link/simple');
+      expect(native.className).toEqual("");
+    })));
+
+    it("should set the class when the link is active (exact = false)",
+      fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+        const fixture = tcb.createFakeAsync(RootCmp);
+        advance(fixture);
+
+        router.resetConfig([
+          { path: 'team/:id', component: TeamCmp, children: [
+            { path: 'link', component: DummyLinkCmp, children: [
+              {path: 'simple', component: SimpleCmp},
+              {path: '', component: BlankCmp}
+            ] }
+          ] }
+        ]);
+
+        router.navigateByUrl('/team/22/link;exact=false');
+        advance(fixture);
+        expect(location.path()).toEqual('/team/22/link;exact=false');
+
+        const native = fixture.debugElement.nativeElement.querySelector("a");
+        expect(native.className).toEqual("active");
+
+        router.navigateByUrl('/team/22/link/simple');
+        advance(fixture);
+        expect(location.path()).toEqual('/team/22/link/simple');
+        expect(native.className).toEqual("active");
+      })));
+
+  });
 });
 
 function expectEvents(events:Event[], pairs: any[]) {
@@ -680,6 +764,27 @@ class StringLinkCmp {}
   directives: ROUTER_DIRECTIVES
 })
 class AbsoluteLinkCmp {}
+
+@Component({
+  selector: 'link-cmp',
+  template: `<router-outlet></router-outlet><a routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">link</a>`,
+  directives: ROUTER_DIRECTIVES
+})
+class DummyLinkCmp {
+  private exact: boolean;
+  constructor(route: ActivatedRoute) {
+    // convert 'false' into false
+    this.exact = (<any>route.snapshot.params).exact !== 'false';
+  }
+}
+
+@Component({
+  selector: 'link-cmp',
+  template: `<router-outlet></router-outlet><link-parent routerLinkActive="active"><a [routerLink]="['./']">link</a></link-parent>`,
+  directives: ROUTER_DIRECTIVES
+})
+class DummyLinkWithParentCmp {
+}
 
 @Component({
   selector: 'link-cmp',

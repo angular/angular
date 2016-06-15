@@ -1,8 +1,9 @@
 import {Directive, HostBinding, HostListener, Input, OnChanges} from '@angular/core';
 
 import {Router} from '../router';
-import {UrlTree} from '../url_tree';
 import {ActivatedRoute} from '../router_state';
+import {UrlTree} from '../url_tree';
+
 
 
 /**
@@ -40,7 +41,7 @@ export class RouterLink implements OnChanges {
   // the url displayed on the anchor element.
   @HostBinding() href: string;
 
-  private urlTree: UrlTree;
+  urlTree: UrlTree;
 
   /**
    * @internal
