@@ -19,6 +19,8 @@ export const formDirectiveProvider: any =
       useExisting: forwardRef(() => NgFormModel)
     };
 
+let _formModelWarningDisplayed: boolean = false;
+
 /**
  * Binds an existing control group to a DOM element.
  *
@@ -93,6 +95,7 @@ export const formDirectiveProvider: any =
  *
  *  @experimental
  */
+
 @Directive({
   selector: '[ngFormModel]',
   providers: [formDirectiveProvider],
@@ -113,11 +116,19 @@ export class NgFormModel extends ControlContainer implements Form,
       @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
-    console.warn(`
+    this._displayWarning();
+  }
+
+  private _displayWarning() {
+    // TODO(kara): Update this when the new forms module becomes the default
+    if (!_formModelWarningDisplayed) {
+      _formModelWarningDisplayed = true;
+      console.warn(`
       *It looks like you're using the old forms module. This will be opt-in in the next RC, and
       will eventually be removed in favor of the new forms module. For more information, see:
       https://docs.google.com/document/u/1/d/1RIezQqE4aEhBRmArIAS1mRIZtWFf6JxN_7B4meyWK0Y/pub
     `);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
