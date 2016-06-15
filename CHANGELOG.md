@@ -150,7 +150,7 @@
 * **security:** allow url(...) style values. ([15ae710](https://github.com/angular/angular/commit/15ae710)), closes [#8514](https://github.com/angular/angular/issues/8514)
 * **security:** Automatic XSRF handling. ([4d793c4](https://github.com/angular/angular/commit/4d793c4))
 * **security:** complete DOM security schema. ([040b101](https://github.com/angular/angular/commit/040b101))
-* **security:** document <iframe src> to be TRUSTED_URL. ([3463047](https://github.com/angular/angular/commit/3463047))
+* **security:** document iframe src to be TRUSTED_URL. ([3463047](https://github.com/angular/angular/commit/3463047))
 * add minified bundles ([9175a04](https://github.com/angular/angular/commit/9175a04))
 * **security:** expose the safe value types. ([50c9bed](https://github.com/angular/angular/commit/50c9bed)), closes [#8568](https://github.com/angular/angular/issues/8568)
 * **security:** fill in missing security contexts. ([67ed2e2](https://github.com/angular/angular/commit/67ed2e2))
