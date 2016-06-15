@@ -42,38 +42,34 @@ class _Humanizer implements HtmlAstVisitor {
     htmlVisitAll(this, ast.attrs);
     htmlVisitAll(this, ast.children);
     this.elDepth--;
-    return null;
   }
 
   visitAttr(ast: HtmlAttrAst, context: any): any {
     var res = this._appendContext(ast, [HtmlAttrAst, ast.name, ast.value]);
     this.result.push(res);
-    return null;
   }
 
   visitText(ast: HtmlTextAst, context: any): any {
     var res = this._appendContext(ast, [HtmlTextAst, ast.value, this.elDepth]);
     this.result.push(res);
-    return null;
   }
 
   visitComment(ast: HtmlCommentAst, context: any): any {
     var res = this._appendContext(ast, [HtmlCommentAst, ast.value, this.elDepth]);
     this.result.push(res);
-    return null;
   }
 
   visitExpansion(ast: HtmlExpansionAst, context: any): any {
-    var res = this._appendContext(ast, [HtmlExpansionAst, ast.switchValue, ast.type]);
+    var res =
+        this._appendContext(ast, [HtmlExpansionAst, ast.switchValue, ast.type, this.elDepth++]);
     this.result.push(res);
     htmlVisitAll(this, ast.cases);
-    return null;
+    this.elDepth--;
   }
 
   visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any {
-    var res = this._appendContext(ast, [HtmlExpansionCaseAst, ast.value]);
+    var res = this._appendContext(ast, [HtmlExpansionCaseAst, ast.value, this.elDepth]);
     this.result.push(res);
-    return null;
   }
 
   private _appendContext(ast: HtmlAst, input: any[]): any[] {

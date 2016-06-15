@@ -19,22 +19,23 @@ import {CompileMetadataResolver, HtmlParser, DirectiveNormalizer, Lexer, Parser,
 import {ReflectorHost} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 
-
 function extract(
     ngOptions: tsc.AngularCompilerOptions, program: ts.Program, host: ts.CompilerHost) {
   return Extractor.create(ngOptions, program, host).extract();
 }
 
-const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
+const _dirPaths = new Map<compiler.CompileDirectiveMetadata, string>();
+
+const _GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 
 class Extractor {
   constructor(
-      private options: tsc.AngularCompilerOptions, private program: ts.Program,
+      private _options: tsc.AngularCompilerOptions, private _program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: StaticReflector,
-      private resolver: CompileMetadataResolver, private compiler: compiler.OfflineCompiler,
-      private reflectorHost: ReflectorHost, private _extractor: MessageExtractor) {}
+      private _resolver: CompileMetadataResolver, private _compiler: compiler.OfflineCompiler,
+      private _reflectorHost: ReflectorHost, private _extractor: MessageExtractor) {}
 
-  private extractCmpMessages(metadatas: compiler.CompileDirectiveMetadata[]):
+  private _extractCmpMessages(metadatas: compiler.CompileDirectiveMetadata[]):
       Promise<ExtractionResult> {
     if (!metadatas || !metadatas.length) {
       return null;
@@ -42,10 +43,10 @@ class Extractor {
 
     const normalize = (metadata: compiler.CompileDirectiveMetadata) => {
       const directiveType = metadata.type.runtime;
-      const directives = this.resolver.getViewDirectivesMetadata(directiveType);
-      return Promise.all(directives.map(d => this.compiler.normalizeDirectiveMetadata(d)))
+      const directives = this._resolver.getViewDirectivesMetadata(directiveType);
+      return Promise.all(directives.map(d => this._compiler.normalizeDirectiveMetadata(d)))
           .then(normalizedDirectives => {
-            const pipes = this.resolver.getViewPipesMetadata(directiveType);
+            const pipes = this._resolver.getViewPipesMetadata(directiveType);
             return new compiler.NormalizedComponentWithViewDirectives(
                 metadata, normalizedDirectives, pipes);
           });
@@ -56,8 +57,8 @@ class Extractor {
           let messages: Message[] = [];
           let errors: ParseError[] = [];
           cmps.forEach(cmp => {
-            // TODO(vicb): url
-            let result = this._extractor.extract(cmp.component.template.template, 'url');
+            let url = _dirPaths.get(cmp.component);
+            let result = this._extractor.extract(cmp.component.template.template, url);
             errors = errors.concat(result.errors);
             messages = messages.concat(result.messages);
           });
@@ -67,7 +68,7 @@ class Extractor {
         });
   }
 
-  private readComponents(absSourcePath: string) {
+  private _readComponents(absSourcePath: string): Promise<compiler.CompileDirectiveMetadata>[] {
     const result: Promise<compiler.CompileDirectiveMetadata>[] = [];
     const metadata = this.staticReflector.getModuleMetadata(absSourcePath);
     if (!metadata) {
@@ -80,26 +81,29 @@ class Extractor {
       return result;
     }
     for (const symbol of symbols) {
-      const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
+      const staticType = this._reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
       let directive: compiler.CompileDirectiveMetadata;
-      directive = this.resolver.maybeGetDirectiveMetadata(<any>staticType);
+      directive = this._resolver.maybeGetDirectiveMetadata(<any>staticType);
 
-      if (!directive || !directive.isComponent) {
-        continue;
+      if (directive && directive.isComponent) {
+        let promise = this._compiler.normalizeDirectiveMetadata(directive);
+        promise.then(md => _dirPaths.set(md, absSourcePath));
+        result.push(promise);
       }
-      result.push(this.compiler.normalizeDirectiveMetadata(directive));
     }
     return result;
   }
 
   extract(): Promise<any> {
-    const promises = this.program.getSourceFiles()
+    _dirPaths.clear();
+
+    const promises = this._program.getSourceFiles()
                          .map(sf => sf.fileName)
-                         .filter(f => !GENERATED_FILES.test(f))
+                         .filter(f => !_GENERATED_FILES.test(f))
                          .map(
                              (absSourcePath: string): Promise<any> =>
-                                 Promise.all(this.readComponents(absSourcePath))
-                                     .then(metadatas => this.extractCmpMessages(metadatas))
+                                 Promise.all(this._readComponents(absSourcePath))
+                                     .then(metadatas => this._extractCmpMessages(metadatas))
                                      .catch(e => console.error(e.stack)));
 
     let messages: Message[] = [];
@@ -112,12 +116,12 @@ class Extractor {
       });
 
       if (errors.length) {
-        throw errors;
+        throw new Error(errors.map(e => e.toString()).join('\n'));
       }
 
       messages = removeDuplicates(messages);
 
-      let genPath = path.join(this.options.genDir, 'messages.xmb');
+      let genPath = path.join(this._options.genDir, 'messages.xmb');
       let msgBundle = serializeXmb(messages);
 
       this.host.writeFile(genPath, msgBundle, false);

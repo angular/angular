@@ -49,11 +49,14 @@ export function main() {
       let res = extractor.extract(
           `
          <!-- i18n: meaning1|desc1 -->message1<!-- /i18n -->
-         <!-- i18n: meaning2|desc2 -->message2<!-- /i18n -->`,
+         <!-- i18n: meaning2 -->message2<!-- /i18n -->
+         <!-- i18n -->message3<!-- /i18n -->`,
           'someUrl');
 
       expect(res.messages).toEqual([
-        new Message('message1', 'meaning1', 'desc1'), new Message('message2', 'meaning2', 'desc2')
+        new Message('message1', 'meaning1', 'desc1'),
+        new Message('message2', 'meaning2'),
+        new Message('message3', null),
       ]);
     });
 
@@ -212,8 +215,7 @@ export function main() {
             `
         <div
           title1='message1' i18n-title1='meaning1|desc1' i18n-title2='meaning2|desc2'>
-        </div>
-      `,
+        </div>`,
             'someurl');
 
         expect(res.errors.length).toEqual(1);
