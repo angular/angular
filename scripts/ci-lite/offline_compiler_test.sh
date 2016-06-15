@@ -26,6 +26,7 @@ cp -v package.json $TMP
 # run in subshell to avoid polluting cwd
 (
   cd $TMP
+  set -ex -o pipefail
   npm install ${PKGS[*]}
   # TODO(alexeagle): allow this to be npm link instead
   npm install ${LINKABLE_PKGS[*]}
