@@ -78,7 +78,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   }
 
   private _getParentRenderNode(parent: CompileElement): o.Expression {
-    parent = <CompileElement>_getOuterContainerParentOrSelf(parent);
+    parent = _getOuterContainerParentOrSelf(parent);
     if (this._isRootNode(parent)) {
       if (this.view.viewType === ViewType.COMPONENT) {
         return parentRenderNodeVar;
