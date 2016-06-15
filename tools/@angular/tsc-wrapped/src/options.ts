@@ -15,6 +15,9 @@ interface Options extends ts.CompilerOptions {
 
   // Print extra information while running the compiler
   trace: boolean;
+
+  // Whether to embed debug information in the compiled templates
+  debug?: boolean;
 }
 
 export default Options;

@@ -41,9 +41,13 @@ coreBootstrap(MyComponentNgFactory, appInjector);
 The `tsconfig.json` file may contain an additional configuration block:
 ```
  "angularCompilerOptions": {
-   "genDir": "."
+   "genDir": ".",
+   "debug": true
  }
 ```
+
+### `genDir`
+
 the `genDir` option controls the path (relative to `tsconfig.json`) where the generated file tree
 will be written. If `genDir` is not set, then the code will be generated in the source tree, next
 to your original sources. More options may be added as we implement more features.
@@ -66,6 +70,11 @@ Note that in the second option, TypeScript will emit the code into two parallel 
 as well. This is by design, see https://github.com/Microsoft/TypeScript/issues/8245.
 This makes the configuration of your runtime module loader more complex, so we don't recommend
 this option yet.
+
+### `debug`
+
+Set the `debug` option to true to generate debug information in the generate files.
+Default to `false`.
 
 See the example in the `test/` directory for a working example.
 
