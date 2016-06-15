@@ -8,7 +8,7 @@ import {TestInjector, async, getTestInjector, inject, injectAsync} from './test_
 
 export {async, inject, injectAsync} from './test_injector';
 
-declare var global: any /** TODO #9100 */;
+declare var global: any;
 
 var _global = <any>(typeof window === 'undefined' ? global : window);
 

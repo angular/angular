@@ -2,6 +2,7 @@ import {HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpan
 import {HtmlTokenType} from '@angular/compiler/src/html_lexer';
 import {HtmlParseTreeResult, HtmlParser, HtmlTreeError} from '@angular/compiler/src/html_parser';
 import {ParseError} from '@angular/compiler/src/parse_util';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
 import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './html_ast_spec_utils';
 
@@ -111,12 +112,42 @@ export function main() {
                   '<table><thead><tr head></tr></thead><tr noparent></tr><tbody><tr body></tr></tbody><tfoot><tr foot></tr></tfoot></table>',
                   'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'table', 0], [HtmlElementAst, 'thead', 1],
-                [HtmlElementAst, 'tr', 2], [HtmlAttrAst, 'head', ''], [HtmlElementAst, 'tbody', 1],
-                [HtmlElementAst, 'tr', 2], [HtmlAttrAst, 'noparent', ''],
-                [HtmlElementAst, 'tbody', 1], [HtmlElementAst, 'tr', 2], [HtmlAttrAst, 'body', ''],
-                [HtmlElementAst, 'tfoot', 1], [HtmlElementAst, 'tr', 2],
-                [HtmlAttrAst, 'foot', '']
+                [HtmlElementAst, 'table', 0],
+                [HtmlElementAst, 'thead', 1],
+                [HtmlElementAst, 'tr', 2],
+                [HtmlAttrAst, 'head', ''],
+                [HtmlElementAst, 'tbody', 1],
+                [HtmlElementAst, 'tr', 2],
+                [HtmlAttrAst, 'noparent', ''],
+                [HtmlElementAst, 'tbody', 1],
+                [HtmlElementAst, 'tr', 2],
+                [HtmlAttrAst, 'body', ''],
+                [HtmlElementAst, 'tfoot', 1],
+                [HtmlElementAst, 'tr', 2],
+                [HtmlAttrAst, 'foot', ''],
+              ]);
+        });
+
+        it('should append the required parent considering ng-container', () => {
+          expect(humanizeDom(parser.parse(
+                     '<table><ng-container><tr></tr></ng-container></table>', 'TestComp')))
+              .toEqual([
+                [HtmlElementAst, 'table', 0],
+                [HtmlElementAst, 'tbody', 1],
+                [HtmlElementAst, 'ng-container', 2],
+                [HtmlElementAst, 'tr', 3],
+              ]);
+        });
+
+        it('should special case ng-container when adding a required parent', () => {
+          expect(humanizeDom(parser.parse(
+                     '<table><thead><ng-container><tr></tr></ng-container></thead></table>',
+                     'TestComp')))
+              .toEqual([
+                [HtmlElementAst, 'table', 0],
+                [HtmlElementAst, 'thead', 1],
+                [HtmlElementAst, 'ng-container', 2],
+                [HtmlElementAst, 'tr', 3],
               ]);
         });
 
