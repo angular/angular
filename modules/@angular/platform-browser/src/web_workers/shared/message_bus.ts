@@ -8,6 +8,7 @@ import {EventEmitter} from '../../facade/async';
  * Communication is based on a channel abstraction. Messages published in a
  * given channel to one MessageBusSink are received on the same channel
  * by the corresponding MessageBusSource.
+ * @experimental
  */
 export abstract class MessageBus implements MessageBusSource, MessageBusSink {
   /**
@@ -41,6 +42,9 @@ export abstract class MessageBus implements MessageBusSource, MessageBusSink {
   abstract to(channel: string): EventEmitter<any>;
 }
 
+/**
+ * @experimental
+ */
 export interface MessageBusSource {
   /**
    * Sets up a new channel on the MessageBusSource.
@@ -64,6 +68,9 @@ export interface MessageBusSource {
   from(channel: string): EventEmitter<any>;
 }
 
+/**
+ * @experimental
+ */
 export interface MessageBusSink {
   /**
    * Sets up a new channel on the MessageBusSink.
