@@ -1,7 +1,7 @@
 import {DefaultUrlSerializer} from '../src/url_serializer';
 import {UrlTree} from '../src/url_tree';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {ActivatedRouteSnapshot} from '../src/router_state';
+import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {RouterConfig} from '../src/config';
 import {recognize} from '../src/recognize';
 
@@ -11,7 +11,7 @@ describe('recognize', () => {
       {
         path: 'a', component: ComponentA
       }
-    ], "a", s => {
+    ], "a", (s:RouterStateSnapshot) => {
       checkActivatedRoute(s.root, "", {}, RootComponent);
       checkActivatedRoute(s.firstChild(s.root), "a", {}, ComponentA);
     });
@@ -22,7 +22,7 @@ describe('recognize', () => {
       { path: 'a', component: ComponentA },
       { path: 'b', component: ComponentB, outlet: 'left' },
       { path: 'c', component: ComponentC, outlet: 'right' }
-    ], "a(left:b//right:c)", s => {
+    ], "a(left:b//right:c)", (s:RouterStateSnapshot) => {
       const c = s.children(s.root);
       checkActivatedRoute(c[0], "a", {}, ComponentA);
       checkActivatedRoute(c[1], "b", {}, ComponentB, 'left');
@@ -58,7 +58,7 @@ describe('recognize', () => {
       { path: '/a/b', component: ComponentA, children: [
         {path: 'c', component: ComponentC}
       ] },
-    ], url, "a/b/c").subscribe(s => {
+    ], url, "a/b/c").subscribe((s:RouterStateSnapshot) => {
       expect(s.root._urlSegment).toBe(url.root);
       expect(s.root._lastPathIndex).toBe(-1);
 
@@ -76,7 +76,7 @@ describe('recognize', () => {
     checkRecognize([
       {path: 'a', component: ComponentA, children: [{path: ':id', component: ComponentB}]},
       {path: 'a/:id', component: ComponentC}
-    ], "a/paramA", s => {
+    ], "a/paramA", (s:RouterStateSnapshot) => {
       checkActivatedRoute(s.root, "", {}, RootComponent);
       checkActivatedRoute(s.firstChild(s.root), "a", {}, ComponentA);
       checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "paramA", {id: 'paramA'}, ComponentB);
@@ -85,7 +85,7 @@ describe('recognize', () => {
     checkRecognize([
       {path: 'a', component: ComponentA},
       {path: 'a/:id', component: ComponentC}
-    ], "a/paramA", s => {
+    ], "a/paramA", (s:RouterStateSnapshot) => {
       checkActivatedRoute(s.root, "", {}, RootComponent);
       checkActivatedRoute(s.firstChild(s.root), "a/paramA", {id: 'paramA'}, ComponentC);
     });
@@ -96,7 +96,7 @@ describe('recognize', () => {
       { path: 'a', component: ComponentA },
       { path: 'b', component: ComponentB, outlet: 'left' },
       { path: 'b', component: ComponentC, outlet: 'right' }
-    ], "a(right:b)", s => {
+    ], "a(right:b)", (s:RouterStateSnapshot) => {
       const c = s.children(s.root);
       checkActivatedRoute(c[0], "a", {}, ComponentA);
       checkActivatedRoute(c[1], "b", {}, ComponentC, 'right');
@@ -108,7 +108,7 @@ describe('recognize', () => {
       { path: 'a', component: ComponentA },
       { path: 'b', component: ComponentB, outlet: 'left' },
       { path: 'c', component: ComponentC, outlet: 'right' }
-    ], "a(left:b(right:c))", s => {
+    ], "a(left:b(right:c))", (s:RouterStateSnapshot) => {
       const c = s.children(s.root);
       checkActivatedRoute(c[0], "a", {}, ComponentA);
       checkActivatedRoute(c[1], "b", {}, ComponentB, 'left');
@@ -122,7 +122,7 @@ describe('recognize', () => {
         { path: 'b', component: ComponentB },
         { path: 'c', component: ComponentC, outlet: 'left' }
       ] },
-    ], "a/(b//left:c)", s => {
+    ], "a/(b//left:c)", (s:RouterStateSnapshot) => {
       const c = s.children(<any>s.firstChild(s.root));
       checkActivatedRoute(c[0], "b", {}, ComponentB, PRIMARY_OUTLET);
       checkActivatedRoute(c[1], "c", {}, ComponentC, 'left');
@@ -134,7 +134,7 @@ describe('recognize', () => {
       { path: 'a', component: ComponentA },
       { path: 'c', component: ComponentC, outlet: 'c' },
       { path: 'b', component: ComponentB, outlet: 'b' }
-    ], "a(c:c//b:b)", s => {
+    ], "a(c:c//b:b)", (s:RouterStateSnapshot) => {
       const c = s.children(s.root);
       checkActivatedRoute(c[0], "a", {}, ComponentA);
       checkActivatedRoute(c[1], "b", {}, ComponentB, 'b');
@@ -150,7 +150,7 @@ describe('recognize', () => {
         ]
       },
       { path: 'c', component: ComponentC, outlet: 'left' }
-    ], "a;a1=11;a2=22/b;b1=111;b2=222(left:c;c1=1111;c2=2222)", s => {
+    ], "a;a1=11;a2=22/b;b1=111;b2=222(left:c;c1=1111;c2=2222)", (s:RouterStateSnapshot) => {
       const c = s.children(s.root);
       checkActivatedRoute(c[0], "a", {a1: '11', a2: '22'}, ComponentA);
       checkActivatedRoute(s.firstChild(<any>c[0]), "b", {b1: '111', b2: '222'}, ComponentB);
@@ -162,7 +162,7 @@ describe('recognize', () => {
     it("should support root index routes", () => {
       checkRecognize([
         {index: true, component: ComponentA}
-      ], "", s => {
+      ], "", (s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
       });
     });
@@ -170,7 +170,7 @@ describe('recognize', () => {
     it("should support nested root index routes", () => {
       checkRecognize([
         {index: true, component: ComponentA, children: [{index: true, component: ComponentB}]}
-      ], "", s => {
+      ], "", (s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
         checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
       });
@@ -181,7 +181,7 @@ describe('recognize', () => {
         {path: 'a', component: ComponentA, children: [
           {index: true, component: ComponentB}
         ]}
-      ], "a", s => {
+      ], "a", (s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "a", {}, ComponentA);
         checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
       });
@@ -197,7 +197,7 @@ describe('recognize', () => {
           }
         ]
         }
-      ], "c/10", s => {
+      ], "c/10", (s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
         checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
         checkActivatedRoute(
@@ -208,7 +208,7 @@ describe('recognize', () => {
     xit("should pass parameters to every nested index route (case with non-index route)", () => {
       checkRecognize([
         {path: 'a', component: ComponentA, children: [{index: true, component: ComponentB}]}
-      ], "/a;a=1", s => {
+      ], "/a;a=1", (s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "a", {a: '1'}, ComponentA);
         checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {a: '1'}, ComponentB);
       });
@@ -219,7 +219,7 @@ describe('recognize', () => {
     it("should support root index routes", () => {
       recognize(RootComponent, [
         {path: '', component: ComponentA}
-      ], tree(""), "").forEach(s => {
+      ], tree(""), "").forEach((s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
       });
     });
@@ -227,7 +227,7 @@ describe('recognize', () => {
     it("should support nested root index routes", () => {
       recognize(RootComponent, [
         {path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}
-      ], tree(""), "").forEach(s => {
+      ], tree(""), "").forEach((s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
         checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
       });
@@ -237,7 +237,7 @@ describe('recognize', () => {
       const url = tree("");
       recognize(RootComponent, [
         {path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}
-      ], url, "").forEach(s => {
+      ], url, "").forEach((s:RouterStateSnapshot) => {
         expect(s.root._urlSegment).toBe(url.root);
         expect(s.root._lastPathIndex).toBe(-1);
 
@@ -256,7 +256,7 @@ describe('recognize', () => {
         {path: 'a', component: ComponentA, children: [
           {path: '', component: ComponentB}
         ]}
-      ], tree("a"), "a").forEach(s => {
+      ], tree("a"), "a").forEach((s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "a", {}, ComponentA);
         checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
       });
@@ -272,7 +272,7 @@ describe('recognize', () => {
           }
         ]
         }
-      ], tree("c/10"), "c/10").forEach(s => {
+      ], tree("c/10"), "c/10").forEach((s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
         checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
         checkActivatedRoute(
@@ -283,7 +283,7 @@ describe('recognize', () => {
     xit("should pass parameters to every nested index route (case with non-index route)", () => {
       recognize(RootComponent, [
         {path: 'a', component: ComponentA, children: [{path: '', component: ComponentB}]}
-      ], tree("/a;a=1"), "/a;a=1").forEach(s => {
+      ], tree("/a;a=1"), "/a;a=1").forEach((s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "a", {a: '1'}, ComponentA);
         checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {a: '1'}, ComponentB);
       });
@@ -294,7 +294,7 @@ describe('recognize', () => {
     it("should support simple wildcards", () => {
       checkRecognize([
         {path: '**', component: ComponentA}
-      ], "a/b/c/d;a1=11", s => {
+      ], "a/b/c/d;a1=11", (s:RouterStateSnapshot) => {
         checkActivatedRoute(s.firstChild(s.root), "a/b/c/d", {a1:'11'}, ComponentA);
       });
     });
@@ -303,7 +303,7 @@ describe('recognize', () => {
   describe("query parameters", () => {
     it("should support query params", () => {
       const config = [{path: 'a', component: ComponentA}];
-      checkRecognize(config, "a?q=11", s => {
+      checkRecognize(config, "a?q=11", (s:RouterStateSnapshot) => {
         expect(s.queryParams).toEqual({q: '11'});
       });
     });
@@ -312,7 +312,7 @@ describe('recognize', () => {
   describe("fragment", () => {
     it("should support fragment", () => {
       const config = [{path: 'a', component: ComponentA}];
-      checkRecognize(config, "a#f1", s => {
+      checkRecognize(config, "a#f1", (s:RouterStateSnapshot) => {
         expect(s.fragment).toEqual("f1");
       });
     });
@@ -324,7 +324,7 @@ describe('recognize', () => {
         { path: 'a', component: ComponentA },
         { path: 'b', component: ComponentB, outlet: 'aux' },
         { path: 'c', component: ComponentC, outlet: 'aux' }
-      ], tree("a(aux:b//aux:c)"), "a(aux:b//aux:c)").subscribe((_) => {}, s => {
+      ], tree("a(aux:b//aux:c)"), "a(aux:b//aux:c)").subscribe((_) => {}, (s:RouterStateSnapshot) => {
         expect(s.toString()).toContain("Two segments cannot have the same outlet name: 'aux:b' and 'aux:c'.");
       });
     });
@@ -332,7 +332,7 @@ describe('recognize', () => {
     it("should error when no matching routes", () => {
       recognize(RootComponent, [
         { path: 'a', component: ComponentA }
-      ], tree("invalid"), "invalid").subscribe((_) => {}, s => {
+      ], tree("invalid"), "invalid").subscribe((_) => {}, (s:RouterStateSnapshot) => {
         expect(s.toString()).toContain("Cannot match any routes");
       });
     });
@@ -340,7 +340,7 @@ describe('recognize', () => {
     it("should error when no matching routes (too short)", () => {
       recognize(RootComponent, [
         { path: 'a/:id', component: ComponentA }
-      ], tree("a"), "a").subscribe((_) => {}, s => {
+      ], tree("a"), "a").subscribe((_) => {}, (s:RouterStateSnapshot) => {
         expect(s.toString()).toContain("Cannot match any routes");
       });
     });

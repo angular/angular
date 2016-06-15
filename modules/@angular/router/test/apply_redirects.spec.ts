@@ -8,7 +8,7 @@ describe('applyRedirects', () => {
   it("should return the same url tree when no redirects", () => {
     checkRedirect([
       {path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}
-    ], "/a/b", t => {
+    ], "/a/b", (t:UrlTree) => {
       compareTrees(t, tree('/a/b'));
     });
   });
@@ -17,7 +17,7 @@ describe('applyRedirects', () => {
     checkRedirect([
       {path: 'a/b', redirectTo: 'a/b/c'},
       {path: '**', component: ComponentC}
-    ], "/a/b", t => {
+    ], "/a/b", (t:UrlTree) => {
       compareTrees(t, tree('/a/b/c'));
     });
   });
@@ -26,7 +26,7 @@ describe('applyRedirects', () => {
     checkRedirect([
       {path: 'a/:aid/b/:bid', redirectTo: 'newa/:aid/newb/:bid'},
       {path: '**', component: ComponentC}
-    ], "/a/1/b/2", t => {
+    ], "/a/1/b/2", (t:UrlTree) => {
       compareTrees(t, tree('/newa/1/newb/2'));
     });
   });
@@ -43,7 +43,7 @@ describe('applyRedirects', () => {
     checkRedirect([
       {path: 'a/:id', redirectTo: 'd/a/:id/e'},
       {path: '**', component: ComponentC}
-    ], "/a;p1=1/1;p2=2", t => {
+    ], "/a;p1=1/1;p2=2", (t:UrlTree) => {
       compareTrees(t, tree('/d/a;p1=1/1;p2=2/e'));
     });
   });
@@ -53,7 +53,7 @@ describe('applyRedirects', () => {
       {path: 'a/:id', redirectTo: 'd/a/:id/e'},
       {path: 'c/d', component: ComponentA, outlet: 'aux'},
       {path: '**', component: ComponentC}
-    ], "/a/1(aux:c/d)", t => {
+    ], "/a/1(aux:c/d)", (t:UrlTree) => {
       compareTrees(t, tree('/d/a/1/e(aux:c/d)'));
     });
   });
@@ -63,7 +63,7 @@ describe('applyRedirects', () => {
       {path: 'a/:id', component: ComponentA},
       {path: 'c/d', redirectTo: 'f/c/d/e', outlet: 'aux'},
       {path: '**', component: ComponentC, outlet: 'aux'}
-    ], "/a/1(aux:c/d)", t => {
+    ], "/a/1(aux:c/d)", (t:UrlTree) => {
       compareTrees(t, tree('/a/1(aux:f/c/d/e)'));
     });
   });
@@ -74,7 +74,7 @@ describe('applyRedirects', () => {
         {path: 'b', component: ComponentB},
       ]},
       {path: 'c', redirectTo: 'a'}
-    ], "c/b", t => {
+    ], "c/b", (t:UrlTree) => {
       compareTrees(t, tree('a/b'));
     });
   });
@@ -85,7 +85,7 @@ describe('applyRedirects', () => {
         {path: 'b', component: ComponentB},
       ]},
       {path: '', redirectTo: 'a'}
-    ], "b", t => {
+    ], "b", (t:UrlTree) => {
       compareTrees(t, tree('a/b'));
     });
   });
@@ -96,7 +96,7 @@ describe('applyRedirects', () => {
         {path: 'b', component: ComponentB},
       ]},
       {path: '', redirectTo: '/a/b'}
-    ], "", t => {
+    ], "", (t:UrlTree) => {
       compareTrees(t, tree('a/b'));
     });
   });
@@ -108,7 +108,7 @@ describe('applyRedirects', () => {
         {path: '', redirectTo: 'b'}
       ]},
       {path: '', redirectTo: 'a'}
-    ], "", t => {
+    ], "", (t:UrlTree) => {
       compareTrees(t, tree('a/b'));
     });
   });
@@ -120,7 +120,7 @@ describe('applyRedirects', () => {
         {path: '', redirectTo: 'b'}
       ]},
       {path: 'a', redirectTo: ''}
-    ], "a", t => {
+    ], "a", (t:UrlTree) => {
       compareTrees(t, tree('b'));
     });
   });
@@ -144,7 +144,7 @@ describe('applyRedirects', () => {
     checkRedirect([
       {path: '404', component: ComponentA},
       {path: '**', redirectTo: '/404'},
-    ], "/a/1(aux:c/d)", t => {
+    ], "/a/1(aux:c/d)", (t:UrlTree) => {
       compareTrees(t, tree('/404'));
     });
   });
@@ -155,7 +155,7 @@ describe('applyRedirects', () => {
         {path: 'b/:id', redirectTo: '/global/:id'}
       ]},
       {path: '**', component: ComponentC}
-    ], "/a/b/1", t => {
+    ], "/a/b/1", (t:UrlTree) => {
       compareTrees(t, tree('/global/1'));
     });
   });

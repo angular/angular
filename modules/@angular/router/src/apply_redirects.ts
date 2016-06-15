@@ -1,4 +1,5 @@
 import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
 import {Route, RouterConfig} from './config';
@@ -21,9 +22,10 @@ export function applyRedirects(urlTree: UrlTree, config: RouterConfig): Observab
           urlTree, new UrlSegment([], {[PRIMARY_OUTLET]: new UrlSegment(e.paths, {})}));
     } else if (e instanceof NoMatch) {
       return new Observable<UrlTree>(
-          obs => obs.error(new Error(`Cannot match any routes: '${e.segment}'`)));
+          (obs: Observer<UrlTree>) =>
+              obs.error(new Error(`Cannot match any routes: '${e.segment}'`)));
     } else {
-      return new Observable<UrlTree>(obs => obs.error(e));
+      return new Observable<UrlTree>((obs: Observer<UrlTree>) => obs.error(e));
     }
   }
 }
@@ -128,7 +130,11 @@ function matchPathsWithParamsAgainstRoute(
   }
 }
 
-function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
+function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]): {
+  consumedPaths: UrlPathWithParams[],
+  lastChild: number,
+  positionalParamSegments: {[k: string]: UrlPathWithParams}
+} {
   if (route.index || route.path === '' || route.path === '/') {
     if (route.terminal && (Object.keys(segment.children).length > 0 || paths.length > 0)) {
       throw new NoMatch();
@@ -139,8 +145,8 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
 
   const path = route.path.startsWith('/') ? route.path.substring(1) : route.path;
   const parts = path.split('/');
-  const positionalParamSegments = {};
-  const consumedPaths = [];
+  const positionalParamSegments: {[k: string]: UrlPathWithParams} = {};
+  const consumedPaths: UrlPathWithParams[] = [];
 
   let currentIndex = 0;
 
