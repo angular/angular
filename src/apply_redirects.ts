@@ -89,6 +89,7 @@ function expandWildCardWithParamsAgainstRouteUsingRedirect(route: Route): UrlSeg
     return new UrlSegment(newPaths, {});
   }
 }
+
 function expandRegularPathWithParamsAgainstRouteUsingRedirect(
     segment: UrlSegment, routes: Route[], route: Route, paths: UrlPathWithParams[],
     outlet: string): UrlSegment {
@@ -169,9 +170,10 @@ function applyRedirectCommands(
     posParams: {[k: string]: UrlPathWithParams}): UrlPathWithParams[] {
   if (redirectTo.startsWith('/')) {
     const parts = redirectTo.substring(1).split('/');
-    throw new GlobalRedirect(createPaths(redirectTo, parts, paths, posParams));
+    return createPaths(redirectTo, parts, paths, posParams);
   } else {
-    return createPaths(redirectTo, redirectTo.split('/'), paths, posParams);
+    const parts = redirectTo.split('/');
+    return createPaths(redirectTo, parts, paths, posParams);
   }
 }
 
