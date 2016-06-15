@@ -597,8 +597,11 @@ describe("Integration", () => {
     describe("CanDeactivate", () => {
       describe("should not deactivate a route when CanDeactivate returns false", () => {
         beforeEachProviders(() => [
-          {provide: 'CanDeactivate', useValue: (c:TeamCmp, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
+          {provide: 'CanDeactivateTeam', useValue: (c:TeamCmp, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
             return c.route.snapshot.params['id'] === "22";
+          }},
+          {provide: 'CanDeactivateUser', useValue: (c:UserCmp, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
+            return a.params['name'] === 'victor';
           }}
         ]);
 
@@ -609,7 +612,7 @@ describe("Integration", () => {
             advance(fixture);
 
             router.resetConfig([
-              { path: 'team/:id', component: TeamCmp, canDeactivate: ["CanDeactivate"] }
+              { path: 'team/:id', component: TeamCmp, canDeactivate: ["CanDeactivateTeam"] }
             ]);
 
             router.navigateByUrl('/team/22');
@@ -626,6 +629,35 @@ describe("Integration", () => {
             advance(fixture);
 
             expect(location.path()).toEqual('/team/33');
+          })));
+
+        it('works with a nested route',
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+            const fixture = tcb.createFakeAsync(RootCmp);
+            advance(fixture);
+
+            router.resetConfig([
+              { path: 'team/:id', component: TeamCmp, children: [
+                {path: '/', terminal: true, component: SimpleCmp},
+                {path: 'user/:name', component: UserCmp, canDeactivate: ["CanDeactivateUser"] }
+              ]}
+            ]);
+
+            router.navigateByUrl('/team/22/user/victor');
+            advance(fixture);
+
+            // this works because we can deactivate victor
+            router.navigateByUrl('/team/33');
+            advance(fixture);
+            expect(location.path()).toEqual('/team/33');
+
+            router.navigateByUrl('/team/33/user/fedor');
+            advance(fixture);
+
+            // this doesn't work cause we cannot deactivate fedor
+            router.navigateByUrl('/team/44');
+            advance(fixture);
+            expect(location.path()).toEqual('/team/33/user/fedor');
           })));
       });
 

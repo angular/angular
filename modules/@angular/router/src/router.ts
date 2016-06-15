@@ -345,6 +345,7 @@ class GuardChecks {
     const currRoot = this.curr ? this.curr._root : null;
     this.traverseChildRoutes(futureRoot, currRoot, parentOutletMap);
     if (this.checks.length === 0) return of (true);
+
     return Observable.from(this.checks)
         .map(s => {
           if (s instanceof CanActivate) {
