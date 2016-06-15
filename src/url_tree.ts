@@ -71,7 +71,7 @@ export class UrlSegment {
   public parent: UrlSegment = null;
   constructor(
       public pathsWithParams: UrlPathWithParams[], public children: {[key: string]: UrlSegment}) {
-    forEach(children, (v, k) => v.parent = this);
+    forEach(children, (v: any, k: any) => v.parent = this);
   }
 
   toString(): string { return serializePaths(this); }
@@ -102,12 +102,12 @@ export function equalPath(a: UrlPathWithParams[], b: UrlPathWithParams[]): boole
 export function mapChildren(segment: UrlSegment, fn: (v: UrlSegment, k: string) => UrlSegment):
     {[name: string]: UrlSegment} {
   const newChildren: {[name: string]: UrlSegment} = {};
-  forEach(segment.children, (child, childOutlet) => {
+  forEach(segment.children, (child: UrlSegment, childOutlet: string) => {
     if (childOutlet === PRIMARY_OUTLET) {
       newChildren[childOutlet] = fn(child, childOutlet);
     }
   });
-  forEach(segment.children, (child, childOutlet) => {
+  forEach(segment.children, (child: UrlSegment, childOutlet: string) => {
     if (childOutlet !== PRIMARY_OUTLET) {
       newChildren[childOutlet] = fn(child, childOutlet);
     }
@@ -117,13 +117,13 @@ export function mapChildren(segment: UrlSegment, fn: (v: UrlSegment, k: string) 
 
 export function mapChildrenIntoArray<T>(
     segment: UrlSegment, fn: (v: UrlSegment, k: string) => T[]): T[] {
-  let res = [];
-  forEach(segment.children, (child, childOutlet) => {
+  let res: T[] = [];
+  forEach(segment.children, (child: UrlSegment, childOutlet: string) => {
     if (childOutlet === PRIMARY_OUTLET) {
       res = res.concat(fn(child, childOutlet));
     }
   });
-  forEach(segment.children, (child, childOutlet) => {
+  forEach(segment.children, (child: UrlSegment, childOutlet: string) => {
     if (childOutlet !== PRIMARY_OUTLET) {
       res = res.concat(fn(child, childOutlet));
     }

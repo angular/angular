@@ -43,8 +43,8 @@ export function serializePaths(segment: UrlSegment): string {
 function serializeSegment(segment: UrlSegment, root: boolean): string {
   if (segment.children[PRIMARY_OUTLET] && root) {
     const primary = serializeSegment(segment.children[PRIMARY_OUTLET], false);
-    const children = [];
-    forEach(segment.children, (v, k) => {
+    const children: string[] = [];
+    forEach(segment.children, (v: UrlSegment, k: string) => {
       if (k !== PRIMARY_OUTLET) {
         children.push(`${k}:${serializeSegment(v, false)}`);
       }
@@ -56,7 +56,7 @@ function serializeSegment(segment: UrlSegment, root: boolean): string {
     }
   } else if (segment.children[PRIMARY_OUTLET] && !root) {
     const children = [serializeSegment(segment.children[PRIMARY_OUTLET], false)];
-    forEach(segment.children, (v, k) => {
+    forEach(segment.children, (v: UrlSegment, k: string) => {
       if (k !== PRIMARY_OUTLET) {
         children.push(`${k}:${serializeSegment(v, false)}`);
       }
@@ -71,15 +71,15 @@ function serializeChildren(segment: UrlSegment) {
   if (segment.children[PRIMARY_OUTLET]) {
     const primary = serializePaths(segment.children[PRIMARY_OUTLET]);
 
-    const secondary = [];
-    forEach(segment.children, (v, k) => {
+    const secondary: string[] = [];
+    forEach(segment.children, (v: UrlSegment, k: string) => {
       if (k !== PRIMARY_OUTLET) {
         secondary.push(`${k}:${serializePaths(v)}${serializeChildren(v)}`);
       }
     });
     const secondaryStr = secondary.length > 0 ? `(${secondary.join('//')})` : '';
     const primaryChildren = serializeChildren(segment.children[PRIMARY_OUTLET]);
-    const primaryChildrenStr = primaryChildren ? `/${primaryChildren}` : '';
+    const primaryChildrenStr: string = primaryChildren ? `/${primaryChildren}` : '';
     return `${primary}${secondaryStr}${primaryChildrenStr}`;
   } else {
     return '';
@@ -103,7 +103,7 @@ class Pair<A, B> {
   constructor(public first: A, public second: B) {}
 }
 function pairs<T>(obj: {[key: string]: T}): Pair<string, T>[] {
-  const res = [];
+  const res: Pair<string, T>[] = [];
   for (let prop in obj) {
     if (obj.hasOwnProperty(prop)) {
       res.push(new Pair<string, T>(prop, obj[prop]));
@@ -260,7 +260,7 @@ class UrlParser {
 
     while (!this.peekStartsWith(')') && this.remaining.length > 0) {
       let path = matchPathWithParams(this.remaining);
-      let outletName;
+      let outletName: string;
       if (path.indexOf(':') > -1) {
         outletName = path.substr(0, path.indexOf(':'));
         this.capture(outletName);

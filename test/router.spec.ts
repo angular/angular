@@ -16,6 +16,7 @@ import {
 
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import { ComponentResolver } from '@angular/core';
+import { Location } from '@angular/common';
 import { SpyLocation } from '@angular/common/testing';
 import { UrlSerializer, DefaultUrlSerializer, RouterOutletMap, Router, ActivatedRoute, ROUTER_DIRECTIVES, Params,
   RouterStateSnapshot, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, RoutesRecognized, RouterConfig } from '../src/index';
@@ -37,19 +38,19 @@ describe("Integration", () => {
       {provide: Location, useClass: SpyLocation},
       {
         provide: Router,
-        useFactory: (resolver, urlSerializer, outletMap, location, injector) => {
+        useFactory: (resolver:ComponentResolver, urlSerializer:UrlSerializer, outletMap:RouterOutletMap, location:Location, injector:Injector) => {
           const r = new Router(RootCmp, resolver, urlSerializer, outletMap, location, injector, config);
           r.initialNavigation();
           return r;
         },
         deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
       },
-      {provide: ActivatedRoute, useFactory: (r) => r.routerState.root, deps: [Router]},
+      {provide: ActivatedRoute, useFactory: (r:Router) => r.routerState.root, deps: [Router]},
     ];
   });
 
   it('should navigate with a provided config',
-    fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -61,7 +62,7 @@ describe("Integration", () => {
 
 
   it('should update location when navigating',
-    fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -80,7 +81,7 @@ describe("Integration", () => {
     })));
 
   it('should navigate back and forward',
-    fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -109,7 +110,7 @@ describe("Integration", () => {
     })));
 
   it('should navigate when locations changes',
-    fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -122,14 +123,14 @@ describe("Integration", () => {
       router.navigateByUrl('/team/22/user/victor');
       advance(fixture);
 
-      location.simulateHashChange("/team/22/user/fedor");
+      (<any>location).simulateHashChange("/team/22/user/fedor");
       advance(fixture);
 
       expect(fixture.debugElement.nativeElement).toHaveText('team 22 { user fedor, right:  }');
     })));
 
   it('should update the location when the matched route does not change',
-    fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -149,7 +150,7 @@ describe("Integration", () => {
     })));
 
   it('should support secondary routes',
-    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+    fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -168,7 +169,7 @@ describe("Integration", () => {
     })));
 
   it('should deactivate outlets',
-    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+    fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -189,7 +190,7 @@ describe("Integration", () => {
     })));
 
   it('should deactivate nested outlets',
-    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+    fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -211,7 +212,7 @@ describe("Integration", () => {
     })));
 
   it('should set query params and fragment',
-    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+    fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -229,7 +230,7 @@ describe("Integration", () => {
     })));
 
   it('should push params only when they change',
-    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb:TestComponentBuilder) => {
+    fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -255,7 +256,7 @@ describe("Integration", () => {
     })));
 
   it('should work when navigating to /',
-    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb:TestComponentBuilder) => {
+    fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -276,7 +277,7 @@ describe("Integration", () => {
     })));
 
   it("should cancel in-flight navigations",
-    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb:TestComponentBuilder) => {
+    fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -284,7 +285,7 @@ describe("Integration", () => {
         { path: '/user/:name', component: UserCmp }
       ]);
 
-      const recordedEvents = [];
+      const recordedEvents:any = [];
       router.events.forEach(e => recordedEvents.push(e));
 
       router.navigateByUrl('/user/init');
@@ -292,7 +293,7 @@ describe("Integration", () => {
 
       const user = fixture.debugElement.children[1].componentInstance;
 
-      let r1, r2;
+      let r1:any, r2:any;
       router.navigateByUrl('/user/victor').then(_ => r1 = _);
       router.navigateByUrl('/user/fedor').then(_ => r2 = _);
       advance(fixture);
@@ -318,7 +319,7 @@ describe("Integration", () => {
     })));
 
   it("should handle failed navigations gracefully",
-    fakeAsync(inject([Router, TestComponentBuilder], (router, tcb:TestComponentBuilder) => {
+    fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -326,10 +327,10 @@ describe("Integration", () => {
         { path: '/user/:name', component: UserCmp }
       ]);
 
-      const recordedEvents = [];
+      const recordedEvents:any = [];
       router.events.forEach(e => recordedEvents.push(e));
 
-      let e;
+      let e:any;
       router.navigateByUrl('/invalid').catch(_ => e = _);
       advance(fixture);
       expect(e.message).toContain("Cannot match any routes");
@@ -350,7 +351,7 @@ describe("Integration", () => {
     })));
 
   it('should replace state when path is equal to current path',
-    fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -377,7 +378,7 @@ describe("Integration", () => {
   
   describe("router links", () => {
     it("should support string router links",
-      fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+      fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
         const fixture = tcb.createFakeAsync(RootCmp);
         advance(fixture);
 
@@ -401,7 +402,7 @@ describe("Integration", () => {
       })));
 
     it("should support absolute router links",
-      fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+      fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
         const fixture = tcb.createFakeAsync(RootCmp);
         advance(fixture);
 
@@ -425,7 +426,7 @@ describe("Integration", () => {
       })));
 
     it("should support relative router links",
-      fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+      fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
         const fixture = tcb.createFakeAsync(RootCmp);
         advance(fixture);
 
@@ -451,7 +452,7 @@ describe("Integration", () => {
       })));
 
     it("should support top-level link",
-      fakeAsync(inject([Router, TestComponentBuilder], (router, tcb) => {
+      fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
         let fixture = tcb.createFakeAsync(AbsoluteLinkCmp);
         advance(fixture);
 
@@ -459,7 +460,7 @@ describe("Integration", () => {
       })));
 
     it("should support query params and fragments",
-      fakeAsync(inject([Router, Location, TestComponentBuilder], (router, location, tcb) => {
+      fakeAsync(inject([Router, Location, TestComponentBuilder], (router:Router, location:Location, tcb:TestComponentBuilder) => {
         const fixture = tcb.createFakeAsync(RootCmp);
         advance(fixture);
 
@@ -486,7 +487,7 @@ describe("Integration", () => {
   });
 
   describe("redirects", () => {
-    it("should work", fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+    it("should work", fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -506,11 +507,11 @@ describe("Integration", () => {
     describe("CanActivate", () => {
       describe("should not activate a route when CanActivate returns false", () => {
         beforeEachProviders(() => [
-          {provide: 'alwaysFalse', useValue: (a, b) => false}
+          {provide: 'alwaysFalse', useValue: (a:any, b:any) => false}
         ]);
 
         it('works',
-          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
             const fixture = tcb.createFakeAsync(RootCmp);
             advance(fixture);
 
@@ -531,7 +532,7 @@ describe("Integration", () => {
         ]);
 
         it('works',
-          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
             const fixture = tcb.createFakeAsync(RootCmp);
             advance(fixture);
 
@@ -556,7 +557,7 @@ describe("Integration", () => {
         beforeEachProviders(() => [AlwaysTrue]);
 
         it('works',
-          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
             const fixture = tcb.createFakeAsync(RootCmp);
             advance(fixture);
 
@@ -579,7 +580,7 @@ describe("Integration", () => {
         ]);
 
         it('works',
-          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
             const fixture = tcb.createFakeAsync(RootCmp);
             advance(fixture);
 
@@ -607,7 +608,7 @@ describe("Integration", () => {
 
 
         it('works',
-          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
             const fixture = tcb.createFakeAsync(RootCmp);
             advance(fixture);
 
@@ -632,7 +633,7 @@ describe("Integration", () => {
           })));
 
         it('works with a nested route',
-          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
             const fixture = tcb.createFakeAsync(RootCmp);
             advance(fixture);
 
@@ -671,7 +672,7 @@ describe("Integration", () => {
         beforeEachProviders(() => [AlwaysTrue]);
 
         it('works',
-          fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
             const fixture = tcb.createFakeAsync(RootCmp);
             advance(fixture);
 
@@ -698,7 +699,7 @@ describe("Integration", () => {
       ]);
 
       it('works',
-        fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+        fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
           const fixture = tcb.createFakeAsync(RootCmp);
           advance(fixture);
 
@@ -719,7 +720,7 @@ describe("Integration", () => {
 
   describe("routerActiveLink", () => {
     it("should set the class when the link is active (exact = true)",
-      fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -746,7 +747,7 @@ describe("Integration", () => {
     })));
 
     it("should set the class on a parent element when the link is active (exact = true)",
-      fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
 
@@ -773,7 +774,7 @@ describe("Integration", () => {
     })));
 
     it("should set the class when the link is active (exact = false)",
-      fakeAsync(inject([Router, TestComponentBuilder, Location], (router, tcb, location) => {
+      fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
         const fixture = tcb.createFakeAsync(RootCmp);
         advance(fixture);
 

@@ -1,5 +1,6 @@
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
 import {Route, RouterConfig} from './config';
@@ -25,9 +26,11 @@ export function recognize(
   } catch (e) {
     if (e instanceof NoMatch) {
       return new Observable<RouterStateSnapshot>(
-          obs => obs.error(new Error(`Cannot match any routes: '${e.segment}'`)));
+          (obs: Observer<RouterStateSnapshot>) =>
+              obs.error(new Error(`Cannot match any routes: '${e.segment}'`)));
     } else {
-      return new Observable<RouterStateSnapshot>(obs => obs.error(e));
+      return new Observable<RouterStateSnapshot>(
+          (obs: Observer<RouterStateSnapshot>) => obs.error(e));
     }
   }
 }
@@ -119,7 +122,7 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
   const path = route.path.startsWith('/') ? route.path.substring(1) : route.path;
   const parts = path.split('/');
   const posParameters: {[key: string]: any} = {};
-  const consumedPaths = [];
+  const consumedPaths: UrlPathWithParams[] = [];
 
   let currentIndex = 0;
 
@@ -147,11 +150,11 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
 }
 
 function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): void {
-  const names = {};
+  const names: {[k: string]: ActivatedRouteSnapshot} = {};
   nodes.forEach(n => {
     let routeWithSameOutletName = names[n.value.outlet];
     if (routeWithSameOutletName) {
-      const p = routeWithSameOutletName.urlSegments.map(s => s.toString()).join('/');
+      const p = routeWithSameOutletName.url.map(s => s.toString()).join('/');
       const c = n.value.url.map(s => s.toString()).join('/');
       throw new Error(`Two segments cannot have the same outlet name: '${p}' and '${c}'.`);
     }

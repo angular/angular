@@ -265,8 +265,8 @@ export class Router {
     }
 
     return new Promise((resolvePromise, rejectPromise) => {
-      let updatedUrl;
-      let state;
+      let updatedUrl: UrlTree;
+      let state: RouterState;
       applyRedirects(url, this.config)
           .mergeMap(u => {
             updatedUrl = u;
@@ -293,7 +293,7 @@ export class Router {
                 .check(this.outletMap);
 
           })
-          .forEach((shouldActivate) => {
+          .forEach((shouldActivate: boolean) => {
             if (!shouldActivate || id !== this.navigationId) {
               this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url)));
               return Promise.resolve(false);
@@ -311,6 +311,7 @@ export class Router {
                 this.location.go(path);
               }
             }
+            return Promise.resolve(true);
           })
           .then(
               () => {
@@ -335,7 +336,7 @@ class CanDeactivate {
 }
 
 class GuardChecks {
-  private checks = [];
+  private checks: Array<CanActivate|CanDeactivate> = [];
   constructor(
       private future: RouterStateSnapshot, private curr: RouterStateSnapshot,
       private injector: Injector) {}
@@ -368,7 +369,9 @@ class GuardChecks {
       this.traverseRoutes(c, prevChildren[c.value.outlet], outletMap);
       delete prevChildren[c.value.outlet];
     });
-    forEach(prevChildren, (v, k) => this.deactivateOutletAndItChildren(v, outletMap._outlets[k]));
+    forEach(
+        prevChildren,
+        (v: any, k: string) => this.deactivateOutletAndItChildren(v, outletMap._outlets[k]));
   }
 
   traverseRoutes(
@@ -392,7 +395,7 @@ class GuardChecks {
 
   private deactivateOutletAndItChildren(route: ActivatedRouteSnapshot, outlet: RouterOutlet): void {
     if (outlet && outlet.isActivated) {
-      forEach(outlet.outletMap._outlets, (v, k) => {
+      forEach(outlet.outletMap._outlets, (v: RouterOutlet) => {
         if (v.isActivated) {
           this.deactivateOutletAndItChildren(v.activatedRoute.snapshot, v);
         }
@@ -461,7 +464,9 @@ class ActivateRoutes {
       this.activateRoutes(c, prevChildren[c.value.outlet], outletMap);
       delete prevChildren[c.value.outlet];
     });
-    forEach(prevChildren, (v, k) => this.deactivateOutletAndItChildren(outletMap._outlets[k]));
+    forEach(
+        prevChildren,
+        (v: any, k: string) => this.deactivateOutletAndItChildren(outletMap._outlets[k]));
   }
 
   activateRoutes(
@@ -495,7 +500,8 @@ class ActivateRoutes {
 
   private deactivateOutletAndItChildren(outlet: RouterOutlet): void {
     if (outlet && outlet.isActivated) {
-      forEach(outlet.outletMap._outlets, (v, k) => this.deactivateOutletAndItChildren(v));
+      forEach(
+          outlet.outletMap._outlets, (v: RouterOutlet) => this.deactivateOutletAndItChildren(v));
       outlet.deactivate();
     }
   }
@@ -512,7 +518,7 @@ function pushQueryParamsAndFragment(state: RouterState): void {
 }
 
 function nodeChildrenAsMap(node: TreeNode<any>) {
-  return node ? node.children.reduce((m, c) => {
+  return node ? node.children.reduce((m: any, c: TreeNode<any>) => {
     m[c.value.outlet] = c;
     return m;
   }, {}) : {};
