@@ -24,9 +24,9 @@ export function propDecorator(value: any /** TODO #9100 */) {
   return new PropDecoratorMeta(value);
 }
 
-export var ClassDecorator = makeDecorator(ClassDecoratorMeta);
-export var ParamDecorator = makeParamDecorator(ParamDecoratorMeta);
-export var PropDecorator = makePropDecorator(PropDecoratorMeta);
+/** @Annotation */ export var ClassDecorator = makeDecorator(ClassDecoratorMeta);
+/** @Annotation */ export var ParamDecorator = makeParamDecorator(ParamDecoratorMeta);
+/** @Annotation */ export var PropDecorator = makePropDecorator(PropDecoratorMeta);
 
 // used only in Dart
 export class HasGetterAndSetterDecorators {}

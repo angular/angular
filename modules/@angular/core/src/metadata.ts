@@ -471,6 +471,7 @@ export interface HostListenerMetadataFactory {
  *
  * {@example core/ts/metadata/metadata.ts region='component'}
  * @stable
+ * @Annotation
  */
 export var Component: ComponentMetadataFactory =
     <ComponentMetadataFactory>makeDecorator(ComponentMetadata, (fn: any) => fn.View = View);
@@ -854,6 +855,7 @@ export var Component: ComponentMetadataFactory =
  * the instantiated
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
  * @stable
+ * @Annotation
  */
 export var Directive: DirectiveMetadataFactory =
     <DirectiveMetadataFactory>makeDecorator(DirectiveMetadata);
@@ -888,6 +890,7 @@ export var Directive: DirectiveMetadataFactory =
  * }
  * ```
  * @deprecated
+ * @Annotation
  */
 var View: ViewMetadataFactory =
     <ViewMetadataFactory>makeDecorator(ViewMetadata, (fn: any) => fn.View = View);
@@ -909,6 +912,7 @@ var View: ViewMetadataFactory =
  *
  * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
  * @stable
+ * @Annotation
  */
 export var Attribute: AttributeMetadataFactory = makeParamDecorator(AttributeMetadata);
 
@@ -1020,6 +1024,7 @@ export var Attribute: AttributeMetadataFactory = makeParamDecorator(AttributeMet
  * The injected object is an unmodifiable live list.
  * See {@link QueryList} for more details.
  * @deprecated
+ * @Annotation
  */
 export var Query: QueryMetadataFactory = makeParamDecorator(QueryMetadata);
 
@@ -1044,6 +1049,7 @@ export var Query: QueryMetadataFactory = makeParamDecorator(QueryMetadata);
  * }
  * ```
  * @stable
+ * @Annotation
  */
 export var ContentChildren: ContentChildrenMetadataFactory =
     makePropDecorator(ContentChildrenMetadata);
@@ -1078,6 +1084,7 @@ export var ContentChildren: ContentChildrenMetadataFactory =
  * </container>
  * ```
  * @stable
+ * @Annotation
  */
 export var ContentChild: ContentChildMetadataFactory = makePropDecorator(ContentChildMetadata);
 
@@ -1161,6 +1168,7 @@ export var ContentChild: ContentChildMetadataFactory = makePropDecorator(Content
  *
  * See also: [ViewChildrenMetadata]
  * @stable
+ * @Annotation
  */
 export var ViewChildren: ViewChildrenMetadataFactory = makePropDecorator(ViewChildrenMetadata);
 
@@ -1235,6 +1243,7 @@ export var ViewChildren: ViewChildrenMetadataFactory = makePropDecorator(ViewChi
  * ```
  * See also: [ViewChildMetadata]
  * @stable
+ * @Annotation
  */
 export var ViewChild: ViewChildMetadataFactory = makePropDecorator(ViewChildMetadata);
 
@@ -1274,6 +1283,7 @@ export var ViewChild: ViewChildMetadataFactory = makePropDecorator(ViewChildMeta
  * The injected object is an iterable and observable live list.
  * See {@link QueryList} for more details.
  * @deprecated
+ * @Annotation
  */
 export var ViewQuery: QueryMetadataFactory = makeParamDecorator(ViewQueryMetadata);
 
@@ -1285,6 +1295,7 @@ export var ViewQuery: QueryMetadataFactory = makeParamDecorator(ViewQueryMetadat
  *
  * {@example core/ts/metadata/metadata.ts region='pipe'}
  * @stable
+ * @Annotation
  */
 export var Pipe: PipeMetadataFactory = <PipeMetadataFactory>makeDecorator(PipeMetadata);
 
@@ -1330,6 +1341,7 @@ export var Pipe: PipeMetadataFactory = <PipeMetadataFactory>makeDecorator(PipeMe
  * bootstrap(App);
  * ```
  * @stable
+ * @Annotation
  */
 export var Input: InputMetadataFactory = makePropDecorator(InputMetadata);
 
@@ -1375,6 +1387,7 @@ export var Input: InputMetadataFactory = makePropDecorator(InputMetadata);
  * bootstrap(App);
  * ```
  * @stable
+ * @Annotation
  */
 export var Output: OutputMetadataFactory = makePropDecorator(OutputMetadata);
 
@@ -1414,6 +1427,7 @@ export var Output: OutputMetadataFactory = makePropDecorator(OutputMetadata);
  * bootstrap(App);
  * ```
  * @stable
+ * @Annotation
  */
 export var HostBinding: HostBindingMetadataFactory = makePropDecorator(HostBindingMetadata);
 
@@ -1452,5 +1466,6 @@ export var HostBinding: HostBindingMetadataFactory = makePropDecorator(HostBindi
  * bootstrap(App);
  * ```
  * @stable
+ * @Annotation
  */
 export var HostListener: HostListenerMetadataFactory = makePropDecorator(HostListenerMetadata);

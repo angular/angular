@@ -22,7 +22,7 @@ export class HasCustomDecorator {
 
 // Verify that custom decorators have metadata collected, eg Ionic
 export function Page(c: any): (f: Function) => void {
-  return c;
+  return NotADirective;
 }
 
 @Page({template: 'Ionic template'})

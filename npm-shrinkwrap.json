@@ -8293,8 +8293,8 @@
       }
     },
     "tsickle": {
-      "version": "0.1.4",
-      "from": "tsickle@0.1.4",
+      "version": "0.1.6",
+      "from": "tsickle@0.1.6",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",

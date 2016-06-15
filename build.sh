@@ -85,7 +85,7 @@ do
 
     if [[ ${PACKAGE} == "router-deprecated" ]]; then
       echo "====== (esm)COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json ====="
-      $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json
+      $(npm bin)/tsc --emitDecoratorMetadata -p ${SRCDIR}/tsconfig-es2015.json
     else
       echo "====== (esm)COMPILING: $TSC -p ${SRCDIR}/tsconfig-es2015.json ====="
       $TSC -p ${SRCDIR}/tsconfig-es2015.json

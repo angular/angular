@@ -17,5 +17,6 @@ export interface RoutesFactory {
  * Defines routes for a given component.
  *
  * It takes an array of {@link RouteMetadata}s.
+ * @Annotation
  */
 export var Routes: RoutesFactory = <RoutesFactory>makeDecorator(RoutesMetadata);

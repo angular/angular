@@ -33,8 +33,9 @@ echo 'travis_fold:end:test.unit.node'
 
 echo 'travis_fold:start:test.unit.localChrome'
 
-# rebuild to codegen files in @angular/compiler/test
-node dist/all/@angular/compiler-cli/src/main -p modules/tsconfig.json
+# rebuild to revert files in @angular/compiler/test
+# TODO(tbosch): remove this and teach karma to serve the right files
+node dist/tools/@angular/tsc-wrapped/src/main -p modules/tsconfig.json
 
 # Run unit tests in local chrome
 if [[ ${TRAVIS} ]]; then
