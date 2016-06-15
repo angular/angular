@@ -10,7 +10,8 @@ import * as path from 'path';
 import {BasicNgFactory} from '../src/basic.ngfactory';
 import {MyComp} from '../src/a/multiple_components';
 import {ReflectiveInjector, DebugElement, getDebugNode, lockRunMode} from '@angular/core';
-import {browserPlatform, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+import {serverPlatform} from '@angular/platform-server';
 
 // Need to lock the mode explicitely as this test is not using Angular's testing framework.
 lockRunMode();
@@ -40,14 +41,14 @@ describe('template codegen output', () => {
 
   it('should be able to create the basic component', () => {
     const appInjector =
-        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
+        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, serverPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
     expect(comp.instance).toBeTruthy();
   });
 
   it('should support ngIf', () => {
     const appInjector =
-        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
+        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, serverPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
     expect(debugElement.children.length).toBe(2);
@@ -60,7 +61,7 @@ describe('template codegen output', () => {
 
   it('should support ngFor', () => {
     const appInjector =
-        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
+        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, serverPlatform().injector);
     var comp = BasicNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
     expect(debugElement.children.length).toBe(2);

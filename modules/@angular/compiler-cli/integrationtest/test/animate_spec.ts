@@ -4,7 +4,9 @@ require('zone.js/dist/long-stack-trace-zone.js');
 
 import {AnimateCmpNgFactory} from '../src/animate.ngfactory';
 import {ReflectiveInjector, DebugElement, getDebugNode, lockRunMode} from '@angular/core';
-import {browserPlatform, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+import {serverPlatform} from '@angular/platform-server';
+import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+
 
 // Need to lock the mode explicitely as this test is not using Angular's testing framework.
 lockRunMode();
@@ -17,8 +19,8 @@ describe('template codegen output', () => {
   }
 
   it('should apply the animate states to the element', (done) => {
-    const appInjector =
-        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
+    const appInjector = ReflectiveInjector.resolveAndCreate(
+        BROWSER_APP_PROVIDERS, serverPlatform().injector);
     var comp = AnimateCmpNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
 
@@ -45,8 +47,8 @@ describe('template codegen output', () => {
   });
 
   it('should apply the default animate state to the element', (done) => {
-    const appInjector =
-        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
+    const appInjector = ReflectiveInjector.resolveAndCreate(
+        BROWSER_APP_PROVIDERS, serverPlatform().injector);
     var comp = AnimateCmpNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
 
