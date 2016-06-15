@@ -352,9 +352,9 @@ class GuardChecks {
   }
 
   private traverseChildRoutes(
-      futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>|null,
-      outletMap: RouterOutletMap|null): void {
-    const prevChildren = nodeChildrenAsMap(currNode);
+      futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>,
+      outletMap: RouterOutletMap): void {
+    const prevChildren: {[key: string]: any} = nodeChildrenAsMap(currNode);
     futureNode.children.forEach(c => {
       this.traverseRoutes(c, prevChildren[c.value.outlet], outletMap);
       delete prevChildren[c.value.outlet];
@@ -363,8 +363,8 @@ class GuardChecks {
   }
 
   traverseRoutes(
-      futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>|null,
-      parentOutletMap: RouterOutletMap|null): void {
+      futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>,
+      parentOutletMap: RouterOutletMap): void {
     const future = futureNode.value;
     const curr = currNode ? currNode.value : null;
     const outlet = parentOutletMap ? parentOutletMap._outlets[futureNode.value.outlet] : null;
@@ -445,9 +445,9 @@ class ActivateRoutes {
   }
 
   private activateChildRoutes(
-      futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>|null,
+      futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>,
       outletMap: RouterOutletMap): void {
-    const prevChildren = nodeChildrenAsMap(currNode);
+    const prevChildren: {[key: string]: any} = nodeChildrenAsMap(currNode);
     futureNode.children.forEach(c => {
       this.activateRoutes(c, prevChildren[c.value.outlet], outletMap);
       delete prevChildren[c.value.outlet];
@@ -456,7 +456,7 @@ class ActivateRoutes {
   }
 
   activateRoutes(
-      futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>|null,
+      futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>,
       parentOutletMap: RouterOutletMap): void {
     const future = futureNode.value;
     const curr = currNode ? currNode.value : null;
@@ -502,7 +502,7 @@ function pushQueryParamsAndFragment(state: RouterState): void {
   }
 }
 
-function nodeChildrenAsMap(node: TreeNode<any>| null) {
+function nodeChildrenAsMap(node: TreeNode<any>) {
   return node ? node.children.reduce((m, c) => {
     m[c.value.outlet] = c;
     return m;

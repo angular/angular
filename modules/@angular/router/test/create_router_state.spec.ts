@@ -61,7 +61,7 @@ function createState(config: RouterConfig, url: string): RouterStateSnapshot {
   return res;
 }
 
-function checkActivatedRoute(actual: ActivatedRoute | null, cmp: Function, outlet: string = PRIMARY_OUTLET):void {
+function checkActivatedRoute(actual: ActivatedRoute, cmp: Function, outlet: string = PRIMARY_OUTLET):void {
   if (actual === null) {
     expect(actual).toBeDefined();
   } else {

@@ -115,7 +115,7 @@ export class ActivatedRouteSnapshot {
   _resolvedComponentFactory: ComponentFactory<any>;
 
   /** @internal **/
-  _routeConfig: Route|null;
+  _routeConfig: Route;
 
   /** @internal **/
   _urlSegment: UrlSegment;
@@ -127,7 +127,7 @@ export class ActivatedRouteSnapshot {
    */
   constructor(
       public url: UrlPathWithParams[], public params: Params, public outlet: string,
-      public component: Type|string, routeConfig: Route|null, urlSegment: UrlSegment,
+      public component: Type|string, routeConfig: Route, urlSegment: UrlSegment,
       lastPathIndex: number) {
     this._routeConfig = routeConfig;
     this._urlSegment = urlSegment;
@@ -160,7 +160,7 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
    */
   constructor(
       public url: string, root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params,
-      public fragment: string|null) {
+      public fragment: string) {
     super(root);
   }
 
