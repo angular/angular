@@ -1051,8 +1051,6 @@ const COMMON = [
   'Validators.nullValidator(c:AbstractControl):{[key:string]:boolean}',
   'Validators.pattern(pattern:string):ValidatorFn',
   'Validators.required(control:AbstractControl):{[key:string]:boolean}',
-  // TODO: rename to LocationChangeEvent
-  // TODO: rename to LocationChangeListener
 ];
 
 const COMMON_TESTING = [
@@ -1520,11 +1518,11 @@ const PLATFORM_BROWSER = [
   'const WORKER_APP_APPLICATION_PROVIDERS:Array<any>',
   'const WORKER_APP_LOCATION_PROVIDERS:any',
   'const WORKER_APP_PLATFORM_PROVIDERS:Array<any>',
-  'const WORKER_RENDER_APPLICATION_PROVIDERS:Array<any>',
-  'const WORKER_RENDER_LOCATION_PROVIDERS:any',
-  'const WORKER_RENDER_PLATFORM_PROVIDERS:Array<any>',
-  'const WORKER_RENDER_STARTABLE_MESSAGING_SERVICE:any',
   'const WORKER_SCRIPT:OpaqueToken',
+  'const WORKER_UI_APPLICATION_PROVIDERS:Array<any>',
+  'const WORKER_UI_LOCATION_PROVIDERS:any',
+  'const WORKER_UI_PLATFORM_PROVIDERS:Array<any>',
+  'const WORKER_UI_STARTABLE_MESSAGING_SERVICE:any',
   'disableDebugTools():void',
   'DomEventsPlugin',
   'DomEventsPlugin.addEventListener(element:HTMLElement, eventName:string, handler:Function):Function',
@@ -1551,7 +1549,6 @@ const PLATFORM_BROWSER = [
   'HammerGestureConfig.buildHammer(element:HTMLElement):HammerInstance',
   'HammerGestureConfig.events:string[]',
   'HammerGestureConfig.overrides:{[key:string]:Object}',
-  'initializeGenericWorkerRenderer(injector:Injector):any',
   'KeyEventsPlugin',
   'KeyEventsPlugin.addEventListener(element:HTMLElement, eventName:string, handler:Function):Function',
   'KeyEventsPlugin.constructor()',
@@ -1601,7 +1598,7 @@ const PLATFORM_BROWSER = [
   'WebWorkerInstance.init(worker:Worker, bus:MessageBus):any',
   'WebWorkerInstance.worker:Worker',
   'workerAppPlatform():PlatformRef',
-  'workerRenderPlatform():PlatformRef',
+  'workerUiPlatform():PlatformRef',
 ];
 
 const PLATFORM_BROWSER_TESTING = [
@@ -1648,8 +1645,8 @@ const PLATFORM_BROWSER_TESTING_E2E = [
 
 const PLATFORM_BROWSER_DYNAMIC = [
   'bootstrap(appComponentType:Type, customProviders?:Array<any>):Promise<ComponentRef<any>>',
-  'bootstrapApp(appComponentType:Type, customProviders?:Array<any>):Promise<ComponentRef<any>>',
-  'bootstrapRender(workerScriptUri:string, customProviders?:Array<any>):Promise<ApplicationRef>',
+  'bootstrapWorkerApp(appComponentType:Type, customProviders?:Array<any>):Promise<ComponentRef<any>>',
+  'bootstrapWorkerUi(workerScriptUri:string, customProviders?:Array<any>):Promise<ApplicationRef>',
   'const BROWSER_APP_COMPILER_PROVIDERS:Array<any>',
   'const CACHED_TEMPLATE_PROVIDER:Array<any>',
 ];
