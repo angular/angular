@@ -1,5 +1,6 @@
 import {DebugElement, ReflectiveInjector, getDebugNode, lockRunMode} from '@angular/core';
-import {BROWSER_APP_PROVIDERS, By, browserPlatform} from '@angular/platform-browser';
+import {BROWSER_APP_PROVIDERS, By} from '@angular/platform-browser';
+import {serverPlatform} from '@angular/platform-server';
 
 import {CompWithProjection} from '../src/projection';
 import {MainCompNgFactory} from '../src/projection.ngfactory';
@@ -10,7 +11,7 @@ lockRunMode();
 describe('content projection', () => {
   it('should support basic content projection', () => {
     const appInjector =
-        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
+        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, serverPlatform().injector);
     var mainComp = MainCompNgFactory.create(appInjector);
 
     var debugElement = <DebugElement>getDebugNode(mainComp.location.nativeElement);
