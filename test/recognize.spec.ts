@@ -353,7 +353,7 @@ function checkRecognize(config: RouterConfig, url: string, callback: any): void 
   });
 }
 
-function checkActivatedRoute(actual: ActivatedRouteSnapshot | null, url: string, params: Params, cmp: Function, outlet: string = PRIMARY_OUTLET):void {
+function checkActivatedRoute(actual: ActivatedRouteSnapshot, url: string, params: Params, cmp: Function, outlet: string = PRIMARY_OUTLET):void {
   if (actual === null) {
     expect(actual).not.toBeNull();
   } else {

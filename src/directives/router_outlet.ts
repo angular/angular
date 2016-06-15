@@ -5,8 +5,8 @@ import {PRIMARY_OUTLET} from '../shared';
 
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {
-  private activated: ComponentRef<any>|null;
-  private _activatedRoute: ActivatedRoute|null;
+  private activated: ComponentRef<any>;
+  private _activatedRoute: ActivatedRoute;
   public outletMap: RouterOutletMap;
 
   /**

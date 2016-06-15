@@ -162,7 +162,7 @@ class UrlParser {
       paths.push(this.parsePathWithParams());
     }
 
-    let children = {};
+    let children: {[key: string]: UrlSegment} = {};
     if (this.peekStartsWith('/(')) {
       this.capture('/');
       children = this.parseParens(true);
@@ -200,7 +200,7 @@ class UrlParser {
     return params;
   }
 
-  parseFragment(): string|null {
+  parseFragment(): string {
     if (this.peekStartsWith('#')) {
       return this.remaining.substring(1);
     } else {
@@ -255,7 +255,7 @@ class UrlParser {
   }
 
   parseParens(allowPrimary: boolean): {[key: string]: UrlSegment} {
-    const segments = {};
+    const segments: {[key: string]: UrlSegment} = {};
     this.capture('(');
 
     while (!this.peekStartsWith(')') && this.remaining.length > 0) {

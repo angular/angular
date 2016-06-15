@@ -4,8 +4,8 @@ import {UrlPathWithParams, UrlSegment, UrlTree} from './url_tree';
 import {forEach, shallowEqual} from './utils/collection';
 
 export function createUrlTree(
-    route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params | undefined,
-    fragment: string | undefined): UrlTree {
+    route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params,
+    fragment: string): UrlTree {
   if (commands.length === 0) {
     return tree(urlTree.root, urlTree.root, urlTree, queryParams, fragment);
   }
@@ -24,8 +24,8 @@ export function createUrlTree(
 }
 
 function tree(
-    oldSegment: UrlSegment, newSegment: UrlSegment, urlTree: UrlTree,
-    queryParams: Params | undefined, fragment: string | undefined): UrlTree {
+    oldSegment: UrlSegment, newSegment: UrlSegment, urlTree: UrlTree, queryParams: Params,
+    fragment: string): UrlTree {
   const q = queryParams ? stringify(queryParams) : urlTree.queryParams;
   const f = fragment ? fragment : urlTree.fragment;
 
@@ -38,7 +38,7 @@ function tree(
 
 function replaceSegment(
     current: UrlSegment, oldSegment: UrlSegment, newSegment: UrlSegment): UrlSegment {
-  const children = {};
+  const children: {[key: string]: UrlSegment} = {};
   forEach(current.children, (c, k) => {
     if (c === oldSegment) {
       children[k] = newSegment;
@@ -162,7 +162,7 @@ function updateSegmentChildren(
     return new UrlSegment(segment.pathsWithParams, {});
   } else {
     const outlet = getOutlet(commands);
-    const children = {};
+    const children: {[key: string]: UrlSegment} = {};
     children[outlet] = updateSegment(segment.children[outlet], startIndex, commands);
     forEach(segment.children, (child, childOutlet) => {
       if (childOutlet !== outlet) {
@@ -223,7 +223,7 @@ function createNewSegment(segment: UrlSegment, startIndex: number, commands: any
 }
 
 function stringify(params: {[key: string]: any}): {[key: string]: string} {
-  const res = {};
+  const res: {[key: string]: string} = {};
   forEach(params, (v, k) => res[k] = `${v}`);
   return res;
 }

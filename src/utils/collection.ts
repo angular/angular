@@ -24,11 +24,11 @@ export function flatten<T>(a: T[][]): T[] {
   return target;
 }
 
-export function first<T>(a: T[]): T|null {
+export function first<T>(a: T[]): T {
   return a.length > 0 ? a[0] : null;
 }
 
-export function last<T>(a: T[]): T|null {
+export function last<T>(a: T[]): T {
   return a.length > 0 ? a[a.length - 1] : null;
 }
 
