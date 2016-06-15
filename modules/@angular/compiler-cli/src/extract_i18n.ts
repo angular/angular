@@ -16,6 +16,8 @@ import {ViewEncapsulation} from '@angular/core';
 import {StaticReflector} from './static_reflector';
 import {CompileMetadataResolver, HtmlParser, DirectiveNormalizer, Lexer, Parser, TemplateParser, DomElementSchemaRegistry, StyleCompiler, ViewCompiler, TypeScriptEmitter, MessageExtractor, removeDuplicates, ExtractionResult, Message, ParseError, serializeXmb,} from './compiler_private';
 
+import {Parse5DomAdapter} from '@angular/platform-server';
+
 import {ReflectorHost} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 
@@ -95,6 +97,7 @@ class Extractor {
   }
 
   extract(): Promise<any> {
+    Parse5DomAdapter.makeCurrent();
     _dirPaths.clear();
 
     const promises = this._program.getSourceFiles()
