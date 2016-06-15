@@ -33,7 +33,6 @@ function declareTests({useJit}: {useJit: boolean}) {
              tcb.overrideTemplate(MyComp, '<ng-container><p></p></ng-container>')
                  .createAsync(MyComp)
                  .then((fixture) => {
-
                    fixture.detectChanges();
 
                    const el = fixture.debugElement.nativeElement;
@@ -41,6 +40,30 @@ function declareTests({useJit}: {useJit: boolean}) {
                    expect(children.length).toBe(2);
                    expect(getDOM().isCommentNode(children[0])).toBe(true);
                    expect(getDOM().tagName(children[1]).toUpperCase()).toEqual('P');
+
+                   async.done();
+                 });
+           }));
+
+    it('should support nesting',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             tcb.overrideTemplate(
+                    MyComp,
+                    '<ng-container>1</ng-container><ng-container><ng-container>2</ng-container></ng-container>')
+                 .createAsync(MyComp)
+                 .then((fixture) => {
+                   fixture.detectChanges();
+
+                   const el = fixture.debugElement.nativeElement;
+                   const children = getDOM().childNodes(el);
+                   expect(children.length).toBe(5);
+                   expect(getDOM().isCommentNode(children[0])).toBe(true);
+                   expect(children[1]).toHaveText('1');
+                   expect(getDOM().isCommentNode(children[2])).toBe(true);
+                   expect(getDOM().isCommentNode(children[3])).toBe(true);
+                   expect(children[4]).toHaveText('2');
 
                    async.done();
                  });
@@ -87,8 +110,10 @@ function declareTests({useJit}: {useJit: boolean}) {
                  .createAsync(MyComp)
                  .then((fixture) => {
                    fixture.detectChanges();
+
                    const el = fixture.debugElement.nativeElement;
                    expect(el).toHaveText('SIMPLE(12)');
+
                    async.done();
                  });
            }));
@@ -102,9 +127,11 @@ function declareTests({useJit}: {useJit: boolean}) {
                  .createAsync(MyComp)
                  .then((fixture) => {
                    fixture.detectChanges();
+
                    const dir = fixture.debugElement.children[0].injector.get(TextDirective);
                    expect(dir).toBeAnInstanceOf(TextDirective);
                    expect(dir.text).toEqual('container');
+
                    async.done();
                  });
            }));
@@ -118,9 +145,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              tcb.overrideTemplate(MyComp, template).createAsync(MyComp).then((view) => {
                view.detectChanges();
-
                var q = view.debugElement.children[0].references['q'];
-
                view.detectChanges();
 
                expect(q.textDirChildren.length).toEqual(1);
@@ -138,9 +163,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              tcb.overrideTemplate(MyComp, template).createAsync(MyComp).then((view) => {
                view.detectChanges();
-
                var q = view.debugElement.children[0].references['q'];
-
                view.detectChanges();
 
                expect(q.textDirChildren.length).toEqual(1);
