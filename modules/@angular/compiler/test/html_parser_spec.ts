@@ -36,7 +36,6 @@ export function main() {
         });
       });
 
-
       describe('elements', () => {
         it('should parse root level elements', () => {
           expect(humanizeDom(parser.parse('<div></div>', 'TestComp'))).toEqual([
@@ -155,6 +154,13 @@ export function main() {
           expect(humanizeDom(parser.parse('<template><tr></tr></template>', 'TestComp'))).toEqual([
             [HtmlElementAst, 'template', 0],
             [HtmlElementAst, 'tr', 1],
+          ]);
+        });
+
+        // https://github.com/angular/angular/issues/5967
+        it('should not add the requiredParent to a template root element', () => {
+          expect(humanizeDom(parser.parse('<tr></tr>', 'TestComp'))).toEqual([
+            [HtmlElementAst, 'tr', 0],
           ]);
         });
 

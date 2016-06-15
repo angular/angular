@@ -266,7 +266,7 @@ class TreeBuilder {
     const tagDef = getHtmlTagDefinition(el.name);
     const {parent, container} = this._getParentElementSkippingContainers();
 
-    if (tagDef.requireExtraParent(isPresent(parent) ? parent.name : null)) {
+    if (isPresent(parent) && tagDef.requireExtraParent(parent.name)) {
       var newParent = new HtmlElementAst(
           tagDef.parentToAdd, [], [], el.sourceSpan, el.startSourceSpan, el.endSourceSpan);
       this._insertBeforeContainer(parent, container, newParent);
