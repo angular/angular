@@ -118,7 +118,7 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
 
   const path = route.path.startsWith('/') ? route.path.substring(1) : route.path;
   const parts = path.split('/');
-  const posParameters = {};
+  const posParameters: {[key: string]: any} = {};
   const consumedPaths = [];
 
   let currentIndex = 0;
@@ -142,7 +142,7 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
     throw new NoMatch();
   }
 
-  const parameters = <any>merge(posParameters, consumedPaths[consumedPaths.length - 1].parameters);
+  const parameters = merge(posParameters, consumedPaths[consumedPaths.length - 1].parameters);
   return {consumedPaths, lastChild: currentIndex, parameters};
 }
 

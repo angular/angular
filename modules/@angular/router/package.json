@@ -63,7 +63,7 @@
     "systemjs-builder": "^0.15.7",
     "traceur": "0.0.96",
     "tsd": "^0.6.5",
-    "typescript": "^1.9.0-dev.20160409",
+    "typescript": "^1.8.10",
     "typings": "^1.0.4",
     "zone.js": "^0.6.6",
     "clang-format": "^1.0.35",

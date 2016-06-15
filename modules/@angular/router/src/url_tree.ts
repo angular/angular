@@ -15,13 +15,13 @@ export class UrlTree {
    */
   constructor(
       public root: UrlSegment, public queryParams: {[key: string]: string},
-      public fragment: string|null) {}
+      public fragment: string) {}
 
   toString(): string { return new DefaultUrlSerializer().serialize(this); }
 }
 
 export class UrlSegment {
-  public parent: UrlSegment|null = null;
+  public parent: UrlSegment = null;
   constructor(
       public pathsWithParams: UrlPathWithParams[], public children: {[key: string]: UrlSegment}) {
     forEach(children, (v, k) => v.parent = this);
@@ -46,7 +46,7 @@ export function equalPathsWithParams(a: UrlPathWithParams[], b: UrlPathWithParam
 
 export function mapChildren(segment: UrlSegment, fn: (v: UrlSegment, k: string) => UrlSegment):
     {[name: string]: UrlSegment} {
-  const newChildren = {};
+  const newChildren: {[name: string]: UrlSegment} = {};
   forEach(segment.children, (child, childOutlet) => {
     if (childOutlet === PRIMARY_OUTLET) {
       newChildren[childOutlet] = fn(child, childOutlet);

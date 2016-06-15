@@ -94,7 +94,8 @@ function expandRegularPathWithParamsAgainstRouteUsingRedirect(
     segment: UrlSegment, routes: Route[], route: Route, paths: UrlPathWithParams[],
     outlet: string): UrlSegment {
   const {consumedPaths, lastChild, positionalParamSegments} = match(segment, route, paths);
-  const newPaths = applyRedirectCommands(consumedPaths, route.redirectTo, positionalParamSegments);
+  const newPaths =
+      applyRedirectCommands(consumedPaths, route.redirectTo, <any>positionalParamSegments);
   if (route.redirectTo.startsWith('/')) {
     throw new GlobalRedirect(newPaths);
   } else {

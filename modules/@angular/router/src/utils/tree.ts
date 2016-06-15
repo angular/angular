@@ -6,7 +6,7 @@ export class Tree<T> {
 
   get root(): T { return this._root.value; }
 
-  parent(t: T): T|null {
+  parent(t: T): T {
     const p = this.pathFromRoot(t);
     return p.length > 1 ? p[p.length - 2] : null;
   }
@@ -16,7 +16,7 @@ export class Tree<T> {
     return n ? n.children.map(t => t.value) : [];
   }
 
-  firstChild(t: T): T|null {
+  firstChild(t: T): T {
     const n = findNode(t, this._root);
     return n && n.children.length > 0 ? n.children[0].value : null;
   }
@@ -34,7 +34,7 @@ export class Tree<T> {
   contains(tree: Tree<T>): boolean { return contains(this._root, tree._root); }
 }
 
-function findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T>|null {
+function findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
   if (expected === c.value) return c;
   for (let cc of c.children) {
     const r = findNode(expected, cc);
