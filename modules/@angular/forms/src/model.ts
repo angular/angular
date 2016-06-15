@@ -282,7 +282,7 @@ export abstract class AbstractControl {
  */
 export class FormControl extends AbstractControl {
   /** @internal */
-  _onChange: Function;
+  _onChange: Function[] = [];
 
   constructor(
       value: any = null, validator: ValidatorFn|ValidatorFn[] = null,
@@ -312,7 +312,9 @@ export class FormControl extends AbstractControl {
   } = {}): void {
     emitModelToViewChange = isPresent(emitModelToViewChange) ? emitModelToViewChange : true;
     this._value = value;
-    if (isPresent(this._onChange) && emitModelToViewChange) this._onChange(this._value);
+    if (this._onChange.length && emitModelToViewChange) {
+      this._onChange.forEach((changeFn) => changeFn(this._value));
+    }
     this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
   }
 
@@ -329,7 +331,7 @@ export class FormControl extends AbstractControl {
   /**
    * Register a listener for change events.
    */
-  registerOnChange(fn: Function): void { this._onChange = fn; }
+  registerOnChange(fn: Function): void { this._onChange.push(fn); }
 }
 
 /**
@@ -364,9 +366,11 @@ export class FormGroup extends AbstractControl {
   /**
    * Register a control with the group's list of controls.
    */
-  registerControl(name: string, control: AbstractControl): void {
+  registerControl(name: string, control: AbstractControl): AbstractControl {
+    if (this.controls[name]) return this.controls[name];
     this.controls[name] = control;
     control.setParent(this);
+    return control;
   }
 
   /**

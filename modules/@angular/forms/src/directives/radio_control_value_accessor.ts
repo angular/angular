@@ -36,7 +36,7 @@ export class RadioControlRegistry {
   select(accessor: RadioControlValueAccessor) {
     this._accessors.forEach((c) => {
       if (this._isSameGroup(c, accessor) && c[1] !== accessor) {
-        c[1].fireUncheck();
+        c[1].fireUncheck(accessor.value);
       }
     });
   }
@@ -49,16 +49,6 @@ export class RadioControlRegistry {
 }
 
 /**
- * The value provided by the forms API for radio buttons.
- *
- * @experimental
- */
-export class RadioButtonState {
-  constructor(public checked: boolean, public value: string) {}
-}
-
-
-/**
  * The accessor for writing a radio control value and listening to changes that is used by the
  * {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName} directives.
  *
@@ -66,13 +56,12 @@ export class RadioButtonState {
  *  ```
  *  @Component({
  *    template: `
- *      <input type="radio" name="food" [(ngModel)]="foodChicken">
- *      <input type="radio" name="food" [(ngModel)]="foodFish">
+ *      <input type="radio" name="food" [(ngModel)]="food" value="chicken">
+ *      <input type="radio" name="food" [(ngModel)]="food" value="fish">
  *    `
  *  })
  *  class FoodCmp {
- *    foodChicken = new RadioButtonState(true, "chicken");
- *    foodFish = new RadioButtonState(false, "fish");
+ *    food = 'chicken';
  *  }
  *  ```
  */
@@ -85,14 +74,16 @@ export class RadioButtonState {
 export class RadioControlValueAccessor implements ControlValueAccessor,
     OnDestroy, OnInit {
   /** @internal */
-  _state: RadioButtonState;
+  _state: boolean;
   /** @internal */
   _control: NgControl;
-  @Input() name: string;
   /** @internal */
   _fn: Function;
   onChange = () => {};
-  onTouched = () => {};
+  onTouched = () => {}
+
+  @Input() name: string;
+  @Input() value: any;
 
   constructor(
       private _renderer: Renderer, private _elementRef: ElementRef,
@@ -106,21 +97,21 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   ngOnDestroy(): void { this._registry.remove(this); }
 
   writeValue(value: any): void {
-    this._state = value;
-    if (isPresent(value) && value.checked) {
-      this._renderer.setElementProperty(this._elementRef.nativeElement, 'checked', true);
+    this._state = value === this.value;
+    if (isPresent(value)) {
+      this._renderer.setElementProperty(this._elementRef.nativeElement, 'checked', this._state);
     }
   }
 
   registerOnChange(fn: (_: any) => {}): void {
     this._fn = fn;
     this.onChange = () => {
-      fn(new RadioButtonState(true, this._state.value));
+      fn(this.value);
       this._registry.select(this);
     };
   }
 
-  fireUncheck(): void { this._fn(new RadioButtonState(false, this._state.value)); }
+  fireUncheck(value: any): void { this.writeValue(value); }
 
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
 }

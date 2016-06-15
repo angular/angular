@@ -9,6 +9,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {NgControl} from './ng_control';
+import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
 import {composeAsyncValidators, composeValidators, setUpControl, setUpFormGroup} from './shared';
 
@@ -107,20 +108,21 @@ export class NgForm extends ControlContainer implements Form {
 
   get controls(): {[key: string]: AbstractControl} { return this.form.controls; }
 
-  addControl(dir: NgControl): FormControl {
+  addControl(dir: NgModel): FormControl {
     const ctrl = new FormControl();
     PromiseWrapper.scheduleMicrotask(() => {
       const container = this._findContainer(dir.path);
-      setUpControl(ctrl, dir);
-      container.registerControl(dir.name, ctrl);
-      ctrl.updateValueAndValidity({emitEvent: false});
+      dir._control = <FormControl>container.registerControl(dir.name, ctrl);
+      setUpControl(dir.control, dir);
+      dir.control.updateValueAndValidity({emitEvent: false});
     });
+
     return ctrl;
   }
 
-  getControl(dir: NgControl): FormControl { return <FormControl>this.form.find(dir.path); }
+  getControl(dir: NgModel): FormControl { return <FormControl>this.form.find(dir.path); }
 
-  removeControl(dir: NgControl): void {
+  removeControl(dir: NgModel): void {
     PromiseWrapper.scheduleMicrotask(() => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
