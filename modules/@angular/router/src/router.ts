@@ -484,8 +484,8 @@ class ActivateRoutes {
       {provide: ActivatedRoute, useValue: future},
       {provide: RouterOutletMap, useValue: outletMap}
     ]);
-    outlet.activate(future._futureSnapshot._resolvedComponentFactory, future, resolved, outletMap);
     advanceActivatedRoute(future);
+    outlet.activate(future._futureSnapshot._resolvedComponentFactory, future, resolved, outletMap);
   }
 
   private deactivateOutletAndItChildren(outlet: RouterOutlet): void {
