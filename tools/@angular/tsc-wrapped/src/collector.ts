@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 
-import {Evaluator, ImportMetadata, ImportSpecifierMetadata, errorSymbol, isPrimitive} from './evaluator';
+import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
 import {ClassMetadata, ConstructorMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isMetadataError, isMetadataSymbolicReferenceExpression} from './schema';
 import {Symbols} from './symbols';
 

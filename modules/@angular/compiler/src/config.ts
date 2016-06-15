@@ -1,7 +1,7 @@
 import {ViewEncapsulation} from '@angular/core';
 
 import {unimplemented} from '../src/facade/exceptions';
-import {Type, assertionsEnabled, isBlank} from '../src/facade/lang';
+import {assertionsEnabled} from '../src/facade/lang';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers} from './identifiers';

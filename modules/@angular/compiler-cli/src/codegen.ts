@@ -152,7 +152,7 @@ export class CodeGenerator {
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser = new HtmlParser();
     const config = new compiler.CompilerConfig({
-      genDebugInfo: true,
+      genDebugInfo: options.debug === true,
       defaultEncapsulation: ViewEncapsulation.Emulated,
       logBindingUpdate: false,
       useJit: false,
