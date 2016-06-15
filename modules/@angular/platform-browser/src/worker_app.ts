@@ -22,9 +22,15 @@ class PrintLogger {
 
 const WORKER_APP_PLATFORM_MARKER = new OpaqueToken('WorkerAppPlatformMarker');
 
+/**
+ * @experimental
+ */
 export const WORKER_APP_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     [PLATFORM_COMMON_PROVIDERS, {provide: WORKER_APP_PLATFORM_MARKER, useValue: true}];
 
+/**
+ * @experimental
+ */
 export const WORKER_APP_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   APPLICATION_COMMON_PROVIDERS, FORM_PROVIDERS, BROWSER_SANITIZATION_PROVIDERS, Serializer,
   {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
@@ -36,6 +42,9 @@ export const WORKER_APP_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any
   {provide: APP_INITIALIZER, useValue: setupWebWorker, multi: true}
 ];
 
+/**
+ * @experimental
+ */
 export function workerAppPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {
     createPlatform(ReflectiveInjector.resolveAndCreate(WORKER_APP_PLATFORM_PROVIDERS));

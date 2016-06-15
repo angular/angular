@@ -29,6 +29,7 @@ const WORKER_RENDER_PLATFORM_MARKER = new OpaqueToken('WorkerRenderPlatformMarke
 /**
  * Wrapper class that exposes the Worker
  * and underlying {@link MessageBus} for lower level message passing.
+ * @experimental
  */
 @Injectable()
 export class WebWorkerInstance {
@@ -42,6 +43,9 @@ export class WebWorkerInstance {
   }
 }
 
+/**
+ * @experimental
+ */
 export const WORKER_SCRIPT: OpaqueToken = new OpaqueToken('WebWorkerScript');
 
 /**
@@ -49,15 +53,22 @@ export const WORKER_SCRIPT: OpaqueToken = new OpaqueToken('WebWorkerScript');
  * created.
  *
  * TODO(vicb): create an interface for startable services to implement
+ * @experimental
  */
 export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
     new OpaqueToken('WorkerRenderStartableMsgService');
 
+/**
+ * * @experimental
+ */
 export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   PLATFORM_COMMON_PROVIDERS, {provide: WORKER_RENDER_PLATFORM_MARKER, useValue: true},
   {provide: PLATFORM_INITIALIZER, useValue: initWebWorkerRenderPlatform, multi: true}
 ];
 
+/**
+ * * @experimental
+ */
 export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   APPLICATION_COMMON_PROVIDERS,
   MessageBasedRenderer,
@@ -108,6 +119,9 @@ function initWebWorkerRenderPlatform(): void {
   BrowserGetTestability.init();
 }
 
+/**
+ * * @experimental
+ */
 export function workerUiPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {
     createPlatform(ReflectiveInjector.resolveAndCreate(WORKER_UI_PLATFORM_PROVIDERS));

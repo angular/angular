@@ -6,6 +6,8 @@ import {getDOM} from '../dom/dom_adapter';
  * it is not possible to bind to the `text` property of the `HTMLTitleElement` elements
  * (representing the `<title>` tag). Instead, this service can be used to set and get the current
  * title value.
+ *
+ * @experimental
  */
 export class Title {
   /**

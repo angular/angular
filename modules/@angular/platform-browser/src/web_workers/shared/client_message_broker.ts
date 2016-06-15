@@ -7,6 +7,9 @@ import {DateWrapper, StringWrapper, isPresent, print, stringify} from '../../fac
 import {MessageBus} from './message_bus';
 import {Serializer} from './serializer';
 
+/**
+ * @experimental
+ */
 export abstract class ClientMessageBrokerFactory {
   /**
    * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
@@ -32,6 +35,9 @@ export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
   }
 }
 
+/**
+ * @experimental
+ */
 export abstract class ClientMessageBroker {
   abstract runOnService(args: UiArguments, returnType: Type): Promise<any>;
 }
@@ -148,10 +154,16 @@ class MessageData {
   }
 }
 
+/**
+ * @experimental
+ */
 export class FnArg {
   constructor(public value: any /** TODO #9100 */, public type: Type) {}
 }
 
+/**
+ * @experimental
+ */
 export class UiArguments {
   constructor(public method: string, public args?: FnArg[]) {}
 }

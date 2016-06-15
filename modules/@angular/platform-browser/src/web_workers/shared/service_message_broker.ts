@@ -29,6 +29,9 @@ export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
   }
 }
 
+/**
+ * @experimental
+ */
 export abstract class ServiceMessageBroker {
   abstract registerMethod(
       methodName: string, signature: Type[], method: Function, returnType?: Type): void;
@@ -88,6 +91,9 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
   }
 }
 
+/**
+ * @experimental
+ */
 export class ReceivedMessage {
   method: string;
   args: any[];
