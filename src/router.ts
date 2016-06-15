@@ -136,25 +136,6 @@ export class Router {
   get events(): Observable<Event> { return this.routerEvents; }
 
   /**
-   * Navigate based on the provided url. This navigation is always absolute.
-   *
-   * Returns a promise that:
-   * - is resolved with 'true' when navigation succeeds
-   * - is resolved with 'false' when navigation fails
-   * - is rejected when an error happens
-   *
-   * ### Usage
-   *
-   * ```
-   * router.navigateByUrl("/team/33/user/11");
-   * ```
-   */
-  navigateByUrl(url: string): Promise<boolean> {
-    const urlTree = this.urlSerializer.parse(url);
-    return this.scheduleNavigation(urlTree, false);
-  }
-
-  /**
    * Resets the configuration used for navigation and generating links.
    *
    * ### Usage
@@ -210,6 +191,29 @@ export class Router {
       UrlTree {
     const a = relativeTo ? relativeTo : this.routerState.root;
     return createUrlTree(a, this.currentUrlTree, commands, queryParams, fragment);
+  }
+
+  /**
+   * Navigate based on the provided url. This navigation is always absolute.
+   *
+   * Returns a promise that:
+   * - is resolved with 'true' when navigation succeeds
+   * - is resolved with 'false' when navigation fails
+   * - is rejected when an error happens
+   *
+   * ### Usage
+   *
+   * ```
+   * router.navigateByUrl("/team/33/user/11");
+   * ```
+   */
+  navigateByUrl(url: string|UrlTree): Promise<boolean> {
+    if (url instanceof UrlTree) {
+      return this.scheduleNavigation(url, false);
+    } else {
+      const urlTree = this.urlSerializer.parse(url);
+      return this.scheduleNavigation(urlTree, false);
+    }
   }
 
   /**
