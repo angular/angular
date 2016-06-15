@@ -3159,6 +3159,11 @@
       "from": "ee-first@1.1.1",
       "resolved": "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz"
     },
+    "ejs": {
+      "version": "2.4.2",
+      "from": "ejs@latest",
+      "resolved": "https://registry.npmjs.org/ejs/-/ejs-2.4.2.tgz"
+    },
     "elliptic": {
       "version": "6.0.2",
       "from": "elliptic@>=6.0.0 <7.0.0",
@@ -8295,6 +8300,7 @@
     "tsickle": {
       "version": "0.1.4",
       "from": "tsickle@0.1.4",
+      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.1.4.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",

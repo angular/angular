@@ -30,7 +30,8 @@ describe('reflector_host', () => {
           basePath: '/tmp/src',
           skipMetadataEmit: false,
           skipTemplateCodegen: false,
-          trace: false
+          trace: false,
+          componentResolver: {}
         },
         context);
   });

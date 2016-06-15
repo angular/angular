@@ -10,6 +10,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './compiler_private';
+import {GeneratedComponentResolverOutput, buildComponentResolverSource} from './component_resolver';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector} from './static_reflector';
@@ -139,6 +140,13 @@ export class CodeGenerator {
                            .map(sf => sf.fileName)
                            .filter(f => !GENERATED_FILES.test(f))
                            .map(generateOneFile);
+
+    compPromises.push(new Promise<void>(r => {
+      var genOutput = buildComponentResolverSource(this.options);
+      var finalFilePath = path.join(this.options.genDir, genOutput.filePath);
+      this.host.writeFile(finalFilePath, genOutput.content, false, () => r(), []);
+    }));
+
     return Promise.all(stylesheetPromises.concat(compPromises));
   }
 
