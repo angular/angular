@@ -52,7 +52,7 @@ function publishRepo {
     git commit -m "${COMMIT_MSG}" && \
     git push origin master && \
     git tag "${BUILD_VER}" && \
-    git push origin --tags
+    git push origin --tags --force
   )
 }
 
