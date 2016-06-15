@@ -151,31 +151,15 @@ export class StaticReflector implements ReflectorReader {
 
   private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
     this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => {
-      let argValues: any[] = [];
-      args.forEach((arg, index) => {
-        let argValue: any;
-        if (typeof arg === 'object' && !arg['__symbolic']) {
-          argValue = mapStringMap(arg, (value, key) => this.simplify(context, value));
-        } else {
-          argValue = this.simplify(context, arg);
-        }
-        argValues.push(argValue);
-      });
       var metadata = Object.create(ctor.prototype);
-      ctor.apply(metadata, argValues);
+      ctor.apply(metadata, args);
       return metadata;
     });
   }
 
   private registerFunction(type: StaticSymbol, fn: any): void {
-    this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => {
-      let argValues: any[] = [];
-      args.forEach((arg, index) => {
-        let argValue = this.simplify(context, arg);
-        argValues.push(argValue);
-      });
-      return fn.apply(null, argValues);
-    });
+    this.conversionMap.set(
+        type, (context: StaticSymbol, args: any[]) => { return fn.apply(undefined, args); });
   }
 
   private initializeConversionMap(): void {
@@ -251,7 +235,7 @@ export class StaticReflector implements ReflectorReader {
     let scope = BindingScope.empty;
     let calling = new Map<StaticSymbol, boolean>();
 
-    function simplifyInContext(context: StaticSymbol, value: any): any {
+    function simplifyInContext(context: StaticSymbol, value: any, depth: number): any {
       function resolveReference(expression: any): StaticSymbol {
         let staticSymbol: StaticSymbol;
         if (expression['module']) {
@@ -274,8 +258,12 @@ export class StaticReflector implements ReflectorReader {
       }
 
       function simplifyCall(expression: any) {
+        let context: {[name: string]: string}|undefined = undefined;
         if (expression['__symbolic'] == 'call') {
           let target = expression['expression'];
+          if (target && target.__symbolic === 'reference') {
+            context = {name: target.name};
+          }
           let targetFunction = simplify(target);
           if (targetFunction['__symbolic'] == 'function') {
             if (calling.get(targetFunction)) {
@@ -305,7 +293,13 @@ export class StaticReflector implements ReflectorReader {
           }
         }
 
-        return simplify({__symbolic: 'error', message: 'Function call not supported'});
+        if (depth === 0) {
+          // If depth is 0 we are evaluating the top level expression that is describing element
+          // decorator. In this case, it is a decorator we don't understand, such as a custom
+          // non-angular decorator, and we should just ignore it.
+          return {__symbolic: 'ignore'};
+        }
+        return simplify({__symbolic: 'error', message: 'Function call not supported', context});
       }
 
       function simplify(expression: any): any {
@@ -325,7 +319,11 @@ export class StaticReflector implements ReflectorReader {
                 continue;
               }
             }
-            result.push(simplify(item));
+            let value = simplify(item);
+            if (shouldIgnore(value)) {
+              continue;
+            }
+            result.push(value);
           }
           return result;
         }
@@ -335,7 +333,9 @@ export class StaticReflector implements ReflectorReader {
             switch (expression['__symbolic']) {
               case 'binop':
                 let left = simplify(expression['left']);
+                if (shouldIgnore(left)) return left;
                 let right = simplify(expression['right']);
+                if (shouldIgnore(right)) return right;
                 switch (expression['operator']) {
                   case '&&':
                     return left && right;
@@ -381,6 +381,7 @@ export class StaticReflector implements ReflectorReader {
                 return null;
               case 'pre':
                 let operand = simplify(expression['operand']);
+                if (shouldIgnore(operand)) return operand;
                 switch (expression['operator']) {
                   case '+':
                     return operand;
@@ -421,7 +422,7 @@ export class StaticReflector implements ReflectorReader {
                     // reference to the symbol.
                     return staticSymbol;
                   }
-                  result = simplifyInContext(staticSymbol, declarationValue);
+                  result = simplifyInContext(staticSymbol, declarationValue, depth + 1);
                 }
                 return result;
               case 'class':
@@ -440,11 +441,12 @@ export class StaticReflector implements ReflectorReader {
                 }
                 let converter = _this.conversionMap.get(staticSymbol);
                 if (converter) {
-                  let args = expression['arguments'];
+                  let args: any[] = expression['arguments'];
                   if (!args) {
                     args = [];
                   }
-                  return converter(context, args);
+                  return converter(
+                      context, args.map(arg => simplifyInContext(context, arg, depth + 1)));
                 }
 
                 // Determine if the function is one we can simplify.
@@ -472,7 +474,11 @@ export class StaticReflector implements ReflectorReader {
       }
     }
 
-    return simplifyInContext(context, value);
+    let result = simplifyInContext(context, value, 0);
+    if (shouldIgnore(result)) {
+      return undefined;
+    }
+    return result;
   }
 
   /**
@@ -527,7 +533,10 @@ function expandedMessage(error: any): string {
       }
       break;
     case 'Function call not supported':
-      return 'Function calls are not supported. Consider replacing the function or lambda with a reference to an exported function';
+      let prefix =
+          error.context && error.context.name ? `Calling function '${error.context.name}', f` : 'F';
+      return prefix +
+          'unction calls are not supported. Consider replacing the function or lambda with a reference to an exported function';
   }
   return error.message;
 }
@@ -540,7 +549,12 @@ function mapStringMap(input: {[key: string]: any}, transform: (value: any, key: 
     {[key: string]: any} {
   if (!input) return {};
   var result: {[key: string]: any} = {};
-  Object.keys(input).forEach((key) => { result[key] = transform(input[key], key); });
+  Object.keys(input).forEach((key) => {
+    let value = transform(input[key], key);
+    if (!shouldIgnore(value)) {
+      result[key] = value;
+    }
+  });
   return result;
 }
 
@@ -583,4 +597,8 @@ class PopulatedScope extends BindingScope {
 
 function sameSymbol(a: StaticSymbol, b: StaticSymbol): boolean {
   return a === b || (a.name == b.name && a.filePath == b.filePath);
+}
+
+function shouldIgnore(value: any): boolean {
+  return value && value.__symbolic == 'ignore';
 }

@@ -36,6 +36,15 @@ export class Symbols {
             const externalReference =
                 <ts.ExternalModuleReference>importEqualsDeclaration.moduleReference;
             // An `import <identifier> = require(<module-specifier>);
+            if (!externalReference.expression.parent) {
+              // The `parent` field of a node is set by the TypeScript binder (run as
+              // part of the type checker). Setting it here allows us to call `getText()`
+              // even if the `SourceFile` was not type checked (which looks for `SourceFile`
+              // in the parent chain). This doesn't damage the node as the binder unconditionally
+              // sets the parent.
+              externalReference.expression.parent = externalReference;
+              externalReference.parent = this.sourceFile;
+            }
             const from = stripQuotes(externalReference.expression.getText());
             symbols.set(importEqualsDeclaration.name.text, {__symbolic: 'reference', module: from});
           } else {
@@ -49,6 +58,11 @@ export class Symbols {
           if (!importDecl.importClause) {
             // An `import <module-specifier>` clause which does not bring symbols into scope.
             break;
+          }
+          if (!importDecl.moduleSpecifier.parent) {
+            // See note above in the `ImportEqualDeclaration` case.
+            importDecl.moduleSpecifier.parent = importDecl;
+            importDecl.parent = this.sourceFile;
           }
           const from = stripQuotes(importDecl.moduleSpecifier.getText());
           if (importDecl.importClause.name) {
