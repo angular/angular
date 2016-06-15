@@ -1,12 +1,8 @@
 {
-  "angularCompilerOptions": {
-    "skipTemplateCodegen": true
-  },
   "compilerOptions": {
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",

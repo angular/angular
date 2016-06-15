@@ -60,18 +60,21 @@ export interface SkipSelfMetadataFactory {
 /**
  * Factory for creating {@link InjectMetadata}.
  * @stable
+ * @Annotation
  */
 export var Inject: InjectMetadataFactory = makeParamDecorator(InjectMetadata);
 
 /**
  * Factory for creating {@link OptionalMetadata}.
  * @stable
+ * @Annotation
  */
 export var Optional: OptionalMetadataFactory = makeParamDecorator(OptionalMetadata);
 
 /**
  * Factory for creating {@link InjectableMetadata}.
  * @stable
+ * @Annotation
  */
 export var Injectable: InjectableMetadataFactory =
     <InjectableMetadataFactory>makeDecorator(InjectableMetadata);
@@ -79,17 +82,20 @@ export var Injectable: InjectableMetadataFactory =
 /**
  * Factory for creating {@link SelfMetadata}.
  * @stable
+ * @Annotation
  */
 export var Self: SelfMetadataFactory = makeParamDecorator(SelfMetadata);
 
 /**
  * Factory for creating {@link HostMetadata}.
  * @stable
+ * @Annotation
  */
 export var Host: HostMetadataFactory = makeParamDecorator(HostMetadata);
 
 /**
  * Factory for creating {@link SkipSelfMetadata}.
  * @stable
+ * @Annotation
  */
 export var SkipSelf: SkipSelfMetadataFactory = makeParamDecorator(SkipSelfMetadata);

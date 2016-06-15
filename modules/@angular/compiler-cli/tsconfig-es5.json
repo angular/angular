@@ -1,7 +1,4 @@
 {
-  "angularCompilerOptions": {
-    "skipTemplateCodegen": true
-  },
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
