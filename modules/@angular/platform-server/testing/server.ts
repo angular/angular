@@ -2,10 +2,10 @@ import {MockLocationStrategy} from '@angular/common/testing';
 import {COMPILER_PROVIDERS, DirectiveResolver, ViewResolver, XHR} from '@angular/compiler';
 import {MockDirectiveResolver, MockViewResolver, TestComponentBuilder, TestComponentRenderer} from '@angular/compiler/testing';
 import {APPLICATION_COMMON_PROVIDERS, APP_ID, NgZone, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, RootRenderer} from '@angular/core';
-import {DOMTestComponentRenderer} from '@angular/platform-browser-dynamic/testing';
 import {BrowserDetection} from '@angular/platform-browser/testing';
 
 import {AnimationDriver, NoOpAnimationDriver} from '../core_private';
+import {DOMTestComponentRenderer} from '../platform_browser_dynamic_testing_private';
 import {Parse5DomAdapter} from '../src/parse5_adapter';
 
 import {DOCUMENT, BROWSER_SANITIZATION_PROVIDERS, EventManager, EVENT_MANAGER_PLUGINS, ELEMENT_PROBE_PROVIDERS, DomEventsPlugin,} from '@angular/platform-browser';

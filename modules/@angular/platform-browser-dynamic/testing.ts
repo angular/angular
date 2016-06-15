@@ -5,6 +5,8 @@ import {TEST_BROWSER_APPLICATION_PROVIDERS, TEST_BROWSER_PLATFORM_PROVIDERS} fro
 import {BROWSER_APP_COMPILER_PROVIDERS} from './index';
 import {DOMTestComponentRenderer} from './testing/dom_test_component_renderer';
 
+export * from './private_export_testing'
+
 /**
  * Default platform providers for testing.
  */

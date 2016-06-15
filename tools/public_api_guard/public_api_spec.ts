@@ -1656,6 +1656,7 @@ const PLATFORM_BROWSER_DYNAMIC = [
 const PLATFORM_BROWSER_DYNAMIC_TESTING = [
   'const TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS:Array<any>',
   'const TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS:Array<any>',
+  'var __platform_browser_dynamic_private__:any',
 ];
 
 
