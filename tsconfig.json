@@ -35,6 +35,7 @@
     "src/interfaces.ts",
     "src/utils/tree.ts",
     "src/utils/collection.ts",
+    "test/url_tree.spec.ts",
     "test/utils/tree.spec.ts",
     "test/url_serializer.spec.ts",
     "test/apply_redirects.spec.ts",

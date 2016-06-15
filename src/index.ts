@@ -1,4 +1,5 @@
 import {RouterLink} from './directives/router_link';
+import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 
 export {ExtraOptions} from './common_router_providers';
@@ -12,4 +13,4 @@ export {PRIMARY_OUTLET, Params} from './shared';
 export {DefaultUrlSerializer, UrlSerializer} from './url_serializer';
 export {UrlPathWithParams, UrlTree} from './url_tree';
 
-export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink];
+export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkActive];
