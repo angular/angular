@@ -9,9 +9,9 @@ so the `@Directive` configuration applies to components as well{@endtarget}
 
 @cheatsheetItem
 syntax(ts dart):
-`viewProviders: [MyService, provide(...)]`|`viewProviders:`
+`viewProviders: [MyService, { provide: ... }]`|`viewProviders:`
 syntax(js):
-`viewProviders: [MyService, ng.core.provide(...)]`|`viewProviders:`
+`viewProviders: [MyService, { provide: ... }]`|`viewProviders:`
 description:
 Array of dependency injection providers scoped to this component's view.
 
