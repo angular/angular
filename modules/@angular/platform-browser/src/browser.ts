@@ -58,7 +58,6 @@ export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   Testability, EventManager, ELEMENT_PROBE_PROVIDERS
 ];
 
-
 export function browserPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {
     createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));

@@ -44,6 +44,7 @@ for PACKAGE in \
   core \
   compiler \
   common \
+  forms \
   platform-browser \
   platform-browser-dynamic \
   platform-server \

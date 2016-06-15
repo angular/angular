@@ -1,30 +1,30 @@
-import {Directive, Inject, OnChanges, Optional, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {ListWrapper, StringMapWrapper} from '../../facade/collection';
 import {BaseException} from '../../facade/exceptions';
 import {isBlank} from '../../facade/lang';
-import {Control, ControlGroup} from '../model';
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../validators';
+import {FormControl, FormGroup} from '../../model';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
+import {ControlContainer} from '../control_container';
+import {Form} from '../form_interface';
+import {NgControl} from '../ng_control';
+import {composeAsyncValidators, composeValidators, setUpControl, setUpFormGroup} from '../shared';
 
-import {ControlContainer} from './control_container';
-import {Form} from './form_interface';
-import {NgControl} from './ng_control';
-import {NgControlGroup} from './ng_control_group';
-import {composeAsyncValidators, composeValidators, setUpControl, setUpControlGroup} from './shared';
+import {FormGroupName} from './form_group_name';
 
 export const formDirectiveProvider: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
       provide: ControlContainer,
-      useExisting: forwardRef(() => NgFormModel)
+      useExisting: forwardRef(() => FormGroupDirective)
     };
 
 /**
- * Binds an existing control group to a DOM element.
+ * Binds an existing form group to a DOM element.
  *
  * ### Example ([live demo](http://plnkr.co/edit/jqrVirudY8anJxTMUjTP?p=preview))
  *
- * In this example, we bind the control group to the form element, and we bind the login and
+ * In this example, we bind the form group to the form element, and we bind the login and
  * password controls to the login and password elements.
  *
  *  ```typescript
@@ -32,24 +32,24 @@ export const formDirectiveProvider: any =
  *   selector: 'my-app',
  *   template: `
  *     <div>
- *       <h2>NgFormModel Example</h2>
- *       <form [ngFormModel]="loginForm">
- *         <p>Login: <input type="text" ngControl="login"></p>
- *         <p>Password: <input type="password" ngControl="password"></p>
+ *       <h2>Binding an existing form group</h2>
+ *       <form [formGroup]="loginForm">
+ *         <p>Login: <input type="text" formControlName="login"></p>
+ *         <p>Password: <input type="password" formControlName="password"></p>
  *       </form>
  *       <p>Value:</p>
  *       <pre>{{value}}</pre>
  *     </div>
  *   `,
- *   directives: [FORM_DIRECTIVES]
+ *   directives: [REACTIVE_FORM_DIRECTIVES]
  * })
  * export class App {
- *   loginForm: ControlGroup;
+ *   loginForm: FormGroup;
  *
  *   constructor() {
- *     this.loginForm = new ControlGroup({
- *       login: new Control(""),
- *       password: new Control("")
+ *     this.loginForm = new FormGroup({
+ *       login: new FormControl(""),
+ *       password: new FormControl("")
  *     });
  *   }
  *
@@ -64,23 +64,23 @@ export const formDirectiveProvider: any =
  *  ```typescript
  * @Component({
  *      selector: "login-comp",
- *      directives: [FORM_DIRECTIVES],
+ *      directives: [REACTIVE_FORM_DIRECTIVES],
  *      template: `
- *        <form [ngFormModel]='loginForm'>
- *          Login <input type='text' ngControl='login' [(ngModel)]='credentials.login'>
- *          Password <input type='password' ngControl='password'
+ *        <form [formGroup]='loginForm'>
+ *          Login <input type='text' formControlName='login' [(ngModel)]='credentials.login'>
+ *          Password <input type='password' formControlName='password'
  *                          [(ngModel)]='credentials.password'>
  *          <button (click)="onLogin()">Login</button>
  *        </form>`
  *      })
  * class LoginComp {
  *  credentials: {login: string, password: string};
- *  loginForm: ControlGroup;
+ *  loginForm: FormGroup;
  *
  *  constructor() {
- *    this.loginForm = new ControlGroup({
- *      login: new Control(""),
- *      password: new Control("")
+ *    this.loginForm = new FormGroup({
+ *      login: new FormControl(""),
+ *      password: new FormControl("")
  *    });
  *  }
  *
@@ -94,30 +94,23 @@ export const formDirectiveProvider: any =
  *  @experimental
  */
 @Directive({
-  selector: '[ngFormModel]',
+  selector: '[formGroup]',
   providers: [formDirectiveProvider],
-  inputs: ['form: ngFormModel'],
   host: {'(submit)': 'onSubmit()'},
-  outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
-export class NgFormModel extends ControlContainer implements Form,
+export class FormGroupDirective extends ControlContainer implements Form,
     OnChanges {
   private _submitted: boolean = false;
-
-  form: ControlGroup = null;
   directives: NgControl[] = [];
-  ngSubmit = new EventEmitter();
+
+  @Input('formGroup') form: FormGroup = null;
+  @Output() ngSubmit = new EventEmitter();
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
-    console.warn(`
-      *It looks like you're using the old forms module. This will be opt-in in the next RC, and
-      will eventually be removed in favor of the new forms module. For more information, see:
-      https://docs.google.com/document/u/1/d/1RIezQqE4aEhBRmArIAS1mRIZtWFf6JxN_7B4meyWK0Y/pub
-    `);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -139,35 +132,34 @@ export class NgFormModel extends ControlContainer implements Form,
 
   get formDirective(): Form { return this; }
 
-  get control(): ControlGroup { return this.form; }
+  get control(): FormGroup { return this.form; }
 
   get path(): string[] { return []; }
 
-  addControl(dir: NgControl): void {
-    var ctrl: any = this.form.find(dir.path);
+  addControl(dir: NgControl): FormControl {
+    const ctrl: any = this.form.find(dir.path);
     setUpControl(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
+    return ctrl;
   }
 
-  getControl(dir: NgControl): Control { return <Control>this.form.find(dir.path); }
+  getControl(dir: NgControl): FormControl { return <FormControl>this.form.find(dir.path); }
 
   removeControl(dir: NgControl): void { ListWrapper.remove(this.directives, dir); }
 
-  addControlGroup(dir: NgControlGroup) {
+  addFormGroup(dir: FormGroupName) {
     var ctrl: any = this.form.find(dir.path);
-    setUpControlGroup(ctrl, dir);
+    setUpFormGroup(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
-  removeControlGroup(dir: NgControlGroup) {}
+  removeFormGroup(dir: FormGroupName) {}
 
-  getControlGroup(dir: NgControlGroup): ControlGroup {
-    return <ControlGroup>this.form.find(dir.path);
-  }
+  getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.find(dir.path); }
 
   updateModel(dir: NgControl, value: any): void {
-    var ctrl  = <Control>this.form.find(dir.path);
+    var ctrl  = <FormControl>this.form.find(dir.path);
     ctrl.updateValue(value);
   }
 
@@ -187,8 +179,9 @@ export class NgFormModel extends ControlContainer implements Form,
 
   private _checkFormPresent() {
     if (isBlank(this.form)) {
-      throw new BaseException(
-          `ngFormModel expects a form. Please pass one in. Example: <form [ngFormModel]="myCoolForm">`);
+      throw new BaseException(`formGroup expects a FormGroup instance. Please pass one in.
+           Example: <form [formGroup]="myFormGroup">
+      `);
     }
   }
 }

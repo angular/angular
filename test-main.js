@@ -32,6 +32,10 @@ System.config({
       main: 'index.js',
       defaultExtension: 'js'
     },
+    '@angular/forms': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
     // remove after all tests imports are fixed
     '@angular/facade': {
       main: 'index.js',

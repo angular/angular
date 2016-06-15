@@ -1,6 +1,6 @@
 import {COMMON_DIRECTIVES, COMMON_PIPES} from '@angular/common';
 import {COMPILER_PROVIDERS, CompilerConfig, XHR} from '@angular/compiler';
-import {ApplicationRef, ComponentRef, ReflectiveInjector, Type, coreLoadAndBootstrap} from '@angular/core';
+import {ApplicationRef, ComponentRef, PLATFORM_DIRECTIVES, PLATFORM_PIPES, ReflectiveInjector, Type, coreLoadAndBootstrap} from '@angular/core';
 import {BROWSER_APP_PROVIDERS, WORKER_APP_APPLICATION_PROVIDERS, WORKER_RENDER_APPLICATION_PROVIDERS, WORKER_SCRIPT, browserPlatform, workerAppPlatform, workerRenderPlatform} from '@angular/platform-browser';
 
 import {ReflectionCapabilities, reflector} from './core_private';
@@ -11,13 +11,16 @@ import {XHRImpl} from './src/xhr/xhr_impl';
 
 
 export const BROWSER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  COMPILER_PROVIDERS,
-  {
+  COMPILER_PROVIDERS, {
     provide: CompilerConfig,
-    useValue:
-        new CompilerConfig({platformDirectives: COMMON_DIRECTIVES, platformPipes: COMMON_PIPES})
+    useFactory: (platformDirectives: any[], platformPipes: any[]) => {
+      return new CompilerConfig({platformDirectives, platformPipes});
+    },
+    deps: [PLATFORM_DIRECTIVES, PLATFORM_PIPES]
   },
   {provide: XHR, useClass: XHRImpl},
+  {provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
+  {provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true}
 ];
 
 
@@ -125,13 +128,16 @@ export function bootstrapRender(
 
 
 const WORKER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  COMPILER_PROVIDERS,
-  {
+  COMPILER_PROVIDERS, {
     provide: CompilerConfig,
-    useValue:
-        new CompilerConfig({platformDirectives: COMMON_DIRECTIVES, platformPipes: COMMON_PIPES})
+    useFactory: (platformDirectives: any[], platformPipes: any[]) => {
+      return new CompilerConfig({platformDirectives, platformPipes});
+    },
+    deps: [PLATFORM_DIRECTIVES, PLATFORM_PIPES]
   },
   {provide: XHR, useClass: XHRImpl},
+  {provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
+  {provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true}
 ];
 
 
