@@ -17,8 +17,8 @@ Does not support parent-child relationship selectors.
 
 @cheatsheetItem
 syntax(ts dart):
-`providers: [MyService, provide(...)]`|`providers:`
+`providers: [MyService, { provide: ... }]`|`providers:`
 syntax(js):
-`providers: [MyService, ng.core.provide(...)]`|`providers:`
+`providers: [MyService, { provide: ... }]`|`providers:`
 description:
 Array of dependency injection providers for this directive and its children.
