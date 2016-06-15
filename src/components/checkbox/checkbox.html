@@ -11,7 +11,8 @@
            [attr.aria-labelledby]="ariaLabelledby"
            (focus)="onInputFocus()"
            (blur)="onInputBlur()"
-           (change)="onInteractionEvent($event)">
+           (change)="onInteractionEvent($event)"
+           (click)="onInputClick($event)">
     <div class="md-ink-ripple"></div>
     <div class="md-checkbox-frame"></div>
     <div class="md-checkbox-background">

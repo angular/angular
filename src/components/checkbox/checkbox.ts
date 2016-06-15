@@ -278,6 +278,18 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
     }
   }
 
+  /** @internal */
+  onInputClick(event: Event) {
+    // We have to stop propagation for click events on the visual hidden input element.
+    // By default, when a user clicks on a label element, a generated click event will be
+    // dispatched on the associated input element. Since we are using a label element as our
+    // root container, the click event on the `checkbox` will be executed twice.
+    // The real click event will bubble up, and the generated click event also tries to bubble up.
+    // This will lead to multiple click events.
+    // Preventing bubbling for the second event will solve that issue.
+    event.stopPropagation();
+  }
+
   private _getAnimationClassForCheckStateTransition(
       oldState: TransitionCheckState, newState: TransitionCheckState): string {
     var animSuffix: string;

@@ -183,6 +183,26 @@ describe('MdCheckbox', () => {
       expect(checkboxNativeElement.classList).toContain('md-checkbox-align-end');
     });
 
+    it('should not trigger the click event multiple times', () => {
+      // By default, when clicking on a label element, a generated click will be dispatched
+      // on the associated input element.
+      // Since we're using a label element and a visual hidden input, this behavior can led
+      // to an issue, where the click events on the checkbox are getting executed twice.
+
+      spyOn(testComponent, 'onCheckboxClick');
+
+      expect(inputElement.checked).toBe(false);
+      expect(checkboxNativeElement.classList).not.toContain('md-checkbox-checked');
+
+      labelElement.click();
+      fixture.detectChanges();
+
+      expect(checkboxNativeElement.classList).toContain('md-checkbox-checked');
+      expect(inputElement.checked).toBe(true);
+
+      expect(testComponent.onCheckboxClick).toHaveBeenCalledTimes(1);
+    });
+
     it('should emit a change event when the `checked` value changes', () => {
       // TODO(jelbourn): this *should* work with async(), but fixture.whenStable currently doesn't
       // know to look at pending macro tasks.
@@ -463,7 +483,8 @@ describe('MdCheckbox', () => {
         [checked]="isChecked" 
         [indeterminate]="isIndeterminate" 
         [disabled]="isDisabled"
-        (change)="changeCount = changeCount + 1">
+        (change)="changeCount = changeCount + 1"
+        (click)="onCheckboxClick($event)">
       Simple checkbox
     </md-checkbox>
   </div>`
@@ -476,6 +497,8 @@ class SingleCheckbox {
   parentElementClicked: boolean = false;
   parentElementKeyedUp: boolean = false;
   lastKeydownEvent: Event = null;
+
+  onCheckboxClick(event: Event) {}
 }
 
 /** Simple component for testing an MdCheckbox with ngModel and ngControl. */

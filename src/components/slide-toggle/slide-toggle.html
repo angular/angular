@@ -17,7 +17,8 @@
            [attr.aria-labelledby]="ariaLabelledby"
            (blur)="onInputBlur()"
            (focus)="onInputFocus()"
-           (change)="onChangeEvent($event)">
+           (change)="onChangeEvent($event)"
+           (click)="onInputClick($event)">
   </div>
   <span class="md-slide-toggle-content">
     <ng-content></ng-content>

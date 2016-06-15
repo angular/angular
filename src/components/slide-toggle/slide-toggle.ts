@@ -38,7 +38,6 @@ let nextId = 0;
     '[class.md-disabled]': 'disabled',
     // This md-slide-toggle prefix will change, once the temporary ripple is removed.
     '[class.md-slide-toggle-focused]': '_hasFocus',
-    '(click)': 'onTouched()',
     '(mousedown)': 'setMousedown()'
   },
   templateUrl: 'slide-toggle.html',
@@ -90,6 +89,20 @@ export class MdSlideToggle implements ControlValueAccessor {
     if (!this.disabled) {
       this.toggle();
     }
+  }
+
+  /** @internal */
+  onInputClick(event: Event) {
+    this.onTouched();
+
+    // We have to stop propagation for click events on the visual hidden input element.
+    // By default, when a user clicks on a label element, a generated click event will be
+    // dispatched on the associated input element. Since we are using a label element as our
+    // root container, the click event on the `slide-toggle` will be executed twice.
+    // The real click event will bubble up, and the generated click event also tries to bubble up.
+    // This will lead to multiple click events.
+    // Preventing bubbling for the second event will solve that issue.
+    event.stopPropagation();
   }
 
   /** @internal */
