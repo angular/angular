@@ -42,7 +42,7 @@ export const formControlBinding: any =
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',
   providers: [formControlBinding],
-  exportAs: 'ngForm'
+  exportAs: 'ngModel'
 })
 export class NgModel extends NgControl implements OnChanges,
     OnDestroy {
