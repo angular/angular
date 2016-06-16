@@ -20,6 +20,15 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual("/one/11/two/22");
   });
 
+  
+  it("should stringify positional parameters", () => {
+    const p = serializer.parse("/a/b");
+    const t = createRoot(p, ["/one", 11]);
+    const params = t.root.children[PRIMARY_OUTLET].pathsWithParams;
+    expect(params[0].path).toEqual("one");
+    expect(params[1].path).toEqual("11");
+  });
+
   it("should preserve secondary segments", () => {
     const p = serializer.parse("/a/11/b(right:c)");
     const t = createRoot(p, ["/a", 11, 'd']);

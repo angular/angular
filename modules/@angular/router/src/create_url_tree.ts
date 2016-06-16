@@ -124,7 +124,7 @@ function findStartingPosition(
 }
 
 function getPath(command: any): any {
-  if (!(typeof command === 'string')) return command;
+  if (!(typeof command === 'string')) return command.toString();
   const parts = command.toString().split(':');
   return parts.length > 1 ? parts[1] : command;
 }
@@ -202,6 +202,7 @@ function createNewSegment(segment: UrlSegment, startIndex: number, commands: any
   const paths = segment.pathsWithParams.slice(0, startIndex);
   let i = 0;
   while (i < commands.length) {
+    // if we start with an object literal, we need to reuse the path part from the segment
     if (i === 0 && (typeof commands[0] === 'object')) {
       const p = segment.pathsWithParams[startIndex];
       paths.push(new UrlPathWithParams(p.path, commands[0]));
