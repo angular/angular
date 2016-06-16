@@ -30,6 +30,6 @@ function validateNode(route: Route): void {
     throw new Error(`Invalid route configuration: routes must have path specified`);
   }
   if (route.path.startsWith('/')) {
-    throw new Error(`Invalid route configuration of route '/a': path cannot start with a slash`);
+    throw new Error(`Invalid route configuration of route '${route.path}': path cannot start with a slash`);
   }
 }
