@@ -7,6 +7,7 @@
 
 ## Bug Fixes
 * fix(router): stringify positional parameters when using routerLink
+* fix(router): change serialize not to require parenthesis in query string to be encoded
 
 ## Breaking Changes
 
