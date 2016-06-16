@@ -158,63 +158,6 @@ describe('recognize', () => {
     });
   });
 
-  describe("index", () => {
-    it("should support root index routes", () => {
-      checkRecognize([
-        {index: true, component: ComponentA}
-      ], "", (s:RouterStateSnapshot) => {
-        checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
-      });
-    });
-
-    it("should support nested root index routes", () => {
-      checkRecognize([
-        {index: true, component: ComponentA, children: [{index: true, component: ComponentB}]}
-      ], "", (s:RouterStateSnapshot) => {
-        checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
-        checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
-      });
-    });
-
-    it("should support index routes", () => {
-      checkRecognize([
-        {path: 'a', component: ComponentA, children: [
-          {index: true, component: ComponentB}
-        ]}
-      ], "a", (s:RouterStateSnapshot) => {
-        checkActivatedRoute(s.firstChild(s.root), "a", {}, ComponentA);
-        checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
-      });
-    });
-
-    it("should support index routes with children", () => {
-      checkRecognize([
-        {
-          index: true, component: ComponentA, children: [
-          { index: true, component: ComponentB, children: [
-            {path: 'c/:id', component: ComponentC}
-          ]
-          }
-        ]
-        }
-      ], "c/10", (s:RouterStateSnapshot) => {
-        checkActivatedRoute(s.firstChild(s.root), "", {}, ComponentA);
-        checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {}, ComponentB);
-        checkActivatedRoute(
-          s.firstChild(<any>s.firstChild(<any>s.firstChild(s.root))), "c/10", {id: '10'}, ComponentC);
-      });
-    });
-
-    xit("should pass parameters to every nested index route (case with non-index route)", () => {
-      checkRecognize([
-        {path: 'a', component: ComponentA, children: [{index: true, component: ComponentB}]}
-      ], "/a;a=1", (s:RouterStateSnapshot) => {
-        checkActivatedRoute(s.firstChild(s.root), "a", {a: '1'}, ComponentA);
-        checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), "", {a: '1'}, ComponentB);
-      });
-    });
-  });
-
   describe("matching empty url", () => {
     it("should support root index routes", () => {
       recognize(RootComponent, [

@@ -111,7 +111,7 @@ function processPathsWithParamsAgainstRoute(
 }
 
 function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
-  if (route.index || route.path === '' || route.path === '/') {
+  if (route.path === '' || route.path === '/') {
     if (route.terminal && (Object.keys(segment.children).length > 0 || paths.length > 0)) {
       throw new NoMatch();
     } else {
