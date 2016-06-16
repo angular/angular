@@ -110,6 +110,9 @@ export function bootstrap(
 }
 
 
+/**
+ * @experimental
+ */
 export function bootstrapWorkerUi(
     workerScriptUri: string,
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ApplicationRef> {
@@ -127,6 +130,9 @@ export function bootstrapWorkerUi(
 }
 
 
+/**
+ * @experimental
+ */
 const WORKER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   COMPILER_PROVIDERS, {
     provide: CompilerConfig,
@@ -141,6 +147,9 @@ const WORKER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
 ];
 
 
+/**
+ * @experimental
+ */
 export function bootstrapWorkerApp(
     appComponentType: Type,
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<any>> {

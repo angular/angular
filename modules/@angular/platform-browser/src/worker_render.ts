@@ -59,7 +59,7 @@ export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
     new OpaqueToken('WorkerRenderStartableMsgService');
 
 /**
- * * @experimental
+ * @experimental
  */
 export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   PLATFORM_COMMON_PROVIDERS, {provide: WORKER_RENDER_PLATFORM_MARKER, useValue: true},
@@ -67,7 +67,7 @@ export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/
 ];
 
 /**
- * * @experimental
+ * @experimental
  */
 export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   APPLICATION_COMMON_PROVIDERS,
@@ -120,7 +120,7 @@ function initWebWorkerRenderPlatform(): void {
 }
 
 /**
- * * @experimental
+ * @experimental
  */
 export function workerUiPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {
