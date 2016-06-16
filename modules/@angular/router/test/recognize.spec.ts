@@ -55,7 +55,7 @@ describe('recognize', () => {
   it('should set url segment and index properly (nested case)', () => {
     const url = tree("a/b/c");
     recognize(RootComponent, [
-      { path: '/a/b', component: ComponentA, children: [
+      { path: 'a/b', component: ComponentA, children: [
         {path: 'c', component: ComponentC}
       ] },
     ], url, "a/b/c").subscribe((s:RouterStateSnapshot) => {
