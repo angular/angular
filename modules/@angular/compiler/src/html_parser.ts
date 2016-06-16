@@ -336,7 +336,7 @@ class TreeBuilder {
 
     for (let i = this.elementStack.length - 1; i >= 0; i--) {
       if (this.elementStack[i].name !== 'ng-container') {
-        return { parent: this.elementStack[i], container };
+        return {parent: this.elementStack[i], container};
       }
       container = this.elementStack[i];
     }
