@@ -111,7 +111,7 @@ function processPathsWithParamsAgainstRoute(
 }
 
 function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
-  if (route.path === '' || route.path === '/') {
+  if (route.path === '') {
     if (route.terminal && (Object.keys(segment.children).length > 0 || paths.length > 0)) {
       throw new NoMatch();
     } else {
@@ -119,7 +119,7 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
     }
   }
 
-  const path = route.path.startsWith('/') ? route.path.substring(1) : route.path;
+  const path = route.path;
   const parts = path.split('/');
   const posParameters: {[key: string]: any} = {};
   const consumedPaths: UrlPathWithParams[] = [];
