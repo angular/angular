@@ -189,6 +189,11 @@ The likelihood of anyone actually depending on this property is very low.
   }
   ```
 
+* `PLATFORM_PIPES` and `PLATFORM_DIRECTIVES` now are fields on `CompilerConfig`. 
+  Instead of providing a binding to these tokens, provide a binding for `CompilerConfig` instead.
+
+* `CompilerConfig` used to take positional arguments and now takes named arguments.
+
 <a name="2.0.0-rc.1"></a>
 # 2.0.0-rc.1 (2016-05-03)
 
