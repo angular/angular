@@ -259,9 +259,9 @@ describe("Integration", () => {
     fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
       const fixture = tcb.createFakeAsync(RootCmp);
       advance(fixture);
-
+      
       router.resetConfig([
-        { index: true, component: SimpleCmp },
+        { path: '', terminal: true, component: SimpleCmp },
         { path: '/user/:name', component: UserCmp }
       ]);
 
