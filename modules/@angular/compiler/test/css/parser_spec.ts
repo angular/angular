@@ -1,5 +1,5 @@
 import {CssLexer} from '@angular/compiler/src/css/lexer';
-import {BlockType, CssBlockAST, CssBlockDefinitionRuleAST, CssBlockRuleAST, CssDefinitionAST, CssInlineRuleAST, CssKeyframeDefinitionAST, CssKeyframeRuleAST, CssMediaQueryRuleAST, CssParseError, CssParser, CssRuleAST, CssSelectorAST, CssSelectorRuleAST, CssStyleSheetAST, CssStyleValueAST, ParsedCssResult} from '@angular/compiler/src/css/parser';
+import {BlockType, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssParseError, CssParser, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssStyleSheetAst, CssStyleValueAst, ParsedCssResult} from '@angular/compiler/src/css/parser';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
 import {BaseException} from '../../src/facade/exceptions';
@@ -19,7 +19,7 @@ export function main() {
       return parser.parse();
     }
 
-    function makeAST(css: any /** TODO #9100 */): CssStyleSheetAST {
+    function makeAst(css: any /** TODO #9100 */): CssStyleSheetAst {
       var output = parse(css);
       var errors = output.errors;
       if (errors.length > 0) {
@@ -28,27 +28,27 @@ export function main() {
       return output.ast;
     }
 
-    it('should parse CSS into a stylesheet AST', () => {
+    it('should parse CSS into a stylesheet Ast', () => {
       var styles = `
         .selector {
           prop: value123;
         }
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
       expect(ast.rules.length).toEqual(1);
 
-      var rule = <CssSelectorRuleAST>ast.rules[0];
+      var rule = <CssSelectorRuleAst>ast.rules[0];
       var selector = rule.selectors[0];
       expect(selector.strValue).toEqual('.selector');
 
-      var block: CssBlockAST = rule.block;
+      var block: CssBlockAst = rule.block;
       expect(block.entries.length).toEqual(1);
 
-      var definition = <CssDefinitionAST>block.entries[0];
+      var definition = <CssDefinitionAst>block.entries[0];
       expect(definition.property.strValue).toEqual('prop');
 
-      var value = <CssStyleValueAST>definition.value;
+      var value = <CssStyleValueAst>definition.value;
       expect(value.tokens[0].strValue).toEqual('value123');
     });
 
@@ -59,10 +59,10 @@ export function main() {
         }
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
       expect(ast.rules.length).toEqual(1);
 
-      var rule = <CssSelectorRuleAST>ast.rules[0];
+      var rule = <CssSelectorRuleAst>ast.rules[0];
       expect(rule.selectors.length).toBe(7);
 
       var classRule = rule.selectors[0];
@@ -86,7 +86,7 @@ export function main() {
 
       assertTokens(mozRule.selectorParts[0].pseudoSelectors[0].tokens, [':', '-moz-any-link']);
 
-      var style1 = <CssDefinitionAST>rule.block.entries[0];
+      var style1 = <CssDefinitionAst>rule.block.entries[0];
       expect(style1.property.strValue).toEqual('prop');
       assertTokens(style1.value.tokens, ['value123']);
     });
@@ -106,36 +106,36 @@ export function main() {
         }
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
       expect(ast.rules.length).toEqual(1);
 
-      var rule = <CssKeyframeRuleAST>ast.rules[0];
+      var rule = <CssKeyframeRuleAst>ast.rules[0];
       expect(rule.name.strValue).toEqual('rotateMe');
 
-      var block = <CssBlockAST>rule.block;
-      var fromRule = <CssKeyframeDefinitionAST>block.entries[0];
+      var block = <CssBlockAst>rule.block;
+      var fromRule = <CssKeyframeDefinitionAst>block.entries[0];
 
       expect(fromRule.name.strValue).toEqual('from');
-      var fromStyle = <CssDefinitionAST>(<CssBlockAST>fromRule.block).entries[0];
+      var fromStyle = <CssDefinitionAst>(<CssBlockAst>fromRule.block).entries[0];
       expect(fromStyle.property.strValue).toEqual('transform');
       assertTokens(fromStyle.value.tokens, ['rotate', '(', '-360', 'deg', ')']);
 
-      var midRule = <CssKeyframeDefinitionAST>block.entries[1];
+      var midRule = <CssKeyframeDefinitionAst>block.entries[1];
 
       expect(midRule.name.strValue).toEqual('50%');
-      var midStyle = <CssDefinitionAST>(<CssBlockAST>midRule.block).entries[0];
+      var midStyle = <CssDefinitionAst>(<CssBlockAst>midRule.block).entries[0];
       expect(midStyle.property.strValue).toEqual('transform');
       assertTokens(midStyle.value.tokens, ['rotate', '(', '0', 'deg', ')']);
 
-      var toRule = <CssKeyframeDefinitionAST>block.entries[2];
+      var toRule = <CssKeyframeDefinitionAst>block.entries[2];
 
       expect(toRule.name.strValue).toEqual('to');
-      var toStyle = <CssDefinitionAST>(<CssBlockAST>toRule.block).entries[0];
+      var toStyle = <CssDefinitionAst>(<CssBlockAst>toRule.block).entries[0];
       expect(toStyle.property.strValue).toEqual('transform');
       assertTokens(toStyle.value.tokens, ['rotate', '(', '360', 'deg', ')']);
     });
 
-    it('should parse media queries into a stylesheet AST', () => {
+    it('should parse media queries into a stylesheet Ast', () => {
       var styles = `
         @media all and (max-width:100px) {
           .selector {
@@ -144,19 +144,19 @@ export function main() {
         }
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
       expect(ast.rules.length).toEqual(1);
 
-      var rule = <CssMediaQueryRuleAST>ast.rules[0];
+      var rule = <CssMediaQueryRuleAst>ast.rules[0];
       assertTokens(rule.query, ['all', 'and', '(', 'max-width', ':', '100', 'px', ')']);
 
-      var block = <CssBlockAST>rule.block;
+      var block = <CssBlockAst>rule.block;
       expect(block.entries.length).toEqual(1);
 
-      var rule2 = <CssSelectorRuleAST>block.entries[0];
+      var rule2 = <CssSelectorRuleAst>block.entries[0];
       expect(rule2.selectors[0].strValue).toEqual('.selector');
 
-      var block2 = <CssBlockAST>rule2.block;
+      var block2 = <CssBlockAst>rule2.block;
       expect(block2.entries.length).toEqual(1);
     });
 
@@ -167,17 +167,17 @@ export function main() {
         @namespace ng url(http://angular.io/namespace/ng);
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
 
-      var importRule = <CssInlineRuleAST>ast.rules[0];
+      var importRule = <CssInlineRuleAst>ast.rules[0];
       expect(importRule.type).toEqual(BlockType.Import);
       assertTokens(importRule.value.tokens, ['url', '(', 'remote', '.', 'css', ')']);
 
-      var charsetRule = <CssInlineRuleAST>ast.rules[1];
+      var charsetRule = <CssInlineRuleAst>ast.rules[1];
       expect(charsetRule.type).toEqual(BlockType.Charset);
       assertTokens(charsetRule.value.tokens, ['UTF-8']);
 
-      var namespaceRule = <CssInlineRuleAST>ast.rules[2];
+      var namespaceRule = <CssInlineRuleAst>ast.rules[2];
       expect(namespaceRule.type).toEqual(BlockType.Namespace);
       assertTokens(
           namespaceRule.value.tokens, ['ng', 'url', '(', 'http://angular.io/namespace/ng', ')']);
@@ -194,19 +194,19 @@ export function main() {
         }
       `;
 
-         var ast = makeAST(styles);
+         var ast = makeAst(styles);
          expect(ast.rules.length).toEqual(1);
 
-         var defs = (<CssSelectorRuleAST>ast.rules[0]).block.entries;
+         var defs = (<CssSelectorRuleAst>ast.rules[0]).block.entries;
          expect(defs.length).toEqual(4);
 
-         assertTokens((<CssDefinitionAST>defs[0]).value.tokens, ['url', '(', 'matias.css', ')']);
+         assertTokens((<CssDefinitionAst>defs[0]).value.tokens, ['url', '(', 'matias.css', ')']);
          assertTokens(
-             (<CssDefinitionAST>defs[1]).value.tokens,
+             (<CssDefinitionAst>defs[1]).value.tokens,
              ['cubic-bezier', '(', '0.755, 0.050, 0.855, 0.060', ')']);
-         assertTokens((<CssDefinitionAST>defs[2]).value.tokens, ['calc', '(', '100% - 50px', ')']);
+         assertTokens((<CssDefinitionAst>defs[2]).value.tokens, ['calc', '(', '100% - 50px', ')']);
          assertTokens(
-             (<CssDefinitionAST>defs[3]).value.tokens,
+             (<CssDefinitionAst>defs[3]).value.tokens,
              ['linear-gradient', '(', '45deg, rgba(100, 0, 0, 0.5), black', ')']);
        });
 
@@ -223,13 +223,13 @@ export function main() {
         }
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
 
-      var fontFaceRule = <CssBlockRuleAST>ast.rules[0];
+      var fontFaceRule = <CssBlockRuleAst>ast.rules[0];
       expect(fontFaceRule.type).toEqual(BlockType.FontFace);
       expect(fontFaceRule.block.entries.length).toEqual(3);
 
-      var viewportRule = <CssBlockRuleAST>ast.rules[1];
+      var viewportRule = <CssBlockRuleAst>ast.rules[1];
       expect(viewportRule.type).toEqual(BlockType.Viewport);
       expect(viewportRule.block.entries.length).toEqual(2);
     });
@@ -250,17 +250,17 @@ export function main() {
           ;.selector2{prop:1}}
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
 
-      var importRule = <CssInlineRuleAST>ast.rules[0];
+      var importRule = <CssInlineRuleAst>ast.rules[0];
       expect(importRule.type).toEqual(BlockType.Import);
       assertTokens(importRule.value.tokens, ['url', '(', 'something something', ')']);
 
-      var fontFaceRule = <CssBlockRuleAST>ast.rules[1];
+      var fontFaceRule = <CssBlockRuleAst>ast.rules[1];
       expect(fontFaceRule.type).toEqual(BlockType.FontFace);
       expect(fontFaceRule.block.entries.length).toEqual(2);
 
-      var mediaQueryRule = <CssMediaQueryRuleAST>ast.rules[2];
+      var mediaQueryRule = <CssMediaQueryRuleAst>ast.rules[2];
       assertTokens(mediaQueryRule.query, ['all', 'and', '(', 'max-width', ':', '100', 'px', ')']);
       expect(mediaQueryRule.block.entries.length).toEqual(2);
     });
@@ -271,7 +271,7 @@ export function main() {
       `;
 
       expect(() => {
-        makeAST(styles);
+        makeAst(styles);
       }).toThrowError(/^CSS Parse Error: The CSS "at" rule "@matias" is not allowed to used here/g);
     });
 
@@ -282,12 +282,12 @@ export function main() {
         .non-empty-rule { property: value; }
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
 
       var rules = ast.rules;
-      expect((<CssSelectorRuleAST>rules[0]).block.entries.length).toEqual(0);
-      expect((<CssSelectorRuleAST>rules[1]).block.entries.length).toEqual(0);
-      expect((<CssSelectorRuleAST>rules[2]).block.entries.length).toEqual(1);
+      expect((<CssSelectorRuleAst>rules[0]).block.entries.length).toEqual(0);
+      expect((<CssSelectorRuleAst>rules[1]).block.entries.length).toEqual(0);
+      expect((<CssSelectorRuleAst>rules[2]).block.entries.length).toEqual(1);
     });
 
     it('should parse the @document rule', () => {
@@ -312,13 +312,13 @@ export function main() {
         }
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
 
       var rules = ast.rules;
-      var documentRule = <CssBlockDefinitionRuleAST>rules[0];
+      var documentRule = <CssBlockDefinitionRuleAst>rules[0];
       expect(documentRule.type).toEqual(BlockType.Document);
 
-      var rule = <CssSelectorRuleAST>documentRule.block.entries[0];
+      var rule = <CssSelectorRuleAst>documentRule.block.entries[0];
       expect(rule.strValue).toEqual('body');
     });
 
@@ -332,24 +332,24 @@ export function main() {
         }
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
 
       var rules = ast.rules;
 
-      var pageRule1 = <CssBlockDefinitionRuleAST>rules[0];
+      var pageRule1 = <CssBlockDefinitionRuleAst>rules[0];
       expect(pageRule1.query.strValue).toEqual('@page one');
       expect(pageRule1.query.tokens[0].strValue).toEqual('one');
       expect(pageRule1.type).toEqual(BlockType.Page);
 
-      var pageRule2 = <CssBlockDefinitionRuleAST>rules[1];
+      var pageRule2 = <CssBlockDefinitionRuleAst>rules[1];
       expect(pageRule2.query.strValue).toEqual('@page two');
       expect(pageRule2.query.tokens[0].strValue).toEqual('two');
       expect(pageRule2.type).toEqual(BlockType.Page);
 
-      var selectorOne = <CssSelectorRuleAST>pageRule1.block.entries[0];
+      var selectorOne = <CssSelectorRuleAst>pageRule1.block.entries[0];
       expect(selectorOne.strValue).toEqual('.selector');
 
-      var selectorTwo = <CssSelectorRuleAST>pageRule2.block.entries[0];
+      var selectorTwo = <CssSelectorRuleAst>pageRule2.block.entries[0];
       expect(selectorTwo.strValue).toEqual('.selector2');
     });
 
@@ -360,15 +360,15 @@ export function main() {
         }
       `;
 
-      var ast = makeAST(styles);
+      var ast = makeAst(styles);
 
       var rules = ast.rules;
 
-      var supportsRule = <CssBlockDefinitionRuleAST>rules[0];
+      var supportsRule = <CssBlockDefinitionRuleAst>rules[0];
       assertTokens(supportsRule.query, ['(', 'animation-name', ':', 'rotate', ')']);
       expect(supportsRule.type).toEqual(BlockType.Supports);
 
-      var selectorOne = <CssSelectorRuleAST>supportsRule.block.entries[0];
+      var selectorOne = <CssSelectorRuleAst>supportsRule.block.entries[0];
       expect(selectorOne.strValue).toEqual('a:hover');
     });
 
@@ -398,15 +398,15 @@ export function main() {
 
       expect(ast.rules.length).toEqual(3);
 
-      var rule1 = <CssSelectorRuleAST>ast.rules[0];
+      var rule1 = <CssSelectorRuleAst>ast.rules[0];
       expect(rule1.selectors[0].strValue).toEqual('tag&');
       expect(rule1.block.entries.length).toEqual(1);
 
-      var rule2 = <CssSelectorRuleAST>ast.rules[1];
+      var rule2 = <CssSelectorRuleAst>ast.rules[1];
       expect(rule2.selectors[0].strValue).toEqual('.%tag');
       expect(rule2.block.entries.length).toEqual(1);
 
-      var rule3 = <CssSelectorRuleAST>ast.rules[2];
+      var rule3 = <CssSelectorRuleAst>ast.rules[2];
       expect(rule3.selectors[0].strValue).toEqual('#tag$');
       expect(rule3.block.entries.length).toEqual(1);
     });
@@ -471,7 +471,7 @@ export function main() {
 
       expect(errors.length).toEqual(0);
 
-      var rule1 = <CssSelectorRuleAST>ast.rules[0];
+      var rule1 = <CssSelectorRuleAst>ast.rules[0];
       expect(rule1.selectors.length).toEqual(1);
 
       var simpleSelector = rule1.selectors[0].selectorParts[0];
@@ -493,7 +493,7 @@ export function main() {
 
       expect(errors.length).toEqual(0);
 
-      var rule1 = <CssSelectorRuleAST>ast.rules[0];
+      var rule1 = <CssSelectorRuleAst>ast.rules[0];
       expect(rule1.selectors.length).toEqual(1);
 
       var simpleSelector = rule1.selectors[0].selectorParts[1];
@@ -546,14 +546,14 @@ export function main() {
 
       expect(ast.rules.length).toEqual(2);
 
-      var rule1 = <CssSelectorRuleAST>ast.rules[0];
+      var rule1 = <CssSelectorRuleAst>ast.rules[0];
       expect(rule1.block.entries.length).toEqual(2);
 
-      var style1 = <CssDefinitionAST>rule1.block.entries[0];
+      var style1 = <CssDefinitionAst>rule1.block.entries[0];
       expect(style1.property.strValue).toEqual('background color');
       assertTokens(style1.value.tokens, ['red']);
 
-      var style2 = <CssDefinitionAST>rule1.block.entries[1];
+      var style2 = <CssDefinitionAst>rule1.block.entries[1];
       expect(style2.property.strValue).toEqual('color');
       assertTokens(style2.value.tokens, ['white']);
     });
@@ -653,7 +653,7 @@ export function main() {
       var ast = output.ast;
       expect(ast.rules.length).toEqual(6);
 
-      var finalRule = <CssBlockRuleAST>ast.rules[ast.rules.length - 1];
+      var finalRule = <CssBlockRuleAst>ast.rules[ast.rules.length - 1];
       expect(finalRule.type).toEqual(BlockType.Keyframes);
       expect(finalRule.block.entries.length).toEqual(4);
     });

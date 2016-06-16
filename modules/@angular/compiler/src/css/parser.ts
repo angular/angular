@@ -96,32 +96,32 @@ function characterContainsDelimiter(code: number, delimiters: number): boolean {
   return bitWiseAnd([getDelimFromCharacter(code), delimiters]) > 0;
 }
 
-export abstract class CssAST {
+export abstract class CssAst {
   constructor(public start: number, public end: number) {}
-  abstract visit(visitor: CssASTVisitor, context?: any): any;
+  abstract visit(visitor: CssAstVisitor, context?: any): any;
 }
 
-export interface CssASTVisitor {
-  visitCssValue(ast: CssStyleValueAST, context?: any): any;
-  visitCssInlineRule(ast: CssInlineRuleAST, context?: any): any;
-  visitCssAtRulePredicate(ast: CssAtRulePredicateAST, context?: any): any;
-  visitCssKeyframeRule(ast: CssKeyframeRuleAST, context?: any): any;
-  visitCssKeyframeDefinition(ast: CssKeyframeDefinitionAST, context?: any): any;
-  visitCssMediaQueryRule(ast: CssMediaQueryRuleAST, context?: any): any;
-  visitCssSelectorRule(ast: CssSelectorRuleAST, context?: any): any;
-  visitCssSelector(ast: CssSelectorAST, context?: any): any;
-  visitCssSimpleSelector(ast: CssSimpleSelectorAST, context?: any): any;
-  visitCssPseudoSelector(ast: CssPseudoSelectorAST, context?: any): any;
-  visitCssDefinition(ast: CssDefinitionAST, context?: any): any;
-  visitCssBlock(ast: CssBlockAST, context?: any): any;
-  visitCssStylesBlock(ast: CssStylesBlockAST, context?: any): any;
-  visitCssStyleSheet(ast: CssStyleSheetAST, context?: any): any;
-  visitCssUnknownRule(ast: CssUnknownRuleAST, context?: any): any;
-  visitCssUnknownTokenList(ast: CssUnknownTokenListAST, context?: any): any;
+export interface CssAstVisitor {
+  visitCssValue(ast: CssStyleValueAst, context?: any): any;
+  visitCssInlineRule(ast: CssInlineRuleAst, context?: any): any;
+  visitCssAtRulePredicate(ast: CssAtRulePredicateAst, context?: any): any;
+  visitCssKeyframeRule(ast: CssKeyframeRuleAst, context?: any): any;
+  visitCssKeyframeDefinition(ast: CssKeyframeDefinitionAst, context?: any): any;
+  visitCssMediaQueryRule(ast: CssMediaQueryRuleAst, context?: any): any;
+  visitCssSelectorRule(ast: CssSelectorRuleAst, context?: any): any;
+  visitCssSelector(ast: CssSelectorAst, context?: any): any;
+  visitCssSimpleSelector(ast: CssSimpleSelectorAst, context?: any): any;
+  visitCssPseudoSelector(ast: CssPseudoSelectorAst, context?: any): any;
+  visitCssDefinition(ast: CssDefinitionAst, context?: any): any;
+  visitCssBlock(ast: CssBlockAst, context?: any): any;
+  visitCssStylesBlock(ast: CssStylesBlockAst, context?: any): any;
+  visitCssStyleSheet(ast: CssStyleSheetAst, context?: any): any;
+  visitCssUnknownRule(ast: CssUnknownRuleAst, context?: any): any;
+  visitCssUnknownTokenList(ast: CssUnknownTokenListAst, context?: any): any;
 }
 
 export class ParsedCssResult {
-  constructor(public errors: CssParseError[], public ast: CssStyleSheetAST) {}
+  constructor(public errors: CssParseError[], public ast: CssStyleSheetAst) {}
 }
 
 export class CssParser {
@@ -184,7 +184,7 @@ export class CssParser {
   }
 
   /** @internal */
-  _parseStyleSheet(delimiters: number): CssStyleSheetAST {
+  _parseStyleSheet(delimiters: number): CssStyleSheetAst {
     const start = this._getScannerIndex();
     var results: any[] /** TODO #9100 */ = [];
     this._scanner.consumeEmptyStatements();
@@ -193,11 +193,11 @@ export class CssParser {
       results.push(this._parseRule(delimiters));
     }
     const end = this._getScannerIndex() - 1;
-    return new CssStyleSheetAST(start, end, results);
+    return new CssStyleSheetAst(start, end, results);
   }
 
   /** @internal */
-  _parseRule(delimiters: number): CssRuleAST {
+  _parseRule(delimiters: number): CssRuleAst {
     if (this._scanner.peek == $AT) {
       return this._parseAtRule(delimiters);
     }
@@ -205,7 +205,7 @@ export class CssParser {
   }
 
   /** @internal */
-  _parseAtRule(delimiters: number): CssRuleAST {
+  _parseAtRule(delimiters: number): CssRuleAst {
     const start = this._getScannerIndex();
     var end: number;
 
@@ -216,7 +216,7 @@ export class CssParser {
         token.type == CssTokenType.AtKeyword,
         `The CSS Rule ${token.strValue} is not a valid [@] rule.`, token);
 
-    var block: CssBlockAST;
+    var block: CssBlockAst;
     var type = this._resolveBlockType(token);
     switch (type) {
       case BlockType.Charset:
@@ -226,13 +226,13 @@ export class CssParser {
         this._scanner.setMode(CssLexerMode.BLOCK);
         end = value.end;
         this._scanner.consumeEmptyStatements();
-        return new CssInlineRuleAST(start, end, type, value);
+        return new CssInlineRuleAst(start, end, type, value);
 
       case BlockType.Viewport:
       case BlockType.FontFace:
         block = this._parseStyleBlock(delimiters);
         end = this._getScannerIndex() - 1;
-        return new CssBlockRuleAST(start, end, type, block);
+        return new CssBlockRuleAst(start, end, type, block);
 
       case BlockType.Keyframes:
         var tokens =
@@ -240,7 +240,7 @@ export class CssParser {
         // keyframes only have one identifier name
         var name = tokens[0];
         end = this._getScannerIndex() - 1;
-        return new CssKeyframeRuleAST(start, end, name, this._parseKeyframeBlock(delimiters));
+        return new CssKeyframeRuleAst(start, end, name, this._parseKeyframeBlock(delimiters));
 
       case BlockType.MediaQuery:
         this._scanner.setMode(CssLexerMode.MEDIA_QUERY);
@@ -248,11 +248,11 @@ export class CssParser {
             this._collectUntilDelim(bitWiseOr([delimiters, RBRACE_DELIM_FLAG, LBRACE_DELIM_FLAG]));
         end = this._getScannerIndex() - 1;
         var strValue = this._scanner.input.substring(start, end);
-        var query = new CssAtRulePredicateAST(start, end, strValue, tokens);
+        var query = new CssAtRulePredicateAst(start, end, strValue, tokens);
         block = this._parseBlock(delimiters);
         end = this._getScannerIndex() - 1;
         strValue = this._scanner.input.substring(start, end);
-        return new CssMediaQueryRuleAST(start, end, strValue, query, block);
+        return new CssMediaQueryRuleAst(start, end, strValue, query, block);
 
       case BlockType.Document:
       case BlockType.Supports:
@@ -262,11 +262,11 @@ export class CssParser {
             this._collectUntilDelim(bitWiseOr([delimiters, RBRACE_DELIM_FLAG, LBRACE_DELIM_FLAG]));
         end = this._getScannerIndex() - 1;
         var strValue = this._scanner.input.substring(start, end);
-        var query = new CssAtRulePredicateAST(start, end, strValue, tokens);
+        var query = new CssAtRulePredicateAst(start, end, strValue, tokens);
         block = this._parseBlock(delimiters);
         end = this._getScannerIndex() - 1;
         strValue = this._scanner.input.substring(start, end);
-        return new CssBlockDefinitionRuleAST(start, end, strValue, type, query, block);
+        return new CssBlockDefinitionRuleAst(start, end, strValue, type, query, block);
 
       // if a custom @rule { ... } is used it should still tokenize the insides
       default:
@@ -288,28 +288,28 @@ export class CssParser {
           listOfTokens.push(this._consume(CssTokenType.Character, '}'));
         }
         end = this._getScannerIndex() - 1;
-        return new CssUnknownRuleAST(start, end, tokenName, listOfTokens);
+        return new CssUnknownRuleAst(start, end, tokenName, listOfTokens);
     }
   }
 
   /** @internal */
-  _parseSelectorRule(delimiters: number): CssRuleAST {
+  _parseSelectorRule(delimiters: number): CssRuleAst {
     const start = this._getScannerIndex();
     var selectors = this._parseSelectors(delimiters);
     var block = this._parseStyleBlock(delimiters);
     const end = this._getScannerIndex() - 1;
-    var token: CssRuleAST;
+    var token: CssRuleAst;
     if (isPresent(block)) {
-      token = new CssSelectorRuleAST(start, end, selectors, block);
+      token = new CssSelectorRuleAst(start, end, selectors, block);
     } else {
       var name = this._scanner.input.substring(start, end);
       var innerTokens: CssToken[] = [];
-      selectors.forEach((selector: CssSelectorAST) => {
-        selector.selectorParts.forEach((part: CssSimpleSelectorAST) => {
+      selectors.forEach((selector: CssSelectorAst) => {
+        selector.selectorParts.forEach((part: CssSimpleSelectorAst) => {
           part.tokens.forEach((token: CssToken) => { innerTokens.push(token); });
         });
       });
-      token = new CssUnknownTokenListAST(start, end, name, innerTokens);
+      token = new CssUnknownTokenListAst(start, end, name, innerTokens);
     }
     this._scanner.setMode(CssLexerMode.BLOCK);
     this._scanner.consumeEmptyStatements();
@@ -317,7 +317,7 @@ export class CssParser {
   }
 
   /** @internal */
-  _parseSelectors(delimiters: number): CssSelectorAST[] {
+  _parseSelectors(delimiters: number): CssSelectorAst[] {
     delimiters = bitWiseOr([delimiters, LBRACE_DELIM_FLAG, SEMICOLON_DELIM_FLAG]);
 
     var selectors: any[] /** TODO #9100 */ = [];
@@ -365,7 +365,7 @@ export class CssParser {
   }
 
   /** @internal */
-  _parseKeyframeBlock(delimiters: number): CssBlockAST {
+  _parseKeyframeBlock(delimiters: number): CssBlockAst {
     const start = this._getScannerIndex();
 
     delimiters = bitWiseOr([delimiters, RBRACE_DELIM_FLAG]);
@@ -381,11 +381,11 @@ export class CssParser {
     this._consume(CssTokenType.Character, '}');
 
     const end = this._getScannerIndex() - 1;
-    return new CssBlockAST(start, end, definitions);
+    return new CssBlockAst(start, end, definitions);
   }
 
   /** @internal */
-  _parseKeyframeDefinition(delimiters: number): CssKeyframeDefinitionAST {
+  _parseKeyframeDefinition(delimiters: number): CssKeyframeDefinitionAst {
     const start = this._getScannerIndex();
     var stepTokens: any[] /** TODO #9100 */ = [];
     delimiters = bitWiseOr([delimiters, LBRACE_DELIM_FLAG]);
@@ -398,7 +398,7 @@ export class CssParser {
     var styles = this._parseStyleBlock(bitWiseOr([delimiters, RBRACE_DELIM_FLAG]));
     this._scanner.setMode(CssLexerMode.BLOCK);
     const end = this._getScannerIndex() - 1;
-    return new CssKeyframeDefinitionAST(start, end, stepTokens, styles);
+    return new CssKeyframeDefinitionAst(start, end, stepTokens, styles);
   }
 
   /** @internal */
@@ -408,7 +408,7 @@ export class CssParser {
   }
 
   /** @internal */
-  _parsePseudoSelector(delimiters: number): CssPseudoSelectorAST {
+  _parsePseudoSelector(delimiters: number): CssPseudoSelectorAst {
     const start = this._getScannerIndex();
 
     delimiters = bitWiseAnd([delimiters, bitWiseNot(COMMA_DELIM_FLAG)]);
@@ -424,7 +424,7 @@ export class CssParser {
       tokens.push(startToken);
     }
 
-    var innerSelectors: CssSelectorAST[] = [];
+    var innerSelectors: CssSelectorAst[] = [];
 
     this._scanner.setMode(CssLexerMode.PSEUDO_SELECTOR);
 
@@ -472,19 +472,19 @@ export class CssParser {
 
     const end = this._getScannerIndex() - 1;
     var strValue = this._scanner.input.substring(start, end);
-    return new CssPseudoSelectorAST(
+    return new CssPseudoSelectorAst(
         start, end, strValue, pseudoSelectorName, tokens, innerSelectors);
   }
 
   /** @internal */
-  _parseSimpleSelector(delimiters: number): CssSimpleSelectorAST {
+  _parseSimpleSelector(delimiters: number): CssSimpleSelectorAst {
     const start = this._getScannerIndex();
 
     delimiters = bitWiseOr([delimiters, COMMA_DELIM_FLAG]);
 
     this._scanner.setMode(CssLexerMode.SELECTOR);
     var selectorCssTokens: CssToken[] = [];
-    var pseudoSelectors: CssPseudoSelectorAST[] = [];
+    var pseudoSelectors: CssPseudoSelectorAst[] = [];
 
     var previousToken: CssToken;
 
@@ -611,18 +611,18 @@ export class CssParser {
     }
 
     var strValue = this._scanner.input.substring(start, end);
-    return new CssSimpleSelectorAST(
+    return new CssSimpleSelectorAst(
         start, end, selectorCssTokens, strValue, pseudoSelectors, operator);
   }
 
   /** @internal */
-  _parseSelector(delimiters: number): CssSelectorAST {
+  _parseSelector(delimiters: number): CssSelectorAst {
     const start = this._getScannerIndex();
 
     delimiters = bitWiseOr([delimiters, COMMA_DELIM_FLAG]);
     this._scanner.setMode(CssLexerMode.SELECTOR);
 
-    var simpleSelectors: CssSimpleSelectorAST[] = [];
+    var simpleSelectors: CssSimpleSelectorAst[] = [];
     var end = this._getScannerIndex() - 1;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       simpleSelectors.push(this._parseSimpleSelector(delimiters));
@@ -636,11 +636,11 @@ export class CssParser {
       end = simpleSelectors[limit].end;
     }
 
-    return new CssSelectorAST(start, end, simpleSelectors);
+    return new CssSelectorAst(start, end, simpleSelectors);
   }
 
   /** @internal */
-  _parseValue(delimiters: number): CssStyleValueAST {
+  _parseValue(delimiters: number): CssStyleValueAst {
     delimiters =
         bitWiseOr([delimiters, RBRACE_DELIM_FLAG, SEMICOLON_DELIM_FLAG, NEWLINE_DELIM_FLAG]);
 
@@ -693,7 +693,7 @@ export class CssParser {
     }
 
     var strValue = this._scanner.input.substring(start, end);
-    return new CssStyleValueAST(start, end, tokens, strValue);
+    return new CssStyleValueAst(start, end, tokens, strValue);
   }
 
   /** @internal */
@@ -707,7 +707,7 @@ export class CssParser {
   }
 
   /** @internal */
-  _parseBlock(delimiters: number): CssBlockAST {
+  _parseBlock(delimiters: number): CssBlockAst {
     const start = this._getScannerIndex();
 
     delimiters = bitWiseOr([delimiters, RBRACE_DELIM_FLAG]);
@@ -728,11 +728,11 @@ export class CssParser {
     this._scanner.consumeEmptyStatements();
 
     const end = this._getScannerIndex() - 1;
-    return new CssBlockAST(start, end, results);
+    return new CssBlockAst(start, end, results);
   }
 
   /** @internal */
-  _parseStyleBlock(delimiters: number): CssStylesBlockAST {
+  _parseStyleBlock(delimiters: number): CssStylesBlockAst {
     const start = this._getScannerIndex();
 
     delimiters = bitWiseOr([delimiters, RBRACE_DELIM_FLAG, LBRACE_DELIM_FLAG]);
@@ -744,7 +744,7 @@ export class CssParser {
       return null;
     }
 
-    var definitions: CssDefinitionAST[] = [];
+    var definitions: CssDefinitionAst[] = [];
     this._scanner.consumeEmptyStatements();
 
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
@@ -758,11 +758,11 @@ export class CssParser {
     this._scanner.consumeEmptyStatements();
 
     const end = this._getScannerIndex() - 1;
-    return new CssStylesBlockAST(start, end, definitions);
+    return new CssStylesBlockAst(start, end, definitions);
   }
 
   /** @internal */
-  _parseDefinition(delimiters: number): CssDefinitionAST {
+  _parseDefinition(delimiters: number): CssDefinitionAst {
     const start = this._getScannerIndex();
     this._scanner.setMode(CssLexerMode.STYLE_BLOCK);
 
@@ -822,7 +822,7 @@ export class CssParser {
     }
 
     const end = this._getScannerIndex() - 1;
-    return new CssDefinitionAST(start, end, prop, value);
+    return new CssDefinitionAst(start, end, prop, value);
   }
 
   /** @internal */
@@ -843,174 +843,174 @@ export class CssParser {
   }
 }
 
-export class CssStyleValueAST extends CssAST {
+export class CssStyleValueAst extends CssAst {
   constructor(start: number, end: number, public tokens: CssToken[], public strValue: string) {
     super(start, end);
   }
-  visit(visitor: CssASTVisitor, context?: any): any { return visitor.visitCssValue(this); }
+  visit(visitor: CssAstVisitor, context?: any): any { return visitor.visitCssValue(this); }
 }
 
-export abstract class CssRuleAST extends CssAST {
+export abstract class CssRuleAst extends CssAst {
   constructor(start: number, end: number) { super(start, end); }
 }
 
-export class CssBlockRuleAST extends CssRuleAST {
+export class CssBlockRuleAst extends CssRuleAst {
   constructor(
-      start: number, end: number, public type: BlockType, public block: CssBlockAST,
+      start: number, end: number, public type: BlockType, public block: CssBlockAst,
       public name: CssToken = null) {
     super(start, end);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssBlock(this.block, context);
   }
 }
 
-export class CssKeyframeRuleAST extends CssBlockRuleAST {
-  constructor(start: number, end: number, name: CssToken, block: CssBlockAST) {
+export class CssKeyframeRuleAst extends CssBlockRuleAst {
+  constructor(start: number, end: number, name: CssToken, block: CssBlockAst) {
     super(start, end, BlockType.Keyframes, block, name);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssKeyframeRule(this, context);
   }
 }
 
-export class CssKeyframeDefinitionAST extends CssBlockRuleAST {
+export class CssKeyframeDefinitionAst extends CssBlockRuleAst {
   public steps: CssToken[];
-  constructor(start: number, end: number, _steps: CssToken[], block: CssBlockAST) {
+  constructor(start: number, end: number, _steps: CssToken[], block: CssBlockAst) {
     super(start, end, BlockType.Keyframes, block, mergeTokens(_steps, ','));
     this.steps = _steps;
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssKeyframeDefinition(this, context);
   }
 }
 
-export class CssBlockDefinitionRuleAST extends CssBlockRuleAST {
+export class CssBlockDefinitionRuleAst extends CssBlockRuleAst {
   constructor(
       start: number, end: number, public strValue: string, type: BlockType,
-      public query: CssAtRulePredicateAST, block: CssBlockAST) {
+      public query: CssAtRulePredicateAst, block: CssBlockAst) {
     super(start, end, type, block);
     var firstCssToken: CssToken = query.tokens[0];
     this.name = new CssToken(
         firstCssToken.index, firstCssToken.column, firstCssToken.line, CssTokenType.Identifier,
         this.strValue);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssBlock(this.block, context);
   }
 }
 
-export class CssMediaQueryRuleAST extends CssBlockDefinitionRuleAST {
+export class CssMediaQueryRuleAst extends CssBlockDefinitionRuleAst {
   constructor(
-      start: number, end: number, strValue: string, query: CssAtRulePredicateAST,
-      block: CssBlockAST) {
+      start: number, end: number, strValue: string, query: CssAtRulePredicateAst,
+      block: CssBlockAst) {
     super(start, end, strValue, BlockType.MediaQuery, query, block);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssMediaQueryRule(this, context);
   }
 }
 
-export class CssAtRulePredicateAST extends CssAST {
+export class CssAtRulePredicateAst extends CssAst {
   constructor(start: number, end: number, public strValue: string, public tokens: CssToken[]) {
     super(start, end);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssAtRulePredicate(this, context);
   }
 }
 
-export class CssInlineRuleAST extends CssRuleAST {
-  constructor(start: number, end: number, public type: BlockType, public value: CssStyleValueAST) {
+export class CssInlineRuleAst extends CssRuleAst {
+  constructor(start: number, end: number, public type: BlockType, public value: CssStyleValueAst) {
     super(start, end);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssInlineRule(this, context);
   }
 }
 
-export class CssSelectorRuleAST extends CssBlockRuleAST {
+export class CssSelectorRuleAst extends CssBlockRuleAst {
   public strValue: string;
 
-  constructor(start: number, end: number, public selectors: CssSelectorAST[], block: CssBlockAST) {
+  constructor(start: number, end: number, public selectors: CssSelectorAst[], block: CssBlockAst) {
     super(start, end, BlockType.Selector, block);
     this.strValue = selectors.map(selector => selector.strValue).join(',');
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssSelectorRule(this, context);
   }
 }
 
-export class CssDefinitionAST extends CssAST {
+export class CssDefinitionAst extends CssAst {
   constructor(
-      start: number, end: number, public property: CssToken, public value: CssStyleValueAST) {
+      start: number, end: number, public property: CssToken, public value: CssStyleValueAst) {
     super(start, end);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssDefinition(this, context);
   }
 }
 
-export abstract class CssSelectorPartAST extends CssAST {
+export abstract class CssSelectorPartAst extends CssAst {
   constructor(start: number, end: number) { super(start, end); }
 }
 
-export class CssSelectorAST extends CssSelectorPartAST {
+export class CssSelectorAst extends CssSelectorPartAst {
   public strValue: string;
-  constructor(start: number, end: number, public selectorParts: CssSimpleSelectorAST[]) {
+  constructor(start: number, end: number, public selectorParts: CssSimpleSelectorAst[]) {
     super(start, end);
     this.strValue = selectorParts.map(part => part.strValue).join('');
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssSelector(this, context);
   }
 }
 
-export class CssSimpleSelectorAST extends CssSelectorPartAST {
+export class CssSimpleSelectorAst extends CssSelectorPartAst {
   public selectorStrValue: string;
 
   constructor(
       start: number, end: number, public tokens: CssToken[], public strValue: string,
-      public pseudoSelectors: CssPseudoSelectorAST[], public operator: CssToken) {
+      public pseudoSelectors: CssPseudoSelectorAst[], public operator: CssToken) {
     super(start, end);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssSimpleSelector(this, context);
   }
 }
 
-export class CssPseudoSelectorAST extends CssSelectorPartAST {
+export class CssPseudoSelectorAst extends CssSelectorPartAst {
   constructor(
       start: number, end: number, public strValue: string, public name: string,
-      public tokens: CssToken[], public innerSelectors: CssSelectorAST[]) {
+      public tokens: CssToken[], public innerSelectors: CssSelectorAst[]) {
     super(start, end);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssPseudoSelector(this, context);
   }
 }
 
-export class CssBlockAST extends CssAST {
-  constructor(start: number, end: number, public entries: CssAST[]) { super(start, end); }
-  visit(visitor: CssASTVisitor, context?: any): any { return visitor.visitCssBlock(this, context); }
+export class CssBlockAst extends CssAst {
+  constructor(start: number, end: number, public entries: CssAst[]) { super(start, end); }
+  visit(visitor: CssAstVisitor, context?: any): any { return visitor.visitCssBlock(this, context); }
 }
 
 /*
   a style block is different from a standard block because it contains
-  css prop:value definitions. A regular block can contain a list of AST entries.
+  css prop:value definitions. A regular block can contain a list of Ast entries.
  */
-export class CssStylesBlockAST extends CssBlockAST {
-  constructor(start: number, end: number, public definitions: CssDefinitionAST[]) {
+export class CssStylesBlockAst extends CssBlockAst {
+  constructor(start: number, end: number, public definitions: CssDefinitionAst[]) {
     super(start, end, definitions);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssStylesBlock(this, context);
   }
 }
 
-export class CssStyleSheetAST extends CssAST {
-  constructor(start: number, end: number, public rules: CssAST[]) { super(start, end); }
-  visit(visitor: CssASTVisitor, context?: any): any {
+export class CssStyleSheetAst extends CssAst {
+  constructor(start: number, end: number, public rules: CssAst[]) { super(start, end); }
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssStyleSheet(this, context);
   }
 }
@@ -1028,20 +1028,20 @@ export class CssParseError extends ParseError {
   constructor(span: ParseSourceSpan, message: string) { super(span, message); }
 }
 
-export class CssUnknownRuleAST extends CssRuleAST {
+export class CssUnknownRuleAst extends CssRuleAst {
   constructor(start: number, end: number, public ruleName: string, public tokens: CssToken[]) {
     super(start, end);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssUnknownRule(this, context);
   }
 }
 
-export class CssUnknownTokenListAST extends CssRuleAST {
+export class CssUnknownTokenListAst extends CssRuleAst {
   constructor(start: number, end: number, public name: string, public tokens: CssToken[]) {
     super(start, end);
   }
-  visit(visitor: CssASTVisitor, context?: any): any {
+  visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssUnknownTokenList(this, context);
   }
 }
