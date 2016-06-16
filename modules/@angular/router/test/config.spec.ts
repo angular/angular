@@ -4,17 +4,19 @@ describe('config', () => {
   describe("validateConfig", () => {
     it("should not throw when no errors", () => {
       validateConfig([
-        { path: '', redirectTo: 'b' },
-        { path: 'b', component: ComponentA }
+        {path: '', redirectTo: 'b'},
+        {path: 'b', component: ComponentA}
       ]);
     });
 
     it("should throw when redirectTo and children are used together", () => {
       expect(() => {
         validateConfig([
-          { path: 'a', redirectTo: 'b', children: [
+          {
+            path: 'a', redirectTo: 'b', children: [
             {path: 'b', component: ComponentA}
-          ] }
+          ]
+          }
         ]);
       }).toThrowError(`Invalid configuration of route 'a': redirectTo and children cannot be used together`);
     });
@@ -22,7 +24,7 @@ describe('config', () => {
     it("should throw when component and redirectTo are used together", () => {
       expect(() => {
         validateConfig([
-              { path: 'a', component: ComponentA, redirectTo: 'b' }
+          {path: 'a', component: ComponentA, redirectTo: 'b'}
         ]);
       }).toThrowError(`Invalid configuration of route 'a': redirectTo and component cannot be used together`);
     });
@@ -30,7 +32,7 @@ describe('config', () => {
     it("should throw when path is missing", () => {
       expect(() => {
         validateConfig([
-              { component: '', redirectTo: 'b' }
+          {component: '', redirectTo: 'b'}
         ]);
       }).toThrowError(`Invalid route configuration: routes must have path specified`);
     });
@@ -38,13 +40,16 @@ describe('config', () => {
     it("should throw when path starts with a slash", () => {
       expect(() => {
         validateConfig([
-              { path: '/a', componenta: '', redirectTo: 'b' }
+          <any>{path: '/a', componenta: '', redirectTo: 'b'}
         ]);
       }).toThrowError(`Invalid route configuration of route '/a': path cannot start with a slash`);
     });
   });
 });
 
-class ComponentA {}
-class ComponentB {}
-class ComponentC {}
+class ComponentA {
+}
+class ComponentB {
+}
+class ComponentC {
+}
