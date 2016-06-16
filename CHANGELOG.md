@@ -22,7 +22,6 @@
 * **ci:** make ci fail when compiler integration test fails ([5941c92](https://github.com/angular/angular/commit/5941c92a31aee3b7e0300f5ab91acb3c68b95171))
 * **codegen:** codegen all files in the program, not just roots ([0d71345](https://github.com/angular/angular/commit/0d71345)), closes [#8475](https://github.com/angular/angular/issues/8475)
 * **compiler:** Support for comment finishing with multiple dashes ([60a2ba8](https://github.com/angular/angular/commit/60a2ba8)), closes [#7119](https://github.com/angular/angular/issues/7119)
-* **compiler:** add ability to parse : in * directives ([53628e1](https://github.com/angular/angular/commit/53628e1)), closes [#6038](https://github.com/angular/angular/issues/6038)
 * **compiler:** Added support for '* as m' style imports. (#9077) ([e178ee4](https://github.com/angular/angular/commit/e178ee4))
 * **compiler:** Added unit test to ReflectorHost and fixed issues (#9052) ([0658eb4](https://github.com/angular/angular/commit/0658eb4)), closes [(#9052](https://github.com/(/issues/9052)
 * **compiler:** allow --noImplicitAny ([817ddfa](https://github.com/angular/angular/commit/817ddfa))
@@ -65,7 +64,6 @@
 * **metadata:** Allow spacing in multiple selectors (#7418) ([b2e804c](https://github.com/angular/angular/commit/b2e804c))
 * **ngc:** depend on correct tsc-wrapped package ([16ef21d](https://github.com/angular/angular/commit/16ef21d))
 * **ngSwitch:** use switchCase instead of switchWhen (#9076) ([e1fcab7](https://github.com/angular/angular/commit/e1fcab7))
-* **ngUpgrade:** prevent digest already in progress (#9046) ([d1c989b](https://github.com/angular/angular/commit/d1c989b))
 * **ngUpgrade:** prevent digest already in progress (#9054) ([7cefec7](https://github.com/angular/angular/commit/7cefec7))
 * **pipes:** handle undefined value in slice ([83c19a1](https://github.com/angular/angular/commit/83c19a1)), closes [#7152](https://github.com/angular/angular/issues/7152)
 * **platform-browser:** fix rollup config ([f4b9728](https://github.com/angular/angular/commit/f4b9728))
@@ -104,9 +102,7 @@
 
 * **animations:** provide support for offline compilation ([fa0718b](https://github.com/angular/angular/commit/fa0718b))
 * **animations:** support styling of the default animation state ([36d25f2](https://github.com/angular/angular/commit/36d25f2)), closes [#9013](https://github.com/angular/angular/issues/9013)
-* **AsyncPipe:** allow onError argument ([390046d](https://github.com/angular/angular/commit/390046d)), closes [#7990](https://github.com/angular/angular/issues/7990)
 * **build:** Added a version stamp in .metadata.json files. ([2d8f776](https://github.com/angular/angular/commit/2d8f776)), closes [#8974](https://github.com/angular/angular/issues/8974) [#8981](https://github.com/angular/angular/issues/8981)
-* **change_detection:** make INTERPOLATE_REGEXP customizable (#7417) ([c3fafa0](https://github.com/angular/angular/commit/c3fafa0))
 * **ChangeDetectorRef:** make detectChanges() correct ([6028368](https://github.com/angular/angular/commit/6028368)), closes [#8599](https://github.com/angular/angular/issues/8599)
 * **common:** DatePipe supports ISO string ([abc266f](https://github.com/angular/angular/commit/abc266f)), closes [#7794](https://github.com/angular/angular/issues/7794)
 * **common/datePipe:** change date formatter to use correct pattern closes #7008 (#8154) ([324f014](https://github.com/angular/angular/commit/324f014)), closes [#7008](https://github.com/angular/angular/issues/7008) [(#8154](https://github.com/(/issues/8154)
@@ -193,6 +189,10 @@ The likelihood of anyone actually depending on this property is very low.
   Instead of providing a binding to these tokens, provide a binding for `CompilerConfig` instead.
 
 * `CompilerConfig` used to take positional arguments and now takes named arguments.
+
+### Reverts
+
+* Revert fix(compiler): support string tokens with `.` inside. ([cc86fee](https://github.com/angular/angular/commit/cc86fee))
 
 <a name="2.0.0-rc.1"></a>
 # 2.0.0-rc.1 (2016-05-03)
