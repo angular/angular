@@ -262,7 +262,7 @@ describe("Integration", () => {
       
       router.resetConfig([
         { path: '', terminal: true, component: SimpleCmp },
-        { path: '/user/:name', component: UserCmp }
+        { path: 'user/:name', component: UserCmp }
       ]);
 
       router.navigateByUrl('/user/victor');
@@ -282,7 +282,7 @@ describe("Integration", () => {
       advance(fixture);
 
       router.resetConfig([
-        { path: '/user/:name', component: UserCmp }
+        { path: 'user/:name', component: UserCmp }
       ]);
 
       const recordedEvents:any = [];
@@ -324,7 +324,7 @@ describe("Integration", () => {
       advance(fixture);
 
       router.resetConfig([
-        { path: '/user/:name', component: UserCmp }
+        { path: 'user/:name', component: UserCmp }
       ]);
 
       const recordedEvents:any = [];
@@ -492,8 +492,8 @@ describe("Integration", () => {
       advance(fixture);
 
       router.resetConfig([
-        { path: '/old/team/:id', redirectTo: 'team/:id' },
-        { path: '/team/:id', component: TeamCmp }
+        { path: 'old/team/:id', redirectTo: 'team/:id' },
+        { path: 'team/:id', component: TeamCmp }
       ]);
 
       router.navigateByUrl('old/team/22');
@@ -639,7 +639,7 @@ describe("Integration", () => {
 
             router.resetConfig([
               { path: 'team/:id', component: TeamCmp, children: [
-                {path: '/', terminal: true, component: SimpleCmp},
+                {path: '', terminal: true, component: SimpleCmp},
                 {path: 'user/:name', component: UserCmp, canDeactivate: ["CanDeactivateUser"] }
               ]}
             ]);
