@@ -133,7 +133,7 @@ export function main() {
 
          var refPromise =
              bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
-         PromiseWrapper.then(refPromise, null, (reason) => {
+         PromiseWrapper.catchError(refPromise, (reason) => {
            expect(reason.message).toContain('The selector "hello-app" did not match any elements');
            async.done();
            return null;
@@ -149,10 +149,11 @@ export function main() {
 
            var refPromise =
                bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
-           PromiseWrapper.then(refPromise, null, (reason: any) => {
+           PromiseWrapper.catchError(refPromise, (reason: any) => {
              expect(reason.message)
                  .toContain('The selector "hello-app" did not match any elements');
              async.done();
+             return null;
            });
          }));
 
@@ -163,7 +164,7 @@ export function main() {
 
            var refPromise =
                bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
-           PromiseWrapper.then(refPromise, null, (reason) => {
+           PromiseWrapper.catchError(refPromise, (reason) => {
              expect(logger.res.join(""))
                  .toContain('The selector "hello-app" did not match any elements');
              async.done();

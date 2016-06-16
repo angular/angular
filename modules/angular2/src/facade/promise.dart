@@ -14,7 +14,6 @@ class PromiseWrapper {
       .wait(promises.map((p) => p is Future ? p as Future/*<T>*/ : new Future/*<T>*/.value(p)));
   }
   static Future/*<R>*/ then/*<T, R>*/(Future/*<T>*/ promise, dynamic /*=R*/ success(dynamic /*=T*/ value), [Function onError]) {
-    if (success == null) return promise.catchError(onError);
     return promise.then(success, onError: onError);
   }
 
