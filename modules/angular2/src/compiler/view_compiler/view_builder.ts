@@ -435,7 +435,7 @@ function createViewClass(view: CompileView, renderCompTypeVar: o.ReadVarExpr,
                                           [o.SUPER_EXPR.callFn(superConstructorArgs).toStmt()]);
 
   var viewMethods = [
-    new o.ClassMethod('createInternal', [new o.FnParam(rootSelectorVar.name, o.STRING_TYPE)],
+    new o.ClassMethod('createInternal', [new o.FnParam(rootSelectorVar.name, o.DYNAMIC_TYPE)],
                       generateCreateMethod(view), o.importType(Identifiers.AppElement)),
     new o.ClassMethod(
         'injectorGetInternal',
