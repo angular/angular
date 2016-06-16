@@ -1,5 +1,5 @@
 import {$AT, $COLON, $COMMA, $EOF, $GT, $LBRACE, $LBRACKET, $LPAREN, $PLUS, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SPACE, $TAB, $TILDA, CssLexerMode, CssScanner, CssScannerError, CssToken, CssTokenType, generateErrorMessage, isNewline, isWhitespace} from './css_lexer';
-import {NumberWrapper, StringWrapper, bitWiseAnd, bitWiseNot, bitWiseOr, isPresent} from './facade/lang';
+import {NumberWrapper, StringWrapper, isPresent} from './facade/lang';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
 
 const SPACE_OPERATOR = ' ';
@@ -92,7 +92,7 @@ function getDelimFromCharacter(code: number): number {
 }
 
 function characterContainsDelimiter(code: number, delimiters: number): boolean {
-  return bitWiseAnd([getDelimFromCharacter(code), delimiters]) > 0;
+  return (getDelimFromCharacter(code) & delimiters) > 0;
 }
 
 export abstract class CssAst {
@@ -234,8 +234,7 @@ export class CssParser {
         return new CssBlockRuleAst(start, end, type, block);
 
       case BlockType.Keyframes:
-        var tokens =
-            this._collectUntilDelim(bitWiseOr([delimiters, RBRACE_DELIM_FLAG, LBRACE_DELIM_FLAG]));
+        var tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
         // keyframes only have one identifier name
         var name = tokens[0];
         end = this._getScannerIndex() - 1;
@@ -243,8 +242,7 @@ export class CssParser {
 
       case BlockType.MediaQuery:
         this._scanner.setMode(CssLexerMode.MEDIA_QUERY);
-        var tokens =
-            this._collectUntilDelim(bitWiseOr([delimiters, RBRACE_DELIM_FLAG, LBRACE_DELIM_FLAG]));
+        var tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
         end = this._getScannerIndex() - 1;
         var strValue = this._scanner.input.substring(start, end);
         var query = new CssAtRulePredicateAst(start, end, strValue, tokens);
@@ -257,8 +255,7 @@ export class CssParser {
       case BlockType.Supports:
       case BlockType.Page:
         this._scanner.setMode(CssLexerMode.AT_RULE_QUERY);
-        var tokens =
-            this._collectUntilDelim(bitWiseOr([delimiters, RBRACE_DELIM_FLAG, LBRACE_DELIM_FLAG]));
+        var tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
         end = this._getScannerIndex() - 1;
         var strValue = this._scanner.input.substring(start, end);
         var query = new CssAtRulePredicateAst(start, end, strValue, tokens);
@@ -278,11 +275,11 @@ export class CssParser {
                 token.strValue, token.index, token.line, token.column),
             token);
 
-        this._collectUntilDelim(bitWiseOr([delimiters, LBRACE_DELIM_FLAG, SEMICOLON_DELIM_FLAG]))
+        this._collectUntilDelim(delimiters | LBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG)
             .forEach((token) => { listOfTokens.push(token); });
         if (this._scanner.peek == $LBRACE) {
           listOfTokens.push(this._consume(CssTokenType.Character, '{'));
-          this._collectUntilDelim(bitWiseOr([delimiters, RBRACE_DELIM_FLAG, LBRACE_DELIM_FLAG]))
+          this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG)
               .forEach((token) => { listOfTokens.push(token); });
           listOfTokens.push(this._consume(CssTokenType.Character, '}'));
         }
@@ -317,7 +314,7 @@ export class CssParser {
 
   /** @internal */
   _parseSelectors(delimiters: number): CssSelectorAst[] {
-    delimiters = bitWiseOr([delimiters, LBRACE_DELIM_FLAG, SEMICOLON_DELIM_FLAG]);
+    delimiters |= LBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG;
 
     var selectors: any[] /** TODO #9100 */ = [];
     var isParsingSelectors = true;
@@ -367,7 +364,7 @@ export class CssParser {
   _parseKeyframeBlock(delimiters: number): CssBlockAst {
     const start = this._getScannerIndex();
 
-    delimiters = bitWiseOr([delimiters, RBRACE_DELIM_FLAG]);
+    delimiters |= RBRACE_DELIM_FLAG;
     this._scanner.setMode(CssLexerMode.KEYFRAME_BLOCK);
 
     this._consume(CssTokenType.Character, '{');
@@ -387,14 +384,14 @@ export class CssParser {
   _parseKeyframeDefinition(delimiters: number): CssKeyframeDefinitionAst {
     const start = this._getScannerIndex();
     var stepTokens: any[] /** TODO #9100 */ = [];
-    delimiters = bitWiseOr([delimiters, LBRACE_DELIM_FLAG]);
+    delimiters |= LBRACE_DELIM_FLAG;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
-      stepTokens.push(this._parseKeyframeLabel(bitWiseOr([delimiters, COMMA_DELIM_FLAG])));
+      stepTokens.push(this._parseKeyframeLabel(delimiters | COMMA_DELIM_FLAG));
       if (this._scanner.peek != $LBRACE) {
         this._consume(CssTokenType.Character, ',');
       }
     }
-    var styles = this._parseStyleBlock(bitWiseOr([delimiters, RBRACE_DELIM_FLAG]));
+    var styles = this._parseStyleBlock(delimiters | RBRACE_DELIM_FLAG);
     this._scanner.setMode(CssLexerMode.BLOCK);
     const end = this._getScannerIndex() - 1;
     return new CssKeyframeDefinitionAst(start, end, stepTokens, styles);
@@ -410,7 +407,7 @@ export class CssParser {
   _parsePseudoSelector(delimiters: number): CssPseudoSelectorAst {
     const start = this._getScannerIndex();
 
-    delimiters = bitWiseAnd([delimiters, bitWiseNot(COMMA_DELIM_FLAG)]);
+    delimiters &= ~COMMA_DELIM_FLAG;
 
     // we keep the original value since we may use it to recurse when :not, :host are used
     var startingDelims = delimiters;
@@ -441,12 +438,12 @@ export class CssParser {
 
       // :host(innerSelector(s)), :not(selector), etc...
       if (_pseudoSelectorSupportsInnerSelectors(pseudoSelectorName)) {
-        var innerDelims = bitWiseOr([startingDelims, LPAREN_DELIM_FLAG, RPAREN_DELIM_FLAG]);
+        var innerDelims = startingDelims | LPAREN_DELIM_FLAG | RPAREN_DELIM_FLAG;
         if (pseudoSelectorName == 'not') {
           // the inner selector inside of :not(...) can only be one
           // CSS selector (no commas allowed) ... This is according
           // to the CSS specification
-          innerDelims = bitWiseOr([innerDelims, COMMA_DELIM_FLAG]);
+          innerDelims |= COMMA_DELIM_FLAG;
         }
 
         // :host(a, b, c) {
@@ -456,9 +453,8 @@ export class CssParser {
       } else {
         // this branch is for things like "en-us, 2k + 1, etc..."
         // which all end up in pseudoSelectors like :lang, :nth-child, etc..
-        var innerValueDelims = bitWiseOr([
-          delimiters, LBRACE_DELIM_FLAG, COLON_DELIM_FLAG, RPAREN_DELIM_FLAG, LPAREN_DELIM_FLAG
-        ]);
+        var innerValueDelims = delimiters | LBRACE_DELIM_FLAG | COLON_DELIM_FLAG |
+            RPAREN_DELIM_FLAG | LPAREN_DELIM_FLAG;
         while (!characterContainsDelimiter(this._scanner.peek, innerValueDelims)) {
           var token = this._scan();
           tokens.push(token);
@@ -479,7 +475,7 @@ export class CssParser {
   _parseSimpleSelector(delimiters: number): CssSimpleSelectorAst {
     const start = this._getScannerIndex();
 
-    delimiters = bitWiseOr([delimiters, COMMA_DELIM_FLAG]);
+    delimiters |= COMMA_DELIM_FLAG;
 
     this._scanner.setMode(CssLexerMode.SELECTOR);
     var selectorCssTokens: CssToken[] = [];
@@ -487,7 +483,7 @@ export class CssParser {
 
     var previousToken: CssToken;
 
-    var selectorPartDelimiters = bitWiseOr([delimiters, SPACE_DELIM_FLAG]);
+    var selectorPartDelimiters = delimiters | SPACE_DELIM_FLAG;
     var loopOverSelector = !characterContainsDelimiter(this._scanner.peek, selectorPartDelimiters);
 
     var hasAttributeError = false;
@@ -618,7 +614,7 @@ export class CssParser {
   _parseSelector(delimiters: number): CssSelectorAst {
     const start = this._getScannerIndex();
 
-    delimiters = bitWiseOr([delimiters, COMMA_DELIM_FLAG]);
+    delimiters |= COMMA_DELIM_FLAG;
     this._scanner.setMode(CssLexerMode.SELECTOR);
 
     var simpleSelectors: CssSimpleSelectorAst[] = [];
@@ -640,8 +636,7 @@ export class CssParser {
 
   /** @internal */
   _parseValue(delimiters: number): CssStyleValueAst {
-    delimiters =
-        bitWiseOr([delimiters, RBRACE_DELIM_FLAG, SEMICOLON_DELIM_FLAG, NEWLINE_DELIM_FLAG]);
+    delimiters |= RBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG | NEWLINE_DELIM_FLAG;
 
     this._scanner.setMode(CssLexerMode.STYLE_VALUE);
     const start = this._getScannerIndex();
@@ -709,7 +704,7 @@ export class CssParser {
   _parseBlock(delimiters: number): CssBlockAst {
     const start = this._getScannerIndex();
 
-    delimiters = bitWiseOr([delimiters, RBRACE_DELIM_FLAG]);
+    delimiters |= RBRACE_DELIM_FLAG;
 
     this._scanner.setMode(CssLexerMode.BLOCK);
 
@@ -734,7 +729,7 @@ export class CssParser {
   _parseStyleBlock(delimiters: number): CssStylesBlockAst {
     const start = this._getScannerIndex();
 
-    delimiters = bitWiseOr([delimiters, RBRACE_DELIM_FLAG, LBRACE_DELIM_FLAG]);
+    delimiters |= RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG;
 
     this._scanner.setMode(CssLexerMode.STYLE_BLOCK);
 
@@ -791,8 +786,7 @@ export class CssParser {
           propStr.push(nextValue.strValue);
 
           var remainingTokens = this._collectUntilDelim(
-              bitWiseOr([delimiters, COLON_DELIM_FLAG, SEMICOLON_DELIM_FLAG]),
-              CssTokenType.Identifier);
+              delimiters | COLON_DELIM_FLAG | SEMICOLON_DELIM_FLAG, CssTokenType.Identifier);
           if (remainingTokens.length > 0) {
             remainingTokens.forEach((token) => { propStr.push(token.strValue); });
           }

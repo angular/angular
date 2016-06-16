@@ -489,14 +489,6 @@ export function hasConstructor(value: Object, type: Type): boolean {
   return value.constructor === type;
 }
 
-export function bitWiseOr(values: number[]): number {
-  return values.reduce((a, b) => { return a | b; });
-}
-
-export function bitWiseAnd(values: number[]): number {
-  return values.reduce((a, b) => { return a & b; });
-}
-
 export function escape(s: string): string {
   return _global.encodeURI(s);
 }

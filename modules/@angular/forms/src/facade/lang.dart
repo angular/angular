@@ -387,16 +387,6 @@ bool hasConstructor(Object value, Type type) {
   return value.runtimeType == type;
 }
 
-num bitWiseOr(List values) {
-  var val = values.reduce((num a, num b) => (a as int) | (b as int));
-  return val as num;
-}
-
-num bitWiseAnd(List values) {
-  var val = values.reduce((num a, num b) => (a as int) & (b as int));
-  return val as num;
-}
-
 String escape(String s) {
   return Uri.encodeComponent(s);
 }
