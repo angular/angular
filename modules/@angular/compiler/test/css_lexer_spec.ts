@@ -1,7 +1,6 @@
-import {CssLexer, CssLexerMode, CssScannerError, CssToken, CssTokenType} from '@angular/compiler/src/css/lexer';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
-
-import {isPresent} from '../../src/facade/lang';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../core/testing/testing_internal';
+import {CssLexer, CssLexerMode, CssScannerError, CssToken, CssTokenType} from '../src/css_lexer';
+import {isPresent} from '../src/facade/lang';
 
 export function main() {
   function tokenize(

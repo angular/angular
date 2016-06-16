@@ -1,8 +1,7 @@
-import {CssLexer} from '@angular/compiler/src/css/lexer';
-import {BlockType, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssParseError, CssParser, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssStyleSheetAst, CssStyleValueAst, ParsedCssResult} from '@angular/compiler/src/css/parser';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
-
-import {BaseException} from '../../src/facade/exceptions';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../core/testing/testing_internal';
+import {CssLexer} from '../src/css_lexer';
+import {BlockType, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssParseError, CssParser, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssStyleSheetAst, CssStyleValueAst, ParsedCssResult} from '../src/css_parser';
+import {BaseException} from '../src/facade/exceptions';
 
 export function assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9100 */) {
   for (var i = 0; i < tokens.length; i++) {

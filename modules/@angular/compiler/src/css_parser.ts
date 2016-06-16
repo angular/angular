@@ -1,11 +1,10 @@
-import {$AT, $COLON, $COMMA, $EOF, $GT, $LBRACE, $LBRACKET, $LPAREN, $PLUS, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SPACE, $TAB, $TILDA, CssLexerMode, CssScanner, CssScannerError, CssToken, CssTokenType, generateErrorMessage, isNewline, isWhitespace} from '@angular/compiler/src/css/lexer';
-import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
-
-import {NumberWrapper, StringWrapper, bitWiseAnd, bitWiseNot, bitWiseOr, isPresent} from '../facade/lang';
+import {$AT, $COLON, $COMMA, $EOF, $GT, $LBRACE, $LBRACKET, $LPAREN, $PLUS, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SPACE, $TAB, $TILDA, CssLexerMode, CssScanner, CssScannerError, CssToken, CssTokenType, generateErrorMessage, isNewline, isWhitespace} from './css_lexer';
+import {NumberWrapper, StringWrapper, bitWiseAnd, bitWiseNot, bitWiseOr, isPresent} from './facade/lang';
+import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
 
 const SPACE_OPERATOR = ' ';
 
-export {CssToken} from '@angular/compiler/src/css/lexer';
+export {CssToken} from './css_lexer';
 
 export enum BlockType {
   Import,

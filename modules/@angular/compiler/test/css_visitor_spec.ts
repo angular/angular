@@ -1,9 +1,8 @@
-import {CssLexer} from '@angular/compiler/src/css/lexer';
-import {BlockType, CssAst, CssAstVisitor, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssParseError, CssParser, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssToken, CssUnknownRuleAst, CssUnknownTokenListAst} from '@angular/compiler/src/css/parser';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
-
-import {BaseException} from '../../src/facade/exceptions';
-import {NumberWrapper, StringWrapper, isPresent} from '../../src/facade/lang';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../core/testing/testing_internal';
+import {CssLexer} from '../src/css_lexer';
+import {BlockType, CssAst, CssAstVisitor, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssParseError, CssParser, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssToken, CssUnknownRuleAst, CssUnknownTokenListAst} from '../src/css_parser';
+import {BaseException} from '../src/facade/exceptions';
+import {NumberWrapper, StringWrapper, isPresent} from '../src/facade/lang';
 
 function _assertTokens(tokens: CssToken[], valuesArr: string[]): void {
   expect(tokens.length).toEqual(valuesArr.length);

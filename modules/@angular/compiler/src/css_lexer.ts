@@ -1,9 +1,8 @@
-import {$$, $0, $9, $A, $AMPERSAND, $AT, $BACKSLASH, $BANG, $CARET, $COLON, $COMMA, $CR, $DQ, $EOF, $EQ, $FF, $GT, $HASH, $LBRACE, $LBRACKET, $LF, $LPAREN, $MINUS, $PERCENT, $PERIOD, $PIPE, $PLUS, $QUESTION, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SQ, $STAR, $TILDA, $VTAB, $Z, $_, $a, $z, isWhitespace} from '../chars';
+import {$$, $0, $9, $A, $AMPERSAND, $AT, $BACKSLASH, $BANG, $CARET, $COLON, $COMMA, $CR, $DQ, $EOF, $EQ, $FF, $GT, $HASH, $LBRACE, $LBRACKET, $LF, $LPAREN, $MINUS, $PERCENT, $PERIOD, $PIPE, $PLUS, $QUESTION, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SPACE, $SQ, $STAR, $TAB, $TILDA, $VTAB, $Z, $_, $a, $z, isWhitespace} from './chars';
+import {BaseException} from './facade/exceptions';
+import {StringWrapper, isPresent, resolveEnumToken} from './facade/lang';
 
-import {BaseException} from '../facade/exceptions';
-import {StringWrapper, isPresent, resolveEnumToken} from '../facade/lang';
-
-export {$AT, $COLON, $COMMA, $EOF, $GT, $LBRACE, $LBRACKET, $LPAREN, $PLUS, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SPACE, $TAB, $TILDA, isWhitespace} from '../chars';
+export {$AT, $COLON, $COMMA, $EOF, $GT, $LBRACE, $LBRACKET, $LPAREN, $PLUS, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SPACE, $TAB, $TILDA, isWhitespace} from './chars';
 
 export enum CssTokenType {
   EOF,
