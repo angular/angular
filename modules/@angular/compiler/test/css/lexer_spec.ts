@@ -331,34 +331,19 @@ export function main() {
     describe('Pseudo Selector Mode', () => {
       it('should validate pseudo selector identifiers with a reduced subset of valid characters',
          () => {
-           function tokenizePseudo(code: any /** TODO #9100 */) {
-             return tokenize(code, false, CssLexerMode.PSEUDO_SELECTOR);
+           function tokenizePseudo(code: string, withArgs = false): CssToken[] {
+             var mode = withArgs ? CssLexerMode.PSEUDO_SELECTOR_WITH_ARGUMENTS :
+                                   CssLexerMode.PSEUDO_SELECTOR;
+             return tokenize(code, false, mode);
            }
 
-           expect(tokenizePseudo('lang(en-us)').length).toEqual(4);
            expect(tokenizePseudo('hover').length).toEqual(1);
            expect(tokenizePseudo('focus').length).toEqual(1);
+           expect(tokenizePseudo('lang(en-us)', true).length).toEqual(4);
 
-           expect(() => { tokenizePseudo('lang(something:broken)'); }).toThrow();
+           expect(() => { tokenizePseudo('lang(something:broken)', true); }).toThrow();
 
-           expect(() => { tokenizePseudo('not(.selector)'); }).toThrow();
-         });
-    });
-
-    describe('Pseudo Selector Mode', () => {
-      it('should validate pseudo selector identifiers with a reduced subset of valid characters',
-         () => {
-           function tokenizePseudo(code: any /** TODO #9100 */) {
-             return tokenize(code, false, CssLexerMode.PSEUDO_SELECTOR);
-           }
-
-           expect(tokenizePseudo('lang(en-us)').length).toEqual(4);
-           expect(tokenizePseudo('hover').length).toEqual(1);
-           expect(tokenizePseudo('focus').length).toEqual(1);
-
-           expect(() => { tokenizePseudo('lang(something:broken)'); }).toThrow();
-
-           expect(() => { tokenizePseudo('not(.selector)'); }).toThrow();
+           expect(() => { tokenizePseudo('not(.selector)', true); }).toThrow();
          });
     });
 
