@@ -172,99 +172,6 @@ export function main() {
       expect(res[1].sourceSpan.start.offset).toEqual(10);
     });
 
-    it('should handle the plural expansion form', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('zero<ph name="e1">bold</ph>', 'plural_=0', null))] =
-          'ZERO<ph name="e1">BOLD</ph>';
-
-      let res = parse(`{messages.length, plural,=0 {zero<b>bold</b>}}`, translations);
-
-      expect(humanizeDom(res)).toEqual([
-        [HtmlElementAst, 'ul', 0],
-        [HtmlAttrAst, '[ngPlural]', 'messages.length'],
-        [HtmlElementAst, 'template', 1],
-        [HtmlAttrAst, 'ngPluralCase', '=0'],
-        [HtmlElementAst, 'li', 2],
-        [HtmlTextAst, 'ZERO', 3],
-        [HtmlElementAst, 'b', 3],
-        [HtmlTextAst, 'BOLD', 4],
-      ]);
-    });
-
-    it('should handle nested expansion forms', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('m', 'gender_=m', null))] = 'M';
-
-      let res = parse(`{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`, translations);
-
-      expect(humanizeDom(res)).toEqual([
-        [HtmlElementAst, 'ul', 0], [HtmlAttrAst, '[ngPlural]', 'messages.length'],
-        [HtmlElementAst, 'template', 1], [HtmlAttrAst, 'ngPluralCase', '=0'],
-        [HtmlElementAst, 'li', 2],
-
-        [HtmlElementAst, 'ul', 3], [HtmlAttrAst, '[ngSwitch]', 'p.gender'],
-        [HtmlElementAst, 'template', 4], [HtmlAttrAst, 'ngSwitchWhen', '=m'],
-        [HtmlElementAst, 'li', 5], [HtmlTextAst, 'M', 6],
-
-        [HtmlTextAst, ' ', 3]
-      ]);
-    });
-
-    it('should correctly set source code positions', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('<ph name="e0">bold</ph>', 'plural_=0', null))] =
-          '<ph name="e0">BOLD</ph>';
-
-      let nodes = parse(`{messages.length, plural,=0 {<b>bold</b>}}`, translations).rootNodes;
-
-      let ul: HtmlElementAst = <HtmlElementAst>nodes[0];
-
-      expect(ul.sourceSpan.start.col).toEqual(0);
-      expect(ul.sourceSpan.end.col).toEqual(42);
-
-      expect(ul.startSourceSpan.start.col).toEqual(0);
-      expect(ul.startSourceSpan.end.col).toEqual(42);
-
-      expect(ul.endSourceSpan.start.col).toEqual(0);
-      expect(ul.endSourceSpan.end.col).toEqual(42);
-
-      let switchExp = ul.attrs[0];
-      expect(switchExp.sourceSpan.start.col).toEqual(1);
-      expect(switchExp.sourceSpan.end.col).toEqual(16);
-
-      let template: HtmlElementAst = <HtmlElementAst>ul.children[0];
-      expect(template.sourceSpan.start.col).toEqual(25);
-      expect(template.sourceSpan.end.col).toEqual(41);
-
-      let switchCheck = template.attrs[0];
-      expect(switchCheck.sourceSpan.start.col).toEqual(25);
-      expect(switchCheck.sourceSpan.end.col).toEqual(28);
-
-      let li: HtmlElementAst = <HtmlElementAst>template.children[0];
-      expect(li.sourceSpan.start.col).toEqual(25);
-      expect(li.sourceSpan.end.col).toEqual(41);
-
-      let b: HtmlElementAst = <HtmlElementAst>li.children[0];
-      expect(b.sourceSpan.start.col).toEqual(29);
-      expect(b.sourceSpan.end.col).toEqual(32);
-    });
-
-    it('should handle other special forms', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('m', 'gender_=male', null))] = 'M';
-
-      let res = parse(`{person.gender, gender,=male {m}}`, translations);
-
-      expect(humanizeDom(res)).toEqual([
-        [HtmlElementAst, 'ul', 0],
-        [HtmlAttrAst, '[ngSwitch]', 'person.gender'],
-        [HtmlElementAst, 'template', 1],
-        [HtmlAttrAst, 'ngSwitchWhen', '=male'],
-        [HtmlElementAst, 'li', 2],
-        [HtmlTextAst, 'M', 3],
-      ]);
-    });
-
     describe('errors', () => {
       it('should error when giving an invalid template', () => {
         expect(humanizeErrors(parse('<a>a</b>', {}).errors)).toEqual([
@@ -310,14 +217,6 @@ export function main() {
         expect(
             humanizeErrors(parse('<div value=\'hi {{a}}\' i18n-value></div>', translations).errors))
             .toEqual(['Invalid interpolation name \'99\'']);
-      });
-
-      it('should error on unknown plural cases', () => {
-        let mid = id(new Message('-', 'plural_unknown', null));
-        expect(humanizeErrors(parse('{n, plural, unknown {-}}', {mid: ''}).errors)).toEqual([
-          `Cannot find message for id '${mid}', content '-'.`,
-          `Plural cases should be "=<number>" or one of zero, one, two, few, many, other`,
-        ]);
       });
     });
 
