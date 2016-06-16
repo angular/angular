@@ -7,11 +7,12 @@
  */
 
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../core/testing/testing_internal';
-import {CssLexer} from '../src/css_lexer';
-import {BlockType, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssParseError, CssParser, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssStyleSheetAst, CssStyleValueAst, ParsedCssResult} from '../src/css_parser';
+import {CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssStyleSheetAst, CssStyleValueAst} from '../src/css_ast';
+import {BlockType, CssParseError, CssParser, CssToken, ParsedCssResult} from '../src/css_parser';
 import {BaseException} from '../src/facade/exceptions';
+import {ParseLocation} from '../src/parse_util';
 
-export function assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** TODO #9100 */) {
+export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
   for (var i = 0; i < tokens.length; i++) {
     expect(tokens[i].strValue == valuesArr[i]);
   }
@@ -19,14 +20,11 @@ export function assertTokens(tokens: any /** TODO #9100 */, valuesArr: any /** T
 
 export function main() {
   describe('CssParser', () => {
-    function parse(css: any /** TODO #9100 */): ParsedCssResult {
-      var lexer = new CssLexer();
-      var scanner = lexer.scan(css);
-      var parser = new CssParser(scanner, 'some-fake-file-name.css');
-      return parser.parse();
+    function parse(css: string): ParsedCssResult {
+      return new CssParser().parse(css, 'some-fake-css-file.css');
     }
 
-    function makeAst(css: any /** TODO #9100 */): CssStyleSheetAst {
+    function makeAst(css: string): CssStyleSheetAst {
       var output = parse(css);
       var errors = output.errors;
       if (errors.length > 0) {
@@ -36,11 +34,7 @@ export function main() {
     }
 
     it('should parse CSS into a stylesheet Ast', () => {
-      var styles = `
-        .selector {
-          prop: value123;
-        }
-      `;
+      var styles = '.selector { prop: value123; }';
 
       var ast = makeAst(styles);
       expect(ast.rules.length).toEqual(1);
@@ -155,7 +149,7 @@ export function main() {
       expect(ast.rules.length).toEqual(1);
 
       var rule = <CssMediaQueryRuleAst>ast.rules[0];
-      assertTokens(rule.query, ['all', 'and', '(', 'max-width', ':', '100', 'px', ')']);
+      assertTokens(rule.query.tokens, ['all', 'and', '(', 'max-width', ':', '100', 'px', ')']);
 
       var block = <CssBlockAst>rule.block;
       expect(block.entries.length).toEqual(1);
@@ -268,7 +262,8 @@ export function main() {
       expect(fontFaceRule.block.entries.length).toEqual(2);
 
       var mediaQueryRule = <CssMediaQueryRuleAst>ast.rules[2];
-      assertTokens(mediaQueryRule.query, ['all', 'and', '(', 'max-width', ':', '100', 'px', ')']);
+      assertTokens(
+          mediaQueryRule.query.tokens, ['all', 'and', '(', 'max-width', ':', '100', 'px', ')']);
       expect(mediaQueryRule.block.entries.length).toEqual(2);
     });
 
@@ -372,7 +367,7 @@ export function main() {
       var rules = ast.rules;
 
       var supportsRule = <CssBlockDefinitionRuleAst>rules[0];
-      assertTokens(supportsRule.query, ['(', 'animation-name', ':', 'rotate', ')']);
+      assertTokens(supportsRule.query.tokens, ['(', 'animation-name', ':', 'rotate', ')']);
       expect(supportsRule.type).toEqual(BlockType.Supports);
 
       var selectorOne = <CssSelectorRuleAst>supportsRule.block.entries[0];
@@ -560,6 +555,148 @@ export function main() {
       var style2 = <CssDefinitionAst>rule1.block.entries[1];
       expect(style2.property.strValue).toEqual('color');
       assertTokens(style2.value.tokens, ['white']);
+    });
+
+    describe('location offsets', () => {
+      var styles: string;
+
+      function assertMatchesOffsetAndChar(
+          location: ParseLocation, expectedOffset: number, expectedChar: string): void {
+        expect(location.offset).toEqual(expectedOffset);
+        expect(styles[expectedOffset]).toEqual(expectedChar);
+      }
+
+      it('should collect the source span location of each AST node with regular selectors', () => {
+        styles = '.problem-class { border-top-right: 1px; color: white; }\n';
+        styles += '#good-boy-rule_ { background-color: #fe4; color: teal; }';
+
+        var output = parse(styles);
+        var ast = output.ast;
+        assertMatchesOffsetAndChar(ast.location.start, 0, '.');
+        assertMatchesOffsetAndChar(ast.location.end, 111, '}');
+
+        var rule1 = <CssSelectorRuleAst>ast.rules[0];
+        assertMatchesOffsetAndChar(rule1.location.start, 0, '.');
+        assertMatchesOffsetAndChar(rule1.location.end, 54, '}');
+
+        var rule2 = <CssSelectorRuleAst>ast.rules[1];
+        assertMatchesOffsetAndChar(rule2.location.start, 56, '#');
+        assertMatchesOffsetAndChar(rule2.location.end, 111, '}');
+
+        var selector1 = rule1.selectors[0];
+        assertMatchesOffsetAndChar(selector1.location.start, 0, '.');
+        assertMatchesOffsetAndChar(selector1.location.end, 1, 'p');  // problem-class
+
+        var selector2 = rule2.selectors[0];
+        assertMatchesOffsetAndChar(selector2.location.start, 56, '#');
+        assertMatchesOffsetAndChar(selector2.location.end, 57, 'g');  // good-boy-rule_
+
+        var block1 = rule1.block;
+        assertMatchesOffsetAndChar(block1.location.start, 15, '{');
+        assertMatchesOffsetAndChar(block1.location.end, 54, '}');
+
+        var block2 = rule2.block;
+        assertMatchesOffsetAndChar(block2.location.start, 72, '{');
+        assertMatchesOffsetAndChar(block2.location.end, 111, '}');
+
+        var block1def1 = <CssDefinitionAst>block1.entries[0];
+        assertMatchesOffsetAndChar(block1def1.location.start, 17, 'b');  // border-top-right
+        assertMatchesOffsetAndChar(block1def1.location.end, 36, 'p');    // px
+
+        var block1def2 = <CssDefinitionAst>block1.entries[1];
+        assertMatchesOffsetAndChar(block1def2.location.start, 40, 'c');  // color
+        assertMatchesOffsetAndChar(block1def2.location.end, 47, 'w');    // white
+
+        var block2def1 = <CssDefinitionAst>block2.entries[0];
+        assertMatchesOffsetAndChar(block2def1.location.start, 74, 'b');  // background-color
+        assertMatchesOffsetAndChar(block2def1.location.end, 93, 'f');    // fe4
+
+        var block2def2 = <CssDefinitionAst>block2.entries[1];
+        assertMatchesOffsetAndChar(block2def2.location.start, 98, 'c');  // color
+        assertMatchesOffsetAndChar(block2def2.location.end, 105, 't');   // teal
+
+        var block1value1 = block1def1.value;
+        assertMatchesOffsetAndChar(block1value1.location.start, 35, '1');
+        assertMatchesOffsetAndChar(block1value1.location.end, 36, 'p');
+
+        var block1value2 = block1def2.value;
+        assertMatchesOffsetAndChar(block1value2.location.start, 47, 'w');
+        assertMatchesOffsetAndChar(block1value2.location.end, 47, 'w');
+
+        var block2value1 = block2def1.value;
+        assertMatchesOffsetAndChar(block2value1.location.start, 92, '#');
+        assertMatchesOffsetAndChar(block2value1.location.end, 93, 'f');
+
+        var block2value2 = block2def2.value;
+        assertMatchesOffsetAndChar(block2value2.location.start, 105, 't');
+        assertMatchesOffsetAndChar(block2value2.location.end, 105, 't');
+      });
+
+      it('should collect the source span location of each AST node with media query data', () => {
+        styles = '@media (all and max-width: 100px) { a { display:none; } }';
+
+        var output = parse(styles);
+        var ast = output.ast;
+
+        var mediaQuery = <CssMediaQueryRuleAst>ast.rules[0];
+        assertMatchesOffsetAndChar(mediaQuery.location.start, 0, '@');
+        assertMatchesOffsetAndChar(mediaQuery.location.end, 56, '}');
+
+        var predicate = mediaQuery.query;
+        assertMatchesOffsetAndChar(predicate.location.start, 0, '@');
+        assertMatchesOffsetAndChar(predicate.location.end, 32, ')');
+
+        var rule = <CssSelectorRuleAst>mediaQuery.block.entries[0];
+        assertMatchesOffsetAndChar(rule.location.start, 36, 'a');
+        assertMatchesOffsetAndChar(rule.location.end, 54, '}');
+      });
+
+      it('should collect the source span location of each AST node with keyframe data', () => {
+        styles = '@keyframes rotateAndZoomOut { ';
+        styles += 'from { transform: rotate(0deg); } ';
+        styles += '100% { transform: rotate(360deg) scale(2); }';
+        styles += '}';
+
+        var output = parse(styles);
+        var ast = output.ast;
+
+        var keyframes = <CssKeyframeRuleAst>ast.rules[0];
+        assertMatchesOffsetAndChar(keyframes.location.start, 0, '@');
+        assertMatchesOffsetAndChar(keyframes.location.end, 108, '}');
+
+        var step1 = <CssKeyframeDefinitionAst>keyframes.block.entries[0];
+        assertMatchesOffsetAndChar(step1.location.start, 30, 'f');
+        assertMatchesOffsetAndChar(step1.location.end, 62, '}');
+
+        var step2 = <CssKeyframeDefinitionAst>keyframes.block.entries[1];
+        assertMatchesOffsetAndChar(step2.location.start, 64, '1');
+        assertMatchesOffsetAndChar(step2.location.end, 107, '}');
+      });
+
+      it('should collect the source span location of each AST node with an inline rule', () => {
+        styles = '@import url(something.css)';
+
+        var output = parse(styles);
+        var ast = output.ast;
+
+        var rule = <CssInlineRuleAst>ast.rules[0];
+        assertMatchesOffsetAndChar(rule.location.start, 0, '@');
+        assertMatchesOffsetAndChar(rule.location.end, 25, ')');
+
+        var value = rule.value;
+        assertMatchesOffsetAndChar(value.location.start, 8, 'u');
+        assertMatchesOffsetAndChar(value.location.end, 25, ')');
+      });
+
+      it('should property collect the start/end locations with an invalid stylesheet', () => {
+        styles = '#id { something: value';
+
+        var output = parse(styles);
+        var ast = output.ast;
+
+        assertMatchesOffsetAndChar(ast.location.start, 0, '#');
+        assertMatchesOffsetAndChar(ast.location.end, 22, undefined);
+      });
     });
 
     it('should parse minified CSS content properly', () => {
