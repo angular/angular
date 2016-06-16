@@ -115,11 +115,18 @@ function pairs<T>(obj: {[key: string]: T}): Pair<string, T>[] {
 const SEGMENT_RE = /^[^\/\(\)\?;=&#]+/;
 function matchPathWithParams(str: string): string {
   SEGMENT_RE.lastIndex = 0;
-  var match = SEGMENT_RE.exec(str);
+  const match = SEGMENT_RE.exec(str);
   return match ? match[0] : '';
 }
 
-const QUERY_PARAM_VALUE_RE = /^[^\(\)\?;&#]+/;
+const QUERY_PARAM_RE = /^[^=\?&#]+/;
+function matchQueryParams(str: string): string {
+  QUERY_PARAM_RE.lastIndex = 0;
+  const match = SEGMENT_RE.exec(str);
+  return match ? match[0] : '';
+}
+
+const QUERY_PARAM_VALUE_RE = /^[^\?&#]+/;
 function matchUrlQueryParamValue(str: string): string {
   QUERY_PARAM_VALUE_RE.lastIndex = 0;
   const match = QUERY_PARAM_VALUE_RE.exec(str);
@@ -188,7 +195,7 @@ class UrlParser {
   }
 
   parseQueryParams(): {[key: string]: any} {
-    var params: {[key: string]: any} = {};
+    const params: {[key: string]: any} = {};
     if (this.peekStartsWith('?')) {
       this.capture('?');
       this.parseQueryParam(params);
@@ -209,7 +216,7 @@ class UrlParser {
   }
 
   parseMatrixParams(): {[key: string]: any} {
-    var params: {[key: string]: any} = {};
+    const params: {[key: string]: any} = {};
     while (this.remaining.length > 0 && this.peekStartsWith(';')) {
       this.capture(';');
       this.parseParam(params);
@@ -218,15 +225,15 @@ class UrlParser {
   }
 
   parseParam(params: {[key: string]: any}): void {
-    var key = matchPathWithParams(this.remaining);
+    const key = matchPathWithParams(this.remaining);
     if (!key) {
       return;
     }
     this.capture(key);
-    var value: any = 'true';
+    let value: any = 'true';
     if (this.peekStartsWith('=')) {
       this.capture('=');
-      var valueMatch = matchPathWithParams(this.remaining);
+      const valueMatch = matchPathWithParams(this.remaining);
       if (valueMatch) {
         value = valueMatch;
         this.capture(value);
@@ -237,12 +244,12 @@ class UrlParser {
   }
 
   parseQueryParam(params: {[key: string]: any}): void {
-    var key = matchPathWithParams(this.remaining);
+    const key = matchQueryParams(this.remaining);
     if (!key) {
       return;
     }
     this.capture(key);
-    var value: any = 'true';
+    let value: any = 'true';
     if (this.peekStartsWith('=')) {
       this.capture('=');
       var valueMatch = matchUrlQueryParamValue(this.remaining);
