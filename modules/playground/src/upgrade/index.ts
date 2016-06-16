@@ -1,6 +1,8 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {UpgradeAdapter} from '@angular/upgrade';
-import * as angular from '@angular/upgrade/src/angular_js';
+
+declare var angular: any;
+
 
 var styles = [
   `
