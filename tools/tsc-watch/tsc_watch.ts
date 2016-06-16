@@ -37,7 +37,7 @@ export class TscWatch {
   }
 
   watch() {
-    var args = [TSC, '--project', this.tsconfig];
+    var args = [TSC, '--emitDecoratorMetadata', '--project', this.tsconfig];
     if (!this.runOnce) args.push('--watch');
     var tsc =
         this.runCmd(args, {}, (d) => this.consumeLine(d, false), (d) => this.consumeLine(d, true));
