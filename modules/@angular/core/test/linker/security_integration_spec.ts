@@ -29,12 +29,12 @@ class SecuredComponent {
   constructor() { this.ctxProp = 'some value'; }
 }
 
-function itAsync(msg: string, injections: Function[], f: Function): any; /** TODO #???? */
-function itAsync(msg: string, f: (tcb: TestComponentBuilder, atc: AsyncTestCompleter) => void):
-    any; /** TODO #???? */
+function itAsync(msg: string, injections: Function[], f: Function): void;
+function itAsync(
+    msg: string, f: (tcb: TestComponentBuilder, atc: AsyncTestCompleter) => void): void;
 function itAsync(
     msg: string, f: Function[] | ((tcb: TestComponentBuilder, atc: AsyncTestCompleter) => void),
-    fn?: Function): any /** TODO #???? */ {
+    fn?: Function): void {
   if (f instanceof Function) {
     it(msg, inject([TestComponentBuilder, AsyncTestCompleter], <Function>f));
   } else {
@@ -63,8 +63,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
 
     itAsync(
-        'should disallow binding on*',
-        (tcb: TestComponentBuilder, async: any /** TODO #???? */) => {
+        'should disallow binding on*', (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
           let tpl = `<div [attr.onclick]="ctxProp"></div>`;
           tcb = tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl}));
           PromiseWrapper.catchError(tcb.createAsync(SecuredComponent), (e) => {
@@ -81,7 +80,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       itAsync(
           'should not escape values marked as trusted',
           [TestComponentBuilder, AsyncTestCompleter, DomSanitizationService],
-          (tcb: TestComponentBuilder, async: any /** TODO #???? */,
+          (tcb: TestComponentBuilder, async: AsyncTestCompleter,
            sanitizer: DomSanitizationService) => {
             let tpl = `<a [href]="ctxProp">Link Title</a>`;
             tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
@@ -101,7 +100,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       itAsync(
           'should error when using the wrong trusted value',
           [TestComponentBuilder, AsyncTestCompleter, DomSanitizationService],
-          (tcb: TestComponentBuilder, async: any /** TODO #???? */,
+          (tcb: TestComponentBuilder, async: AsyncTestCompleter,
            sanitizer: DomSanitizationService) => {
             let tpl = `<a [href]="ctxProp">Link Title</a>`;
             tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
@@ -116,12 +115,32 @@ function declareTests({useJit}: {useJit: boolean}) {
                   async.done();
                 });
           });
+
+      itAsync(
+          'should warn when using in string interpolation',
+          [TestComponentBuilder, AsyncTestCompleter, DomSanitizationService],
+          (tcb: TestComponentBuilder, async: AsyncTestCompleter,
+           sanitizer: DomSanitizationService) => {
+            let tpl = `<a href="/foo/{{ctxProp}}">Link Title</a>`;
+            tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+                .createAsync(SecuredComponent)
+                .then((fixture) => {
+                  let e = fixture.debugElement.children[0].nativeElement;
+                  let trusted = sanitizer.bypassSecurityTrustUrl('bar/baz');
+                  let ci = fixture.debugElement.componentInstance;
+                  ci.ctxProp = trusted;
+                  fixture.detectChanges();
+                  expect(getDOM().getProperty(e, 'href')).toMatch(/SafeValue(%20| )must(%20| )use/);
+
+                  async.done();
+                });
+          });
     });
 
     describe('sanitizing', () => {
       itAsync(
           'should escape unsafe attributes',
-          (tcb: TestComponentBuilder, async: any /** TODO #???? */) => {
+          (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
             let tpl = `<a [href]="ctxProp">Link Title</a>`;
             tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
                 .createAsync(SecuredComponent)
@@ -144,7 +163,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       itAsync(
           'should escape unsafe style values',
-          (tcb: TestComponentBuilder, async: any /** TODO #???? */) => {
+          (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
             let tpl = `<div [style.background]="ctxProp">Text</div>`;
             tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
                 .createAsync(SecuredComponent)
@@ -169,7 +188,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       itAsync(
           'should escape unsafe HTML values',
-          (tcb: TestComponentBuilder, async: any /** TODO #???? */) => {
+          (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
             let tpl = `<div [innerHTML]="ctxProp">Text</div>`;
             tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
                 .createAsync(SecuredComponent)

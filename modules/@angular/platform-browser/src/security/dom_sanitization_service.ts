@@ -9,7 +9,9 @@ import {sanitizeUrl} from './url_sanitizer';
 export {SecurityContext};
 
 
-/** Marker interface for a value that's safe to use in a particular context. */
+/**
+ * Marker interface for a value that's safe to use in a particular context.
+ */
 export interface SafeValue {}
 /** Marker interface for a value that's safe to use as HTML. */
 export interface SafeHtml extends SafeValue {}
@@ -151,7 +153,12 @@ abstract class SafeValueImpl implements SafeValue {
   constructor(public changingThisBreaksApplicationSecurity: string) {
     // empty
   }
+
   abstract getTypeName(): string;
+
+  toString() {
+    return `SafeValue must use [property]=binding: ${this.changingThisBreaksApplicationSecurity}`;
+  }
 }
 
 class SafeHtmlImpl extends SafeValueImpl implements SafeHtml {
