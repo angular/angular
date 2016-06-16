@@ -43,6 +43,7 @@
     "test/recognize.spec.ts",
     "test/create_router_state.spec.ts",
     "test/create_url_tree.spec.ts",
+    "test/config.spec.ts",
     "test/router.spec.ts",
     "typings/index.d.ts"
   ]

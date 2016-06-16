@@ -15,7 +15,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {of } from 'rxjs/observable/of';
 
 import {applyRedirects} from './apply_redirects';
-import {RouterConfig} from './config';
+import {RouterConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -99,6 +99,7 @@ export class Router {
   private locationSubscription: Subscription;
   private routerEvents: Subject<Event>;
   private navigationId: number = 0;
+  private config: RouterConfig;
 
   /**
    * @internal
@@ -106,7 +107,8 @@ export class Router {
   constructor(
       private rootComponentType: Type, private resolver: ComponentResolver,
       private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
-      private location: Location, private injector: Injector, private config: RouterConfig) {
+      private location: Location, private injector: Injector, config: RouterConfig) {
+    this.resetConfig(config);
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
@@ -149,7 +151,10 @@ export class Router {
    * ]);
    * ```
    */
-  resetConfig(config: RouterConfig): void { this.config = config; }
+  resetConfig(config: RouterConfig): void {
+    validateConfig(config);
+    this.config = config;
+  }
 
   /**
    * @internal
