@@ -5,7 +5,7 @@ import {NumberWrapper, RegExpWrapper, Type, isBlank, isNumber, isPresent} from '
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 var defaultLocale: string = 'en-US';
-const _NUMBER_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$'/g;
+const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/g;
 
 /**
  * Internal function to format numbers used by Decimal, Percent and Date pipes.
@@ -19,7 +19,7 @@ function formatNumber(
   }
   var minInt = 1, minFraction = 0, maxFraction = 3;
   if (isPresent(digits)) {
-    var parts = RegExpWrapper.firstMatch(_NUMBER_REGEXP, digits);
+    var parts = RegExpWrapper.firstMatch(_NUMBER_FORMAT_REGEXP, digits);
     if (isBlank(parts)) {
       throw new BaseException(`${digits} is not a valid digit info for number pipes`);
     }

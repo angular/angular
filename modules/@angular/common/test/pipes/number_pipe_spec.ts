@@ -19,7 +19,6 @@ export function main() {
             expect(pipe.transform(123, '.2')).toEqual('123.00');
             expect(pipe.transform(1, '3.')).toEqual('001');
             expect(pipe.transform(1.1, '3.4-5')).toEqual('001.1000');
-
             expect(pipe.transform(1.123456, '3.4-5')).toEqual('001.12346');
             expect(pipe.transform(1.1234)).toEqual('1.123');
           });
@@ -54,6 +53,7 @@ export function main() {
           it('should return correct value for numbers', () => {
             expect(pipe.transform(123)).toEqual('USD123');
             expect(pipe.transform(12, 'EUR', false, '.2')).toEqual('EUR12.00');
+            expect(pipe.transform(5.123, 'USD', false, '.0-2')).toEqual('USD5.12');
           });
 
           it('should not support other objects',
