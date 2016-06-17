@@ -74,5 +74,15 @@ export function main() {
 
       expect(lastKeyframe['height']).toEqual('555em');
     });
+
+    it('should use a fill mode of `both`', () => {
+      var startingStyles = _makeStyles({});
+      var styles = [_makeKeyframe(0, {'color': 'green'}), _makeKeyframe(1, {'color': 'red'})];
+
+      driver.animate(elm, startingStyles, styles, 1000, 1000, 'linear');
+      var details = driver.log.pop();
+      var options = details['options'];
+      expect(options['fill']).toEqual('both');
+    });
   });
 }

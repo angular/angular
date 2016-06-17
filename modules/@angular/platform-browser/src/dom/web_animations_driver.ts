@@ -39,9 +39,13 @@ export class WebAnimationsDriver implements AnimationDriver {
       formattedSteps = [start, start];
     }
 
-    var player = this._triggerWebAnimation(
-        anyElm, formattedSteps,
-        {'duration': duration, 'delay': delay, 'easing': easing, 'fill': 'forwards'});
+    var playerOptions = {
+      'duration': duration,
+      'delay': delay,
+      'fill': 'both'  // we use `both` because it allows for styling at 0% to work with `delay`
+    };
+
+    var player = this._triggerWebAnimation(anyElm, formattedSteps, playerOptions);
 
     return new WebAnimationsPlayer(player, duration);
   }
