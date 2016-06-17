@@ -1,10 +1,12 @@
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
 import {Log} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
-import {OnChanges, OnInit, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked} from '@angular/core';
+import {OnChanges, OnInit, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, ChangeDetectorRef} from '@angular/core';
 import {Directive, Component, ViewMetadata} from '@angular/core/src/metadata';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
+
 
 export function main() {
   describe('directive lifecycle integration spec', () => {
@@ -36,6 +38,28 @@ export function main() {
                    async.done();
                  });
            }));
+
+    it('should not invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked when CD is detached',
+       inject(
+           [TestComponentBuilder, Log, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, log: Log, async: AsyncTestCompleter) => {
+             tcb.overrideView(MyComp5, new ViewMetadata({
+                                template: '<div [field]="123" lifecycle></div>',
+                                directives: [LifecycleCmp]
+                              }))
+                 .createAsync(MyComp5)
+                 .then((tc) => {
+                   var nodes = tc.debugElement.queryAllNodes(By.directive(LifecycleCmp));
+                   var cmp = nodes.map(node => node.injector.get(LifecycleCmp))[0];
+
+                   cmp.changeDetectorRef.detach();
+                   tc.detectChanges();
+
+                   expect(log.result()).toEqual('ngOnInit; ngAfterContentInit; ngAfterViewInit');
+
+                   async.done();
+                 });
+           }));
   });
 }
 
@@ -55,7 +79,7 @@ class LifecycleDir implements DoCheck {
 class LifecycleCmp implements OnChanges,
     OnInit, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked {
   field: any /** TODO #9100 */;
-  constructor(private _log: Log) {}
+  constructor(private _log: Log, public changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnChanges(_: any /** TODO #9100 */) { this._log.add('ngOnChanges'); }
 
