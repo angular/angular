@@ -20,26 +20,29 @@ export function partition(nodes: HtmlAst[], errors: ParseError[], implicitTags: 
   let parts: Part[] = [];
 
   for (let i = 0; i < nodes.length; ++i) {
-    let n = nodes[i];
-    let temp: HtmlAst[] = [];
-    if (_isOpeningComment(n)) {
-      let i18n = (<HtmlCommentAst>n).value.replace(/^i18n:?/, '').trim();
-      i++;
-      while (!_isClosingComment(nodes[i])) {
-        temp.push(nodes[i++]);
-        if (i === nodes.length) {
-          errors.push(new I18nError(n.sourceSpan, 'Missing closing \'i18n\' comment.'));
-          break;
-        }
-      }
-      parts.push(new Part(null, null, temp, i18n, true));
+    let node = nodes[i];
+    let msgNodes: HtmlAst[] = [];
+    // Nodes between `<!-- i18n -->` and `<!-- /i18n -->`
+    if (_isOpeningComment(node)) {
+      let i18n = (<HtmlCommentAst>node).value.replace(/^i18n:?/, '').trim();
 
-    } else if (n instanceof HtmlElementAst) {
-      let i18n = _findI18nAttr(n);
-      let hasI18n: boolean = isPresent(i18n) || implicitTags.indexOf(n.name) > -1;
-      parts.push(new Part(n, null, n.children, isPresent(i18n) ? i18n.value : null, hasI18n));
-    } else if (n instanceof HtmlTextAst) {
-      parts.push(new Part(null, n, null, null, false));
+      while (++i < nodes.length && !_isClosingComment(nodes[i])) {
+        msgNodes.push(nodes[i]);
+      }
+
+      if (i === nodes.length) {
+        errors.push(new I18nError(node.sourceSpan, 'Missing closing \'i18n\' comment.'));
+        break;
+      }
+
+      parts.push(new Part(null, null, msgNodes, i18n, true));
+    } else if (node instanceof HtmlElementAst) {
+      // Node with an `i18n` attribute
+      let i18n = _findI18nAttr(node);
+      let hasI18n: boolean = isPresent(i18n) || implicitTags.indexOf(node.name) > -1;
+      parts.push(new Part(node, null, node.children, isPresent(i18n) ? i18n.value : null, hasI18n));
+    } else if (node instanceof HtmlTextAst) {
+      parts.push(new Part(null, node, null, null, false));
     }
   }
 

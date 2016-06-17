@@ -10,8 +10,8 @@ export function main() {
     let extractor: MessageExtractor;
 
     beforeEach(() => {
-      let htmlParser = new HtmlParser();
-      var parser = new Parser(new Lexer());
+      const htmlParser = new HtmlParser();
+      const parser = new Parser(new Lexer());
       extractor = new MessageExtractor(htmlParser, parser, ['i18n-tag'], {'i18n-el': ['trans']});
     });
 
@@ -153,7 +153,7 @@ export function main() {
         new Message('value', 'meaning', 'desc')
       ]);
     });
-    
+
     it('should remove duplicate messages', () => {
       let res = extractor.extract(
           `
@@ -203,12 +203,14 @@ export function main() {
         expect(res.errors[0].msg).toEqual('Missing attribute \'title2\'.');
       });
 
-      it('should error when cannot find a matching desc', () => {
-        let res = extractor.extract(
-            `
-         <!-- i18n: meaning1|desc1 -->message1`,
-            'someUrl');
+      it('should error when i18n comments are unbalanced', () => {
+        const res = extractor.extract('<!-- i18n -->message1', 'someUrl');
+        expect(res.errors.length).toEqual(1);
+        expect(res.errors[0].msg).toEqual('Missing closing \'i18n\' comment.');
+      });
 
+      it('should error when i18n comments are unbalanced', () => {
+        const res = extractor.extract('<!-- i18n -->', 'someUrl');
         expect(res.errors.length).toEqual(1);
         expect(res.errors[0].msg).toEqual('Missing closing \'i18n\' comment.');
       });
