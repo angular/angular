@@ -238,7 +238,7 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 [github]: https://github.com/angular/material2
 [gitter]: https://gitter.im/angular/material2
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
-[js-style-guide]: http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
+[js-style-guide]: https://google.github.io/styleguide/javascriptguide.xml
 [codepen]: http://codepen.io/
 [jsbin]: http://jsbin.com/
 [jsfiddle]: http://jsfiddle.net/
