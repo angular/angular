@@ -167,8 +167,6 @@ The likelihood of anyone actually depending on this property is very low.
 
 * `Parser` constructor required new parameter `config: CompilerConfig` as second argument.
 
-* Parse5Adapter is no longer exported as public API, use serverBootstrap()
-
 * Bundles are now in the bundles/ subdirectory within each package
 
 * HTML, style values, and URLs are now automatically sanitized. Values that do not match are escaped
@@ -189,6 +187,12 @@ The likelihood of anyone actually depending on this property is very low.
   Instead of providing a binding to these tokens, provide a binding for `CompilerConfig` instead.
 
 * `CompilerConfig` used to take positional arguments and now takes named arguments.
+
+### Deprecation
+
+* `Parse5DomAdapter` will no longer be exported from `@angular/platform-server` as a public API as of RC.3.
+  A new function called `serverBootstrap()` will be provided, which will automatically set the correct
+  `document` during platform initialization.
 
 ### Reverts
 
