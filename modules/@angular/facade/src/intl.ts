@@ -127,13 +127,13 @@ function hour12Modify(
 }
 
 function digitCondition(prop: string, len: number): Intl.DateTimeFormatOptions {
-  var result = {};
-  (result as any /** TODO #9100 */)[prop] = len == 2 ? '2-digit' : 'numeric';
+  var result: {[k: string]: string} = {};
+  result[prop] = len == 2 ? '2-digit' : 'numeric';
   return result;
 }
 function nameCondition(prop: string, len: number): Intl.DateTimeFormatOptions {
-  var result = {};
-  (result as any /** TODO #9100 */)[prop] = len < 4 ? 'short' : 'long';
+  var result: {[k: string]: string} = {};
+  result[prop] = len < 4 ? 'short' : 'long';
   return result;
 }
 

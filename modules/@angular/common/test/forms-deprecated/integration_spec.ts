@@ -561,7 +561,7 @@ export function main() {
                       </select>
                   </div>`;
 
-             var fixture: any /** TODO #9100 */;
+             var fixture: ComponentFixture<MyComp8>;
              tcb.overrideTemplate(MyComp8, t)
                  .createAsync(MyComp8)
                  .then((compFixture) => fixture = compFixture);
@@ -952,7 +952,7 @@ export function main() {
                   <input type="text" ngControl="login">
                  </div>`;
 
-           var fixture: any /** TODO #9100 */;
+           var fixture: ComponentFixture<MyComp8>;
            tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((root) => fixture = root);
            tick();
 

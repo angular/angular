@@ -7,8 +7,8 @@ import {RegExpWrapper, StringJoiner} from '../../src/facade/lang';
 export function main() {
   describe('ReplacePipe', () => {
     var someNumber: number;
-    var str: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var str: string;
+    var pipe: ReplacePipe;
 
     beforeEach(() => {
       someNumber = 42;
@@ -24,15 +24,15 @@ export function main() {
       });
 
       it('should not support patterns other than strings and regular expressions', () => {
-        expect(() => pipe.transform(str, {}, 'Hugh')).toThrow();
-        expect(() => pipe.transform(str, null, 'Hugh')).toThrow();
-        expect(() => pipe.transform(str, 123, 'Hugh')).toThrow();
+        expect(() => pipe.transform(str, <any>{}, 'Hugh')).toThrow();
+        expect(() => pipe.transform(str, <any>null, 'Hugh')).toThrow();
+        expect(() => pipe.transform(str, <any>123, 'Hugh')).toThrow();
       });
 
       it('should not support replacements other than strings and functions', () => {
-        expect(() => pipe.transform(str, 'Douglas', {})).toThrow();
-        expect(() => pipe.transform(str, 'Douglas', null)).toThrow();
-        expect(() => pipe.transform(str, 'Douglas', 123)).toThrow();
+        expect(() => pipe.transform(str, 'Douglas', <any>{})).toThrow();
+        expect(() => pipe.transform(str, 'Douglas', <any>null)).toThrow();
+        expect(() => pipe.transform(str, 'Douglas', <any>123)).toThrow();
       });
 
       it('should return a new string with the pattern replaced', () => {
@@ -42,7 +42,7 @@ export function main() {
 
         var result3 = pipe.transform(str, RegExpWrapper.create('a', 'i'), '_');
 
-        var f = ((x: any /** TODO #9100 */) => { return 'Adams!'; });
+        var f = ((x: any) => { return 'Adams!'; });
 
         var result4 = pipe.transform(str, 'Adams', f);
 

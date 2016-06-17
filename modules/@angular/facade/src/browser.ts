@@ -6,7 +6,7 @@ var win = typeof window !== 'undefined' && window || <any>{};
 export {win as window};
 export var document = win.document;
 export var location = win.location;
-export var gc = win['gc'] ? () => win['gc']() : (): any /** TODO #9100 */ => null;
+export var gc = win['gc'] ? () => win['gc']() : (): any => null;
 export var performance = win['performance'] ? win['performance'] : null;
 export const Event = win['Event'];
 export const MouseEvent = win['MouseEvent'];
