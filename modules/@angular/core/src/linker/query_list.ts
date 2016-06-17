@@ -40,22 +40,24 @@ export class QueryList<T> {
   /**
    * returns a new array with the passed in function applied to each element.
    */
-  map<U>(fn: (item: T) => U): U[] { return this._results.map(fn); }
+  map<U>(fn: (item: T, index?: number) => U): U[] { return this._results.map(fn); }
 
   /**
    * returns a filtered array.
    */
-  filter(fn: (item: T) => boolean): T[] { return this._results.filter(fn); }
+  filter(fn: (item: T, index?: number) => boolean): T[] { return this._results.filter(fn); }
 
   /**
    * returns a reduced value.
    */
-  reduce<U>(fn: (acc: U, item: T) => U, init: U): U { return this._results.reduce(fn, init); }
+  reduce<U>(fn: (acc: U, item: T, index?: number) => U, init: U): U {
+    return this._results.reduce(fn, init);
+  }
 
   /**
    * executes function for each element in a query.
    */
-  forEach(fn: (item: T) => void): void { this._results.forEach(fn); }
+  forEach(fn: (item: T, index?: number) => void): void { this._results.forEach(fn); }
 
   /**
    * converts QueryList into an array
