@@ -40,6 +40,11 @@ export function main() {
       expect(queryList.map((x) => x)).toEqual(['one', 'two']);
     });
 
+    it('should support map with index', () => {
+      queryList.reset(['one', 'two']);
+      expect(queryList.map((x, i) => `${x}_${i}`)).toEqual(['one_0', 'two_1']);
+    });
+
     it('should support forEach', () => {
       queryList.reset(['one', 'two']);
       let join = '';
@@ -47,25 +52,40 @@ export function main() {
       expect(join).toEqual('onetwo');
     });
 
+    it('should support forEach with index', () => {
+      queryList.reset(['one', 'two']);
+      let join = '';
+      queryList.forEach((x, i) => join = join + x + i);
+      expect(join).toEqual('one0two1');
+    });
+
     if (!IS_DART) {
       it('should support filter', () => {
         queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList).filter((x: any /** TODO #9100 */) => x == 'one')).toEqual([
-          'one'
-        ]);
+        expect((<_JsQueryList>queryList).filter((x: string) => x == 'one')).toEqual(['one']);
+      });
+
+      it('should support filter with index', () => {
+        queryList.reset(['one', 'two']);
+        expect((<_JsQueryList>queryList).filter((x: string, i: number) => i == 0)).toEqual(['one']);
       });
 
       it('should support reduce', () => {
         queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList)
-                   .reduce((a: any /** TODO #9100 */, x: any /** TODO #9100 */) => a + x, 'start:'))
+        expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
             .toEqual('start:onetwo');
+      });
+
+      it('should support reduce with index', () => {
+        queryList.reset(['one', 'two']);
+        expect((<_JsQueryList>queryList)
+                   .reduce((a: string, x: string, i: number) => a + x + i, 'start:'))
+            .toEqual('start:one0two1');
       });
 
       it('should support toArray', () => {
         queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList)
-                   .reduce((a: any /** TODO #9100 */, x: any /** TODO #9100 */) => a + x, 'start:'))
+        expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
             .toEqual('start:onetwo');
       });
 
