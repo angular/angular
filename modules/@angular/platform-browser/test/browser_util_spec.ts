@@ -17,7 +17,6 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: true,
         isChromeDesktop: true
       },
       {
@@ -30,7 +29,6 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: true,
         isChromeDesktop: false
       },
       {
@@ -43,7 +41,6 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -56,7 +53,6 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -69,7 +65,6 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -82,7 +77,6 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -95,7 +89,6 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -108,7 +101,6 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -121,7 +113,6 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -134,7 +125,6 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -147,7 +137,6 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -160,7 +149,6 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -173,7 +161,6 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -186,7 +173,6 @@ export function main() {
         isWebkit: true,
         isIOS7: true,
         isSlow: true,
-        supportsIntlApi: false,
         isChromeDesktop: false
       },
       {
@@ -199,7 +185,6 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
         isChromeDesktop: false
       }
     ];
@@ -214,7 +199,6 @@ export function main() {
         expect(bd.isWebkit).toBe(StringMapWrapper.get(browser, 'isWebkit'));
         expect(bd.isIOS7).toBe(StringMapWrapper.get(browser, 'isIOS7'));
         expect(bd.isSlow).toBe(StringMapWrapper.get(browser, 'isSlow'));
-        expect(bd.supportsIntlApi).toBe(StringMapWrapper.get(browser, 'supportsIntlApi'));
         expect(bd.isChromeDesktop).toBe(StringMapWrapper.get(browser, 'isChromeDesktop'));
       });
     });
