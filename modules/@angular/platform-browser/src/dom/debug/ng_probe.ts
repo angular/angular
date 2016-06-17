@@ -1,7 +1,6 @@
-import {ApplicationRef, DebugNode, NgZone, RootRenderer, getDebugNode} from '@angular/core';
+import {ApplicationRef, DebugNode, NgZone, RootRenderer, getDebugNode, isDevMode} from '@angular/core';
 
 import {DebugDomRootRenderer} from '../../../core_private';
-import {assertionsEnabled} from '../../facade/lang';
 import {getDOM} from '../dom_adapter';
 import {DomRootRenderer} from '../dom_renderer';
 
@@ -24,7 +23,7 @@ export function inspectNativeElement(element: any /** TODO #9100 */): DebugNode 
 }
 
 function _createConditionalRootRenderer(rootRenderer: any /** TODO #9100 */) {
-  if (assertionsEnabled()) {
+  if (isDevMode()) {
     return _createRootRenderer(rootRenderer);
   }
   return rootRenderer;

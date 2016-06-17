@@ -1,6 +1,6 @@
 import {ObservableWrapper} from '../facade/async';
 import {ListWrapper, Map, MapWrapper, StringMapWrapper} from '../facade/collection';
-import {Type, assertionsEnabled, isArray, isBlank, isNumber, isPresent, isPrimitive, isString, stringify} from '../facade/lang';
+import {Type, isArray, isBlank, isNumber, isPresent, isPrimitive, isString, stringify} from '../facade/lang';
 import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 
 import {AppElement} from './element';

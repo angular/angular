@@ -1,7 +1,7 @@
 import {ObservableWrapper, PromiseWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
-import {IS_DART, Type, assertionsEnabled, isBlank, isPresent, isPromise, lockMode} from '../src/facade/lang';
+import {IS_DART, Type, isBlank, isPresent, isPromise} from '../src/facade/lang';
 
 import {APP_INITIALIZER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
@@ -13,17 +13,57 @@ import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {NgZone, NgZoneError} from './zone/ng_zone';
 
-
 /**
  * Create an Angular zone.
  * @experimental
  */
 export function createNgZone(): NgZone {
-  return new NgZone({enableLongStackTrace: assertionsEnabled()});
+  return new NgZone({enableLongStackTrace: isDevMode()});
 }
 
+var _devMode: boolean = true;
+var _runModeLocked: boolean = false;
 var _platform: PlatformRef;
 var _inPlatformCreate: boolean = false;
+
+/**
+ * Disable Angular's development mode, which turns off assertions and other
+ * checks within the framework.
+ *
+ * One important assertion this disables verifies that a change detection pass
+ * does not result in additional changes to any bindings (also known as
+ * unidirectional data flow).
+ * @stable
+ */
+export function enableProdMode(): void {
+  if (_runModeLocked) {
+    // Cannot use BaseException as that ends up importing from facade/lang.
+    throw new BaseException('Cannot enable prod mode after platform setup.');
+  }
+  _devMode = false;
+}
+
+/**
+ * Returns whether Angular is in development mode.
+ * This can only be read after `lockRunMode` has been called.
+ *
+ * By default, this is true, unless a user calls `enableProdMode`.
+ */
+export function isDevMode(): boolean {
+  if (!_runModeLocked) {
+    throw new BaseException(`Dev mode can't be read before bootstrap!`);
+  }
+  return _devMode;
+}
+
+/**
+ * Locks the run mode of Angular. After this has been called,
+ * it can't be changed any more. I.e. `isDevMode()` will always
+ * return the same value.
+ */
+export function lockRunMode(): void {
+  _runModeLocked = true;
+}
 
 /**
  * Creates a platform.
@@ -38,7 +78,7 @@ export function createPlatform(injector: Injector): PlatformRef {
     throw new BaseException(
         'There can be only one platform. Destroy the previous one to create a new one.');
   }
-  lockMode();
+  lockRunMode();
   _inPlatformCreate = true;
   try {
     _platform = injector.get(PlatformRef);
@@ -281,7 +321,7 @@ export class ApplicationRef_ extends ApplicationRef {
   constructor(private _platform: PlatformRef_, private _zone: NgZone, private _injector: Injector) {
     super();
     var zone: NgZone = _injector.get(NgZone);
-    this._enforceNoNewChanges = assertionsEnabled();
+    this._enforceNoNewChanges = isDevMode();
     zone.run(() => { this._exceptionHandler = _injector.get(ExceptionHandler); });
     this._asyncInitDonePromise = this.run(() => {
       let inits: Function[] = _injector.get(APP_INITIALIZER, null);
@@ -373,7 +413,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
       this._loadComponent(compRef);
       let c: Console = this._injector.get(Console);
-      if (assertionsEnabled()) {
+      if (isDevMode()) {
         let prodDescription = IS_DART ? 'Production mode is disabled in Dart.' :
                                         'Call enableProdMode() to enable the production mode.';
         c.log(`Angular 2 is running in the development mode. ${prodDescription}`);

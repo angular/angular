@@ -3,7 +3,7 @@
  * Intended to be used in a build step.
  */
 import * as compiler from '@angular/compiler';
-import {ViewEncapsulation} from '@angular/core';
+import {ViewEncapsulation, lockRunMode} from '@angular/core';
 import {Parse5DomAdapter} from '@angular/platform-server';
 import {AngularCompilerOptions} from '@angular/tsc-wrapped';
 import * as path from 'path';
@@ -29,7 +29,9 @@ export class CodeGenerator {
       private options: AngularCompilerOptions, private program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: StaticReflector,
       private resolver: CompileMetadataResolver, private compiler: compiler.OfflineCompiler,
-      private reflectorHost: ReflectorHost) {}
+      private reflectorHost: ReflectorHost) {
+    lockRunMode();
+  }
 
   private generateSource(metadatas: compiler.CompileDirectiveMetadata[]) {
     const normalize = (metadata: compiler.CompileDirectiveMetadata) => {

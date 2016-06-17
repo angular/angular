@@ -1,7 +1,9 @@
+import {isDevMode} from '@angular/core';
+
 import {DomAdapter, getDOM} from '../dom/dom_adapter';
-import {assertionsEnabled} from '../facade/lang';
 
 import {sanitizeUrl} from './url_sanitizer';
+
 
 
 /** A <body> element that can be safely used to parse untrusted HTML. Lazily initialized below. */
@@ -256,7 +258,7 @@ export function sanitizeHtml(unsafeHtml: string): string {
       DOM.removeChild(parent, child);
     }
 
-    if (assertionsEnabled() && safeHtml !== unsafeHtml) {
+    if (isDevMode() && safeHtml !== unsafeHtml) {
       DOM.log('WARNING: sanitizing HTML stripped some content.');
     }
 

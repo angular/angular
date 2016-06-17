@@ -4,8 +4,11 @@ require('zone.js/dist/zone-node.js');
 require('zone.js/dist/long-stack-trace-zone.js');
 
 import {AnimateCmpNgFactory} from '../src/animate.ngfactory';
-import {ReflectiveInjector, DebugElement, getDebugNode} from '@angular/core';
+import {ReflectiveInjector, DebugElement, getDebugNode, lockRunMode} from '@angular/core';
 import {browserPlatform, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+
+// Need to lock the mode explicitely as this test is not using Angular's testing framework.
+lockRunMode();
 
 describe('template codegen output', () => {
   function findTargetElement(elm: DebugElement): DebugElement {

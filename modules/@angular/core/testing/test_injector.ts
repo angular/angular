@@ -1,4 +1,5 @@
 import {PLATFORM_INITIALIZER, Provider, ReflectiveInjector, Type} from '../index';
+import {lockRunMode} from '../src/application_ref';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {FunctionWrapper, isPresent} from '../src/facade/lang';
@@ -33,6 +34,7 @@ export class TestInjector {
   }
 
   createInjector() {
+    lockRunMode();
     var rootInjector = ReflectiveInjector.resolveAndCreate(this.platformProviders);
     this._injector = rootInjector.resolveAndCreateChild(
         ListWrapper.concat(this.applicationProviders, this._providers));
