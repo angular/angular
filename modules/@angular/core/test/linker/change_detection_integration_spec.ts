@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {ComponentFixture, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-
-import {fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
 import {isBlank, NumberWrapper,} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';

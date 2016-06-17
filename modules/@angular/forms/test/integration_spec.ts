@@ -8,9 +8,9 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {TestComponentBuilder} from '@angular/compiler/testing';
-import {ComponentFixture} from '@angular/compiler/testing';
 import {Component, Directive, EventEmitter, Output} from '@angular/core';
 import {Input, Provider, forwardRef} from '@angular/core';
+import {ComponentFixture} from '@angular/core/testing';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';

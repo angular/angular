@@ -1,20 +1,3 @@
-export declare class ComponentFixture<T> {
-    changeDetectorRef: ChangeDetectorRef;
-    componentInstance: any;
-    componentRef: ComponentRef<T>;
-    debugElement: DebugElement;
-    elementRef: ElementRef;
-    nativeElement: any;
-    ngZone: NgZone;
-    constructor(componentRef: ComponentRef<T>, ngZone: NgZone, autoDetect: boolean);
-    autoDetectChanges(autoDetect?: boolean): void;
-    checkNoChanges(): void;
-    destroy(): void;
-    detectChanges(checkNoChanges?: boolean): void;
-    isStable(): boolean;
-    whenStable(): Promise<any>;
-}
-
 export declare var ComponentFixtureAutoDetect: OpaqueToken;
 
 export declare var ComponentFixtureNoNgZone: OpaqueToken;

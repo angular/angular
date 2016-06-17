@@ -7,8 +7,9 @@
  */
 
 import {Location} from '@angular/common';
-import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component} from '@angular/core';
+import {ComponentFixture} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';

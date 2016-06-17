@@ -7,7 +7,8 @@
  */
 
 import {beforeEach, beforeEachProviders, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {ComponentFixture} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {Location} from '@angular/common';
