@@ -21,18 +21,11 @@ export class CompileMetadataResolver {
   private _pipeCache = new Map<Type, cpl.CompilePipeMetadata>();
   private _anonymousTypes = new Map<Object, number>();
   private _anonymousTypeIndex = 0;
-  private _reflector: ReflectorReader;
 
   constructor(
       private _directiveResolver: DirectiveResolver, private _pipeResolver: PipeResolver,
       private _viewResolver: ViewResolver, private _config: CompilerConfig,
-      _reflector?: ReflectorReader) {
-    if (isPresent(_reflector)) {
-      this._reflector = _reflector;
-    } else {
-      this._reflector = reflector;
-    }
-  }
+      private _reflector: ReflectorReader = reflector) {}
 
   private sanitizeTokenName(token: any): string {
     let identifier = stringify(token);
@@ -244,7 +237,7 @@ export class CompileMetadataResolver {
       let isOptional = false;
       let query: QueryMetadata = null;
       let viewQuery: ViewQueryMetadata = null;
-      var token: any /** TODO #9100 */ = null;
+      var token: any = null;
       if (isArray(param)) {
         (<any[]>param).forEach((paramEntry) => {
           if (paramEntry instanceof HostMetadata) {
@@ -372,7 +365,7 @@ export class CompileMetadataResolver {
 
   getQueryMetadata(q: QueryMetadata, propertyName: string, typeOrFunc: Type|Function):
       cpl.CompileQueryMetadata {
-    var selectors: any /** TODO #9100 */;
+    var selectors: cpl.CompileTokenMetadata[];
     if (q.isVarBindingQuery) {
       selectors = q.varBindings.map(varName => this.getTokenMetadata(varName));
     } else {
@@ -393,7 +386,7 @@ export class CompileMetadataResolver {
 }
 
 function flattenDirectives(view: ViewMetadata, platformDirectives: any[]): Type[] {
-  let directives: any[] /** TODO #9100 */ = [];
+  let directives: Type[] = [];
   if (isPresent(platformDirectives)) {
     flattenArray(platformDirectives, directives);
   }
@@ -404,7 +397,7 @@ function flattenDirectives(view: ViewMetadata, platformDirectives: any[]): Type[
 }
 
 function flattenPipes(view: ViewMetadata, platformPipes: any[]): Type[] {
-  let pipes: any[] /** TODO #9100 */ = [];
+  let pipes: Type[] = [];
   if (isPresent(platformPipes)) {
     flattenArray(platformPipes, pipes);
   }

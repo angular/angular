@@ -1,8 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
-
 import {ListWrapper} from '../facade/collection';
 import {StringWrapper, isArray, isBlank, isString} from '../facade/lang';
-
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 /**

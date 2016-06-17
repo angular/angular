@@ -1,9 +1,9 @@
-import {resolveForwardRef, Injectable, DirectiveMetadata, ComponentMetadata, InputMetadata, OutputMetadata, HostBindingMetadata, HostListenerMetadata, ContentChildrenMetadata, ViewChildrenMetadata, ContentChildMetadata, ViewChildMetadata,} from '@angular/core';
-import {ReflectorReader, reflector} from '../core_private';
+import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, resolveForwardRef} from '@angular/core';
 
-import {Type, isPresent, stringify} from '../src/facade/lang';
-import {BaseException} from '../src/facade/exceptions';
+import {ReflectorReader, reflector} from '../core_private';
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
+import {BaseException} from '../src/facade/exceptions';
+import {Type, isPresent, stringify} from '../src/facade/lang';
 
 
 function _isDirectiveMetadata(type: any): boolean {
@@ -19,15 +19,7 @@ function _isDirectiveMetadata(type: any): boolean {
  */
 @Injectable()
 export class DirectiveResolver {
-  private _reflector: ReflectorReader;
-
-  constructor(_reflector?: ReflectorReader) {
-    if (isPresent(_reflector)) {
-      this._reflector = _reflector;
-    } else {
-      this._reflector = reflector;
-    }
-  }
+  constructor(private _reflector: ReflectorReader = reflector) {}
 
   /**
    * Return {@link DirectiveMetadata} for a given `Type`.
@@ -48,8 +40,8 @@ export class DirectiveResolver {
   private _mergeWithPropertyMetadata(
       dm: DirectiveMetadata, propertyMetadata: {[key: string]: any[]},
       directiveType: Type): DirectiveMetadata {
-    var inputs: any[] /** TODO #9100 */ = [];
-    var outputs: any[] /** TODO #9100 */ = [];
+    var inputs: string[] = [];
+    var outputs: string[] = [];
     var host: {[key: string]: string} = {};
     var queries: {[key: string]: any} = {};
 
@@ -84,19 +76,7 @@ export class DirectiveResolver {
           host[`(${a.eventName})`] = `${propName}(${args})`;
         }
 
-        if (a instanceof ContentChildrenMetadata) {
-          queries[propName] = a;
-        }
-
-        if (a instanceof ViewChildrenMetadata) {
-          queries[propName] = a;
-        }
-
-        if (a instanceof ContentChildMetadata) {
-          queries[propName] = a;
-        }
-
-        if (a instanceof ViewChildMetadata) {
+        if (a instanceof QueryMetadata) {
           queries[propName] = a;
         }
       });

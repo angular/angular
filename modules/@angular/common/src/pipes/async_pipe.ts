@@ -1,8 +1,6 @@
-import {ChangeDetectorRef, Injectable, OnDestroy, Pipe, WrappedValue} from '@angular/core';
-
+import {ChangeDetectorRef, OnDestroy, Pipe, WrappedValue} from '@angular/core';
 import {EventEmitter, Observable, ObservableWrapper} from '../facade/async';
 import {isBlank, isPresent, isPromise} from '../facade/lang';
-
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 interface SubscriptionStrategy {
@@ -63,7 +61,6 @@ var __unused: Promise<any>;  // avoid unused import when Promise union types are
  * @stable
  */
 @Pipe({name: 'async', pure: false})
-@Injectable()
 export class AsyncPipe implements OnDestroy {
   /** @internal */
   _latestValue: Object = null;
