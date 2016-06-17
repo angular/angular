@@ -1,6 +1,6 @@
-import {ListWrapper, Map, MapWrapper, Set, SetWrapper, StringMapWrapper} from '../facade/collection';
-import {BaseException, WrappedException} from '../facade/exceptions';
-import {Type, isPresent, stringify} from '../facade/lang';
+import {Map, MapWrapper, Set, SetWrapper, StringMapWrapper} from '../facade/collection';
+import {BaseException} from '../facade/exceptions';
+import {Type, isPresent} from '../facade/lang';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {ReflectorReader} from './reflector_reader';
@@ -124,7 +124,7 @@ export class Reflector extends ReflectorReader {
     }
   }
 
-  hasLifecycleHook(type: any, lcInterface: /*Type*/ any, lcProperty: string): boolean {
+  hasLifecycleHook(type: any, lcInterface: Type, lcProperty: string): boolean {
     var interfaces = this.interfaces(type);
     if (interfaces.indexOf(lcInterface) !== -1) {
       return true;

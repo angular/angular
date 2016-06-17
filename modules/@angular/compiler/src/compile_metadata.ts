@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {CHANGE_DETECTION_STRATEGY_VALUES, LIFECYCLE_HOOKS_VALUES, LifecycleHooks, VIEW_ENCAPSULATION_VALUES, reflector} from '../core_private';
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 import {BaseException, unimplemented} from '../src/facade/exceptions';
-import {NumberWrapper, RegExpWrapper, StringWrapper, Type, isArray, isBlank, isBoolean, isNumber, isPresent, isString, normalizeBlank, normalizeBool, serializeEnum} from '../src/facade/lang';
+import {NumberWrapper, RegExpWrapper, Type, isArray, isBlank, isBoolean, isNumber, isPresent, isString, normalizeBlank, normalizeBool, serializeEnum} from '../src/facade/lang';
 
 import {CssSelector} from './selector';
 import {getUrlScheme} from './url_resolver';

@@ -11,18 +11,10 @@ import {Map} from '../src/facade/collection';
  */
 @Injectable()
 export class ViewResolver {
-  private _reflector: ReflectorReader;
-
   /** @internal */
   _cache = new Map<Type, ViewMetadata>();
 
-  constructor(_reflector?: ReflectorReader) {
-    if (isPresent(_reflector)) {
-      this._reflector = _reflector;
-    } else {
-      this._reflector = reflector;
-    }
-  }
+  constructor(private _reflector: ReflectorReader = reflector) {}
 
   resolve(component: Type): ViewMetadata {
     var view = this._cache.get(component);

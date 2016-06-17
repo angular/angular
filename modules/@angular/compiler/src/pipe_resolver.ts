@@ -17,14 +17,7 @@ function _isPipeMetadata(type: any): boolean {
  */
 @Injectable()
 export class PipeResolver {
-  private _reflector: ReflectorReader;
-  constructor(_reflector?: ReflectorReader) {
-    if (isPresent(_reflector)) {
-      this._reflector = _reflector;
-    } else {
-      this._reflector = reflector;
-    }
-  }
+  constructor(private _reflector: ReflectorReader = reflector) {}
 
   /**
    * Return {@link PipeMetadata} for a given `Type`.
@@ -40,5 +33,3 @@ export class PipeResolver {
     throw new BaseException(`No Pipe decorator found on ${stringify(type)}`);
   }
 }
-
-export var CODEGEN_PIPE_RESOLVER = new PipeResolver(reflector);

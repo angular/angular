@@ -1,7 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-
 import {isBlank, isString} from '../facade/lang';
-
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 

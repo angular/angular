@@ -1,11 +1,8 @@
-import {Injectable, Pipe, PipeTransform} from '@angular/core';
-
+import {Pipe, PipeTransform} from '@angular/core';
 import {isDate, isNumber, isString, DateWrapper, isBlank,} from '../facade/lang';
 import {DateFormatter} from '../facade/intl';
 import {StringMapWrapper} from '../facade/collection';
-
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
-
 
 // TODO: move to a global configurable location along with other i18n components.
 var defaultLocale: string = 'en-US';
@@ -80,7 +77,6 @@ var defaultLocale: string = 'en-US';
  * @experimental
  */
 @Pipe({name: 'date', pure: true})
-@Injectable()
 export class DatePipe implements PipeTransform {
   /** @internal */
   static _ALIASES: {[key: string]: String} = {

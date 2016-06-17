@@ -1,7 +1,5 @@
-import {Injectable, Pipe, PipeTransform} from '@angular/core';
-
+import {Pipe, PipeTransform} from '@angular/core';
 import {RegExpWrapper, StringWrapper, isBlank, isFunction, isNumber, isString} from '../facade/lang';
-
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 /**
@@ -35,7 +33,6 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  */
 
 @Pipe({name: 'replace'})
-@Injectable()
 export class ReplacePipe implements PipeTransform {
   transform(value: any, pattern: string|RegExp, replacement: Function|string): any {
     if (isBlank(value)) {
