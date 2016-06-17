@@ -3,6 +3,12 @@ import {animate, group, keyframes, sequence, state, style, transition, trigger} 
 import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import {ListWrapper} from '@angular/facade/src/collection';
 import {isBlank} from '@angular/facade/src/lang';
+import {MetadataCollector} from '@angular/tsc-wrapped';
+import * as ts from 'typescript';
+
+
+// This matches .ts files but not .d.ts files.
+const TS_EXT = /(^.|(?!\.d)..)\.ts$/;
 
 describe('StaticReflector', () => {
   let noContext = new StaticSymbol('', '');
@@ -322,16 +328,65 @@ describe('StaticReflector', () => {
         .toThrow(new Error(
             'Recursion not supported, resolving symbol indirectRecursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
+
   it('should simplify a spread expression', () => {
     expect(simplify(new StaticSymbol('/tmp/src/spread.ts', ''), {
       __symbolic: 'reference',
       name: 'spread'
     })).toEqual([0, 1, 2, 3, 4, 5]);
   });
+
+  it('should be able to get metadata from a ts file', () => {
+    let metadata = reflector.getModuleMetadata('/tmp/src/custom-decorator-reference.ts');
+    expect(metadata).toEqual({
+      __symbolic: 'module',
+      version: 1,
+      metadata: {
+        Foo: {
+          __symbolic: 'class',
+          decorators: [{
+            __symbolic: 'call',
+            expression:
+                {__symbolic: 'reference', module: './custom-decorator', name: 'CustomDecorator'}
+          }],
+          members: {
+            foo: [{
+              __symbolic: 'property',
+              decorators: [{
+                __symbolic: 'call',
+                expression: {
+                  __symbolic: 'reference',
+                  module: './custom-decorator',
+                  name: 'CustomDecorator'
+                }
+              }]
+            }]
+          }
+        }
+      }
+    });
+  });
+
+  it('should be able to get metadata for a class containing a custom decorator', () => {
+    let props = reflector.propMetadata(
+        host.getStaticSymbol('/tmp/src/custom-decorator-reference.ts', 'Foo'));
+    expect(props).toEqual({foo: []});
+  });
+
+  it('should report an error for invalid function calls', () => {
+    expect(
+        () =>
+            reflector.annotations(host.getStaticSymbol('/tmp/src/invalid-calls.ts', 'MyComponent')))
+        .toThrow(new Error(
+            `Error encountered resolving symbol values statically. Calling function 'someFunction', function calls are not supported. Consider replacing the function or lambda with a reference to an exported function, resolving symbol MyComponent in /tmp/src/invalid-calls.ts, resolving symbol MyComponent in /tmp/src/invalid-calls.ts`));
+  });
 });
 
 class MockReflectorHost implements StaticReflectorHost {
   private staticTypeCache = new Map<string, StaticSymbol>();
+  private collector = new MetadataCollector();
+
+  constructor() {}
 
   angularImportLocations() {
     return {
@@ -792,8 +847,60 @@ class MockReflectorHost implements StaticReflectorHost {
         metadata: {
           spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]
         }
-      }
+      },
+      '/tmp/src/custom-decorator.ts': `
+        export function CustomDecorator(): any {
+          return () => {};
+        }
+      `,
+      '/tmp/src/custom-decorator-reference.ts': `
+        import {CustomDecorator} from './custom-decorator';
+
+        @CustomDecorator()
+        export class Foo {
+          @CustomDecorator() get foo(): string { return ''; }
+        }
+      `,
+      '/tmp/src/invalid-calll-definitions.ts': `
+        export function someFunction(a: any) {
+          if (Array.isArray(a)) {
+            return a;
+          }
+          return undefined;
+        }
+      `,
+      '/tmp/src/invalid-calls.ts': `
+        import {someFunction} from './nvalid-calll-definitions.ts';
+        import {Component} from 'angular2/src/core/metadata';
+        import {NgIf} from 'angular2/common';
+
+        @Component({
+          selector: 'my-component',
+          directives: [someFunction([NgIf])]
+        })
+        export class MyComponent {}
+
+        @someFunction()
+        @Component({
+          selector: 'my-component',
+          directives: [NgIf]
+        })
+        export class MyOtherComponent { }
+      `
     };
+
+
+    if (data[moduleId] && moduleId.match(TS_EXT)) {
+      let text = data[moduleId];
+      if (typeof text === 'string') {
+        let sf = ts.createSourceFile(moduleId, data[moduleId], ts.ScriptTarget.ES5);
+        let diagnostics: ts.Diagnostic[] = (<any>sf).parseDiagnostics;
+        if (diagnostics && diagnostics.length) {
+          throw Error(`Error encountered during parse of file ${moduleId}`);
+        }
+        return this.collector.getMetadata(sf);
+      }
+    }
     return data[moduleId];
   }
 }
