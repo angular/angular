@@ -10,8 +10,8 @@ import {SlicePipe} from '@angular/common';
 export function main() {
   describe('SlicePipe', () => {
     var list: number[];
-    var str: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var str: string;
+    var pipe: SlicePipe;
 
     beforeEach(() => {
       list = [1, 2, 3, 4, 5];
@@ -20,20 +20,17 @@ export function main() {
     });
 
     describe('supports', () => {
-      it('should support strings', () => { expect(pipe.supports(str)).toBe(true); });
-      it('should support lists', () => { expect(pipe.supports(list)).toBe(true); });
+      it('should support strings', () => { expect(() => pipe.transform(str, 0)).not.toThrow(); });
+      it('should support lists', () => { expect(() => pipe.transform(list, 0)).not.toThrow(); });
 
-      it('should not support other objects', () => {
-        expect(pipe.supports(new Object())).toBe(false);
-        expect(pipe.supports(null)).toBe(false);
-      });
+      it('should not support other objects',
+         () => { expect(() => pipe.transform({}, 0)).toThrow(); });
     });
 
     describe('transform', () => {
 
-      it('should return null if the value is null', () => {
-        expect(pipe.transform(null, [4, 2])).toBe(null);
-      });
+      it('should return null if the value is null',
+         () => { expect(pipe.transform(null, 1)).toBe(null); });
 
       it('should return all items after START index when START is positive and END is omitted',
          () => {

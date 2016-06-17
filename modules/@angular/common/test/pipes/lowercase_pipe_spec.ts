@@ -3,9 +3,9 @@ import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '
 
 export function main() {
   describe('LowerCasePipe', () => {
-    var upper: any /** TODO #9100 */;
-    var lower: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var upper: string;
+    var lower: string;
+    var pipe: LowerCasePipe;
 
     beforeEach(() => {
       lower = 'something';
@@ -27,7 +27,7 @@ export function main() {
       });
 
       it('should not support other objects',
-         () => { expect(() => pipe.transform(new Object())).toThrowError(); });
+         () => { expect(() => pipe.transform(<any>{})).toThrowError(); });
     });
 
   });

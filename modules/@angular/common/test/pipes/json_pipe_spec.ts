@@ -1,7 +1,7 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
-import {Json, RegExp, NumberWrapper, StringWrapper} from '../../src/facade/lang';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {Json, StringWrapper} from '../../src/facade/lang';
 
 import {Component} from '@angular/core';
 import {JsonPipe} from '@angular/common';
@@ -9,9 +9,9 @@ import {JsonPipe} from '@angular/common';
 export function main() {
   describe('JsonPipe', () => {
     var regNewLine = '\n';
-    var inceptionObj: any /** TODO #9100 */;
-    var inceptionObjString: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var inceptionObj: any;
+    var inceptionObjString: string;
+    var pipe: JsonPipe;
 
     function normalize(obj: string): string { return StringWrapper.replace(obj, regNewLine, ''); }
 

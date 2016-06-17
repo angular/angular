@@ -4,8 +4,8 @@ import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '
 import {PromiseWrapper} from '../../src/facade/promise';
 
 export function main() {
-  function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
-  function asyncValidator(_: any /** TODO #9100 */) { return PromiseWrapper.resolve(null); }
+  function syncValidator(_: any): any { return null; }
+  function asyncValidator(_: any) { return PromiseWrapper.resolve(null); }
 
   describe('Form Builder', () => {
     var b: any /** TODO #9100 */;

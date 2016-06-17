@@ -4,7 +4,7 @@ import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '
 
 export function main() {
   describe('I18nSelectPipe', () => {
-    var pipe: any /** TODO #9100 */;
+    var pipe: I18nSelectPipe;
     var mapping = {'male': 'Invite him.', 'female': 'Invite her.', 'other': 'Invite them.'};
 
     beforeEach(() => { pipe = new I18nSelectPipe(); });
@@ -29,13 +29,12 @@ export function main() {
       });
 
       it('should use \'other\' if value is undefined', () => {
-        var gender: any /** TODO #9100 */;
-        var val = pipe.transform(gender, mapping);
+        var val = pipe.transform(void(0), mapping);
         expect(val).toEqual('Invite them.');
       });
 
       it('should not support bad arguments',
-         () => { expect(() => pipe.transform('male', 'hey')).toThrowError(); });
+         () => { expect(() => pipe.transform('male', <any>'hey')).toThrowError(); });
     });
 
   });

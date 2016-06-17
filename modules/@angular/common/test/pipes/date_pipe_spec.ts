@@ -7,8 +7,8 @@ import {DateWrapper} from '../../src/facade/lang';
 
 export function main() {
   describe('DatePipe', () => {
-    var date: any /** TODO #9100 */;
-    var pipe: any /** TODO #9100 */;
+    var date: Date;
+    var pipe: DatePipe;
 
     beforeEach(() => {
       date = DateWrapper.create(2015, 6, 15, 21, 43, 11);
@@ -18,22 +18,21 @@ export function main() {
     it('should be marked as pure',
        () => { expect(new PipeResolver().resolve(DatePipe).pure).toEqual(true); });
 
-    describe('supports', () => {
-      it('should support date', () => { expect(pipe.supports(date)).toBe(true); });
-      it('should support int', () => { expect(pipe.supports(123456789)).toBe(true); });
-      it('should support ISO string',
-         () => { expect(pipe.supports('2015-06-15T21:43:11Z')).toBe(true); });
-
-      it('should not support other objects', () => {
-        expect(pipe.supports(new Object())).toBe(false);
-        expect(pipe.supports(null)).toBe(false);
-        expect(pipe.supports('')).toBe(false);
-      });
-    });
-
     // TODO(mlaval): enable tests when Intl API is no longer used, see
     // https://github.com/angular/angular/issues/3333
     if (browserDetection.supportsIntlApi) {
+      describe('supports', () => {
+        it('should support date', () => { expect(() => pipe.transform(date)).not.toThrow(); });
+        it('should support int', () => { expect(() => pipe.transform(123456789)).not.toThrow(); });
+        it('should support ISO string',
+           () => { expect(() => pipe.transform('2015-06-15T21:43:11Z')).not.toThrow(); });
+
+        it('should not support other objects', () => {
+          expect(() => pipe.transform({})).toThrow();
+          expect(() => pipe.transform('')).toThrow();
+        });
+      });
+
       describe('transform', () => {
         it('should format each component correctly', () => {
           expect(pipe.transform(date, 'y')).toEqual('2015');
