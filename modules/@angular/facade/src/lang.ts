@@ -120,7 +120,7 @@ export function isType(obj: any): boolean {
   return isFunction(obj);
 }
 
-export function isStringMap(obj: any): boolean {
+export function isStringMap(obj: any): obj is Object {
   return typeof obj === 'object' && obj !== null;
 }
 

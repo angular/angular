@@ -7,18 +7,9 @@
  */
 
 import {AfterContentInit, Attribute, ContentChildren, Directive, Input, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
-
-import {Map} from '../facade/collection';
-import {NumberWrapper, isPresent} from '../facade/lang';
-
+import {isPresent} from '../facade/lang';
+import {NgLocalization, getPluralCategory} from '../localization';
 import {SwitchView} from './ng_switch';
-
-const _CATEGORY_DEFAULT = 'other';
-
-/**
- * @experimental
- */
-export abstract class NgLocalization { abstract getPluralCategory(value: any): string; }
 
 /**
  * `ngPlural` is an i18n directive that displays DOM sub-trees that match the switch expression
@@ -34,9 +25,6 @@ export abstract class NgLocalization { abstract getPluralCategory(value: any): s
  *    - Otherwise, the view will be treated as a "category match", and will only display if exact
  * value matches aren't found and the value maps to its category using the `getPluralCategory`
  * function provided.
- *
- * If no matching views are found for a switch expression, inner elements marked
- * `[ngPluralCase]="other"` will be displayed.
  *
  * ```typescript
  * class MyLocalization extends NgLocalization {
@@ -88,7 +76,6 @@ export class NgPluralCase {
   }
 }
 
-
 /**
  * @experimental
  */
@@ -96,7 +83,7 @@ export class NgPluralCase {
 export class NgPlural implements AfterContentInit {
   private _switchValue: number;
   private _activeView: SwitchView;
-  private _caseViews = new Map<any, SwitchView>();
+  private _caseViews: {[k: string]: SwitchView} = {};
   @ContentChildren(NgPluralCase) cases: QueryList<NgPluralCase> = null;
 
   constructor(private _localization: NgLocalization) {}
@@ -109,7 +96,7 @@ export class NgPlural implements AfterContentInit {
 
   ngAfterContentInit() {
     this.cases.forEach((pluralCase: NgPluralCase): void => {
-      this._caseViews.set(this._formatValue(pluralCase), pluralCase._view);
+      this._caseViews[pluralCase.value] = pluralCase._view;
     });
     this._updateView();
   }
@@ -118,10 +105,9 @@ export class NgPlural implements AfterContentInit {
   _updateView(): void {
     this._clearViews();
 
-    var view: SwitchView = this._caseViews.get(this._switchValue);
-    if (!isPresent(view)) view = this._getCategoryView(this._switchValue);
-
-    this._activateView(view);
+    var key = getPluralCategory(
+        this._switchValue, Object.getOwnPropertyNames(this._caseViews), this._localization);
+    this._activateView(this._caseViews[key]);
   }
 
   /** @internal */
@@ -135,22 +121,4 @@ export class NgPlural implements AfterContentInit {
     this._activeView = view;
     this._activeView.create();
   }
-
-  /** @internal */
-  _getCategoryView(value: number): SwitchView {
-    var category: string = this._localization.getPluralCategory(value);
-    var categoryView: SwitchView = this._caseViews.get(category);
-    return isPresent(categoryView) ? categoryView : this._caseViews.get(_CATEGORY_DEFAULT);
-  }
-
-  /** @internal */
-  _isValueView(pluralCase: NgPluralCase): boolean { return pluralCase.value[0] === '='; }
-
-  /** @internal */
-  _formatValue(pluralCase: NgPluralCase): any {
-    return this._isValueView(pluralCase) ? this._stripValue(pluralCase.value) : pluralCase.value;
-  }
-
-  /** @internal */
-  _stripValue(value: string): number { return NumberWrapper.parseInt(value.substring(1), 10); }
 }

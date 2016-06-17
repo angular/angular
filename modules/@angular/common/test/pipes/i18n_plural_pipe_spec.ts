@@ -6,21 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {I18nPluralPipe} from '@angular/common';
+import {I18nPluralPipe, NgLocalization} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('I18nPluralPipe', () => {
+    var localization: NgLocalization;
     var pipe: I18nPluralPipe;
-    var mapping = {'=0': 'No messages.', '=1': 'One message.', 'other': 'There are some messages.'};
-    var interpolatedMapping = {
+
+    var mapping = {
       '=0': 'No messages.',
       '=1': 'One message.',
-      'other': 'There are # messages, that is #.'
+      'many': 'Many messages.',
+      'other': 'There are # messages, that is #.',
     };
 
-    beforeEach(() => { pipe = new I18nPluralPipe(); });
+    beforeEach(() => {
+      localization = new TestLocalization();
+      pipe = new I18nPluralPipe(localization);
+    });
 
     it('should be marked as pure',
        () => { expect(new PipeResolver().resolve(I18nPluralPipe).pure).toEqual(true); });
@@ -36,19 +41,19 @@ export function main() {
         expect(val).toEqual('One message.');
       });
 
-      it('should return other text if value is anything other than 0 or 1', () => {
-        var val = pipe.transform(6, mapping);
-        expect(val).toEqual('There are some messages.');
+      it('should return category messages', () => {
+        var val = pipe.transform(4, mapping);
+        expect(val).toEqual('Many messages.');
       });
 
       it('should interpolate the value into the text where indicated', () => {
-        var val = pipe.transform(6, interpolatedMapping);
+        var val = pipe.transform(6, mapping);
         expect(val).toEqual('There are 6 messages, that is 6.');
       });
 
-      it('should use \'other\' if value is undefined', () => {
-        var val = pipe.transform(void(0), interpolatedMapping);
-        expect(val).toEqual('There are  messages, that is .');
+      it('should use "" if value is undefined', () => {
+        var val = pipe.transform(void(0), mapping);
+        expect(val).toEqual('');
       });
 
       it('should not support bad arguments',
@@ -56,4 +61,8 @@ export function main() {
     });
 
   });
+}
+
+class TestLocalization extends NgLocalization {
+  getPluralCategory(value: number): string { return value > 1 && value < 6 ? 'many' : 'other'; }
 }
