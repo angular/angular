@@ -310,36 +310,6 @@ warn(o) {
   print(o);
 }
 
-// Functions below are noop in Dart. Imperatively controlling dev mode kills
-// tree shaking. We should only rely on `assertionsEnabled`.
-@Deprecated('Do not use this function. It is for JS only. There is no alternative.')
-void lockMode() {}
-@Deprecated('Do not use this function. It is for JS only. There is no alternative.')
-void enableDevMode() {}
-@Deprecated('Do not use this function. It is for JS only. There is no alternative.')
-void enableProdMode() {}
-
-/// Use this function to guard debugging code. When Dart is compiled in
-/// production mode, the code guarded using this function will be tree
-/// shaken away, reducing code size.
-///
-/// WARNING: DO NOT CHANGE THIS METHOD! This method is designed to have no
-/// more AST nodes than the maximum allowed by dart2js to inline it. In
-/// addition, the use of `assert` allows the compiler to statically compute
-/// the value returned by this function and tree shake conditions guarded by
-/// it.
-///
-/// Example:
-///
-/// if (assertionsEnabled()) {
-///   ...code here is tree shaken away in prod mode...
-/// }
-bool assertionsEnabled() {
-  var k = false;
-  assert((k = true));
-  return k;
-}
-
 // Can't be all uppercase as our transpiler would think it is a special directive...
 class Json {
   static parse(String s) => convert.JSON.decode(s);

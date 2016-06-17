@@ -10,8 +10,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {BasicNgFactory} from '../src/basic.ngfactory';
 import {MyComp} from '../src/a/multiple_components';
-import {ReflectiveInjector, DebugElement, getDebugNode} from '@angular/core';
+import {ReflectiveInjector, DebugElement, getDebugNode, lockRunMode} from '@angular/core';
 import {browserPlatform, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+
+// Need to lock the mode explicitely as this test is not using Angular's testing framework.
+lockRunMode();
 
 describe('template codegen output', () => {
   const outDir = 'src';

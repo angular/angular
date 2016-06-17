@@ -1,7 +1,6 @@
-import {ViewEncapsulation} from '@angular/core';
+import {ViewEncapsulation, isDevMode} from '@angular/core';
 
 import {unimplemented} from '../src/facade/exceptions';
-import {assertionsEnabled} from '../src/facade/lang';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers} from './identifiers';
@@ -9,16 +8,16 @@ import {Identifiers} from './identifiers';
 export class CompilerConfig {
   public renderTypes: RenderTypes;
   public defaultEncapsulation: ViewEncapsulation;
-  public genDebugInfo: boolean;
-  public logBindingUpdate: boolean;
+  private _genDebugInfo: boolean;
+  private _logBindingUpdate: boolean;
   public useJit: boolean;
   public platformDirectives: any[];
   public platformPipes: any[];
 
   constructor(
       {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
-       genDebugInfo = assertionsEnabled(), logBindingUpdate = assertionsEnabled(), useJit = true,
-       platformDirectives = [], platformPipes = []}: {
+       genDebugInfo, logBindingUpdate, useJit = true, platformDirectives = [],
+       platformPipes = []}: {
         renderTypes?: RenderTypes,
         defaultEncapsulation?: ViewEncapsulation,
         genDebugInfo?: boolean,
@@ -29,11 +28,18 @@ export class CompilerConfig {
       } = {}) {
     this.renderTypes = renderTypes;
     this.defaultEncapsulation = defaultEncapsulation;
-    this.genDebugInfo = genDebugInfo;
-    this.logBindingUpdate = logBindingUpdate;
+    this._genDebugInfo = genDebugInfo;
+    this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
     this.platformDirectives = platformDirectives;
     this.platformPipes = platformPipes;
+  }
+
+  get genDebugInfo(): boolean {
+    return this._genDebugInfo === void 0 ? isDevMode() : this._genDebugInfo;
+  }
+  get logBindingUpdate(): boolean {
+    return this._logBindingUpdate === void 0 ? isDevMode() : this._logBindingUpdate;
   }
 }
 
