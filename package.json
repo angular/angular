@@ -15,7 +15,7 @@
     "tslint": "tslint -c tslint.json 'src/**/*.ts'",
     "stylelint": "stylelint 'src/**/*.scss' --config stylelint-config.json --syntax scss",
     "check-circular-deps": "madge --circular ./dist",
-    "typings": "typings install --ambient",
+    "typings": "typings install --global",
     "postinstall": "npm run typings",
     "e2e": "protractor",
     "inline-resources": "node ./scripts/release/inline-resources.js ./dist/components",
