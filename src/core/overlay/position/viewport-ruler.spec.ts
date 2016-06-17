@@ -46,6 +46,7 @@ describe('ViewportRuler', () => {
     // successfully constrain its size. As such, skip assertions in environments where the
     // window size has changed since the start of the test.
     if (window.innerWidth > startingWindowWidth || window.innerHeight > startingWindowHeight) {
+      document.body.removeChild(veryLargeElement);
       return;
     }
 
@@ -78,6 +79,7 @@ describe('ViewportRuler', () => {
     // successfully constrain its size. As such, skip assertions in environments where the
     // window size has changed since the start of the test.
     if (window.innerWidth > startingWindowWidth || window.innerHeight > startingWindowHeight) {
+      document.body.removeChild(veryLargeElement);
       return;
     }
 
