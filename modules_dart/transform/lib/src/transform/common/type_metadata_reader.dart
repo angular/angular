@@ -938,13 +938,9 @@ class _InjectorModuleMetadataVisitor extends Object
 
   final _CompileTypeMetadataVisitor _typeVisitor;
 
+  bool _isInjectable = false;
   /// The [AssetId] we are currently processing.
   AssetId _assetId;
-
-  _InjectorModuleMetadataVisitor(
-      this._annotationMatcher, this._typeVisitor) {
-    reset(null);
-  }
 
   /// Whether the visitor has found an [InjectorModule] annotation
   /// since the last call to `reset`.
@@ -954,11 +950,16 @@ class _InjectorModuleMetadataVisitor extends Object
   CompileTypeMetadata _type;
   List _providers;
 
+  _InjectorModuleMetadataVisitor(
+      this._annotationMatcher, this._typeVisitor) {
+    reset(null);
+  }
+
   void reset(AssetId assetId) {
     _typeVisitor.reset(assetId);
     _assetId = assetId;
     _hasMetadata = false;
-
+    _isInjectable = false;
     _providers = [];
   }
 
@@ -969,11 +970,13 @@ class _InjectorModuleMetadataVisitor extends Object
         name: _type.name,
         moduleUrl: _type.moduleUrl,
         diDeps: _type.diDeps,
+        injectable: _isInjectable,
         providers: _providers);
   }
 
   @override
   Object visitAnnotation(Annotation node) {
+    _isInjectable = _isInjectable || _annotationMatcher.isInjectable(node, _assetId);
     var isInjectorModule = _annotationMatcher.isInjectorModule(node, _assetId);
     if (isInjectorModule) {
       if (_hasMetadata) {

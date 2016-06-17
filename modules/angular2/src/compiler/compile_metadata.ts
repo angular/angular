@@ -780,16 +780,18 @@ export class CompileInjectorModuleMetadata implements CompileMetadataWithType, C
   isHost = false;
   value: any;
   diDeps: CompileDiDependencyMetadata[];
+  injectable: boolean;
   providers:
       Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>;
 
-  constructor({runtime, name, moduleUrl, prefix, value, diDeps, providers}: {
+  constructor({runtime, name, moduleUrl, prefix, value, diDeps, providers, injectable}: {
     runtime?: Type,
     name?: string,
     moduleUrl?: string,
     prefix?: string,
     value?: any,
     diDeps?: CompileDiDependencyMetadata[],
+    injectable?: boolean,
     providers?:
         Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>
   } = {}) {
@@ -800,6 +802,7 @@ export class CompileInjectorModuleMetadata implements CompileMetadataWithType, C
     this.value = value;
     this.diDeps = _normalizeArray(diDeps);
     this.providers = _normalizeArray(providers);
+    this.injectable = normalizeBool(injectable);
   }
 
   static fromJson(data: {[key: string]: any}): CompileInjectorModuleMetadata {
@@ -809,7 +812,8 @@ export class CompileInjectorModuleMetadata implements CompileMetadataWithType, C
       prefix: data['prefix'],
       value: data['value'],
       diDeps: _arrayFromJson(data['diDeps'], CompileDiDependencyMetadata.fromJson),
-      providers: _arrayFromJson(data['providers'], metadataFromJson)
+      providers: _arrayFromJson(data['providers'], metadataFromJson),
+      injectable: data['injectable']
     });
   }
 
@@ -826,7 +830,8 @@ export class CompileInjectorModuleMetadata implements CompileMetadataWithType, C
       'isHost': this.isHost,
       'value': this.value,
       'diDeps': _arrayToJson(this.diDeps),
-      'providers': _arrayToJson(this.providers)
+      'providers': _arrayToJson(this.providers),
+      'injectable': this.injectable
     };
   }
 }

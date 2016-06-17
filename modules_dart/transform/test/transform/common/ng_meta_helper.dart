@@ -58,10 +58,14 @@ CompileDirectiveMetadata createDirectiveMetadataForTest(
 CompileInjectorModuleMetadata createInjectorModuleMetadataForTest(
     {String name: 'TestMetadata',
     moduleUrl: 'asset:angular2/test/test.dart',
-    providers: const []}) {
+    providers: const [],
+    diDeps: const [],
+    injectable: false}) {
   return new CompileInjectorModuleMetadata(
       name: name, moduleUrl: moduleUrl,
-      providers: providers);
+      providers: providers,
+      diDeps: diDeps,
+      injectable: injectable);
 }
 
 

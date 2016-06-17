@@ -193,7 +193,11 @@ class _NgMetaIdentifierResolver {
       } else if (meta is CompilePipeMetadata) {
         _resolveDiDependencyMetadata(ngMetaMap, meta.type.name, meta.type.diDeps);
       } else if (meta is CompileInjectorModuleMetadata) {
-        _resolveDiDependencyMetadata(ngMetaMap, meta.name, meta.diDeps);
+        if (meta.injectable) {
+          // Only resolve constructor arguments if the InjectorModule is marked as
+          // @Injectable.
+          _resolveDiDependencyMetadata(ngMetaMap, meta.name, meta.diDeps);
+        }
         _resolveInjectorProviders(ngMetaMap, meta);
       } else if (meta is CompileTypeMetadata) {
         _resolveDiDependencyMetadata(ngMetaMap, meta.name, meta.diDeps);
@@ -228,7 +232,8 @@ class _NgMetaIdentifierResolver {
       if (resolved is CompileTypeMetadata) {
         var providers = [new CompileProviderMetadata(token: new CompileTokenMetadata(identifier: resolved), useClass: resolved)];
         if (resolved is CompileInjectorModuleMetadata) {
-          providers.addAll(_resolveProviders(ngMetaMap, resolved.providers, resolved.name));
+          var cimm = resolved as CompileInjectorModuleMetadata;
+          providers.addAll(_resolveProviders(ngMetaMap, cimm.providers, cimm.name));
         }
         return providers;
 

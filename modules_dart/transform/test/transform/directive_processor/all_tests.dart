@@ -1202,6 +1202,12 @@ void allTests() {
       expect(inj.diDeps[2].token.name, equals('ServiceDep'));
       expect(inj.diDeps[3].token, isNull);
     });
+
+    test('should read @Injectable annotation', () async {
+      var meta = await _testCreateModel('injector_files/injectors.dart');
+      expect(meta.identifiers['InjectorWithDeps'].injectable, equals(true));
+      expect(meta.identifiers['NonInjectable'].injectable, equals(false));
+    });
   });
 }
 

@@ -767,14 +767,18 @@ void allTests() {
       expect(inj.providers[1].useClass.identifier.moduleUrl, equals("moduleUrl"));
     });
 
-    test('should resolve constructor deps', () async {
+    test('should resolve constructor deps if marked as @Injectable', () async {
       barNgMeta.identifiers['Service'] =
       new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
 
-      fooInjectorModuleMeta.type.diDeps = [
+      fooInjectorModuleMeta.injectable = true;
+      fooInjectorModuleMeta.diDeps = [
         new CompileDiDependencyMetadata(
             token: new CompileTokenMetadata(identifier:
-                new CompileIdentifierMetadata(name: 'Service')))
+                new CompileIdentifierMetadata(name: 'Service'))),
+        new CompileDiDependencyMetadata(
+            token: new CompileTokenMetadata(identifier:
+                new CompileIdentifierMetadata(name: 'UnknownId')))
       ];
 
       fooNgMeta.ngDeps.imports
@@ -782,13 +786,46 @@ void allTests() {
 
       updateReader();
 
-      final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId);
+      final log = new RecordingLogger();
+      final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId, {}, log);
+      expect(log.logs, anyElement(contains('ERROR: Missing identifier "UnknownId" needed by "FooInjectorModule"')));
+      final inj = extracted.identifiers["FooInjectorModule"];
+
+      expect(inj.diDeps.length, equals(2));
+
+      expect(inj.diDeps[0].token.identifier.name, equals("Service"));
+      expect(inj.diDeps[0].token.identifier.moduleUrl, equals("moduleUrl"));
+
+      expect(inj.diDeps[1].token.identifier.name, equals("UnknownId"));
+      expect(inj.diDeps[1].token.identifier.moduleUrl, isNull);
+
+    });
+
+    test('should not resolve constructor deps if not marked as @Injectable', () async {
+      barNgMeta.identifiers['Service'] =
+      new CompileTypeMetadata(name: 'Service', moduleUrl: 'moduleUrl');
+
+      fooInjectorModuleMeta.injectable = false;
+      fooInjectorModuleMeta.diDeps = [
+        new CompileDiDependencyMetadata(
+            token: new CompileTokenMetadata(identifier:
+                new CompileIdentifierMetadata(name: 'UnknownId')))
+      ];
+
+      fooNgMeta.ngDeps.imports
+          .add(new ImportModel()..uri = 'package:a/bar.dart');
+
+      updateReader();
+
+      final log = new RecordingLogger();
+      final extracted = await _testLink(reader, fooAssetId, fooMetaAssetId, {}, log);
+      expect(log.logs, everyElement(isNot(contains('ERROR'))));
       final inj = extracted.identifiers["FooInjectorModule"];
 
       expect(inj.diDeps.length, equals(1));
 
-      expect(inj.diDeps[0].token.identifier.name, equals("Service"));
-      expect(inj.diDeps[0].token.identifier.moduleUrl, equals("moduleUrl"));
+      expect(inj.diDeps[0].token.identifier.name, equals("UnknownId"));
+      expect(inj.diDeps[0].token.identifier.moduleUrl, isNull);
 
     });
   });
@@ -848,9 +885,12 @@ void allTests() {
 
 Future<NgMeta> _testLink(
     AssetReader reader, AssetId summaryAssetId, AssetId metaAssetId,
-    [Map<String, String> resolvedIdentifiers]) {
+    [Map<String, String> resolvedIdentifiers, RecordingLogger log]) {
+  if (log == null) {
+    log = new RecordingLogger();
+  }
   return zone.exec(
       () => linkDirectiveMetadata(
       reader, summaryAssetId, metaAssetId, resolvedIdentifiers),
-      log: new RecordingLogger());
+      log: log);
 }
