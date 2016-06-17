@@ -1,6 +1,6 @@
 import {getDOM} from '../src/dom/dom_adapter';
 import {ListWrapper} from '../src/facade/collection';
-import {RegExp, RegExpWrapper, StringWrapper, isPresent, isString, global} from '../src/facade/lang';
+import {RegExp, RegExpWrapper, StringWrapper, global, isPresent, isString} from '../src/facade/lang';
 
 export class BrowserDetection {
   private _overrideUa: string;
@@ -40,9 +40,7 @@ export class BrowserDetection {
   // The Intl API is only properly supported in recent Chrome and Opera.
   // Note: Edge is disguised as Chrome 42, so checking the "Edge" part is needed,
   // see https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
-  get supportsIntlApi(): boolean {
-    return !!(<any>global).Intl;
-  }
+  get supportsIntlApi(): boolean { return !!(<any>global).Intl; }
 
   get isChromeDesktop(): boolean {
     return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 &&

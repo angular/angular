@@ -7,7 +7,8 @@ export function main() {
   describe('Number pipes', () => {
     // TODO(mlaval): enable tests when Intl API is no longer used, see
     // https://github.com/angular/angular/issues/3333
-    if (browserDetection.supportsIntlApi) {
+    // Have to restrict to Chrome as IE uses a different formatting
+    if (browserDetection.supportsIntlApi && browserDetection.isChromeDesktop) {
       describe('DecimalPipe', () => {
         var pipe: DecimalPipe;
 
