@@ -1,4 +1,4 @@
-# 3.0.0-alpha.7 (--)
+# 3.0.0-alpha.7 (2016-06-17)
 
 ## Features
 * feat(router): add route config validation
