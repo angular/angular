@@ -5,13 +5,23 @@ import {DirectiveAst} from '../template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
-import {ChangeDetectorStateEnum, DetectChangesVars} from './constants';
+import {ChangeDetectionStrategyEnum, ChangeDetectorStateEnum, DetectChangesVars} from './constants';
 
 
 
 var STATE_IS_NEVER_CHECKED =
     o.THIS_EXPR.prop('cdState').identical(ChangeDetectorStateEnum.NeverChecked);
 var NOT_THROW_ON_CHANGES = o.not(DetectChangesVars.throwOnChange);
+
+
+function changeDetectionModeIsNotDetachedCondition(directiveInstance: o.Expression):
+    o.BinaryOperatorExpr {
+  return o.not(directiveInstance.prop('changeDetectorRef'))
+      .or(directiveInstance.prop('changeDetectorRef')
+              .prop('_view')
+              .prop('cdMode')
+              .notIdentical(ChangeDetectionStrategyEnum.Detached));
+}
 
 export function bindDirectiveDetectChangesLifecycleCallbacks(
     directiveAst: DirectiveAst, directiveInstance: o.Expression, compileElement: CompileElement) {
@@ -20,7 +30,8 @@ export function bindDirectiveDetectChangesLifecycleCallbacks(
   var lifecycleHooks = directiveAst.directive.lifecycleHooks;
   if (lifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1 && directiveAst.inputs.length > 0) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(
-        DetectChangesVars.changes.notIdentical(o.NULL_EXPR),
+        DetectChangesVars.changes.notIdentical(o.NULL_EXPR)
+            .and(changeDetectionModeIsNotDetachedCondition(directiveInstance)),
         [directiveInstance.callMethod('ngOnChanges', [DetectChangesVars.changes]).toStmt()]));
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.OnInit) !== -1) {
@@ -30,7 +41,8 @@ export function bindDirectiveDetectChangesLifecycleCallbacks(
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.DoCheck) !== -1) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(
-        NOT_THROW_ON_CHANGES, [directiveInstance.callMethod('ngDoCheck', []).toStmt()]));
+        NOT_THROW_ON_CHANGES.and(changeDetectionModeIsNotDetachedCondition(directiveInstance)),
+        [directiveInstance.callMethod('ngDoCheck', []).toStmt()]));
   }
 }
 
@@ -47,8 +59,9 @@ export function bindDirectiveAfterContentLifecycleCallbacks(
         STATE_IS_NEVER_CHECKED, [directiveInstance.callMethod('ngAfterContentInit', []).toStmt()]));
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterContentChecked) !== -1) {
-    afterContentLifecycleCallbacksMethod.addStmt(
-        directiveInstance.callMethod('ngAfterContentChecked', []).toStmt());
+    afterContentLifecycleCallbacksMethod.addStmt(new o.IfStmt(
+        changeDetectionModeIsNotDetachedCondition(directiveInstance),
+        [directiveInstance.callMethod('ngAfterContentChecked', []).toStmt()]));
   }
 }
 
@@ -65,8 +78,9 @@ export function bindDirectiveAfterViewLifecycleCallbacks(
         STATE_IS_NEVER_CHECKED, [directiveInstance.callMethod('ngAfterViewInit', []).toStmt()]));
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterViewChecked) !== -1) {
-    afterViewLifecycleCallbacksMethod.addStmt(
-        directiveInstance.callMethod('ngAfterViewChecked', []).toStmt());
+    afterViewLifecycleCallbacksMethod.addStmt(new o.IfStmt(
+        changeDetectionModeIsNotDetachedCondition(directiveInstance),
+        [directiveInstance.callMethod('ngAfterViewChecked', []).toStmt()]));
   }
 }
 
