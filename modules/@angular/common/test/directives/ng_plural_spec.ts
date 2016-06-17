@@ -34,6 +34,31 @@ export function main() {
                  });
            }));
 
+    it('should be applicable to <ng-container> elements',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             var template = '<div>' +
+                 '<ng-container [ngPlural]="switchValue">' +
+                 '<template ngPluralCase="=0">you have no messages.</template>' +
+                 '<template ngPluralCase="=1">you have one message.</template>' +
+                 '</ng-container></div>';
+
+             tcb.overrideTemplate(TestComponent, template)
+                 .createAsync(TestComponent)
+                 .then((fixture) => {
+                   fixture.debugElement.componentInstance.switchValue = 0;
+                   fixture.detectChanges();
+                   expect(fixture.debugElement.nativeElement).toHaveText('you have no messages.');
+
+                   fixture.debugElement.componentInstance.switchValue = 1;
+                   fixture.detectChanges();
+                   expect(fixture.debugElement.nativeElement).toHaveText('you have one message.');
+
+                   async.done();
+                 });
+           }));
+
     it('should display the template according to the category',
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
@@ -124,9 +149,7 @@ export class TestLocalizationMap extends NgLocalization {
 }
 
 
-@Component({selector: 'test-cmp', directives: [NgPlural, NgPluralCase], template: ''})
+@Component({selector: 'test-cmp', directives: [NgPluralCase, NgPlural], template: ''})
 class TestComponent {
-  switchValue: number;
-
-  constructor() { this.switchValue = null; }
+  switchValue: number = null;
 }

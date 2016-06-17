@@ -4,25 +4,23 @@ import {ParseLocation} from '@angular/compiler/src/parse_util';
 
 import {BaseException} from '../src/facade/exceptions';
 
-export function humanizeDom(parseResult: HtmlParseTreeResult): any[] {
+export function humanizeDom(
+    parseResult: HtmlParseTreeResult, addSourceSpan: boolean = false): any[] {
   if (parseResult.errors.length > 0) {
     var errorString = parseResult.errors.join('\n');
     throw new BaseException(`Unexpected parse errors:\n${errorString}`);
   }
 
-  var humanizer = new _Humanizer(false);
-  htmlVisitAll(humanizer, parseResult.rootNodes);
-  return humanizer.result;
+  return humanizeNodes(parseResult.rootNodes, addSourceSpan);
 }
 
 export function humanizeDomSourceSpans(parseResult: HtmlParseTreeResult): any[] {
-  if (parseResult.errors.length > 0) {
-    var errorString = parseResult.errors.join('\n');
-    throw new BaseException(`Unexpected parse errors:\n${errorString}`);
-  }
+  return humanizeDom(parseResult, true);
+}
 
-  var humanizer = new _Humanizer(true);
-  htmlVisitAll(humanizer, parseResult.rootNodes);
+export function humanizeNodes(nodes: HtmlAst[], addSourceSpan: boolean = false): any[] {
+  var humanizer = new _Humanizer(addSourceSpan);
+  htmlVisitAll(humanizer, nodes);
   return humanizer.result;
 }
 

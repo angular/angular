@@ -154,7 +154,9 @@ export function main() {
       ]);
     });
 
-    it('should extract messages from expansion forms', () => {
+    // TODO(vicb) - this should be extracted to a single message
+    // see https://github.com/angular/angular/issues/9067
+    xit('should extract messages from expansion forms', () => {
       let res = extractor.extract(
           `
         <div>
