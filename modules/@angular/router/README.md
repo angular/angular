@@ -1,4 +1,4 @@
-Angular Route
+Angular Router
 =========
 
 Managing state transitions is one of the hardest parts of building applications. This is especially true on the web, where you also need to ensure that the state is reflected in the URL. In addition, we often want to split applications into multiple bundles and load them on demand. Doing this transparently isn’t trivial.
