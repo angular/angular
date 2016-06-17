@@ -5,8 +5,6 @@ import {HtmlAst, HtmlElementAst} from '../html_ast';
 import {HtmlParser} from '../html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../interpolation_config';
 import {ParseError} from '../parse_util';
-
-import {expandNodes} from './expander';
 import {Message, id} from './message';
 import {I18N_ATTR_PREFIX, I18nError, Part, messageFromAttribute, messageFromI18nAttribute, partition} from './shared';
 
@@ -106,14 +104,13 @@ export class MessageExtractor {
     this._errors = [];
     this._interpolationConfig = interpolationConfig;
 
-    let res = this._htmlParser.parse(template, sourceUrl, true);
-    if (res.errors.length > 0) {
-      return new ExtractionResult([], res.errors);
-    } else {
-      let expanded = expandNodes(res.rootNodes);
-      this._recurse(expanded.nodes);
-      return new ExtractionResult(this._messages, this._errors.concat(expanded.errors));
+    const res = this._htmlParser.parse(template, sourceUrl, true);
+
+    if (res.errors.length == 0) {
+      this._recurse(res.rootNodes);
     }
+
+    return new ExtractionResult(this._messages, this._errors.concat(res.errors));
   }
 
   private _extractMessagesFromPart(part: Part): void {
