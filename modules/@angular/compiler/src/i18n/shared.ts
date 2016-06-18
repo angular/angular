@@ -77,7 +77,7 @@ function _isOpeningComment(n: HtmlAst): boolean {
 }
 
 function _isClosingComment(n: HtmlAst): boolean {
-  return n instanceof HtmlCommentAst && isPresent(n.value) && n.value == '/i18n';
+  return n instanceof HtmlCommentAst && isPresent(n.value) && n.value === '/i18n';
 }
 
 function _findI18nAttr(p: HtmlElementAst): HtmlAttrAst {
