@@ -147,6 +147,7 @@ export class MessageExtractor {
         isPresent(this._implicitAttrs[p.name]) ? this._implicitAttrs[p.name] : [];
     let explicitAttrs: string[] = [];
 
+    // `i18n-` prefixed attributes should be translated
     p.attrs.filter(attr => attr.name.startsWith(I18N_ATTR_PREFIX)).forEach(attr => {
       try {
         explicitAttrs.push(attr.name.substring(I18N_ATTR_PREFIX.length));
@@ -161,6 +162,7 @@ export class MessageExtractor {
       }
     });
 
+    // implicit attributes should also be translated
     p.attrs.filter(attr => !attr.name.startsWith(I18N_ATTR_PREFIX))
         .filter(attr => explicitAttrs.indexOf(attr.name) == -1)
         .filter(attr => transAttrs.indexOf(attr.name) > -1)
