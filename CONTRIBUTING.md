@@ -1,245 +1,100 @@
-# Contributing to Angular 2
+# Contributing to React
 
-We would love for you to contribute to Angular 2 and help make it even better than it is
-today! As a contributor, here are the guidelines we would like you to follow:
+React is one of Facebook's first open source projects that is both under very active development and is also being used to ship code to everybody on [facebook.com](https://www.facebook.com). We're still working out the kinks to make contributing to this project as easy and transparent as possible, but we're not quite there yet. Hopefully this document makes the process for contributing clear and answers some questions that you may have.
 
- - [Code of Conduct](#coc)
- - [Question or Problem?](#question)
- - [Issues and Bugs](#issue)
- - [Feature Requests](#feature)
- - [Submission Guidelines](#submit)
- - [Coding Rules](#rules)
- - [Commit Message Guidelines](#commit)
- - [Signing the CLA](#cla)
+## [Code of Conduct](https://code.facebook.com/codeofconduct)
 
-## <a name="coc"></a> Code of Conduct
-Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][coc].
+Facebook has adopted a Code of Conduct that we expect project participants to adhere to. Please read [the full text](https://code.facebook.com/codeofconduct) so that you can understand what actions will and will not be tolerated.
 
-## <a name="question"></a> Got a Question or Problem?
+## Our Development Process
 
-If you have questions about how to *use* Angular, please direct them to the [Google Group][angular-group]
-discussion list or [StackOverflow][stackoverflow]. Please note that Angular 2 is still in early developer preview, and the core team's capacity to answer usage questions is limited. We are also available on [Gitter][gitter].
+Some of the core team will be working directly on GitHub. These changes will be public from the beginning. Other changesets will come via a bridge with Facebook's internal source control. This is a necessity as it allows engineers at Facebook outside of the core team to move fast and contribute from an environment they are comfortable in.
 
-## <a name="issue"></a> Found an Issue?
-If you find a bug in the source code or a mistake in the documentation, you can help us by
-[submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
-[submit a Pull Request](#submit-pr) with a fix.
+### `master` is unsafe
 
-## <a name="feature"></a> Want a Feature?
-You can *request* a new feature by [submitting an issue](#submit-issue) to our [GitHub
-Repository][github]. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it. Angular 2 is in developer preview
-and we are not ready to accept major contributions ahead of the full release.
-Please consider what kind of change it is:
+We will do our best to keep `master` in good shape, with tests passing at all times. But in order to move fast, we will make API changes that your application might not be compatible with. We will do our best to communicate these changes and always version appropriately so you can lock into a specific version if need be.
 
-* For a **Major Feature**, first open an issue and outline your proposal so that it can be
-discussed. This will also allow us to better coordinate our efforts, prevent duplication of work,
-and help you to craft the change so that it is successfully accepted into the project.
-* **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
+### Test Suite
 
-## <a name="submit"></a> Submission Guidelines
+Use `grunt test` to run the full test suite with PhantomJS.
 
-### <a name="submit-issue"></a> Submitting an Issue
-Before you submit an issue, search the archive, maybe your question was already answered.
+This command is just a facade to [Jest](https://facebook.github.io/jest/). You may optionally run `npm install -g jest-cli` and use Jest commands directly to have more control over how tests are executed.
 
-If your issue appears to be a bug, and hasn't been reported, open a new issue.
-Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues.  Providing the following information will increase the
-chances of your issue being dealt with quickly:
+For example, `jest --watch` lets you automatically run the test suite on every file change.
 
-* **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
-* **Angular Version** - what version of Angular is affected (e.g. 2.0.0-alpha.53)
-* **Motivation for or Use Case** - explain what are you trying to do and why the current behavior is a bug for you
-* **Browsers and Operating System** - is this a problem with all browsers?
-* **Reproduce the Error** - provide a live example (using [Plunker][plunker],
-  [JSFiddle][jsfiddle] or [Runnable][runnable]) or a unambiguous set of steps
-* **Related Issues** - has a similar issue been reported before?
-* **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
-  causing the problem (line of code or commit)
+You can also run a subset of tests by passing a prefix to `jest`. For instance, `jest ReactDOMSVG` will only run tests in the files that start with `ReactDOMSVG`, such as `ReactDOMSVG-test.js`.
 
-You can file new issues by providing the above information [here](https://github.com/angular/angular/issues/new).
+When you know which tests you want to run, you can achieve a fast feedback loop by using these two features together. For example, `jest ReactDOMSVG --watch` will re-run only the matching tests on every change.
 
+Just make sure to run the whole test suite before submitting a pull request!
 
-### <a name="submit-pr"></a> Submitting a Pull Request (PR)
-Before you submit your Pull Request (PR) consider the following guidelines:
+### Pull Requests
 
-* Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR
-  that relates to your submission. You don't want to duplicate effort.
-* Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
-  We cannot accept code without this.
-* Make your changes in a new git branch:
+**Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
 
-     ```shell
-     git checkout -b my-fix-branch master
-     ```
+The core team will be monitoring for pull requests. When we get one, we'll run some Facebook-specific integration tests on it first. From here, we'll need to get another person to sign off on the changes and then merge the pull request. For API changes we may need to fix internal uses, which could cause some delay. We'll do our best to provide updates and feedback throughout the process.
 
-* Create your patch, **including appropriate test cases**.
-* Follow our [Coding Rules](#rules).
-* Run the full Angular test suite, as described in the [developer documentation][dev-doc],
-  and ensure that all tests pass.
-* Commit your changes using a descriptive commit message that follows our
-  [commit message conventions](#commit). Adherence to these conventions
-  is necessary because release notes are automatically generated from these messages.
+*Before* submitting a pull request, please make sure the following is done…
 
-     ```shell
-     git commit -a
-     ```
-  Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
+1. Fork the repo and create your branch from `master`.
+2. If you've added code that should be tested, add tests!
+3. If you've changed APIs, update the documentation.
+4. Ensure the test suite passes (`grunt test`).
+5. Make sure your code lints (`grunt lint`) - we've done our best to make sure these rules match our internal linting guidelines.
+6. If you haven't already, complete the CLA.
 
-* Push your branch to GitHub:
+### Contributor License Agreement (CLA)
 
-    ```shell
-    git push origin my-fix-branch
-    ```
+In order to accept your pull request, we need you to submit a CLA. You only need to do this once, so if you've done this for another Facebook open source project, you're good to go. If you are submitting a pull request for the first time, just let us know that you have completed the CLA and we can cross-check with your GitHub username.
 
-* In GitHub, send a pull request to `angular:master`.
-* If we suggest changes then:
-  * Make the required updates.
-  * Re-run the Angular 2 test suites for JS and Dart to ensure tests are still passing.
-  * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
+[Complete your CLA here.](https://code.facebook.com/cla)
 
-    ```shell
-    git rebase master -i
-    git push -f
-    ```
+## Bugs
 
-That's it! Thank you for your contribution!
+### Where to Find Known Issues
 
-#### After your pull request is merged
+We will be using GitHub Issues for our public bugs. We will keep a close eye on this and try to make it clear when we have an internal fix in progress. Before filing a new task, try to make sure your problem doesn't already exist.
 
-After your pull request is merged, you can safely delete your branch and pull the changes
-from the main (upstream) repository:
+### Reporting New Issues
 
-* Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
+The best way to get your bug fixed is to provide a reduced test case. jsFiddle, jsBin, and other sites provide a way to give live examples. Those are especially helpful though may not work for `JSX`-based code.
 
-    ```shell
-    git push origin --delete my-fix-branch
-    ```
+### Security Bugs
 
-* Check out the master branch:
+Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe disclosure of security bugs. With that in mind, please do not file public issues; go through the process outlined on that page.
 
-    ```shell
-    git checkout master -f
-    ```
+## How to Get in Touch
 
-* Delete the local branch:
+* IRC - [#reactjs on freenode](https://webchat.freenode.net/?channels=reactjs)
+* Discussion forum - [discuss.reactjs.org](https://discuss.reactjs.org/)
 
-    ```shell
-    git branch -D my-fix-branch
-    ```
+## Meeting Notes
 
-* Update your master with the latest upstream version:
+React team meets once a week to discuss the development of React, future plans, and priorities.  
+You can find the meeting notes in a [dedicated repository](https://github.com/reactjs/core-notes/).
 
-    ```shell
-    git pull --ff upstream master
-    ```
+## Style Guide
 
-## <a name="rules"></a> Coding Rules
-To ensure consistency throughout the source code, keep these rules in mind as you are working:
+Our linter will catch most styling issues that may exist in your code.
+You can check the status of your code styling by simply running: `grunt lint`
 
-* All features or bug fixes **must be tested** by one or more specs (unit-tests).
-* All public API methods **must be documented**. (Details TBC).
-* We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at
-  **100 characters**. An automated formatter is available, see
-  [DEVELOPER.md](DEVELOPER.md#clang-format).
+However, there are still some styles that the linter cannot pick up. If you are unsure about something, looking at [Airbnb's Style Guide](https://github.com/airbnb/javascript) will guide you in the right direction.
 
-## <a name="commit"></a> Commit Message Guidelines
+### Code Conventions
 
-We have very precise rules over how our git commit messages can be formatted.  This leads to **more
-readable messages** that are easy to follow when looking through the **project history**.  But also,
-we use the git commit messages to **generate the Angular change log**.
+* Use semicolons `;`
+* Commas last `,`
+* 2 spaces for indentation (no tabs)
+* Prefer `'` over `"`
+* `'use strict';`
+* 80 character line length
+* Write "attractive" code
+* Do not use the optional parameters of `setTimeout` and `setInterval`
 
-### Commit Message Format
-Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
-format that includes a **type**, a **scope** and a **subject**:
+### Documentation
 
-```
-<type>(<scope>): <subject>
-<BLANK LINE>
-<body>
-<BLANK LINE>
-<footer>
-```
+* Do not wrap lines at 80 characters
 
-The **header** is mandatory and the **scope** of the header is optional.
+## License
 
-Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
-to read on GitHub as well as in various git tools.
-
-Footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
-
-Samples: (even more [samples](https://github.com/angular/angular/commits/master))
-
-```
-docs(changelog): update change log to beta.5
-```
-```
-fix(release): need to depend on latest rxjs and zone.js
-
-The version in our package.json gets copied to the one we publish, and users need the latest of these.
-```
-
-### Revert
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
-
-### Type
-Must be one of the following:
-
-* **feat**: A new feature
-* **fix**: A bug fix
-* **docs**: Documentation only changes
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
-  semi-colons, etc)
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-* **perf**: A code change that improves performance
-* **test**: Adding missing tests or correcting existing tests
-* **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
-* **ci**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
-* **chore**: Other changes that don't modify `src` or `test` files
-
-### Scope
-The scope could be anything specifying place of the commit change. For example
-`Compiler`, `ElementInjector`, etc.
-
-### Subject
-The subject contains succinct description of the change:
-
-* use the imperative, present tense: "change" not "changed" nor "changes"
-* don't capitalize first letter
-* no dot (.) at the end
-
-### Body
-Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
-The body should include the motivation for the change and contrast this with previous behavior.
-
-### Footer
-The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
-
-**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
-
-A detailed explanation can be found in this [document][commit-message-format].
-
-## <a name="cla"></a> Signing the CLA
-
-Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code
-changes to be accepted, the CLA must be signed. It's a quick process, we promise!
-
-* For individuals we have a [simple click-through form][individual-cla].
-* For corporations we'll need you to
-  [print, sign and one of scan+email, fax or mail the form][corporate-cla].
-
-
-[angular-group]: https://groups.google.com/forum/#!forum/angular
-[coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
-[commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
-[corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
-[dev-doc]: https://github.com/angular/angular/blob/master/DEVELOPER.md
-[github]: https://github.com/angular/angular
-[gitter]: https://gitter.im/angular/angular
-[individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
-[js-style-guide]: https://google.github.io/styleguide/javascriptguide.xml
-[jsfiddle]: http://jsfiddle.net
-[plunker]: http://plnkr.co/edit
-[runnable]: http://runnable.com
-[stackoverflow]: http://stackoverflow.com/questions/tagged/angular
+By contributing to React, you agree that your contributions will be licensed under its BSD license.
