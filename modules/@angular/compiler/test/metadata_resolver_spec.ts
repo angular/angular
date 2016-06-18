@@ -1,14 +1,13 @@
+import {CompilerConfig} from '@angular/compiler/src/config';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation} from '@angular/core';
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {IS_DART, stringify} from '../src/facade/lang';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 
-import {Component, Directive, ViewEncapsulation, ChangeDetectionStrategy, OnChanges, OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, SimpleChanges,} from '@angular/core';
-
-import {TEST_PROVIDERS} from './test_bindings';
-import {CompilerConfig} from '@angular/compiler/src/config';
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
+import {TEST_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('CompileMetadataResolver', () => {
@@ -49,18 +48,20 @@ export function main() {
 
       it('should throw when metadata is incorrectly typed',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-           if (!IS_DART) {
-             expect(() => resolver.getDirectiveMetadata(MalformedStylesComponent))
-                 .toThrowError(`Expected 'styles' to be an array of strings.`);
-           }
+           expect(() => resolver.getDirectiveMetadata(MalformedStylesComponent))
+               .toThrowError(`Expected 'styles' to be an array of strings.`);
          }));
 
       it('should throw with descriptive error message when provider token can not be resolved',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-           if (!IS_DART) {
-             expect(() => resolver.getDirectiveMetadata(MyBrokenComp1))
-                 .toThrowError(`Can't resolve all parameters for MyBrokenComp1: (?).`);
-           }
+           expect(() => resolver.getDirectiveMetadata(MyBrokenComp1))
+               .toThrowError(`Can't resolve all parameters for MyBrokenComp1: (?).`);
+         }));
+
+      it('should throw with descriptive error message when a param token of a dependency is undefined',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           expect(() => resolver.getDirectiveMetadata(MyBrokenComp2))
+               .toThrowError(`Can't resolve all parameters for NonAnnotatedService: (?).`);
          }));
 
       it('should throw an error when the interpolation config has invalid symbols',
@@ -150,6 +151,15 @@ class ComponentWithEverything implements OnChanges,
 @Component({selector: 'my-broken-comp', template: ''})
 class MyBrokenComp1 {
   constructor(public dependency: any) {}
+}
+
+class NonAnnotatedService {
+  constructor(dep: any) {}
+}
+
+@Component({selector: 'my-broken-comp', template: '', providers: [NonAnnotatedService]})
+class MyBrokenComp2 {
+  constructor(dependency: NonAnnotatedService) {}
 }
 
 @Component({selector: 'someSelector', template: '', interpolation: [' ', ' ']})
