@@ -37,6 +37,14 @@ describe('config', () => {
       }).toThrowError(`Invalid route configuration: routes must have path specified`);
     });
 
+    it("should throw when none of component and children or direct are missing", () => {
+      expect(() => {
+        validateConfig([
+          {path: 'a'}
+        ]);
+      }).toThrowError(`Invalid configuration of route 'a': component, redirectTo, children must be provided`);
+    });
+
     it("should throw when path starts with a slash", () => {
       expect(() => {
         validateConfig([

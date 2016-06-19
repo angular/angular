@@ -44,6 +44,32 @@ describe('create router state', () => {
     expect(prevC[1]).not.toBe(currC[1]);
     checkActivatedRoute(currC[1], ComponentC, 'left');
   });
+
+  it('should handle componentless routes', () => {
+    const config = [
+      { path: 'a/:id', children: [
+        { path: 'b', component: ComponentA },
+        { path: 'c', component: ComponentB, outlet: 'right' }
+      ] }
+    ];
+
+
+    const prevState = createRouterState(createState(config, "a/1;p=11/(b//right:c)"), emptyState());
+    advanceState(prevState);
+    const state = createRouterState(createState(config, "a/2;p=22/(b//right:c)"), prevState);
+
+    expect(prevState.root).toBe(state.root);
+    const prevP = prevState.firstChild(prevState.root);
+    const currP = state.firstChild(state.root);
+    expect(prevP).toBe(currP);
+
+    const prevC = prevState.children(prevP);
+    const currC = state.children(currP);
+
+    expect(currP._futureSnapshot.params).toEqual({id: '2', p: '22'});
+    checkActivatedRoute(currC[0], ComponentA);
+    checkActivatedRoute(currC[1], ComponentB, 'right');
+  });
 });
 
 function advanceState(state: RouterState): void {

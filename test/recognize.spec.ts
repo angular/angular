@@ -243,6 +243,112 @@ describe('recognize', () => {
     });
   });
 
+  describe("componentless routes", () => {
+    it("should work", () => {
+      checkRecognize([
+        {
+          path: 'p/:id',
+          children: [
+            {path: 'a', component: ComponentA},
+            {path: 'b', component: ComponentB, outlet: 'aux'}
+          ]
+        }
+      ], "p/11;pp=22/(a;pa=33//aux:b;pb=44)", (s:RouterStateSnapshot) => {
+        const p = s.firstChild(s.root);
+        checkActivatedRoute(p, "p/11", {id: '11', pp: '22'}, undefined);
+
+        const c = s.children(p);
+        checkActivatedRoute(c[0], "a", {id: '11', pp: '22', pa: '33'}, ComponentA);
+        checkActivatedRoute(c[1], "b", {id: '11', pp: '22', pb: '44'}, ComponentB, "aux");
+      });
+    });
+
+    it("should merge params until encounters a normal route", () => {
+      checkRecognize([
+        {
+          path: 'p/:id',
+          children: [
+            {path: 'a/:name', children: [
+              {path: 'b', component: ComponentB, children: [
+                {path: 'c', component: ComponentC}
+              ]}
+            ]}
+          ]
+        }
+      ], "p/11/a/victor/b/c", (s:RouterStateSnapshot) => {
+        const p = s.firstChild(s.root);
+        checkActivatedRoute(p, "p/11", {id: '11'}, undefined);
+
+        const a = s.firstChild(p);
+        checkActivatedRoute(a, "a/victor", {id: '11', name: 'victor'}, undefined);
+
+        const b = s.firstChild(a);
+        checkActivatedRoute(b, "b", {id: '11', name: 'victor'}, ComponentB);
+
+        const c = s.firstChild(b);
+        checkActivatedRoute(c, "c", {}, ComponentC);
+      });
+    });
+
+    xit("should work with empty paths", () => {
+      checkRecognize([
+        {
+          path: 'p/:id',
+          children: [
+            {path: '', component: ComponentA},
+            {path: '', component: ComponentB, outlet: 'aux'}
+          ]
+        }
+      ], "p/11", (s:RouterStateSnapshot) => {
+        const p = s.firstChild(s.root);
+        checkActivatedRoute(p, "p/11", {id: '11'}, undefined);
+
+        const c = s.children(p);
+        console.log("lsfs", c);
+        checkActivatedRoute(c[0], "", {}, ComponentA);
+        checkActivatedRoute(c[1], "", {}, ComponentB, "aux");
+      });
+    });
+
+    xit("should work with empty paths and params", () => {
+      checkRecognize([
+        {
+          path: 'p/:id',
+          children: [
+            {path: '', component: ComponentA},
+            {path: '', component: ComponentB, outlet: 'aux'}
+          ]
+        }
+      ], "p/11/(;pa=33//aux:;pb=44)", (s:RouterStateSnapshot) => {
+        const p = s.firstChild(s.root);
+        checkActivatedRoute(p, "p/11", {id: '11'}, undefined);
+
+        const c = s.children(p);
+        checkActivatedRoute(c[0], "", {pa: '33'}, ComponentA);
+        checkActivatedRoute(c[1], "", {pb: '44'}, ComponentB, "aux");
+      });
+    });
+
+    xit("should work with only aux path", () => {
+      checkRecognize([
+        {
+          path: 'p/:id',
+          children: [
+            {path: '', component: ComponentA},
+            {path: '', component: ComponentB, outlet: 'aux'}
+          ]
+        }
+      ], "p/11", (s:RouterStateSnapshot) => {
+        const p = s.firstChild(s.root);
+        checkActivatedRoute(p, "p/11(aux:;pb=44)", {id: '11'}, undefined);
+
+        const c = s.children(p);
+        checkActivatedRoute(c[0], "", {}, ComponentA);
+        checkActivatedRoute(c[1], "", {pb: '44'}, ComponentB, "aux");
+      });
+    });
+  });
+
   describe("query parameters", () => {
     it("should support query params", () => {
       const config = [{path: 'a', component: ComponentA}];

@@ -139,7 +139,7 @@ function updateSegment(segment: UrlSegment, startIndex: number, commands: any[])
   if (!segment) {
     segment = new UrlSegment([], {});
   }
-  if (segment.pathsWithParams.length === 0 && Object.keys(segment.children).length > 0) {
+  if (segment.pathsWithParams.length === 0 && segment.hasChildren()) {
     return updateSegmentChildren(segment, startIndex, commands);
   }
   const m = prefixedWith(segment, startIndex, commands);
@@ -147,7 +147,7 @@ function updateSegment(segment: UrlSegment, startIndex: number, commands: any[])
 
   if (m.match && slicedCommands.length === 0) {
     return new UrlSegment(segment.pathsWithParams, {});
-  } else if (m.match && Object.keys(segment.children).length === 0) {
+  } else if (m.match && !segment.hasChildren()) {
     return createNewSegment(segment, startIndex, commands);
   } else if (m.match) {
     return updateSegmentChildren(segment, 0, slicedCommands);
