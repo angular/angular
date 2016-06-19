@@ -1194,6 +1194,33 @@ export function main() {
        })));
 
     describe('template-driven forms', () => {
+      iit('new-forms',
+         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+            console.log("----------new-forms");
+           const t = `<form>
+              <input type="text" [(ngModel)]="value" name="value" required>
+            </form>`;
+
+           const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
+           tick();
+           fixture.detectChanges();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           let ev:any;
+           form.form.statusChanges.subscribe((v:any) => ev = v);
+
+           let vv:any;
+           form.form.valueChanges.subscribe((v:any) => vv = v);
+
+           tick();
+
+           expect(form.form.status).toEqual('INVALID');
+           expect(ev).toEqual('INVALID');
+
+           expect(form.form.value).toEqual({value: undefined});
+           expect(vv).toEqual({value: undefined});
+         })));
+
       it('should add new controls and control groups',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
            const t = `<form>

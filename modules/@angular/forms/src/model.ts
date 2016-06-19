@@ -367,6 +367,11 @@ export class FormGroup extends AbstractControl {
    * Register a control with the group's list of controls.
    */
   registerControl(name: string, control: AbstractControl): AbstractControl {
+    // TODO: To Kara
+    // this check should not be required
+    // register control should be called once and only once for a given name
+    // if it is called twice, we should throw
+    // the return type should be made 'void'
     if (this.controls[name]) return this.controls[name];
     this.controls[name] = control;
     control.setParent(this);

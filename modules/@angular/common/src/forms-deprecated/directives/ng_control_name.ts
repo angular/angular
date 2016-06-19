@@ -107,6 +107,7 @@ export class NgControlName extends NgControl implements OnChanges,
                 }
                 if (isPropertyUpdated(changes, this.viewModel)) {
                   this.viewModel = this.model;
+                  console.log("ngOnChanges");
                   this.formDirective.updateModel(this, this.model);
                 }
               }

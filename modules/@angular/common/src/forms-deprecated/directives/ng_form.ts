@@ -130,6 +130,7 @@ export class NgForm extends ControlContainer implements Form {
       var container = this._findContainer(dir.path);
       var ctrl = new Control();
       setUpControl(ctrl, dir);
+      console.log("registering control");
       container.registerControl(dir.name, ctrl);
       ctrl.updateValueAndValidity({emitEvent: false});
     });
@@ -171,6 +172,7 @@ export class NgForm extends ControlContainer implements Form {
 
   updateModel(dir: NgControl, value: any): void {
     PromiseWrapper.scheduleMicrotask(() => {
+      console.log("updating model");
       var ctrl = <Control>this.form.find(dir.path);
       ctrl.updateValue(value);
     });
