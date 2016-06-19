@@ -125,6 +125,21 @@ describe('applyRedirects', () => {
     });
   });
 
+  xit("should support redirects with both main and aux", () => {
+    checkRedirect([
+      {path: 'a', children: [
+        {path: 'b', component: ComponentB},
+        {path: '', redirectTo: 'b'},
+
+        {path: 'c', component: ComponentC, outlet: 'aux'},
+        {path: '', redirectTo: 'c', outlet: 'aux'}
+      ]},
+      {path: 'a', redirectTo: ''}
+    ], "a", (t:UrlTree) => {
+      compareTrees(t, tree('a/(b//aux:c)'));
+    });
+  });
+
   it("should redirect empty path route only when terminal", () => {
     const config = [
       {path: 'a', component: ComponentA, children: [

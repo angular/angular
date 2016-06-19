@@ -5,7 +5,7 @@ import {of } from 'rxjs/observable/of';
 
 import {Route, RouterConfig} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
-import {PRIMARY_OUTLET} from './shared';
+import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlPathWithParams, UrlSegment, UrlTree, mapChildrenIntoArray} from './url_tree';
 import {last, merge} from './utils/collection';
 import {TreeNode} from './utils/tree';
@@ -18,7 +18,7 @@ export function recognize(
     rootComponentType: Type, config: RouterConfig, urlTree: UrlTree,
     url: string): Observable<RouterStateSnapshot> {
   try {
-    const children = processSegment(config, urlTree.root, PRIMARY_OUTLET);
+    const children = processSegment(config, urlTree.root, {}, PRIMARY_OUTLET);
     const root = new ActivatedRouteSnapshot(
         [], {}, PRIMARY_OUTLET, rootComponentType, null, urlTree.root, -1);
     const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
@@ -35,19 +35,20 @@ export function recognize(
   }
 }
 
-function processSegment(
-    config: Route[], segment: UrlSegment, outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
-  if (segment.pathsWithParams.length === 0 && Object.keys(segment.children).length > 0) {
-    return processSegmentChildren(config, segment);
+function processSegment(config: Route[], segment: UrlSegment, extraParams: Params, outlet: string):
+    TreeNode<ActivatedRouteSnapshot>[] {
+  if (segment.pathsWithParams.length === 0 && segment.hasChildren()) {
+    return processSegmentChildren(config, segment, extraParams);
   } else {
-    return [processPathsWithParams(config, segment, 0, segment.pathsWithParams, outlet)];
+    return [processPathsWithParams(
+        config, segment, 0, segment.pathsWithParams, extraParams, outlet)];
   }
 }
 
 function processSegmentChildren(
-    config: Route[], segment: UrlSegment): TreeNode<ActivatedRouteSnapshot>[] {
+    config: Route[], segment: UrlSegment, extraParams: Params): TreeNode<ActivatedRouteSnapshot>[] {
   const children = mapChildrenIntoArray(
-      segment, (child, childOutlet) => processSegment(config, child, childOutlet));
+      segment, (child, childOutlet) => processSegment(config, child, extraParams, childOutlet));
   checkOutletNameUniqueness(children);
   sortActivatedRouteSnapshots(children);
   return children;
@@ -63,10 +64,10 @@ function sortActivatedRouteSnapshots(nodes: TreeNode<ActivatedRouteSnapshot>[]):
 
 function processPathsWithParams(
     config: Route[], segment: UrlSegment, pathIndex: number, paths: UrlPathWithParams[],
-    outlet: string): TreeNode<ActivatedRouteSnapshot> {
+    extraParams: Params, outlet: string): TreeNode<ActivatedRouteSnapshot> {
   for (let r of config) {
     try {
-      return processPathsWithParamsAgainstRoute(r, segment, pathIndex, paths, outlet);
+      return processPathsWithParamsAgainstRoute(r, segment, pathIndex, paths, extraParams, outlet);
     } catch (e) {
       if (!(e instanceof NoMatch)) throw e;
     }
@@ -76,19 +77,20 @@ function processPathsWithParams(
 
 function processPathsWithParamsAgainstRoute(
     route: Route, segment: UrlSegment, pathIndex: number, paths: UrlPathWithParams[],
-    outlet: string): TreeNode<ActivatedRouteSnapshot> {
+    parentExtraParams: Params, outlet: string): TreeNode<ActivatedRouteSnapshot> {
   if (route.redirectTo) throw new NoMatch();
+
   if ((route.outlet ? route.outlet : PRIMARY_OUTLET) !== outlet) throw new NoMatch();
 
   if (route.path === '**') {
     const params = paths.length > 0 ? last(paths).parameters : {};
-    const snapshot =
-        new ActivatedRouteSnapshot(paths, params, outlet, route.component, route, segment, -1);
+    const snapshot = new ActivatedRouteSnapshot(
+        paths, merge(parentExtraParams, params), outlet, route.component, route, segment, -1);
     return new TreeNode<ActivatedRouteSnapshot>(snapshot, []);
   }
 
-  const {consumedPaths, parameters, lastChild} = match(segment, route, paths);
-
+  const {consumedPaths, parameters, extraParams, lastChild} =
+      match(segment, route, paths, parentExtraParams);
   const snapshot = new ActivatedRouteSnapshot(
       consumedPaths, parameters, outlet, route.component, route, segment,
       pathIndex + lastChild - 1);
@@ -99,23 +101,24 @@ function processPathsWithParamsAgainstRoute(
     return new TreeNode<ActivatedRouteSnapshot>(snapshot, []);
 
     // TODO: check that the right segment is present
-  } else if (slicedPath.length === 0 && Object.keys(segment.children).length > 0) {
-    const children = processSegmentChildren(childConfig, segment);
+  } else if (slicedPath.length === 0 && segment.hasChildren()) {
+    const children = processSegmentChildren(childConfig, segment, extraParams);
     return new TreeNode<ActivatedRouteSnapshot>(snapshot, children);
 
   } else {
     const child = processPathsWithParams(
-        childConfig, segment, pathIndex + lastChild, slicedPath, PRIMARY_OUTLET);
+        childConfig, segment, pathIndex + lastChild, slicedPath, extraParams, PRIMARY_OUTLET);
     return new TreeNode<ActivatedRouteSnapshot>(snapshot, [child]);
   }
 }
 
-function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
+function match(
+    segment: UrlSegment, route: Route, paths: UrlPathWithParams[], parentExtraParams: Params) {
   if (route.path === '') {
-    if (route.terminal && (Object.keys(segment.children).length > 0 || paths.length > 0)) {
+    if (route.terminal && (segment.hasChildren() || paths.length > 0)) {
       throw new NoMatch();
     } else {
-      return {consumedPaths: [], lastChild: 0, parameters: {}};
+      return {consumedPaths: [], lastChild: 0, parameters: {}, extraParams: {}};
     }
   }
 
@@ -141,12 +144,14 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]) {
     currentIndex++;
   }
 
-  if (route.terminal && (Object.keys(segment.children).length > 0 || currentIndex < paths.length)) {
+  if (route.terminal && (segment.hasChildren() || currentIndex < paths.length)) {
     throw new NoMatch();
   }
 
-  const parameters = merge(posParameters, consumedPaths[consumedPaths.length - 1].parameters);
-  return {consumedPaths, lastChild: currentIndex, parameters};
+  const parameters = merge(
+      parentExtraParams, merge(posParameters, consumedPaths[consumedPaths.length - 1].parameters));
+  const extraParams = route.component ? {} : parameters;
+  return {consumedPaths, lastChild: currentIndex, parameters, extraParams};
 }
 
 function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): void {
