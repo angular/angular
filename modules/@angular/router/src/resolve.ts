@@ -17,17 +17,25 @@ export function resolve(
 function resolveNode(
     resolver: ComponentResolver, node: TreeNode<ActivatedRouteSnapshot>): Observable<any> {
   if (node.children.length === 0) {
-    return fromPromise(resolver.resolveComponent(<any>node.value.component).then(factory => {
+    return fromPromise(resolveComponent(resolver, <any>node.value).then(factory => {
       node.value._resolvedComponentFactory = factory;
       return node.value;
     }));
 
   } else {
     const c = node.children.map(c => resolveNode(resolver, c).toPromise());
-    return forkJoin(c).map(
-        _ => resolver.resolveComponent(<any>node.value.component).then(factory => {
-          node.value._resolvedComponentFactory = factory;
-          return node.value;
-        }));
+    return forkJoin(c).map(_ => resolveComponent(resolver, <any>node.value).then(factory => {
+      node.value._resolvedComponentFactory = factory;
+      return node.value;
+    }));
+  }
+}
+
+function resolveComponent(
+    resolver: ComponentResolver, snapshot: ActivatedRouteSnapshot): Promise<any> {
+  if (snapshot.component && snapshot._routeConfig) {
+    return resolver.resolveComponent(<any>snapshot.component);
+  } else {
+    return Promise.resolve(null);
   }
 }
