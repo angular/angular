@@ -39,6 +39,7 @@
     "test/url_tree.spec.ts",
     "test/utils/tree.spec.ts",
     "test/url_serializer.spec.ts",
+    "test/resolve.spec.ts",
     "test/apply_redirects.spec.ts",
     "test/recognize.spec.ts",
     "test/create_router_state.spec.ts",

@@ -35,7 +35,7 @@ function createUrlTree(urlTree: UrlTree, root: UrlSegment): Observable<UrlTree> 
 }
 
 function expandSegment(routes: Route[], segment: UrlSegment, outlet: string): UrlSegment {
-  if (segment.pathsWithParams.length === 0 && Object.keys(segment.children).length > 0) {
+  if (segment.pathsWithParams.length === 0 && segment.hasChildren()) {
     return new UrlSegment([], expandSegmentChildren(routes, segment));
   } else {
     return expandPathsWithParams(segment, routes, segment.pathsWithParams, outlet, true);
@@ -119,7 +119,7 @@ function matchPathsWithParamsAgainstRoute(
       return new UrlSegment(consumedPaths, {});
 
       // TODO: check that the right segment is present
-    } else if (slicedPath.length === 0 && Object.keys(segment.children).length > 0) {
+    } else if (slicedPath.length === 0 && segment.hasChildren()) {
       const children = expandSegmentChildren(childConfig, segment);
       return new UrlSegment(consumedPaths, children);
 
@@ -136,7 +136,7 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]): {
   positionalParamSegments: {[k: string]: UrlPathWithParams}
 } {
   if (route.path === '') {
-    if (route.terminal && (Object.keys(segment.children).length > 0 || paths.length > 0)) {
+    if (route.terminal && (segment.hasChildren() || paths.length > 0)) {
       throw new NoMatch();
     } else {
       return {consumedPaths: [], lastChild: 0, positionalParamSegments: {}};
@@ -165,7 +165,7 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]): {
     currentIndex++;
   }
 
-  if (route.terminal && (Object.keys(segment.children).length > 0 || currentIndex < paths.length)) {
+  if (route.terminal && (segment.hasChildren() || currentIndex < paths.length)) {
     throw new NoMatch();
   }
 

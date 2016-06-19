@@ -375,7 +375,46 @@ describe("Integration", () => {
       advance(fixture);
       expect(location.path()).toEqual('/team/33/simple');
     })));
-  
+
+  it('should handle componentless paths',
+    fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
+      const fixture = tcb.createFakeAsync(RootCmpWithTwoOutlets);
+      advance(fixture);
+
+      router.resetConfig([
+        { path: 'parent/:id', children: [
+          { path: 'simple', component: SimpleCmp },
+          { path: 'user/:name', component: UserCmp, outlet: 'right' }
+        ] },
+        { path: 'user/:name', component: UserCmp }
+      ]);
+
+
+      // navigate to a componentless route
+      router.navigateByUrl('/parent/11/(simple//right:user/victor)');
+      advance(fixture);
+      expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
+      expect(fixture.debugElement.nativeElement).toHaveText('primary {simple} right {user victor}');
+
+      // navigate to the same route with different params (reuse)
+      router.navigateByUrl('/parent/22/(simple//right:user/fedor)');
+      advance(fixture);
+      expect(location.path()).toEqual('/parent/22/(simple//right:user/fedor)');
+      expect(fixture.debugElement.nativeElement).toHaveText('primary {simple} right {user fedor}');
+
+      // navigate to a normal route (check deactivation)
+      router.navigateByUrl('/user/victor');
+      advance(fixture);
+      expect(location.path()).toEqual('/user/victor');
+      expect(fixture.debugElement.nativeElement).toHaveText('primary {user victor} right {}');
+
+      // navigate back to a componentless route
+      router.navigateByUrl('/parent/11/(simple//right:user/victor)');
+      advance(fixture);
+      expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
+      expect(fixture.debugElement.nativeElement).toHaveText('primary {simple} right {user victor}');
+    })));
+
   describe("router links", () => {
     it("should support string router links",
       fakeAsync(inject([Router, TestComponentBuilder], (router:Router, tcb:TestComponentBuilder) => {
@@ -526,6 +565,29 @@ describe("Integration", () => {
           })));
       });
 
+      describe("should not activate a route when CanActivate returns false (componentless route)", () => {
+        beforeEachProviders(() => [
+          {provide: 'alwaysFalse', useValue: (a:any, b:any) => false}
+        ]);
+
+        it('works',
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
+            const fixture = tcb.createFakeAsync(RootCmp);
+            advance(fixture);
+
+            router.resetConfig([
+              { path: 'parent', canActivate: ['alwaysFalse'], children: [
+                { path: 'team/:id', component: TeamCmp }
+              ]}
+            ]);
+
+            router.navigateByUrl('parent/team/22');
+            advance(fixture);
+
+            expect(location.path()).toEqual('/');
+          })));
+      });
+
       describe("should activate a route when CanActivate returns true", () => {
         beforeEachProviders(() => [
           {provide: 'alwaysTrue', useValue: (a:ActivatedRouteSnapshot, s:RouterStateSnapshot) => true}
@@ -598,14 +660,16 @@ describe("Integration", () => {
     describe("CanDeactivate", () => {
       describe("should not deactivate a route when CanDeactivate returns false", () => {
         beforeEachProviders(() => [
-          {provide: 'CanDeactivateTeam', useValue: (c:TeamCmp, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
+          {provide: 'CanDeactivateParent', useValue: (c:any, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
+            return a.params['id'] === "22";
+          }},
+          {provide: 'CanDeactivateTeam', useValue: (c:any, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
             return c.route.snapshot.params['id'] === "22";
           }},
-          {provide: 'CanDeactivateUser', useValue: (c:UserCmp, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
+          {provide: 'CanDeactivateUser', useValue: (c:any, a:ActivatedRouteSnapshot, b:RouterStateSnapshot) => {
             return a.params['name'] === 'victor';
           }}
         ]);
-
 
         it('works',
           fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
@@ -618,18 +682,39 @@ describe("Integration", () => {
 
             router.navigateByUrl('/team/22');
             advance(fixture);
-
             expect(location.path()).toEqual('/team/22');
 
             router.navigateByUrl('/team/33');
             advance(fixture);
-
             expect(location.path()).toEqual('/team/33');
 
             router.navigateByUrl('/team/44');
             advance(fixture);
-
             expect(location.path()).toEqual('/team/33');
+          })));
+
+        it('works (componentless route)',
+          fakeAsync(inject([Router, TestComponentBuilder, Location], (router:Router, tcb:TestComponentBuilder, location:Location) => {
+            const fixture = tcb.createFakeAsync(RootCmp);
+            advance(fixture);
+
+            router.resetConfig([
+              { path: 'parent/:id', canDeactivate: ["CanDeactivateParent"], children: [
+                { path: 'simple', component: SimpleCmp }
+              ] }
+            ]);
+
+            router.navigateByUrl('/parent/22/simple');
+            advance(fixture);
+            expect(location.path()).toEqual('/parent/22/simple');
+
+            router.navigateByUrl('/parent/33/simple');
+            advance(fixture);
+            expect(location.path()).toEqual('/parent/33/simple');
+
+            router.navigateByUrl('/parent/44/simple');
+            advance(fixture);
+            expect(location.path()).toEqual('/parent/33/simple');
           })));
 
         it('works with a nested route',
@@ -926,6 +1011,13 @@ class QueryParamsAndFragmentCmp {
   directives: [ROUTER_DIRECTIVES]
 })
 class RootCmp {}
+
+@Component({
+  selector: 'root-cmp',
+  template: `primary {<router-outlet></router-outlet>} right {<router-outlet name="right"></router-outlet>}`,
+  directives: [ROUTER_DIRECTIVES]
+})
+class RootCmpWithTwoOutlets {}
 
 function advance(fixture: ComponentFixture<any>): void {
   tick();
