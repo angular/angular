@@ -7,12 +7,13 @@ const _EMPTY_ATTR_VALUE = /*@ts2dart_const*/ '';
 // TODO: Can't use `const` here as
 // in Dart this is not transpiled into `final` yet...
 var _SELECTOR_REGEXP = RegExpWrapper.create(
-    '(\\:not\\()|' +                          //":not("
-    '([-\\w]+)|' +                            // "tag"
-    '(?:\\.([-\\w]+))|' +                     // ".class"
-    '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])|' +  // "[name]", "[name=value]" or "[name*=value]"
-    '(\\))|' +                                // ")"
-    '(\\s*,\\s*)');                           // ","
+    '(\\:not\\()|' +                           //":not("
+    '([-\\w]+)|' +                             // "tag"
+    '(?:\\.([-\\w]+))|' +                      // ".class"
+    '(?:\\[([-\\w*^]+)(?:=([^\\]]*))?\\])|' +  // "[name]", "[name=value]" or "[name*=value]" or
+                                               // "[name^=value]"
+    '(\\))|' +                                 // ")"
+    '(\\s*,\\s*)');                            // ","
 
 /**
  * A css selector contains an element name,
@@ -39,6 +40,7 @@ export class CssSelector {
     var match: string[];
     var current = cssSelector;
     var inNot = false;
+    var previousMatch: string[];
     while (isPresent(match = RegExpMatcherWrapper.next(matcher))) {
       if (isPresent(match[1])) {
         if (inNot) {
@@ -49,6 +51,9 @@ export class CssSelector {
         cssSelector.notSelectors.push(current);
       }
       if (isPresent(match[2])) {
+        if (isPresent(previousMatch) && isPresent(previousMatch[2])) {
+          throw new BaseException(`Hierarchical selectors are not supported: ${selector}`);
+        }
         current.setElement(match[2]);
       }
       if (isPresent(match[3])) {
@@ -68,6 +73,7 @@ export class CssSelector {
         _addResult(results, cssSelector);
         cssSelector = current = new CssSelector();
       }
+      previousMatch = match;
     }
     _addResult(results, cssSelector);
     return results;
