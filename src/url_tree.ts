@@ -74,6 +74,8 @@ export class UrlSegment {
     forEach(children, (v: any, k: any) => v.parent = this);
   }
 
+  hasChildren(): boolean { return Object.keys(this.children).length > 0; }
+
   toString(): string { return serializePaths(this); }
 }
 

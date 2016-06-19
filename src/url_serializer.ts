@@ -1,5 +1,5 @@
 import {PRIMARY_OUTLET} from './shared';
-import {UrlPathWithParams, UrlSegment, UrlTree} from './url_tree';
+import {UrlPathWithParams, UrlSegment, UrlTree, mapChildrenIntoArray} from './url_tree';
 import {forEach} from './utils/collection';
 
 
@@ -54,35 +54,19 @@ function serializeSegment(segment: UrlSegment, root: boolean): string {
     } else {
       return `${primary}`;
     }
-  } else if (segment.children[PRIMARY_OUTLET] && !root) {
-    const children = [serializeSegment(segment.children[PRIMARY_OUTLET], false)];
-    forEach(segment.children, (v: UrlSegment, k: string) => {
-      if (k !== PRIMARY_OUTLET) {
-        children.push(`${k}:${serializeSegment(v, false)}`);
+
+  } else if (segment.hasChildren() && !root) {
+    const children = mapChildrenIntoArray(segment, (v: UrlSegment, k: string) => {
+      if (k === PRIMARY_OUTLET) {
+        return [serializeSegment(segment.children[PRIMARY_OUTLET], false)];
+      } else {
+        return [`${k}:${serializeSegment(v, false)}`];
       }
     });
     return `${serializePaths(segment)}/(${children.join('//')})`;
+
   } else {
     return serializePaths(segment);
-  }
-}
-
-function serializeChildren(segment: UrlSegment) {
-  if (segment.children[PRIMARY_OUTLET]) {
-    const primary = serializePaths(segment.children[PRIMARY_OUTLET]);
-
-    const secondary: string[] = [];
-    forEach(segment.children, (v: UrlSegment, k: string) => {
-      if (k !== PRIMARY_OUTLET) {
-        secondary.push(`${k}:${serializePaths(v)}${serializeChildren(v)}`);
-      }
-    });
-    const secondaryStr = secondary.length > 0 ? `(${secondary.join('//')})` : '';
-    const primaryChildren = serializeChildren(segment.children[PRIMARY_OUTLET]);
-    const primaryChildrenStr: string = primaryChildren ? `/${primaryChildren}` : '';
-    return `${primary}${secondaryStr}${primaryChildrenStr}`;
-  } else {
-    return '';
   }
 }
 
