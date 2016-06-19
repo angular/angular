@@ -19,8 +19,8 @@ describe('template codegen output', () => {
   }
 
   it('should apply the animate states to the element', (done) => {
-    const appInjector = ReflectiveInjector.resolveAndCreate(
-        BROWSER_APP_PROVIDERS, serverPlatform().injector);
+    const appInjector =
+        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, serverPlatform().injector);
     var comp = AnimateCmpNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
 
@@ -47,8 +47,8 @@ describe('template codegen output', () => {
   });
 
   it('should apply the default animate state to the element', (done) => {
-    const appInjector = ReflectiveInjector.resolveAndCreate(
-        BROWSER_APP_PROVIDERS, serverPlatform().injector);
+    const appInjector =
+        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, serverPlatform().injector);
     var comp = AnimateCmpNgFactory.create(appInjector);
     var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
 
