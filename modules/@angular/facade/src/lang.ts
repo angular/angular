@@ -216,7 +216,7 @@ export class StringWrapper {
     return s.slice(from, to === null ? undefined : to);
   }
 
-  static replaceAllMapped(s: string, from: RegExp, cb: Function): string {
+  static replaceAllMapped(s: string, from: RegExp, cb: (m: string[]) => string): string {
     return s.replace(from, function(...matches: any[]) {
       // Remove offset & string from the result array
       matches.splice(-2, 2);

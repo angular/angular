@@ -51,14 +51,14 @@ export class ReplacePipe implements PipeTransform {
     if (!this._supportedReplacement(replacement)) {
       throw new InvalidPipeArgumentException(ReplacePipe, replacement);
     }
-    // template fails with literal RegExp e.g /pattern/igm
-    // var rgx = pattern instanceof RegExp ? pattern : RegExpWrapper.create(pattern);
 
     if (isFunction(replacement)) {
-      var rgxPattern = isString(pattern) ? RegExpWrapper.create(<string>pattern) : <RegExp>pattern;
+      const rgxPattern = isString(pattern) ? RegExpWrapper.create(pattern) : pattern;
 
-      return StringWrapper.replaceAllMapped(input, rgxPattern, <Function>replacement);
+      return StringWrapper.replaceAllMapped(
+          input, rgxPattern, <(m: string[]) => string>replacement);
     }
+
     if (pattern instanceof RegExp) {
       // use the replaceAll variant
       return StringWrapper.replaceAll(input, pattern, <string>replacement);

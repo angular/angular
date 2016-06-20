@@ -10,16 +10,23 @@ export function main() {
       it('should return an empty message bundle for an empty list of messages',
          () => { expect(serializeXmb([])).toEqual('<message-bundle></message-bundle>'); });
 
-      it('should serializeXmb messages without desc', () => {
-        let m = new Message('content', 'meaning', null);
+      it('should serialize messages without desc nor meaning', () => {
+        let m = new Message('content', null, null);
         let expected = `<message-bundle><msg id='${id(m)}'>content</msg></message-bundle>`;
         expect(serializeXmb([m])).toEqual(expected);
       });
 
-      it('should serializeXmb messages with desc', () => {
+      it('should serialize messages with desc and meaning', () => {
         let m = new Message('content', 'meaning', 'description');
         let expected =
-            `<message-bundle><msg id='${id(m)}' desc='description'>content</msg></message-bundle>`;
+            `<message-bundle><msg id='${id(m)}' desc='description' meaning='meaning'>content</msg></message-bundle>`;
+        expect(serializeXmb([m])).toEqual(expected);
+      });
+
+      it('should escape the desc and meaning', () => {
+        let m = new Message('content', '"\'&<>"\'&<>', '"\'&<>"\'&<>');
+        let expected =
+            `<message-bundle><msg id='${id(m)}' desc='&quot;&apos;&amp;&lt;&gt;&quot;&apos;&amp;&lt;&gt;' meaning='&quot;&apos;&amp;&lt;&gt;&quot;&apos;&amp;&lt;&gt;'>content</msg></message-bundle>`;
         expect(serializeXmb([m])).toEqual(expected);
       });
     });
