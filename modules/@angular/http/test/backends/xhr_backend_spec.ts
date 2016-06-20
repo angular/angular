@@ -181,13 +181,30 @@ export function main() {
            existingXHRs[0].dispatchEvent('error');
          }));
 
+      it('should set the status text and status code on error',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(),
+               new ResponseOptions({type: ResponseType.Error}));
+           connection.response.subscribe(null, (res: Response) => {
+             expect(res.type).toBe(ResponseType.Error);
+             expect(res.status).toEqual(0);
+             expect(res.statusText).toEqual('');
+             async.done();
+           });
+           const xhr = existingXHRs[0];
+           // status=0 with a text='' is common for CORS errors
+           xhr.setStatusCode(0);
+           xhr.setStatusText('');
+           xhr.dispatchEvent('error');
+         }));
+
       it('should call open with method and url when subscribed to', () => {
         var connection = new XHRConnection(sampleRequest, new MockBrowserXHR());
         expect(openSpy).not.toHaveBeenCalled();
         connection.response.subscribe();
         expect(openSpy).toHaveBeenCalledWith('GET', sampleRequest.url);
       });
-
 
       it('should call send on the backend with request body when subscribed to', () => {
         var body = 'Some body to love';
