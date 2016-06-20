@@ -1,5 +1,5 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing/testing_internal';
-import {fakeAsync, flushMicrotasks, Log, tick, containsRegexp} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, Log, tick} from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {isBlank} from '../../src/facade/lang';
 import {Type, ViewContainerRef, TemplateRef, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, Directive, Component, DebugElement, forwardRef, Input, PipeTransform, Attribute, ViewMetadata, provide, Optional, Inject, Self, InjectMetadata, Pipe, Host, SkipSelfMetadata} from '@angular/core';
@@ -58,8 +58,6 @@ class SimpleDirective {
 @Component({selector: '[simpleComponent]', template: '', directives: ALL_DIRECTIVES})
 class SimpleComponent {
 }
-
-class SimpleService {}
 
 @Directive({selector: '[someOtherDirective]'})
 class SomeOtherDirective {
@@ -398,7 +396,7 @@ export function main() {
                    '<div simpleComponent needsService></div>',
                    tcb.overrideViewProviders(
                        SimpleComponent, [{provide: 'service', useValue: 'service'}])))
-               .toThrowError(containsRegexp(`No provider for service!`));
+               .toThrowError(/No provider for service!/);
          }));
 
       it('should instantiate directives that depend on providers of other directives',
@@ -510,7 +508,7 @@ export function main() {
 
       it('should throw when a dependency cannot be resolved', fakeAsync(() => {
            expect(() => createComp('<div needsService></div>', tcb))
-               .toThrowError(containsRegexp(`No provider for service!`));
+               .toThrowError(/No provider for service!/);
          }));
 
       it('should inject null when an optional dependency cannot be resolved', fakeAsync(() => {
@@ -624,7 +622,7 @@ export function main() {
 
       it('should throw if there is no TemplateRef', fakeAsync(() => {
            expect(() => createComp('<div needsTemplateRef></div>', tcb))
-               .toThrowError(containsRegexp(`No provider for TemplateRef!`));
+               .toThrowError(/No provider for TemplateRef!/);
          }));
 
       it('should inject null if there is no TemplateRef when the dependency is optional',

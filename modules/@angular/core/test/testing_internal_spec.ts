@@ -1,14 +1,13 @@
 import {SpyObject} from '@angular/core/testing/testing_internal';
 
 import {MapWrapper} from '../../platform-browser/src/facade/collection';
-import {RegExpWrapper} from '../../router-deprecated/src/facade/lang';
-import {beforeEach, containsRegexp, ddescribe, describe, expect, iit, it, tick} from '../testing';
+import {beforeEach, ddescribe, describe, expect, iit, it, tick} from '../testing';
 
 class TestObj {
-  prop: any /** TODO #9100 */;
-  constructor(prop: any /** TODO #9100 */) { this.prop = prop; }
+  prop: any;
+  constructor(prop: any) { this.prop = prop; }
   someFunc(): number { return -1; }
-  someComplexFunc(a: any /** TODO #9100 */) { return a; }
+  someComplexFunc(a: any) { return a; }
 }
 
 class SpyTestObj extends SpyObject {
@@ -117,18 +116,5 @@ export function main() {
       });
     });
 
-    describe('containsRegexp', () => {
-
-      it('should allow any prefix and suffix', () => {
-        expect(RegExpWrapper.firstMatch(containsRegexp('b'), 'abc')).toBeTruthy();
-        expect(RegExpWrapper.firstMatch(containsRegexp('b'), 'adc')).toBeFalsy();
-      });
-
-      it('should match various special characters', () => {
-        expect(RegExpWrapper.firstMatch(containsRegexp('a.b'), 'a.b')).toBeTruthy();
-        expect(RegExpWrapper.firstMatch(containsRegexp('axb'), 'a.b')).toBeFalsy();
-      });
-
-    });
   });
 }

@@ -1,5 +1,5 @@
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {containsRegexp, fakeAsync, tick, clearPendingTimers} from '@angular/core/testing';
+import {fakeAsync, tick, clearPendingTimers} from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -1663,7 +1663,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
                      .createAsync(MyComp)
                      .then((fixture) => {
-                       expect(() => fixture.detectChanges()).toThrowError(containsRegexp(`:0:5`));
+                       expect(() => fixture.detectChanges()).toThrowError(/:0:5/);
                        async.done();
                      })}));
 
@@ -1676,7 +1676,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
                      .createAsync(MyComp)
                      .then((fixture) => {
-                       expect(() => fixture.detectChanges()).toThrowError(containsRegexp(`:0:5`));
+                       expect(() => fixture.detectChanges()).toThrowError(/:0:5/);
                        async.done();
                      })}));
 
@@ -1692,7 +1692,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
                      .createAsync(MyComp)
                      .then((fixture) => {
-                       expect(() => fixture.detectChanges()).toThrowError(containsRegexp(`:0:11`));
+                       expect(() => fixture.detectChanges()).toThrowError(/:0:11/);
                        async.done();
                      })}));
     });

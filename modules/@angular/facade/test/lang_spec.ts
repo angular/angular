@@ -1,5 +1,5 @@
 import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing';
-import {NumberWrapper, RegExpMatcherWrapper, RegExpWrapper, StringWrapper, hasConstructor, isPresent, resolveEnumToken} from '../src/lang';
+import {NumberWrapper, RegExpMatcherWrapper, RegExpWrapper, StringWrapper, escapeRegExp, hasConstructor, isPresent, resolveEnumToken} from '../src/lang';
 
 enum UsefulEnum {
   MyToken,
@@ -14,7 +14,7 @@ export function main() {
     it('should expose the index for each match', () => {
       var re = /(!)/g;
       var matcher = RegExpWrapper.matcher(re, '0!23!567!!');
-      var indexes: any[] /** TODO #9100 */ = [];
+      var indexes: number[] = [];
       var m: any /** TODO #9100 */;
 
       while (isPresent(m = RegExpMatcherWrapper.next(matcher))) {
@@ -41,6 +41,14 @@ export function main() {
           RegExpWrapper.replaceAll(re, 'a1b2c', (match: any /** TODO #9100 */) => `!${match[1]}!`);
       expect(m).toEqual('a!1!b!2!c');
     });
+
+    it('should escape regexp', () => {
+      expect(RegExpWrapper.firstMatch(new RegExp(escapeRegExp('b')), 'abc')).toBeTruthy();
+      expect(RegExpWrapper.firstMatch(new RegExp(escapeRegExp('b')), 'adc')).toBeFalsy();
+      expect(RegExpWrapper.firstMatch(new RegExp(escapeRegExp('a.b')), 'a.b')).toBeTruthy();
+      expect(RegExpWrapper.firstMatch(new RegExp(escapeRegExp('axb')), 'a.b')).toBeFalsy();
+    });
+
   });
 
   describe('const', () => {
@@ -73,7 +81,7 @@ export function main() {
   });
 
   describe('String', () => {
-    var s: any /** TODO #9100 */;
+    var s: string;
 
     describe('slice', () => {
       beforeEach(() => { s = 'abcdefghij'; });

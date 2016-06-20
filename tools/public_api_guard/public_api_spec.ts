@@ -638,7 +638,6 @@ const CORE_TESTING = [
   'beforeEach(fn:Function):void',
   'beforeEachProviders(fn:() => Array<any>):void',
   'clearPendingTimers():void',
-  'containsRegexp(input:string):RegExp',
   'discardPeriodicTasks():void',
   'fakeAsync(fn:Function):Function',
   'fit(name:string, fn:Function, timeOut:number=null):void',
