@@ -7,6 +7,8 @@ pubspec.lock
 .packages
 
 /dist/
+/modules/@angular/router/dist
+/modules/@angular/router/typings
 .buildlog
 node_modules
 bower_components
