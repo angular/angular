@@ -1,21 +1,26 @@
-import {DefaultUrlSerializer} from '../src/url_serializer';
-import {UrlTree, UrlSegment} from '../src/url_tree';
-import {TreeNode} from '../src/utils/tree';
-import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {ActivatedRoute, RouterState, RouterStateSnapshot, createEmptyState, advanceActivatedRoute} from '../src/router_state';
+import {RouterConfig} from '../src/config';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
-import {RouterConfig} from '../src/config';
+import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from '../src/router_state';
+import {PRIMARY_OUTLET, Params} from '../src/shared';
+import {DefaultUrlSerializer} from '../src/url_serializer';
+import {UrlSegment, UrlTree} from '../src/url_tree';
+import {TreeNode} from '../src/utils/tree';
 
 describe('create router state', () => {
-  const emptyState = () => createEmptyState(new UrlTree(new UrlSegment([], {}), {}, null), RootComponent);
+  const emptyState = () =>
+      createEmptyState(new UrlTree(new UrlSegment([], {}), {}, null), RootComponent);
 
   it('should work create new state', () => {
-    const state = createRouterState(createState([
-      {path: 'a', component: ComponentA},
-      {path: 'b', component: ComponentB, outlet: 'left'},
-      {path: 'c', component: ComponentC, outlet: 'right'}
-    ], "a(left:b//right:c)"), emptyState());
+    const state = createRouterState(
+        createState(
+            [
+              {path: 'a', component: ComponentA},
+              {path: 'b', component: ComponentB, outlet: 'left'},
+              {path: 'c', component: ComponentC, outlet: 'right'}
+            ],
+            'a(left:b//right:c)'),
+        emptyState());
 
     checkActivatedRoute(state.root, RootComponent);
 
@@ -27,14 +32,13 @@ describe('create router state', () => {
 
   it('should reuse existing nodes when it can', () => {
     const config = [
-      {path: 'a', component: ComponentA},
-      {path: 'b', component: ComponentB, outlet: 'left'},
+      {path: 'a', component: ComponentA}, {path: 'b', component: ComponentB, outlet: 'left'},
       {path: 'c', component: ComponentC, outlet: 'left'}
     ];
 
-    const prevState = createRouterState(createState(config, "a(left:b)"), emptyState());
+    const prevState = createRouterState(createState(config, 'a(left:b)'), emptyState());
     advanceState(prevState);
-    const state = createRouterState(createState(config, "a(left:c)"), prevState);
+    const state = createRouterState(createState(config, 'a(left:c)'), prevState);
 
     expect(prevState.root).toBe(state.root);
     const prevC = prevState.children(prevState.root);
@@ -46,17 +50,17 @@ describe('create router state', () => {
   });
 
   it('should handle componentless routes', () => {
-    const config = [
-      { path: 'a/:id', children: [
-        { path: 'b', component: ComponentA },
-        { path: 'c', component: ComponentB, outlet: 'right' }
-      ] }
-    ];
+    const config = [{
+      path: 'a/:id',
+      children: [
+        {path: 'b', component: ComponentA}, {path: 'c', component: ComponentB, outlet: 'right'}
+      ]
+    }];
 
 
-    const prevState = createRouterState(createState(config, "a/1;p=11/(b//right:c)"), emptyState());
+    const prevState = createRouterState(createState(config, 'a/1;p=11/(b//right:c)'), emptyState());
     advanceState(prevState);
-    const state = createRouterState(createState(config, "a/2;p=22/(b//right:c)"), prevState);
+    const state = createRouterState(createState(config, 'a/2;p=22/(b//right:c)'), prevState);
 
     expect(prevState.root).toBe(state.root);
     const prevP = prevState.firstChild(prevState.root);
@@ -87,7 +91,8 @@ function createState(config: RouterConfig, url: string): RouterStateSnapshot {
   return res;
 }
 
-function checkActivatedRoute(actual: ActivatedRoute, cmp: Function, outlet: string = PRIMARY_OUTLET):void {
+function checkActivatedRoute(
+    actual: ActivatedRoute, cmp: Function, outlet: string = PRIMARY_OUTLET): void {
   if (actual === null) {
     expect(actual).toBeDefined();
   } else {
