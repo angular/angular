@@ -77,8 +77,8 @@ do
     find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i    -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
     find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i    -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
   else
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i '' -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i '' -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
+    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i'' -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
+    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i'' -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
   fi
 
   if [[ ${PACKAGE} != compiler-cli ]]; then
