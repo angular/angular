@@ -1,10 +1,7 @@
 import {EventEmitter, Observable, ObservableWrapper} from '../facade/async';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {isBlank, isPresent, normalizeBool} from '../facade/lang';
-import {PromiseWrapper} from '../facade/promise';
-
+import {isBlank, isPresent, isPromise, normalizeBool} from '../facade/lang';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-
 
 /**
  * Indicates that a Control is valid, i.e. that no errors exist in the input value.
@@ -47,7 +44,7 @@ function _find(control: AbstractControl, path: Array<string|number>| string) {
 }
 
 function toObservable(r: any): Observable<any> {
-  return PromiseWrapper.isPromise(r) ? ObservableWrapper.fromPromise(r) : r;
+  return isPromise(r) ? ObservableWrapper.fromPromise(r) : r;
 }
 
 /**
