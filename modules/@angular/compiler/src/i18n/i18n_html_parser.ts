@@ -4,6 +4,7 @@ import {BaseException} from '../facade/exceptions';
 import {NumberWrapper, RegExpWrapper, isPresent} from '../facade/lang';
 import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../html_ast';
 import {HtmlParseTreeResult, HtmlParser} from '../html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../interpolation_config';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import {expandNodes} from './expander';
@@ -96,15 +97,19 @@ let _PLACEHOLDER_EXPANDED_REGEXP = /<ph(\s)+name=("(\w)+")><\/ph>/gi;
  */
 export class I18nHtmlParser implements HtmlParser {
   errors: ParseError[];
+  private _interpolationConfig: InterpolationConfig;
 
   constructor(
       private _htmlParser: HtmlParser, private _parser: Parser, private _messagesContent: string,
       private _messages: {[key: string]: HtmlAst[]}, private _implicitTags: string[],
       private _implicitAttrs: {[k: string]: string[]}) {}
 
-  parse(sourceContent: string, sourceUrl: string, parseExpansionForms: boolean = false):
+  parse(
+      sourceContent: string, sourceUrl: string, parseExpansionForms: boolean = false,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG):
       HtmlParseTreeResult {
     this.errors = [];
+    this._interpolationConfig = interpolationConfig;
 
     let res = this._htmlParser.parse(sourceContent, sourceUrl, true);
 
@@ -134,7 +139,7 @@ export class I18nHtmlParser implements HtmlParser {
   }
 
   private _mergeI18Part(part: Part): HtmlAst[] {
-    let message = part.createMessage(this._parser);
+    let message = part.createMessage(this._parser, this._interpolationConfig);
     let messageId = id(message);
     if (!StringMapWrapper.contains(this._messages, messageId)) {
       throw new I18nError(
@@ -240,8 +245,8 @@ export class I18nHtmlParser implements HtmlParser {
   }
 
   private _mergeTextInterpolation(t: HtmlElementAst, originalNode: HtmlTextAst): HtmlTextAst {
-    let split =
-        this._parser.splitInterpolation(originalNode.value, originalNode.sourceSpan.toString());
+    let split = this._parser.splitInterpolation(
+        originalNode.value, originalNode.sourceSpan.toString(), this._interpolationConfig);
     let exps = isPresent(split) ? split.expressions : [];
 
     let messageSubstring =
@@ -277,9 +282,9 @@ export class I18nHtmlParser implements HtmlParser {
           res.push(attr);
           return;
         }
-        message = messageFromAttribute(this._parser, attr);
+        message = messageFromAttribute(this._parser, this._interpolationConfig, attr);
       } else {
-        message = messageFromI18nAttribute(this._parser, el, i18ns[0]);
+        message = messageFromI18nAttribute(this._parser, this._interpolationConfig, el, i18ns[0]);
       }
 
       let messageId = id(message);
@@ -298,7 +303,8 @@ export class I18nHtmlParser implements HtmlParser {
   }
 
   private _replaceInterpolationInAttr(attr: HtmlAttrAst, msg: HtmlAst[]): string {
-    let split = this._parser.splitInterpolation(attr.value, attr.sourceSpan.toString());
+    let split = this._parser.splitInterpolation(
+        attr.value, attr.sourceSpan.toString(), this._interpolationConfig);
     let exps = isPresent(split) ? split.expressions : [];
 
     let first = msg[0];
@@ -336,7 +342,7 @@ export class I18nHtmlParser implements HtmlParser {
   private _convertIntoExpression(
       name: string, expMap: Map<string, string>, sourceSpan: ParseSourceSpan) {
     if (expMap.has(name)) {
-      return `{{${expMap.get(name)}}}`;
+      return `${this._interpolationConfig.start}${expMap.get(name)}${this._interpolationConfig.end}`;
     } else {
       throw new I18nError(sourceSpan, `Invalid interpolation name '${name}'`);
     }

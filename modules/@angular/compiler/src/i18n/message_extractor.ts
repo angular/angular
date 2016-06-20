@@ -3,6 +3,7 @@ import {StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {HtmlAst, HtmlElementAst} from '../html_ast';
 import {HtmlParser} from '../html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../interpolation_config';
 import {ParseError} from '../parse_util';
 
 import {expandNodes} from './expander';
@@ -92,14 +93,18 @@ export function removeDuplicates(messages: Message[]): Message[] {
 export class MessageExtractor {
   private _messages: Message[];
   private _errors: ParseError[];
+  private _interpolationConfig: InterpolationConfig;
 
   constructor(
       private _htmlParser: HtmlParser, private _parser: Parser, private _implicitTags: string[],
       private _implicitAttrs: {[k: string]: string[]}) {}
 
-  extract(template: string, sourceUrl: string): ExtractionResult {
+  extract(
+      template: string, sourceUrl: string,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ExtractionResult {
     this._messages = [];
     this._errors = [];
+    this._interpolationConfig = interpolationConfig;
 
     let res = this._htmlParser.parse(template, sourceUrl, true);
     if (res.errors.length > 0) {
@@ -113,7 +118,7 @@ export class MessageExtractor {
 
   private _extractMessagesFromPart(part: Part): void {
     if (part.hasI18n) {
-      this._messages.push(part.createMessage(this._parser));
+      this._messages.push(part.createMessage(this._parser, this._interpolationConfig));
       this._recurseToExtractMessagesFromAttributes(part.children);
     } else {
       this._recurse(part.children);
@@ -148,7 +153,8 @@ export class MessageExtractor {
     p.attrs.filter(attr => attr.name.startsWith(I18N_ATTR_PREFIX)).forEach(attr => {
       try {
         explicitAttrs.push(attr.name.substring(I18N_ATTR_PREFIX.length));
-        this._messages.push(messageFromI18nAttribute(this._parser, p, attr));
+        this._messages.push(
+            messageFromI18nAttribute(this._parser, this._interpolationConfig, p, attr));
       } catch (e) {
         if (e instanceof I18nError) {
           this._errors.push(e);
@@ -161,6 +167,8 @@ export class MessageExtractor {
     p.attrs.filter(attr => !attr.name.startsWith(I18N_ATTR_PREFIX))
         .filter(attr => explicitAttrs.indexOf(attr.name) == -1)
         .filter(attr => transAttrs.indexOf(attr.name) > -1)
-        .forEach(attr => this._messages.push(messageFromAttribute(this._parser, attr)));
+        .forEach(
+            attr => this._messages.push(
+                messageFromAttribute(this._parser, this._interpolationConfig, attr)));
   }
 }

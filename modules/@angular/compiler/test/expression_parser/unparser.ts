@@ -1,12 +1,15 @@
 import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '../../src/expression_parser/ast';
 import {StringWrapper, isPresent, isString} from '../../src/facade/lang';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/interpolation_config';
 
 export class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;
   private _expression: string;
+  private _interpolationConfig: InterpolationConfig;
 
-  unparse(ast: AST) {
+  unparse(ast: AST, interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {
     this._expression = '';
+    this._interpolationConfig = interpolationConfig;
     this._visit(ast);
     return this._expression;
   }
@@ -74,9 +77,9 @@ export class Unparser implements AstVisitor {
     for (let i = 0; i < ast.strings.length; i++) {
       this._expression += ast.strings[i];
       if (i < ast.expressions.length) {
-        this._expression += '{{ ';
+        this._expression += `${this._interpolationConfig.start} `;
         this._visit(ast.expressions[i]);
-        this._expression += ' }}';
+        this._expression += ` ${this._interpolationConfig.end}`;
       }
     }
   }

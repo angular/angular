@@ -16,3 +16,24 @@ export function assertArrayOfStrings(identifier: string, value: any) {
     }
   }
 }
+
+const INTERPOLATION_BLACKLIST_REGEXPS = [
+  /^\s*$/g,     // empty
+  /[<>]/g,      // html tag
+  /^[\{\}]$/g,  // i18n expansion
+];
+
+export function assertInterpolationSymbols(identifier: string, value: any): void {
+  if (isDevMode() && !isBlank(value) && (!isArray(value) || value.length != 2)) {
+    throw new BaseException(`Expected '${identifier}' to be an array, [start, end].`);
+  } else if (isDevMode() && !isBlank(value)) {
+    const start = value[0] as string;
+    const end = value[1] as string;
+    // black list checking
+    INTERPOLATION_BLACKLIST_REGEXPS.forEach(regexp => {
+      if (regexp.test(start) || regexp.test(end)) {
+        throw new BaseException(`['${start}', '${end}'] contains unusable interpolation symbol.`);
+      }
+    });
+  }
+}
