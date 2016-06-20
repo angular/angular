@@ -85,8 +85,9 @@ function _id(el: HtmlElementAst): string {
 }
 
 function _serializeMessage(m: Message): string {
-  let desc = isPresent(m.description) ? ` desc='${m.description}'` : '';
-  return `<msg id='${id(m)}'${desc}>${m.content}</msg>`;
+  const desc = isPresent(m.description) ? ` desc='${_escapeXml(m.description)}'` : '';
+  const meaning = isPresent(m.meaning) ? ` meaning='${_escapeXml(m.meaning)}'` : '';
+  return `<msg id='${id(m)}'${desc}${meaning}>${m.content}</msg>`;
 }
 
 function _expandPlaceholder(input: string): string {
@@ -94,4 +95,16 @@ function _expandPlaceholder(input: string): string {
     let nameWithQuotes = match[2];
     return `<ph name=${nameWithQuotes}></ph>`;
   });
+}
+
+const _XML_ESCAPED_CHARS: [RegExp, string][] = [
+  [/&/g, '&amp;'],
+  [/"/g, '&quot;'],
+  [/'/g, '&apos;'],
+  [/</g, '&lt;'],
+  [/>/g, '&gt;'],
+];
+
+function _escapeXml(value: string): string {
+  return _XML_ESCAPED_CHARS.reduce((value, escape) => value.replace(escape[0], escape[1]), value);
 }
