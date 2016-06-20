@@ -14,8 +14,6 @@
     "devsetup": "typings install",
     "rewrite_npm_package": "node --harmony_destructuring tools/rewrite-published-package.js",
     "build_bundle": "cp -r src router && tsc typings/index.d.ts src/router.ts --rootDir . --module system -t es5 --outFile dist/bundles/router.js  --moduleResolution node --emitDecoratorMetadata --experimentalDecorators",
-    "lint": "tslint \"src/**/*.ts\"",
-    "format": "clang-format -style=file -i --glob=src/**/*.ts"
   },
   "keywords": [
     "angular2",
@@ -24,14 +22,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/angular/vladivostok.git"
+    "url": "git+https://github.com/angular/angular.git"
   },
   "author": "vsavkin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/angular/vladivostok/issues"
+    "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/vladivostok#readme",
+  "homepage": "https://github.com/angular/angular#readme",
   "dependencies": {
     "@angular/common": "^2.0.0-rc.2",
     "@angular/compiler": "^2.0.0-rc.2",
