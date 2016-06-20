@@ -50,7 +50,7 @@ import {TemplateParser} from './template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {RuntimeMetadataResolver} from './runtime_metadata';
 import {ComponentFactory} from 'angular2/src/core/linker/component_factory';
-import {InjectorFactory} from 'angular2/src/core/linker/injector_factory';
+import {CodegenInjectorFactory} from 'angular2/src/core/linker/injector_factory';
 import {
   ComponentResolver,
   ReflectorComponentResolver
@@ -83,7 +83,7 @@ export class RuntimeCompiler implements ComponentResolver {
               private _injectorCompiler: InjectorCompiler, private _genConfig: CompilerConfig) {}
 
   createInjectorFactory(moduleClass: Type,
-                        extraProviders: any[] = CONST_EXPR([])): InjectorFactory<any> {
+                        extraProviders: any[] = CONST_EXPR([])): CodegenInjectorFactory<any> {
     var injectorModuleMeta =
         this._runtimeMetadataResolver.getInjectorModuleMetadata(moduleClass, extraProviders);
     var compileResult = this._injectorCompiler.compileInjector(injectorModuleMeta);

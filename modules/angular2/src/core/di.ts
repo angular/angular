@@ -19,7 +19,7 @@ export * from './di/decorators';
 
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
 
-export {Injector, MapInjector} from './di/injector';
+export {Injector, InjectorFactory} from './di/injector';
 export {ReflectiveInjector} from './di/reflective_injector';
 export {
   Binding,
@@ -47,3 +47,4 @@ export {
   OutOfBoundsError
 } from './di/reflective_exceptions';
 export {OpaqueToken} from './di/opaque_token';
+export {MapInjector, MapInjectorFactory} from './di/map_injector';

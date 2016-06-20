@@ -20,7 +20,7 @@ export abstract class CodegenInjector<MODULE> implements Injector {
 }
 
 @CONST()
-export class InjectorFactory<MODULE> {
+export class CodegenInjectorFactory<MODULE> {
   constructor(private _injectorFactory: (parent: Injector, mainModule: MODULE) => Injector) {}
 
   create(parent: Injector = null, mainModule: MODULE = null): Injector {

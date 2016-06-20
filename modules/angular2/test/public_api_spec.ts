@@ -199,6 +199,7 @@ var NG_CORE = [
   'InjectableMetadata',
   'Injector',
   'MapInjector',
+  'MapInjectorFactory',
   'InjectorFactory',
   'ReflectiveInjector',
   'InstantiationError',
