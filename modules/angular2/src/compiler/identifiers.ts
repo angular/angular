@@ -26,7 +26,7 @@ import {QueryList} from 'angular2/src/core/linker';
 import {Injector} from 'angular2/src/core/di/injector';
 import {TemplateRef, TemplateRef_} from 'angular2/src/core/linker/template_ref';
 import {MODULE_SUFFIX} from './util';
-import {CodegenInjector, InjectorFactory} from 'angular2/src/core/linker/injector_factory';
+import {CodegenInjector, CodegenInjectorFactory} from 'angular2/src/core/linker/injector_factory';
 
 var APP_VIEW_MODULE_URL = 'asset:angular2/lib/src/core/linker/view' + MODULE_SUFFIX;
 var VIEW_UTILS_MODULE_URL = 'asset:angular2/lib/src/core/linker/view_utils' + MODULE_SUFFIX;
@@ -50,7 +50,7 @@ var impTemplateRef_ = TemplateRef_;
 var impValueUnwrapper = ValueUnwrapper;
 var impInjector = Injector;
 var impCodegenInjector = CodegenInjector;
-var impInjectorFactory = InjectorFactory;
+var impCodegenInjectorFactory = CodegenInjectorFactory;
 var impViewEncapsulation = ViewEncapsulation;
 var impViewType = ViewType;
 var impChangeDetectionStrategy = ChangeDetectionStrategy;
@@ -122,9 +122,9 @@ export class Identifiers {
     runtime: impInjector
   });
   static InjectorFactory = new CompileIdentifierMetadata({
-    name: 'InjectorFactory',
+    name: 'CodegenInjectorFactory',
     moduleUrl: `asset:angular2/lib/src/core/linker/injector_factory${MODULE_SUFFIX}`,
-    runtime: impInjectorFactory
+    runtime: impCodegenInjectorFactory
   });
   static CodegenInjector = new CompileIdentifierMetadata({
     name: 'CodegenInjector',

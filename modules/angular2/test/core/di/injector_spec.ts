@@ -1,6 +1,5 @@
 import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/testing_internal';
-import {Injector, MapInjector} from 'angular2/core';
-import {MapWrapper} from 'angular2/src/facade/collection';
+import {Injector, InjectorFactory} from 'angular2/core';
 
 export function main() {
   describe('Injector.NULL', () => {
@@ -15,32 +14,10 @@ export function main() {
        () => { expect(Injector.NULL.get('someToken', 'notFound')).toEqual('notFound'); });
   });
 
-  describe('MapInjector', () => {
-    it('should throw if not found', () => {
-      expect(() => new MapInjector(null, new Map<any, any>()).get('someToken'))
-          .toThrowError('No provider for someToken!');
-    });
+  describe('InjectorFactory.EMPTY', () => {
+    it('should return Injector.NULL if no parent is given',
+       () => { expect(InjectorFactory.EMPTY.create()).toBe(Injector.NULL); });
 
-    it('should return the default value', () => {
-      expect(new MapInjector(null, new Map<any, any>()).get('someToken', 'notFound'))
-          .toEqual('notFound');
-    });
-
-    it('should return a value from the map', () => {
-      expect(new MapInjector(null, MapWrapper.createFromPairs([['someToken', 'someValue']]))
-                 .get('someToken'))
-          .toEqual('someValue');
-    });
-
-    it('should return the injector', () => {
-      var injector = new MapInjector(null, new Map<any, any>());
-      expect(injector.get(Injector)).toBe(injector);
-    });
-
-    it('should delegate to the parent', () => {
-      var parent = new MapInjector(null, MapWrapper.createFromPairs([['someToken', 'someValue']]));
-      expect(new MapInjector(parent, new Map<any, any>()).get('someToken')).toEqual('someValue');
-    });
 
   });
 }

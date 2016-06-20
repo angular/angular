@@ -44,7 +44,7 @@ import {
   ComponentRef_,
   ComponentRef
 } from 'angular2/src/core/linker/component_factory';
-import {InjectorFactory} from 'angular2/src/core/linker/injector_factory';
+import {CodegenInjectorFactory} from 'angular2/src/core/linker/injector_factory';
 import {ExceptionHandler} from 'angular2/src/facade/exception_handler';
 
 export function main() {
@@ -169,7 +169,7 @@ class _MockComponentResolver implements ComponentResolver {
     return PromiseWrapper.resolve(this._compFactory);
   }
 
-  createInjectorFactory(injectorModule: Type, extraProviders?: any[]): InjectorFactory<any> {
+  createInjectorFactory(injectorModule: Type, extraProviders?: any[]): CodegenInjectorFactory<any> {
     return unimplemented();
   }
 

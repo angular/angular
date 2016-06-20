@@ -4,7 +4,7 @@ import {BaseException, unimplemented} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ComponentFactory} from './component_factory';
-import {InjectorFactory} from './injector_factory';
+import {CodegenInjectorFactory} from './injector_factory';
 
 /**
  * Low-level service for loading {@link ComponentFactory}s, which
@@ -13,7 +13,7 @@ import {InjectorFactory} from './injector_factory';
 export abstract class ComponentResolver {
   abstract resolveComponent(componentType: Type): Promise<ComponentFactory>;
   abstract createInjectorFactory(injectorModule: Type,
-                                 extraProviders?: any[]): InjectorFactory<any>;
+                                 extraProviders?: any[]): CodegenInjectorFactory<any>;
   abstract clearCache();
 }
 
@@ -33,7 +33,7 @@ export class ReflectorComponentResolver extends ComponentResolver {
     return PromiseWrapper.resolve(componentFactory);
   }
 
-  createInjectorFactory(injectorModule: Type, extraProviders?: any[]): InjectorFactory<any> {
+  createInjectorFactory(injectorModule: Type, extraProviders?: any[]): CodegenInjectorFactory<any> {
     return unimplemented();
   }
 
