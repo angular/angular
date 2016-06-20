@@ -1,4 +1,6 @@
 import {spawn} from 'child_process';
+import {platform} from 'os';
+import {normalize} from 'path';
 import {resolve} from 'url';
 
 enum State {
@@ -7,7 +9,7 @@ enum State {
   error
 }
 
-export const TSC = 'node_modules/typescript/bin/tsc';
+export const TSC = normalize('node_modules/.bin/tsc') + (/^win/.test(platform()) ? '.cmd' : '');
 export type Command = (stdIn: any, stdErr: any) => Promise<number>;
 
 export class TscWatch {
