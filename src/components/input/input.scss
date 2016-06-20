@@ -31,7 +31,7 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
  * Applies a floating placeholder above the input itself.
  */
 @mixin md-input-placeholder-floating {
-  visibility: visible;
+  display: block;
   padding-bottom: 5px;
   transform: translateY(-100%) scale(0.75);
 
@@ -103,7 +103,6 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
     left: 0;
     top: 0;
 
-    visibility: hidden;
     font-size: 100%;
     pointer-events: none;  // We shouldn't catch mouse events (let them through).
     color: $md-input-placeholder-color;
@@ -111,7 +110,7 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
 
     // Put ellipsis text overflow.
     width: 100%;
-    display: block;
+    display: none;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow-x: hidden;
@@ -123,7 +122,7 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
                 color $swift-ease-out-duration $swift-ease-out-timing-function;
 
     &.md-empty {
-      visibility: visible;
+      display: block;
       cursor: text;
     }
 
