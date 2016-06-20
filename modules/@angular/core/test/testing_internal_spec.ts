@@ -1,7 +1,7 @@
 import {SpyObject} from '@angular/core/testing/testing_internal';
 
 import {MapWrapper} from '../../platform-browser/src/facade/collection';
-import {RegExpWrapper} from '../../router/src/facade/lang';
+import {RegExpWrapper} from '../../router-deprecated/src/facade/lang';
 import {beforeEach, containsRegexp, ddescribe, describe, expect, iit, it, tick} from '../testing';
 
 class TestObj {

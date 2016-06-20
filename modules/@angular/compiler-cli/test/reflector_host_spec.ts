@@ -1,7 +1,7 @@
 import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import * as ts from 'typescript';
 
-import {ReflectorHost, ReflectorHostContext} from '../src/reflector_host';
+import {ReflectorHost} from '../src/reflector_host';
 
 import {Directory, Entry, MockCompilerHost, MockContext} from './mocks';
 
@@ -64,11 +64,13 @@ describe('reflector_host', () => {
   });
 
   it('should be able to produce a symbol for an exported symbol', () => {
-    expect(reflectorHost.findDeclaration('@angular/router', 'foo', 'main.ts')).toBeDefined();
+    expect(reflectorHost.findDeclaration('@angular/router-deprecated', 'foo', 'main.ts'))
+        .toBeDefined();
   });
 
   it('should be able to produce a symbol for values space only reference', () => {
-    expect(reflectorHost.findDeclaration('@angular/router/src/providers', 'foo', 'main.ts'))
+    expect(
+        reflectorHost.findDeclaration('@angular/router-deprecated/src/providers', 'foo', 'main.ts'))
         .toBeDefined();
   });
 
@@ -90,7 +92,7 @@ const FILES: Entry = {
     'src': {
       'main.ts': `
         import * as c from '@angular/core';
-        import * as r from '@angular/router';
+        import * as r from '@angular/router-deprecated';
         import * as u from './lib/utils';
         import * as cs from './lib/collections';
         import * as u2 from './lib2/utils2';
@@ -105,7 +107,8 @@ const FILES: Entry = {
           'core.d.ts': dummyModule,
           'core.metadata.json':
               `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
-          'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}}
+          'router-deprecated':
+              {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}}
         }
       }
     }

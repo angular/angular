@@ -1,8 +1,7 @@
 import {it, iit, xit, describe, ddescribe, xdescribe, expect, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing';
 import {async, fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
 
-import {ROUTER_FAKE_PROVIDERS} from '@angular/router/testing';
-import {ROUTER_DIRECTIVES, Routes, Route} from '@angular/router';
+import {ROUTER_DIRECTIVES, Route} from '@angular/router-deprecated';
 
 
 import {Component, bind} from '@angular/core';
@@ -37,10 +36,6 @@ class BadTemplateUrl {
       `<a [routerLink]="['One']">one</a> <a [routerLink]="['Two']">two</a><router-outlet></router-outlet>`,
   directives: [ROUTER_DIRECTIVES]
 })
-@Routes([
-  new Route({path: '/One', component: BadTemplateUrl}),
-  new Route({path: '/Two', component: ExternalTemplateComp}),
-])
 class TestRouterComponent {
 }
 
@@ -168,16 +163,5 @@ export function main() {
              })),
          10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
     });
-  });
-
-  describe('apps with router components', () => {
-    beforeEachProviders(() => [ROUTER_FAKE_PROVIDERS]);
-
-    it('should build without a problem',
-       async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         tcb.createAsync(TestRouterComponent).then((fixture) => {
-           expect(fixture.nativeElement).toHaveText('one two');
-         });
-       })));
   });
 }

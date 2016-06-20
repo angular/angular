@@ -3,7 +3,7 @@ set -ex -o pipefail
 
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,core,compiler,compiler-cli,http,router,router-deprecated,upgrade,platform-{browser,browser-dynamic,server}}
+  $(pwd)/dist/packages-dist/{common,core,compiler,compiler-cli,http,router-deprecated,upgrade,platform-{browser,browser-dynamic,server}}
 )
 
 TMPDIR=${TMPDIR:-/tmp/angular-build/}
