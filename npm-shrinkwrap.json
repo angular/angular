@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -8257,9 +8257,9 @@
       "resolved": "https://registry.npmjs.org/trim-newlines/-/trim-newlines-1.0.0.tgz"
     },
     "ts-api-guardian": {
-      "version": "0.0.3",
-      "from": "ts-api-guardian@0.0.3",
-      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.0.3.tgz",
+      "version": "0.0.4",
+      "from": "ts-api-guardian@0.0.4",
+      "resolved": "https://registry.npmjs.org/ts-api-guardian/-/ts-api-guardian-0.0.4.tgz",
       "dependencies": {
         "typescript": {
           "version": "1.7.3",
@@ -8295,6 +8295,7 @@
     "tsickle": {
       "version": "0.1.6",
       "from": "tsickle@0.1.6",
+      "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.1.6.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
