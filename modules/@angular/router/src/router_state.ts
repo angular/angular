@@ -120,6 +120,7 @@ export class ActivatedRouteSnapshot {
   /** @internal **/
   _urlSegment: UrlSegment;
 
+  /** @internal */
   _lastPathIndex: number;
 
   /**
