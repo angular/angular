@@ -5179,7 +5179,7 @@
       "version": "1.0.0"
     },
     "ts-api-guardian": {
-      "version": "0.0.3",
+      "version": "0.0.4",
       "dependencies": {
         "typescript": {
           "version": "1.7.3"
@@ -5620,5 +5620,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-rc.1"
+  "version": "2.0.0-rc.2"
 }
