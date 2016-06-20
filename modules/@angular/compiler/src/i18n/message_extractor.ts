@@ -91,7 +91,6 @@ export function removeDuplicates(messages: Message[]): Message[] {
 export class MessageExtractor {
   private _messages: Message[];
   private _errors: ParseError[];
-  private _interpolationConfig: InterpolationConfig;
 
   constructor(
       private _htmlParser: HtmlParser, private _parser: Parser, private _implicitTags: string[],
@@ -102,47 +101,48 @@ export class MessageExtractor {
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ExtractionResult {
     this._messages = [];
     this._errors = [];
-    this._interpolationConfig = interpolationConfig;
 
     const res = this._htmlParser.parse(template, sourceUrl, true);
 
     if (res.errors.length == 0) {
-      this._recurse(res.rootNodes);
+      this._recurse(res.rootNodes, interpolationConfig);
     }
 
     return new ExtractionResult(this._messages, this._errors.concat(res.errors));
   }
 
-  private _extractMessagesFromPart(part: Part): void {
+  private _extractMessagesFromPart(part: Part, interpolationConfig: InterpolationConfig): void {
     if (part.hasI18n) {
-      this._messages.push(part.createMessage(this._parser, this._interpolationConfig));
-      this._recurseToExtractMessagesFromAttributes(part.children);
+      this._messages.push(part.createMessage(this._parser, interpolationConfig));
+      this._recurseToExtractMessagesFromAttributes(part.children, interpolationConfig);
     } else {
-      this._recurse(part.children);
+      this._recurse(part.children, interpolationConfig);
     }
 
     if (isPresent(part.rootElement)) {
-      this._extractMessagesFromAttributes(part.rootElement);
+      this._extractMessagesFromAttributes(part.rootElement, interpolationConfig);
     }
   }
 
-  private _recurse(nodes: HtmlAst[]): void {
+  private _recurse(nodes: HtmlAst[], interpolationConfig: InterpolationConfig): void {
     if (isPresent(nodes)) {
       let parts = partition(nodes, this._errors, this._implicitTags);
-      parts.forEach(part => this._extractMessagesFromPart(part));
+      parts.forEach(part => this._extractMessagesFromPart(part, interpolationConfig));
     }
   }
 
-  private _recurseToExtractMessagesFromAttributes(nodes: HtmlAst[]): void {
+  private _recurseToExtractMessagesFromAttributes(
+      nodes: HtmlAst[], interpolationConfig: InterpolationConfig): void {
     nodes.forEach(n => {
       if (n instanceof HtmlElementAst) {
-        this._extractMessagesFromAttributes(n);
-        this._recurseToExtractMessagesFromAttributes(n.children);
+        this._extractMessagesFromAttributes(n, interpolationConfig);
+        this._recurseToExtractMessagesFromAttributes(n.children, interpolationConfig);
       }
     });
   }
 
-  private _extractMessagesFromAttributes(p: HtmlElementAst): void {
+  private _extractMessagesFromAttributes(
+      p: HtmlElementAst, interpolationConfig: InterpolationConfig): void {
     let transAttrs: string[] =
         isPresent(this._implicitAttrs[p.name]) ? this._implicitAttrs[p.name] : [];
     let explicitAttrs: string[] = [];
@@ -151,8 +151,7 @@ export class MessageExtractor {
     p.attrs.filter(attr => attr.name.startsWith(I18N_ATTR_PREFIX)).forEach(attr => {
       try {
         explicitAttrs.push(attr.name.substring(I18N_ATTR_PREFIX.length));
-        this._messages.push(
-            messageFromI18nAttribute(this._parser, this._interpolationConfig, p, attr));
+        this._messages.push(messageFromI18nAttribute(this._parser, interpolationConfig, p, attr));
       } catch (e) {
         if (e instanceof I18nError) {
           this._errors.push(e);
@@ -167,7 +166,7 @@ export class MessageExtractor {
         .filter(attr => explicitAttrs.indexOf(attr.name) == -1)
         .filter(attr => transAttrs.indexOf(attr.name) > -1)
         .forEach(
-            attr => this._messages.push(
-                messageFromAttribute(this._parser, this._interpolationConfig, attr)));
+            attr =>
+                this._messages.push(messageFromAttribute(this._parser, interpolationConfig, attr)));
   }
 }
