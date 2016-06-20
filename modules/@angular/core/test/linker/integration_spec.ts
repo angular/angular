@@ -1300,6 +1300,31 @@ function declareTests({useJit}: {useJit: boolean}) {
                      async.done();
                    });
              }));
+
+      it('should support custom interpolation',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               tcb.overrideView(
+                      MyComp, new ViewMetadata({
+                        template: `<div>{{ctxProp}}</div>
+<cmp-with-custom-interpolation-a></cmp-with-custom-interpolation-a>
+<cmp-with-custom-interpolation-b></cmp-with-custom-interpolation-b>`,
+                        directives: [
+                          ComponentWithCustomInterpolationA, ComponentWithCustomInterpolationB
+                        ]
+                      }))
+                   .createAsync(MyComp)
+                   .then((fixture) => {
+                     fixture.debugElement.componentInstance.ctxProp = 'Default Interpolation';
+
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement)
+                         .toHaveText(
+                             'Default Interpolation\nCustom Interpolation A\nCustom Interpolation B (Default Interpolation)');
+                     async.done();
+                   });
+             }));
     });
 
     describe('dependency injection', () => {
@@ -2021,6 +2046,32 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
     }
   });
+}
+
+
+@Component({selector: 'cmp-with-default-interpolation', template: `{{text}}`})
+class ComponentWithDefaultInterpolation {
+  text = 'Default Interpolation';
+}
+
+@Component({
+  selector: 'cmp-with-custom-interpolation-a',
+  template: `<div>{%text%}</div>`,
+  interpolation: ['{%', '%}']
+})
+class ComponentWithCustomInterpolationA {
+  text = 'Custom Interpolation A';
+}
+
+@Component({
+  selector: 'cmp-with-custom-interpolation-b',
+  template:
+      `<div>{**text%}</div> (<cmp-with-default-interpolation></cmp-with-default-interpolation>)`,
+  interpolation: ['{**', '%}'],
+  directives: [ComponentWithDefaultInterpolation]
+})
+class ComponentWithCustomInterpolationB {
+  text = 'Custom Interpolation B';
 }
 
 @Injectable()

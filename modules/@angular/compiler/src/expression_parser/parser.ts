@@ -2,15 +2,14 @@ import {Injectable} from '@angular/core';
 
 import {ListWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
-import {StringWrapper, isBlank, isPresent} from '../facade/lang';
+import {RegExpWrapper, StringWrapper, escapeRegExp, isBlank, isPresent} from '../facade/lang';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../interpolation_config';
 
 import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
 import {$COLON, $COMMA, $LBRACE, $LBRACKET, $LPAREN, $PERIOD, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, EOF, Lexer, Token, isIdentifier, isQuote} from './lexer';
 
 
 var _implicitReceiver = new ImplicitReceiver();
-// TODO(tbosch): Cannot make this const/final right now because of the transpiler...
-var INTERPOLATION_REGEXP = /\{\{([\s\S]*?)\}\}/g;
 
 class ParseException extends BaseException {
   constructor(message: string, input: string, errLocation: string, ctxLocation?: any) {
@@ -26,24 +25,40 @@ export class TemplateBindingParseResult {
   constructor(public templateBindings: TemplateBinding[], public warnings: string[]) {}
 }
 
+function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
+  const regexp = escapeRegExp(config.start) + '([\\s\\S]*?)' + escapeRegExp(config.end);
+  return RegExpWrapper.create(regexp, 'g');
+}
+
 @Injectable()
 export class Parser {
+  private _interpolationConfig: InterpolationConfig;
+
   constructor(/** @internal */
               public _lexer: Lexer) {}
 
-  parseAction(input: string, location: any): ASTWithSource {
+  parseAction(
+      input: string, location: any,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
+    this._interpolationConfig = interpolationConfig;
     this._checkNoInterpolation(input, location);
     var tokens = this._lexer.tokenize(this._stripComments(input));
     var ast = new _ParseAST(input, location, tokens, true).parseChain();
     return new ASTWithSource(ast, input, location);
   }
 
-  parseBinding(input: string, location: any): ASTWithSource {
+  parseBinding(
+      input: string, location: any,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
+    this._interpolationConfig = interpolationConfig;
     var ast = this._parseBindingAst(input, location);
     return new ASTWithSource(ast, input, location);
   }
 
-  parseSimpleBinding(input: string, location: string): ASTWithSource {
+  parseSimpleBinding(
+      input: string, location: string,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
+    this._interpolationConfig = interpolationConfig;
     var ast = this._parseBindingAst(input, location);
     if (!SimpleExpressionChecker.check(ast)) {
       throw new ParseException(
@@ -81,8 +96,11 @@ export class Parser {
     return new _ParseAST(input, location, tokens, false).parseTemplateBindings();
   }
 
-  parseInterpolation(input: string, location: any): ASTWithSource {
-    let split = this.splitInterpolation(input, location);
+  parseInterpolation(
+      input: string, location: any,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
+    this._interpolationConfig = interpolationConfig;
+    let split = this.splitInterpolation(input, location, this._interpolationConfig);
     if (split == null) return null;
 
     let expressions: AST[] = [];
@@ -96,8 +114,12 @@ export class Parser {
     return new ASTWithSource(new Interpolation(split.strings, expressions), input, location);
   }
 
-  splitInterpolation(input: string, location: string): SplitInterpolation {
-    var parts = StringWrapper.split(input, INTERPOLATION_REGEXP);
+  splitInterpolation(
+      input: string, location: string,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation {
+    this._interpolationConfig = interpolationConfig;
+    const regexp = _createInterpolateRegExp(this._interpolationConfig);
+    const parts = StringWrapper.split(input, regexp);
     if (parts.length <= 1) {
       return null;
     }
@@ -147,18 +169,21 @@ export class Parser {
   }
 
   private _checkNoInterpolation(input: string, location: any): void {
-    var parts = StringWrapper.split(input, INTERPOLATION_REGEXP);
+    var regexp = _createInterpolateRegExp(this._interpolationConfig);
+    var parts = StringWrapper.split(input, regexp);
     if (parts.length > 1) {
       throw new ParseException(
-          'Got interpolation ({{}}) where expression was expected', input,
-          `at column ${this._findInterpolationErrorColumn(parts, 1)} in`, location);
+          `Got interpolation (${this._interpolationConfig.start}${this._interpolationConfig.end}) where expression was expected`,
+          input, `at column ${this._findInterpolationErrorColumn(parts, 1)} in`, location);
     }
   }
 
   private _findInterpolationErrorColumn(parts: string[], partInErrIdx: number): number {
     var errLocation = '';
     for (var j = 0; j < partInErrIdx; j++) {
-      errLocation += j % 2 === 0 ? parts[j] : `{{${parts[j]}}}`;
+      errLocation += j % 2 === 0 ?
+          parts[j] :
+          `${this._interpolationConfig.start}${parts[j]}${this._interpolationConfig.end}`;
     }
 
     return errLocation.length;

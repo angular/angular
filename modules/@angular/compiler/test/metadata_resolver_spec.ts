@@ -35,6 +35,7 @@ export function main() {
            expect(meta.template.styleUrls).toEqual(['someStyleUrl']);
            expect(meta.template.template).toEqual('someTemplate');
            expect(meta.template.templateUrl).toEqual('someTemplateUrl');
+           expect(meta.template.interpolation).toEqual(['{{', '}}']);
          }));
 
       it('should use the moduleUrl from the reflector if none is given',
@@ -60,6 +61,16 @@ export function main() {
              expect(() => resolver.getDirectiveMetadata(MyBrokenComp1))
                  .toThrowError(`Can't resolve all parameters for MyBrokenComp1: (?).`);
            }
+         }));
+
+      it('should throw an error when the interpolation config has invalid symbols',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidInterpolation1))
+               .toThrowError(`[' ', ' '] contains unusable interpolation symbol.`);
+           expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidInterpolation2))
+               .toThrowError(`['{', '}'] contains unusable interpolation symbol.`);
+           expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidInterpolation3))
+               .toThrowError(`['<%', '%>'] contains unusable interpolation symbol.`);
          }));
     });
 
@@ -120,7 +131,8 @@ class ComponentWithoutModuleId {
   encapsulation: ViewEncapsulation.Emulated,
   styles: ['someStyle'],
   styleUrls: ['someStyleUrl'],
-  directives: [SomeDirective]
+  directives: [SomeDirective],
+  interpolation: ['{{', '}}']
 })
 class ComponentWithEverything implements OnChanges,
     OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit,
@@ -138,4 +150,16 @@ class ComponentWithEverything implements OnChanges,
 @Component({selector: 'my-broken-comp', template: ''})
 class MyBrokenComp1 {
   constructor(public dependency: any) {}
+}
+
+@Component({selector: 'someSelector', template: '', interpolation: [' ', ' ']})
+class ComponentWithInvalidInterpolation1 {
+}
+
+@Component({selector: 'someSelector', template: '', interpolation: ['{', '}']})
+class ComponentWithInvalidInterpolation2 {
+}
+
+@Component({selector: 'someSelector', template: '', interpolation: ['<%', '%>']})
+class ComponentWithInvalidInterpolation3 {
 }

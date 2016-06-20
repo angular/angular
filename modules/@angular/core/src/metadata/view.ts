@@ -128,8 +128,11 @@ export class ViewMetadata {
 
   animations: AnimationEntryMetadata[];
 
+  interpolation: [string, string];
+
   constructor(
-      {templateUrl, template, directives, pipes, encapsulation, styles, styleUrls, animations}: {
+      {templateUrl, template, directives, pipes, encapsulation, styles, styleUrls, animations,
+       interpolation}: {
         templateUrl?: string,
         template?: string,
         directives?: Array<Type|any[]>,
@@ -137,7 +140,8 @@ export class ViewMetadata {
         encapsulation?: ViewEncapsulation,
         styles?: string[],
         styleUrls?: string[],
-        animations?: AnimationEntryMetadata[]
+        animations?: AnimationEntryMetadata[],
+        interpolation?: [string, string]
       } = {}) {
     this.templateUrl = templateUrl;
     this.template = template;
@@ -147,5 +151,6 @@ export class ViewMetadata {
     this.pipes = pipes;
     this.encapsulation = encapsulation;
     this.animations = animations;
+    this.interpolation = interpolation;
   }
 }
