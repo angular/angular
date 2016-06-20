@@ -30,7 +30,6 @@ transformers:
         - web/src/person_management/index.dart
         - web/src/relative_assets/index.dart
         - web/src/routing/index.dart
-        - web/src/alt_routing/index.dart
         - web/src/sourcemap/index.dart
         - web/src/svg/index.dart
         - web/src/template_driven_forms/index.dart

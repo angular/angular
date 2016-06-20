@@ -49,7 +49,6 @@ for PACKAGE in \
   platform-browser-dynamic \
   platform-server \
   http \
-  router \
   router-deprecated \
   upgrade \
   compiler-cli

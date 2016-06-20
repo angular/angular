@@ -26,7 +26,6 @@ for PACKAGE in \
   http \
   platform-browser \
   platform-server \
-  router \
   router-deprecated \
   upgrade
 do
