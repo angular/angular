@@ -73,12 +73,12 @@ do
 
   echo "======      TSC 1.8 d.ts compat for ${DESTDIR}   ====="
   # safely strips 'readonly' specifier from d.ts files to make them compatible with tsc 1.8
-  if [[ ${TRAVIS} ]]; then
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i    -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i    -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
+  if [ "$(uname)" == "Darwin" ]; then
+    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i ''    -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
+    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i ''    -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
   else
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i '' -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
-    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i '' -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
+    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i -e 's/\(^ *(static |private )*\)*readonly  */\1/g'
+    find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
   fi
 
   if [[ ${PACKAGE} != compiler-cli ]]; then

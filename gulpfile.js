@@ -8,6 +8,7 @@ require('./tools/check-environment')(
 
 const gulp = require('gulp');
 const path = require('path');
+const os = require('os');
 
 const srcsToFmt = ['tools/**/*.ts', 'modules/@angular/**/*.ts'];
 
@@ -61,7 +62,8 @@ function tsc(projectPath, done) {
 
   child_process
       .spawn(
-          `${__dirname}/node_modules/.bin/tsc`, ['-p', path.join(__dirname, projectPath)],
+          path.normalize(`${__dirname}/node_modules/.bin/tsc`) + (/^win/.test(os.platform()) ? '.cmd' : ''),
+          ['-p', path.join(__dirname, projectPath)],
           {stdio: 'inherit'})
       .on('close', (errorCode) => done(errorCode));
 }
