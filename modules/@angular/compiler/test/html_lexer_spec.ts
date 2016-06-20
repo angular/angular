@@ -1,4 +1,5 @@
 import {HtmlToken, HtmlTokenError, HtmlTokenType, tokenizeHtml} from '@angular/compiler/src/html_lexer';
+import {InterpolationConfig} from '@angular/compiler/src/interpolation_config';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
@@ -345,6 +346,16 @@ export function main() {
         ]);
       });
 
+      it('should parse interpolation', () => {
+        expect(tokenizeAndHumanizeParts('{{ a }}')).toEqual([
+          [HtmlTokenType.TEXT, '{{ a }}'], [HtmlTokenType.EOF]
+        ]);
+
+        expect(tokenizeAndHumanizeParts('{% a %}', null, {start: '{%', end: '%}'})).toEqual([
+          [HtmlTokenType.TEXT, '{% a %}'], [HtmlTokenType.EOF]
+        ]);
+      });
+
       it('should handle CR & LF', () => {
         expect(tokenizeAndHumanizeParts('t\ne\rs\r\nt')).toEqual([
           [HtmlTokenType.TEXT, 't\ne\ns\nt'], [HtmlTokenType.EOF]
@@ -577,8 +588,9 @@ export function main() {
 }
 
 function tokenizeWithoutErrors(
-    input: string, tokenizeExpansionForms: boolean = false): HtmlToken[] {
-  var tokenizeResult = tokenizeHtml(input, 'someUrl', tokenizeExpansionForms);
+    input: string, tokenizeExpansionForms: boolean = false,
+    interpolationConfig?: InterpolationConfig): HtmlToken[] {
+  var tokenizeResult = tokenizeHtml(input, 'someUrl', tokenizeExpansionForms, interpolationConfig);
   if (tokenizeResult.errors.length > 0) {
     var errorString = tokenizeResult.errors.join('\n');
     throw new BaseException(`Unexpected parse errors:\n${errorString}`);
@@ -586,8 +598,10 @@ function tokenizeWithoutErrors(
   return tokenizeResult.tokens;
 }
 
-function tokenizeAndHumanizeParts(input: string, tokenizeExpansionForms: boolean = false): any[] {
-  return tokenizeWithoutErrors(input, tokenizeExpansionForms)
+function tokenizeAndHumanizeParts(
+    input: string, tokenizeExpansionForms: boolean = false,
+    interpolationConfig?: InterpolationConfig): any[] {
+  return tokenizeWithoutErrors(input, tokenizeExpansionForms, interpolationConfig)
       .map(token => [<any>token.type].concat(token.parts));
 }
 

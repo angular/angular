@@ -49,7 +49,8 @@ export function main() {
                   new CompileAnimationAnimateMetadata(
                       1000, new CompileAnimationStyleMetadata(0, [{'opacity': 1}]))
                 ]))])],
-        ngContentSelectors: ['*']
+        ngContentSelectors: ['*'],
+        interpolation: ['{{', '}}']
       });
       fullDirectiveMeta = CompileDirectiveMetadata.create({
         selector: 'someSelector',
@@ -144,6 +145,11 @@ export function main() {
       it('should serialize with no data', () => {
         var empty = new CompileTemplateMetadata();
         expect(CompileTemplateMetadata.fromJson(empty.toJson())).toEqual(empty);
+      });
+
+      it('should throw an error with invalid interpolation symbols', () => {
+        expect(() => new CompileTemplateMetadata(<any>{interpolation: ['{{']}))
+            .toThrowError(`'interpolation' should have a start and an end symbol.`);
       });
     });
 

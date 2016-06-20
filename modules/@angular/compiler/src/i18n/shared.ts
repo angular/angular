@@ -1,6 +1,7 @@
 import {Parser} from '../expression_parser/parser';
 import {StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../html_ast';
+import {InterpolationConfig} from '../interpolation_config';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 import {Message} from './message';
 
@@ -61,9 +62,10 @@ export class Part {
     return this.children[0].sourceSpan;
   }
 
-  createMessage(parser: Parser): Message {
+  createMessage(parser: Parser, interpolationConfig: InterpolationConfig): Message {
     return new Message(
-        stringifyNodes(this.children, parser), meaning(this.i18n), description(this.i18n));
+        stringifyNodes(this.children, parser, interpolationConfig), meaning(this.i18n),
+        description(this.i18n));
   }
 }
 
@@ -102,28 +104,31 @@ export function description(i18n: string): string {
  * @internal
  */
 export function messageFromI18nAttribute(
-    parser: Parser, p: HtmlElementAst, i18nAttr: HtmlAttrAst): Message {
+    parser: Parser, interpolationConfig: InterpolationConfig, p: HtmlElementAst,
+    i18nAttr: HtmlAttrAst): Message {
   let expectedName = i18nAttr.name.substring(5);
   let attr = p.attrs.find(a => a.name == expectedName);
 
   if (attr) {
-    return messageFromAttribute(parser, attr, meaning(i18nAttr.value), description(i18nAttr.value));
+    return messageFromAttribute(
+        parser, interpolationConfig, attr, meaning(i18nAttr.value), description(i18nAttr.value));
   }
 
   throw new I18nError(p.sourceSpan, `Missing attribute '${expectedName}'.`);
 }
 
 export function messageFromAttribute(
-    parser: Parser, attr: HtmlAttrAst, meaning: string = null,
-    description: string = null): Message {
-  let value = removeInterpolation(attr.value, attr.sourceSpan, parser);
+    parser: Parser, interpolationConfig: InterpolationConfig, attr: HtmlAttrAst,
+    meaning: string = null, description: string = null): Message {
+  let value = removeInterpolation(attr.value, attr.sourceSpan, parser, interpolationConfig);
   return new Message(value, meaning, description);
 }
 
 export function removeInterpolation(
-    value: string, source: ParseSourceSpan, parser: Parser): string {
+    value: string, source: ParseSourceSpan, parser: Parser,
+    interpolationConfig: InterpolationConfig): string {
   try {
-    let parsed = parser.splitInterpolation(value, source.toString());
+    let parsed = parser.splitInterpolation(value, source.toString(), interpolationConfig);
     let usedNames = new Map<string, number>();
     if (isPresent(parsed)) {
       let res = '';
@@ -160,14 +165,15 @@ export function dedupePhName(usedNames: Map<string, number>, name: string): stri
   }
 }
 
-export function stringifyNodes(nodes: HtmlAst[], parser: Parser): string {
-  let visitor = new _StringifyVisitor(parser);
+export function stringifyNodes(
+    nodes: HtmlAst[], parser: Parser, interpolationConfig: InterpolationConfig): string {
+  let visitor = new _StringifyVisitor(parser, interpolationConfig);
   return htmlVisitAll(visitor, nodes).join('');
 }
 
 class _StringifyVisitor implements HtmlAstVisitor {
   private _index: number = 0;
-  constructor(private _parser: Parser) {}
+  constructor(private _parser: Parser, private _interpolationConfig: InterpolationConfig) {}
 
   visitElement(ast: HtmlElementAst, context: any): any {
     let name = this._index++;
@@ -179,7 +185,8 @@ class _StringifyVisitor implements HtmlAstVisitor {
 
   visitText(ast: HtmlTextAst, context: any): any {
     let index = this._index++;
-    let noInterpolation = removeInterpolation(ast.value, ast.sourceSpan, this._parser);
+    let noInterpolation =
+        removeInterpolation(ast.value, ast.sourceSpan, this._parser, this._interpolationConfig);
     if (noInterpolation != ast.value) {
       return `<ph name="t${index}">${noInterpolation}</ph>`;
     }

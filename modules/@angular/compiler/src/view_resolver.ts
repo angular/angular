@@ -51,7 +51,8 @@ export class ViewResolver {
           encapsulation: compMeta.encapsulation,
           styles: compMeta.styles,
           styleUrls: compMeta.styleUrls,
-          animations: compMeta.animations
+          animations: compMeta.animations,
+          interpolation: compMeta.interpolation
         });
       }
     } else {
