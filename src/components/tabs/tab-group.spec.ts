@@ -39,15 +39,30 @@ describe('MdTabGroup', () => {
       checkSelectedIndex(0);
 
       // select the second tab
-      let tabLabel = fixture.debugElement.query(By.css('.md-tab-label:nth-of-type(2)'));
+      let tabLabel = fixture.debugElement.queryAll(By.css('.md-tab-label'))[1];
       tabLabel.nativeElement.click();
       checkSelectedIndex(1);
 
       // select the third tab
-      tabLabel = fixture.debugElement.query(By.css('.md-tab-label:nth-of-type(3)'));
+      tabLabel = fixture.debugElement.queryAll(By.css('.md-tab-label'))[2];
       tabLabel.nativeElement.click();
       checkSelectedIndex(2);
     });
+
+    it('should support two-way binding for selectedIndex', async(() => {
+      let component = fixture.componentInstance;
+      component.selectedIndex = 0;
+
+      fixture.detectChanges();
+
+      let tabLabel = fixture.debugElement.queryAll(By.css('.md-tab-label'))[1];
+      tabLabel.nativeElement.click();
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(component.selectedIndex).toBe(1);
+      });
+    }));
 
     it('should cycle through tab focus with focusNextTab/focusPreviousTab functions',
         fakeAsync(() => {
@@ -170,7 +185,7 @@ describe('MdTabGroup', () => {
   selector: 'test-app',
   template: `
     <md-tab-group class="tab-group"
-        [selectedIndex]="selectedIndex"
+        [(selectedIndex)]="selectedIndex"
         (focusChange)="handleFocus($event)"
         (selectChange)="handleSelection($event)">
       <md-tab>

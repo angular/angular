@@ -16,6 +16,7 @@ import {MdTabContent} from './tab-content';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
 import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 
 /** Used to generate unique ID's for each tab component */
 let nextId = 0;
@@ -66,6 +67,11 @@ export class MdTabGroup {
   }
   get selectedIndex(): number {
     return this._selectedIndex;
+  }
+
+  /** Output to enable support for two-way binding on `selectedIndex`. */
+  @Output('selectedIndexChange') private get _selectedIndexChange(): Observable<number> {
+    return this.selectChange.map(event => event.index);
   }
 
   private _onFocusChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
