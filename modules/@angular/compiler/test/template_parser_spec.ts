@@ -9,6 +9,7 @@ import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect,
 
 import {SecurityContext} from '../core_private';
 import {Identifiers, identifierToken} from '../src/identifiers';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../src/interpolation_config';
 
 import {Unparser} from './expression_parser/unparser';
 import {TEST_PROVIDERS} from './test_bindings';
@@ -151,6 +152,20 @@ export function main() {
       it('should parse bound text nodes', () => {
         expect(humanizeTplAst(parse('{{a}}', []))).toEqual([[BoundTextAst, '{{ a }}']]);
       });
+
+      it('should parse with custom interpolation config',
+         inject([TemplateParser], (parser: TemplateParser) => {
+           const component = CompileDirectiveMetadata.create({
+             selector: 'test',
+             type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'Test'}),
+             isComponent: true,
+             template: new CompileTemplateMetadata({interpolation: ['{%', '%}']})
+           });
+           expect(humanizeTplAst(parser.parse(component, '{%a%}', [], [], 'TestComp'), {
+             start: '{%',
+             end: '%}'
+           })).toEqual([[BoundTextAst, '{% a %}']]);
+         }));
 
       describe('bound properties', () => {
 
@@ -1406,14 +1421,16 @@ The pipe 'test' could not be found ("[ERROR ->]{{a | test}}"): TestComp@0:0`);
   });
 }
 
-function humanizeTplAst(templateAsts: TemplateAst[]): any[] {
-  var humanizer = new TemplateHumanizer(false);
+function humanizeTplAst(
+    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
+  const humanizer = new TemplateHumanizer(false, interpolationConfig);
   templateVisitAll(humanizer, templateAsts);
   return humanizer.result;
 }
 
-function humanizeTplAstSourceSpans(templateAsts: TemplateAst[]): any[] {
-  var humanizer = new TemplateHumanizer(true);
+function humanizeTplAstSourceSpans(
+    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
+  const humanizer = new TemplateHumanizer(true, interpolationConfig);
   templateVisitAll(humanizer, templateAsts);
   return humanizer.result;
 }
@@ -1421,7 +1438,9 @@ function humanizeTplAstSourceSpans(templateAsts: TemplateAst[]): any[] {
 class TemplateHumanizer implements TemplateAstVisitor {
   result: any[] = [];
 
-  constructor(private includeSourceSpan: boolean){};
+  constructor(
+      private includeSourceSpan: boolean,
+      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG){};
 
   visitNgContent(ast: NgContentAst, context: any): any {
     var res = [NgContentAst];
@@ -1461,13 +1480,17 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitEvent(ast: BoundEventAst, context: any): any {
-    var res = [BoundEventAst, ast.name, ast.target, expressionUnparser.unparse(ast.handler)];
+    var res = [
+      BoundEventAst, ast.name, ast.target,
+      expressionUnparser.unparse(ast.handler, this.interpolationConfig)
+    ];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
   visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
     var res = [
-      BoundElementPropertyAst, ast.type, ast.name, expressionUnparser.unparse(ast.value), ast.unit
+      BoundElementPropertyAst, ast.type, ast.name,
+      expressionUnparser.unparse(ast.value, this.interpolationConfig), ast.unit
     ];
     this.result.push(this._appendContext(ast, res));
     return null;
@@ -1478,7 +1501,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitBoundText(ast: BoundTextAst, context: any): any {
-    var res = [BoundTextAst, expressionUnparser.unparse(ast.value)];
+    var res = [BoundTextAst, expressionUnparser.unparse(ast.value, this.interpolationConfig)];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
@@ -1496,7 +1519,10 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
-    var res = [BoundDirectivePropertyAst, ast.directiveName, expressionUnparser.unparse(ast.value)];
+    var res = [
+      BoundDirectivePropertyAst, ast.directiveName,
+      expressionUnparser.unparse(ast.value, this.interpolationConfig)
+    ];
     this.result.push(this._appendContext(ast, res));
     return null;
   }

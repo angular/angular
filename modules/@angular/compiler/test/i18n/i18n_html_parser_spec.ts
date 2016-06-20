@@ -5,6 +5,7 @@ import {HtmlParseTreeResult, HtmlParser} from '@angular/compiler/src/html_parser
 import {I18nHtmlParser} from '@angular/compiler/src/i18n/i18n_html_parser';
 import {Message, id} from '@angular/compiler/src/i18n/message';
 import {deserializeXmb} from '@angular/compiler/src/i18n/xmb_serializer';
+import {InterpolationConfig} from '@angular/compiler/src/interpolation_config';
 import {ParseError} from '@angular/compiler/src/parse_util';
 import {humanizeDom} from '@angular/compiler/test/html_ast_spec_utils';
 import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
@@ -15,7 +16,8 @@ export function main() {
   describe('I18nHtmlParser', () => {
     function parse(
         template: string, messages: {[key: string]: string}, implicitTags: string[] = [],
-        implicitAttrs: {[k: string]: string[]} = {}): HtmlParseTreeResult {
+        implicitAttrs: {[k: string]: string[]} = {},
+        interpolation?: InterpolationConfig): HtmlParseTreeResult {
       var parser = new Parser(new Lexer());
       let htmlParser = new HtmlParser();
 
@@ -26,7 +28,7 @@ export function main() {
 
       return new I18nHtmlParser(
                  htmlParser, parser, res.content, res.messages, implicitTags, implicitAttrs)
-          .parse(template, 'someurl', true);
+          .parse(template, 'someurl', true, interpolation);
     }
 
     it('should delegate to the provided parser when no i18n', () => {
@@ -61,6 +63,17 @@ export function main() {
 
       expect(humanizeDom(parse('<div value=\'{{a}} and {{b}}\' i18n-value></div>', translations)))
           .toEqual([[HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', '{{b}} or {{a}}']]);
+    });
+
+    it('should handle interpolation with config', () => {
+      let translations: {[key: string]: string} = {};
+      translations[id(new Message('<ph name="0"/> and <ph name="1"/>', null, null))] =
+          '<ph name="1"/> or <ph name="0"/>';
+
+      expect(humanizeDom(parse(
+                 '<div value=\'{%a%} and {%b%}\' i18n-value></div>', translations, [], {},
+                 {start: '{%', end: '%}'})))
+          .toEqual([[HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', '{%b%} or {%a%}']]);
     });
 
     it('should handle interpolation with custom placeholder names', () => {

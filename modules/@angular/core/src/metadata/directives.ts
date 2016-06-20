@@ -954,6 +954,8 @@ export class ComponentMetadata extends DirectiveMetadata {
 
   encapsulation: ViewEncapsulation;
 
+  interpolation: [string, string];
+
   constructor({selector,
                inputs,
                outputs,
@@ -973,7 +975,8 @@ export class ComponentMetadata extends DirectiveMetadata {
                animations,
                directives,
                pipes,
-               encapsulation}: {
+               encapsulation,
+               interpolation}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -993,7 +996,8 @@ export class ComponentMetadata extends DirectiveMetadata {
     animations?: AnimationEntryMetadata[],
     directives?: Array<Type|any[]>,
     pipes?: Array<Type|any[]>,
-    encapsulation?: ViewEncapsulation
+    encapsulation?: ViewEncapsulation,
+    interpolation?: [string, string]
   } = {}) {
     super({
       selector: selector,
@@ -1018,6 +1022,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     this.encapsulation = encapsulation;
     this.moduleId = moduleId;
     this.animations = animations;
+    this.interpolation = interpolation;
   }
 }
 

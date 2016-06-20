@@ -11,6 +11,7 @@ import {CompileDirectiveMetadata, CompilePipeMetadata, CompileMetadataWithType,}
 import {HtmlParser} from './html_parser';
 import {splitNsName, mergeNsAndName} from './html_tags';
 import {ParseSourceSpan, ParseError, ParseLocation, ParseErrorLevel} from './parse_util';
+import {InterpolationConfig} from './interpolation_config';
 
 import {ElementAst, BoundElementPropertyAst, BoundEventAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst, ProviderAst, ProviderAstType, VariableAst} from './template_ast';
 import {CssSelector, SelectorMatcher} from './selector';
@@ -151,12 +152,20 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   directivesIndex = new Map<CompileDirectiveMetadata, number>();
   ngContentCount: number = 0;
   pipesByName: Map<string, CompilePipeMetadata>;
+  private _interpolationConfig: InterpolationConfig;
 
   constructor(
       public providerViewContext: ProviderViewContext, directives: CompileDirectiveMetadata[],
       pipes: CompilePipeMetadata[], private _exprParser: Parser,
       private _schemaRegistry: ElementSchemaRegistry) {
     this.selectorMatcher = new SelectorMatcher();
+    const tempMeta = providerViewContext.component.template;
+    if (isPresent(tempMeta) && isPresent(tempMeta.interpolation)) {
+      this._interpolationConfig = {
+        start: tempMeta.interpolation[0],
+        end: tempMeta.interpolation[1]
+      };
+    }
     ListWrapper.forEachWithIndex(
         directives, (directive: CompileDirectiveMetadata, index: number) => {
           var selector = CssSelector.parse(directive.selector);
@@ -176,7 +185,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseInterpolation(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      var ast = this._exprParser.parseInterpolation(value, sourceInfo);
+      var ast = this._exprParser.parseInterpolation(value, sourceInfo, this._interpolationConfig);
       this._checkPipes(ast, sourceSpan);
       if (isPresent(ast) &&
           (<Interpolation>ast.ast).expressions.length > MAX_INTERPOLATION_VALUES) {
@@ -193,7 +202,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      var ast = this._exprParser.parseAction(value, sourceInfo);
+      var ast = this._exprParser.parseAction(value, sourceInfo, this._interpolationConfig);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
@@ -205,7 +214,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseBinding(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      var ast = this._exprParser.parseBinding(value, sourceInfo);
+      var ast = this._exprParser.parseBinding(value, sourceInfo, this._interpolationConfig);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
