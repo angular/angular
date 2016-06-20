@@ -49,7 +49,5 @@ export class PromiseWrapper {
     PromiseWrapper.then(PromiseWrapper.resolve(null), computation, (_) => {});
   }
 
-  static isPromise(obj: any): boolean { return obj instanceof Promise; }
-
   static completer<T>(): PromiseCompleter<T> { return new PromiseCompleter<T>(); }
 }

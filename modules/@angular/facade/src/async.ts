@@ -43,7 +43,7 @@ export class ObservableWrapper {
   /**
    * @deprecated - use callEmit() instead
    */
-  static callNext(emitter: EventEmitter<any>, value: any) { emitter.next(value); }
+  static callNext(emitter: EventEmitter<any>, value: any) { emitter.emit(value); }
 
   static callEmit(emitter: EventEmitter<any>, value: any) { emitter.emit(value); }
 
