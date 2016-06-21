@@ -150,6 +150,49 @@ function declareTests({useJit}: {useJit: boolean}) {
                    });
              })));
 
+      it('should animate between * and void and back even when no expression is assigned',
+         inject(
+             [TestComponentBuilder, AnimationDriver],
+             fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
+               tcb = tcb.overrideTemplate(DummyIfCmp, `
+              <div @myAnimation *ngIf="exp"></div>
+            `);
+               tcb.overrideAnimations(DummyIfCmp, [trigger(
+                                                      'myAnimation',
+                                                      [
+                                                        state('*', style({'opacity': '1'})),
+                                                        state('void', style({'opacity': '0'})),
+                                                        transition('* => *', [animate('500ms')])
+                                                      ])])
+                   .createAsync(DummyIfCmp)
+                   .then((fixture) => {
+                     tick();
+
+                     var cmp = fixture.debugElement.componentInstance;
+                     cmp.exp = true;
+                     fixture.detectChanges();
+                     flushMicrotasks();
+
+                     var result = driver.log.pop();
+                     expect(result['duration']).toEqual(500);
+                     expect(result['startingStyles']).toEqual({'opacity': '0'});
+                     expect(result['keyframeLookup']).toEqual([
+                       [0, {'opacity': '0'}], [1, {'opacity': '1'}]
+                     ]);
+
+                     cmp.exp = false;
+                     fixture.detectChanges();
+                     flushMicrotasks();
+
+                     result = driver.log.pop();
+                     expect(result['duration']).toEqual(500);
+                     expect(result['startingStyles']).toEqual({'opacity': '1'});
+                     expect(result['keyframeLookup']).toEqual([
+                       [0, {'opacity': '1'}], [1, {'opacity': '0'}]
+                     ]);
+                   });
+             })));
+
       it('should combine repeated style steps into a single step',
          inject(
              [TestComponentBuilder, AnimationDriver],
