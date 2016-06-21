@@ -2,6 +2,7 @@
 @import 'mixins';
 @import 'variables';
 
+$md-input-floating-placeholder-scale-factor: 0.75 !default;
 
 // Placeholder colors. Required is used for the `*` star shown in the placeholder.
 $md-input-placeholder-color: md-color($md-foreground, hint-text);
@@ -33,7 +34,8 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
 @mixin md-input-placeholder-floating {
   display: block;
   padding-bottom: 5px;
-  transform: translateY(-100%) scale(0.75);
+  transform: translateY(-100%) scale($md-input-floating-placeholder-scale-factor);
+  width: 100% / $md-input-floating-placeholder-scale-factor;
 
   .md-placeholder-required {
     color: $md-input-required-placeholder-color;
@@ -44,6 +46,7 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
   display: inline-block;
   position: relative;
   font-family: $md-font-family;
+  overflow: hidden;
 
   // To avoid problems with text-align.
   text-align: left;
@@ -119,7 +122,8 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
     transform-origin: bottom left;
     transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
                 scale $swift-ease-out-duration $swift-ease-out-timing-function,
-                color $swift-ease-out-duration $swift-ease-out-timing-function;
+                color $swift-ease-out-duration $swift-ease-out-timing-function,
+                width $swift-ease-out-duration $swift-ease-out-timing-function;
 
     &.md-empty {
       display: block;
