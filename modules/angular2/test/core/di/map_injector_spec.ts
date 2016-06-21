@@ -20,30 +20,6 @@ export function main() {
           .toEqual('someValue');
     });
 
-    it('should create a value from the factories', () => {
-      expect(
-          new MapInjectorFactory(MapWrapper.createFromPairs([['someToken', 'someValue']]),
-                                 MapWrapper.createFromPairs([
-                                   [
-                                     'someTokenFactory',
-                                     (injector: Injector) => `${injector.get('someToken')}Factory`
-                                   ]
-                                 ]))
-              .create()
-              .get('someTokenFactory'))
-          .toEqual('someValueFactory');
-    });
-
-    it('should cache created values', () => {
-      var count = 0;
-      var inj =
-          new MapInjectorFactory(null, MapWrapper.createFromPairs(
-                                           [['someTokenFactory', (injector: Injector) => count++]]))
-              .create();
-      expect(inj.get('someTokenFactory')).toBe(0);
-      expect(inj.get('someTokenFactory')).toBe(0);
-    });
-
     it('should return the injector', () => {
       var injector = new MapInjectorFactory().create();
       expect(injector.get(Injector)).toBe(injector);
