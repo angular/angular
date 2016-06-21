@@ -339,7 +339,7 @@ If you need to debug the transpiler:
 See the [Node.js manual](http://nodejs.org/api/debugger.html) for more information.
 
 Notes:
-- You can also execute `node $(npm bin)/karma start karma-dart.conf.js` depending on which
+- You can also execute :key: `node $(npm bin)/karma start karma-dart.conf.js` depending on which
   code you want to debug (the former will process the "modules" folder while the later processes
   the transpiler specs).
 - You can also add `debugger;` statements in the specs (JavaScript). The execution will halt when
