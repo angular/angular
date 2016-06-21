@@ -18,9 +18,10 @@ export function assertArrayOfStrings(identifier: string, value: any) {
 }
 
 const INTERPOLATION_BLACKLIST_REGEXPS = [
-  /^\s*$/g,     // empty
-  /[<>]/g,      // html tag
-  /^[\{\}]$/g,  // i18n expansion
+  /^\s*$/,        // empty
+  /[<>]/,         // html tag
+  /^[{}]$/,       // i18n expansion
+  /&(#|[a-z])/i,  // character reference
 ];
 
 export function assertInterpolationSymbols(identifier: string, value: any): void {

@@ -398,13 +398,10 @@ export function main() {
         ]);
       });
 
-      // TODO(vicb): make the lexer aware of Angular expressions
-      // see https://github.com/angular/angular/issues/5679
       it('should parse valid start tag in interpolation', () => {
         expect(tokenizeAndHumanizeParts('{{ a <b && c > d }}')).toEqual([
-          [HtmlTokenType.TEXT, '{{ a '], [HtmlTokenType.TAG_OPEN_START, null, 'b'],
-          [HtmlTokenType.ATTR_NAME, null, '&&'], [HtmlTokenType.ATTR_NAME, null, 'c'],
-          [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.TEXT, ' d }}'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, '{{ a <b && c > d }}'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
