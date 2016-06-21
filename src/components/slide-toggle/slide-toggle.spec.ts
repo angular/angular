@@ -33,11 +33,19 @@ describe('MdSlideToggle', () => {
     beforeEach(async(() => {
       builder.createAsync(SlideToggleTestApp).then(f => {
         fixture = f;
+
+        testComponent = fixture.debugElement.componentInstance;
+
+        // Enable jasmine spies on event functions, which may trigger at initialization
+        // of the slide-toggle component.
+        spyOn(fixture.debugElement.componentInstance, 'onSlideChange').and.callThrough();
+        spyOn(fixture.debugElement.componentInstance, 'onSlideClick').and.callThrough();
+
+        // Initialize the slide-toggle component, by triggering the first change detection cycle.
         fixture.detectChanges();
 
         let slideToggleDebug = fixture.debugElement.query(By.css('md-slide-toggle'));
 
-        testComponent = fixture.debugElement.componentInstance;
         slideToggle = slideToggleDebug.componentInstance;
         slideToggleElement = slideToggleDebug.nativeElement;
         slideToggleControl = slideToggleDebug.injector.get(NgControl);
@@ -103,8 +111,6 @@ describe('MdSlideToggle', () => {
       // Since we're using a label element and a visual hidden input, this behavior can led
       // to an issue, where the click events on the slide-toggle are getting executed twice.
 
-      spyOn(testComponent, 'onSlideClick');
-
       expect(slideToggle.checked).toBe(false);
       expect(slideToggleElement.classList).not.toContain('md-checked');
 
@@ -116,6 +122,42 @@ describe('MdSlideToggle', () => {
 
       expect(testComponent.onSlideClick).toHaveBeenCalledTimes(1);
     });
+
+    it('should not trigger the change event multiple times', async(() => {
+      expect(inputElement.checked).toBe(false);
+      expect(slideToggleElement.classList).not.toContain('md-checked');
+
+      testComponent.slideChecked = true;
+      fixture.detectChanges();
+
+      expect(inputElement.checked).toBe(true);
+      expect(slideToggleElement.classList).toContain('md-checked');
+
+      // Wait for the fixture to become stable, because the EventEmitter for the change event,
+      // will only fire after the zone async change detection has finished.
+      fixture.whenStable().then(() => {
+        expect(testComponent.onSlideChange).toHaveBeenCalledTimes(1);
+      });
+
+    }));
+
+    it('should not trigger the change event on initialization', async(() => {
+      expect(inputElement.checked).toBe(false);
+      expect(slideToggleElement.classList).not.toContain('md-checked');
+
+      testComponent.slideChecked = true;
+      fixture.detectChanges();
+
+      expect(inputElement.checked).toBe(true);
+      expect(slideToggleElement.classList).toContain('md-checked');
+
+      // Wait for the fixture to become stable, because the EventEmitter for the change event,
+      // will only fire after the zone async change detection has finished.
+      fixture.whenStable().then(() => {
+        expect(testComponent.onSlideChange).toHaveBeenCalledTimes(1);
+      });
+
+    }));
 
     it('should add a suffix to the inputs id', () => {
       testComponent.slideId = 'myId';
@@ -269,6 +311,56 @@ describe('MdSlideToggle', () => {
 
   });
 
+  describe('custom template', () => {
+
+    let testComponent: SlideToggleTestApp;
+    let slideToggle: MdSlideToggle;
+    let slideToggleElement: HTMLElement;
+    let labelElement: HTMLLabelElement;
+    let inputElement: HTMLInputElement;
+
+    it('should not trigger the change event on initialization', async(() => {
+      builder
+        .overrideTemplate(SlideToggleTestApp, `
+          <md-slide-toggle checked="true" (change)="onSlideChange($event)"></md-slide-toggle>
+        `)
+        .createAsync(SlideToggleTestApp)
+        .then(fixture => {
+          // Initialize the variables for our test.
+          initializeTest(fixture);
+
+          // Enable jasmine spies on event functions, which may trigger at initialization
+          // of the slide-toggle component.
+          spyOn(fixture.debugElement.componentInstance, 'onSlideChange').and.callThrough();
+
+          fixture.detectChanges();
+
+          fixture.whenStable().then(() => {
+            expect(testComponent.onSlideChange).not.toHaveBeenCalled();
+          });
+        });
+    }));
+
+    /**
+     * Initializes the suites variables, to allow developers to easily access the several variables
+     * without loading / querying them always again.
+     * @param fixture Custom fixture, which contains the slide-toggle component.
+     */
+    function initializeTest(fixture: ComponentFixture<any>) {
+      testComponent = fixture.debugElement.componentInstance;
+
+      // Initialize the slide-toggle component, by triggering the first change detection cycle.
+      fixture.detectChanges();
+
+      let slideToggleDebug = fixture.debugElement.query(By.css('md-slide-toggle'));
+
+      slideToggle = slideToggleDebug.componentInstance;
+      slideToggleElement = slideToggleDebug.nativeElement;
+      inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+      labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
+    }
+  });
+
 });
 
 /**
@@ -288,7 +380,7 @@ function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void
     <md-slide-toggle [(ngModel)]="slideModel" [disabled]="isDisabled" [color]="slideColor" 
                      [id]="slideId" [checked]="slideChecked" [name]="slideName" 
                      [aria-label]="slideLabel" [ariaLabel]="slideLabel" 
-                     [ariaLabelledby]="slideLabelledBy" (change)="lastEvent = $event"
+                     [ariaLabelledby]="slideLabelledBy" (change)="onSlideChange($event)"
                      (click)="onSlideClick($event)">
       <span>Test Slide Toggle</span>
     </md-slide-toggle>
@@ -307,4 +399,7 @@ class SlideToggleTestApp {
   lastEvent: MdSlideToggleChange;
 
   onSlideClick(event: Event) {}
+  onSlideChange(event: MdSlideToggleChange) {
+    this.lastEvent = event;
+  }
 }

@@ -6,7 +6,8 @@ import {
   ChangeDetectionStrategy,
   Input,
   Output,
-  EventEmitter
+  EventEmitter,
+  AfterContentInit
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -45,7 +46,7 @@ let nextId = 0;
   providers: [MD_SLIDE_TOGGLE_VALUE_ACCESSOR],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MdSlideToggle implements ControlValueAccessor {
+export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
 
   private onChange = (_: any) => {};
   private onTouched = () => {};
@@ -56,6 +57,7 @@ export class MdSlideToggle implements ControlValueAccessor {
   private _color: string;
   private _hasFocus: boolean = false;
   private _isMousedown: boolean = false;
+  private _isInitialized: boolean = false;
 
   @Input() @BooleanFieldValue() disabled: boolean = false;
   @Input() name: string = null;
@@ -72,6 +74,14 @@ export class MdSlideToggle implements ControlValueAccessor {
 
   constructor(private _elementRef: ElementRef,
               private _renderer: Renderer) {
+  }
+
+  /** TODO: internal */
+  ngAfterContentInit() {
+    // Mark this component as initialized in AfterContentInit because the initial checked value can
+    // possibly be set by NgModel or the checked attribute. This would cause the change event to
+    // be emitted, before the component is actually initialized.
+    this._isInitialized = true;
   }
 
   /**
@@ -163,7 +173,12 @@ export class MdSlideToggle implements ControlValueAccessor {
     if (this.checked !== !!value) {
       this._checked = value;
       this.onChange(this._checked);
-      this._emitChangeEvent();
+
+      // Only fire a change event if the `slide-toggle` is completely initialized and
+      // all attributes / inputs are properly loaded.
+      if (this._isInitialized) {
+        this._emitChangeEvent();
+      }
     }
   }
 
