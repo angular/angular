@@ -206,6 +206,7 @@ const CORE =
       'ComponentFactory.metadata:any[]',
       'InjectorFactory.EMPTY:InjectorFactory<any>',
       'InjectorFactory.create(parent:Injector, context:CONTEXT):Injector',
+      'InjectorFactory.bind(factory:InjectorFactory<any>, context:any):InjectorFactory<any>',
       'InjectorFactory<CONTEXT>',
       'InjectMetadataFactory',
       'InjectMetadata',

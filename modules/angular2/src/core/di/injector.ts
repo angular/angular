@@ -1,4 +1,4 @@
-import {CONST_EXPR, stringify, isBlank} from 'angular2/src/facade/lang';
+import {CONST_EXPR, CONST, stringify, isBlank} from 'angular2/src/facade/lang';
 import {unimplemented, BaseException} from 'angular2/src/facade/exceptions';
 
 const _THROW_IF_NOT_FOUND = CONST_EXPR(new Object());
@@ -48,6 +48,7 @@ export abstract class Injector {
   get(token: any, notFoundValue?: any): any { return unimplemented(); }
 }
 
+@CONST()
 class _EmptyInjectorFactory implements InjectorFactory<any> {
   create(parent: Injector = null, context: any = null): Injector {
     return isBlank(parent) ? Injector.NULL : parent;
@@ -59,7 +60,21 @@ class _EmptyInjectorFactory implements InjectorFactory<any> {
  */
 export abstract class InjectorFactory<CONTEXT> {
   // An InjectorFactory that will always delegate to the parent.
-  static EMPTY: InjectorFactory<any> = new _EmptyInjectorFactory();
+  static EMPTY: InjectorFactory<any> = CONST_EXPR(new _EmptyInjectorFactory());
+
+  /**
+   * Binds an InjectorFactory to a fixed context
+   */
+  static bind(factory: InjectorFactory<any>, context: any): InjectorFactory<any> {
+    return new _BoundInjectorFactory(factory, context);
+  }
 
   abstract create(parent?: Injector, context?: CONTEXT): Injector;
+}
+
+class _BoundInjectorFactory implements InjectorFactory<any> {
+  constructor(private _delegate: InjectorFactory<any>, private _context: any) {}
+  create(parent: Injector = null, context: any = null): Injector {
+    return this._delegate.create(parent, this._context);
+  }
 }
