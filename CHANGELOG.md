@@ -1,3 +1,52 @@
+<a name="2.0.0-rc.3"></a>
+# 2.0.0-rc.3 (2016-06-21)
+
+
+### Bug Fixes
+
+* **animations:** ensure starting styles are applied when a delay is present ([ba46ca6](https://github.com/angular/angular/commit/ba46ca6)), closes [#9326](https://github.com/angular/angular/issues/9326) [#9328](https://github.com/angular/angular/issues/9328)
+* **BrowserUtil:** fix `supportsIntlApi()`  ([76a4187](https://github.com/angular/angular/commit/76a4187))
+* **change_detection:** ChangeDetectorRef reattach should restore original mode ([773c349](https://github.com/angular/angular/commit/773c349)), closes [#7078](https://github.com/angular/angular/issues/7078) [#7080](https://github.com/angular/angular/issues/7080)
+* **compiler:** codegen view query generic types ([e157a06](https://github.com/angular/angular/commit/e157a06))
+* **compiler:** properly report unresolved dependencies ([fdf6bc1](https://github.com/angular/angular/commit/fdf6bc1)), closes [#9332](https://github.com/angular/angular/issues/9332) [#9341](https://github.com/angular/angular/issues/9341)
+* **compiler:** StaticReflector ignores unregistered decorators. (#9266) ([791153c](https://github.com/angular/angular/commit/791153c)), closes [#9265](https://github.com/angular/angular/issues/9265)
+* **core/testing:** show full error ([297f0fd](https://github.com/angular/angular/commit/297f0fd))
+* **forms:** ngModel should export as ngModel ([8e6e90e](https://github.com/angular/angular/commit/8e6e90e))
+* **guards:** Cancel in-flight guards if one returns false ([97cf0e4](https://github.com/angular/angular/commit/97cf0e4))
+* **HtmlParser:** add missing ; ([c60ef45](https://github.com/angular/angular/commit/c60ef45))
+* **HtmlParser:** consider <ng-container> when adding required parents ([9ba400d](https://github.com/angular/angular/commit/9ba400d))
+* **HtmlParser:** do not add required parents to template root elements ([e484c62](https://github.com/angular/angular/commit/e484c62)), closes [#5967](https://github.com/angular/angular/issues/5967)
+* **HTTP/XhrBackend:** correctly set the status code on errors (#9355) ([12c4904](https://github.com/angular/angular/commit/12c4904)), closes [angular/http#54](https://github.com/angular/http/issues/54)
+* **NumberPipe:** fix broken RegExp ([49bf3f5](https://github.com/angular/angular/commit/49bf3f5))
+* **partition:** fix partition when `<!-- i18n -->` is the only child ([58b18d7](https://github.com/angular/angular/commit/58b18d7))
+* **perf:** support prod mode again ([c0f2a22](https://github.com/angular/angular/commit/c0f2a22)), closes [#9318](https://github.com/angular/angular/issues/9318) [#8508](https://github.com/angular/angular/issues/8508) [#9318](https://github.com/angular/angular/issues/9318)
+* **platform-server:** cleanup public api of platform-server ([8675b8d](https://github.com/angular/angular/commit/8675b8d)), closes [#9237](https://github.com/angular/angular/issues/9237) [#9205](https://github.com/angular/angular/issues/9205)
+* **upgrade:** fix bundling issue and fix e2e test ([8c076d5](https://github.com/angular/angular/commit/8c076d5)), closes [#9244](https://github.com/angular/angular/issues/9244)
+* **XmbSerializer:** add meaning attribute, escape attribute values ([c9c81e1](https://github.com/angular/angular/commit/c9c81e1))
+
+### Features
+
+* **benchpress:** add custom user metric to benchpress ([6686bc6](https://github.com/angular/angular/commit/6686bc6)), closes [#9229](https://github.com/angular/angular/issues/9229)
+* **compiler:** make interpolation symbols configurable (`@Component` config) (#9367) ([1b28cf7](https://github.com/angular/angular/commit/1b28cf7)), closes [#9158](https://github.com/angular/angular/issues/9158)
+* **compiler-cli:** add a `debug` option to control the output ([1eaa193](https://github.com/angular/angular/commit/1eaa193)), closes [#9208](https://github.com/angular/angular/issues/9208)
+* **core:** ensure CSS parser tracks start/end values and understands complex pseudo selecto ([935c39a](https://github.com/angular/angular/commit/935c39a))
+* **datePipe:** numeric string support ([5c8d315](https://github.com/angular/angular/commit/5c8d315))
+* **DomElementSchemaRegistry:** add support for <ng-content> and <ng-container> ([b620f4f](https://github.com/angular/angular/commit/b620f4f))
+* **I18N Expander:** do not add extra `<ul>` & `<li>` around ICU messages (#9283) ([721f53f](https://github.com/angular/angular/commit/721f53f)), closes [#9072](https://github.com/angular/angular/issues/9072)
+* **MessageExtractor:** do not expand ICU messages before extraction ([04a50f5](https://github.com/angular/angular/commit/04a50f5))
+* **QueryList:** support index in callbacks ([5fe6075](https://github.com/angular/angular/commit/5fe6075)), closes [#9278](https://github.com/angular/angular/issues/9278)
+* **radio:** support radio button sharing a control ([39e0b49](https://github.com/angular/angular/commit/39e0b49))
+* **security:** fail more detectably when using a safe value in an interpolation. ([8879aa1](https://github.com/angular/angular/commit/8879aa1))
+
+
+### BREAKING CHANGES
+
+* Parse5Adapter is no longer exported as public API, use serverBootstrap()
+Parse5Adapter is an implementation detail not a public API
+
+* `containsRegexp` is no more exported from `@angular/core/testing`. It should not have been part of the public API in the first place.
+
+
 <a name="2.0.0-rc.2"></a>
 # 2.0.0-rc.2 (2016-06-15)
 
