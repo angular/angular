@@ -2,7 +2,7 @@
  * Public Test Library for unit testing Angular2 Applications. Uses the
  * Jasmine framework.
  */
-import {isPromise} from '../src/facade/lang';
+import {isPromise, isString} from '../src/facade/lang';
 
 import {TestInjector, async, getTestInjector, inject, injectAsync} from './test_injector';
 
@@ -108,7 +108,12 @@ function _wrapTestFn(fn: Function) {
       let retVal = fn();
       if (isPromise(retVal)) {
         // Asynchronous test function - wait for completion.
-        (<Promise<any>>retVal).then(done, done.fail);
+        (<Promise<any>>retVal).then(done, (err) => {
+          if (isString(err)) {
+            return done.fail(new Error(err));
+          }
+          return done.fail(err);
+        });
       } else {
         // Synchronous test function - complete immediately.
         done();

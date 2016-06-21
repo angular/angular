@@ -231,14 +231,15 @@ export function main() {
 
     it('should fail when an asynchronous error is thrown', (done: any /** TODO #9100 */) => {
       var itPromise = patchJasmineIt();
+      var barError = new Error('bar');
 
       it('throws an async error',
-         async(inject([], () => { setTimeout(() => { throw new Error('bar'); }, 0); })));
+         async(inject([], () => { setTimeout(() => { throw barError; }, 0); })));
 
       itPromise.then(
           () => { done.fail('Expected test to fail, but it did not'); },
           (err) => {
-            expect(err).toEqual('bar');
+            expect(err).toEqual(barError);
             done();
           });
       restoreJasmineIt();
@@ -258,7 +259,7 @@ export function main() {
       itPromise.then(
           () => { done.fail('Expected test to fail, but it did not'); },
           (err) => {
-            expect(err).toEqual('Uncaught (in promise): baz');
+            expect(err.message).toEqual('Uncaught (in promise): baz');
             done();
           });
       restoreJasmineIt();
