@@ -94,27 +94,25 @@ do
     echo "======      BUNDLING: ${SRCDIR} ====="
     mkdir ${DESTDIR}/bundles
 
-    if [[ ${PACKAGE} != router ]]; then
-      (
-        cd  ${SRCDIR}
-        echo "..."  # here just to have grep match something and not exit with 1
-        ../../../node_modules/.bin/rollup -c rollup.config.js
-      ) 2>&1 | grep -v "as external dependency"
+    (
+      cd  ${SRCDIR}
+      echo "..."  # here just to have grep match something and not exit with 1
+      ../../../node_modules/.bin/rollup -c rollup.config.js
+    ) 2>&1 | grep -v "as external dependency"
 
-      $(npm bin)/tsc  \
-          --out ${UMD_ES5_PATH} \
-          --target es5 \
-          --lib "es6,dom" \
-          --allowJs \
-          ${UMD_ES6_PATH}
+    $(npm bin)/tsc  \
+        --out ${UMD_ES5_PATH} \
+        --target es5 \
+        --lib "es6,dom" \
+        --allowJs \
+        ${UMD_ES6_PATH}
 
-      rm ${UMD_ES6_PATH}
+    rm ${UMD_ES6_PATH}
 
-      cat ./modules/@angular/license-banner.txt > ${UMD_ES5_PATH}.tmp
-      cat ${UMD_ES5_PATH} >> ${UMD_ES5_PATH}.tmp
-      mv ${UMD_ES5_PATH}.tmp ${UMD_ES5_PATH}
+    cat ./modules/@angular/license-banner.txt > ${UMD_ES5_PATH}.tmp
+    cat ${UMD_ES5_PATH} >> ${UMD_ES5_PATH}.tmp
+    mv ${UMD_ES5_PATH}.tmp ${UMD_ES5_PATH}
 
-      $(npm bin)/uglifyjs -c --screw-ie8 -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_PATH}
-    fi
+    $(npm bin)/uglifyjs -c --screw-ie8 -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_PATH}
   fi
 done
