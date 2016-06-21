@@ -1,4 +1,5 @@
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {Injectable} from 'angular2/core';
 import {
   CompileInjectorModuleMetadata,
   CompileDiDependencyMetadata,
@@ -23,6 +24,7 @@ export class InjectorCompileResult {
   constructor(public statements: o.Statement[], public injectorFactoryVar: string) {}
 }
 
+@Injectable()
 export class InjectorCompiler {
   compileInjector(injectorModuleMeta: CompileInjectorModuleMetadata): InjectorCompileResult {
     var builder = new _InjectorBuilder(injectorModuleMeta);
