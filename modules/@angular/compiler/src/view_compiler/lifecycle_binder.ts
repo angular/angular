@@ -5,7 +5,7 @@ import {DirectiveAst} from '../template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
-import {ChangeDetectorStateEnum, DetectChangesVars} from './constants';
+import {ChangeDetectionStrategyEnum, ChangeDetectorStateEnum, DetectChangesVars} from './constants';
 
 
 
@@ -13,15 +13,31 @@ var STATE_IS_NEVER_CHECKED =
     o.THIS_EXPR.prop('cdState').identical(ChangeDetectorStateEnum.NeverChecked);
 var NOT_THROW_ON_CHANGES = o.not(DetectChangesVars.throwOnChange);
 
+
+function ifChangeDetectorIsAttached(
+    compileElement: CompileElement, statement: o.Statement): o.Statement {
+  return compileElement.appElement ?
+      new o.IfStmt(
+          o.not(compileElement.appElement.prop('componentView'))
+              .or(compileElement.appElement.prop('componentView')
+                      .prop('cdMode')
+                      .notIdentical(ChangeDetectionStrategyEnum.Detached)),
+          [statement]) :
+      statement;
+}
+
 export function bindDirectiveDetectChangesLifecycleCallbacks(
     directiveAst: DirectiveAst, directiveInstance: o.Expression, compileElement: CompileElement) {
   var view = compileElement.view;
   var detectChangesInInputsMethod = view.detectChangesInInputsMethod;
   var lifecycleHooks = directiveAst.directive.lifecycleHooks;
+
   if (lifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1 && directiveAst.inputs.length > 0) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(
         DetectChangesVars.changes.notIdentical(o.NULL_EXPR),
-        [directiveInstance.callMethod('ngOnChanges', [DetectChangesVars.changes]).toStmt()]));
+        [ifChangeDetectorIsAttached(
+            compileElement,
+            directiveInstance.callMethod('ngOnChanges', [DetectChangesVars.changes]).toStmt())]));
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.OnInit) !== -1) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(
@@ -30,7 +46,9 @@ export function bindDirectiveDetectChangesLifecycleCallbacks(
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.DoCheck) !== -1) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(
-        NOT_THROW_ON_CHANGES, [directiveInstance.callMethod('ngDoCheck', []).toStmt()]));
+        NOT_THROW_ON_CHANGES,
+        [ifChangeDetectorIsAttached(
+            compileElement, directiveInstance.callMethod('ngDoCheck', []).toStmt())]));
   }
 }
 
@@ -47,8 +65,8 @@ export function bindDirectiveAfterContentLifecycleCallbacks(
         STATE_IS_NEVER_CHECKED, [directiveInstance.callMethod('ngAfterContentInit', []).toStmt()]));
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterContentChecked) !== -1) {
-    afterContentLifecycleCallbacksMethod.addStmt(
-        directiveInstance.callMethod('ngAfterContentChecked', []).toStmt());
+    afterContentLifecycleCallbacksMethod.addStmt(ifChangeDetectorIsAttached(
+        compileElement, directiveInstance.callMethod('ngAfterContentChecked', []).toStmt()));
   }
 }
 
@@ -65,8 +83,8 @@ export function bindDirectiveAfterViewLifecycleCallbacks(
         STATE_IS_NEVER_CHECKED, [directiveInstance.callMethod('ngAfterViewInit', []).toStmt()]));
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterViewChecked) !== -1) {
-    afterViewLifecycleCallbacksMethod.addStmt(
-        directiveInstance.callMethod('ngAfterViewChecked', []).toStmt());
+    afterViewLifecycleCallbacksMethod.addStmt(ifChangeDetectorIsAttached(
+        compileElement, directiveInstance.callMethod('ngAfterViewChecked', []).toStmt()));
   }
 }
 
