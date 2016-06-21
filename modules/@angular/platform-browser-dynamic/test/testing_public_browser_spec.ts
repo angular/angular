@@ -142,7 +142,8 @@ export function main() {
         itPromise.then(
             () => { done.fail('Expected test to fail, but it did not'); },
             (err) => {
-              expect(err).toEqual('Uncaught (in promise): Failed to load non-existant.html');
+              expect(err.message)
+                  .toEqual('Uncaught (in promise): Failed to load non-existant.html');
               done();
             });
         restoreJasmineIt();
