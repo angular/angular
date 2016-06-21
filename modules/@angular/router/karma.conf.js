@@ -1,15 +1,16 @@
+var browserProvidersConf = require('../../../browser-providers.conf.js');
+
 // Karma configuration
 module.exports = function(config) {
   config.set({
 
-    basePath: '',
+    basePath: '../../../',
 
     frameworks: ['jasmine'],
 
     files: [
       // Polyfills.
       'node_modules/es6-shim/es6-shim.js',
-
       'node_modules/reflect-metadata/Reflect.js',
 
       // System.js for module loading
@@ -27,17 +28,42 @@ module.exports = function(config) {
       { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },
       { pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false },
 
+      // shim
+      {pattern: 'modules/@angular/router/karma-test-shim.js', included: true, watched: true },
 
-      {pattern: 'karma-test-shim.js', included: true, watched: true},
-      {pattern: 'built/test/matchers.js', included: true, watched: true},
+      // Angular modules
+      {pattern: 'dist/all/@angular/core/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/core/src/**/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/core/testing/**/*.js', included: false, watched: false},
 
-      // paths loaded via module imports
-      // Angular itself
-      {pattern: 'node_modules/@angular/**/*.js', included: false, watched: true},
-      {pattern: 'node_modules/@angular/**/*.js.map', included: false, watched: true},
+      {pattern: 'dist/all/@angular/common/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/common/src/**/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/common/testing/**/*.js', included: false, watched: false},
 
-      {pattern: 'dist/**/*.js', included: false, watched: true},
-      {pattern: 'dist/**/*.js.map', included: false, watched: false}
+      {pattern: 'dist/all/@angular/compiler/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/compiler/src/**/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/compiler/testing/**/*.js', included: false, watched: false},
+
+      {pattern: 'dist/all/@angular/platform-browser/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/platform-browser/src/**/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/platform-browser/testing/**/*.js', included: false, watched: false},
+
+      {pattern: 'dist/all/@angular/platform-browser-dynamic/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/platform-browser-dynamic/src/**/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/platform-browser-dynamic/testing/**/*.js', included: false, watched: false},
+
+      // Router
+      {pattern: 'dist/all/@angular/router/**/*.js', included: false, watched: false}
+    ],
+
+    customLaunchers: browserProvidersConf.customLaunchers,
+
+    plugins: [
+      'karma-jasmine',
+      'karma-browserstack-launcher',
+      'karma-sauce-launcher',
+      'karma-chrome-launcher',
+      'karma-sourcemap-loader'
     ],
 
     preprocessors: {
