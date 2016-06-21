@@ -86,6 +86,10 @@ export function main() {
                .toThrowError(`['{', '}'] contains unusable interpolation symbol.`);
            expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidInterpolation3))
                .toThrowError(`['<%', '%>'] contains unusable interpolation symbol.`);
+           expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidInterpolation4))
+               .toThrowError(`['&#', '}}'] contains unusable interpolation symbol.`);
+           expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidInterpolation5))
+               .toThrowError(`['&lbrace;', '}}'] contains unusable interpolation symbol.`);
          }));
     });
 
@@ -198,4 +202,12 @@ class ComponentWithInvalidInterpolation2 {
 
 @Component({selector: 'someSelector', template: '', interpolation: ['<%', '%>']})
 class ComponentWithInvalidInterpolation3 {
+}
+
+@Component({selector: 'someSelector', template: '', interpolation: ['&#', '}}']})
+class ComponentWithInvalidInterpolation4 {
+}
+
+@Component({selector: 'someSelector', template: '', interpolation: ['&lbrace;', '}}']})
+class ComponentWithInvalidInterpolation5 {
 }

@@ -1,5 +1,4 @@
 import * as chars from './chars';
-import {ListWrapper} from './facade/collection';
 import {NumberWrapper, StringWrapper, isBlank, isPresent} from './facade/lang';
 import {HtmlTagContentType, NAMED_ENTITIES, getHtmlTagDefinition} from './html_tags';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
@@ -80,6 +79,7 @@ class _HtmlTokenizer {
   private _currentTokenStart: ParseLocation;
   private _currentTokenType: HtmlTokenType;
   private _expansionCaseStack: HtmlTokenType[] = [];
+  private _inInterpolation: boolean = false;
 
   tokens: HtmlToken[] = [];
   errors: HtmlTokenError[] = [];
@@ -238,8 +238,12 @@ class _HtmlTokenizer {
   }
 
   private _attemptStr(chars: string): boolean {
+    const len = chars.length;
+    if (this._index + len > this._length) {
+      return false;
+    }
     const initialPosition = this._savePosition();
-    for (var i = 0; i < chars.length; i++) {
+    for (var i = 0; i < len; i++) {
       if (!this._attemptCharCode(StringWrapper.charCodeAt(chars, i))) {
         // If attempting to parse the string fails, we want to reset the parser
         // to where it was before the attempt
@@ -333,7 +337,7 @@ class _HtmlTokenizer {
   }
 
   private _consumeRawText(
-      decodeEntities: boolean, firstCharOfEnd: number, attemptEndRest: Function): HtmlToken {
+      decodeEntities: boolean, firstCharOfEnd: number, attemptEndRest: () => boolean): HtmlToken {
     var tagCloseStart: ParseLocation;
     var textStart = this._getLocation();
     this._beginToken(
@@ -345,6 +349,7 @@ class _HtmlTokenizer {
         break;
       }
       if (this._index > tagCloseStart.offset) {
+        // add the characters consumed by the previous if statement to the output
         parts.push(this._input.substring(tagCloseStart.offset, this._index));
       }
       while (this._peek !== firstCharOfEnd) {
@@ -558,48 +563,43 @@ class _HtmlTokenizer {
     this._beginToken(HtmlTokenType.TEXT, start);
 
     var parts: string[] = [];
-    let interpolation = false;
 
     do {
-      const savedPos = this._savePosition();
-      // _attemptStr advances the position when it is true.
-      // To push interpolation symbols, we have to reset it.
       if (this._attemptStr(this.interpolationConfig.start)) {
-        this._restorePosition(savedPos);
-        for (let i = 0; i < this.interpolationConfig.start.length; i++) {
-          parts.push(this._readChar(true));
-        }
-        interpolation = true;
-      } else if (this._attemptStr(this.interpolationConfig.end) && interpolation) {
-        this._restorePosition(savedPos);
-        for (let i = 0; i < this.interpolationConfig.end.length; i++) {
-          parts.push(this._readChar(true));
-        }
-        interpolation = false;
+        parts.push(this.interpolationConfig.start);
+        this._inInterpolation = true;
+      } else if (this._attemptStr(this.interpolationConfig.end) && this._inInterpolation) {
+        parts.push(this.interpolationConfig.end);
+        this._inInterpolation = false;
       } else {
-        this._restorePosition(savedPos);
         parts.push(this._readChar(true));
       }
-    } while (!this._isTextEnd(interpolation));
+    } while (!this._isTextEnd());
 
     this._endToken([this._processCarriageReturns(parts.join(''))]);
   }
 
-  private _isTextEnd(interpolation: boolean): boolean {
-    if (this._peek === chars.$LT || this._peek === chars.$EOF) return true;
-    if (this.tokenizeExpansionForms) {
-      const savedPos = this._savePosition();
-      if (isExpansionFormStart(this._input, this._index, this.interpolationConfig.start))
-        return true;
-      this._restorePosition(savedPos);
-      if (this._peek === chars.$RBRACE && !interpolation &&
-          (this._isInExpansionCase() || this._isInExpansionForm()))
-        return true;
+  private _isTextEnd(): boolean {
+    if (this._peek === chars.$LT || this._peek === chars.$EOF) {
+      return true;
     }
+
+    if (this.tokenizeExpansionForms) {
+      if (isExpansionFormStart(this._input, this._index, this.interpolationConfig.start)) {
+        // start of an expansion form
+        return true;
+      }
+
+      if (this._peek === chars.$RBRACE && !this._inInterpolation && this._isInExpansionCase()) {
+        // end of and expansion case
+        return true;
+      }
+    }
+
     return false;
   }
 
-  private _savePosition(): number[] {
+  private _savePosition(): [number, number, number, number, number] {
     return [this._peek, this._index, this._column, this._line, this.tokens.length];
   }
 
@@ -609,7 +609,7 @@ class _HtmlTokenizer {
     return this._input.substring(start, this._index);
   }
 
-  private _restorePosition(position: number[]): void {
+  private _restorePosition(position: [number, number, number, number, number]): void {
     this._peek = position[0];
     this._index = position[1];
     this._column = position[2];
@@ -617,7 +617,7 @@ class _HtmlTokenizer {
     let nbTokens = position[4];
     if (nbTokens < this.tokens.length) {
       // remove any extra tokens
-      this.tokens = ListWrapper.slice(this.tokens, 0, nbTokens);
+      this.tokens = this.tokens.slice(0, nbTokens);
     }
   }
 
@@ -657,10 +657,8 @@ function isNamedEntityEnd(code: number): boolean {
 }
 
 function isExpansionFormStart(input: string, offset: number, interpolationStart: string): boolean {
-  const substr = input.substring(offset);
-  return StringWrapper.charCodeAt(substr, 0) === chars.$LBRACE &&
-      StringWrapper.charCodeAt(substr, 1) !== chars.$LBRACE &&
-      !substr.startsWith(interpolationStart);
+  return input.charCodeAt(offset) == chars.$LBRACE &&
+      input.indexOf(interpolationStart, offset) != offset;
 }
 
 function isExpansionCaseStart(peek: number): boolean {
