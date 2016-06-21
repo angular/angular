@@ -53,7 +53,7 @@ module.exports = function(config) {
       {pattern: 'dist/all/@angular/platform-browser-dynamic/testing/**/*.js', included: false, watched: false},
 
       // Router
-      {pattern: 'dist/all/@angular/router/**/*.js', included: false, watched: false}
+      {pattern: 'dist/all/@angular/router/**/*.js', included: false, watched: true}
     ],
 
     customLaunchers: browserProvidersConf.customLaunchers,
