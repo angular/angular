@@ -43,6 +43,9 @@ if [[ ${TRAVIS} ]]; then
 fi
 
 $(npm bin)/karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
+
+$(npm bin)/karma start ./modules/@angular/router/karma.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
+
 echo 'travis_fold:end:test.unit.localChrome'
 
 
