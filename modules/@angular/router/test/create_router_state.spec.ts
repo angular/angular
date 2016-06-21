@@ -3,8 +3,7 @@ import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
 import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
-import {DefaultUrlSerializer} from '../src/url_serializer';
-import {UrlSegment, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegment, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
 describe('create router state', () => {

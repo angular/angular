@@ -2,8 +2,7 @@ import {RouterConfig} from '../src/config';
 import {recognize} from '../src/recognize';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
-import {DefaultUrlSerializer} from '../src/url_serializer';
-import {UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 
 describe('recognize', () => {
   it('should work', () => {

@@ -21,8 +21,7 @@ import {resolve} from './resolve';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
 import {PRIMARY_OUTLET, Params} from './shared';
-import {UrlSerializer} from './url_serializer';
-import {UrlTree, createEmptyUrlTree} from './url_tree';
+import {UrlSerializer, UrlTree, createEmptyUrlTree} from './url_tree';
 import {forEach, shallowEqual} from './utils/collection';
 import {TreeNode} from './utils/tree';
 

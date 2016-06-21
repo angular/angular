@@ -1,5 +1,4 @@
-import {DefaultUrlSerializer} from '../src/url_serializer';
-import {UrlTree, containsTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlTree, containsTree} from '../src/url_tree';
 
 describe('UrlTree', () => {
   const serializer = new DefaultUrlSerializer();

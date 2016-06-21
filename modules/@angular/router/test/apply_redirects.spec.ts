@@ -1,7 +1,6 @@
 import {applyRedirects} from '../src/apply_redirects';
 import {RouterConfig} from '../src/config';
-import {DefaultUrlSerializer} from '../src/url_serializer';
-import {UrlSegment, UrlTree, equalPathsWithParams} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegment, UrlTree, equalPathsWithParams} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
 describe('applyRedirects', () => {
