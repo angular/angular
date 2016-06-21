@@ -1,7 +1,8 @@
-import {EventEmitter, Observable} from '../facade/async';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
+
+import {Observable} from '../facade/async';
 import {ListWrapper} from '../facade/collection';
 import {getSymbolIterator} from '../facade/lang';
-
 
 
 /**
@@ -30,9 +31,9 @@ import {getSymbolIterator} from '../facade/lang';
 export class QueryList<T> {
   private _dirty = true;
   private _results: Array<T> = [];
-  private _emitter = new EventEmitter();
+  private _emitter = new ReplaySubject<Array<T>>(1);
 
-  get changes(): Observable<any> { return this._emitter; }
+  get changes(): Observable<Array<T>> { return this._emitter; }
   get length(): number { return this._results.length; }
   get first(): T { return ListWrapper.first(this._results); }
   get last(): T { return ListWrapper.last(this._results); }
@@ -79,7 +80,7 @@ export class QueryList<T> {
   }
 
   /** @internal */
-  notifyOnChanges(): void { this._emitter.emit(this); }
+  notifyOnChanges(): void { this._emitter.next(this._results); }
 
   /** internal */
   setDirty() { this._dirty = true; }

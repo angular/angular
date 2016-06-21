@@ -415,7 +415,7 @@ const CORE = [
   'ProviderBuilder.toFactory(factory:Function, dependencies?:any[]):Provider',
   'ProviderBuilder.token:any',
   'ProviderBuilder.toValue(value:any):Provider',
-  'QueryList.changes:Observable<any>',
+  'QueryList.changes:Observable<Array<T>>',
   'QueryList.dirty:any',
   'QueryList.filter(fn:(item: T, index?: number) => boolean):T[]',
   'QueryList.first:T',
