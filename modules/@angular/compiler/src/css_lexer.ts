@@ -1,8 +1,6 @@
-import {$$, $0, $9, $A, $AMPERSAND, $AT, $BACKSLASH, $BANG, $CARET, $COLON, $COMMA, $CR, $DQ, $EOF, $EQ, $FF, $GT, $HASH, $LBRACE, $LBRACKET, $LF, $LPAREN, $MINUS, $PERCENT, $PERIOD, $PIPE, $PLUS, $QUESTION, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SPACE, $SQ, $STAR, $TAB, $TILDA, $VTAB, $Z, $_, $a, $z, isWhitespace} from './chars';
+import * as chars from './chars';
 import {BaseException} from './facade/exceptions';
 import {StringWrapper, isPresent, resolveEnumToken} from './facade/lang';
-
-export {$AT, $COLON, $COMMA, $EOF, $GT, $LBRACE, $LBRACKET, $LPAREN, $PLUS, $RBRACE, $RBRACKET, $RPAREN, $SEMICOLON, $SLASH, $SPACE, $TAB, $TILDA, isWhitespace} from './chars';
 
 export enum CssTokenType {
   EOF,
@@ -148,25 +146,25 @@ export class CssScanner {
   }
 
   peekAt(index: number): number {
-    return index >= this.length ? $EOF : StringWrapper.charCodeAt(this.input, index);
+    return index >= this.length ? chars.$EOF : StringWrapper.charCodeAt(this.input, index);
   }
 
   consumeEmptyStatements(): void {
     this.consumeWhitespace();
-    while (this.peek == $SEMICOLON) {
+    while (this.peek == chars.$SEMICOLON) {
       this.advance();
       this.consumeWhitespace();
     }
   }
 
   consumeWhitespace(): void {
-    while (isWhitespace(this.peek) || isNewline(this.peek)) {
+    while (chars.isWhitespace(this.peek) || isNewline(this.peek)) {
       this.advance();
       if (!this._trackComments && isCommentStart(this.peek, this.peekPeek)) {
         this.advance();  // /
         this.advance();  // *
         while (!isCommentEnd(this.peek, this.peekPeek)) {
-          if (this.peek == $EOF) {
+          if (this.peek == chars.$EOF) {
             this.error('Unterminated comment');
           }
           this.advance();
@@ -255,7 +253,7 @@ export class CssScanner {
   _scan(): CssToken {
     var peek = this.peek;
     var peekPeek = this.peekPeek;
-    if (peek == $EOF) return null;
+    if (peek == chars.$EOF) return null;
 
     if (isCommentStart(peek, peekPeek)) {
       // even if comments are not tracked we still lex the
@@ -266,13 +264,13 @@ export class CssScanner {
       }
     }
 
-    if (_trackWhitespace(this._currentMode) && (isWhitespace(peek) || isNewline(peek))) {
+    if (_trackWhitespace(this._currentMode) && (chars.isWhitespace(peek) || isNewline(peek))) {
       return this.scanWhitespace();
     }
 
     peek = this.peek;
     peekPeek = this.peekPeek;
-    if (peek == $EOF) return null;
+    if (peek == chars.$EOF) return null;
 
     if (isStringStart(peek, peekPeek)) {
       return this.scanString();
@@ -283,14 +281,15 @@ export class CssScanner {
       return this.scanCssValueFunction();
     }
 
-    var isModifier = peek == $PLUS || peek == $MINUS;
-    var digitA = isModifier ? false : isDigit(peek);
-    var digitB = isDigit(peekPeek);
-    if (digitA || (isModifier && (peekPeek == $PERIOD || digitB)) || (peek == $PERIOD && digitB)) {
+    var isModifier = peek == chars.$PLUS || peek == chars.$MINUS;
+    var digitA = isModifier ? false : chars.isDigit(peek);
+    var digitB = chars.isDigit(peekPeek);
+    if (digitA || (isModifier && (peekPeek == chars.$PERIOD || digitB)) ||
+        (peek == chars.$PERIOD && digitB)) {
       return this.scanNumber();
     }
 
-    if (peek == $AT) {
+    if (peek == chars.$AT) {
       return this.scanAtExpression();
     }
 
@@ -319,7 +318,7 @@ export class CssScanner {
     this.advance();  // *
 
     while (!isCommentEnd(this.peek, this.peekPeek)) {
-      if (this.peek == $EOF) {
+      if (this.peek == chars.$EOF) {
         this.error('Unterminated comment');
       }
       this.advance();
@@ -336,7 +335,7 @@ export class CssScanner {
     var start = this.index;
     var startingColumn = this.column;
     var startingLine = this.line;
-    while (isWhitespace(this.peek) && this.peek != $EOF) {
+    while (chars.isWhitespace(this.peek) && this.peek != chars.$EOF) {
       this.advance();
     }
     var str = this.input.substring(start, this.index);
@@ -357,7 +356,7 @@ export class CssScanner {
     this.advance();
 
     while (!isCharMatch(target, previous, this.peek)) {
-      if (this.peek == $EOF || isNewline(this.peek)) {
+      if (this.peek == chars.$EOF || isNewline(this.peek)) {
         this.error('Unterminated quote');
       }
       previous = this.peek;
@@ -376,12 +375,12 @@ export class CssScanner {
   scanNumber(): CssToken {
     var start = this.index;
     var startingColumn = this.column;
-    if (this.peek == $PLUS || this.peek == $MINUS) {
+    if (this.peek == chars.$PLUS || this.peek == chars.$MINUS) {
       this.advance();
     }
     var periodUsed = false;
-    while (isDigit(this.peek) || this.peek == $PERIOD) {
-      if (this.peek == $PERIOD) {
+    while (chars.isDigit(this.peek) || this.peek == chars.$PERIOD) {
+      if (this.peek == chars.$PERIOD) {
         if (periodUsed) {
           this.error('Unexpected use of a second period value');
         }
@@ -412,11 +411,11 @@ export class CssScanner {
     var start = this.index;
     var startingColumn = this.column;
     var parenBalance = 1;
-    while (this.peek != $EOF && parenBalance > 0) {
+    while (this.peek != chars.$EOF && parenBalance > 0) {
       this.advance();
-      if (this.peek == $LPAREN) {
+      if (this.peek == chars.$LPAREN) {
         parenBalance++;
-      } else if (this.peek == $RPAREN) {
+      } else if (this.peek == chars.$RPAREN) {
         parenBalance--;
       }
     }
@@ -440,7 +439,7 @@ export class CssScanner {
   }
 
   scanAtExpression(): CssToken {
-    if (this.assertCondition(this.peek == $AT, 'Expected @ value')) {
+    if (this.assertCondition(this.peek == chars.$AT, 'Expected @ value')) {
       return null;
     }
 
@@ -481,53 +480,45 @@ export class CssScanner {
   }
 }
 
-function isAtKeyword(current: CssToken, next: CssToken): boolean {
-  return current.numValue == $AT && next.type == CssTokenType.Identifier;
-}
-
 function isCharMatch(target: number, previous: number, code: number): boolean {
-  return code == target && previous != $BACKSLASH;
-}
-
-function isDigit(code: number): boolean {
-  return $0 <= code && code <= $9;
+  return code == target && previous != chars.$BACKSLASH;
 }
 
 function isCommentStart(code: number, next: number): boolean {
-  return code == $SLASH && next == $STAR;
+  return code == chars.$SLASH && next == chars.$STAR;
 }
 
 function isCommentEnd(code: number, next: number): boolean {
-  return code == $STAR && next == $SLASH;
+  return code == chars.$STAR && next == chars.$SLASH;
 }
 
 function isStringStart(code: number, next: number): boolean {
   var target = code;
-  if (target == $BACKSLASH) {
+  if (target == chars.$BACKSLASH) {
     target = next;
   }
-  return target == $DQ || target == $SQ;
+  return target == chars.$DQ || target == chars.$SQ;
 }
 
 function isIdentifierStart(code: number, next: number): boolean {
   var target = code;
-  if (target == $MINUS) {
+  if (target == chars.$MINUS) {
     target = next;
   }
 
-  return ($a <= target && target <= $z) || ($A <= target && target <= $Z) || target == $BACKSLASH ||
-      target == $MINUS || target == $_;
+  return chars.isAsciiLetter(target) || target == chars.$BACKSLASH || target == chars.$MINUS ||
+      target == chars.$_;
 }
 
 function isIdentifierPart(target: number): boolean {
-  return ($a <= target && target <= $z) || ($A <= target && target <= $Z) || target == $BACKSLASH ||
-      target == $MINUS || target == $_ || isDigit(target);
+  return chars.isAsciiLetter(target) || target == chars.$BACKSLASH || target == chars.$MINUS ||
+      target == chars.$_ || chars.isDigit(target);
 }
 
 function isValidPseudoSelectorCharacter(code: number): boolean {
   switch (code) {
-    case $LPAREN:
-    case $RPAREN:
+    case chars.$LPAREN:
+    case chars.$RPAREN:
       return true;
     default:
       return false;
@@ -535,18 +526,18 @@ function isValidPseudoSelectorCharacter(code: number): boolean {
 }
 
 function isValidKeyframeBlockCharacter(code: number): boolean {
-  return code == $PERCENT;
+  return code == chars.$PERCENT;
 }
 
 function isValidAttributeSelectorCharacter(code: number): boolean {
   // value^*|$~=something
   switch (code) {
-    case $$:
-    case $PIPE:
-    case $CARET:
-    case $TILDA:
-    case $STAR:
-    case $EQ:
+    case chars.$$:
+    case chars.$PIPE:
+    case chars.$CARET:
+    case chars.$TILDA:
+    case chars.$STAR:
+    case chars.$EQ:
       return true;
     default:
       return false;
@@ -559,17 +550,17 @@ function isValidSelectorCharacter(code: number): boolean {
   // #id, .class, *+~>
   // tag:PSEUDO
   switch (code) {
-    case $HASH:
-    case $PERIOD:
-    case $TILDA:
-    case $STAR:
-    case $PLUS:
-    case $GT:
-    case $COLON:
-    case $PIPE:
-    case $COMMA:
-    case $LBRACKET:
-    case $RBRACKET:
+    case chars.$HASH:
+    case chars.$PERIOD:
+    case chars.$TILDA:
+    case chars.$STAR:
+    case chars.$PLUS:
+    case chars.$GT:
+    case chars.$COLON:
+    case chars.$PIPE:
+    case chars.$COMMA:
+    case chars.$LBRACKET:
+    case chars.$RBRACKET:
       return true;
     default:
       return false;
@@ -580,16 +571,16 @@ function isValidStyleBlockCharacter(code: number): boolean {
   // key:value;
   // key:calc(something ... )
   switch (code) {
-    case $HASH:
-    case $SEMICOLON:
-    case $COLON:
-    case $PERCENT:
-    case $SLASH:
-    case $BACKSLASH:
-    case $BANG:
-    case $PERIOD:
-    case $LPAREN:
-    case $RPAREN:
+    case chars.$HASH:
+    case chars.$SEMICOLON:
+    case chars.$COLON:
+    case chars.$PERCENT:
+    case chars.$SLASH:
+    case chars.$BACKSLASH:
+    case chars.$BANG:
+    case chars.$PERIOD:
+    case chars.$LPAREN:
+    case chars.$RPAREN:
       return true;
     default:
       return false;
@@ -599,11 +590,11 @@ function isValidStyleBlockCharacter(code: number): boolean {
 function isValidMediaQueryRuleCharacter(code: number): boolean {
   // (min-width: 7.5em) and (orientation: landscape)
   switch (code) {
-    case $LPAREN:
-    case $RPAREN:
-    case $COLON:
-    case $PERCENT:
-    case $PERIOD:
+    case chars.$LPAREN:
+    case chars.$RPAREN:
+    case chars.$COLON:
+    case chars.$PERCENT:
+    case chars.$PERIOD:
       return true;
     default:
       return false;
@@ -613,21 +604,21 @@ function isValidMediaQueryRuleCharacter(code: number): boolean {
 function isValidAtRuleCharacter(code: number): boolean {
   // @document url(http://www.w3.org/page?something=on#hash),
   switch (code) {
-    case $LPAREN:
-    case $RPAREN:
-    case $COLON:
-    case $PERCENT:
-    case $PERIOD:
-    case $SLASH:
-    case $BACKSLASH:
-    case $HASH:
-    case $EQ:
-    case $QUESTION:
-    case $AMPERSAND:
-    case $STAR:
-    case $COMMA:
-    case $MINUS:
-    case $PLUS:
+    case chars.$LPAREN:
+    case chars.$RPAREN:
+    case chars.$COLON:
+    case chars.$PERCENT:
+    case chars.$PERIOD:
+    case chars.$SLASH:
+    case chars.$BACKSLASH:
+    case chars.$HASH:
+    case chars.$EQ:
+    case chars.$QUESTION:
+    case chars.$AMPERSAND:
+    case chars.$STAR:
+    case chars.$COMMA:
+    case chars.$MINUS:
+    case chars.$PLUS:
       return true;
     default:
       return false;
@@ -636,14 +627,14 @@ function isValidAtRuleCharacter(code: number): boolean {
 
 function isValidStyleFunctionCharacter(code: number): boolean {
   switch (code) {
-    case $PERIOD:
-    case $MINUS:
-    case $PLUS:
-    case $STAR:
-    case $SLASH:
-    case $LPAREN:
-    case $RPAREN:
-    case $COMMA:
+    case chars.$PERIOD:
+    case chars.$MINUS:
+    case chars.$PLUS:
+    case chars.$STAR:
+    case chars.$SLASH:
+    case chars.$LPAREN:
+    case chars.$RPAREN:
+    case chars.$COMMA:
       return true;
     default:
       return false;
@@ -653,7 +644,7 @@ function isValidStyleFunctionCharacter(code: number): boolean {
 function isValidBlockCharacter(code: number): boolean {
   // @something { }
   // IDENT
-  return code == $AT;
+  return code == chars.$AT;
 }
 
 function isValidCssCharacter(code: number, mode: CssLexerMode): boolean {
@@ -695,20 +686,20 @@ function isValidCssCharacter(code: number, mode: CssLexerMode): boolean {
   }
 }
 
-function charCode(input: any /** TODO #9100 */, index: any /** TODO #9100 */): number {
-  return index >= input.length ? $EOF : StringWrapper.charCodeAt(input, index);
+function charCode(input: string, index: number): number {
+  return index >= input.length ? chars.$EOF : StringWrapper.charCodeAt(input, index);
 }
 
 function charStr(code: number): string {
   return StringWrapper.fromCharCode(code);
 }
 
-export function isNewline(code: any /** TODO #9100 */): boolean {
+export function isNewline(code: number): boolean {
   switch (code) {
-    case $FF:
-    case $CR:
-    case $LF:
-    case $VTAB:
+    case chars.$FF:
+    case chars.$CR:
+    case chars.$LF:
+    case chars.$VTAB:
       return true;
 
     default:

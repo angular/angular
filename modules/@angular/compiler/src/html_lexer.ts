@@ -266,13 +266,13 @@ class _HtmlTokenizer {
     }
   }
 
-  private _attemptCharCodeUntilFn(predicate: Function) {
+  private _attemptCharCodeUntilFn(predicate: (code: number) => boolean) {
     while (!predicate(this._peek)) {
       this._advance();
     }
   }
 
-  private _requireCharCodeUntilFn(predicate: Function, len: number) {
+  private _requireCharCodeUntilFn(predicate: (code: number) => boolean, len: number) {
     var start = this._getLocation();
     this._attemptCharCodeUntilFn(predicate);
     if (this._index - start.offset < len) {
@@ -402,7 +402,7 @@ class _HtmlTokenizer {
     let savedPos = this._savePosition();
     let lowercaseTagName: string;
     try {
-      if (!isAsciiLetter(this._peek)) {
+      if (!chars.isAsciiLetter(this._peek)) {
         throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan());
       }
       var nameStart = this._index;
@@ -635,16 +635,12 @@ class _HtmlTokenizer {
 }
 
 function isNotWhitespace(code: number): boolean {
-  return !isWhitespace(code) || code === chars.$EOF;
-}
-
-function isWhitespace(code: number): boolean {
-  return (code >= chars.$TAB && code <= chars.$SPACE) || (code === chars.$NBSP);
+  return !chars.isWhitespace(code) || code === chars.$EOF;
 }
 
 function isNameEnd(code: number): boolean {
-  return isWhitespace(code) || code === chars.$GT || code === chars.$SLASH || code === chars.$SQ ||
-      code === chars.$DQ || code === chars.$EQ;
+  return chars.isWhitespace(code) || code === chars.$GT || code === chars.$SLASH ||
+      code === chars.$SQ || code === chars.$DQ || code === chars.$EQ;
 }
 
 function isPrefixEnd(code: number): boolean {
@@ -653,11 +649,11 @@ function isPrefixEnd(code: number): boolean {
 }
 
 function isDigitEntityEnd(code: number): boolean {
-  return code == chars.$SEMICOLON || code == chars.$EOF || !isAsciiHexDigit(code);
+  return code == chars.$SEMICOLON || code == chars.$EOF || !chars.isAsciiHexDigit(code);
 }
 
 function isNamedEntityEnd(code: number): boolean {
-  return code == chars.$SEMICOLON || code == chars.$EOF || !isAsciiLetter(code);
+  return code == chars.$SEMICOLON || code == chars.$EOF || !chars.isAsciiLetter(code);
 }
 
 function isExpansionFormStart(input: string, offset: number, interpolationStart: string): boolean {
@@ -668,16 +664,7 @@ function isExpansionFormStart(input: string, offset: number, interpolationStart:
 }
 
 function isExpansionCaseStart(peek: number): boolean {
-  return peek === chars.$EQ || isAsciiLetter(peek);
-}
-
-function isAsciiLetter(code: number): boolean {
-  return code >= chars.$a && code <= chars.$z || code >= chars.$A && code <= chars.$Z;
-}
-
-function isAsciiHexDigit(code: number): boolean {
-  return code >= chars.$a && code <= chars.$f || code >= chars.$A && code <= chars.$F ||
-      code >= chars.$0 && code <= chars.$9;
+  return peek === chars.$EQ || chars.isAsciiLetter(peek);
 }
 
 function compareCharCodeCaseInsensitive(code1: number, code2: number): boolean {

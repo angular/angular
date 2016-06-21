@@ -62,6 +62,20 @@ export const $PIPE = 124;
 export const $TILDA = 126;
 export const $AT = 64;
 
+export const $BT = 96;
+
 export function isWhitespace(code: number): boolean {
   return (code >= $TAB && code <= $SPACE) || (code == $NBSP);
+}
+
+export function isDigit(code: number): boolean {
+  return $0 <= code && code <= $9;
+}
+
+export function isAsciiLetter(code: number): boolean {
+  return code >= $a && code <= $z || code >= $A && code <= $Z;
+}
+
+export function isAsciiHexDigit(code: number): boolean {
+  return code >= $a && code <= $f || code >= $A && code <= $F || isDigit(code);
 }
