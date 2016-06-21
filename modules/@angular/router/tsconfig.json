@@ -30,6 +30,7 @@
     "src/router_outlet_map.ts",
     "src/router_state.ts",
     "src/shared.ts",
+    "src/url_tree.ts",
     "src/common_router_providers.ts",
     "src/router_providers.ts",
     "src/create_url_tree.ts",
