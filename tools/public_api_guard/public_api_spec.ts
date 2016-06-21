@@ -165,7 +165,7 @@ const CORE =
       'DoCheck.ngDoCheck():any',
       'DynamicComponentLoader',
       'DynamicComponentLoader.loadAsRoot(type:Type, overrideSelectorOrNode:string|any, injector:Injector, onDispose:() => void, projectableNodes:any[][]):Promise<ComponentRef>',
-      'DynamicComponentLoader.loadNextToLocation(type:Type, location:ViewContainerRef, providers:ResolvedReflectiveProvider[], projectableNodes:any[][]):Promise<ComponentRef>',
+      'DynamicComponentLoader.loadNextToLocation(type:Type, location:ViewContainerRef, injector:Injector, projectableNodes:any[][]):Promise<ComponentRef>',
       'ElementRef',
       'ElementRef.nativeElement:any',
       'ElementRef.constructor(nativeElement:any)',
