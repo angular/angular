@@ -2,7 +2,7 @@ import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, before
 import {fakeAsync, flushMicrotasks, Log, tick, containsRegexp} from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {isBlank} from '../../src/facade/lang';
-import {Type, ViewContainerRef, TemplateRef, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, Directive, Component, DebugElement, forwardRef, Input, PipeTransform, Attribute, ViewMetadata, provide, Optional, Inject, Self, InjectMetadata, Pipe, Host, SkipSelfMetadata} from '@angular/core';
+import {Type, ViewContainerRef, TemplateRef, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, Directive, Component, DebugElement, forwardRef, Input, PipeTransform, Attribute, ViewMetadata, provide, Optional, Inject, Injectable, Self, InjectMetadata, Pipe, Host, SkipSelfMetadata} from '@angular/core';
 import {NgIf, NgFor} from '@angular/common';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -18,6 +18,7 @@ const ALL_DIRECTIVES = /*@ts2dart_const*/[
   forwardRef(() => NeedsDirectiveFromHost),
   forwardRef(() => NeedsDirective),
   forwardRef(() => NeedsService),
+  forwardRef(() => NeedsServiceAndContainerRef),
   forwardRef(() => NeedsAppService),
   forwardRef(() => NeedsAttribute),
   forwardRef(() => NeedsAttributeNoType),
@@ -98,6 +99,25 @@ class NeedsDirectiveFromHost {
 class NeedsDirective {
   dependency: SimpleDirective;
   constructor(dependency: SimpleDirective) { this.dependency = dependency; }
+}
+
+@Injectable()
+class NeedsElementRefService {
+  constructor(public elementRef: ElementRef) {}
+}
+
+@Injectable()
+class NeedsViewContainerRefService {
+  constructor(public viewContainerRef: ViewContainerRef) {}
+}
+
+@Component({
+  selector: '[needsServiceAndContainerRef]',
+  template: '',
+  providers: [{provide: 'service', useClass: NeedsViewContainerRefService}]
+})
+class NeedsServiceAndContainerRef {
+  constructor(@Inject('service') public service: any, public viewContainerRef: ViewContainerRef) {}
 }
 
 @Directive({selector: '[needsService]'})
@@ -632,6 +652,41 @@ export function main() {
            var el = createComp('<div optionallyNeedsTemplateRef></div>', tcb);
            var instance = el.children[0].injector.get(OptionallyNeedsTemplateRef);
            expect(instance.templateRef).toBeNull();
+         }));
+    });
+
+    describe('refs injected into a service', () => {
+
+      function serviceFromEl(el: DebugElement) { return el.injector.get(NeedsService).service; }
+
+      it('should inject ElementRef', fakeAsync(() => {
+           var el = createComp(
+               '<div needsService></div>',
+               tcb.overrideProviders(
+                   TestComp, [{provide: 'service', useClass: NeedsElementRefService}]));
+           expect(serviceFromEl(el.children[0]).elementRef.nativeElement).toBe(el.nativeElement);
+         }));
+
+      it('should inject ViewContainerRef', fakeAsync(() => {
+           var el = createComp(
+               '<div needsService></div>',
+               tcb.overrideProviders(
+                   TestComp, [{provide: 'service', useClass: NeedsViewContainerRefService}]));
+
+           expect(serviceFromEl(el.children[0]).viewContainerRef.element.nativeElement)
+               .toBe(el.nativeElement);
+         }));
+
+      it('should inject ViewContainerRef from a providing component', fakeAsync(() => {
+           var el = createComp(
+               '<div needsServiceAndContainerRef></div><div needsService></div>',
+               tcb.overrideProviders(
+                   TestComp, [{provide: 'service', useClass: NeedsViewContainerRefService}]));
+
+           expect(el.children[0].componentInstance.service.viewContainerRef.element.nativeElement)
+               .toBe(el.children[0].nativeElement);
+           expect(serviceFromEl(el.children[1]).viewContainerRef.element.nativeElement)
+               .toBe(el.nativeElement);
          }));
     });
 
