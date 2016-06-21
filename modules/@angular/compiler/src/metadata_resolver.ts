@@ -112,14 +112,16 @@ export class CompileMetadataResolver {
         });
         changeDetectionStrategy = cmpMeta.changeDetection;
         if (isPresent(dirMeta.viewProviders)) {
-          viewProviders = this.getProvidersMetadata(dirMeta.viewProviders);
+          viewProviders = this.getProvidersMetadata(
+              verifyNonBlankProviders(directiveType, dirMeta.viewProviders, 'viewProviders'));
         }
         moduleUrl = componentModuleUrl(this._reflector, directiveType, cmpMeta);
       }
 
       var providers: any[] /** TODO #9100 */ = [];
       if (isPresent(dirMeta.providers)) {
-        providers = this.getProvidersMetadata(dirMeta.providers);
+        providers = this.getProvidersMetadata(
+            verifyNonBlankProviders(directiveType, dirMeta.providers, 'providers'));
       }
       var queries: any[] /** TODO #9100 */ = [];
       var viewQueries: any[] /** TODO #9100 */ = [];
@@ -421,6 +423,23 @@ function flattenArray(tree: any[], out: Array<Type|any[]>): void {
       out.push(item);
     }
   }
+}
+
+function verifyNonBlankProviders(
+    directiveType: Type, providersTree: any[], providersType: string): any[] {
+  var flat: any[] = [];
+  var errMsg: string;
+
+  flattenArray(providersTree, flat);
+  for (var i = 0; i < flat.length; i++) {
+    if (isBlank(flat[i])) {
+      errMsg = flat.map(provider => isBlank(provider) ? '?' : stringify(provider)).join(', ');
+      throw new BaseException(
+          `One or more of ${providersType} for "${stringify(directiveType)}" were not defined: [${errMsg}].`);
+    }
+  }
+
+  return providersTree;
 }
 
 function isStaticType(value: any): boolean {
