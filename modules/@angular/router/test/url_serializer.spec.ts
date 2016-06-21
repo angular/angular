@@ -1,6 +1,5 @@
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, serializePath} from '../src/url_serializer';
-import {UrlSegment} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegment, serializePath} from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();

@@ -28,8 +28,6 @@
     "src/config.ts",
     "src/router_outlet_map.ts",
     "src/router_state.ts",
-    "src/url_serializer.ts",
-    "src/url_tree.ts",
     "src/shared.ts",
     "src/common_router_providers.ts",
     "src/router_providers.ts",
