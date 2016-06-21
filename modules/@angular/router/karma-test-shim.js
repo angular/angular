@@ -1,10 +1,9 @@
 /*global jasmine, __karma__, window*/
-Error.stackTraceLimit = Infinity;
+Error.stackTraceLimit = 10;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 __karma__.loaded = function () {
 };
-
 
 function isJsFile(path) {
   return path.slice(-3) == '.js';
@@ -32,14 +31,9 @@ System.config(
   {
     map: {
       'rxjs': 'node_modules/rxjs',
-      '@angular': 'node_modules/@angular',
-      'app': 'dist'
+      '@angular': 'dist/all/@angular'
     },
     packages: {
-      'app': {
-        main: 'main.js',
-        defaultExtension: 'js'
-      },
       '@angular/core': {
         main: 'index.js',
         defaultExtension: 'js'
@@ -57,6 +51,10 @@ System.config(
         defaultExtension: 'js'
       },
       '@angular/platform-browser-dynamic': {
+        main: 'index.js',
+        defaultExtension: 'js'
+      },
+      '@angular/router': {
         main: 'index.js',
         defaultExtension: 'js'
       },

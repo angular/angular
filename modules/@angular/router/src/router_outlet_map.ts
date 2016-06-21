@@ -1,8 +1,5 @@
 import {RouterOutlet} from './directives/router_outlet';
 
-/**
- * @internal
- */
 export class RouterOutletMap {
   /** @internal */
   _outlets: {[name: string]: RouterOutlet} = {};

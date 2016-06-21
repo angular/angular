@@ -1,21 +1,24 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "noEmitOnError": false,
-    "module": "commonjs",
-    "target": "es5",
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "outDir": "dist",
-    "rootDir": ".",
-    "inlineSourceMap": true,
-    "inlineSources": true,
+    "baseUrl": ".",
     "declaration": true,
-    "removeComments": true
+    "stripInternal": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/all/@angular/router/",
+    "paths": {
+      "@angular/*": ["../../../dist/all/@angular/*"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "lib": ["es6", "dom"],
+    "target": "es5"
   },
   "files": [
-    "src/index.ts",
+    "index.ts",
     "src/router.ts",
     "src/apply_redirects.ts",
     "src/recognize.ts",
@@ -46,7 +49,7 @@
     "test/create_url_tree.spec.ts",
     "test/config.spec.ts",
     "test/router.spec.ts",
-    "typings/index.d.ts"
+    "../../../node_modules/@types/jasmine/index.d.ts"
   ]
 }
 

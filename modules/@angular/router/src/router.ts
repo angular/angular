@@ -1,10 +1,7 @@
 import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/concat';
-import 'rxjs/add/operator/concatMap';
-import 'rxjs/add/operator/every';
 import 'rxjs/add/operator/mergeAll';
+import 'rxjs/add/operator/every';
 import 'rxjs/add/observable/from';
 
 import {Location} from '@angular/common';
