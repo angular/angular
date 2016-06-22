@@ -5,8 +5,6 @@ import {asNativeElements} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {Type} from '../src/facade/lang';
-
 export function main() {
   describe('forwardRef integration', function() {
     it('should instantiate components which are declared using forwardRef',
@@ -49,12 +47,10 @@ class Door {
 }
 
 class Frame {
-  name: string;
-  constructor() { this.name = 'frame'; }
+  name: string = 'frame';
 }
 
 @Directive({selector: 'lock'})
 class Lock {
-  name: string;
-  constructor() { this.name = 'lock'; }
+  name: string = 'lock';
 }

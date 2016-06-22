@@ -14,7 +14,6 @@ class SpyTestObj extends SpyObject {
   constructor() { super(TestObj); }
 }
 
-
 export function main() {
   describe('testing', () => {
     describe('equality', () => {

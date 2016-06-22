@@ -142,6 +142,6 @@ class _MockComponentRef extends ComponentRef_<any> {
 }
 
 class _MockConsole implements Console {
-  log(message: any /** TODO #9100 */) {}
-  warn(message: any /** TODO #9100 */) {}
+  log(message: string) {}
+  warn(message: string) {}
 }
