@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "outDir": "../dist/tools/",
     "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
     "paths": {
     },
     "rootDir": ".",

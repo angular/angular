@@ -176,6 +176,8 @@ export class Evaluator {
             case ts.SyntaxKind.BarBarToken:
               return this.isFoldableWorker(binaryExpression.left, folding) &&
                   this.isFoldableWorker(binaryExpression.right, folding);
+            default:
+              return false;
           }
         case ts.SyntaxKind.PropertyAccessExpression:
           const propertyAccessExpression = <ts.PropertyAccessExpression>node;

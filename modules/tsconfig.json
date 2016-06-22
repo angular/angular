@@ -7,6 +7,7 @@
     "moduleResolution": "node",
     "outDir": "../dist/all/",
     "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
     "paths": {
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],

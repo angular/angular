@@ -64,9 +64,8 @@ export class MetadataCollector {
         let isConstructor = false;
         switch (member.kind) {
           case ts.SyntaxKind.Constructor:
-            isConstructor = true;
-          // fallthrough
           case ts.SyntaxKind.MethodDeclaration:
+            isConstructor = member.kind === ts.SyntaxKind.Constructor;
             const method = <ts.MethodDeclaration|ts.ConstructorDeclaration>member;
             const methodDecorators = getDecorators(method.decorators);
             const parameters = method.parameters;
