@@ -74,6 +74,8 @@ export interface Type extends Function {}
  */
 export interface ConcreteType extends Type { new (...args: any[] /** TODO #9100 */): any; }
 
+export interface ClassWithConstructor<T> { new (...args: any[]): T; }
+
 export function getTypeNameForDebugging(type: Type): string {
   if (type['name']) {
     return type['name'];

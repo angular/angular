@@ -8,6 +8,7 @@
 
 // Public API for compiler
 export {ComponentFactory, ComponentRef} from './linker/component_factory';
+export {ComponentFactoryResolver, NoComponentFactoryError} from './linker/component_factory_resolver';
 export {ComponentResolver} from './linker/component_resolver';
 export {DynamicComponentLoader} from './linker/dynamic_component_loader';
 export {ElementRef} from './linker/element_ref';

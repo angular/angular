@@ -964,6 +964,14 @@ export class ComponentMetadata extends DirectiveMetadata {
 
   interpolation: [string, string];
 
+  /**
+   * Defines the components that should be precompiled as well when
+   * this component is defined. For each components listed here,
+   * Angular will create a {@link ComponentFactory ComponentFactory} and store it in the
+   * {@link ComponentFactoryResolver ComponentFactoryResolver}.
+   */
+  precompile: Array<Type|any[]>;
+
   constructor({selector,
                inputs,
                outputs,
@@ -984,7 +992,8 @@ export class ComponentMetadata extends DirectiveMetadata {
                directives,
                pipes,
                encapsulation,
-               interpolation}: {
+               interpolation,
+               precompile}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -1005,7 +1014,8 @@ export class ComponentMetadata extends DirectiveMetadata {
     directives?: Array<Type|any[]>,
     pipes?: Array<Type|any[]>,
     encapsulation?: ViewEncapsulation,
-    interpolation?: [string, string]
+    interpolation?: [string, string],
+    precompile?: Array<Type|any[]>
   } = {}) {
     super({
       selector: selector,
@@ -1031,6 +1041,7 @@ export class ComponentMetadata extends DirectiveMetadata {
     this.moduleId = moduleId;
     this.animations = animations;
     this.interpolation = interpolation;
+    this.precompile = precompile;
   }
 }
 

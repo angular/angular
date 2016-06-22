@@ -9,22 +9,18 @@
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
 import {ViewType, isDefaultChangeDetectionStrategy} from '../../core_private';
+import {AnimationCompiler} from '../animation/animation_compiler';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata, CompileTypeMetadata} from '../compile_metadata';
 import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isPresent} from '../facade/lang';
 import {Identifiers, identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ProviderAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_ast';
 
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView} from './compile_view';
 import {ChangeDetectionStrategyEnum, DetectChangesVars, InjectMethodVars, ViewConstructorVars, ViewEncapsulationEnum, ViewProperties, ViewTypeEnum} from './constants';
-
-import {TemplateAst, TemplateAstVisitor, NgContentAst, EmbeddedTemplateAst, ElementAst, ReferenceAst, VariableAst, BoundEventAst, BoundElementPropertyAst, AttrAst, BoundTextAst, TextAst, DirectiveAst, BoundDirectivePropertyAst, templateVisitAll,} from '../template_ast';
-
-import {getViewFactoryName, createFlatArray, createDiTokenExpression} from './util';
-
-import {CompileIdentifierMetadata, CompileDirectiveMetadata, CompileTokenMetadata} from '../compile_metadata';
-
-import {AnimationCompiler} from '../animation/animation_compiler';
+import {createDiTokenExpression, createFlatArray, getViewFactoryName} from './util';
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 const CLASS_ATTR = 'class';
@@ -34,15 +30,20 @@ const NG_CONTAINER_TAG = 'ng-container';
 var parentRenderNodeVar = o.variable('parentRenderNode');
 var rootSelectorVar = o.variable('rootSelector');
 
-export class ViewCompileDependency {
+export class ViewFactoryDependency {
   constructor(
-      public comp: CompileDirectiveMetadata, public factoryPlaceholder: CompileIdentifierMetadata) {
-  }
+      public comp: CompileDirectiveMetadata, public placeholder: CompileIdentifierMetadata) {}
 }
+
+export class ComponentFactoryDependency {
+  constructor(
+      public comp: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
+}
+
 
 export function buildView(
     view: CompileView, template: TemplateAst[],
-    targetDependencies: ViewCompileDependency[]): number {
+    targetDependencies: Array<ViewFactoryDependency|ComponentFactoryDependency>): number {
   var builderVisitor = new ViewBuilderVisitor(view, targetDependencies);
   templateVisitAll(
       builderVisitor, template,
@@ -65,7 +66,9 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
 
   private _animationCompiler = new AnimationCompiler();
 
-  constructor(public view: CompileView, public targetDependencies: ViewCompileDependency[]) {}
+  constructor(
+      public view: CompileView,
+      public targetDependencies: Array<ViewFactoryDependency|ComponentFactoryDependency>) {}
 
   private _isRootNode(parent: CompileElement): boolean { return parent.view !== this.view; }
 
@@ -203,9 +206,17 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     this.view.nodes.push(compileElement);
     var compViewExpr: o.ReadVarExpr = null;
     if (isPresent(component)) {
-      var nestedComponentIdentifier =
+      let nestedComponentIdentifier =
           new CompileIdentifierMetadata({name: getViewFactoryName(component, 0)});
-      this.targetDependencies.push(new ViewCompileDependency(component, nestedComponentIdentifier));
+      this.targetDependencies.push(new ViewFactoryDependency(component, nestedComponentIdentifier));
+      let precompileComponentIdentifiers =
+          component.precompile.map((precompileComp: CompileIdentifierMetadata) => {
+            var id = new CompileIdentifierMetadata({name: precompileComp.name});
+            this.targetDependencies.push(new ComponentFactoryDependency(precompileComp, id));
+            return id;
+          });
+      compileElement.createComponentFactoryResolver(precompileComponentIdentifiers);
+
       compViewExpr = o.variable(`compView_${nodeIndex}`);  // fix highlighting: `
       compileElement.setComponentView(compViewExpr);
       this.view.createMethod.addStmt(
