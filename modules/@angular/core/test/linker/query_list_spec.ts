@@ -1,7 +1,7 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit,} from '@angular/core/testing/testing_internal';
 import {fakeAsync, tick,} from '@angular/core/testing';
-import {MapWrapper, ListWrapper, iterateListLike} from '../../src/facade/collection';
-import {IS_DART, StringWrapper} from '../../src/facade/lang';
+import {iterateListLike} from '../../src/facade/collection';
+import {StringWrapper} from '../../src/facade/lang';
 import {ObservableWrapper} from '../../src/facade/async';
 import {QueryList} from '@angular/core/src/linker/query_list';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -59,41 +59,39 @@ export function main() {
       expect(join).toEqual('one0two1');
     });
 
-    if (!IS_DART) {
-      it('should support filter', () => {
-        queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList).filter((x: string) => x == 'one')).toEqual(['one']);
-      });
+    it('should support filter', () => {
+      queryList.reset(['one', 'two']);
+      expect((<_JsQueryList>queryList).filter((x: string) => x == 'one')).toEqual(['one']);
+    });
 
-      it('should support filter with index', () => {
-        queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList).filter((x: string, i: number) => i == 0)).toEqual(['one']);
-      });
+    it('should support filter with index', () => {
+      queryList.reset(['one', 'two']);
+      expect((<_JsQueryList>queryList).filter((x: string, i: number) => i == 0)).toEqual(['one']);
+    });
 
-      it('should support reduce', () => {
-        queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
-            .toEqual('start:onetwo');
-      });
+    it('should support reduce', () => {
+      queryList.reset(['one', 'two']);
+      expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
+          .toEqual('start:onetwo');
+    });
 
-      it('should support reduce with index', () => {
-        queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList)
-                   .reduce((a: string, x: string, i: number) => a + x + i, 'start:'))
-            .toEqual('start:one0two1');
-      });
+    it('should support reduce with index', () => {
+      queryList.reset(['one', 'two']);
+      expect((<_JsQueryList>queryList)
+                 .reduce((a: string, x: string, i: number) => a + x + i, 'start:'))
+          .toEqual('start:one0two1');
+    });
 
-      it('should support toArray', () => {
-        queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
-            .toEqual('start:onetwo');
-      });
+    it('should support toArray', () => {
+      queryList.reset(['one', 'two']);
+      expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
+          .toEqual('start:onetwo');
+    });
 
-      it('should support toArray', () => {
-        queryList.reset(['one', 'two']);
-        expect((<_JsQueryList>queryList).toArray()).toEqual(['one', 'two']);
-      });
-    }
+    it('should support toArray', () => {
+      queryList.reset(['one', 'two']);
+      expect((<_JsQueryList>queryList).toArray()).toEqual(['one', 'two']);
+    });
 
     it('should support toString', () => {
       queryList.reset(['one', 'two']);
@@ -106,6 +104,12 @@ export function main() {
       queryList.reset(['one', 'two', 'three']);
       expect(queryList.first).toEqual('one');
       expect(queryList.last).toEqual('three');
+    });
+
+    it('should support some', () => {
+      queryList.reset(['one', 'two', 'three']);
+      expect(queryList.some(item => item === 'one')).toEqual(true);
+      expect(queryList.some(item => item === 'four')).toEqual(false);
     });
 
     if (getDOM().supportsDOMEvents()) {
