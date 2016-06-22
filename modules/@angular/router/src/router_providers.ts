@@ -9,7 +9,7 @@
 import {PlatformLocation} from '@angular/common';
 import {BrowserPlatformLocation} from '@angular/platform-browser';
 
-import * as common from './common_router_providers';
+import {ExtraOptions, provideRouter as provideRouter_} from './common_router_providers';
 import {RouterConfig} from './config';
 
 
@@ -31,9 +31,8 @@ import {RouterConfig} from './config';
  * bootstrap(AppCmp, [provideRouter(router)]);
  * ```
  */
-export function provideRouter(config: RouterConfig, opts: common.ExtraOptions = {}): any[] {
+export function provideRouter(config: RouterConfig, opts: ExtraOptions = {}): any[] {
   return [
-    {provide: PlatformLocation, useClass: BrowserPlatformLocation},
-    ...common.provideRouter(config, opts)
+    {provide: PlatformLocation, useClass: BrowserPlatformLocation}, ...provideRouter_(config, opts)
   ];
 }
