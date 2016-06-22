@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as impl from './wtf_impl';
+import {WtfScopeFn, createScope, detectWTF, endTimeRange, leave, startTimeRange} from './wtf_impl';
 
 export {WtfScopeFn} from './wtf_impl';
 
@@ -16,7 +16,7 @@ export {WtfScopeFn} from './wtf_impl';
 /**
  * True if WTF is enabled.
  */
-export var wtfEnabled = impl.detectWTF();
+export var wtfEnabled = detectWTF();
 
 function noopScope(arg0?: any, arg1?: any): any {
   return null;
@@ -52,8 +52,8 @@ function noopScope(arg0?: any, arg1?: any): any {
  *
  * @experimental
  */
-export var wtfCreateScope: (signature: string, flags?: any) => impl.WtfScopeFn =
-    wtfEnabled ? impl.createScope : (signature: string, flags?: any) => noopScope;
+export var wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn =
+    wtfEnabled ? createScope : (signature: string, flags?: any) => noopScope;
 
 /**
  * Used to mark end of Scope.
@@ -65,7 +65,7 @@ export var wtfCreateScope: (signature: string, flags?: any) => impl.WtfScopeFn =
  * @experimental
  */
 export var wtfLeave: <T>(scope: any, returnValue?: T) => T =
-    wtfEnabled ? impl.leave : (s: any, r?: any) => r;
+    wtfEnabled ? leave : (s: any, r?: any) => r;
 
 /**
  * Used to mark Async start. Async are similar to scope but they don't have to be strictly nested.
@@ -81,7 +81,7 @@ export var wtfLeave: <T>(scope: any, returnValue?: T) => T =
  * @experimental
  */
 export var wtfStartTimeRange: (rangeType: string, action: string) => any =
-    wtfEnabled ? impl.startTimeRange : (rangeType: string, action: string) => null;
+    wtfEnabled ? startTimeRange : (rangeType: string, action: string) => null;
 
 /**
  * Ends a async time range operation.
@@ -89,5 +89,4 @@ export var wtfStartTimeRange: (rangeType: string, action: string) => any =
  * enabled.
  * @experimental
  */
-export var wtfEndTimeRange: (range: any) => void =
-    wtfEnabled ? impl.endTimeRange : (r: any) => null;
+export var wtfEndTimeRange: (range: any) => void = wtfEnabled ? endTimeRange : (r: any) => null;

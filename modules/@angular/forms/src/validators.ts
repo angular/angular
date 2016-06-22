@@ -12,7 +12,7 @@ import {ObservableWrapper} from './facade/async';
 import {StringMapWrapper} from './facade/collection';
 import {isBlank, isPresent, isPromise, isString} from './facade/lang';
 import {PromiseWrapper} from './facade/promise';
-import * as modelModule from './model';
+import {AbstractControl} from './model';
 
 /**
  * Providers for validators to be used for {@link FormControl}s in a form.
@@ -57,7 +57,7 @@ export class Validators {
   /**
    * Validator that requires controls to have a non-empty value.
    */
-  static required(control: modelModule.AbstractControl): {[key: string]: boolean} {
+  static required(control: AbstractControl): {[key: string]: boolean} {
     return isBlank(control.value) || (isString(control.value) && control.value == '') ?
         {'required': true} :
         null;
@@ -67,7 +67,7 @@ export class Validators {
    * Validator that requires controls to have a value of a minimum length.
    */
   static minLength(minLength: number): ValidatorFn {
-    return (control: modelModule.AbstractControl): {[key: string]: any} => {
+    return (control: AbstractControl): {[key: string]: any} => {
       if (isPresent(Validators.required(control))) return null;
       var v: string = control.value;
       return v.length < minLength ?
@@ -80,7 +80,7 @@ export class Validators {
    * Validator that requires controls to have a value of a maximum length.
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return (control: modelModule.AbstractControl): {[key: string]: any} => {
+    return (control: AbstractControl): {[key: string]: any} => {
       if (isPresent(Validators.required(control))) return null;
       var v: string = control.value;
       return v.length > maxLength ?
@@ -93,7 +93,7 @@ export class Validators {
    * Validator that requires a control to match a regex to its value.
    */
   static pattern(pattern: string): ValidatorFn {
-    return (control: modelModule.AbstractControl): {[key: string]: any} => {
+    return (control: AbstractControl): {[key: string]: any} => {
       if (isPresent(Validators.required(control))) return null;
       let regex = new RegExp(`^${pattern}$`);
       let v: string = control.value;
@@ -105,7 +105,7 @@ export class Validators {
   /**
    * No-op validator.
    */
-  static nullValidator(c: modelModule.AbstractControl): {[key: string]: boolean} { return null; }
+  static nullValidator(c: AbstractControl): {[key: string]: boolean} { return null; }
 
   /**
    * Compose multiple validators into a single function that returns the union
@@ -116,7 +116,7 @@ export class Validators {
     var presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
-    return function(control: modelModule.AbstractControl) {
+    return function(control: AbstractControl) {
       return _mergeErrors(_executeValidators(control, presentValidators));
     };
   }
@@ -126,7 +126,7 @@ export class Validators {
     var presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
-    return function(control: modelModule.AbstractControl) {
+    return function(control: AbstractControl) {
       let promises = _executeAsyncValidators(control, presentValidators).map(_convertToPromise);
       return PromiseWrapper.all(promises).then(_mergeErrors);
     };
@@ -137,13 +137,11 @@ function _convertToPromise(obj: any): Promise<any> {
   return isPromise(obj) ? obj : ObservableWrapper.toPromise(obj);
 }
 
-function _executeValidators(
-    control: modelModule.AbstractControl, validators: ValidatorFn[]): any[] {
+function _executeValidators(control: AbstractControl, validators: ValidatorFn[]): any[] {
   return validators.map(v => v(control));
 }
 
-function _executeAsyncValidators(
-    control: modelModule.AbstractControl, validators: AsyncValidatorFn[]): any[] {
+function _executeAsyncValidators(control: AbstractControl, validators: AsyncValidatorFn[]): any[] {
   return validators.map(v => v(control));
 }
 

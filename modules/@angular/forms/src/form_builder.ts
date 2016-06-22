@@ -11,7 +11,7 @@ import {Injectable} from '@angular/core';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {StringMapWrapper} from './facade/collection';
 import {isArray, isPresent} from './facade/lang';
-import * as modelModule from './model';
+import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
 
 
 
@@ -63,23 +63,22 @@ export class FormBuilder {
    *
    * See the {@link FormGroup} constructor for more details.
    */
-  group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any} = null):
-      modelModule.FormGroup {
+  group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any} = null): FormGroup {
     var controls = this._reduceControls(controlsConfig);
     var optionals = <{[key: string]: boolean}>(
         isPresent(extra) ? StringMapWrapper.get(extra, 'optionals') : null);
     var validator: ValidatorFn = isPresent(extra) ? StringMapWrapper.get(extra, 'validator') : null;
     var asyncValidator: AsyncValidatorFn =
         isPresent(extra) ? StringMapWrapper.get(extra, 'asyncValidator') : null;
-    return new modelModule.FormGroup(controls, optionals, validator, asyncValidator);
+    return new FormGroup(controls, optionals, validator, asyncValidator);
   }
   /**
    * Construct a new {@link FormControl} with the given `value`,`validator`, and `asyncValidator`.
    */
   control(
       value: Object, validator: ValidatorFn|ValidatorFn[] = null,
-      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null): modelModule.FormControl {
-    return new modelModule.FormControl(value, validator, asyncValidator);
+      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null): FormControl {
+    return new FormControl(value, validator, asyncValidator);
   }
 
   /**
@@ -88,15 +87,14 @@ export class FormBuilder {
    */
   array(
       controlsConfig: any[], validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null): modelModule.FormArray {
+      asyncValidator: AsyncValidatorFn = null): FormArray {
     var controls = controlsConfig.map(c => this._createControl(c));
-    return new modelModule.FormArray(controls, validator, asyncValidator);
+    return new FormArray(controls, validator, asyncValidator);
   }
 
   /** @internal */
-  _reduceControls(controlsConfig: {[k: string]: any}):
-      {[key: string]: modelModule.AbstractControl} {
-    var controls: {[key: string]: modelModule.AbstractControl} = {};
+  _reduceControls(controlsConfig: {[k: string]: any}): {[key: string]: AbstractControl} {
+    var controls: {[key: string]: AbstractControl} = {};
     StringMapWrapper.forEach(controlsConfig, (controlConfig: any, controlName: string) => {
       controls[controlName] = this._createControl(controlConfig);
     });
@@ -104,10 +102,9 @@ export class FormBuilder {
   }
 
   /** @internal */
-  _createControl(controlConfig: any): modelModule.AbstractControl {
-    if (controlConfig instanceof modelModule.FormControl ||
-        controlConfig instanceof modelModule.FormGroup ||
-        controlConfig instanceof modelModule.FormArray) {
+  _createControl(controlConfig: any): AbstractControl {
+    if (controlConfig instanceof FormControl || controlConfig instanceof FormGroup ||
+        controlConfig instanceof FormArray) {
       return controlConfig;
 
     } else if (isArray(controlConfig)) {

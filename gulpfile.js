@@ -43,7 +43,9 @@ const entrypoints = [
   'dist/packages-dist/platform-server/index.d.ts',
   'dist/packages-dist/platform-server/testing.d.ts',
   'dist/packages-dist/http/index.d.ts',
-  'dist/packages-dist/http/testing.d.ts'
+  'dist/packages-dist/http/testing.d.ts',
+  'dist/packages-dist/forms/index.d.ts',
+  'dist/packages-dist/router/index.d.ts'
 ];
 const publicApiDir = 'tools/public_api_guard';
 const publicApiArgs = [
