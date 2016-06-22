@@ -13,12 +13,12 @@
   </p>
 
   <span class="btn medium primary">
-    <a [routerLink]="record.draft ? ['/drafts'] : ['/inbox']" class="back-button">Back</a>
+    <a [routerLink]="record.draft ? ['../Drafts'] : ['../Inbox']" class="back-button">Back</a>
   </span>
 
   <hr />
 
-  <a [routerLink]="['/inbox', { sort: 'date'} ]" class="sort-button">
+  <a [routerLink]="['../Inbox', { sort: 'date'} ]" class="sort-button">
     View Latest Messages
   </a>
 </div>

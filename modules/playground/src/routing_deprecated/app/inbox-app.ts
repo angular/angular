@@ -1,11 +1,18 @@
 import {Component, Injectable} from '@angular/core';
-import {ROUTER_DIRECTIVES, ActivatedRoute, Router} from '@angular/router';
+import {
+  RouterLink,
+  RouteConfig,
+  Router,
+  Route,
+  RouterOutlet,
+  RouteParams
+} from '@angular/router-deprecated';
 import * as db from './data';
 import {Location} from '@angular/common';
 import {PromiseWrapper, PromiseCompleter} from '@angular/core/src/facade/async';
 import {isPresent, DateWrapper} from '@angular/core/src/facade/lang';
 
-export class InboxRecord {
+class InboxRecord {
   id: string = '';
   subject: string = '';
   content: string = '';
@@ -50,7 +57,7 @@ export class InboxRecord {
 }
 
 @Injectable()
-export class DbService {
+class DbService {
   getData(): Promise<any[]> {
     var p = new PromiseCompleter<any[]>();
     p.resolve(db.data);
@@ -82,51 +89,48 @@ export class DbService {
 }
 
 @Component(
-    {selector: 'inbox-detail', directives: ROUTER_DIRECTIVES, templateUrl: 'app/inbox-detail.html'})
-export class InboxDetailCmp {
-  private record: InboxRecord = new InboxRecord();
-  private ready: boolean = false;
+    {selector: 'inbox-detail', directives: [RouterLink], templateUrl: 'app/inbox-detail.html'})
+class InboxDetailCmp {
+  record: InboxRecord = new InboxRecord();
+  ready: boolean = false;
 
-  constructor(db: DbService, route: ActivatedRoute) {
-    route.params.forEach(p => {
-      PromiseWrapper.then(db.email(p['id']), (data) => { this.record.setData(data); });
+  constructor(db: DbService, params: RouteParams) {
+    var id = params.get('id');
+    PromiseWrapper.then(db.email(id), (data) => { this.record.setData(data); });
+  }
+}
+
+@Component({selector: 'inbox', templateUrl: 'app/inbox.html', directives: [RouterLink]})
+class InboxCmp {
+  items: InboxRecord[] = [];
+  ready: boolean = false;
+
+  constructor(public router: Router, db: DbService, params: RouteParams) {
+    var sortType = params.get('sort');
+    var sortEmailsByDate = isPresent(sortType) && sortType == "date";
+
+    PromiseWrapper.then(db.emails(), (emails: any[]) => {
+      this.ready = true;
+      this.items = emails.map(data => new InboxRecord(data));
+
+      if (sortEmailsByDate) {
+        this.items.sort((a: InboxRecord, b: InboxRecord) =>
+                            DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
+                                    DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
+                                -1 :
+                                1);
+      }
     });
   }
 }
 
-@Component({selector: 'inbox', templateUrl: 'app/inbox.html', directives: ROUTER_DIRECTIVES})
-export class InboxCmp {
-  private items: InboxRecord[] = [];
-  private ready: boolean = false;
 
-  constructor(public router: Router, db: DbService, route: ActivatedRoute) {
-    route.params.forEach(p => {
-      const sortType = p['sort'];
-      const sortEmailsByDate = isPresent(sortType) && sortType == "date";
+@Component({selector: 'drafts', templateUrl: 'app/drafts.html', directives: [RouterLink]})
+class DraftsCmp {
+  items: InboxRecord[] = [];
+  ready: boolean = false;
 
-      PromiseWrapper.then(db.emails(), (emails: any[]) => {
-        this.ready = true;
-        this.items = emails.map(data => new InboxRecord(data));
-
-        if (sortEmailsByDate) {
-          this.items.sort((a: InboxRecord, b: InboxRecord) =>
-            DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
-            DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
-              -1 :
-              1);
-        }
-      });
-    });
-  }
-}
-
-
-@Component({selector: 'drafts', templateUrl: 'app/drafts.html', directives: ROUTER_DIRECTIVES})
-export class DraftsCmp {
-  private items: InboxRecord[] = [];
-  private ready: boolean = false;
-
-  constructor(private router: Router, db: DbService) {
+  constructor(public router: Router, db: DbService) {
     PromiseWrapper.then(db.drafts(), (drafts: any[]) => {
       this.ready = true;
       this.items = drafts.map(data => new InboxRecord(data));
@@ -134,17 +138,24 @@ export class DraftsCmp {
   }
 }
 
-export const ROUTER_CONFIG = [
-  {path: '', terminal: true, redirectTo: 'inbox'},
-  {path: 'inbox', component: InboxCmp},
-  {path: 'drafts', component: DraftsCmp},
-  {path: 'detail/:id', component: InboxDetailCmp}
-];
-
 @Component({
   selector: 'inbox-app',
   viewProviders: [DbService],
   templateUrl: 'app/inbox-app.html',
-  directives: ROUTER_DIRECTIVES
+  directives: [RouterOutlet, RouterLink]
 })
-export class InboxApp {}
+@RouteConfig([
+  new Route({path: '/', component: InboxCmp, name: 'Inbox'}),
+  new Route({path: '/drafts', component: DraftsCmp, name: 'Drafts'}),
+  new Route({path: '/detail/:id', component: InboxDetailCmp, name: 'DetailPage'})
+])
+export class InboxApp {
+  router: Router;
+  location: Location;
+  constructor(router: Router, location: Location) {
+    this.router = router;
+    this.location = location;
+  }
+  inboxPageActive() { return this.location.path() == ''; }
+  draftsPageActive() { return this.location.path() == '/drafts'; }
+}
