@@ -26,7 +26,7 @@ var MOCK_SCHEMA_REGISTRY = [{
 let zeConsole = console;
 
 export function main() {
-  var ngIf: any /** TODO #9100 */;
+  var ngIf: CompileDirectiveMetadata;
   var parse:
       (template: string, directives: CompileDirectiveMetadata[], pipes?: CompilePipeMetadata[]) =>
           TemplateAst[];
@@ -1143,6 +1143,26 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         expect(() => parse('<ng-content>content</ng-content>', []))
             .toThrowError(`Template parse errors:
 <ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content> ("[ERROR ->]<ng-content>content</ng-content>"): TestComp@0:0`);
+      });
+
+      it('should report when *attr is used on a template element', () => {
+        expect(() => parse('<template *ngIf>', [])).toThrowError(`Template parse errors:
+Can't have template bindings on a <template> element but the '*ngIf' attribute was used ("<template [ERROR ->]*ngIf>"): TestComp@0:10`);
+      });
+
+      it('should report when a template attribute is used on a template element', () => {
+        expect(() => parse('<template template="ngIf">', [])).toThrowError(`Template parse errors:
+Can't have template bindings on a <template> element but the 'template' attribute was used ("<template [ERROR ->]template="ngIf">"): TestComp@0:10`);
+      });
+
+      it('should report when mutliple *attrs are used on the same element', () => {
+        expect(() => parse('<div *ngIf *ngFor>', [])).toThrowError(`Template parse errors:
+Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<div *ngIf [ERROR ->]*ngFor>"): TestComp@0:11`);
+      });
+
+      it('should report when mix of template and *attrs are used on the same element', () => {
+        expect(() => parse('<div template="ngIf" *ngFor>', [])).toThrowError(`Template parse errors:
+Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<div template="ngIf" [ERROR ->]*ngFor>"): TestComp@0:21`);
       });
 
       it('should report invalid property names', () => {

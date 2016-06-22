@@ -10,7 +10,7 @@ import {Parser} from './expression_parser/parser';
 import {CompileDirectiveMetadata, CompilePipeMetadata, CompileMetadataWithType,} from './compile_metadata';
 import {HtmlParser} from './html_parser';
 import {splitNsName, mergeNsAndName} from './html_tags';
-import {ParseSourceSpan, ParseError, ParseLocation, ParseErrorLevel} from './parse_util';
+import {ParseSourceSpan, ParseError, ParseErrorLevel} from './parse_util';
 import {InterpolationConfig} from './interpolation_config';
 
 import {ElementAst, BoundElementPropertyAst, BoundEventAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst, ProviderAst, ProviderAstType, VariableAst} from './template_ast';
@@ -312,6 +312,19 @@ class TemplateParseVisitor implements HtmlAstVisitor {
           elementOrDirectiveRefs, elementVars);
       var hasTemplateBinding = this._parseInlineTemplateBinding(
           attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateElementVars);
+
+      if (hasTemplateBinding && isTemplateElement) {
+        this._reportError(
+            `Can't have template bindings on a <template> element but the '${attr.name}' attribute was used`,
+            attr.sourceSpan);
+      }
+
+      if (hasTemplateBinding && hasInlineTemplates) {
+        this._reportError(
+            `Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with *`,
+            attr.sourceSpan);
+      }
+
       if (!hasBinding && !hasTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
         attrs.push(this.visitAttr(attr, null));
@@ -403,7 +416,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseInlineTemplateBinding(
       attr: HtmlAttrAst, targetMatchableAttrs: string[][],
       targetProps: BoundElementOrDirectiveProperty[], targetVars: VariableAst[]): boolean {
-    var templateBindingsSource: any /** TODO #???? */ = null;
+    var templateBindingsSource: string = null;
     if (attr.name == TEMPLATE_ATTR) {
       templateBindingsSource = attr.value;
     } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
@@ -812,9 +825,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       directives: DirectiveAst[], events: BoundEventAst[]) {
     var allDirectiveEvents = new Set<string>();
     directives.forEach(directive => {
-      StringMapWrapper.forEach(
-          directive.directive.outputs,
-          (eventName: string, _: any /** TODO #???? */) => { allDirectiveEvents.add(eventName); });
+      StringMapWrapper.forEach(directive.directive.outputs, (eventName: string) => {
+        allDirectiveEvents.add(eventName);
+      });
     });
     events.forEach(event => {
       if (isPresent(event.target) || !SetWrapper.has(allDirectiveEvents, event.name)) {
@@ -877,7 +890,7 @@ class ElementContext {
       isTemplateElement: boolean, directives: DirectiveAst[],
       providerContext: ProviderElementContext): ElementContext {
     var matcher = new SelectorMatcher();
-    var wildcardNgContentIndex: any /** TODO #???? */ = null;
+    var wildcardNgContentIndex: number = null;
     var component = directives.find(directive => directive.directive.isComponent);
     if (isPresent(component)) {
       var ngContentSelectors = component.directive.template.ngContentSelectors;
@@ -943,7 +956,7 @@ export class PipeCollector extends RecursiveAstVisitor {
 }
 
 function removeDuplicates(items: CompileMetadataWithType[]): CompileMetadataWithType[] {
-  let res: any[] /** TODO #???? */ = [];
+  let res: CompileMetadataWithType[] = [];
   items.forEach(item => {
     let hasMatch =
         res.filter(
