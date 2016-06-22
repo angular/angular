@@ -266,7 +266,7 @@ export class ListWrapper {
   }
 
   static flatten<T>(list: Array<T|T[]>): T[] {
-    var target: any[] /** TODO #???? */ = [];
+    var target: any[] = [];
     _flattenArray(list, target);
     return target;
   }

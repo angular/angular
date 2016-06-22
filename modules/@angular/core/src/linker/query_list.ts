@@ -2,8 +2,6 @@ import {EventEmitter, Observable} from '../facade/async';
 import {ListWrapper} from '../facade/collection';
 import {getSymbolIterator} from '../facade/lang';
 
-
-
 /**
  * An unmodifiable list of items that Angular keeps up to date when the state
  * of the application changes.
@@ -27,46 +25,55 @@ import {getSymbolIterator} from '../facade/lang';
  * ```
  * @stable
  */
-export class QueryList<T> {
+export class QueryList<T>/* implements Iterable<T> */ {
   private _dirty = true;
   private _results: Array<T> = [];
   private _emitter = new EventEmitter();
 
   get changes(): Observable<any> { return this._emitter; }
   get length(): number { return this._results.length; }
-  get first(): T { return ListWrapper.first(this._results); }
-  get last(): T { return ListWrapper.last(this._results); }
+  get first(): T { return this._results[0]; }
+  get last(): T { return this._results[this.length - 1]; }
 
   /**
-   * returns a new array with the passed in function applied to each element.
+   * See
+   * [Array.map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
    */
-  map<U>(fn: (item: T, index?: number) => U): U[] { return this._results.map(fn); }
+  map<U>(fn: (item: T, index: number, array: T[]) => U): U[] { return this._results.map(fn); }
 
   /**
-   * returns a filtered array.
+   * See
+   * [Array.filter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
    */
-  filter(fn: (item: T, index?: number) => boolean): T[] { return this._results.filter(fn); }
+  filter(fn: (item: T, index: number, array: T[]) => boolean): T[] {
+    return this._results.filter(fn);
+  }
 
   /**
-   * returns a reduced value.
+   * See
+   * [Array.reduce](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
    */
-  reduce<U>(fn: (acc: U, item: T, index?: number) => U, init: U): U {
+  reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U {
     return this._results.reduce(fn, init);
   }
 
   /**
-   * executes function for each element in a query.
+   * See
+   * [Array.forEach](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
    */
-  forEach(fn: (item: T, index?: number) => void): void { this._results.forEach(fn); }
+  forEach(fn: (item: T, index: number, array: T[]) => void): void { this._results.forEach(fn); }
 
   /**
-   * converts QueryList into an array
+   * See
+   * [Array.some](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some)
    */
-  toArray(): T[] { return ListWrapper.clone(this._results); }
-
-  [getSymbolIterator()](): any {
-    return (this._results as any /** TODO #???? */)[getSymbolIterator()]();
+  some(fn: (value: T, index: number, array: T[]) => boolean): boolean {
+    return this._results.some(fn);
   }
+
+  toArray(): T[] { return this._results.slice(); }
+
+  [getSymbolIterator()](): Iterator<T> { return (this._results as any)[getSymbolIterator()](); }
 
   toString(): string { return this._results.toString(); }
 
