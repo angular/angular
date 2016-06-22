@@ -14,7 +14,7 @@ import {provide, Injectable, OpaqueToken} from '@angular/core';
 import {CompilerConfig} from '@angular/compiler';
 import {Component, ViewMetadata} from '@angular/core/src/metadata';
 import {IS_DART} from '../../src/facade/lang';
-import {el} from '@angular/platform-browser/testing';
+import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {DomSanitizationService} from '@angular/platform-browser';
 

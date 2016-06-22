@@ -7,7 +7,7 @@
  */
 
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {el} from '@angular/platform-browser/testing';
+import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {ActiveAnimationPlayersMap} from '../../src/animation/active_animation_players_map';
 import {isPresent} from '../../src/facade/lang';

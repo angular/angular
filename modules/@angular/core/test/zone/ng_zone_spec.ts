@@ -14,7 +14,7 @@ import {BaseException} from '../../src/facade/exceptions';
 import {IS_DART, scheduleMicroTask, isPresent} from '../../src/facade/lang';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {NgZone, NgZoneError} from '@angular/core/src/zone/ng_zone';
-import {browserDetection} from '@angular/platform-browser/testing';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
 var needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
 var resultTimer = 1000;

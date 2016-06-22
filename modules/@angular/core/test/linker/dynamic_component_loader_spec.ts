@@ -18,7 +18,7 @@ import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BaseException} from '../../src/facade/exceptions';
 import {PromiseWrapper} from '../../src/facade/promise';
-import {el} from '@angular/platform-browser/testing';
+import {el} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('DynamicComponentLoader', function() {

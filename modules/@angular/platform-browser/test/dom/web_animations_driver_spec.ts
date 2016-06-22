@@ -7,7 +7,7 @@
  */
 
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {el} from '@angular/platform-browser/testing';
+import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {AnimationKeyframe, AnimationStyles} from '../../core_private';
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';

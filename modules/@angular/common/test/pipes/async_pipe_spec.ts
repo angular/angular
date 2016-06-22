@@ -15,7 +15,7 @@ import {WrappedValue} from '@angular/core';
 import {EventEmitter, ObservableWrapper, PromiseWrapper, TimerWrapper} from '../../src/facade/async';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {PromiseCompleter} from '../../src/facade/promise';
-import {browserDetection} from '@angular/platform-browser/testing';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('AsyncPipe', () => {

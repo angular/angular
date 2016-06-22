@@ -10,7 +10,7 @@ import {SelectorMatcher} from '@angular/compiler/src/selector';
 import {CssSelector} from '@angular/compiler/src/selector';
 import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {el} from '@angular/platform-browser/testing';
+import {el} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('SelectorMatcher', () => {

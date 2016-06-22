@@ -19,7 +19,7 @@ import {EventEmitter} from '@angular/core';
 import {ViewType} from '@angular/core/src/linker/view_type';
 import {BaseException} from '@angular/core';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {browserDetection} from '@angular/platform-browser/testing'
+import {browserDetection} from '@angular/platform-browser/testing/browser_util'
 
 export function main() {
   var outputDefs: any[] /** TODO #9100 */ = []; outputDefs.push({

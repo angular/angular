@@ -10,7 +10,7 @@ import {describe, beforeEach, it, expect, ddescribe, iit,} from '@angular/core/t
 import {ShadowCss, processRules, CssRule} from '@angular/compiler/src/shadow_css';
 
 import {RegExpWrapper, StringWrapper, isPresent} from '../src/facade/lang';
-import {normalizeCSS} from '@angular/platform-browser/testing';
+import {normalizeCSS} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('ShadowCss', function() {

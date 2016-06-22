@@ -9,7 +9,7 @@
 import {DatePipe} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
 import {DateWrapper} from '../../src/facade/lang';
 
