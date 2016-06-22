@@ -7,7 +7,6 @@
  */
 
 import {BaseException} from '../index';
-import {getTestInjector} from './test_injector';
 
 let _FakeAsyncTestZoneSpecType = (Zone as any /** TODO #9100 */)['FakeAsyncTestZoneSpec'];
 
@@ -62,16 +61,6 @@ function _getFakeAsyncZoneSpec(): any {
     throw new Error('The code should be running in the fakeAsync zone to call this function');
   }
   return zoneSpec;
-}
-
-/**
- * Clear the queue of pending timers and microtasks.
- * Tests no longer need to call this explicitly.
- *
- * @deprecated
- */
-export function clearPendingTimers(): void {
-  // Do nothing.
 }
 
 /**

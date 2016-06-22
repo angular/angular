@@ -18,6 +18,9 @@ export {MockAnimationPlayer} from './animation/mock_animation_player';
 export {AsyncTestCompleter} from './async_test_completer';
 export {inject} from './test_injector';
 export {expect} from './testing';
+export * from './logger';
+export * from './ng_zone_mock';
+export * from './mock_application_ref';
 
 export var proxy: ClassDecorator = (t: any /** TODO #9100 */) => t;
 

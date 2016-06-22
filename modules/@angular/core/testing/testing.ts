@@ -12,9 +12,7 @@
  */
 import {isPromise, isString} from '../src/facade/lang';
 
-import {TestInjector, async, getTestInjector, inject, injectAsync} from './test_injector';
-
-export {async, inject, injectAsync} from './test_injector';
+import {TestInjector, getTestInjector} from './test_injector';
 
 declare var global: any;
 
@@ -78,6 +76,8 @@ var jsmBeforeEach = _global.beforeEach;
 var jsmIt = _global.it;
 var jsmIIt = _global.fit;
 var jsmXIt = _global.xit;
+
+// TODO(juliemr): override the globals and make them throw with a useful message.
 
 var testInjector: TestInjector = getTestInjector();
 

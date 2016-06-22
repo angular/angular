@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, describe, it, expect, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {ObservableWrapper, TimerWrapper} from '../../../src/facade/async';
-import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
-import {createConnectedMessageBus} from './message_bus_util';
-import {MockNgZone} from '@angular/core/testing';
-import {provide, NgZone} from '@angular/core';
+import {NgZone, provide} from '@angular/core';
 import {withProviders} from '@angular/core/testing/test_injector';
+import {MockNgZone, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
+
+import {ObservableWrapper, TimerWrapper} from '../../../src/facade/async';
+
+import {createConnectedMessageBus} from './message_bus_util';
 
 export function main() {
   /**

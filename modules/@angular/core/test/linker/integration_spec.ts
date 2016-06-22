@@ -7,7 +7,7 @@
  */
 
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {fakeAsync, tick, clearPendingTimers} from '@angular/core/testing';
+import {fakeAsync, tick} from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -1630,8 +1630,6 @@ function declareTests({useJit}: {useJit: boolean}) {
              try {
                tc.injector.get(DirectiveEmittingEvent).fireEvent('boom');
              } catch (e) {
-               clearPendingTimers();
-
                var c = e.context;
                expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
                expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');

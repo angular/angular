@@ -6,8 +6,6 @@ export declare function beforeEach(fn: Function): void;
 
 export declare function beforeEachProviders(fn: () => Array<any>): void;
 
-export declare function clearPendingTimers(): void;
-
 export declare var ddescribe: Function;
 
 export declare var describe: Function;
@@ -26,53 +24,16 @@ export declare function flushMicrotasks(): void;
 
 export declare function getTestInjector(): TestInjector;
 
-export declare function getTypeOf(instance: any): any;
-
 export declare function iit(name: string, fn: Function, timeOut?: number): void;
 
 export declare function inject(tokens: any[], fn: Function): Function;
 
-export declare function injectAsync(tokens: any[], fn: Function): Function;
-
 export declare class InjectSetupWrapper {
     constructor(_providers: () => any);
     inject(tokens: any[], fn: Function): Function;
-    injectAsync(tokens: any[], fn: Function): Function;
 }
-
-export declare function instantiateType(type: Function, params?: any[]): any;
 
 export declare function it(name: string, fn: Function, timeOut?: number): void;
-
-export declare class Log {
-    logItems: any[];
-    constructor();
-    add(value: any): void;
-    fn(value: any): (a1?: any, a2?: any, a3?: any, a4?: any, a5?: any) => void;
-    clear(): void;
-    result(): string;
-}
-
-export declare class MockApplicationRef extends ApplicationRef {
-    registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
-    registerDisposeListener(dispose: () => void): void;
-    bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C>;
-    injector: Injector;
-    zone: NgZone;
-    run(callback: Function): any;
-    waitForAsyncInitializers(): Promise<any>;
-    dispose(): void;
-    tick(): void;
-    componentTypes: Type[];
-}
-
-export declare class MockNgZone extends NgZone {
-    constructor();
-    onStable: EventEmitter<any>;
-    run(fn: Function): any;
-    runOutsideAngular(fn: Function): any;
-    simulateZoneExit(): void;
-}
 
 export declare function resetBaseTestProviders(): void;
 

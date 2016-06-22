@@ -8,7 +8,7 @@
 
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 

@@ -6,24 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-
-import {bootstrap} from '@angular/platform-browser-dynamic';
 import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
-import {Component} from '@angular/core/src/metadata';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {MockLocationStrategy} from '@angular/common/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {ApplicationRef} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
+import {Component} from '@angular/core/src/metadata';
+import {MockApplicationRef, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {RouteConfig, Route, AuxRoute} from '../../src/route_config/route_config_decorator';
+import {ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT, ROUTER_PROVIDERS, RouteParams, Router} from '@angular/router-deprecated';
+
 import {PromiseWrapper} from '../../src/facade/async';
 import {BaseException} from '../../src/facade/exceptions';
-import {ROUTER_PROVIDERS, ROUTER_PRIMARY_COMPONENT, RouteParams, Router, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
+import {AuxRoute, Route, RouteConfig} from '../../src/route_config/route_config_decorator';
 
-import {MockLocationStrategy} from '@angular/common/testing';
-import {ApplicationRef} from '@angular/core/src/application_ref';
-import {MockApplicationRef} from '@angular/core/testing';
+
 
 // noinspection JSAnnotator
 class DummyConsole implements Console {
