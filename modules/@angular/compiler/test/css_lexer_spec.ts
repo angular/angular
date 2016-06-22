@@ -274,8 +274,7 @@ export function main() {
           capturedMessage = e.rawMessage;
         }
 
-        expect(capturedMessage)
-            .toMatchPattern(/Unexpected character \[\>\] at column 0:7 in expression/g);
+        expect(capturedMessage).toMatch(/Unexpected character \[\>\] at column 0:7 in expression/g);
         capturedMessage = null;
 
         try {

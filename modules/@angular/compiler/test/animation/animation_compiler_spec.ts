@@ -44,10 +44,10 @@ export function main() {
       }
 
       expect(capturedErrorMessage)
-          .toMatchPattern(/Unable to apply styles due to missing a state: "missing_state"/g);
+          .toMatch(/Unable to apply styles due to missing a state: "missing_state"/g);
 
       expect(capturedErrorMessage)
-          .toMatchPattern(/Animation states via styles must be prefixed with a ":"/);
+          .toMatch(/Animation states via styles must be prefixed with a ":"/);
     });
   });
 }

@@ -253,21 +253,6 @@ _global.beforeEach(function() {
       };
     },
 
-    toMatchPattern() {
-      return {compare: buildError(false), negativeCompare: buildError(true)};
-
-      function buildError(isNot: any /** TODO #???? */) {
-        return function(actual: any /** TODO #???? */, regex: any /** TODO #???? */) {
-          return {
-            pass: regex.test(actual) == !isNot,
-            get message() {
-              return `Expected ${actual} ${isNot ? 'not ' : ''}to match ${regex.toString()}`;
-            }
-          };
-        };
-      }
-    },
-
     toImplement: function() {
       return {
         compare: function(

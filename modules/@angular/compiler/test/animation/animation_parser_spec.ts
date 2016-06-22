@@ -221,8 +221,8 @@ export function main() {
       expect(step.keyframes.length).toEqual(4);
 
       expect(step.keyframes[0].offset).toEqual(0);
-      expect(step.keyframes[1].offset).toMatchPattern(/^0\.33/);
-      expect(step.keyframes[2].offset).toMatchPattern(/^0\.66/);
+      expect(step.keyframes[1].offset).toMatch(/^0\.33/);
+      expect(step.keyframes[2].offset).toMatch(/^0\.66/);
       expect(step.keyframes[3].offset).toEqual(1);
     });
 
@@ -275,7 +275,7 @@ export function main() {
       expect(errors.length).toEqual(1);
       var error = errors[0];
 
-      expect(error.msg).toMatchPattern(/Not all style\(\) entries contain an offset/);
+      expect(error.msg).toMatch(/Not all style\(\) entries contain an offset/);
     });
 
     it('should use an existing style used earlier in the animation sequence if not defined in the first keyframe',

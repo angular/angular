@@ -417,11 +417,11 @@ export function main() {
 
       expect(errors.length).toEqual(3);
 
-      expect(errors[0].msg).toMatchPattern(/Unexpected character \[\[\] at column 0:7/g);
+      expect(errors[0].msg).toMatch(/Unexpected character \[\[\] at column 0:7/g);
 
-      expect(errors[1].msg).toMatchPattern(/Unexpected character \[%\] at column 0:12/g);
+      expect(errors[1].msg).toMatch(/Unexpected character \[%\] at column 0:12/g);
 
-      expect(errors[2].msg).toMatchPattern(/Unexpected character \[}\] at column 0:19/g);
+      expect(errors[2].msg).toMatch(/Unexpected character \[}\] at column 0:19/g);
     });
 
     it('should throw an error if an attribute selector is not closed properly', () => {
@@ -429,7 +429,7 @@ export function main() {
       var output = parse(styles);
       var errors = output.errors;
 
-      expect(errors[0].msg).toMatchPattern(/Unbalanced CSS attribute selector at column 0:12/g);
+      expect(errors[0].msg).toMatch(/Unbalanced CSS attribute selector at column 0:12/g);
     });
 
     it('should throw an error if a pseudo function selector is not closed properly', () => {
@@ -438,8 +438,7 @@ export function main() {
       var errors = output.errors;
 
       expect(errors[0].msg)
-          .toMatchPattern(
-              /Character does not match expected Character value \("{" should match "\)"\)/);
+          .toMatch(/Character does not match expected Character value \("{" should match "\)"\)/);
     });
 
     it('should raise an error when a semi colon is missing from a CSS style/pair that isn\'t the last entry',
@@ -455,8 +454,7 @@ export function main() {
          expect(errors.length).toEqual(1);
 
          expect(errors[0].msg)
-             .toMatchPattern(
-                 /The CSS key\/value definition did not end with a semicolon at column 1:15/g);
+             .toMatch(/The CSS key\/value definition did not end with a semicolon at column 1:15/g);
        });
 
     it('should parse the inner value of a :not() pseudo-selector as a CSS selector', () => {
@@ -520,18 +518,17 @@ export function main() {
       expect(errors.length).toEqual(4);
 
       expect(errors[0].msg)
-          .toMatchPattern(
+          .toMatch(
               /Identifier does not match expected Character value \("color" should match ":"\) at column 1:19/g);
 
       expect(errors[1].msg)
-          .toMatchPattern(
-              /The CSS key\/value definition did not end with a semicolon at column 2:15/g);
+          .toMatch(/The CSS key\/value definition did not end with a semicolon at column 2:15/g);
 
       expect(errors[2].msg)
-          .toMatchPattern(/The CSS property was not paired with a style value at column 3:8/g);
+          .toMatch(/The CSS property was not paired with a style value at column 3:8/g);
 
       expect(errors[3].msg)
-          .toMatchPattern(/The CSS property was not paired with a style value at column 4:8/g);
+          .toMatch(/The CSS property was not paired with a style value at column 4:8/g);
     });
 
     it('should recover from CSS key/value parse errors', () => {
