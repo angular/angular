@@ -19,7 +19,7 @@ export function main() {
     it('should throw when no suitable implementation found', () => {
       var differs = new IterableDiffers([]);
       expect(() => differs.find('some object'))
-          .toThrowErrorWith('Cannot find a differ supporting object \'some object\'')
+          .toThrowError(/Cannot find a differ supporting object 'some object'/);
     });
 
     it('should return the first suitable implementation', () => {
@@ -46,7 +46,7 @@ export function main() {
         var injector = ReflectiveInjector.resolveAndCreate([IterableDiffers.extend([])]);
 
         expect(() => injector.get(IterableDiffers))
-            .toThrowErrorWith('Cannot extend IterableDiffers without a parent injector');
+            .toThrowError(/Cannot extend IterableDiffers without a parent injector/);
       });
 
       it('should extend di-inherited diffesr', () => {

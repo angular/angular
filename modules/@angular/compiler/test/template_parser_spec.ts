@@ -711,8 +711,8 @@ export function main() {
         it('should report missing @Self() deps as errors', () => {
           var dirA = createDir('[dirA]', {deps: ['self:provider0']});
           expect(() => parse('<div dirA></div>', [dirA]))
-              .toThrowErrorWith(
-                  'No provider for provider0 ("[ERROR ->]<div dirA></div>"): TestComp@0:0');
+              .toThrowError(
+                  'Template parse errors:\nNo provider for provider0 ("[ERROR ->]<div dirA></div>"): TestComp@0:0');
         });
 
         it('should change missing @Self() that are optional to nulls', () => {
@@ -725,8 +725,8 @@ export function main() {
         it('should report missing @Host() deps as errors', () => {
           var dirA = createDir('[dirA]', {deps: ['host:provider0']});
           expect(() => parse('<div dirA></div>', [dirA]))
-              .toThrowErrorWith(
-                  'No provider for provider0 ("[ERROR ->]<div dirA></div>"): TestComp@0:0');
+              .toThrowError(
+                  'Template parse errors:\nNo provider for provider0 ("[ERROR ->]<div dirA></div>"): TestComp@0:0');
         });
 
         it('should change missing @Host() that are optional to nulls', () => {
@@ -1171,7 +1171,7 @@ Can't bind to 'invalidProp' since it isn't a known native property ("<div [ERROR
       });
 
       it('should report errors in expressions', () => {
-        expect(() => parse('<div [prop]="a b"></div>', [])).toThrowErrorWith(`Template parse errors:
+        expect(() => parse('<div [prop]="a b"></div>', [])).toThrowError(`Template parse errors:
 Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [ERROR ->][prop]="a b"></div>"): TestComp@0:5`);
       });
 

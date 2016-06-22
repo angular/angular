@@ -13,13 +13,12 @@ export function main() {
     describe('errors', () => {
       it('should throw on missing selector', () => {
         expect(() => getComponentInfo(AttributeNameComponent))
-            .toThrowErrorWith(
-                'Only selectors matching element names are supported, got: [attr-name]');
+            .toThrowError('Only selectors matching element names are supported, got: [attr-name]');
       });
 
       it('should throw on non element names', () => {
         expect(() => getComponentInfo(NoAnnotationComponent))
-            .toThrowErrorWith('No Directive annotation found on NoAnnotationComponent');
+            .toThrowError('No Directive annotation found on NoAnnotationComponent');
       });
     });
 

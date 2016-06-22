@@ -1632,8 +1632,6 @@ const PLATFORM_BROWSER_TESTING = [
   'NgMatchers.toHaveCssStyle(expected:any):boolean',
   'NgMatchers.toHaveText(expected:any):boolean',
   'NgMatchers.toImplement(expected:any):boolean',
-  'NgMatchers.toMatchPattern(expectedMessage:any):boolean',
-  'NgMatchers.toThrowErrorWith(expectedMessage:any):boolean',
   'normalizeCSS(css:string):string',
   'stringifyElement(el:any):string',
   'var browserDetection:BrowserDetection',

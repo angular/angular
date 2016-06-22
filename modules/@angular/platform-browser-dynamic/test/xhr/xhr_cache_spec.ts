@@ -27,7 +27,7 @@ export function main() {
       setTemplateCache(null);
       expect(() => {
         xhr = new CachedXHR();
-      }).toThrowErrorWith('CachedXHR: Template cache was not found in $templateCache.');
+      }).toThrowError('CachedXHR: Template cache was not found in $templateCache.');
     });
 
     it('should resolve the Promise with the cached file content on success',

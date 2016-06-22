@@ -1,17 +1,13 @@
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
-
 import {Location} from '@angular/common';
-import {NumberWrapper} from '../../src/facade/lang';
+import {NumberWrapper, escapeRegExp} from '../../src/facade/lang';
 import {PromiseWrapper} from '../../src/facade/async';
 import {ListWrapper} from '../../src/facade/collection';
-
-import {provide, Component} from '@angular/core';
-
-import {Router, RouteRegistry, RouterLink, RouterOutlet, AsyncRoute, AuxRoute, Route, RouteParams, RouteConfig, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from '@angular/router-deprecated';
+import {Component} from '@angular/core';
+import {Router, RouteRegistry, RouterLink, AsyncRoute, AuxRoute, Route, RouteParams, RouteConfig, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from '@angular/router-deprecated';
 import {RootRouter} from '@angular/router-deprecated/src/router';
-
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {SpyLocation} from '@angular/common/testing';
@@ -32,7 +28,7 @@ export function main() {
 
     beforeEach(inject(
         [TestComponentBuilder, Router, Location],
-        (tcBuilder: any /** TODO #9100 */, rtr: Router, loc: Location) => {
+        (tcBuilder: TestComponentBuilder, rtr: Router, loc: Location) => {
           tcb = tcBuilder;
           router = rtr;
           location = loc;
@@ -138,8 +134,8 @@ export function main() {
              .then((_) => {
                var link = ListWrapper.toJSON(['Book', {number: 100}]);
                expect(() => fixture.detectChanges())
-                   .toThrowErrorWith(
-                       `Link "${link}" is ambiguous, use "./" or "../" to disambiguate.`);
+                   .toThrowError(new RegExp(escapeRegExp(
+                       `Link "${link}" is ambiguous, use "./" or "../" to disambiguate.`)));
                async.done();
              });
        }));

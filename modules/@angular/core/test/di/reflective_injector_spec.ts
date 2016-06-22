@@ -65,10 +65,10 @@ class CyclicEngine {
 }
 
 class NoAnnotations {
-  constructor(secretDependency: any /** TODO #9100 */) {}
+  constructor(secretDependency: any) {}
 }
 
-function factoryFn(a: any /** TODO #9100 */) {}
+function factoryFn(a: any) {}
 
 export function main() {
   var dynamicProviders = [
@@ -211,9 +211,8 @@ export function main() {
 
       it('should support multiProviders', () => {
         var injector = createInjector([
-          Engine,
-          /* @ts2dart_Provider */ {provide: Car, useClass: SportsCar, multi: true},
-          /* @ts2dart_Provider */ {provide: Car, useClass: CarWithOptionalEngine, multi: true}
+          Engine, {provide: Car, useClass: SportsCar, multi: true},
+          {provide: Car, useClass: CarWithOptionalEngine, multi: true}
         ]);
 
         var cars = injector.get(Car);
@@ -223,10 +222,8 @@ export function main() {
       });
 
       it('should support multiProviders that are created using useExisting', () => {
-        var injector = createInjector([
-          Engine, SportsCar,
-          /* @ts2dart_Provider */ {provide: Car, useExisting: SportsCar, multi: true}
-        ]);
+        var injector = createInjector(
+            [Engine, SportsCar, {provide: Car, useExisting: SportsCar, multi: true}]);
 
         var cars = injector.get(Car);
         expect(cars.length).toEqual(1);
@@ -488,8 +485,8 @@ export function main() {
 
       it('should support multi providers', () => {
         var provider = ReflectiveInjector.resolve([
-          /* @ts2dart_Provider */ {provide: Engine, useClass: BrokenEngine, multi: true},
-          /* @ts2dart_Provider */ {provide: Engine, useClass: TurboEngine, multi: true}
+          {provide: Engine, useClass: BrokenEngine, multi: true},
+          {provide: Engine, useClass: TurboEngine, multi: true}
         ])[0];
 
         expect(provider.key.token).toBe(Engine);
@@ -500,8 +497,8 @@ export function main() {
 
       it('should support providers as hash', () => {
         var provider = ReflectiveInjector.resolve([
-          /* @ts2dart_Provider */ {provide: Engine, useClass: BrokenEngine, multi: true},
-          /* @ts2dart_Provider */ {provide: Engine, useClass: TurboEngine, multi: true}
+          {provide: Engine, useClass: BrokenEngine, multi: true},
+          {provide: Engine, useClass: TurboEngine, multi: true}
         ])[0];
 
         expect(provider.key.token).toBe(Engine);
@@ -510,9 +507,8 @@ export function main() {
       });
 
       it('should support multi providers with only one provider', () => {
-        var provider = ReflectiveInjector.resolve([
-          /* @ts2dart_Provider */ {provide: Engine, useClass: BrokenEngine, multi: true}
-        ])[0];
+        var provider =
+            ReflectiveInjector.resolve([{provide: Engine, useClass: BrokenEngine, multi: true}])[0];
 
         expect(provider.key.token).toBe(Engine);
         expect(provider.multiProvider).toEqual(true);
@@ -521,17 +517,14 @@ export function main() {
 
       it('should throw when mixing multi providers with regular providers', () => {
         expect(() => {
-          ReflectiveInjector.resolve([
-            /* @ts2dart_Provider */ {provide: Engine, useClass: BrokenEngine, multi: true}, Engine
-          ]);
-        }).toThrowErrorWith('Cannot mix multi providers and regular providers');
+          ReflectiveInjector.resolve(
+              [{provide: Engine, useClass: BrokenEngine, multi: true}, Engine]);
+        }).toThrowError(/Cannot mix multi providers and regular providers/);
 
         expect(() => {
-          ReflectiveInjector.resolve([
-            Engine,
-            /* @ts2dart_Provider */ {provide: Engine, useClass: BrokenEngine, multi: true}
-          ]);
-        }).toThrowErrorWith('Cannot mix multi providers and regular providers');
+          ReflectiveInjector.resolve(
+              [Engine, {provide: Engine, useClass: BrokenEngine, multi: true}]);
+        }).toThrowError(/Cannot mix multi providers and regular providers/);
       });
 
       it('should resolve forward references', () => {
@@ -570,16 +563,10 @@ export function main() {
       });
 
       it('should allow declaring dependencies with flat arrays', () => {
-        var resolved = ReflectiveInjector.resolve([{
-          provide: 'token',
-          useFactory: (e: any /** TODO #9100 */) => e,
-          deps: [new InjectMetadata('dep')]
-        }]);
-        var nestedResolved = ReflectiveInjector.resolve([{
-          provide: 'token',
-          useFactory: (e: any /** TODO #9100 */) => e,
-          deps: [[new InjectMetadata('dep')]]
-        }]);
+        var resolved = ReflectiveInjector.resolve(
+            [{provide: 'token', useFactory: (e: any) => e, deps: [new InjectMetadata('dep')]}]);
+        var nestedResolved = ReflectiveInjector.resolve(
+            [{provide: 'token', useFactory: (e: any) => e, deps: [[new InjectMetadata('dep')]]}]);
         expect(resolved[0].resolvedFactories[0].dependencies[0].key.token)
             .toEqual(nestedResolved[0].resolvedFactories[0].dependencies[0].key.token);
       });

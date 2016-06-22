@@ -31,10 +31,6 @@ expect(element).toHaveCssStyle({width: '100px', height: 'auto'});
 expect(exception).toContainError('Failed to load');
 // #enddocregion
 
-// #docregion toThrowErrorWith
-expect(() => { throw 'Failed to load'; }).toThrowErrorWith('Failed to load');
-// #enddocregion
-
 // #docregion toImplement
 expect(SomeClass).toImplement(OtherClass);
 // #enddocregion

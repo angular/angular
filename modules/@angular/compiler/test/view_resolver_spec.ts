@@ -40,13 +40,13 @@ export function main() {
 
     it('should throw when Component has neither template nor templateUrl set', () => {
       expect(() => resolver.resolve(ComponentWithoutView))
-          .toThrowErrorWith(
-              'Component \'ComponentWithoutView\' must have either \'template\' or \'templateUrl\' set');
+          .toThrowError(
+              /Component 'ComponentWithoutView' must have either 'template' or 'templateUrl' set/);
     });
 
     it('should throw when simple class has no component decorator', () => {
       expect(() => resolver.resolve(SimpleClass))
-          .toThrowErrorWith('Could not compile \'SimpleClass\' because it is not a component.');
+          .toThrowError('Could not compile \'SimpleClass\' because it is not a component.');
     });
   });
 }

@@ -110,7 +110,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                   let ci = fixture.debugElement.componentInstance;
                   ci.ctxProp = trusted;
                   expect(() => fixture.detectChanges())
-                      .toThrowErrorWith('Required a safe URL, got a Script');
+                      .toThrowError(/Required a safe URL, got a Script/);
 
                   async.done();
                 });

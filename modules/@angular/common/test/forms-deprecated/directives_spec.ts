@@ -141,16 +141,14 @@ export function main() {
           var dir = new NgControlName(form, null, null, [defaultAccessor]);
           dir.name = 'invalidName';
 
-          expect(() => form.addControl(dir))
-              .toThrowError(new RegExp('Cannot find control \'invalidName\''));
+          expect(() => form.addControl(dir)).toThrowError(/Cannot find control 'invalidName'/);
         });
 
         it('should throw when no value accessor', () => {
           var dir = new NgControlName(form, null, null, null);
           dir.name = 'login';
 
-          expect(() => form.addControl(dir))
-              .toThrowError(new RegExp('No value accessor for \'login\''));
+          expect(() => form.addControl(dir)).toThrowError(/No value accessor for 'login'/);
         });
 
         it('should set up validators', fakeAsync(() => {

@@ -47,7 +47,7 @@ export function main() {
 
              tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                expect(() => fixture.detectChanges())
-                   .toThrowError(new RegExp(`ngFormModel expects a form. Please pass one in.`));
+                   .toThrowError(/ngFormModel expects a form\. Please pass one in/);
                async.done();
              });
            }));
