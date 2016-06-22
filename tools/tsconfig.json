@@ -19,6 +19,7 @@
   },
   "exclude": [
     "node_modules",
-    "typings-test"
+    "typings-test",
+    "public_api_guard"
   ]
 }
