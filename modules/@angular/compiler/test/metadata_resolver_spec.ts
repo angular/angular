@@ -64,6 +64,20 @@ export function main() {
                .toThrowError(`Can't resolve all parameters for NonAnnotatedService: (?).`);
          }));
 
+      it('should throw with descriptive error message when one of providers is not present',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           expect(() => resolver.getDirectiveMetadata(MyBrokenComp3))
+               .toThrowError(
+                   `One or more of providers for "MyBrokenComp3" were not defined: [?, SimpleService, ?].`);
+         }));
+
+      it('should throw with descriptive error message when one of viewProviders is not present',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           expect(() => resolver.getDirectiveMetadata(MyBrokenComp4))
+               .toThrowError(
+                   `One or more of viewProviders for "MyBrokenComp4" were not defined: [?, SimpleService, ?].`);
+         }));
+
       it('should throw an error when the interpolation config has invalid symbols',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidInterpolation1))
@@ -160,6 +174,18 @@ class NonAnnotatedService {
 @Component({selector: 'my-broken-comp', template: '', providers: [NonAnnotatedService]})
 class MyBrokenComp2 {
   constructor(dependency: NonAnnotatedService) {}
+}
+
+@Injectable()
+class SimpleService {
+}
+
+@Component({selector: 'my-broken-comp', template: '', providers: [null, SimpleService, [null]]})
+class MyBrokenComp3 {
+}
+
+@Component({selector: 'my-broken-comp', template: '', viewProviders: [null, SimpleService, [null]]})
+class MyBrokenComp4 {
 }
 
 @Component({selector: 'someSelector', template: '', interpolation: [' ', ' ']})
