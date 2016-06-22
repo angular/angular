@@ -186,7 +186,8 @@ export interface ComponentMetadataFactory {
     directives?: Array<Type|any[]>,
     pipes?: Array<Type|any[]>,
     encapsulation?: ViewEncapsulation,
-    interpolation?: [string, string]
+    interpolation?: [string, string],
+    precompile?: Array<Type|any[]>
   }): ComponentDecorator;
   new (obj: {
     selector?: string,
@@ -209,7 +210,8 @@ export interface ComponentMetadataFactory {
     directives?: Array<Type|any[]>,
     pipes?: Array<Type|any[]>,
     encapsulation?: ViewEncapsulation,
-    interpolation?: [string, string]
+    interpolation?: [string, string],
+    precompile?: Array<Type|any[]>
   }): ComponentMetadata;
 }
 

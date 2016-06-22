@@ -17,12 +17,14 @@ import {TemplateAst} from '../template_ast';
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
 import {bindView} from './view_binder';
-import {ViewCompileDependency, buildView, finishView} from './view_builder';
+import {ComponentFactoryDependency, ViewFactoryDependency, buildView, finishView} from './view_builder';
+
+export {ComponentFactoryDependency, ViewFactoryDependency} from './view_builder';
 
 export class ViewCompileResult {
   constructor(
       public statements: o.Statement[], public viewFactoryVar: string,
-      public dependencies: ViewCompileDependency[]) {}
+      public dependencies: Array<ViewFactoryDependency|ComponentFactoryDependency>) {}
 }
 
 @Injectable()
@@ -33,9 +35,9 @@ export class ViewCompiler {
   compileComponent(
       component: CompileDirectiveMetadata, template: TemplateAst[], styles: o.Expression,
       pipes: CompilePipeMetadata[]): ViewCompileResult {
-    var dependencies: any[] /** TODO #9100 */ = [];
+    var dependencies: Array<ViewFactoryDependency|ComponentFactoryDependency> = [];
     var compiledAnimations = this._animationCompiler.compileComponent(component);
-    var statements: any[] /** TODO #9100 */ = [];
+    var statements: o.Statement[] = [];
     compiledAnimations.map(entry => {
       statements.push(entry.statesMapStatement);
       statements.push(entry.fnStatement);

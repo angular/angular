@@ -675,7 +675,7 @@ export class CompileTemplateMetadata {
 export class CompileDirectiveMetadata implements CompileMetadataWithType {
   static create(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
-       lifecycleHooks, providers, viewProviders, queries, viewQueries, template}: {
+       lifecycleHooks, providers, viewProviders, queries, viewQueries, precompile, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -691,6 +691,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
         queries?: CompileQueryMetadata[],
         viewQueries?: CompileQueryMetadata[],
+        precompile?: CompileTypeMetadata[],
         template?: CompileTemplateMetadata
       } = {}): CompileDirectiveMetadata {
     var hostListeners: {[key: string]: string} = {};
@@ -743,6 +744,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
       viewProviders: viewProviders,
       queries: queries,
       viewQueries: viewQueries,
+      precompile: precompile,
       template: template
     });
   }
@@ -761,12 +763,13 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
   viewProviders: CompileProviderMetadata[];
   queries: CompileQueryMetadata[];
   viewQueries: CompileQueryMetadata[];
+  precompile: CompileTypeMetadata[];
 
   template: CompileTemplateMetadata;
   constructor(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, hostListeners,
        hostProperties, hostAttributes, lifecycleHooks, providers, viewProviders, queries,
-       viewQueries, template}: {
+       viewQueries, precompile, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -784,6 +787,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
         queries?: CompileQueryMetadata[],
         viewQueries?: CompileQueryMetadata[],
+        precompile?: CompileTypeMetadata[],
         template?: CompileTemplateMetadata
       } = {}) {
     this.type = type;
@@ -801,6 +805,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
     this.viewProviders = _normalizeArray(viewProviders);
     this.queries = _normalizeArray(queries);
     this.viewQueries = _normalizeArray(viewQueries);
+    this.precompile = _normalizeArray(precompile);
     this.template = template;
   }
 
@@ -827,7 +832,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
       providers: _arrayFromJson(data['providers'], metadataFromJson),
       viewProviders: _arrayFromJson(data['viewProviders'], metadataFromJson),
       queries: _arrayFromJson(data['queries'], CompileQueryMetadata.fromJson),
-      viewQueries: _arrayFromJson(data['viewQueries'], CompileQueryMetadata.fromJson)
+      viewQueries: _arrayFromJson(data['viewQueries'], CompileQueryMetadata.fromJson),
+      precompile: _arrayFromJson(data['precompile'], CompileTypeMetadata.fromJson)
     });
   }
 
@@ -850,7 +856,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
       'providers': _arrayToJson(this.providers),
       'viewProviders': _arrayToJson(this.viewProviders),
       'queries': _arrayToJson(this.queries),
-      'viewQueries': _arrayToJson(this.viewQueries)
+      'viewQueries': _arrayToJson(this.viewQueries),
+      'precompile': _arrayToJson(this.precompile)
     };
   }
 }

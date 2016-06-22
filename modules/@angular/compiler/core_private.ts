@@ -24,6 +24,8 @@ export var ReflectorComponentResolver: typeof t.ReflectorComponentResolver =
     r.ReflectorComponentResolver;
 export type AppElement = t.AppElement;
 export var AppElement: typeof t.AppElement = r.AppElement;
+export var CodegenComponentFactoryResolver: typeof t.CodegenComponentFactoryResolver =
+    r.CodegenComponentFactoryResolver;
 export var AppView: typeof t.AppView = r.AppView;
 export type DebugAppView<T> = t.DebugAppView<T>;
 export var DebugAppView: typeof t.DebugAppView = r.DebugAppView;

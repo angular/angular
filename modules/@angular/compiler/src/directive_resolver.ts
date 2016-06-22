@@ -125,7 +125,8 @@ export class DirectiveResolver {
         queries: mergedQueries,
         changeDetection: dm.changeDetection,
         providers: dm.providers,
-        viewProviders: dm.viewProviders
+        viewProviders: dm.viewProviders,
+        precompile: dm.precompile
       });
 
     } else {

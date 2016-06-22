@@ -51,7 +51,8 @@ export class MockDirectiveResolver extends DirectiveResolver {
         queries: dm.queries,
         changeDetection: dm.changeDetection,
         providers: providers,
-        viewProviders: viewProviders
+        viewProviders: viewProviders,
+        precompile: dm.precompile
       });
     }
 

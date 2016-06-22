@@ -99,6 +99,7 @@ export class CompileMetadataResolver {
       var changeDetectionStrategy: any /** TODO #9100 */ = null;
       var viewProviders: any[] /** TODO #9100 */ = [];
       var moduleUrl = staticTypeModuleUrl(directiveType);
+      var precompileTypes: cpl.CompileTypeMetadata[] = [];
       if (dirMeta instanceof ComponentMetadata) {
         assertArrayOfStrings('styles', dirMeta.styles);
         var cmpMeta = <ComponentMetadata>dirMeta;
@@ -124,6 +125,10 @@ export class CompileMetadataResolver {
               verifyNonBlankProviders(directiveType, dirMeta.viewProviders, 'viewProviders'));
         }
         moduleUrl = componentModuleUrl(this._reflector, directiveType, cmpMeta);
+        if (cmpMeta.precompile) {
+          precompileTypes = flattenArray(cmpMeta.precompile)
+                                .map((cmp) => this.getTypeMetadata(cmp, staticTypeModuleUrl(cmp)));
+        }
       }
 
       var providers: any[] /** TODO #9100 */ = [];
@@ -152,7 +157,8 @@ export class CompileMetadataResolver {
         providers: providers,
         viewProviders: viewProviders,
         queries: queries,
-        viewQueries: viewQueries
+        viewQueries: viewQueries,
+        precompile: precompileTypes
       });
       this._directiveCache.set(directiveType, meta);
     }
@@ -422,7 +428,7 @@ function flattenPipes(view: ViewMetadata, platformPipes: any[]): Type[] {
   return pipes;
 }
 
-function flattenArray(tree: any[], out: Array<Type|any[]>): void {
+function flattenArray(tree: any[], out: Array<Type> = []): Array<Type> {
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {
@@ -431,6 +437,7 @@ function flattenArray(tree: any[], out: Array<Type|any[]>): void {
       out.push(item);
     }
   }
+  return out;
 }
 
 function verifyNonBlankProviders(

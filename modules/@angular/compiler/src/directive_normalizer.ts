@@ -52,6 +52,7 @@ export class DirectiveNormalizer {
                 viewProviders: directive.viewProviders,
                 queries: directive.queries,
                 viewQueries: directive.viewQueries,
+                precompile: directive.precompile,
                 template: normalizedTemplate
               }));
   }

@@ -21,6 +21,7 @@ import * as console from './src/console';
 import * as debug from './src/debug/debug_renderer';
 import * as provider_util from './src/di/provider_util';
 import * as reflective_provider from './src/di/reflective_provider';
+import * as component_factory_resolver from './src/linker/component_factory_resolver';
 import * as component_resolver from './src/linker/component_resolver';
 import * as debug_context from './src/linker/debug_context';
 import * as element from './src/linker/element';
@@ -52,6 +53,8 @@ export declare namespace __core_private_types__ {
   export type ReflectorReader = reflector_reader.ReflectorReader;
   export var ReflectorReader: typeof reflector_reader.ReflectorReader;
   export var ReflectorComponentResolver: typeof component_resolver.ReflectorComponentResolver;
+  export var CodegenComponentFactoryResolver:
+      typeof component_factory_resolver.CodegenComponentFactoryResolver;
   export type AppElement = element.AppElement;
   export var AppElement: typeof element.AppElement;
   export var AppView: typeof view.AppView;
@@ -141,6 +144,7 @@ export var __core_private__ = {
   LIFECYCLE_HOOKS_VALUES: lifecycle_hooks.LIFECYCLE_HOOKS_VALUES,
   ReflectorReader: reflector_reader.ReflectorReader,
   ReflectorComponentResolver: component_resolver.ReflectorComponentResolver,
+  CodegenComponentFactoryResolver: component_factory_resolver.CodegenComponentFactoryResolver,
   AppElement: element.AppElement,
   AppView: view.AppView,
   DebugAppView: view.DebugAppView,
