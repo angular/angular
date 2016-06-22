@@ -5,6 +5,9 @@ import {isBlank, isPresent, normalizeBlank} from '../facade/lang';
 
 const _CASE_DEFAULT = /*@ts2dart_const*/ new Object();
 
+// TODO: remove when fully deprecated
+let _warned: boolean = false;
+
 export class SwitchView {
   constructor(
       private _viewContainerRef: ViewContainerRef, private _templateRef: TemplateRef<Object>) {}
@@ -179,9 +182,6 @@ export class NgSwitchCase {
   _value: any = _CASE_DEFAULT;
   /** @internal */
   _view: SwitchView;
-  // TODO: remove when fully deprecated
-  /** @internal */
-  _warned: boolean;
   private _switch: NgSwitch;
 
   constructor(
@@ -197,8 +197,8 @@ export class NgSwitchCase {
   }
 
   set ngSwitchWhen(value: any) {
-    if (!this._warned) {
-      this._warned = true;
+    if (!_warned) {
+      _warned = true;
       console.warn('*ngSwitchWhen is deprecated and will be removed. Use *ngSwitchCase instead');
     }
     this._switch._onCaseValueChanged(this._value, value, this._view);
