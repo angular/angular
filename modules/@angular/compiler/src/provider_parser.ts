@@ -197,14 +197,16 @@ export class ProviderElementContext {
       if ((requestingProviderType === ProviderAstType.Directive ||
            requestingProviderType === ProviderAstType.Component)) {
         if (dep.token.equalsTo(identifierToken(Identifiers.Renderer)) ||
-            dep.token.equalsTo(identifierToken(Identifiers.ElementRef)) ||
             dep.token.equalsTo(identifierToken(Identifiers.ChangeDetectorRef)) ||
             dep.token.equalsTo(identifierToken(Identifiers.TemplateRef))) {
           return dep;
         }
-        if (dep.token.equalsTo(identifierToken(Identifiers.ViewContainerRef))) {
-          this._hasViewContainer = true;
-        }
+      }
+      if (dep.token.equalsTo(identifierToken(Identifiers.ElementRef))) {
+        return dep;
+      }
+      if (dep.token.equalsTo(identifierToken(Identifiers.ViewContainerRef))) {
+        this._hasViewContainer = true;
       }
       // access the injector
       if (dep.token.equalsTo(identifierToken(Identifiers.Injector))) {
