@@ -51,6 +51,10 @@ export function main() {
       t.expect(sanitizeHtml('<?pi nodes?>no.')).toEqual('no.');
       t.expect(logMsgs.join('\n')).toMatch(/sanitizing HTML stripped some content/);
     });
+    t.it('supports sanitizing escaped entities', () => {
+      t.expect(sanitizeHtml('&#128640;')).toEqual('&#128640;');
+      t.expect(logMsgs).toEqual([]);
+    });
     t.it('escapes entities', () => {
       t.expect(sanitizeHtml('<p>Hello &lt; World</p>')).toEqual('<p>Hello &lt; World</p>');
       t.expect(sanitizeHtml('<p>Hello < World</p>')).toEqual('<p>Hello &lt; World</p>');
