@@ -65,6 +65,57 @@ export function main() {
           var c = new FormControl(null, Validators.required);
           expect(c.errors).toEqual({'required': true});
         });
+
+        it('should set single validator', () => {
+          var c = new FormControl(null);
+          expect(c.valid).toEqual(true);
+
+          c.setValidators(Validators.required);
+
+          c.updateValue(null);
+          expect(c.valid).toEqual(false);
+
+          c.updateValue('abc');
+          expect(c.valid).toEqual(true);
+        });
+
+        it('should set multiple validators from array', () => {
+          var c = new FormControl('');
+          expect(c.valid).toEqual(true);
+
+          c.setValidators([Validators.minLength(5), Validators.required]);
+
+          c.updateValue('');
+          expect(c.valid).toEqual(false);
+
+          c.updateValue('abc');
+          expect(c.valid).toEqual(false);
+
+          c.updateValue('abcde');
+          expect(c.valid).toEqual(true);
+        });
+
+        it('should clear validators', () => {
+          var c = new FormControl('', Validators.required);
+          expect(c.valid).toEqual(false);
+
+          c.clearValidators();
+          expect(c.validator).toEqual(null);
+
+          c.updateValue('');
+          expect(c.valid).toEqual(true);
+        });
+
+        it('should add after clearing', () => {
+          var c = new FormControl('', Validators.required);
+          expect(c.valid).toEqual(false);
+
+          c.clearValidators();
+          expect(c.validator).toEqual(null);
+
+          c.setValidators([Validators.required]);
+          expect(c.validator).not.toBe(null);
+        });
       });
 
       describe('asyncValidator', () => {
@@ -134,6 +185,38 @@ export function main() {
              tick();
 
              expect(c.errors).toEqual({'async': true, 'other': true});
+           }));
+
+        it('should add single async validator', fakeAsync(() => {
+             var c = new FormControl('value', null);
+
+             c.setAsyncValidators(asyncValidator('expected'));
+             expect(c.asyncValidator).not.toEqual(null);
+
+             c.updateValue('expected');
+             tick();
+
+             expect(c.valid).toEqual(true);
+           }));
+
+        it('should add async validator from array', fakeAsync(() => {
+             var c = new FormControl('value', null);
+
+             c.setAsyncValidators([asyncValidator('expected')]);
+             expect(c.asyncValidator).not.toEqual(null);
+
+             c.updateValue('expected');
+             tick();
+
+             expect(c.valid).toEqual(true);
+           }));
+
+        it('should clear async validators', fakeAsync(() => {
+             var c = new FormControl('value', [asyncValidator('expected'), otherAsyncValidator]);
+
+             c.clearValidators();
+
+             expect(c.asyncValidator).toEqual(null);
            }));
       });
 
