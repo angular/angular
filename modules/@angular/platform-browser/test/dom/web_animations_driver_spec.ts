@@ -92,5 +92,15 @@ export function main() {
       var options = details['options'];
       expect(options['fill']).toEqual('both');
     });
+
+    it('should apply the provided easing', () => {
+      var startingStyles = _makeStyles({});
+      var styles = [_makeKeyframe(0, {'color': 'green'}), _makeKeyframe(1, {'color': 'red'})];
+
+      driver.animate(elm, startingStyles, styles, 1000, 1000, 'ease-out');
+      var details = driver.log.pop();
+      var options = details['options'];
+      expect(options['easing']).toEqual('ease-out');
+    });
   });
 }

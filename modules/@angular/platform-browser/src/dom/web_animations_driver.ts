@@ -50,6 +50,7 @@ export class WebAnimationsDriver implements AnimationDriver {
     var playerOptions = {
       'duration': duration,
       'delay': delay,
+      'easing': easing,
       'fill': 'both'  // we use `both` because it allows for styling at 0% to work with `delay`
     };
 
