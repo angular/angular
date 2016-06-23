@@ -24,6 +24,7 @@ echo 'travis_fold:end:test.buildPackages'
 
 ./scripts/ci-lite/offline_compiler_test.sh
 ./tools/typings-test/test.sh
+$(npm bin)/gulp public-api:enforce
 
 echo 'travis_fold:start:test.e2e.localChrome'
 cd dist/
