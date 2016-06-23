@@ -54,9 +54,11 @@ export class Tsc implements CompilerInterface {
     this.basePath = basePath;
 
     // Allow a directory containing tsconfig.json as the project value
+    // Note, TS@next returns an empty array, while earlier versions throw
     try {
-      this.readDirectory(project);
-      project = path.join(project, 'tsconfig.json');
+      if (this.readDirectory(project).length > 0) {
+        project = path.join(project, 'tsconfig.json');
+      }
     } catch (e) {
       // Was not a directory, continue on assuming it's a file
     }
