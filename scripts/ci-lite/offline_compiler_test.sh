@@ -31,6 +31,7 @@ cp -v package.json $TMP
   # TODO(alexeagle): allow this to be npm link instead
   npm install ${LINKABLE_PKGS[*]}
 
+  ./node_modules/.bin/tsc --version
   # Compile the compiler-cli integration tests
   ./node_modules/.bin/ngc
   ./node_modules/.bin/ng-xi18n
@@ -38,4 +39,8 @@ cp -v package.json $TMP
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node
   ./node_modules/.bin/jasmine test/*_spec.js
+
+  # Compile again with a differently named tsconfig file
+  mv tsconfig.json othername.json
+  ./node_modules/.bin/ngc -p othername.json
 )
