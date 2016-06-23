@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing';
-
-import {fakeAsync, async, withProviders, tick,} from '@angular/core/testing';
+import {addProviders, inject, fakeAsync, async, withProviders, tick,} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {Injectable, provide, Component, ViewMetadata} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {PromiseWrapper} from '../../http/src/facade/promise';
@@ -127,7 +126,7 @@ export function main() {
 
   describe('using the test injector with the inject helper', () => {
     describe('setting up Providers', () => {
-      beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
+      beforeEach(() => addProviders([{provide: FancyService, useValue: new FancyService()}]));
 
       it('should use set up providers', inject([FancyService], (service: any /** TODO #9100 */) => {
            expect(service.value).toEqual('real value');
@@ -273,23 +272,24 @@ export function main() {
       restoreJasmineIt();
     });
 
-    describe('using beforeEachProviders', () => {
-      beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
+    describe('using addProviders', () => {
+      beforeEach(() => addProviders([{provide: FancyService, useValue: new FancyService()}]));
 
       beforeEach(inject([FancyService], (service: any /** TODO #9100 */) => {
         expect(service.value).toEqual('real value');
       }));
 
-      describe('nested beforeEachProviders', () => {
+      describe('nested addProviders', () => {
 
         it('should fail when the injector has already been used', () => {
           patchJasmineBeforeEach();
           expect(() => {
-            beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
+            beforeEach(() => addProviders([{provide: FancyService, useValue: new FancyService()}]));
           })
               .toThrowError(
-                  'beforeEachProviders was called after the injector had been used ' +
-                  'in a beforeEach or it block. This invalidates the test injector');
+                  'addProviders can\'t be called after the injector has been already created for this test. ' +
+                  'This is most likely because you\'ve already used the injector to inject a beforeEach or the ' +
+                  'current `it` function.');
           restoreJasmineBeforeEach();
         });
       });

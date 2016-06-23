@@ -132,7 +132,7 @@ export function resetBaseTestProviders() {
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
  */
-export function inject(tokens: any[], fn: Function): Function {
+export function inject(tokens: any[], fn: Function): () => any {
   let testInjector = getTestInjector();
   if (tokens.indexOf(AsyncTestCompleter) >= 0) {
     // Return an async test method that returns a Promise if AsyncTestCompleter is one of the
@@ -158,7 +158,7 @@ export class InjectSetupWrapper {
     }
   }
 
-  inject(tokens: any[], fn: Function): Function {
+  inject(tokens: any[], fn: Function): () => any {
     return () => {
       this._addProviders();
       return inject_impl(tokens, fn)();
