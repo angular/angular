@@ -195,6 +195,19 @@ function declareTests({useJit}: {useJit: boolean}) {
           });
 
       itAsync(
+          'should escape unsafe SVG attributes',
+          (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+            let tpl = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
+            tcb = tcb.overrideView(
+                SecuredComponent, new ViewMetadata({template: tpl, directives: []}));
+            PromiseWrapper.catchError(tcb.createAsync(SecuredComponent), (e) => {
+              expect(e.message).toContain(`Can't bind to 'xlink:href'`);
+              async.done();
+              return null;
+            });
+          });
+
+      itAsync(
           'should escape unsafe HTML values',
           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
             let tpl = `<div [innerHTML]="ctxProp">Text</div>`;
