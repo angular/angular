@@ -15,7 +15,7 @@ import {NgPlural, NgPluralCase, NgLocalization} from '@angular/common';
 
 export function main() {
   describe('switch', () => {
-    beforeEachProviders(() => [{provide: NgLocalization, useClass: TestLocalizationMap}]);
+    beforeEachProviders(() => [{provide: NgLocalization, useClass: TestLocalization}]);
 
     it('should display the template according to the exact value',
        inject(
@@ -142,22 +142,21 @@ export function main() {
   });
 }
 
-
 @Injectable()
-export class TestLocalizationMap extends NgLocalization {
+class TestLocalization extends NgLocalization {
   getPluralCategory(value: number): string {
     if (value > 1 && value < 4) {
       return 'few';
-    } else if (value >= 4 && value < 10) {
-      return 'many';
-    } else {
-      return 'other';
     }
+    if (value >= 4 && value < 10) {
+      return 'many';
+    }
+
+    return 'other';
   }
 }
 
-
-@Component({selector: 'test-cmp', directives: [NgPluralCase, NgPlural], template: ''})
+@Component({selector: 'test-cmp', directives: [NgPlural, NgPluralCase], template: ''})
 class TestComponent {
   switchValue: number = null;
 }

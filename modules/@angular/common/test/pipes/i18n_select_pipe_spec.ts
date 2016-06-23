@@ -31,14 +31,14 @@ export function main() {
         expect(val).toEqual('Invite her.');
       });
 
-      it('should return other text if value is anything other than male or female', () => {
+      it('should return "" if value is anything other than male or female', () => {
         var val = pipe.transform('Anything else', mapping);
-        expect(val).toEqual('Invite them.');
+        expect(val).toEqual('');
       });
 
-      it('should use \'other\' if value is undefined', () => {
+      it('should use "" if value is undefined', () => {
         var val = pipe.transform(void(0), mapping);
-        expect(val).toEqual('Invite them.');
+        expect(val).toEqual('');
       });
 
       it('should not support bad arguments',

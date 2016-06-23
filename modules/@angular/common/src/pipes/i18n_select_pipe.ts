@@ -7,10 +7,8 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {StringMapWrapper} from '../facade/collection';
-import {isStringMap} from '../facade/lang';
+import {isBlank, isStringMap} from '../facade/lang';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
-
 
 /**
  *
@@ -46,10 +44,12 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 @Pipe({name: 'i18nSelect', pure: true})
 export class I18nSelectPipe implements PipeTransform {
   transform(value: string, mapping: {[key: string]: string}): string {
+    if (isBlank(value)) return '';
+
     if (!isStringMap(mapping)) {
       throw new InvalidPipeArgumentException(I18nSelectPipe, mapping);
     }
 
-    return StringMapWrapper.contains(mapping, value) ? mapping[value] : mapping['other'];
+    return mapping.hasOwnProperty(value) ? mapping[value] : '';
   }
 }

@@ -820,6 +820,7 @@ const COMMON = [
   'HashLocationStrategy.pushState(state:any, title:string, path:string, queryParams:string):any',
   'HashLocationStrategy.replaceState(state:any, title:string, path:string, queryParams:string):any',
   'I18nPluralPipe',
+  'I18nPluralPipe.constructor(_localization:NgLocalization)',
   'I18nPluralPipe.transform(value:number, pluralMap:{[count:string]:string}):string',
   'I18nSelectPipe',
   'I18nSelectPipe.transform(value:string, mapping:{[key:string]:string}):string',

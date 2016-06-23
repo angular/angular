@@ -7,22 +7,21 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {StringWrapper, isPresent, isStringMap} from '../facade/lang';
+import {StringWrapper, isBlank, isStringMap} from '../facade/lang';
+import {NgLocalization, getPluralCategory} from '../localization';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 const _INTERPOLATION_REGEXP: RegExp = /#/g;
 
 /**
- *
  *  Maps a value to a string that pluralizes the value properly.
  *
  *  ## Usage
  *
  *  expression | i18nPlural:mapping
  *
- *  where `expression` is a number and `mapping` is an object that indicates the proper text for
- *  when the `expression` evaluates to 0, 1, or some other number.  You can interpolate the actual
- *  value into the text using the `#` sign.
+ *  where `expression` is a number and `mapping` is an object that mimics the ICU format,
+ *  see http://userguide.icu-project.org/formatparse/messages
  *
  *  ## Example
  *
@@ -33,7 +32,7 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *
  *  class MyApp {
  *    messages: any[];
- *    messageMapping: any = {
+ *    messageMapping: {[k:string]: string} = {
  *      '=0': 'No messages.',
  *      '=1': 'One message.',
  *      'other': '# messages.'
@@ -46,17 +45,17 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  */
 @Pipe({name: 'i18nPlural', pure: true})
 export class I18nPluralPipe implements PipeTransform {
+  constructor(private _localization: NgLocalization) {}
+
   transform(value: number, pluralMap: {[count: string]: string}): string {
-    var key: string;
-    var valueStr: string;
+    if (isBlank(value)) return '';
 
     if (!isStringMap(pluralMap)) {
       throw new InvalidPipeArgumentException(I18nPluralPipe, pluralMap);
     }
 
-    key = value === 0 || value === 1 ? `=${value}` : 'other';
-    valueStr = isPresent(value) ? value.toString() : '';
+    const key = getPluralCategory(value, Object.getOwnPropertyNames(pluralMap), this._localization);
 
-    return StringWrapper.replaceAll(pluralMap[key], _INTERPOLATION_REGEXP, valueStr);
+    return StringWrapper.replaceAll(pluralMap[key], _INTERPOLATION_REGEXP, value.toString());
   }
 }
