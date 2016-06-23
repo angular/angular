@@ -251,6 +251,8 @@ export function main() {
   });
 
   describe('CssSelector.parse', () => {
+    const HIERARCHICAL_SELECTOR_ERR_MSG = /Hierarchical selectors are not supported/;
+
     it('should detect element names', () => {
       var cssSelector = CssSelector.parse('sometag')[0];
       expect(cssSelector.element).toEqual('sometag');
@@ -331,6 +333,49 @@ export function main() {
       }).toThrowError('Multiple selectors in :not are not supported');
     });
 
+    it('should throw for child selectors', () => {
+      expect(() => {
+        var cssSelectors = CssSelector.parse('parent > child');
+        console.log(cssSelectors);
+      }).toThrowError(HIERARCHICAL_SELECTOR_ERR_MSG);
+
+      expect(() => {
+        var cssSelectors = CssSelector.parse('parent>child');
+        console.log(cssSelectors);
+      }).toThrowError(HIERARCHICAL_SELECTOR_ERR_MSG);
+
+      expect(() => {
+        var cssSelectors = CssSelector.parse('parent    >  child');
+        console.log(cssSelectors);
+      }).toThrowError(HIERARCHICAL_SELECTOR_ERR_MSG);
+    });
+
+    it('should throw for descendent selectors', () => {
+      expect(() => {
+        var cssSelectors = CssSelector.parse('parent child');
+        console.log(cssSelectors);
+      }).toThrowError(HIERARCHICAL_SELECTOR_ERR_MSG);
+
+      expect(() => {
+        var cssSelectors = CssSelector.parse('parent     child');
+        console.log(cssSelectors);
+      }).toThrowError(HIERARCHICAL_SELECTOR_ERR_MSG);
+    });
+
+    it('should throw for adjacent sibling selectors', () => {
+      expect(() => {
+        var cssSelectors = CssSelector.parse('parent + child');
+        console.log(cssSelectors);
+      }).toThrowError(HIERARCHICAL_SELECTOR_ERR_MSG);
+    });
+
+    it('should throw for general sibling selectors', () => {
+      expect(() => {
+        var cssSelectors = CssSelector.parse('parent ~ child');
+        console.log(cssSelectors);
+      }).toThrowError(HIERARCHICAL_SELECTOR_ERR_MSG);
+    });
+
     it('should detect lists of selectors', () => {
       var cssSelectors = CssSelector.parse('.someclass,[attrname=attrvalue], sometag');
       expect(cssSelectors.length).toEqual(3);
@@ -338,6 +383,14 @@ export function main() {
       expect(cssSelectors[0].classNames).toEqual(['someclass']);
       expect(cssSelectors[1].attrs).toEqual(['attrname', 'attrvalue']);
       expect(cssSelectors[2].element).toEqual('sometag');
+    });
+
+    it('should detect lists of element selectors', () => {
+      var cssSelectors = CssSelector.parse('sometag,someothertag');
+      expect(cssSelectors.length).toEqual(2);
+
+      expect(cssSelectors[0].element).toEqual('sometag');
+      expect(cssSelectors[1].element).toEqual('someothertag');
     });
 
     it('should detect lists of selectors with :not', () => {
