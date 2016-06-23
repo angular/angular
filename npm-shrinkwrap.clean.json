@@ -1775,53 +1775,86 @@
       "version": "1.0.1"
     },
     "conventional-changelog": {
-      "version": "0.2.1",
+      "version": "1.1.0"
+    },
+    "conventional-changelog-angular": {
+      "version": "1.2.0"
+    },
+    "conventional-changelog-atom": {
+      "version": "0.1.0"
+    },
+    "conventional-changelog-codemirror": {
+      "version": "0.1.0"
+    },
+    "conventional-changelog-core": {
+      "version": "1.5.0",
       "dependencies": {
+        "isarray": {
+          "version": "1.0.0"
+        },
         "lodash": {
-          "version": "3.10.1"
+          "version": "4.13.1"
         },
         "readable-stream": {
-          "version": "2.0.5"
-        },
-        "semver": {
-          "version": "5.1.0"
+          "version": "2.0.6"
         },
         "through2": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         }
       }
     },
+    "conventional-changelog-ember": {
+      "version": "0.2.2"
+    },
+    "conventional-changelog-eslint": {
+      "version": "0.1.0"
+    },
+    "conventional-changelog-express": {
+      "version": "0.1.0"
+    },
+    "conventional-changelog-jquery": {
+      "version": "0.1.0"
+    },
+    "conventional-changelog-jscs": {
+      "version": "0.1.0"
+    },
+    "conventional-changelog-jshint": {
+      "version": "0.1.0"
+    },
     "conventional-changelog-writer": {
-      "version": "0.2.1",
+      "version": "1.4.1",
       "dependencies": {
+        "isarray": {
+          "version": "1.0.0"
+        },
         "lodash": {
-          "version": "3.10.1"
+          "version": "4.13.1"
         },
         "readable-stream": {
-          "version": "2.0.5"
-        },
-        "semver": {
-          "version": "5.1.0"
+          "version": "2.0.6"
         },
         "through2": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         }
       }
     },
     "conventional-commits-filter": {
-      "version": "0.1.1"
+      "version": "1.0.0"
     },
     "conventional-commits-parser": {
-      "version": "0.0.19",
+      "version": "1.2.2",
       "dependencies": {
+        "isarray": {
+          "version": "1.0.0"
+        },
         "lodash": {
-          "version": "3.10.1"
+          "version": "4.13.1"
         },
         "readable-stream": {
-          "version": "2.0.5"
+          "version": "2.0.6"
         },
         "through2": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         }
       }
     },
@@ -1905,7 +1938,7 @@
       "version": "0.1.1"
     },
     "dargs": {
-      "version": "4.0.1"
+      "version": "4.1.0"
     },
     "dart-style": {
       "version": "0.2.7"
@@ -1979,7 +2012,7 @@
       "version": "1.1.7"
     },
     "dot-prop": {
-      "version": "2.2.0"
+      "version": "2.4.0"
     },
     "duplexer": {
       "version": "0.1.1"
@@ -2743,13 +2776,16 @@
       "version": "1.2.0"
     },
     "get-pkg-repo": {
-      "version": "0.1.0",
+      "version": "1.2.1",
       "dependencies": {
+        "isarray": {
+          "version": "1.0.0"
+        },
         "readable-stream": {
-          "version": "2.0.5"
+          "version": "2.0.6"
         },
         "through2": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         }
       }
     },
@@ -2757,23 +2793,42 @@
       "version": "4.0.1"
     },
     "git-raw-commits": {
-      "version": "0.1.0",
+      "version": "1.1.0",
       "dependencies": {
+        "isarray": {
+          "version": "1.0.0"
+        },
+        "lodash.escape": {
+          "version": "4.0.0"
+        },
+        "lodash.keys": {
+          "version": "4.0.7"
+        },
+        "lodash.template": {
+          "version": "4.2.5"
+        },
+        "lodash.templatesettings": {
+          "version": "4.0.1"
+        },
         "readable-stream": {
-          "version": "2.0.5"
+          "version": "2.0.6"
         },
         "through2": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         }
       }
     },
+    "git-remote-origin-url": {
+      "version": "2.0.0"
+    },
     "git-semver-tags": {
-      "version": "1.1.1",
-      "dependencies": {
-        "semver": {
-          "version": "5.1.0"
-        }
-      }
+      "version": "1.1.2"
+    },
+    "gitconfiglocal": {
+      "version": "1.0.0"
+    },
+    "github-url-from-git": {
+      "version": "1.4.0"
     },
     "glob": {
       "version": "4.5.3",
@@ -2899,6 +2954,23 @@
       "dependencies": {
         "connect": {
           "version": "2.30.2"
+        }
+      }
+    },
+    "gulp-conventional-changelog": {
+      "version": "1.1.0",
+      "dependencies": {
+        "concat-stream": {
+          "version": "1.5.1"
+        },
+        "isarray": {
+          "version": "1.0.0"
+        },
+        "readable-stream": {
+          "version": "2.0.6"
+        },
+        "through2": {
+          "version": "2.0.1"
         }
       }
     },
@@ -3149,10 +3221,13 @@
       "version": "1.0.0"
     },
     "handlebars": {
-      "version": "3.0.3",
+      "version": "4.0.5",
       "dependencies": {
+        "async": {
+          "version": "1.5.2"
+        },
         "source-map": {
-          "version": "0.1.43"
+          "version": "0.4.4"
         }
       }
     },
@@ -3331,6 +3406,9 @@
     },
     "is-number": {
       "version": "2.1.0"
+    },
+    "is-obj": {
+      "version": "1.0.1"
     },
     "is-primitive": {
       "version": "2.0.0"
@@ -3655,6 +3733,9 @@
     "lodash._shimkeys": {
       "version": "2.4.1"
     },
+    "lodash.assigninwith": {
+      "version": "4.0.7"
+    },
     "lodash.defaults": {
       "version": "2.4.1",
       "dependencies": {
@@ -3678,6 +3759,9 @@
     "lodash.keys": {
       "version": "3.1.2"
     },
+    "lodash.keysin": {
+      "version": "4.1.4"
+    },
     "lodash.memoize": {
       "version": "3.0.4"
     },
@@ -3693,6 +3777,9 @@
     "lodash.repeat": {
       "version": "3.0.1"
     },
+    "lodash.rest": {
+      "version": "4.0.3"
+    },
     "lodash.restparam": {
       "version": "3.6.1"
     },
@@ -3701,6 +3788,9 @@
     },
     "lodash.templatesettings": {
       "version": "3.1.0"
+    },
+    "lodash.tostring": {
+      "version": "4.1.3"
     },
     "lodash.values": {
       "version": "2.4.1",
@@ -4244,6 +4334,9 @@
     },
     "parse-asn1": {
       "version": "5.0.0"
+    },
+    "parse-github-repo-url": {
+      "version": "1.3.0"
     },
     "parse-glob": {
       "version": "3.0.4"
@@ -4900,13 +4993,16 @@
       "version": "1.0.0"
     },
     "split2": {
-      "version": "1.1.0",
+      "version": "2.1.0",
       "dependencies": {
+        "isarray": {
+          "version": "1.0.0"
+        },
         "readable-stream": {
-          "version": "2.0.5"
+          "version": "2.0.6"
         },
         "through2": {
-          "version": "2.0.0"
+          "version": "2.0.1"
         }
       }
     },
@@ -5081,9 +5177,6 @@
         }
       }
     },
-    "tempfile": {
-      "version": "1.1.1"
-    },
     "text-extensions": {
       "version": "1.3.3"
     },
@@ -5181,6 +5274,9 @@
       "version": "0.3.9"
     },
     "trim-newlines": {
+      "version": "1.0.0"
+    },
+    "trim-off-newlines": {
       "version": "1.0.0"
     },
     "ts-api-guardian": {
@@ -5296,13 +5392,25 @@
       "version": "0.7.10"
     },
     "uglify-js": {
-      "version": "2.3.6",
+      "version": "2.6.4",
       "dependencies": {
-        "optimist": {
-          "version": "0.3.7"
+        "camelcase": {
+          "version": "1.2.1"
+        },
+        "cliui": {
+          "version": "2.1.0"
         },
         "source-map": {
-          "version": "0.1.43"
+          "version": "0.5.6"
+        },
+        "window-size": {
+          "version": "0.1.0"
+        },
+        "wordwrap": {
+          "version": "0.0.2"
+        },
+        "yargs": {
+          "version": "3.10.0"
         }
       }
     },
@@ -5380,9 +5488,6 @@
     },
     "utils-merge": {
       "version": "1.0.0"
-    },
-    "uuid": {
-      "version": "2.0.1"
     },
     "v8flags": {
       "version": "2.0.11"
