@@ -100,6 +100,18 @@ export abstract class AbstractControl {
 
   get pending(): boolean { return this._status == PENDING; }
 
+  setAsyncValidators(newValidator: AsyncValidatorFn|AsyncValidatorFn[]): void {
+    this.asyncValidator = coerceToAsyncValidator(newValidator);
+  }
+
+  clearAsyncValidators(): void { this.asyncValidator = null; }
+
+  setValidators(newValidator: ValidatorFn|ValidatorFn[]): void {
+    this.validator = coerceToValidator(newValidator);
+  }
+
+  clearValidators(): void { this.validator = null; }
+
   markAsTouched(): void { this._touched = true; }
 
   markAsDirty({onlySelf}: {onlySelf?: boolean} = {}): void {
