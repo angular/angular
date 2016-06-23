@@ -72,6 +72,7 @@ export class NgModel extends NgControl implements OnChanges,
                 if (!this._added) this._addControl();
 
                 if (isPropertyUpdated(changes, this.viewModel)) {
+                  console.log("ngOnChangesAndUpdatingValue");
                   this._control.updateValue(this.model);
                   this.viewModel = this.model;
                 }
@@ -99,6 +100,10 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _addControl(): void {
+                // Question to Kara
+                // one can argue that maybe the control that is part of the part should be made defined
+                // only when it is added to the form. It is not meant to be used independently.
+                // what do you think?
                 this._control = this.formDirective ? this.formDirective.addControl(this) :
                                                      this._addStandaloneControl();
                 this._added = true;
