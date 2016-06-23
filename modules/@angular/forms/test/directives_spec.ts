@@ -281,7 +281,7 @@ export function main() {
         personControlGroupDir = new NgModelGroup(form, [], []);
         personControlGroupDir.name = 'person';
 
-        loginControlDir = new FormControlName(personControlGroupDir, null, null, [defaultAccessor]);
+        loginControlDir = new NgModel(personControlGroupDir, null, null, [defaultAccessor]);
         loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });

@@ -1371,7 +1371,7 @@ export function main() {
          })));
 
 
-      it('should throw if ngModel has a parent form but no name attr',
+      it('should throw if ngModel has a parent form but no name attr or standalone label',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
@@ -1384,10 +1384,28 @@ export function main() {
                    .createAsync(MyComp8)
                    .then((fixture) => {
                      expect(() => fixture.detectChanges())
-                         .toThrowError(new RegExp(`Name attribute must be set`));
+                         .toThrowError(new RegExp(`name attribute must be set`));
                      async.done();
                    });
              }));
+
+      it('should not throw if ngModel has a parent form, no name attr, and a standalone label',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form>
+                  <input [(ngModel)]="name" [ngModelOptions]="{standalone: true}">
+                </form>`;
+
+               tcb.overrideTemplate(MyComp8, t)
+                   .overrideProviders(MyComp8, providerArr)
+                   .createAsync(MyComp8)
+                   .then((fixture) => {
+                     expect(() => fixture.detectChanges()).not.toThrow();
+                     async.done();
+                   });
+             }));
+
 
       it('should override name attribute with ngModelOptions name if provided',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
@@ -1406,6 +1424,29 @@ export function main() {
            tick();
            expect(form.value).toEqual({two: 'some data'});
          })));
+
+      it('should not register standalone ngModels with parent form',
+         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           const t = `
+            <form>
+              <input name="one" [(ngModel)]="data">
+              <input [(ngModel)]="list" [ngModelOptions]="{standalone: true}">
+            </form>
+            `;
+
+           const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
+           tick();
+           fixture.debugElement.componentInstance.data = 'some data';
+           fixture.debugElement.componentInstance.list = 'should not show';
+           fixture.detectChanges();
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+
+           tick();
+           expect(form.value).toEqual({one: 'some data'});
+           expect(inputs[1].nativeElement.value).toEqual('should not show');
+         })));
+
 
       it('should support <type=radio>',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {

@@ -55,14 +55,14 @@ export const formControlBinding: any =
 export class NgModel extends NgControl implements OnChanges,
     OnDestroy {
   /** @internal */
-  _control: FormControl;
+  _control = new FormControl();
   /** @internal */
-  _added = false;
+  _registered = false;
   viewModel: any;
 
   @Input('ngModel') model: any;
   @Input() name: string;
-  @Input('ngModelOptions') options: {name?: string};
+  @Input('ngModelOptions') options: {name?: string, standalone?: boolean};
   @Output('ngModelChange') update = new EventEmitter();
 
   constructor(@Optional() @Host() private _parent: ControlContainer,
@@ -72,12 +72,11 @@ export class NgModel extends NgControl implements OnChanges,
               valueAccessors: ControlValueAccessor[]) {
                 super();
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);
-                if (!this._parent) this._control = new FormControl();
               }
 
               ngOnChanges(changes: SimpleChanges) {
                 this._checkName();
-                if (!this._added) this._addControl();
+                if (!this._registered) this._setUpControl();
 
                 if (isPropertyUpdated(changes, this.viewModel)) {
                   this._control.updateValue(this.model);
@@ -106,25 +105,32 @@ export class NgModel extends NgControl implements OnChanges,
                 ObservableWrapper.callEmit(this.update, newValue);
               }
 
-              private _addControl(): void {
-                this._control = this.formDirective ? this.formDirective.addControl(this) :
-                                                     this._addStandaloneControl();
-                this._added = true;
+              private _setUpControl(): void {
+                this._isStandalone() ? this._setUpStandalone() :
+                                       this.formDirective.addControl(this);
+                this._registered = true;
               }
 
-              private _addStandaloneControl(): FormControl {
+              private _isStandalone(): boolean {
+                return !this._parent || (this.options && this.options.standalone);
+              }
+
+              private _setUpStandalone(): void {
                 setUpControl(this._control, this);
                 this._control.updateValueAndValidity({emitEvent: false});
-                return this._control;
               }
 
               private _checkName() {
                 if (this.options && this.options.name) this.name = this.options.name;
 
-                if (this._parent && !this.name) {
+                if (!this._isStandalone() && !this.name) {
                   throw new BaseException(
-                      `Name attribute must be set if ngModel is used within a form.
-                      Example: <input [(ngModel)]="person.firstName" name="first">`);
+                      `If ngModel is used within a form tag, either the name attribute must be set
+                      or the form control must be defined as 'standalone' in ngModelOptions.
+
+                      Example 1: <input [(ngModel)]="person.firstName" name="first">
+                      Example 2: <input [(ngModel)]="person.firstName" [ngModelOptions]="{standalone: true}">
+                   `);
                 }
               }
 }

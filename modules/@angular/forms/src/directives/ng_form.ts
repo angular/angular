@@ -116,16 +116,13 @@ export class NgForm extends ControlContainer implements Form {
 
   get controls(): {[key: string]: AbstractControl} { return this.form.controls; }
 
-  addControl(dir: NgModel): FormControl {
-    const ctrl = new FormControl();
+  addControl(dir: NgModel): void {
     PromiseWrapper.scheduleMicrotask(() => {
       const container = this._findContainer(dir.path);
-      dir._control = <FormControl>container.registerControl(dir.name, ctrl);
+      dir._control = <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
     });
-
-    return ctrl;
   }
 
   getControl(dir: NgModel): FormControl { return <FormControl>this.form.find(dir.path); }

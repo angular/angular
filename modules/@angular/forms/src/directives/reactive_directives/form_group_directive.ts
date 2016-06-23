@@ -144,12 +144,11 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   get path(): string[] { return []; }
 
-  addControl(dir: NgControl): FormControl {
+  addControl(dir: NgControl): void {
     const ctrl: any = this.form.find(dir.path);
     setUpControl(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
-    return ctrl;
   }
 
   getControl(dir: NgControl): FormControl { return <FormControl>this.form.find(dir.path); }
