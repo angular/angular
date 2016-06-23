@@ -10,7 +10,6 @@ import {ddescribe, describe, expect, inject, beforeEachProviders, beforeEach, af
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {PromiseWrapper} from '../../src/facade/async';
 import {provide, Injectable, OpaqueToken} from '@angular/core';
 import {CompilerConfig} from '@angular/compiler';
 import {Component, ViewMetadata} from '@angular/core/src/metadata';
@@ -31,7 +30,7 @@ export function main() {
   }
 }
 
-@Component({selector: 'my-comp', directives: []})
+@Component({selector: 'my-comp', template: '', directives: []})
 class SecuredComponent {
   ctxProp: string;
   constructor() { this.ctxProp = 'some value'; }
@@ -73,15 +72,17 @@ function declareTests({useJit}: {useJit: boolean}) {
     itAsync(
         'should disallow binding on*', (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
           let tpl = `<div [attr.onclick]="ctxProp"></div>`;
-          tcb = tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl}));
-          PromiseWrapper.catchError(tcb.createAsync(SecuredComponent), (e) => {
-            expect(e.message).toContain(
-                `Template parse errors:\n` +
-                `Binding to event attribute 'onclick' is disallowed ` +
-                `for security reasons, please use (click)=... `);
-            async.done();
-            return null;
-          });
+          tcb.overrideTemplate(SecuredComponent, tpl)
+              .createAsync(SecuredComponent)
+              .then(v => async.done(new Error('unexpected success')))
+              .catch((e) => {
+                expect(e.message).toContain(
+                    `Template parse errors:\n` +
+                    `Binding to event attribute 'onclick' is disallowed ` +
+                    `for security reasons, please use (click)=... `);
+                async.done();
+                return null;
+              });
         });
 
     describe('safe HTML values', function() {
@@ -91,7 +92,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           (tcb: TestComponentBuilder, async: AsyncTestCompleter,
            sanitizer: DomSanitizationService) => {
             let tpl = `<a [href]="ctxProp">Link Title</a>`;
-            tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+            tcb.overrideTemplate(SecuredComponent, tpl)
                 .createAsync(SecuredComponent)
                 .then((fixture) => {
                   let e = fixture.debugElement.children[0].nativeElement;
@@ -111,7 +112,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           (tcb: TestComponentBuilder, async: AsyncTestCompleter,
            sanitizer: DomSanitizationService) => {
             let tpl = `<a [href]="ctxProp">Link Title</a>`;
-            tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+            tcb.overrideTemplate(SecuredComponent, tpl)
                 .createAsync(SecuredComponent)
                 .then((fixture) => {
                   let trusted = sanitizer.bypassSecurityTrustScript('javascript:alert(1)');
@@ -130,7 +131,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           (tcb: TestComponentBuilder, async: AsyncTestCompleter,
            sanitizer: DomSanitizationService) => {
             let tpl = `<a href="/foo/{{ctxProp}}">Link Title</a>`;
-            tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+            tcb.overrideTemplate(SecuredComponent, tpl)
                 .createAsync(SecuredComponent)
                 .then((fixture) => {
                   let e = fixture.debugElement.children[0].nativeElement;
@@ -150,7 +151,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           'should escape unsafe attributes',
           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
             let tpl = `<a [href]="ctxProp">Link Title</a>`;
-            tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+            tcb.overrideTemplate(SecuredComponent, tpl)
                 .createAsync(SecuredComponent)
                 .then((fixture) => {
                   let e = fixture.debugElement.children[0].nativeElement;
@@ -173,7 +174,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           'should escape unsafe style values',
           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
             let tpl = `<div [style.background]="ctxProp">Text</div>`;
-            tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+            tcb.overrideTemplate(SecuredComponent, tpl)
                 .createAsync(SecuredComponent)
                 .then((fixture) => {
                   let e = fixture.debugElement.children[0].nativeElement;
@@ -198,20 +199,21 @@ function declareTests({useJit}: {useJit: boolean}) {
           'should escape unsafe SVG attributes',
           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
             let tpl = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
-            tcb = tcb.overrideView(
-                SecuredComponent, new ViewMetadata({template: tpl, directives: []}));
-            PromiseWrapper.catchError(tcb.createAsync(SecuredComponent), (e) => {
-              expect(e.message).toContain(`Can't bind to 'xlink:href'`);
-              async.done();
-              return null;
-            });
+            tcb.overrideTemplate(SecuredComponent, tpl)
+                .createAsync(SecuredComponent)
+                .then(v => async.done(new Error('unexpected success')))
+                .catch((e) => {
+                  expect(e.message).toContain(`Can't bind to 'xlink:href'`);
+                  async.done();
+                  return null;
+                });
           });
 
       itAsync(
           'should escape unsafe HTML values',
           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
             let tpl = `<div [innerHTML]="ctxProp">Text</div>`;
-            tcb.overrideView(SecuredComponent, new ViewMetadata({template: tpl, directives: []}))
+            tcb.overrideTemplate(SecuredComponent, tpl)
                 .createAsync(SecuredComponent)
                 .then((fixture) => {
                   let e = fixture.debugElement.children[0].nativeElement;
@@ -237,6 +239,5 @@ function declareTests({useJit}: {useJit: boolean}) {
                 });
           });
     });
-
   });
 }
