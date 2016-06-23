@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {ObservableWrapper} from '../facade/async';
 import {ListWrapper, Map, MapWrapper, StringMapWrapper} from '../facade/collection';
 import {Type, isArray, isBlank, isNumber, isPresent, isPrimitive, isString, stringify} from '../facade/lang';

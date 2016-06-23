@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 
 import {COMMON_DIRECTIVES, FORM_DIRECTIVES as OLD_FORM_DIRECTIVES, FORM_PROVIDERS as OLD_FORM_PROVIDERS} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {ApplicationRef, ComponentFactory, ComponentResolver, Injector, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, provide} from '@angular/core';
 import {BROWSER_APP_PROVIDERS, browserPlatform} from '@angular/platform-browser';
 import {BROWSER_APP_COMPILER_PROVIDERS} from '@angular/platform-browser-dynamic';

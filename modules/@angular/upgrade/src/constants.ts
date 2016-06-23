@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 export const NG2_COMPILER = 'ng2.Compiler';
 export const NG2_INJECTOR = 'ng2.Injector';
 export const NG2_COMPONENT_FACTORY_REF_MAP = 'ng2.ComponentFactoryRefMap';

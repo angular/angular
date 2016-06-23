@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {CollectionChangeRecord, Directive, DoCheck, ElementRef, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, OnDestroy, Renderer} from '@angular/core';
 
 import {StringMapWrapper, isListLikeIterable} from '../facade/collection';

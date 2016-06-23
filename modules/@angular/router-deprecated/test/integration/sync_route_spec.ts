@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {beforeEachProviders, ddescribe, describe} from '@angular/core/testing/testing_internal';
 
 import {registerSpecs} from './impl/sync_route_spec_impl';

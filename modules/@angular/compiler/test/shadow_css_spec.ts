@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {describe, beforeEach, it, expect, ddescribe, iit,} from '@angular/core/testing/testing_internal';
 import {ShadowCss, processRules, CssRule} from '@angular/compiler/src/shadow_css';
 

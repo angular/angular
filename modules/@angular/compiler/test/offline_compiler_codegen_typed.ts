@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // ATTENTION: This file will be overwritten with generated code by main()
 import {DartEmitter} from '@angular/compiler/src/output/dart_emitter';
 import {DartImportGenerator} from '@angular/compiler/src/output/dart_imports';

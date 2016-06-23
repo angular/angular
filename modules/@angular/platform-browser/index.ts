@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 export {BrowserPlatformLocation} from './src/browser/location/browser_platform_location';
 export {Title} from './src/browser/title';
 export {disableDebugTools, enableDebugTools} from './src/browser/tools/tools';

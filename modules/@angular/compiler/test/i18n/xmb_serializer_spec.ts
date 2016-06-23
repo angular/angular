@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {HtmlAst} from '@angular/compiler/src/html_ast';
 import {Message, id} from '@angular/compiler/src/i18n/message';
 import {deserializeXmb, serializeXmb} from '@angular/compiler/src/i18n/xmb_serializer';

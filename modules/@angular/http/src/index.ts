@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // Index to be used if Http is ever configured as a standalone npm package.
 // require('reflect-metadata');
 // require('es6-shim');

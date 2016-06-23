@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {isPresent, isBlank, normalizeBool, RegExpWrapper,} from '../src/facade/lang';
 
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {expect} from '@angular/core/testing';
 import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';

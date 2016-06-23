@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 /// <reference path="../bitmap.d.ts" /> /// <reference path="../b64.d.ts" />
 import {Injectable} from '@angular/core';
 declare var base64js: any /** TODO #9100 */;

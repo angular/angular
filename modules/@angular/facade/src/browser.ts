@@ -1,4 +1,12 @@
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * JS version of browser APIs. This library can only run in the browser.
  */
 var win = typeof window !== 'undefined' && window || <any>{};

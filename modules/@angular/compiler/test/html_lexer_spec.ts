@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {HtmlToken, HtmlTokenError, HtmlTokenType, tokenizeHtml} from '@angular/compiler/src/html_lexer';
 import {InterpolationConfig} from '@angular/compiler/src/interpolation_config';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {PLATFORM_INITIALIZER, Provider, ReflectiveInjector, Type} from '../index';
 import {lockRunMode} from '../src/application_ref';
 import {ListWrapper} from '../src/facade/collection';

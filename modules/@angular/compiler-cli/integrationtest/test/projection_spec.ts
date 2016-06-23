@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {DebugElement, ReflectiveInjector, getDebugNode, lockRunMode} from '@angular/core';
 import {BROWSER_APP_PROVIDERS, By} from '@angular/platform-browser';
 import {serverPlatform} from '@angular/platform-server';

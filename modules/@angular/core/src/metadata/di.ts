@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {resolveForwardRef} from '../di/forward_ref';
 import {DependencyMetadata} from '../di/metadata';
 import {StringWrapper, Type, isString, stringify} from '../facade/lang';
