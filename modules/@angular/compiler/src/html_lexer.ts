@@ -7,6 +7,7 @@
  */
 
 import * as chars from './chars';
+import {Parser as ExpressionParser} from './expression_parser/parser';
 import {NumberWrapper, StringWrapper, isBlank, isPresent} from './facade/lang';
 import {HtmlTagContentType, NAMED_ENTITIES, getHtmlTagDefinition} from './html_tags';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
@@ -32,6 +33,7 @@ export enum HtmlTokenType {
   EXPANSION_CASE_EXP_START,
   EXPANSION_CASE_EXP_END,
   EXPANSION_FORM_END,
+  INTERPOLATION,
   EOF
 }
 
@@ -51,26 +53,27 @@ export class HtmlTokenizeResult {
 }
 
 export function tokenizeHtml(
-    sourceContent: string, sourceUrl: string, tokenizeExpansionForms: boolean = false,
+    sourceContent: string, sourceUrl: string, parser: ExpressionParser,
+    tokenizeExpansionForms: boolean = false,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): HtmlTokenizeResult {
   return new _HtmlTokenizer(
-             new ParseSourceFile(sourceContent, sourceUrl), tokenizeExpansionForms,
+             new ParseSourceFile(sourceContent, sourceUrl), tokenizeExpansionForms, parser,
              interpolationConfig)
       .tokenize();
 }
 
-var CR_OR_CRLF_REGEXP = /\r\n?/g;
+const _CR_OR_CRLF_REGEXP = /\r\n?/g;
 
-function unexpectedCharacterErrorMsg(charCode: number): string {
+function _unexpectedCharacterErrorMsg(charCode: number): string {
   var char = charCode === chars.$EOF ? 'EOF' : StringWrapper.fromCharCode(charCode);
   return `Unexpected character "${char}"`;
 }
 
-function unknownEntityErrorMsg(entitySrc: string): string {
+function _unknownEntityErrorMsg(entitySrc: string): string {
   return `Unknown entity "${entitySrc}" - use the "&#<decimal>;" or  "&#x<hex>;" syntax`;
 }
 
-class ControlFlowError {
+class _ControlFlowError {
   constructor(public error: HtmlTokenError) {}
 }
 
@@ -92,11 +95,18 @@ class _HtmlTokenizer {
   tokens: HtmlToken[] = [];
   errors: HtmlTokenError[] = [];
 
+  /**
+   * @param _file The html source
+   * @param _tokenizeIcu Whether to tokenize ICU messages (considered as text nodes when false)
+   * @param _expressionParser Used to check syntax of interpolations
+   * @param _interpolationConfig
+   */
   constructor(
-      private file: ParseSourceFile, private tokenizeExpansionForms: boolean,
-      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {
-    this._input = file.content;
-    this._length = file.content.length;
+      private _file: ParseSourceFile, private _tokenizeIcu: boolean,
+      private _expressionParser: ExpressionParser,
+      private _interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {
+    this._input = _file.content;
+    this._length = _file.content.length;
     this._advance();
   }
 
@@ -105,7 +115,7 @@ class _HtmlTokenizer {
     // In order to keep the original position in the source, we can not
     // pre-process it.
     // Instead CRs are processed right before instantiating the tokens.
-    return StringWrapper.replaceAll(content, CR_OR_CRLF_REGEXP, '\n');
+    return StringWrapper.replaceAll(content, _CR_OR_CRLF_REGEXP, '\n');
   }
 
   tokenize(): HtmlTokenizeResult {
@@ -126,31 +136,11 @@ class _HtmlTokenizer {
           } else {
             this._consumeTagOpen(start);
           }
-        } else if (
-            isExpansionFormStart(this._input, this._index, this.interpolationConfig.start) &&
-            this.tokenizeExpansionForms) {
-          this._consumeExpansionFormStart();
-
-        } else if (
-            isExpansionCaseStart(this._peek) && this._isInExpansionForm() &&
-            this.tokenizeExpansionForms) {
-          this._consumeExpansionCaseStart();
-
-        } else if (
-            this._peek === chars.$RBRACE && this._isInExpansionCase() &&
-            this.tokenizeExpansionForms) {
-          this._consumeExpansionCaseEnd();
-
-        } else if (
-            this._peek === chars.$RBRACE && this._isInExpansionForm() &&
-            this.tokenizeExpansionForms) {
-          this._consumeExpansionFormEnd();
-
-        } else {
+        } else if (!this._tokenizeIcu || !this._tokenizeExpansionForm()) {
           this._consumeText();
         }
       } catch (e) {
-        if (e instanceof ControlFlowError) {
+        if (e instanceof _ControlFlowError) {
           this.errors.push(e.error);
         } else {
           throw e;
@@ -162,8 +152,38 @@ class _HtmlTokenizer {
     return new HtmlTokenizeResult(mergeTextTokens(this.tokens), this.errors);
   }
 
+  /**
+   * @returns {boolean} whether an ICU token has been created
+   * @internal
+   */
+  private _tokenizeExpansionForm(): boolean {
+    if (isExpansionFormStart(this._input, this._index, this._interpolationConfig.start)) {
+      this._consumeExpansionFormStart();
+      return true;
+    }
+
+    if (isExpansionCaseStart(this._peek) && this._isInExpansionForm()) {
+      this._consumeExpansionCaseStart();
+      return true;
+    }
+
+    if (this._peek === chars.$RBRACE) {
+      if (this._isInExpansionCase()) {
+        this._consumeExpansionCaseEnd();
+        return true;
+      }
+
+      if (this._isInExpansionForm()) {
+        this._consumeExpansionFormEnd();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private _getLocation(): ParseLocation {
-    return new ParseLocation(this.file, this._index, this._line, this._column);
+    return new ParseLocation(this._file, this._index, this._line, this._column);
   }
 
   private _getSpan(start?: ParseLocation, end?: ParseLocation): ParseSourceSpan {
@@ -196,16 +216,16 @@ class _HtmlTokenizer {
     return token;
   }
 
-  private _createError(msg: string, span: ParseSourceSpan): ControlFlowError {
+  private _createError(msg: string, span: ParseSourceSpan): _ControlFlowError {
     var error = new HtmlTokenError(msg, this._currentTokenType, span);
     this._currentTokenStart = null;
     this._currentTokenType = null;
-    return new ControlFlowError(error);
+    return new _ControlFlowError(error);
   }
 
   private _advance() {
     if (this._index >= this._length) {
-      throw this._createError(unexpectedCharacterErrorMsg(chars.$EOF), this._getSpan());
+      throw this._createError(_unexpectedCharacterErrorMsg(chars.$EOF), this._getSpan());
     }
     if (this._peek === chars.$LF) {
       this._line++;
@@ -241,7 +261,7 @@ class _HtmlTokenizer {
     var location = this._getLocation();
     if (!this._attemptCharCode(charCode)) {
       throw this._createError(
-          unexpectedCharacterErrorMsg(this._peek), this._getSpan(location, location));
+          _unexpectedCharacterErrorMsg(this._peek), this._getSpan(location, location));
     }
   }
 
@@ -274,7 +294,7 @@ class _HtmlTokenizer {
   private _requireStr(chars: string) {
     var location = this._getLocation();
     if (!this._attemptStr(chars)) {
-      throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan(location));
+      throw this._createError(_unexpectedCharacterErrorMsg(this._peek), this._getSpan(location));
     }
   }
 
@@ -288,7 +308,8 @@ class _HtmlTokenizer {
     var start = this._getLocation();
     this._attemptCharCodeUntilFn(predicate);
     if (this._index - start.offset < len) {
-      throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan(start, start));
+      throw this._createError(
+          _unexpectedCharacterErrorMsg(this._peek), this._getSpan(start, start));
     }
   }
 
@@ -316,7 +337,7 @@ class _HtmlTokenizer {
       let numberStart = this._getLocation().offset;
       this._attemptCharCodeUntilFn(isDigitEntityEnd);
       if (this._peek != chars.$SEMICOLON) {
-        throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan());
+        throw this._createError(_unexpectedCharacterErrorMsg(this._peek), this._getSpan());
       }
       this._advance();
       let strNum = this._input.substring(numberStart, this._index - 1);
@@ -325,7 +346,7 @@ class _HtmlTokenizer {
         return StringWrapper.fromCharCode(charCode);
       } catch (e) {
         let entity = this._input.substring(start.offset + 1, this._index - 1);
-        throw this._createError(unknownEntityErrorMsg(entity), this._getSpan(start));
+        throw this._createError(_unknownEntityErrorMsg(entity), this._getSpan(start));
       }
     } else {
       let startPosition = this._savePosition();
@@ -338,7 +359,7 @@ class _HtmlTokenizer {
       let name = this._input.substring(start.offset + 1, this._index - 1);
       let char = (NAMED_ENTITIES as any)[name];
       if (isBlank(char)) {
-        throw this._createError(unknownEntityErrorMsg(name), this._getSpan(start));
+        throw this._createError(_unknownEntityErrorMsg(name), this._getSpan(start));
       }
       return char;
     }
@@ -416,7 +437,7 @@ class _HtmlTokenizer {
     let lowercaseTagName: string;
     try {
       if (!chars.isAsciiLetter(this._peek)) {
-        throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getSpan());
+        throw this._createError(_unexpectedCharacterErrorMsg(this._peek), this._getSpan());
       }
       var nameStart = this._index;
       this._consumeTagOpenStart(start);
@@ -433,7 +454,7 @@ class _HtmlTokenizer {
       }
       this._consumeTagOpenEnd();
     } catch (e) {
-      if (e instanceof ControlFlowError) {
+      if (e instanceof _ControlFlowError) {
         // When the start tag is invalid, assume we want a "<"
         this._restorePosition(savedPos);
         // Back to back text tokens are merged at the end
@@ -573,11 +594,11 @@ class _HtmlTokenizer {
     var parts: string[] = [];
 
     do {
-      if (this._attemptStr(this.interpolationConfig.start)) {
-        parts.push(this.interpolationConfig.start);
+      if (this._attemptStr(this._interpolationConfig.start)) {
+        parts.push(this._interpolationConfig.start);
         this._inInterpolation = true;
-      } else if (this._attemptStr(this.interpolationConfig.end) && this._inInterpolation) {
-        parts.push(this.interpolationConfig.end);
+      } else if (this._attemptStr(this._interpolationConfig.end) && this._inInterpolation) {
+        parts.push(this._interpolationConfig.end);
         this._inInterpolation = false;
       } else {
         parts.push(this._readChar(true));
@@ -592,8 +613,8 @@ class _HtmlTokenizer {
       return true;
     }
 
-    if (this.tokenizeExpansionForms) {
-      if (isExpansionFormStart(this._input, this._index, this.interpolationConfig.start)) {
+    if (this._tokenizeIcu) {
+      if (isExpansionFormStart(this._input, this._index, this._interpolationConfig.start)) {
         // start of an expansion form
         return true;
       }

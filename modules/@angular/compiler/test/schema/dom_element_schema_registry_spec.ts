@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
+import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
 import {HtmlElementAst} from '@angular/compiler/src/html_ast';
 import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
@@ -68,7 +70,9 @@ export function main() {
     });
 
     it('should detect properties on namespaced elements', () => {
-      let htmlAst = new HtmlParser().parse('<svg:style>', 'TestComp');
+      const expLexer = new ExpressionLexer();
+      const expParser = new ExpressionParser(expLexer);
+      let htmlAst = new HtmlParser(expParser).parse('<svg:style>', 'TestComp');
       let nodeName = (<HtmlElementAst>htmlAst.rootNodes[0]).name;
       expect(registry.hasProperty(nodeName, 'type')).toBeTruthy();
     });

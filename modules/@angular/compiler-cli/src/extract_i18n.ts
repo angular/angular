@@ -137,7 +137,8 @@ class Extractor {
     const reflectorHost = new ReflectorHost(program, compilerHost, options);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
-    const htmlParser = new HtmlParser();
+    const expressionParser = new Parser(new Lexer());
+    const htmlParser = new HtmlParser(expressionParser);
     const config = new compiler.CompilerConfig({
       genDebugInfo: true,
       defaultEncapsulation: ViewEncapsulation.Emulated,
@@ -145,13 +146,12 @@ class Extractor {
       useJit: false
     });
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
-    const parser = new Parser(new Lexer());
     const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), config, staticReflector);
 
     // TODO(vicb): handle implicit
-    const extractor = new MessageExtractor(htmlParser, parser, [], {});
+    const extractor = new MessageExtractor(htmlParser, expressionParser, [], {});
 
     return new Extractor(
         options, program, compilerHost, staticReflector, resolver, normalizer, reflectorHost,

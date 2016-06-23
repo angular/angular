@@ -768,23 +768,17 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
     }
 
     return new CompileDirectiveMetadata({
-      type: type,
-      isComponent: normalizeBool(isComponent),
-      selector: selector,
-      exportAs: exportAs,
-      changeDetection: changeDetection,
+      type,
+      isComponent: normalizeBool(isComponent), selector, exportAs, changeDetection,
       inputs: inputsMap,
-      outputs: outputsMap,
-      hostListeners: hostListeners,
-      hostProperties: hostProperties,
-      hostAttributes: hostAttributes,
+      outputs: outputsMap, hostListeners, hostProperties, hostAttributes,
       lifecycleHooks: isPresent(lifecycleHooks) ? lifecycleHooks : [],
-      providers: providers,
-      viewProviders: viewProviders,
-      queries: queries,
-      viewQueries: viewQueries,
-      precompile: precompile,
-      template: template
+      providers,
+      viewProviders,
+      queries,
+      viewQueries,
+      precompile,
+      template,
     });
   }
   type: CompileTypeMetadata;
@@ -803,8 +797,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
   queries: CompileQueryMetadata[];
   viewQueries: CompileQueryMetadata[];
   precompile: CompileTypeMetadata[];
-
   template: CompileTemplateMetadata;
+
   constructor(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, hostListeners,
        hostProperties, hostAttributes, lifecycleHooks, providers, viewProviders, queries,
@@ -827,7 +821,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
         queries?: CompileQueryMetadata[],
         viewQueries?: CompileQueryMetadata[],
         precompile?: CompileTypeMetadata[],
-        template?: CompileTemplateMetadata
+        template?: CompileTemplateMetadata,
       } = {}) {
     this.type = type;
     this.isComponent = isComponent;

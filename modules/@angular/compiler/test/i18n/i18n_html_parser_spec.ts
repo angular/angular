@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-import {Parser} from '@angular/compiler/src/expression_parser/parser';
+import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
+import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
 import {HtmlAttrAst, HtmlElementAst, HtmlTextAst} from '@angular/compiler/src/html_ast';
 import {HtmlParseTreeResult, HtmlParser} from '@angular/compiler/src/html_parser';
 import {I18nHtmlParser} from '@angular/compiler/src/i18n/i18n_html_parser';
@@ -26,8 +26,8 @@ export function main() {
         template: string, messages: {[key: string]: string}, implicitTags: string[] = [],
         implicitAttrs: {[k: string]: string[]} = {},
         interpolation?: InterpolationConfig): HtmlParseTreeResult {
-      var parser = new Parser(new Lexer());
-      let htmlParser = new HtmlParser();
+      var expParser = new ExpressionParser(new ExpressionLexer());
+      let htmlParser = new HtmlParser(expParser);
 
       let msgs = '';
       StringMapWrapper.forEach(
@@ -35,7 +35,7 @@ export function main() {
       let res = deserializeXmb(`<message-bundle>${msgs}</message-bundle>`, 'someUrl');
 
       return new I18nHtmlParser(
-                 htmlParser, parser, res.content, res.messages, implicitTags, implicitAttrs)
+                 htmlParser, expParser, res.content, res.messages, implicitTags, implicitAttrs)
           .parse(template, 'someurl', true, interpolation);
     }
 
@@ -80,8 +80,11 @@ export function main() {
 
       expect(humanizeDom(parse(
                  '<div value=\'{%a%} and {%b%}\' i18n-value></div>', translations, [], {},
-                 {start: '{%', end: '%}'})))
-          .toEqual([[HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', '{%b%} or {%a%}']]);
+                 InterpolationConfig.fromArray(['{%', '%}']))))
+          .toEqual([
+            [HtmlElementAst, 'div', 0],
+            [HtmlAttrAst, 'value', '{%b%} or {%a%}'],
+          ]);
     });
 
     it('should handle interpolation with custom placeholder names', () => {

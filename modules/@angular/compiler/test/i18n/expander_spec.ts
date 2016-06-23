@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
+import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
 import {HtmlAttrAst, HtmlElementAst, HtmlTextAst} from '@angular/compiler/src/html_ast';
 import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {ExpansionResult, expandNodes} from '@angular/compiler/src/i18n/expander';
@@ -16,7 +18,9 @@ import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testin
 export function main() {
   describe('Expander', () => {
     function expand(template: string): ExpansionResult {
-      const htmlParser = new HtmlParser();
+      const expLexer = new ExpressionLexer();
+      const expParser = new ExpressionParser(expLexer);
+      const htmlParser = new HtmlParser(expParser);
       const res = htmlParser.parse(template, 'url', true);
       return expandNodes(res.rootNodes);
     }

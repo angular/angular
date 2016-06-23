@@ -111,8 +111,8 @@ export class CompileMetadataResolver {
     if (isBlank(meta)) {
       var dirMeta = this._directiveResolver.resolve(directiveType);
       var templateMeta: cpl.CompileTemplateMetadata = null;
-      var changeDetectionStrategy: any /** TODO #9100 */ = null;
-      var viewProviders: any[] /** TODO #9100 */ = [];
+      var changeDetectionStrategy: ChangeDetectionStrategy = null;
+      var viewProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
       var moduleUrl = staticTypeModuleUrl(directiveType);
       var precompileTypes: cpl.CompileTypeMetadata[] = [];
       if (dirMeta instanceof ComponentMetadata) {
@@ -147,7 +147,7 @@ export class CompileMetadataResolver {
         }
       }
 
-      var providers: any[] /** TODO #9100 */ = [];
+      var providers: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
       if (isPresent(dirMeta.providers)) {
         providers = this.getProvidersMetadata(
             verifyNonBlankProviders(directiveType, dirMeta.providers, 'providers'),
@@ -492,14 +492,13 @@ export class CompileMetadataResolver {
   getQueriesMetadata(
       queries: {[key: string]: QueryMetadata}, isViewQuery: boolean,
       directiveType: Type): cpl.CompileQueryMetadata[] {
-    var compileQueries: any[] /** TODO #9100 */ = [];
-    StringMapWrapper.forEach(
-        queries, (query: any /** TODO #9100 */, propertyName: any /** TODO #9100 */) => {
-          if (query.isViewQuery === isViewQuery) {
-            compileQueries.push(this.getQueryMetadata(query, propertyName, directiveType));
-          }
-        });
-    return compileQueries;
+    var res: cpl.CompileQueryMetadata[] = [];
+    StringMapWrapper.forEach(queries, (query: QueryMetadata, propertyName: string) => {
+      if (query.isViewQuery === isViewQuery) {
+        res.push(this.getQueryMetadata(query, propertyName, directiveType));
+      }
+    });
+    return res;
   }
 
   getQueryMetadata(q: QueryMetadata, propertyName: string, typeOrFunc: Type|Function):

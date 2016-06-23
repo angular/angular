@@ -6,12 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export interface InterpolationConfig {
-  start: string;
-  end: string;
+import {assertInterpolationSymbols} from './assertions';
+import {isBlank} from './facade/lang';
+
+export class InterpolationConfig {
+  static fromArray(markers: [string, string]): InterpolationConfig {
+    if (isBlank(markers)) {
+      // TODO:bad ??
+      return DEFAULT_INTERPOLATION_CONFIG;
+    }
+
+    assertInterpolationSymbols('interpolation', markers);
+    return new InterpolationConfig(markers[0], markers[1]);
+  }
+
+  constructor(public start: string, public end: string){};
 }
 
-export const DEFAULT_INTERPOLATION_CONFIG: InterpolationConfig = {
-  start: '{{',
-  end: '}}'
-};
+export const DEFAULT_INTERPOLATION_CONFIG: InterpolationConfig =
+    new InterpolationConfig('{{', '}}');

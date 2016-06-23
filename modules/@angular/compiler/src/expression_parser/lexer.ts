@@ -8,7 +8,6 @@
 
 import {Injectable} from '@angular/core';
 import * as chars from '../chars';
-import {SetWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
 import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from '../facade/lang';
 

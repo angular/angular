@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
+import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
 import {HtmlToken, HtmlTokenError, HtmlTokenType, tokenizeHtml} from '@angular/compiler/src/html_lexer';
 import {InterpolationConfig} from '@angular/compiler/src/interpolation_config';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
-
-import {BaseException} from '../src/facade/exceptions';
 
 export function main() {
   describe('HtmlLexer', () => {
@@ -358,7 +358,15 @@ export function main() {
         expect(tokenizeAndHumanizeParts('{{ a }}')).toEqual([
           [HtmlTokenType.TEXT, '{{ a }}'], [HtmlTokenType.EOF]
         ]);
+      });
 
+      it('should detect interpolation end', () => {
+        expect(tokenizeAndHumanizeParts('{{value|filter:{params: {strict: true}}}}')).toEqual([
+          [HtmlTokenType.TEXT, '{{ a }}'], [HtmlTokenType.EOF]
+        ]);
+      });
+
+      it('should parse interpolation with custom markers', () => {
         expect(tokenizeAndHumanizeParts('{% a %}', null, {start: '{%', end: '%}'})).toEqual([
           [HtmlTokenType.TEXT, '{% a %}'], [HtmlTokenType.EOF]
         ]);
@@ -598,11 +606,14 @@ export function main() {
 function tokenizeWithoutErrors(
     input: string, tokenizeExpansionForms: boolean = false,
     interpolationConfig?: InterpolationConfig): HtmlToken[] {
-  var tokenizeResult = tokenizeHtml(input, 'someUrl', tokenizeExpansionForms, interpolationConfig);
+  var tokenizeResult = tokenizeHtml(
+      input, 'someUrl', _getExpressionParser(), tokenizeExpansionForms, interpolationConfig);
+
   if (tokenizeResult.errors.length > 0) {
-    var errorString = tokenizeResult.errors.join('\n');
-    throw new BaseException(`Unexpected parse errors:\n${errorString}`);
+    const errorString = tokenizeResult.errors.join('\n');
+    throw new Error(`Unexpected parse errors:\n${errorString}`);
   }
+
   return tokenizeResult.tokens;
 }
 
@@ -627,9 +638,10 @@ function tokenizeAndHumanizeLineColumn(input: string): any[] {
 }
 
 function tokenizeAndHumanizeErrors(input: string): any[] {
-  return tokenizeHtml(input, 'someUrl')
-      .errors.map(
-          tokenError =>
-              [<any>tokenError.tokenType, tokenError.msg,
-               humanizeLineColumn(tokenError.span.start)]);
+  return tokenizeHtml(input, 'someUrl', _getExpressionParser())
+      .errors.map(e => [<any>e.tokenType, e.msg, humanizeLineColumn(e.span.start)]);
+}
+
+function _getExpressionParser(): ExpressionParser {
+  return new ExpressionParser(new ExpressionLexer());
 }

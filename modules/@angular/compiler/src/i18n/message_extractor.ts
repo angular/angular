@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Parser} from '../expression_parser/parser';
+import {Parser as ExpressionParser} from '../expression_parser/parser';
 import {StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {HtmlAst, HtmlElementAst} from '../html_ast';
 import {HtmlParser} from '../html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../interpolation_config';
 import {ParseError} from '../parse_util';
+
 import {Message, id} from './message';
 import {I18N_ATTR_PREFIX, I18nError, Part, messageFromAttribute, messageFromI18nAttribute, partition} from './shared';
+
 
 
 /**
@@ -101,8 +103,8 @@ export class MessageExtractor {
   private _errors: ParseError[];
 
   constructor(
-      private _htmlParser: HtmlParser, private _parser: Parser, private _implicitTags: string[],
-      private _implicitAttrs: {[k: string]: string[]}) {}
+      private _htmlParser: HtmlParser, private _expressionParser: ExpressionParser,
+      private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
 
   extract(
       template: string, sourceUrl: string,
@@ -110,7 +112,7 @@ export class MessageExtractor {
     this._messages = [];
     this._errors = [];
 
-    const res = this._htmlParser.parse(template, sourceUrl, true);
+    const res = this._htmlParser.parse(template, sourceUrl, true, interpolationConfig);
 
     if (res.errors.length == 0) {
       this._recurse(res.rootNodes, interpolationConfig);
@@ -121,7 +123,7 @@ export class MessageExtractor {
 
   private _extractMessagesFromPart(part: Part, interpolationConfig: InterpolationConfig): void {
     if (part.hasI18n) {
-      this._messages.push(part.createMessage(this._parser, interpolationConfig));
+      this._messages.push(part.createMessage(this._expressionParser, interpolationConfig));
       this._recurseToExtractMessagesFromAttributes(part.children, interpolationConfig);
     } else {
       this._recurse(part.children, interpolationConfig);
@@ -159,7 +161,8 @@ export class MessageExtractor {
     p.attrs.filter(attr => attr.name.startsWith(I18N_ATTR_PREFIX)).forEach(attr => {
       try {
         explicitAttrs.push(attr.name.substring(I18N_ATTR_PREFIX.length));
-        this._messages.push(messageFromI18nAttribute(this._parser, interpolationConfig, p, attr));
+        this._messages.push(
+            messageFromI18nAttribute(this._expressionParser, interpolationConfig, p, attr));
       } catch (e) {
         if (e instanceof I18nError) {
           this._errors.push(e);
@@ -174,7 +177,7 @@ export class MessageExtractor {
         .filter(attr => explicitAttrs.indexOf(attr.name) == -1)
         .filter(attr => transAttrs.indexOf(attr.name) > -1)
         .forEach(
-            attr =>
-                this._messages.push(messageFromAttribute(this._parser, interpolationConfig, attr)));
+            attr => this._messages.push(
+                messageFromAttribute(this._expressionParser, interpolationConfig, attr)));
   }
 }

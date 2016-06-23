@@ -6,21 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-import {Parser} from '@angular/compiler/src/expression_parser/parser';
+import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
+import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
 import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {Message} from '@angular/compiler/src/i18n/message';
 import {MessageExtractor, removeDuplicates} from '@angular/compiler/src/i18n/message_extractor';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+
 
 export function main() {
   describe('MessageExtractor', () => {
     let extractor: MessageExtractor;
 
     beforeEach(() => {
-      const htmlParser = new HtmlParser();
-      const parser = new Parser(new Lexer());
-      extractor = new MessageExtractor(htmlParser, parser, ['i18n-tag'], {'i18n-el': ['trans']});
+      const expParser = new ExpressionParser(new ExpressionLexer());
+      const htmlParser = new HtmlParser(expParser);
+      // TODO: pass expression parser
+      extractor = new MessageExtractor(htmlParser, expParser, ['i18n-tag'], {'i18n-el': ['trans']});
     });
 
     it('should extract from elements with the i18n attr', () => {

@@ -101,15 +101,23 @@ export class TemplateParser {
       const errorString = errors.join('\n');
       throw new BaseException(`Template parse errors:\n${errorString}`);
     }
+
     return result.templateAst;
   }
 
   tryParse(
       component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveMetadata[],
       pipes: CompilePipeMetadata[], templateUrl: string): TemplateParseResult {
-    const htmlAstWithErrors = this._htmlParser.parse(template, templateUrl);
+    // TODO: bad ???
+    let interpolationConfig: any;
+    if (component.template) {
+      interpolationConfig = InterpolationConfig.fromArray(component.template.interpolation);
+    }
+    const htmlAstWithErrors =
+        this._htmlParser.parse(template, templateUrl, false, interpolationConfig);
     const errors: ParseError[] = htmlAstWithErrors.errors;
-    let result: any[];
+    let result: TemplateAst[];
+
     if (htmlAstWithErrors.rootNodes.length > 0) {
       const uniqDirectives = <CompileDirectiveMetadata[]>removeDuplicates(directives);
       const uniqPipes = <CompilePipeMetadata[]>removeDuplicates(pipes);
@@ -137,10 +145,12 @@ export class TemplateParser {
   }
 
   /** @internal */
-  _assertNoReferenceDuplicationOnTemplate(result: any[], errors: TemplateParseError[]): void {
-    const existingReferences: any[] /** TODO #???? */ = [];
-    result.filter(element => !!element.references)
-        .forEach(element => element.references.forEach((reference: any /** TODO #???? */) => {
+  _assertNoReferenceDuplicationOnTemplate(result: TemplateAst[], errors: TemplateParseError[]):
+      void {
+    const existingReferences: string[] = [];
+
+    result.filter(element => !!(<any>element).references)
+        .forEach(element => (<any>element).references.forEach((reference: ReferenceAst) => {
           const name = reference.name;
           if (existingReferences.indexOf(name) < 0) {
             existingReferences.push(name);
@@ -167,19 +177,24 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       pipes: CompilePipeMetadata[], private _exprParser: Parser,
       private _schemaRegistry: ElementSchemaRegistry) {
     this.selectorMatcher = new SelectorMatcher();
+
     const tempMeta = providerViewContext.component.template;
+
+    // TODO
     if (isPresent(tempMeta) && isPresent(tempMeta.interpolation)) {
       this._interpolationConfig = {
         start: tempMeta.interpolation[0],
         end: tempMeta.interpolation[1]
       };
     }
+
     ListWrapper.forEachWithIndex(
         directives, (directive: CompileDirectiveMetadata, index: number) => {
           const selector = CssSelector.parse(directive.selector);
           this.selectorMatcher.addSelectables(selector, directive);
           this.directivesIndex.set(directive, index);
         });
+
     this.pipesByName = new Map<string, CompilePipeMetadata>();
     pipes.forEach(pipe => this.pipesByName.set(pipe.name, pipe));
   }

@@ -13,6 +13,8 @@ import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, HtmlElementAst, HtmlE
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
 import {ParseError, ParseSourceSpan} from './parse_util';
 import {getHtmlTagDefinition, getNsPrefix, mergeNsAndName} from './html_tags';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
+import {Parser as ExpressionParser} from './expression_parser/parser';
 
 export class HtmlTreeError extends ParseError {
   static create(elementName: string, span: ParseSourceSpan, msg: string): HtmlTreeError {
@@ -28,9 +30,14 @@ export class HtmlParseTreeResult {
 
 @Injectable()
 export class HtmlParser {
-  parse(sourceContent: string, sourceUrl: string, parseExpansionForms: boolean = false):
+  constructor(public _expressionParser: ExpressionParser) {}
+
+  parse(
+      sourceContent: string, sourceUrl: string, parseExpansionForms: boolean = false,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG):
       HtmlParseTreeResult {
-    var tokensAndErrors = tokenizeHtml(sourceContent, sourceUrl, parseExpansionForms);
+    var tokensAndErrors = tokenizeHtml(
+        sourceContent, sourceUrl, this._expressionParser, parseExpansionForms, interpolationConfig);
     var treeAndErrors = new TreeBuilder(tokensAndErrors.tokens).build();
     return new HtmlParseTreeResult(
         treeAndErrors.rootNodes,

@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
+import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
+
 import {RegExpWrapper, isBlank, isPresent} from '../facade/lang';
 import {HtmlAst, HtmlElementAst} from '../html_ast';
 import {HtmlParser} from '../html_parser';
@@ -34,9 +37,11 @@ export class XmbDeserializationError extends ParseError {
 }
 
 export function deserializeXmb(content: string, url: string): XmbDeserializationResult {
-  let parser = new HtmlParser();
-  let normalizedContent = _expandPlaceholder(content.trim());
-  let parsed = parser.parse(normalizedContent, url);
+  const expLexer = new ExpressionLexer();
+  const expParser = new ExpressionParser(expLexer);
+  const parser = new HtmlParser(expParser);
+  const normalizedContent = _expandPlaceholder(content.trim());
+  const parsed = parser.parse(normalizedContent, url);
 
   if (parsed.errors.length > 0) {
     return new XmbDeserializationResult(null, {}, parsed.errors);

@@ -37,8 +37,7 @@ function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
 export class Parser {
   private errors: ParserError[] = [];
 
-  constructor(/** @internal */
-              public _lexer: Lexer) {}
+  constructor(private _lexer: Lexer) {}
 
   parseAction(
       input: string, location: any,

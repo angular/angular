@@ -7,12 +7,9 @@
  */
 
 import {Injectable, ViewEncapsulation} from '@angular/core';
-
-import {PromiseWrapper} from '../src/facade/async';
 import {MapWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {isBlank, isPresent} from '../src/facade/lang';
-
 import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from './html_ast';
@@ -22,6 +19,7 @@ import {PreparsedElementType, preparseElement} from './template_preparser';
 import {UrlResolver} from './url_resolver';
 import {SyncAsyncResult} from './util';
 import {XHR} from './xhr';
+import {InterpolationConfig} from './interpolation_config';
 
 @Injectable()
 export class DirectiveNormalizer {
@@ -99,7 +97,9 @@ export class DirectiveNormalizer {
   normalizeLoadedTemplate(
       directiveType: CompileTypeMetadata, templateMeta: CompileTemplateMetadata, template: string,
       templateAbsUrl: string): CompileTemplateMetadata {
-    const rootNodesAndErrors = this._htmlParser.parse(template, directiveType.name);
+    const interpolationConfig = InterpolationConfig.fromArray(templateMeta.interpolation);
+    const rootNodesAndErrors =
+        this._htmlParser.parse(template, directiveType.name, false, interpolationConfig);
     if (rootNodesAndErrors.errors.length > 0) {
       const errorString = rootNodesAndErrors.errors.join('\n');
       throw new BaseException(`Template parse errors:\n${errorString}`);
@@ -127,7 +127,7 @@ export class DirectiveNormalizer {
       encapsulation = ViewEncapsulation.None;
     }
     return new CompileTemplateMetadata({
-      encapsulation: encapsulation,
+      encapsulation,
       template: template,
       templateUrl: templateAbsUrl,
       styles: allStyles,
