@@ -1,5 +1,4 @@
 import * as compiler from '@angular/compiler';
-import * as compiler_cli from '@angular/compiler-cli';
 import * as compilerTesting from '@angular/compiler/testing';
 import * as coreTesting from '@angular/core';
 import * as core from '@angular/core/testing';
@@ -17,7 +16,6 @@ import * as upgrade from '@angular/upgrade';
 export default {
   compiler,
   compilerTesting,
-  compiler_cli,
   core,
   coreTesting,
   http,
