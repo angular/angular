@@ -1220,9 +1220,9 @@ More than one component: DirB,DirA ("[ERROR ->]<div>"): TestComp@0:0`);
            });
            expect(() => parse('<template [a]="b" (e)="f"></template>', [dirA]))
                .toThrowError(`Template parse errors:
-Event binding e not emitted by any directive on an embedded template ("<template [a]="b" [ERROR ->](e)="f"></template>"): TestComp@0:18
+Event binding e not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "directives" section. ("<template [a]="b" [ERROR ->](e)="f"></template>"): TestComp@0:18
 Components on an embedded template: DirA ("[ERROR ->]<template [a]="b" (e)="f"></template>"): TestComp@0:0
-Property binding a not used by any directive on an embedded template ("[ERROR ->]<template [a]="b" (e)="f"></template>"): TestComp@0:0`);
+Property binding a not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "directives" section. ("[ERROR ->]<template [a]="b" (e)="f"></template>"): TestComp@0:0`);
          });
 
       it('should not allow components or element bindings on inline embedded templates', () => {
@@ -1234,7 +1234,7 @@ Property binding a not used by any directive on an embedded template ("[ERROR ->
         });
         expect(() => parse('<div *a="b"></div>', [dirA])).toThrowError(`Template parse errors:
 Components on an embedded template: DirA ("[ERROR ->]<div *a="b"></div>"): TestComp@0:0
-Property binding a not used by any directive on an embedded template ("[ERROR ->]<div *a="b"></div>"): TestComp@0:0`);
+Property binding a not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "directives" section. ("[ERROR ->]<div *a="b"></div>"): TestComp@0:0`);
       });
     });
 

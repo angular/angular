@@ -824,7 +824,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     }
     elementProps.forEach(prop => {
       this._reportError(
-          `Property binding ${prop.name} not used by any directive on an embedded template`,
+          `Property binding ${prop.name} not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "directives" section.`,
           sourceSpan);
     });
   }
@@ -840,7 +840,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     events.forEach(event => {
       if (isPresent(event.target) || !SetWrapper.has(allDirectiveEvents, event.name)) {
         this._reportError(
-            `Event binding ${event.fullName} not emitted by any directive on an embedded template`,
+            `Event binding ${event.fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "directives" section.`,
             event.sourceSpan);
       }
     });
