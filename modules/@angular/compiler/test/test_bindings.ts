@@ -8,7 +8,8 @@
 
 import {ElementSchemaRegistry, UrlResolver, XHR} from '@angular/compiler';
 import {createUrlResolverWithoutPackagePrefix} from '@angular/compiler/src/url_resolver';
-import {MockSchemaRegistry, MockXHR} from '@angular/compiler/testing';
+import {MockSchemaRegistry} from '@angular/compiler/testing';
+import {MockXHR} from '@angular/compiler/testing/xhr_mock';
 
 export var TEST_PROVIDERS: any[] = [
   {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {})},

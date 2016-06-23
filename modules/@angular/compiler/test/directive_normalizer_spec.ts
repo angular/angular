@@ -10,7 +10,7 @@ import {CompileTemplateMetadata, CompileTypeMetadata} from '@angular/compiler/sr
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {XHR} from '@angular/compiler/src/xhr';
-import {MockXHR} from '@angular/compiler/testing';
+import {MockXHR} from '@angular/compiler/testing/xhr_mock';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';

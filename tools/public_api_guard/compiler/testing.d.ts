@@ -51,14 +51,6 @@ export declare class MockViewResolver extends ViewResolver {
     resolve(component: Type): ViewMetadata;
 }
 
-export declare class MockXHR extends XHR {
-    get(url: string): Promise<string>;
-    expect(url: string, response: string): void;
-    when(url: string, response: string): void;
-    flush(): void;
-    verifyNoOutstandingExpectations(): void;
-}
-
 export declare class TestComponentBuilder {
     constructor(_injector: Injector);
     overrideTemplate(componentType: Type, template: string): TestComponentBuilder;
