@@ -14,7 +14,7 @@ import {NgIf} from '@angular/common';
 import {TimerWrapper} from '../src/facade/async';
 import {IS_DART} from '../src/facade/lang';
 import {PromiseWrapper} from '../src/facade/promise';
-import {dispatchEvent} from '@angular/platform-browser/testing';
+import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {withProviders} from '@angular/core/testing/test_injector';
 
 @Component(

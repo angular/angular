@@ -6,17 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {el} from '@angular/platform-browser/testing';
-
 import {FILL_STYLE_FLAG} from '../../src/animation/animation_constants';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import * as animationUtils from '../../src/animation/animation_style_util';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AUTO_STYLE} from '../../src/animation/metadata';
-import {isPresent} from '../../src/facade/lang';
-import {fakeAsync, flushMicrotasks} from '../../testing';
-import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {

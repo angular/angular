@@ -7,7 +7,7 @@
  */
 
 import {inject, describe, it, iit, expect, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 import {createPairedMessageBuses} from './web_worker_test_util';
 import {Serializer, PRIMITIVE} from '@angular/platform-browser/src/web_workers/shared/serializer';
 import {ServiceMessageBroker, ServiceMessageBroker_} from '@angular/platform-browser/src/web_workers/shared/service_message_broker';

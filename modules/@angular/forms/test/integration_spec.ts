@@ -17,7 +17,7 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, FormControl, FormGroup, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, NgModel, REACTIVE_FORM_DIRECTIVES, Validator, Validators, disableDeprecatedForms, provideForms} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent} from '@angular/platform-browser/testing';
+import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 
 import {ObservableWrapper, TimerWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';

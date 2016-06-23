@@ -12,7 +12,7 @@ import {Reflector, ReflectionInfo} from '@angular/core/src/reflection/reflection
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {ClassDecorator, ParamDecorator, PropDecorator, classDecorator, paramDecorator, propDecorator, HasGetterAndSetterDecorators} from './reflector_common';
 import {IS_DART} from '../../src/facade/lang';
-import {browserDetection} from '@angular/platform-browser/testing'
+import {browserDetection} from '@angular/platform-browser/testing/browser_util'
 
 class AType {
   value: any /** TODO #9100 */;

@@ -7,7 +7,7 @@
  */
 
 import * as t from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
 import {getDOM} from '../../src/dom/dom_adapter';
 import {sanitizeHtml} from '../../src/security/html_sanitizer';

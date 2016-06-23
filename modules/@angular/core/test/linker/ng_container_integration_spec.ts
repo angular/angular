@@ -13,7 +13,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {OpaqueToken, ViewMetadata, Component, Directive, AfterContentInit, AfterViewInit, QueryList, ContentChildren, ViewChildren, Input} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
-import {el} from '@angular/platform-browser/testing';
+import {el} from '@angular/platform-browser/testing/browser_util';
 
 const ANCHOR_ELEMENT = new OpaqueToken('AnchorElement');
 

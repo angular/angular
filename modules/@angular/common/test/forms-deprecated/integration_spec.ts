@@ -17,7 +17,7 @@ import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {dispatchEvent} from '@angular/platform-browser/testing';
+import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 
 import {ObservableWrapper, TimerWrapper} from '../../src/facade/async';
 import {ListWrapper} from '../../src/facade/collection';

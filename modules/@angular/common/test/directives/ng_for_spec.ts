@@ -7,7 +7,6 @@
  */
 
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 
@@ -16,6 +15,7 @@ import {IS_DART} from '../../src/facade/lang';
 import {Component, TemplateRef, ContentChild} from '@angular/core';
 import {NgFor} from '@angular/common';
 import {NgIf} from '@angular/common';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 
 export function main() {

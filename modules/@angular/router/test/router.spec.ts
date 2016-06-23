@@ -5,7 +5,8 @@ import {SpyLocation} from '@angular/common/testing';
 import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
 import {Component, Injector} from '@angular/core';
 import {ComponentResolver} from '@angular/core';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, fakeAsync, iit, inject, it, tick, xdescribe, xit} from '@angular/core/testing';
+import {beforeEach, beforeEachProviders, ddescribe, describe, fakeAsync, iit, inject, it, tick, xdescribe, xit} from '@angular/core/testing';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
