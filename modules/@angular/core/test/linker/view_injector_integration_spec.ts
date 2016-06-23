@@ -397,11 +397,21 @@ export function main() {
            expect(created).toBe(true);
          }));
 
-      it('should not instantiate other directives that depend on viewProviders providers',
+      it('should not instantiate other directives that depend on viewProviders providers (same element)',
          fakeAsync(() => {
            expect(
                () => createComp(
                    '<div simpleComponent needsService></div>',
+                   tcb.overrideViewProviders(
+                       SimpleComponent, [{provide: 'service', useValue: 'service'}])))
+               .toThrowError(/No provider for service!/);
+         }));
+
+      it('should not instantiate other directives that depend on viewProviders providers (child element)',
+         fakeAsync(() => {
+           expect(
+               () => createComp(
+                   '<div simpleComponent><div needsService></div></div>',
                    tcb.overrideViewProviders(
                        SimpleComponent, [{provide: 'service', useValue: 'service'}])))
                .toThrowError(/No provider for service!/);

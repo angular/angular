@@ -313,6 +313,14 @@ export class CompileElement extends CompileNode {
       }
       // access regular providers on the element
       if (isBlank(result)) {
+        let resolvedProvider = this._resolvedProviders.get(dep.token);
+        // don't allow directives / public services to access private services.
+        // only components and private services can access private services.
+        if (resolvedProvider && (requestingProviderType === ProviderAstType.Directive ||
+                                 requestingProviderType === ProviderAstType.PublicService) &&
+            resolvedProvider.providerType === ProviderAstType.PrivateService) {
+          return null;
+        }
         result = this._instances.get(dep.token);
       }
     }
