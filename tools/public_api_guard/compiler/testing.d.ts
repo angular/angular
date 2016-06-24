@@ -1,7 +1,3 @@
-export declare var ComponentFixtureAutoDetect: OpaqueToken;
-
-export declare var ComponentFixtureNoNgZone: OpaqueToken;
-
 export declare class MockDirectiveResolver extends DirectiveResolver {
     resolve(type: Type): DirectiveMetadata;
     setProvidersOverride(type: Type, providers: any[]): void;
@@ -34,21 +30,13 @@ export declare class MockViewResolver extends ViewResolver {
     setView(component: Type, view: ViewMetadata): void;
 }
 
-export declare class TestComponentBuilder {
-    constructor(_injector: Injector);
+export declare class OverridingTestComponentBuilder extends TestComponentBuilder {
+    constructor(injector: Injector);
     createAsync(rootComponentType: Type): Promise<ComponentFixture<any>>;
-    createFakeAsync(rootComponentType: Type): ComponentFixture<any>;
-    createSync<C>(componentFactory: ComponentFactory<C>): ComponentFixture<C>;
     overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder;
-    overrideBindings(type: Type, providers: any[]): TestComponentBuilder;
-    overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder;
-    overrideProviders(type: Type, providers: any[]): TestComponentBuilder;
-    overrideTemplate(componentType: Type, template: string): TestComponentBuilder;
-    overrideView(componentType: Type, view: ViewMetadata): TestComponentBuilder;
-    overrideViewBindings(type: Type, providers: any[]): TestComponentBuilder;
-    overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder;
-}
-
-export declare class TestComponentRenderer {
-    insertRootElement(rootElementId: string): void;
+    overrideDirective(componentType: Type, from: Type, to: Type): OverridingTestComponentBuilder;
+    overrideProviders(type: Type, providers: any[]): OverridingTestComponentBuilder;
+    overrideTemplate(componentType: Type, template: string): OverridingTestComponentBuilder;
+    overrideView(componentType: Type, view: ViewMetadata): OverridingTestComponentBuilder;
+    overrideViewProviders(type: Type, providers: any[]): OverridingTestComponentBuilder;
 }
