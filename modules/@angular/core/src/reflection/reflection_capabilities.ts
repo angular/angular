@@ -19,7 +19,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   isReflectionEnabled(): boolean { return true; }
 
-  factory(t: ConcreteType): Function {
+  factory(t: ConcreteType<any>): Function {
     switch (t.length) {
       case 0:
         return () => new t();

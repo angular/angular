@@ -84,7 +84,7 @@ export interface TypeDecorator {
   /**
    * Generate a class from the definition and annotate it with {@link TypeDecorator#annotations}.
    */
-  Class(obj: ClassDefinition): ConcreteType;
+  Class(obj: ClassDefinition): ConcreteType<any>;
 }
 
 function extractAnnotation(annotation: any): any {
@@ -219,7 +219,7 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
  * ```
  * @stable
  */
-export function Class(clsDef: ClassDefinition): ConcreteType {
+export function Class(clsDef: ClassDefinition): ConcreteType<any> {
   var constructor = applyParams(
       clsDef.hasOwnProperty('constructor') ? clsDef.constructor : undefined, 'constructor');
   var proto = constructor.prototype;
@@ -246,7 +246,7 @@ export function Class(clsDef: ClassDefinition): ConcreteType {
     (constructor as any /** TODO #9100 */)['overriddenName'] = `class${_nextClassId++}`;
   }
 
-  return <ConcreteType>constructor;
+  return <ConcreteType<any>>constructor;
 }
 
 var Reflect = global.Reflect;

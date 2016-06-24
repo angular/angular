@@ -32,7 +32,7 @@ var rootSelectorVar = o.variable('rootSelector');
 
 export class ViewFactoryDependency {
   constructor(
-      public comp: CompileDirectiveMetadata, public placeholder: CompileIdentifierMetadata) {}
+      public comp: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
 }
 
 export class ComponentFactoryDependency {
@@ -208,7 +208,8 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     if (isPresent(component)) {
       let nestedComponentIdentifier =
           new CompileIdentifierMetadata({name: getViewFactoryName(component, 0)});
-      this.targetDependencies.push(new ViewFactoryDependency(component, nestedComponentIdentifier));
+      this.targetDependencies.push(
+          new ViewFactoryDependency(component.type, nestedComponentIdentifier));
       let precompileComponentIdentifiers =
           component.precompile.map((precompileComp: CompileIdentifierMetadata) => {
             var id = new CompileIdentifierMetadata({name: precompileComp.name});

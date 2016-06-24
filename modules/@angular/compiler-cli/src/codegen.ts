@@ -101,44 +101,23 @@ export class CodeGenerator {
     return path.join(this.options.genDir, path.relative(root, filePath));
   }
 
-  // TODO(tbosch): add a cache for shared css files
-  // TODO(tbosch): detect cycles!
-  private generateStylesheet(filepath: string, shim: boolean): Promise<any> {
-    return this.compiler.loadAndCompileStylesheet(filepath, shim, '.ts')
-        .then((sourceWithImports) => {
-          const emitPath = this.calculateEmitPath(sourceWithImports.source.moduleUrl);
-          // TODO(alexeagle): should include the sourceFile to the WriteFileCallback
-          this.host.writeFile(emitPath, PREAMBLE + sourceWithImports.source.source, false);
-          return Promise.all(
-              sourceWithImports.importedUrls.map(url => this.generateStylesheet(url, shim)));
-        });
-  }
-
   codegen(): Promise<any> {
-    let stylesheetPromises: Promise<any>[] = [];
     const generateOneFile = (absSourcePath: string) =>
         Promise.all(this.readComponents(absSourcePath))
             .then((metadatas: compiler.CompileDirectiveMetadata[]) => {
               if (!metadatas || !metadatas.length) {
                 return;
               }
-              metadatas.forEach((metadata) => {
-                let stylesheetPaths = metadata && metadata.template && metadata.template.styleUrls;
-                if (stylesheetPaths) {
-                  stylesheetPaths.forEach((path) => {
-                    stylesheetPromises.push(this.generateStylesheet(
-                        path, metadata.template.encapsulation === ViewEncapsulation.Emulated));
-                  });
-                }
-              });
               return this.generateSource(metadatas);
             })
-            .then(generated => {
-              if (generated) {
-                const sourceFile = this.program.getSourceFile(absSourcePath);
-                const emitPath = this.calculateEmitPath(generated.moduleUrl);
-                this.host.writeFile(
-                    emitPath, PREAMBLE + generated.source, false, () => {}, [sourceFile]);
+            .then(generatedModules => {
+              if (generatedModules) {
+                generatedModules.forEach((generatedModule) => {
+                  const sourceFile = this.program.getSourceFile(absSourcePath);
+                  const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
+                  this.host.writeFile(
+                      emitPath, PREAMBLE + generatedModule.source, false, () => {}, [sourceFile]);
+                });
               }
             })
             .catch((e) => { console.error(e.stack); });
@@ -146,7 +125,7 @@ export class CodeGenerator {
                            .map(sf => sf.fileName)
                            .filter(f => !GENERATED_FILES.test(f))
                            .map(generateOneFile);
-    return Promise.all(stylesheetPromises.concat(compPromises));
+    return Promise.all(compPromises);
   }
 
   static create(
@@ -173,7 +152,7 @@ export class CodeGenerator {
         /*console*/ null, []);
     const offlineCompiler = new compiler.OfflineCompiler(
         normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
-        new TypeScriptEmitter(reflectorHost), xhr);
+        new TypeScriptEmitter(reflectorHost));
     const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), config, staticReflector);

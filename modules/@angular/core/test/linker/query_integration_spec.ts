@@ -261,18 +261,14 @@ export function main() {
              }));
 
       it('should throw with descriptive error when query selectors are not present',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               tcb.overrideTemplate(
-                      MyCompBroken0, '<has-null-query-condition></has-null-query-condition>')
-                   .createAsync(MyCompBroken0)
-                   .catch((e) => {
-                     expect(e.message).toEqual(
-                         `Can't construct a query for the property "errorTrigger" of "${stringify(HasNullQueryCondition)}" since the query selector wasn't defined.`);
-                     async.done();
-                   });
-             }));
+         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           expect(
+               () => tcb.overrideTemplate(
+                            MyCompBroken0, '<has-null-query-condition></has-null-query-condition>')
+                         .createAsync(MyCompBroken0))
+               .toThrowError(
+                   `Can't construct a query for the property "errorTrigger" of "${stringify(HasNullQueryCondition)}" since the query selector wasn't defined.`);
+         }));
     });
 
     describe('query for TemplateRef', () => {

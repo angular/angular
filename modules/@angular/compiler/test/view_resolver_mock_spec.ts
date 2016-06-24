@@ -6,18 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, it,} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, it, inject,} from '@angular/core/testing/testing_internal';
 
 import {stringify} from '../src/facade/lang';
 import {MockViewResolver} from '../testing';
-import {Component, ViewMetadata} from '@angular/core';
+import {Component, ViewMetadata, Injector} from '@angular/core';
 import {isBlank} from '../src/facade/lang';
 
 export function main() {
   describe('MockViewResolver', () => {
     var viewResolver: MockViewResolver;
 
-    beforeEach(() => { viewResolver = new MockViewResolver(); });
+    beforeEach(inject(
+        [Injector], (injector: Injector) => { viewResolver = new MockViewResolver(injector); }));
 
     describe('View overriding', () => {
       it('should fallback to the default ViewResolver when templates are not overridden', () => {
@@ -33,13 +34,12 @@ export function main() {
         expect(isBlank(view.directives)).toBe(true);
       });
 
-      it('should not allow overriding a view after it has been resolved', () => {
+      it('should allow overriding a view after it has been resolved', () => {
         viewResolver.resolve(SomeComponent);
-        expect(() => {
-          viewResolver.setView(SomeComponent, new ViewMetadata({template: 'overridden template'}));
-        })
-            .toThrowError(
-                `The component ${stringify(SomeComponent)} has already been compiled, its configuration can not be changed`);
+        viewResolver.setView(SomeComponent, new ViewMetadata({template: 'overridden template'}));
+        var view = viewResolver.resolve(SomeComponent);
+        expect(view.template).toEqual('overridden template');
+        expect(isBlank(view.directives)).toBe(true);
       });
     });
 
@@ -58,11 +58,11 @@ export function main() {
         expect(view.template).toEqual('overridden template x 2');
       });
 
-      it('should not allow overriding a view after it has been resolved', () => {
+      it('should allow overriding a view after it has been resolved', () => {
         viewResolver.resolve(SomeComponent);
-        expect(() => { viewResolver.setInlineTemplate(SomeComponent, 'overridden template'); })
-            .toThrowError(
-                `The component ${stringify(SomeComponent)} has already been compiled, its configuration can not be changed`);
+        viewResolver.setInlineTemplate(SomeComponent, 'overridden template');
+        var view = viewResolver.resolve(SomeComponent);
+        expect(view.template).toEqual('overridden template');
       });
     });
 
@@ -90,13 +90,12 @@ export function main() {
                 `Overriden directive ${stringify(SomeOtherDirective)} not found in the template of ${stringify(SomeComponent)}`);
       });
 
-      it('should not allow overriding a directive after its view has been resolved', () => {
+      it('should allow overriding a directive after its view has been resolved', () => {
         viewResolver.resolve(SomeComponent);
-        expect(() => {
-          viewResolver.overrideViewDirective(SomeComponent, SomeDirective, SomeOtherDirective);
-        })
-            .toThrowError(
-                `The component ${stringify(SomeComponent)} has already been compiled, its configuration can not be changed`);
+        viewResolver.overrideViewDirective(SomeComponent, SomeDirective, SomeOtherDirective);
+        var view = viewResolver.resolve(SomeComponent);
+        expect(view.directives.length).toEqual(1);
+        expect(view.directives[0]).toBe(SomeOtherDirective);
       });
     });
   });

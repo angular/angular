@@ -12,65 +12,92 @@ import {PromiseWrapper} from '../src/facade/async';
 import {BaseException} from '../src/facade/exceptions';
 import {isBlank, isPresent} from '../src/facade/lang';
 
-import {CompileTypeMetadata, CompileDirectiveMetadata, CompileTemplateMetadata,} from './compile_metadata';
-import {XHR} from './xhr';
-import {UrlResolver} from './url_resolver';
-import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
-
-import {HtmlAstVisitor, HtmlElementAst, HtmlTextAst, HtmlAttrAst, HtmlCommentAst, HtmlExpansionAst, HtmlExpansionCaseAst, htmlVisitAll} from './html_ast';
-import {HtmlParser} from './html_parser';
+import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
+import {HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from './html_ast';
+import {HtmlParser} from './html_parser';
+import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
+import {PreparsedElementType, preparseElement} from './template_preparser';
+import {UrlResolver} from './url_resolver';
+import {XHR} from './xhr';
 
-import {preparseElement, PreparsedElementType} from './template_preparser';
-
+export class NormalizeDirectiveResult {
+  constructor(
+      public syncResult: CompileDirectiveMetadata,
+      public asyncResult: Promise<CompileDirectiveMetadata>) {}
+}
 
 @Injectable()
 export class DirectiveNormalizer {
+  private _xhrCache = new Map<string, Promise<string>>();
+
   constructor(
       private _xhr: XHR, private _urlResolver: UrlResolver, private _htmlParser: HtmlParser,
       private _config: CompilerConfig) {}
 
-  normalizeDirective(directive: CompileDirectiveMetadata): Promise<CompileDirectiveMetadata> {
-    if (!directive.isComponent) {
-      // For non components there is nothing to be normalized yet.
-      return PromiseWrapper.resolve(directive);
+  clearCache() { this._xhrCache.clear(); }
+
+  clearCacheFor(normalizedDirective: CompileDirectiveMetadata) {
+    if (!normalizedDirective.isComponent) {
+      return;
     }
-    return this.normalizeTemplate(directive.type, directive.template)
-        .then((normalizedTemplate: CompileTemplateMetadata) => new CompileDirectiveMetadata({
-                type: directive.type,
-                isComponent: directive.isComponent,
-                selector: directive.selector,
-                exportAs: directive.exportAs,
-                changeDetection: directive.changeDetection,
-                inputs: directive.inputs,
-                outputs: directive.outputs,
-                hostListeners: directive.hostListeners,
-                hostProperties: directive.hostProperties,
-                hostAttributes: directive.hostAttributes,
-                lifecycleHooks: directive.lifecycleHooks,
-                providers: directive.providers,
-                viewProviders: directive.viewProviders,
-                queries: directive.queries,
-                viewQueries: directive.viewQueries,
-                precompile: directive.precompile,
-                template: normalizedTemplate
-              }));
+    this._xhrCache.delete(normalizedDirective.template.templateUrl);
+    normalizedDirective.template.externalStylesheets.forEach(
+        (stylesheet) => { this._xhrCache.delete(stylesheet.moduleUrl); });
   }
 
-  normalizeTemplate(directiveType: CompileTypeMetadata, template: CompileTemplateMetadata):
-      Promise<CompileTemplateMetadata> {
-    if (isPresent(template.template)) {
-      return PromiseWrapper.resolve(this.normalizeLoadedTemplate(
-          directiveType, template, template.template, directiveType.moduleUrl));
-    } else if (isPresent(template.templateUrl)) {
-      var sourceAbsUrl = this._urlResolver.resolve(directiveType.moduleUrl, template.templateUrl);
-      return this._xhr.get(sourceAbsUrl)
-          .then(
-              templateContent => this.normalizeLoadedTemplate(
-                  directiveType, template, templateContent, sourceAbsUrl));
-    } else {
-      throw new BaseException(`No template specified for component ${directiveType.name}`);
+  private _fetch(url: string): Promise<string> {
+    var result = this._xhrCache.get(url);
+    if (!result) {
+      result = this._xhr.get(url);
+      this._xhrCache.set(url, result);
     }
+    return result;
+  }
+
+  normalizeDirective(directive: CompileDirectiveMetadata): NormalizeDirectiveResult {
+    if (!directive.isComponent) {
+      // For non components there is nothing to be normalized yet.
+      return new NormalizeDirectiveResult(directive, Promise.resolve(directive));
+    }
+    let normalizedTemplateSync: CompileTemplateMetadata = null;
+    let normalizedTemplateAsync: Promise<CompileTemplateMetadata>;
+    if (isPresent(directive.template.template)) {
+      normalizedTemplateSync = this.normalizeTemplateSync(directive.type, directive.template);
+      normalizedTemplateAsync = Promise.resolve(normalizedTemplateSync);
+    } else if (directive.template.templateUrl) {
+      normalizedTemplateAsync = this.normalizeTemplateAsync(directive.type, directive.template);
+    } else {
+      throw new BaseException(`No template specified for component ${directive.type.name}`);
+    }
+    if (normalizedTemplateSync && normalizedTemplateSync.styleUrls.length === 0) {
+      // sync case
+      let normalizedDirective = _cloneDirectiveWithTemplate(directive, normalizedTemplateSync);
+      return new NormalizeDirectiveResult(
+          normalizedDirective, Promise.resolve(normalizedDirective));
+    } else {
+      // async case
+      return new NormalizeDirectiveResult(
+          null,
+          normalizedTemplateAsync
+              .then((normalizedTemplate) => this.normalizeExternalStylesheets(normalizedTemplate))
+              .then(
+                  (normalizedTemplate) =>
+                      _cloneDirectiveWithTemplate(directive, normalizedTemplate)));
+    }
+  }
+
+  normalizeTemplateSync(directiveType: CompileTypeMetadata, template: CompileTemplateMetadata):
+      CompileTemplateMetadata {
+    return this.normalizeLoadedTemplate(
+        directiveType, template, template.template, directiveType.moduleUrl);
+  }
+
+  normalizeTemplateAsync(directiveType: CompileTypeMetadata, template: CompileTemplateMetadata):
+      Promise<CompileTemplateMetadata> {
+    let templateUrl = this._urlResolver.resolve(directiveType.moduleUrl, template.templateUrl);
+    return this._fetch(templateUrl)
+        .then((value) => this.normalizeLoadedTemplate(directiveType, template, value, templateUrl));
   }
 
   normalizeLoadedTemplate(
@@ -81,41 +108,86 @@ export class DirectiveNormalizer {
       var errorString = rootNodesAndErrors.errors.join('\n');
       throw new BaseException(`Template parse errors:\n${errorString}`);
     }
+    var templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({
+      styles: templateMeta.styles,
+      styleUrls: templateMeta.styleUrls,
+      moduleUrl: directiveType.moduleUrl
+    }));
 
     var visitor = new TemplatePreparseVisitor();
     htmlVisitAll(visitor, rootNodesAndErrors.rootNodes);
-    var allStyles = templateMeta.styles.concat(visitor.styles);
+    var templateStyles = this.normalizeStylesheet(new CompileStylesheetMetadata(
+        {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
 
-    var allStyleAbsUrls =
-        visitor.styleUrls.filter(isStyleUrlResolvable)
-            .map(url => this._urlResolver.resolve(templateAbsUrl, url))
-            .concat(templateMeta.styleUrls.filter(isStyleUrlResolvable)
-                        .map(url => this._urlResolver.resolve(directiveType.moduleUrl, url)));
-
-    var allResolvedStyles = allStyles.map(style => {
-      var styleWithImports = extractStyleUrls(this._urlResolver, templateAbsUrl, style);
-      styleWithImports.styleUrls.forEach(styleUrl => allStyleAbsUrls.push(styleUrl));
-      return styleWithImports.style;
-    });
+    var allStyles = templateMetadataStyles.styles.concat(templateStyles.styles);
+    var allStyleUrls = templateMetadataStyles.styleUrls.concat(templateStyles.styleUrls);
 
     var encapsulation = templateMeta.encapsulation;
     if (isBlank(encapsulation)) {
       encapsulation = this._config.defaultEncapsulation;
     }
-    if (encapsulation === ViewEncapsulation.Emulated && allResolvedStyles.length === 0 &&
-        allStyleAbsUrls.length === 0) {
+    if (encapsulation === ViewEncapsulation.Emulated && allStyles.length === 0 &&
+        allStyleUrls.length === 0) {
       encapsulation = ViewEncapsulation.None;
     }
     return new CompileTemplateMetadata({
       encapsulation: encapsulation,
       template: template,
       templateUrl: templateAbsUrl,
-      styles: allResolvedStyles,
-      styleUrls: allStyleAbsUrls,
+      styles: allStyles,
+      styleUrls: allStyleUrls,
+      externalStylesheets: templateMeta.externalStylesheets,
       ngContentSelectors: visitor.ngContentSelectors,
       animations: templateMeta.animations,
       interpolation: templateMeta.interpolation
     });
+  }
+
+  normalizeExternalStylesheets(templateMeta: CompileTemplateMetadata):
+      Promise<CompileTemplateMetadata> {
+    return this._loadMissingExternalStylesheets(templateMeta.styleUrls)
+        .then((externalStylesheets) => new CompileTemplateMetadata({
+                encapsulation: templateMeta.encapsulation,
+                template: templateMeta.template,
+                templateUrl: templateMeta.templateUrl,
+                styles: templateMeta.styles,
+                styleUrls: templateMeta.styleUrls,
+                externalStylesheets: externalStylesheets,
+                ngContentSelectors: templateMeta.ngContentSelectors,
+                animations: templateMeta.animations,
+                interpolation: templateMeta.interpolation
+              }));
+  }
+
+  private _loadMissingExternalStylesheets(
+      styleUrls: string[],
+      loadedStylesheets:
+          Map<string, CompileStylesheetMetadata> = new Map<string, CompileStylesheetMetadata>()):
+      Promise<CompileStylesheetMetadata[]> {
+    return Promise
+        .all(styleUrls.filter((styleUrl) => !loadedStylesheets.has(styleUrl))
+                 .map(styleUrl => this._fetch(styleUrl).then((loadedStyle) => {
+                   var stylesheet = this.normalizeStylesheet(
+                       new CompileStylesheetMetadata({styles: [loadedStyle], moduleUrl: styleUrl}));
+                   loadedStylesheets.set(styleUrl, stylesheet);
+                   return this._loadMissingExternalStylesheets(
+                       stylesheet.styleUrls, loadedStylesheets);
+                 })))
+        .then((_) => Array.from(loadedStylesheets.values()));
+  }
+
+  normalizeStylesheet(stylesheet: CompileStylesheetMetadata): CompileStylesheetMetadata {
+    var allStyleUrls = stylesheet.styleUrls.filter(isStyleUrlResolvable)
+                           .map(url => this._urlResolver.resolve(stylesheet.moduleUrl, url));
+
+    var allStyles = stylesheet.styles.map(style => {
+      var styleWithImports = extractStyleUrls(this._urlResolver, stylesheet.moduleUrl, style);
+      allStyleUrls.push(...styleWithImports.styleUrls);
+      return styleWithImports.style;
+    });
+
+    return new CompileStylesheetMetadata(
+        {styles: allStyles, styleUrls: allStyleUrls, moduleUrl: stylesheet.moduleUrl});
   }
 }
 
@@ -165,4 +237,28 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
   visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
 
   visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
+}
+
+function _cloneDirectiveWithTemplate(
+    directive: CompileDirectiveMetadata,
+    template: CompileTemplateMetadata): CompileDirectiveMetadata {
+  return new CompileDirectiveMetadata({
+    type: directive.type,
+    isComponent: directive.isComponent,
+    selector: directive.selector,
+    exportAs: directive.exportAs,
+    changeDetection: directive.changeDetection,
+    inputs: directive.inputs,
+    outputs: directive.outputs,
+    hostListeners: directive.hostListeners,
+    hostProperties: directive.hostProperties,
+    hostAttributes: directive.hostAttributes,
+    lifecycleHooks: directive.lifecycleHooks,
+    providers: directive.providers,
+    viewProviders: directive.viewProviders,
+    queries: directive.queries,
+    viewQueries: directive.viewQueries,
+    precompile: directive.precompile,
+    template: template
+  });
 }

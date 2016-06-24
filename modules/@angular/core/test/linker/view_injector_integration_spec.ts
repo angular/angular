@@ -9,7 +9,7 @@
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing/testing_internal';
 import {fakeAsync, flushMicrotasks, tick, ComponentFixture} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
-import {isBlank} from '../../src/facade/lang';
+import {isBlank, ConcreteType} from '../../src/facade/lang';
 import {Type, ViewContainerRef, TemplateRef, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, Directive, Component, DebugElement, forwardRef, Input, PipeTransform, Attribute, ViewMetadata, provide, Optional, Inject, Self, InjectMetadata, Pipe, Host, SkipSelfMetadata} from '@angular/core';
 import {NgIf, NgFor} from '@angular/common';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -242,10 +242,11 @@ class TestComp {
 export function main() {
   var tcb: TestComponentBuilder;
 
-  function createCompFixture(
-      template: string, tcb: TestComponentBuilder, comp: Type = null): ComponentFixture<any> {
+  function createCompFixture<T>(
+      template: string, tcb: TestComponentBuilder,
+      comp: ConcreteType<T> = null): ComponentFixture<T> {
     if (isBlank(comp)) {
-      comp = TestComp;
+      comp = <any>TestComp;
     }
     return tcb
         .overrideView(
@@ -255,7 +256,7 @@ export function main() {
   }
 
   function createComp(
-      template: string, tcb: TestComponentBuilder, comp: Type = null): DebugElement {
+      template: string, tcb: TestComponentBuilder, comp: ConcreteType<any> = null): DebugElement {
     var fixture = createCompFixture(template, tcb, comp);
     fixture.detectChanges();
     return fixture.debugElement;

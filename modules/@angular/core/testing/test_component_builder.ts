@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, ComponentFactory, ComponentResolver, Injectable, Injector, NgZone, OpaqueToken, ViewMetadata} from '../index';
+import {AnimationEntryMetadata, Compiler, ComponentFactory, Injectable, Injector, NgZone, OpaqueToken, ViewMetadata} from '../index';
 import {PromiseWrapper} from '../src/facade/async';
-import {IS_DART, Type, isPresent} from '../src/facade/lang';
+import {ConcreteType, IS_DART, Type, isPresent} from '../src/facade/lang';
 
 import {ComponentFixture} from './component_fixture';
 import {tick} from './fake_async';
+
 
 
 /**
@@ -118,20 +119,21 @@ export class TestComponentBuilder {
   /**
    * Builds and returns a ComponentFixture.
    */
-  createAsync(rootComponentType: Type): Promise<ComponentFixture<any>> {
+  createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>> {
     let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
+    let compiler: Compiler = this._injector.get(Compiler);
 
     let initComponent = () => {
       let promise: Promise<ComponentFactory<any>> =
-          this._injector.get(ComponentResolver).resolveComponent(rootComponentType);
+          compiler.compileComponentAsync(rootComponentType);
       return promise.then(componentFactory => this.createFromFactory(ngZone, componentFactory));
     };
 
     return ngZone == null ? initComponent() : ngZone.run(initComponent);
   }
 
-  createFakeAsync(rootComponentType: Type): ComponentFixture<any> {
+  createFakeAsync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
     let result: any /** TODO #9100 */;
     let error: any /** TODO #9100 */;
     PromiseWrapper.then(
@@ -144,15 +146,16 @@ export class TestComponentBuilder {
     return result;
   }
 
-  /**
-   * @deprecated createSync will be replaced with the ability to precompile components from within
-   * the test.
-   */
-  createSync<C>(componentFactory: ComponentFactory<C>): ComponentFixture<C> {
+  createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
     let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
+    let compiler: Compiler = this._injector.get(Compiler);
 
-    let initComponent = () => this.createFromFactory(ngZone, componentFactory);
+    let initComponent = () => {
+      return this.createFromFactory(
+          ngZone, this._injector.get(Compiler).compileComponentSync(rootComponentType));
+    };
+
     return ngZone == null ? initComponent() : ngZone.run(initComponent);
   }
 }

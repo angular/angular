@@ -162,7 +162,7 @@ class Extractor {
         /*console*/ null, []);
     const offlineCompiler = new compiler.OfflineCompiler(
         normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
-        new TypeScriptEmitter(reflectorHost), xhr);
+        new TypeScriptEmitter(reflectorHost));
     const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), config, staticReflector);

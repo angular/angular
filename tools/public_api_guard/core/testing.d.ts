@@ -89,10 +89,10 @@ export declare function setBaseTestProviders(platformProviders: Array<Type | Pro
 export declare class TestComponentBuilder {
     protected _injector: Injector;
     constructor(_injector: Injector);
-    createAsync(rootComponentType: Type): Promise<ComponentFixture<any>>;
-    createFakeAsync(rootComponentType: Type): ComponentFixture<any>;
+    createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>>;
+    createFakeAsync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T>;
     protected createFromFactory<C>(ngZone: NgZone, componentFactory: ComponentFactory<C>): ComponentFixture<C>;
-    /** @deprecated */ createSync<C>(componentFactory: ComponentFactory<C>): ComponentFixture<C>;
+    createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T>;
     overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder;
     overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder;
     overrideProviders(type: Type, providers: any[]): TestComponentBuilder;

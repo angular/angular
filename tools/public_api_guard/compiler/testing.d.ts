@@ -1,4 +1,5 @@
 export declare class MockDirectiveResolver extends DirectiveResolver {
+    constructor(_injector: Injector);
     resolve(type: Type): DirectiveMetadata;
     setProvidersOverride(type: Type, providers: any[]): void;
     setViewProvidersOverride(type: Type, viewProviders: any[]): void;
@@ -22,7 +23,7 @@ export declare class MockSchemaRegistry implements ElementSchemaRegistry {
 }
 
 export declare class MockViewResolver extends ViewResolver {
-    constructor();
+    constructor(_injector: Injector);
     overrideViewDirective(component: Type, from: Type, to: Type): void;
     resolve(component: Type): ViewMetadata;
     setAnimations(component: Type, animations: AnimationEntryMetadata[]): void;
@@ -32,7 +33,8 @@ export declare class MockViewResolver extends ViewResolver {
 
 export declare class OverridingTestComponentBuilder extends TestComponentBuilder {
     constructor(injector: Injector);
-    createAsync(rootComponentType: Type): Promise<ComponentFixture<any>>;
+    createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>>;
+    createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T>;
     overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder;
     overrideDirective(componentType: Type, from: Type, to: Type): OverridingTestComponentBuilder;
     overrideProviders(type: Type, providers: any[]): OverridingTestComponentBuilder;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentResolver, Type} from '@angular/core';
+import {Compiler, ComponentResolver, Type} from '@angular/core';
 
 export * from './template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser';
@@ -49,6 +49,7 @@ export const COMPILER_PROVIDERS: Array<any|Type|{[k: string]: any}|any[]> =
       /*@ts2dart_Provider*/ {provide: CompilerConfig, useValue: new CompilerConfig()},
       RuntimeCompiler,
       /*@ts2dart_Provider*/ {provide: ComponentResolver, useExisting: RuntimeCompiler},
+      /*@ts2dart_Provider*/ {provide: Compiler, useExisting: RuntimeCompiler},
       DomElementSchemaRegistry,
       /*@ts2dart_Provider*/ {provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
       UrlResolver, ViewResolver, DirectiveResolver, PipeResolver

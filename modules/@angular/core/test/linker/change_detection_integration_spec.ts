@@ -10,7 +10,7 @@ import {TestComponentBuilder} from '@angular/compiler/testing';
 import {ComponentFixture, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {isBlank, NumberWrapper,} from '../../src/facade/lang';
+import {isBlank, NumberWrapper, ConcreteType,} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
 import {StringMapWrapper} from '../../src/facade/collection';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -40,9 +40,9 @@ export function main() {
   var renderLog: RenderLog;
   var directiveLog: DirectiveLog;
 
-  function createCompFixture(
-      template: string, compType: Type = TestComponent,
-      _tcb: TestComponentBuilder = null): ComponentFixture<any> {
+  function createCompFixture<T>(
+      template: string, compType: ConcreteType<T> = <any>TestComponent,
+      _tcb: TestComponentBuilder = null): ComponentFixture<T> {
     if (isBlank(_tcb)) {
       _tcb = tcb;
     }
@@ -58,18 +58,19 @@ export function main() {
     return nodes.map(node => node.injector.get(dirType));
   }
 
-  function _bindSimpleProp(
-      bindAttr: string, compType: Type = TestComponent): ComponentFixture<any> {
+  function _bindSimpleProp<T>(
+      bindAttr: string, compType: ConcreteType<T> = <any>TestComponent): ComponentFixture<T> {
     var template = `<div ${bindAttr}></div>`;
     return createCompFixture(template, compType);
   }
 
-  function _bindSimpleValue(
-      expression: any, compType: Type = TestComponent): ComponentFixture<any> {
+  function _bindSimpleValue<T>(
+      expression: any, compType: ConcreteType<T> = <any>TestComponent): ComponentFixture<T> {
     return _bindSimpleProp(`[someProp]='${expression}'`, compType);
   }
 
-  function _bindAndCheckSimpleValue(expression: any, compType: Type = TestComponent): string[] {
+  function _bindAndCheckSimpleValue<T>(
+      expression: any, compType: ConcreteType<T> = <any>TestComponent): string[] {
     var ctx = _bindSimpleValue(expression, compType);
     ctx.detectChanges(false);
     return renderLog.log;

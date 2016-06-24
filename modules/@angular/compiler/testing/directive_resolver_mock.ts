@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentMetadata, DirectiveMetadata, Injectable} from '@angular/core';
+import {Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector} from '@angular/core';
 
 import {DirectiveResolver} from '../src/directive_resolver';
 import {Map} from '../src/facade/collection';
 import {Type, isPresent} from '../src/facade/lang';
+
 
 
 /**
@@ -21,6 +22,10 @@ import {Type, isPresent} from '../src/facade/lang';
 export class MockDirectiveResolver extends DirectiveResolver {
   private _providerOverrides = new Map<Type, any[]>();
   private viewProviderOverrides = new Map<Type, any[]>();
+
+  constructor(private _injector: Injector) { super(); }
+
+  private get _compiler(): Compiler { return this._injector.get(Compiler); }
 
   resolve(type: Type): DirectiveMetadata {
     var dm = super.resolve(type);
@@ -69,9 +74,11 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
   setProvidersOverride(type: Type, providers: any[]): void {
     this._providerOverrides.set(type, providers);
+    this._compiler.clearCacheFor(type);
   }
 
   setViewProvidersOverride(type: Type, viewProviders: any[]): void {
     this.viewProviderOverrides.set(type, viewProviders);
+    this._compiler.clearCacheFor(type);
   }
 }

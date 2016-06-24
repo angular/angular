@@ -310,21 +310,24 @@ export declare class CompilerConfig {
     });
 }
 
-export declare class CompileTemplateMetadata {
+export declare class CompileTemplateMetadata implements CompileStylesheetMetadata {
     animations: CompileAnimationEntryMetadata[];
     encapsulation: ViewEncapsulation;
+    externalStylesheets: CompileStylesheetMetadata[];
     interpolation: [string, string];
+    moduleUrl: string;
     ngContentSelectors: string[];
     styleUrls: string[];
     styles: string[];
     template: string;
     templateUrl: string;
-    constructor({encapsulation, template, templateUrl, styles, styleUrls, animations, ngContentSelectors, interpolation}?: {
+    constructor({encapsulation, template, templateUrl, styles, styleUrls, externalStylesheets, animations, ngContentSelectors, interpolation}?: {
         encapsulation?: ViewEncapsulation;
         template?: string;
         templateUrl?: string;
         styles?: string[];
         styleUrls?: string[];
+        externalStylesheets?: CompileStylesheetMetadata[];
         ngContentSelectors?: string[];
         animations?: CompileAnimationEntryMetadata[];
         interpolation?: [string, string];
@@ -460,9 +463,8 @@ export declare class NormalizedComponentWithViewDirectives {
 }
 
 export declare class OfflineCompiler {
-    constructor(_directiveNormalizer: DirectiveNormalizer, _templateParser: TemplateParser, _styleCompiler: StyleCompiler, _viewCompiler: ViewCompiler, _outputEmitter: OutputEmitter, _xhr: XHR);
-    compileTemplates(components: NormalizedComponentWithViewDirectives[]): SourceModule;
-    loadAndCompileStylesheet(stylesheetUrl: string, shim: boolean, suffix: string): Promise<StyleSheetSourceWithImports>;
+    constructor(_directiveNormalizer: DirectiveNormalizer, _templateParser: TemplateParser, _styleCompiler: StyleCompiler, _viewCompiler: ViewCompiler, _outputEmitter: OutputEmitter);
+    compileTemplates(components: NormalizedComponentWithViewDirectives[]): SourceModule[];
     normalizeDirectiveMetadata(directive: CompileDirectiveMetadata): Promise<CompileDirectiveMetadata>;
 }
 
@@ -515,9 +517,12 @@ export declare abstract class RenderTypes {
     renderer: CompileIdentifierMetadata;
 }
 
-export declare class RuntimeCompiler implements ComponentResolver {
-    constructor(_metadataResolver: CompileMetadataResolver, _templateNormalizer: DirectiveNormalizer, _templateParser: TemplateParser, _styleCompiler: StyleCompiler, _viewCompiler: ViewCompiler, _xhr: XHR, _genConfig: CompilerConfig);
+export declare class RuntimeCompiler implements ComponentResolver, Compiler {
+    constructor(_metadataResolver: CompileMetadataResolver, _templateNormalizer: DirectiveNormalizer, _templateParser: TemplateParser, _styleCompiler: StyleCompiler, _viewCompiler: ViewCompiler, _genConfig: CompilerConfig);
     clearCache(): void;
+    clearCacheFor(compType: Type): void;
+    compileComponentAsync<T>(compType: ConcreteType<T>): Promise<ComponentFactory<T>>;
+    compileComponentSync<T>(compType: ConcreteType<T>): ComponentFactory<T>;
     resolveComponent(component: Type | string): Promise<ComponentFactory<any>>;
 }
 

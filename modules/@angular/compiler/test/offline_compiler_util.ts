@@ -20,11 +20,11 @@ import {TemplateParser} from '@angular/compiler/src/template_parser';
 import {createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
 import {MODULE_SUFFIX} from '@angular/compiler/src/util';
 import {ViewCompiler} from '@angular/compiler/src/view_compiler/view_compiler';
+import {XHR} from '@angular/compiler/src/xhr';
 
 import {Console} from '../core_private';
 import {IS_DART, isPresent, print} from '../src/facade/lang';
 import {MockSchemaRegistry} from '../testing/schema_registry_mock';
-import {MockXHR} from '../testing/xhr_mock';
 
 
 export class CompA { user: string; }
@@ -44,9 +44,8 @@ export var compAMetadata = CompileDirectiveMetadata.create({
   })
 });
 
-function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCompiler {
+function _createOfflineCompiler(xhr: XHR, emitter: OutputEmitter): OfflineCompiler {
   var urlResolver = createOfflineCompileUrlResolver();
-  xhr.when(`${THIS_MODULE_PATH}/offline_compiler_compa.html`, 'Hello World {{user}}!');
   var htmlParser = new HtmlParser();
   var config = new CompilerConfig({genDebugInfo: true, useJit: true});
   var normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
@@ -54,29 +53,42 @@ function _createOfflineCompiler(xhr: MockXHR, emitter: OutputEmitter): OfflineCo
       normalizer,
       new TemplateParser(
           new Parser(new Lexer()), new MockSchemaRegistry({}, {}), htmlParser, new Console(), []),
-      new StyleCompiler(urlResolver), new ViewCompiler(config), emitter, xhr);
+      new StyleCompiler(urlResolver), new ViewCompiler(config), emitter);
 }
 
 export function compileComp(
     emitter: OutputEmitter, comp: CompileDirectiveMetadata): Promise<string> {
-  var xhr = new MockXHR();
+  var xhr = new MockXhr();
+  xhr.setResult(`${THIS_MODULE_PATH}/offline_compiler_compa.html`, '');
+  xhr.setResult(`${THIS_MODULE_PATH}/offline_compiler_compa.css`, '');
   var compiler = _createOfflineCompiler(xhr, emitter);
   var result = compiler.normalizeDirectiveMetadata(comp).then((normComp) => {
-    return compiler.compileTemplates([new NormalizedComponentWithViewDirectives(normComp, [], [])])
+    return compiler
+        .compileTemplates([new NormalizedComponentWithViewDirectives(normComp, [], [])])[0]
         .source;
   });
-  xhr.flush();
   return result;
 }
 
 export class SimpleJsImportGenerator implements ImportGenerator {
   getImportPath(moduleUrlStr: string, importedUrlStr: string): string {
-    // var moduleAssetUrl = ImportGenerator.parseAssetUrl(moduleUrlStr);
     var importedAssetUrl = ImportGenerator.parseAssetUrl(importedUrlStr);
     if (isPresent(importedAssetUrl)) {
       return `${importedAssetUrl.packageName}/${importedAssetUrl.modulePath}`;
     } else {
       return importedUrlStr;
     }
+  }
+}
+
+class MockXhr implements XHR {
+  results: {[key: string]: string} = {};
+  setResult(url: string, content: string) { this.results[url] = content; }
+
+  get(url: string): Promise<string> {
+    if (url in this.results) {
+      return Promise.resolve(this.results[url]);
+    }
+    return Promise.reject<any>(`Unknown url ${url}`);
   }
 }

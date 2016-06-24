@@ -207,7 +207,7 @@ export declare abstract class ChangeDetectorRef {
 }
 
 /** @stable */
-export declare function Class(clsDef: ClassDefinition): ConcreteType;
+export declare function Class(clsDef: ClassDefinition): ConcreteType<any>;
 
 /** @stable */
 export interface ClassDefinition {
@@ -224,6 +224,14 @@ export declare class CollectionChangeRecord {
     trackById: any;
     constructor(item: any, trackById: any);
     toString(): string;
+}
+
+/** @stable */
+export declare class Compiler {
+    clearCache(): void;
+    clearCacheFor(compType: Type): void;
+    compileComponentAsync<T>(component: ConcreteType<T>): Promise<ComponentFactory<T>>;
+    compileComponentSync<T>(component: ConcreteType<T>): ComponentFactory<T>;
 }
 
 /** @stable */
@@ -254,7 +262,7 @@ export declare class ComponentFactory<C> {
 
 /** @stable */
 export declare abstract class ComponentFactoryResolver {
-    abstract resolveComponentFactory<T>(component: ClassWithConstructor<T>): ComponentFactory<T>;
+    abstract resolveComponentFactory<T>(component: ConcreteType<T>): ComponentFactory<T>;
     static NULL: ComponentFactoryResolver;
 }
 
@@ -1267,7 +1275,7 @@ export interface TypeDecorator {
     annotations: any[];
     (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
     <T extends Type>(type: T): T;
-    Class(obj: ClassDefinition): ConcreteType;
+    Class(obj: ClassDefinition): ConcreteType<any>;
 }
 
 /** @stable */

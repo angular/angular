@@ -19,24 +19,9 @@ import {Map} from '../src/facade/collection';
  */
 @Injectable()
 export class ViewResolver {
-  /** @internal */
-  _cache = new Map<Type, ViewMetadata>();
-
   constructor(private _reflector: ReflectorReader = reflector) {}
 
   resolve(component: Type): ViewMetadata {
-    var view = this._cache.get(component);
-
-    if (isBlank(view)) {
-      view = this._resolve(component);
-      this._cache.set(component, view);
-    }
-
-    return view;
-  }
-
-  /** @internal */
-  _resolve(component: Type): ViewMetadata {
     var compMeta: ComponentMetadata;
 
     this._reflector.annotations(component).forEach(m => {

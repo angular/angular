@@ -10,7 +10,7 @@ import {Injectable, ViewEncapsulation} from '@angular/core';
 
 import {isPresent} from '../src/facade/lang';
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileStylesheetMetadata} from './compile_metadata';
 import * as o from './output/output_ast';
 import {ShadowCss} from './shadow_css';
 import {extractStyleUrls} from './style_url_resolver';
@@ -28,8 +28,15 @@ export class StylesCompileDependency {
 
 export class StylesCompileResult {
   constructor(
+      public componentStylesheet: CompiledStylesheet,
+      public externalStylesheets: CompiledStylesheet[]) {}
+}
+
+export class CompiledStylesheet {
+  constructor(
       public statements: o.Statement[], public stylesVar: string,
-      public dependencies: StylesCompileDependency[]) {}
+      public dependencies: StylesCompileDependency[], public isShimmed: boolean,
+      public meta: CompileStylesheetMetadata) {}
 }
 
 @Injectable()
@@ -40,35 +47,41 @@ export class StyleCompiler {
 
   compileComponent(comp: CompileDirectiveMetadata): StylesCompileResult {
     var shim = comp.template.encapsulation === ViewEncapsulation.Emulated;
-    return this._compileStyles(
-        getStylesVarName(comp), comp.template.styles, comp.template.styleUrls, shim);
-  }
-
-  compileStylesheet(stylesheetUrl: string, cssText: string, isShimmed: boolean):
-      StylesCompileResult {
-    var styleWithImports = extractStyleUrls(this._urlResolver, stylesheetUrl, cssText);
-    return this._compileStyles(
-        getStylesVarName(null), [styleWithImports.style], styleWithImports.styleUrls, isShimmed);
+    var externalStylesheets: CompiledStylesheet[] = [];
+    var componentStylesheet: CompiledStylesheet = this._compileStyles(
+        comp, new CompileStylesheetMetadata({
+          styles: comp.template.styles,
+          styleUrls: comp.template.styleUrls,
+          moduleUrl: comp.type.moduleUrl
+        }),
+        true);
+    comp.template.externalStylesheets.forEach((stylesheetMeta) => {
+      var compiledStylesheet = this._compileStyles(comp, stylesheetMeta, false);
+      externalStylesheets.push(compiledStylesheet);
+    });
+    return new StylesCompileResult(componentStylesheet, externalStylesheets);
   }
 
   private _compileStyles(
-      stylesVar: string, plainStyles: string[], absUrls: string[],
-      shim: boolean): StylesCompileResult {
+      comp: CompileDirectiveMetadata, stylesheet: CompileStylesheetMetadata,
+      isComponentStylesheet: boolean): CompiledStylesheet {
+    var shim = comp.template.encapsulation === ViewEncapsulation.Emulated;
     var styleExpressions =
-        plainStyles.map(plainStyle => o.literal(this._shimIfNeeded(plainStyle, shim)));
+        stylesheet.styles.map(plainStyle => o.literal(this._shimIfNeeded(plainStyle, shim)));
     var dependencies: StylesCompileDependency[] = [];
-    for (var i = 0; i < absUrls.length; i++) {
+    for (var i = 0; i < stylesheet.styleUrls.length; i++) {
       var identifier = new CompileIdentifierMetadata({name: getStylesVarName(null)});
-      dependencies.push(new StylesCompileDependency(absUrls[i], shim, identifier));
+      dependencies.push(new StylesCompileDependency(stylesheet.styleUrls[i], shim, identifier));
       styleExpressions.push(new o.ExternalExpr(identifier));
     }
     // styles variable contains plain strings and arrays of other styles arrays (recursive),
     // so we set its type to dynamic.
+    var stylesVar = getStylesVarName(isComponentStylesheet ? comp : null);
     var stmt = o.variable(stylesVar)
                    .set(o.literalArr(
                        styleExpressions, new o.ArrayType(o.DYNAMIC_TYPE, [o.TypeModifier.Const])))
                    .toDeclStmt(null, [o.StmtModifier.Final]);
-    return new StylesCompileResult([stmt], stylesVar, dependencies);
+    return new CompiledStylesheet([stmt], stylesVar, dependencies, shim, stylesheet);
   }
 
   private _shimIfNeeded(style: string, shim: boolean): string {
@@ -78,7 +91,7 @@ export class StyleCompiler {
 
 function getStylesVarName(component: CompileDirectiveMetadata): string {
   var result = `styles`;
-  if (isPresent(component)) {
+  if (component) {
     result += `_${component.type.name}`;
   }
   return result;

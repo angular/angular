@@ -8,7 +8,7 @@
 
 import {Inject, OpaqueToken, Optional, SkipSelf} from '../di';
 import {BaseException} from '../facade/exceptions';
-import {ClassWithConstructor, stringify} from '../facade/lang';
+import {ConcreteType, stringify} from '../facade/lang';
 
 import {ComponentFactory} from './component_factory';
 
@@ -33,7 +33,7 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
  */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = new _NullComponentFactoryResolver();
-  abstract resolveComponentFactory<T>(component: ClassWithConstructor<T>): ComponentFactory<T>;
+  abstract resolveComponentFactory<T>(component: ConcreteType<T>): ComponentFactory<T>;
 }
 
 export class CodegenComponentFactoryResolver implements ComponentFactoryResolver {

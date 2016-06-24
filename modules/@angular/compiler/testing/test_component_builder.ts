@@ -6,37 +6,34 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, ComponentFactory, ComponentResolver, Injectable, Injector, NgZone, ViewMetadata} from '@angular/core';
+import {AnimationEntryMetadata, Compiler, ComponentFactory, Injectable, Injector, NgZone, ViewMetadata} from '@angular/core';
 import {ComponentFixture, ComponentFixtureNoNgZone, TestComponentBuilder} from '@angular/core/testing';
 
 import {DirectiveResolver, ViewResolver} from '../index';
 import {MapWrapper} from '../src/facade/collection';
-import {IS_DART, Type, isPresent} from '../src/facade/lang';
+import {ConcreteType, IS_DART, Type, isPresent} from '../src/facade/lang';
 
 /**
  * @deprecated Import TestComponentRenderer from @angular/core/testing
  */
 export {TestComponentRenderer} from '@angular/core/testing';
-
 /**
  * @deprecated Import TestComponentBuilder from @angular/core/testing
  */
 export {TestComponentBuilder} from '@angular/core/testing';
-
 /**
  * @deprecated Import ComponentFixture from @angular/core/testing
  */
 export {ComponentFixture} from '@angular/core/testing';
-
 /**
  * @deprecated Import ComponentFixtureNoNgZone from @angular/core/testing
  */
 export {ComponentFixtureNoNgZone} from '@angular/core/testing';
-
 /**
  * @deprecated Import ComponentFixtureAutoDetect from @angular/core/testing
  */
 export {ComponentFixtureAutoDetect} from '@angular/core/testing';
+
 
 
 /**
@@ -114,32 +111,31 @@ export class OverridingTestComponentBuilder extends TestComponentBuilder {
     return clone;
   }
 
-  createAsync(rootComponentType: Type): Promise<ComponentFixture<any>> {
-    let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
-    let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
+  createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>> {
+    this._applyMetadataOverrides();
+    return super.createAsync(rootComponentType);
+  }
 
-    let initComponent = () => {
-      let mockDirectiveResolver = this._injector.get(DirectiveResolver);
-      let mockViewResolver = this._injector.get(ViewResolver);
-      this._viewOverrides.forEach((view, type) => mockViewResolver.setView(type, view));
-      this._templateOverrides.forEach(
-          (template, type) => mockViewResolver.setInlineTemplate(type, template));
-      this._animationOverrides.forEach(
-          (animationsEntry, type) => mockViewResolver.setAnimations(type, animationsEntry));
-      this._directiveOverrides.forEach((overrides, component) => {
-        overrides.forEach(
-            (to, from) => { mockViewResolver.overrideViewDirective(component, from, to); });
-      });
-      this._bindingsOverrides.forEach(
-          (bindings, type) => mockDirectiveResolver.setProvidersOverride(type, bindings));
-      this._viewBindingsOverrides.forEach(
-          (bindings, type) => mockDirectiveResolver.setViewProvidersOverride(type, bindings));
+  createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
+    this._applyMetadataOverrides();
+    return super.createSync(rootComponentType);
+  }
 
-      let promise: Promise<ComponentFactory<any>> =
-          this._injector.get(ComponentResolver).resolveComponent(rootComponentType);
-      return promise.then(componentFactory => this.createFromFactory(ngZone, componentFactory));
-    };
-
-    return ngZone == null ? initComponent() : ngZone.run(initComponent);
+  private _applyMetadataOverrides() {
+    let mockDirectiveResolver = this._injector.get(DirectiveResolver);
+    let mockViewResolver = this._injector.get(ViewResolver);
+    this._viewOverrides.forEach((view, type) => { mockViewResolver.setView(type, view); });
+    this._templateOverrides.forEach(
+        (template, type) => mockViewResolver.setInlineTemplate(type, template));
+    this._animationOverrides.forEach(
+        (animationsEntry, type) => mockViewResolver.setAnimations(type, animationsEntry));
+    this._directiveOverrides.forEach((overrides, component) => {
+      overrides.forEach(
+          (to, from) => { mockViewResolver.overrideViewDirective(component, from, to); });
+    });
+    this._bindingsOverrides.forEach(
+        (bindings, type) => mockDirectiveResolver.setProvidersOverride(type, bindings));
+    this._viewBindingsOverrides.forEach(
+        (bindings, type) => mockDirectiveResolver.setViewProvidersOverride(type, bindings));
   }
 }

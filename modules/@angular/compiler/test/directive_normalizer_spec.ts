@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileTemplateMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
+import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {XHR} from '@angular/compiler/src/xhr';
@@ -15,6 +15,7 @@ import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
+import {SpyXHR} from './spies';
 import {TEST_PROVIDERS} from './test_bindings';
 
 export function main() {
@@ -30,176 +31,230 @@ export function main() {
           new CompileTypeMetadata({moduleUrl: 'http://some/module/a.js', name: 'SomeComp'});
     });
 
-    describe('loadTemplate', () => {
-      describe('inline template', () => {
-        it('should store the template',
-           inject(
-               [AsyncTestCompleter, DirectiveNormalizer],
-               (async: AsyncTestCompleter, normalizer: DirectiveNormalizer) => {
-                 normalizer
-                     .normalizeTemplate(dirType, new CompileTemplateMetadata({
-                                          encapsulation: null,
-                                          template: 'a',
-                                          templateUrl: null,
-                                          styles: [],
-                                          styleUrls: ['test.css']
-                                        }))
-                     .then((template: CompileTemplateMetadata) => {
-                       expect(template.template).toEqual('a');
-                       expect(template.templateUrl).toEqual('package:some/module/a.js');
-                       async.done();
-                     });
-               }));
-
-        it('should resolve styles on the annotation against the moduleUrl',
-           inject(
-               [AsyncTestCompleter, DirectiveNormalizer],
-               (async: AsyncTestCompleter, normalizer: DirectiveNormalizer) => {
-                 normalizer
-                     .normalizeTemplate(dirType, new CompileTemplateMetadata({
-                                          encapsulation: null,
-                                          template: '',
-                                          templateUrl: null,
-                                          styles: [],
-                                          styleUrls: ['test.css']
-                                        }))
-                     .then((template: CompileTemplateMetadata) => {
-                       expect(template.styleUrls).toEqual(['package:some/module/test.css']);
-                       async.done();
-                     });
-               }));
-
-        it('should resolve styles in the template against the moduleUrl',
-           inject(
-               [AsyncTestCompleter, DirectiveNormalizer],
-               (async: AsyncTestCompleter, normalizer: DirectiveNormalizer) => {
-                 normalizer
-                     .normalizeTemplate(dirType, new CompileTemplateMetadata({
-                                          encapsulation: null,
-                                          template: '<style>@import test.css</style>',
-                                          templateUrl: null,
-                                          styles: [],
-                                          styleUrls: []
-                                        }))
-                     .then((template: CompileTemplateMetadata) => {
-                       expect(template.styleUrls).toEqual(['package:some/module/test.css']);
-                       async.done();
-                     });
-               }));
-
-        it('should use ViewEncapsulation.Emulated by default',
-           inject(
-               [AsyncTestCompleter, DirectiveNormalizer],
-               (async: AsyncTestCompleter, normalizer: DirectiveNormalizer) => {
-                 normalizer
-                     .normalizeTemplate(dirType, new CompileTemplateMetadata({
-                                          encapsulation: null,
-                                          template: '',
-                                          templateUrl: null,
-                                          styles: [],
-                                          styleUrls: ['test.css']
-                                        }))
-                     .then((template: CompileTemplateMetadata) => {
-                       expect(template.encapsulation).toEqual(ViewEncapsulation.Emulated);
-                       async.done();
-                     });
-               }));
-
-        it('should use default encapsulation provided by CompilerConfig',
-           inject(
-               [AsyncTestCompleter, CompilerConfig, DirectiveNormalizer],
-               (async: AsyncTestCompleter, config: CompilerConfig,
-                normalizer: DirectiveNormalizer) => {
-                 config.defaultEncapsulation = ViewEncapsulation.None;
-                 normalizer
-                     .normalizeTemplate(dirType, new CompileTemplateMetadata({
-                                          encapsulation: null,
-                                          template: '',
-                                          templateUrl: null,
-                                          styles: [],
-                                          styleUrls: ['test.css']
-                                        }))
-                     .then((template: CompileTemplateMetadata) => {
-                       expect(template.encapsulation).toEqual(ViewEncapsulation.None);
-                       async.done();
-                     });
-               }));
-      });
-
-      describe('templateUrl', () => {
-
-        it('should load a template from a url that is resolved against moduleUrl',
-           inject(
-               [AsyncTestCompleter, DirectiveNormalizer, XHR],
-               (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
-                 xhr.expect('package:some/module/sometplurl.html', 'a');
-                 normalizer
-                     .normalizeTemplate(dirType, new CompileTemplateMetadata({
-                                          encapsulation: null,
-                                          template: null,
-                                          templateUrl: 'sometplurl.html',
-                                          styles: [],
-                                          styleUrls: ['test.css']
-                                        }))
-                     .then((template: CompileTemplateMetadata) => {
-                       expect(template.template).toEqual('a');
-                       expect(template.templateUrl).toEqual('package:some/module/sometplurl.html');
-                       async.done();
-                     });
-                 xhr.flush();
-               }));
-
-        it('should resolve styles on the annotation against the moduleUrl',
-           inject(
-               [AsyncTestCompleter, DirectiveNormalizer, XHR],
-               (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
-                 xhr.expect('package:some/module/tpl/sometplurl.html', '');
-                 normalizer
-                     .normalizeTemplate(dirType, new CompileTemplateMetadata({
-                                          encapsulation: null,
-                                          template: null,
-                                          templateUrl: 'tpl/sometplurl.html',
-                                          styles: [],
-                                          styleUrls: ['test.css']
-                                        }))
-                     .then((template: CompileTemplateMetadata) => {
-                       expect(template.styleUrls).toEqual(['package:some/module/test.css']);
-                       async.done();
-                     });
-                 xhr.flush();
-               }));
-
-        it('should resolve styles in the template against the templateUrl',
-           inject(
-               [AsyncTestCompleter, DirectiveNormalizer, XHR],
-               (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
-                 xhr.expect(
-                     'package:some/module/tpl/sometplurl.html', '<style>@import test.css</style>');
-                 normalizer
-                     .normalizeTemplate(dirType, new CompileTemplateMetadata({
-                                          encapsulation: null,
-                                          template: null,
-                                          templateUrl: 'tpl/sometplurl.html',
-                                          styles: [],
-                                          styleUrls: []
-                                        }))
-                     .then((template: CompileTemplateMetadata) => {
-                       expect(template.styleUrls).toEqual(['package:some/module/tpl/test.css']);
-                       async.done();
-                     });
-                 xhr.flush();
-               }));
-
-      });
-
+    describe('normalizeDirective', () => {
       it('should throw if no template was specified',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           expect(
-               () => normalizer.normalizeTemplate(
-                   dirType,
-                   new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []})))
-               .toThrowError('No template specified for component SomeComp');
+           expect(() => normalizer.normalizeDirective(new CompileDirectiveMetadata({
+             type: dirType,
+             isComponent: true,
+             template:
+                 new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []})
+           }))).toThrowError('No template specified for component SomeComp');
          }));
+    });
+
+    describe('normalizeTemplateSync', () => {
+      it('should store the template',
+         inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
+           let template = normalizer.normalizeTemplateSync(dirType, new CompileTemplateMetadata({
+                                                             encapsulation: null,
+                                                             template: 'a',
+                                                             templateUrl: null,
+                                                             styles: [],
+                                                             styleUrls: []
+                                                           }))
+           expect(template.template).toEqual('a');
+           expect(template.templateUrl).toEqual('package:some/module/a.js');
+         }));
+
+      it('should resolve styles on the annotation against the moduleUrl',
+         inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
+           let template = normalizer.normalizeTemplateSync(dirType, new CompileTemplateMetadata({
+                                                             encapsulation: null,
+                                                             template: '',
+                                                             templateUrl: null,
+                                                             styles: [],
+                                                             styleUrls: ['test.css']
+                                                           }))
+           expect(template.styleUrls).toEqual(['package:some/module/test.css']);
+         }));
+
+      it('should resolve styles in the template against the moduleUrl',
+         inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
+           let template =
+               normalizer.normalizeTemplateSync(dirType, new CompileTemplateMetadata({
+                                                  encapsulation: null,
+                                                  template: '<style>@import test.css</style>',
+                                                  templateUrl: null,
+                                                  styles: [],
+                                                  styleUrls: []
+                                                }))
+           expect(template.styleUrls).toEqual(['package:some/module/test.css']);
+         }));
+
+      it('should use ViewEncapsulation.Emulated by default',
+         inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
+           let template = normalizer.normalizeTemplateSync(dirType, new CompileTemplateMetadata({
+                                                             encapsulation: null,
+                                                             template: '',
+                                                             templateUrl: null,
+                                                             styles: [],
+                                                             styleUrls: ['test.css']
+                                                           }))
+           expect(template.encapsulation).toEqual(ViewEncapsulation.Emulated);
+         }));
+
+      it('should use default encapsulation provided by CompilerConfig',
+         inject(
+             [CompilerConfig, DirectiveNormalizer],
+             (config: CompilerConfig, normalizer: DirectiveNormalizer) => {
+               config.defaultEncapsulation = ViewEncapsulation.None;
+               let template =
+                   normalizer.normalizeTemplateSync(dirType, new CompileTemplateMetadata({
+                                                      encapsulation: null,
+                                                      template: '',
+                                                      templateUrl: null,
+                                                      styles: [],
+                                                      styleUrls: ['test.css']
+                                                    }))
+               expect(template.encapsulation).toEqual(ViewEncapsulation.None);
+             }));
+    });
+
+    describe('templateUrl', () => {
+
+      it('should load a template from a url that is resolved against moduleUrl',
+         inject(
+             [AsyncTestCompleter, DirectiveNormalizer, XHR],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
+               xhr.expect('package:some/module/sometplurl.html', 'a');
+               normalizer
+                   .normalizeTemplateAsync(dirType, new CompileTemplateMetadata({
+                                             encapsulation: null,
+                                             template: null,
+                                             templateUrl: 'sometplurl.html',
+                                             styles: [],
+                                             styleUrls: ['test.css']
+                                           }))
+                   .then((template: CompileTemplateMetadata) => {
+                     expect(template.template).toEqual('a');
+                     expect(template.templateUrl).toEqual('package:some/module/sometplurl.html');
+                     async.done();
+                   });
+               xhr.flush();
+             }));
+
+      it('should resolve styles on the annotation against the moduleUrl',
+         inject(
+             [AsyncTestCompleter, DirectiveNormalizer, XHR],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
+               xhr.expect('package:some/module/tpl/sometplurl.html', '');
+               normalizer
+                   .normalizeTemplateAsync(dirType, new CompileTemplateMetadata({
+                                             encapsulation: null,
+                                             template: null,
+                                             templateUrl: 'tpl/sometplurl.html',
+                                             styles: [],
+                                             styleUrls: ['test.css']
+                                           }))
+                   .then((template: CompileTemplateMetadata) => {
+                     expect(template.styleUrls).toEqual(['package:some/module/test.css']);
+                     async.done();
+                   });
+               xhr.flush();
+             }));
+
+      it('should resolve styles in the template against the templateUrl',
+         inject(
+             [AsyncTestCompleter, DirectiveNormalizer, XHR],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
+               xhr.expect(
+                   'package:some/module/tpl/sometplurl.html', '<style>@import test.css</style>');
+               normalizer
+                   .normalizeTemplateAsync(dirType, new CompileTemplateMetadata({
+                                             encapsulation: null,
+                                             template: null,
+                                             templateUrl: 'tpl/sometplurl.html',
+                                             styles: [],
+                                             styleUrls: []
+                                           }))
+                   .then((template: CompileTemplateMetadata) => {
+                     expect(template.styleUrls).toEqual(['package:some/module/tpl/test.css']);
+                     async.done();
+                   });
+               xhr.flush();
+             }));
+
+    });
+
+    describe('normalizeExternalStylesheets', () => {
+
+      beforeEachProviders(() => [{provide: XHR, useClass: SpyXHR}]);
+
+      it('should load an external stylesheet',
+         inject(
+             [AsyncTestCompleter, DirectiveNormalizer, XHR],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: SpyXHR) => {
+               programXhrSpy(xhr, {'package:some/module/test.css': 'a'});
+               normalizer
+                   .normalizeExternalStylesheets(new CompileTemplateMetadata({
+                     template: '',
+                     templateUrl: '',
+                     styleUrls: ['package:some/module/test.css']
+                   }))
+                   .then((template: CompileTemplateMetadata) => {
+                     expect(template.externalStylesheets.length).toBe(1);
+                     expect(template.externalStylesheets[0]).toEqual(new CompileStylesheetMetadata({
+                       moduleUrl: 'package:some/module/test.css',
+                       styles: ['a'],
+                       styleUrls: []
+                     }));
+                     async.done();
+                   });
+             }));
+
+      it('should load stylesheets referenced by external stylesheets',
+         inject(
+             [AsyncTestCompleter, DirectiveNormalizer, XHR],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: SpyXHR) => {
+               programXhrSpy(xhr, {
+                 'package:some/module/test.css': 'a@import "test2.css"',
+                 'package:some/module/test2.css': 'b'
+               });
+               normalizer
+                   .normalizeExternalStylesheets(new CompileTemplateMetadata({
+                     template: '',
+                     templateUrl: '',
+                     styleUrls: ['package:some/module/test.css']
+                   }))
+                   .then((template: CompileTemplateMetadata) => {
+                     expect(template.externalStylesheets.length).toBe(2);
+                     expect(template.externalStylesheets[0]).toEqual(new CompileStylesheetMetadata({
+                       moduleUrl: 'package:some/module/test.css',
+                       styles: ['a'],
+                       styleUrls: ['package:some/module/test2.css']
+                     }));
+                     expect(template.externalStylesheets[1]).toEqual(new CompileStylesheetMetadata({
+                       moduleUrl: 'package:some/module/test2.css',
+                       styles: ['b'],
+                       styleUrls: []
+                     }));
+                     async.done();
+                   });
+             }));
+    });
+
+    describe('caching', () => {
+      it('should work for templateUrl',
+         inject(
+             [AsyncTestCompleter, DirectiveNormalizer, XHR],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
+               xhr.expect('package:some/module/cmp.html', 'a');
+               var templateMeta = new CompileTemplateMetadata({
+                 templateUrl: 'cmp.html',
+               });
+               Promise
+                   .all([
+                     normalizer.normalizeTemplateAsync(dirType, templateMeta),
+                     normalizer.normalizeTemplateAsync(dirType, templateMeta)
+                   ])
+                   .then((templates: CompileTemplateMetadata[]) => {
+                     expect(templates[0].template).toEqual('a');
+                     expect(templates[1].template).toEqual('a');
+                     async.done();
+                   });
+               xhr.flush();
+             }));
 
     });
 
@@ -367,5 +422,16 @@ export function main() {
            expect(template.styles).toEqual(['div {color:red}']);
          }));
     });
+  });
+}
+
+function programXhrSpy(spy: SpyXHR, results: {[key: string]: string}) {
+  spy.spy('get').andCallFake((url: string): Promise<any> => {
+    var result = results[url];
+    if (result) {
+      return Promise.resolve(result);
+    } else {
+      return Promise.reject(`Unknown mock url ${url}`);
+    }
   });
 }

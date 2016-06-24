@@ -9,7 +9,7 @@
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {Injectable, Component, Input, ViewMetadata, ComponentResolver} from '@angular/core';
+import {Injectable, Component, Input, ViewMetadata} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {TimerWrapper} from '../src/facade/async';
 import {IS_DART} from '../src/facade/lang';
@@ -320,6 +320,15 @@ export function main() {
                  });
            }));
 
+    it('should create components synchronously',
+       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+
+         let componentFixture =
+             tcb.overrideTemplate(MockChildComp, '<span>Mock</span>').createSync(MockChildComp);
+         componentFixture.detectChanges();
+         expect(componentFixture.nativeElement).toHaveText('Mock');
+       }));
+
     if (!IS_DART) {
       describe('ComponentFixture', () => {
         it('should auto detect changes if autoDetectChanges is called',
@@ -602,27 +611,6 @@ export function main() {
                      async.done();
                    });
                  }));
-        });
-
-        describe('createSync', () => {
-          it('should create components',
-             inject(
-                 [ComponentResolver, TestComponentBuilder, AsyncTestCompleter],
-                 (cr: ComponentResolver, tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                   cr.resolveComponent(MyIfComp).then((cmpFactory) => {
-                     let componentFixture = tcb.createSync(cmpFactory);
-
-                     componentFixture.detectChanges();
-                     expect(componentFixture.nativeElement).toHaveText('MyIf()');
-
-                     componentFixture.componentInstance.showMore = true;
-                     componentFixture.detectChanges();
-                     expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
-
-                     async.done();
-                   });
-                 }));
-
         });
 
       });

@@ -1504,20 +1504,15 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     describe('error handling', () => {
       it('should report a meaningful error when a directive is missing annotation',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               tcb = tcb.overrideView(
-                   MyComp,
-                   new ViewMetadata({template: '', directives: [SomeDirectiveMissingAnnotation]}));
+         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           tcb = tcb.overrideView(
+               MyComp,
+               new ViewMetadata({template: '', directives: [SomeDirectiveMissingAnnotation]}));
 
-               PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
-                 expect(e.message).toEqual(
-                     `No Directive annotation found on ${stringify(SomeDirectiveMissingAnnotation)}`);
-                 async.done();
-                 return null;
-               });
-             }));
+           expect(() => tcb.createAsync(MyComp))
+               .toThrowError(
+                   `No Directive annotation found on ${stringify(SomeDirectiveMissingAnnotation)}`);
+         }));
 
       it('should report a meaningful error when a component is missing view annotation',
          inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
@@ -1530,19 +1525,13 @@ function declareTests({useJit}: {useJit: boolean}) {
          }));
 
       it('should report a meaningful error when a directive is null',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               tcb =
-                   tcb.overrideView(MyComp, new ViewMetadata({directives: [[null]], template: ''}));
+         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           tcb = tcb.overrideView(MyComp, new ViewMetadata({directives: [[null]], template: ''}));
 
-               PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
-                 expect(e.message).toEqual(
-                     `Unexpected directive value 'null' on the View of component '${stringify(MyComp)}'`);
-                 async.done();
-                 return null;
-               });
-             }));
+           expect(() => tcb.createAsync(MyComp))
+               .toThrowError(
+                   `Unexpected directive value 'null' on the View of component '${stringify(MyComp)}'`);
+         }));
 
       it('should provide an error context when an error happens in DI',
          inject(
@@ -1642,22 +1631,17 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       if (!IS_DART) {
         it('should report a meaningful error when a directive is undefined',
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter],
-               (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+           inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-                 var undefinedValue: any = void(0);
+             var undefinedValue: any = void(0);
 
-                 tcb = tcb.overrideView(
-                     MyComp, new ViewMetadata({directives: [undefinedValue], template: ''}));
+             tcb = tcb.overrideView(
+                 MyComp, new ViewMetadata({directives: [undefinedValue], template: ''}));
 
-                 PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
-                   expect(e.message).toEqual(
-                       `Unexpected directive value 'undefined' on the View of component '${stringify(MyComp)}'`);
-                   async.done();
-                   return null;
-                 });
-               }));
+             expect(() => tcb.createAsync(MyComp))
+                 .toThrowError(
+                     `Unexpected directive value 'undefined' on the View of component '${stringify(MyComp)}'`);
+           }));
       }
 
       it('should specify a location of an error that happened during change detection (text)',
