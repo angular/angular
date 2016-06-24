@@ -18,7 +18,7 @@ import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ROUTER_PROVIDERS, Router, RouteConfig, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
 import {ExceptionHandler} from '@angular/core';
-import {MockLocationStrategy} from '@angular/common/testing';
+import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
 
 class _ArrayLogger {
   res: any[] = [];

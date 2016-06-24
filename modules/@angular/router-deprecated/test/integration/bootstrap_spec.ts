@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
-import {MockLocationStrategy} from '@angular/common/testing';
+import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';

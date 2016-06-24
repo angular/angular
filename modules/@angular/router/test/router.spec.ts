@@ -1,7 +1,8 @@
 import 'rxjs/add/operator/map';
 
-import {Location} from '@angular/common';
+import {Location, LocationStrategy} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
+import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
 import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
 import {Component, Injector} from '@angular/core';
 import {ComponentResolver} from '@angular/core';
@@ -22,6 +23,7 @@ describe('Integration', () => {
       RouterOutletMap,
       {provide: UrlSerializer, useClass: DefaultUrlSerializer},
       {provide: Location, useClass: SpyLocation},
+      {provide: LocationStrategy, useClass: MockLocationStrategy},
       {
         provide: Router,
         useFactory: (resolver: ComponentResolver, urlSerializer: UrlSerializer,
