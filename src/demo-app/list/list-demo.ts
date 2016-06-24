@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {NgIf, NgFor} from '@angular/common';
 import {MdButton} from '@angular2-material/button/button';
 import {MD_LIST_DIRECTIVES} from '@angular2-material/list/list';
 import {MdIcon} from '@angular2-material/icon/icon';
@@ -8,7 +9,7 @@ import {MdIcon} from '@angular2-material/icon/icon';
   selector: 'list-demo',
   templateUrl: 'list-demo.html',
   styleUrls: ['list-demo.css'],
-  directives: [MD_LIST_DIRECTIVES, MdButton, MdIcon]
+  directives: [MD_LIST_DIRECTIVES, MdButton, MdIcon, NgIf, NgFor]
 })
 export class ListDemo {
   items: string[] = [

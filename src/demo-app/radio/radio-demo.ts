@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
+import {FORM_DIRECTIVES, NgFor} from '@angular/common';
 import {MdCheckbox} from '@angular2-material/checkbox/checkbox';
-import {MdRadioButton, MdRadioGroup} from '@angular2-material/radio/radio';
+import {MD_RADIO_DIRECTIVES} from '@angular2-material/radio/radio';
 import {
   MdUniqueSelectionDispatcher
 } from '@angular2-material/core/coordination/unique-selection-dispatcher';
@@ -11,7 +12,7 @@ import {
   templateUrl: 'radio-demo.html',
   styleUrls: ['radio-demo.css'],
   providers: [MdUniqueSelectionDispatcher],
-  directives: [MdCheckbox, MdRadioButton, MdRadioGroup]
+  directives: [MdCheckbox, MD_RADIO_DIRECTIVES, FORM_DIRECTIVES, NgFor]
 })
 export class RadioDemo {
   isDisabled: boolean = false;

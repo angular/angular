@@ -1,4 +1,5 @@
 import {Component, ViewChildren, QueryList} from '@angular/core';
+import {NgFor} from '@angular/common';
 import {
     Portal,
     ComponentPortal,
@@ -12,7 +13,7 @@ import {
   selector: 'portal-demo',
   templateUrl: 'portal-demo.html',
   styleUrls: ['portal-demo.css'],
-  directives: [TemplatePortalDirective, PortalHostDirective]
+  directives: [TemplatePortalDirective, PortalHostDirective, NgFor]
 })
 export class PortalDemo {
   @ViewChildren(TemplatePortalDirective) templatePortals: QueryList<Portal<any>>;

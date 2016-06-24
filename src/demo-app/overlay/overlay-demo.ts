@@ -6,6 +6,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
+import {NgIf} from '@angular/common';
 import {
     Overlay,
     OverlayState,
@@ -24,7 +25,7 @@ import {
   selector: 'overlay-demo',
   templateUrl: 'overlay-demo.html',
   styleUrls: ['overlay-demo.css'],
-  directives: [PORTAL_DIRECTIVES, OVERLAY_DIRECTIVES],
+  directives: [PORTAL_DIRECTIVES, OVERLAY_DIRECTIVES, NgIf],
   providers: [OVERLAY_PROVIDERS],
   encapsulation: ViewEncapsulation.None,
 })

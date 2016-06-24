@@ -34,7 +34,7 @@ export {
  * Provider Expression that allows md-radio-group to register as a ControlValueAccessor. This
  * allows it to support [(ngModel)] and ngControl.
  */
-const MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR = new Provider(
+export const MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR = new Provider(
     NG_VALUE_ACCESSOR, {
       useExisting: forwardRef(() => MdRadioGroup),
       multi: true

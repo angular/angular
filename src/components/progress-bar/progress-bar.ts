@@ -4,7 +4,7 @@ import {
     HostBinding,
     Input,
 } from '@angular/core';
-
+import {NgStyle} from '@angular/common';
 
 // TODO(josephperrott): Benchpress tests.
 // TODO(josephperrott): Add ARIA attributes for progressbar "for".
@@ -24,6 +24,7 @@ import {
   templateUrl: 'progress-bar.html',
   styleUrls: ['progress-bar.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  directives: [NgStyle],
 })
 export class MdProgressBar {
   /** Value of the progressbar. Defaults to zero. Mirrored to aria-valuenow. */

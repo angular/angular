@@ -6,10 +6,11 @@ import {
     Output,
     ViewChildren,
     NgZone,
-    EventEmitter
+    EventEmitter,
+    QueryList,
+    ContentChildren
 } from '@angular/core';
-import {QueryList} from '@angular/core';
-import {ContentChildren} from '@angular/core';
+import {NgIf, NgFor} from '@angular/common';
 import {PortalHostDirective} from '@angular2-material/core/portal/portal-directives';
 import {MdTabLabel} from './tab-label';
 import {MdTabContent} from './tab-content';
@@ -45,7 +46,7 @@ export class MdTab {
   selector: 'md-tab-group',
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
-  directives: [PortalHostDirective, MdTabLabelWrapper, MdInkBar],
+  directives: [PortalHostDirective, MdTabLabelWrapper, MdInkBar, NgIf, NgFor],
 })
 export class MdTabGroup {
   /** @internal */

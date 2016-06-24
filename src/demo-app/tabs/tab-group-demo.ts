@@ -1,4 +1,5 @@
 import {Component, ViewEncapsulation} from '@angular/core';
+import {FORM_DIRECTIVES, NgIf, NgFor, AsyncPipe} from '@angular/common';
 import {MD_TABS_DIRECTIVES} from '@angular2-material/tabs/tabs';
 import {MdToolbar} from '@angular2-material/toolbar/toolbar';
 import {MdInput} from '@angular2-material/input/input';
@@ -9,7 +10,8 @@ import {Observable} from 'rxjs/Observable';
   selector: 'tab-group-demo',
   templateUrl: 'tab-group-demo.html',
   styleUrls: ['tab-group-demo.css'],
-  directives: [MD_TABS_DIRECTIVES, MdToolbar, MdInput],
+  directives: [MD_TABS_DIRECTIVES, MdToolbar, MdInput, NgIf, FORM_DIRECTIVES, NgFor],
+  pipes: [AsyncPipe],
   encapsulation: ViewEncapsulation.None,
 })
 export class TabsDemo {

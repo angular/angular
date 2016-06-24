@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {NgFor, FORM_DIRECTIVES} from '@angular/common';
 import {MD_GRID_LIST_DIRECTIVES} from '@angular2-material/grid-list/grid-list';
 import {MdButton} from '@angular2-material/button/button';
 import {MD_CARD_DIRECTIVES} from '@angular2-material/card/card';
@@ -9,7 +10,14 @@ import {MdIcon, MdIconRegistry} from '@angular2-material/icon/icon';
   selector: 'grid-list-demo',
   templateUrl: 'grid-list-demo.html',
   styleUrls: ['grid-list-demo.css'],
-  directives: [MD_GRID_LIST_DIRECTIVES, MdButton, MD_CARD_DIRECTIVES, MdIcon],
+  directives: [
+    MD_GRID_LIST_DIRECTIVES,
+    MdButton,
+    MD_CARD_DIRECTIVES,
+    MdIcon,
+    FORM_DIRECTIVES,
+    NgFor,
+  ],
   providers: [MdIconRegistry]
 })
 export class GridListDemo {

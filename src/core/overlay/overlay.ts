@@ -32,10 +32,17 @@ let defaultState = new OverlayState();
  */
  @Injectable()
 export class Overlay {
+  private _overlayContainerElement: HTMLElement;
+
   constructor(
-      @Inject(OVERLAY_CONTAINER_TOKEN) private _overlayContainerElement: HTMLElement,
+      @Inject(OVERLAY_CONTAINER_TOKEN) overlayContainerElement: any,
       private _componentResolver: ComponentResolver,
       private _positionBuilder: OverlayPositionBuilder) {
+
+    // We inject the container as `any` because the constructor signature cannot reference
+    // browser globals (HTMLElement) on non-browser environments, since having a class decorator
+    // causes TypeScript to preserve the constructor signature types.
+    this._overlayContainerElement = overlayContainerElement;
   }
 
   /**

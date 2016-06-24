@@ -26,6 +26,10 @@
       ]
     }
   },
+  "angularCompilerOptions": {
+    "genDir": "../../dist",
+    "debug": true
+  },
   "files": [
     "main.ts",
     "typings.d.ts"

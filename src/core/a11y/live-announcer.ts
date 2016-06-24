@@ -14,7 +14,11 @@ export class MdLiveAnnouncer {
 
   private _liveElement: Element;
 
-  constructor(@Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: Element) {
+  constructor(@Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any) {
+
+    // We inject the live element as `any` because the constructor signature cannot reference
+    // browser globals (HTMLElement) on non-browser environments, since having a class decorator
+    // causes TypeScript to preserve the constructor signature types.
     this._liveElement = elementToken || this._createLiveElement();
   }
 

@@ -12,6 +12,7 @@ import {
     EventEmitter,
     Renderer
 } from '@angular/core';
+import {NgStyle} from '@angular/common';
 import {Dir} from '@angular2-material/core/rtl/dir';
 import {PromiseCompleter} from '@angular2-material/core/async/promise-completer';
 import {MdError} from '@angular2-material/core/errors/error';
@@ -231,7 +232,7 @@ export class MdSidenav {
   // Do not use ChangeDetectionStrategy.OnPush. It does not work for this component because
   // technically it is a sibling of MdSidenav (on the content tree) and isn't updated when MdSidenav
   // changes its state.
-  directives: [MdSidenav],
+  directives: [MdSidenav, NgStyle],
   templateUrl: 'sidenav.html',
   styleUrls: [
     'sidenav.css',

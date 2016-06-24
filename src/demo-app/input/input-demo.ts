@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {FORM_DIRECTIVES, NgFor} from '@angular/common';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input/input';
 import {MdButton} from '@angular2-material/button/button';
 import {MdCard} from '@angular2-material/card/card';
@@ -14,7 +15,16 @@ let max = 5;
   selector: 'input-demo',
   templateUrl: 'input-demo.html',
   styleUrls: ['input-demo.css'],
-  directives: [MdCard, MdCheckbox, MdButton, MdIcon, MdToolbar, MD_INPUT_DIRECTIVES]
+  directives: [
+    MdCard,
+    MdCheckbox,
+    MdButton,
+    MdIcon,
+    MdToolbar,
+    MD_INPUT_DIRECTIVES,
+    FORM_DIRECTIVES,
+    NgFor,
+  ]
 })
 export class InputDemo {
   dividerColor: boolean;
