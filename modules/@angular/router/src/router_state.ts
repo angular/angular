@@ -13,7 +13,7 @@ import {Observable} from 'rxjs/Observable';
 import {Route} from './config';
 import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlPathWithParams, UrlSegment, UrlTree} from './url_tree';
-import {shallowEqual} from './utils/collection';
+import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
 
@@ -188,10 +188,14 @@ function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
  * And we detect that by checking if the snapshot field is set.
  */
 export function advanceActivatedRoute(route: ActivatedRoute): void {
-  if (route.snapshot && !shallowEqual(route.snapshot.params, route._futureSnapshot.params)) {
+  if (route.snapshot) {
+    if (!shallowEqual(route.snapshot.params, route._futureSnapshot.params)) {
+      (<any>route.params).next(route._futureSnapshot.params);
+    }
+    if (!shallowEqualArrays(route.snapshot.url, route._futureSnapshot.url)) {
+      (<any>route.url).next(route._futureSnapshot.url);
+    }
     route.snapshot = route._futureSnapshot;
-    (<any>route.url).next(route.snapshot.url);
-    (<any>route.params).next(route.snapshot.params);
   } else {
     route.snapshot = route._futureSnapshot;
   }

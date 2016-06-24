@@ -6,6 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export function shallowEqualArrays(a:any[], b:any[]):boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; ++i) {
+    if (!shallowEqual(a[i], b[i])) return false;
+  }
+  return true;
+}
+
 export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): boolean {
   const k1 = Object.keys(a);
   const k2 = Object.keys(b);

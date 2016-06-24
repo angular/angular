@@ -133,17 +133,21 @@ describe('Integration', () => {
            const fixture = tcb.createFakeAsync(RootCmp);
            advance(fixture);
 
-           router.resetConfig([{path: '**', component: SimpleCmp}]);
+           router.resetConfig([{path: '**', component: CollectParamsCmp}]);
 
            router.navigateByUrl('/one/two');
            advance(fixture);
+           const cmp = fixture.debugElement.children[1].componentInstance;
            expect(location.path()).toEqual('/one/two');
-           expect(fixture.debugElement.nativeElement).toHaveText('simple');
+           expect(fixture.debugElement.nativeElement).toHaveText('collect-params');
+
+           expect(cmp.recordedUrls()).toEqual(['one/two']);
 
            router.navigateByUrl('/three/four');
            advance(fixture);
            expect(location.path()).toEqual('/three/four');
-           expect(fixture.debugElement.nativeElement).toHaveText('simple');
+           expect(fixture.debugElement.nativeElement).toHaveText('collect-params');
+           expect(cmp.recordedUrls()).toEqual(['one/two', 'three/four']);
          })));
 
   it('should support secondary routes',
@@ -1023,6 +1027,21 @@ class LinkWithQueryParamsAndFragment {
 
 @Component({selector: 'simple-cmp', template: `simple`, directives: ROUTER_DIRECTIVES})
 class SimpleCmp {
+}
+
+@Component({selector: 'collect-params-cmp', template: `collect-params`, directives: ROUTER_DIRECTIVES})
+class CollectParamsCmp {
+  private params: any = [];
+  private urls: any = [];
+
+  constructor(a: ActivatedRoute) {
+    a.params.forEach(p => this.params.push(p));
+    a.url.forEach(u => this.urls.push(u));
+  }
+
+  recordedUrls(): string[] {
+    return this.urls.map(a => a.map(p => p.path).join('/'));
+  }
 }
 
 @Component({selector: 'blank-cmp', template: ``, directives: ROUTER_DIRECTIVES})
