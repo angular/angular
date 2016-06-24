@@ -8,47 +8,45 @@
 
 import {Lexer, Token} from '@angular/compiler/src/expression_parser/lexer';
 
-import {StringWrapper} from '../../src/facade/lang';
-
 function lex(text: string): any[] {
   return new Lexer().tokenize(text);
 }
 
-function expectToken(token: any, index: any) {
+function expectToken(token: any, index: number) {
   expect(token instanceof Token).toBe(true);
   expect(token.index).toEqual(index);
 }
 
-function expectCharacterToken(token: any, index: any, character: any) {
+function expectCharacterToken(token: any, index: number, character: string) {
   expect(character.length).toBe(1);
   expectToken(token, index);
-  expect(token.isCharacter(StringWrapper.charCodeAt(character, 0))).toBe(true);
+  expect(token.isCharacter(character.charCodeAt(0))).toBe(true);
 }
 
-function expectOperatorToken(token: any, index: any, operator: any) {
+function expectOperatorToken(token: any, index: number, operator: string) {
   expectToken(token, index);
   expect(token.isOperator(operator)).toBe(true);
 }
 
-function expectNumberToken(token: any, index: any, n: any) {
+function expectNumberToken(token: any, index: number, n: number) {
   expectToken(token, index);
   expect(token.isNumber()).toBe(true);
   expect(token.toNumber()).toEqual(n);
 }
 
-function expectStringToken(token: any, index: any, str: any) {
+function expectStringToken(token: any, index: number, str: string) {
   expectToken(token, index);
   expect(token.isString()).toBe(true);
   expect(token.toString()).toEqual(str);
 }
 
-function expectIdentifierToken(token: any, index: any, identifier: any) {
+function expectIdentifierToken(token: any, index: number, identifier: string) {
   expectToken(token, index);
   expect(token.isIdentifier()).toBe(true);
   expect(token.toString()).toEqual(identifier);
 }
 
-function expectKeywordToken(token: any, index: any, keyword: any) {
+function expectKeywordToken(token: any, index: number, keyword: string) {
   expectToken(token, index);
   expect(token.isKeyword()).toBe(true);
   expect(token.toString()).toEqual(keyword);
@@ -212,12 +210,6 @@ export function main() {
         var tokens: Token[] = lex('0.5');
         expectNumberToken(tokens[0], 0, 0.5);
       });
-
-      // NOTE(deboer): NOT A LEXER TEST
-      //    it('should tokenize negative number', () => {
-      //      var tokens:Token[] = lex("-0.5");
-      //      expectNumberToken(tokens[0], 0, -0.5);
-      //    });
 
       it('should tokenize number with exponent', function() {
         var tokens: Token[] = lex('0.5E-10');
