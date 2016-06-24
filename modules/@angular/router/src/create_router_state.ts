@@ -37,13 +37,12 @@ function createNode(curr: TreeNode<ActivatedRouteSnapshot>, prevState?: TreeNode
 function createOrReuseChildren(
     curr: TreeNode<ActivatedRouteSnapshot>, prevState: TreeNode<ActivatedRoute>) {
   return curr.children.map(child => {
-    const index =
-        prevState.children.findIndex(p => equalRouteSnapshots(p.value.snapshot, child.value));
-    if (index >= 0) {
-      return createNode(child, prevState.children[index]);
-    } else {
-      return createNode(child);
+    for (const p of prevState.children) {
+      if (equalRouteSnapshots(p.value.snapshot, child.value)) {
+        return createNode(child, p);
+      }
     }
+    return createNode(child);
   });
 }
 

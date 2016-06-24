@@ -16,7 +16,8 @@
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es6", "dom"],
+    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable"],
+    "skipDefaultLibCheck": true,
     "target": "es5"
   },
   "exclude": [
