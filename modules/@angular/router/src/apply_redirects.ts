@@ -214,14 +214,15 @@ function findPosParam(
 }
 
 function findOrCreatePath(part: string, paths: UrlPathWithParams[]): UrlPathWithParams {
-  const matchingIndex = paths.findIndex(s => s.path === part);
-  if (matchingIndex > -1) {
-    const r = paths[matchingIndex];
-    paths.splice(matchingIndex);
-    return r;
-  } else {
-    return new UrlPathWithParams(part, {});
+  let idx = 0;
+  for (const s of paths) {
+    if (s.path === part) {
+      paths.splice(idx);
+      return s;
+    }
+    idx++;
   }
+  return new UrlPathWithParams(part, {});
 }
 
 
