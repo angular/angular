@@ -860,7 +860,7 @@ describe('Integration', () => {
   });
 
   describe('routerActiveLink', () => {
-    it('should set the class when the link is active (exact = true)',
+    it('should set the class when the link is active',
        fakeAsync(inject(
            [Router, TestComponentBuilder, Location],
            (router: Router, tcb: TestComponentBuilder, location: Location) => {
@@ -878,9 +878,9 @@ describe('Integration', () => {
                }]
              }]);
 
-             router.navigateByUrl('/team/22/link');
+             router.navigateByUrl('/team/22/link;exact=true');
              advance(fixture);
-             expect(location.path()).toEqual('/team/22/link');
+             expect(location.path()).toEqual('/team/22/link;exact=true');
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.className).toEqual('active');
@@ -891,7 +891,7 @@ describe('Integration', () => {
              expect(native.className).toEqual('');
            })));
 
-    it('should set the class on a parent element when the link is active (exact = true)',
+    it('should set the class on a parent element when the link is active',
        fakeAsync(inject(
            [Router, TestComponentBuilder, Location],
            (router: Router, tcb: TestComponentBuilder, location: Location) => {
@@ -909,9 +909,9 @@ describe('Integration', () => {
                }]
              }]);
 
-             router.navigateByUrl('/team/22/link');
+             router.navigateByUrl('/team/22/link;exact=true');
              advance(fixture);
-             expect(location.path()).toEqual('/team/22/link');
+             expect(location.path()).toEqual('/team/22/link;exact=true');
 
              const native = fixture.debugElement.nativeElement.querySelector('link-parent');
              expect(native.className).toEqual('active');
@@ -922,7 +922,7 @@ describe('Integration', () => {
              expect(native.className).toEqual('');
            })));
 
-    it('should set the class when the link is active (exact = false)',
+    it('should set the class when the link is active',
        fakeAsync(inject(
            [Router, TestComponentBuilder, Location],
            (router: Router, tcb: TestComponentBuilder, location: Location) => {
@@ -940,9 +940,9 @@ describe('Integration', () => {
                }]
              }]);
 
-             router.navigateByUrl('/team/22/link;exact=false');
+             router.navigateByUrl('/team/22/link');
              advance(fixture);
-             expect(location.path()).toEqual('/team/22/link;exact=false');
+             expect(location.path()).toEqual('/team/22/link');
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.className).toEqual('active');
@@ -988,18 +988,21 @@ class AbsoluteLinkCmp {
 class DummyLinkCmp {
   private exact: boolean;
   constructor(route: ActivatedRoute) {
-    // convert 'false' into false
-    this.exact = (<any>route.snapshot.params).exact !== 'false';
+    this.exact = (<any>route.snapshot.params).exact === 'true';
   }
 }
 
 @Component({
   selector: 'link-cmp',
   template:
-      `<router-outlet></router-outlet><link-parent routerLinkActive="active"><a [routerLink]="['./']">link</a></link-parent>`,
+      `<router-outlet></router-outlet><link-parent routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}"><a [routerLink]="['./']">link</a></link-parent>`,
   directives: ROUTER_DIRECTIVES
 })
 class DummyLinkWithParentCmp {
+  private exact: boolean;
+  constructor(route: ActivatedRoute) {
+    this.exact = (<any>route.snapshot.params).exact === 'true';
+  }
 }
 
 @Component({

@@ -24,7 +24,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   private classes: string[] = [];
   private subscription: Subscription;
 
-  @Input() private routerLinkActiveOptions: RouterLinkActiveOptions = {exact: true};
+  @Input() private routerLinkActiveOptions: RouterLinkActiveOptions = {exact: false};
 
   /**
    * @internal
