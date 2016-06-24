@@ -10,7 +10,7 @@ import {isDevMode} from '@angular/core';
 
 import {DomAdapter, getDOM} from '../dom/dom_adapter';
 
-import {sanitizeUrl} from './url_sanitizer';
+import {sanitizeSrcset, sanitizeUrl} from './url_sanitizer';
 
 
 
@@ -77,28 +77,31 @@ const BLOCK_ELEMENTS = merge(
     OPTIONAL_END_TAG_BLOCK_ELEMENTS,
     tagSet(
         'address,article,' +
-        'aside,blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,' +
-        'h6,header,hgroup,hr,ins,map,menu,nav,ol,pre,section,table,ul'));
+        'aside,blockquote,caption,center,del,details,dialog,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,' +
+        'h6,header,hgroup,hr,ins,main,map,menu,nav,ol,pre,section,summary,table,ul'));
 
 // Inline Elements - HTML5
 const INLINE_ELEMENTS = merge(
     OPTIONAL_END_TAG_INLINE_ELEMENTS,
     tagSet(
-        'a,abbr,acronym,b,' +
-        'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,' +
-        'samp,small,span,strike,strong,sub,sup,time,tt,u,var'));
+        'a,abbr,acronym,audio,b,' +
+        'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,picture,q,ruby,rp,rt,s,' +
+        'samp,small,source,span,strike,strong,sub,sup,time,track,tt,u,var,video'));
 
 const VALID_ELEMENTS =
     merge(VOID_ELEMENTS, BLOCK_ELEMENTS, INLINE_ELEMENTS, OPTIONAL_END_TAG_ELEMENTS);
 
 // Attributes that have href and hence need to be sanitized
-const URI_ATTRS = tagSet('background,cite,href,longdesc,src,xlink:href');
+const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,src,xlink:href');
+
+// Attributes that have special href set hence need to be sanitized
+const SRCSET_ATTRS = tagSet('srcset');
 
 const HTML_ATTRS = tagSet(
-    'abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
-    'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,' +
-    'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,' +
-    'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,' +
+    'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
+    'compact,controls,coords,datetime,default,dir,download,face,headers,height,hidden,hreflang,hspace,' +
+    'ismap,itemscope,itemprop,kind,label,lang,language,loop,media,muted,nohref,nowrap,open,preload,rel,rev,role,rows,rowspan,rules,' +
+    'scope,scrolling,shape,size,sizes,span,srclang,start,summary,tabindex,target,title,translate,type,usemap,' +
     'valign,value,vspace,width');
 
 // NB: This currently conciously doesn't support SVG. SVG sanitization has had several security
@@ -109,7 +112,7 @@ const HTML_ATTRS = tagSet(
 // can be sanitized, but they increase security surface area without a legitimate use case, so they
 // are left out here.
 
-const VALID_ATTRS = merge(URI_ATTRS, HTML_ATTRS);
+const VALID_ATTRS = merge(URI_ATTRS, SRCSET_ATTRS, HTML_ATTRS);
 
 /**
  * SanitizingHtmlSerializer serializes a DOM fragment, stripping out any unsafe elements and unsafe
@@ -159,6 +162,7 @@ class SanitizingHtmlSerializer {
         if (!VALID_ATTRS.hasOwnProperty(lower)) return;
         // TODO(martinprobst): Special case image URIs for data:image/...
         if (URI_ATTRS[lower]) value = sanitizeUrl(value);
+        if (SRCSET_ATTRS[lower]) value = sanitizeSrcset(value);
         this.buf.push(' ');
         this.buf.push(attrName);
         this.buf.push('="');
