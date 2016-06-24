@@ -7,7 +7,6 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {MockLocationStrategy} from '@angular/common/testing';
 import {APP_ID, NgZone, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER} from '@angular/core';
 
 import {AnimationDriver, NoOpAnimationDriver} from '../core_private';
@@ -29,7 +28,6 @@ const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[
 const ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   {provide: APP_ID, useValue: 'a'}, ELEMENT_PROBE_PROVIDERS,
   {provide: NgZone, useFactory: createNgZone},
-  {provide: LocationStrategy, useClass: MockLocationStrategy},
   {provide: AnimationDriver, useClass: NoOpAnimationDriver}
 ];
 

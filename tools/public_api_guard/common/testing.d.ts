@@ -1,20 +1,3 @@
-export declare class MockLocationStrategy extends LocationStrategy {
-    internalBaseHref: string;
-    internalPath: string;
-    internalTitle: string;
-    urlChanges: string[];
-    constructor();
-    back(): void;
-    forward(): void;
-    getBaseHref(): string;
-    onPopState(fn: (value: any) => void): void;
-    path(): string;
-    prepareExternalUrl(internal: string): string;
-    pushState(ctx: any, title: string, path: string, query: string): void;
-    replaceState(ctx: any, title: string, path: string, query: string): void;
-    simulatePopState(url: string): void;
-}
-
 export declare class SpyLocation implements Location {
     urlChanges: string[];
     back(): void;
