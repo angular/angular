@@ -27,7 +27,8 @@ import {NgControl} from './ng_control';
     '[class.ng-pristine]': 'ngClassPristine',
     '[class.ng-dirty]': 'ngClassDirty',
     '[class.ng-valid]': 'ngClassValid',
-    '[class.ng-invalid]': 'ngClassInvalid'
+    '[class.ng-invalid]': 'ngClassInvalid',
+    '[class.ng-empty-value]': 'ngClassEmptyValue'
   }
 })
 export class NgControlStatus {
@@ -53,4 +54,7 @@ export class NgControlStatus {
   get ngClassInvalid(): boolean {
     return isPresent(this._cd.control) ? !this._cd.control.valid : false;
   }
+  get ngClassEmptyValue(): boolean { 
+    return isPresent(this._cd.control) ? this._cd.control.empty : true; 
+  } 
 }
