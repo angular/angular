@@ -101,6 +101,11 @@ describe('url serializer', () => {
     expect(tree.queryParams).toEqual({a: '(11)', b: '(22)'});
   });
 
+  it('should parse query params when with slashes', () => {
+    const tree = url.parse('/one?a=1/2&b=3/4');
+    expect(tree.queryParams).toEqual({a: '1/2', b: '3/4'});
+  });
+
   it('should parse key only query params', () => {
     const tree = url.parse('/one?a');
     expect(tree.queryParams).toEqual({a: 'true'});
