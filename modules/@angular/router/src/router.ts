@@ -460,7 +460,7 @@ class GuardChecks {
   }
 
   private runCanDeactivate(component: Object, curr: ActivatedRouteSnapshot): Observable<boolean> {
-    const canDeactivate = curr._routeConfig ? curr._routeConfig.canDeactivate : null;
+    const canDeactivate = curr && curr._routeConfig ? curr._routeConfig.canDeactivate : null;
     if (!canDeactivate || canDeactivate.length === 0) return of (true);
     return Observable.from(canDeactivate)
         .map(c => {
