@@ -24,7 +24,7 @@ Now that your project has been created, you can install any Angular Material 2 c
 to use through npm. You can see our [list of published packages here](https://www.npmjs.com/~angular2-material).  
 
 ```bash
-npm install --save @angular2-material/{core,button,card}
+npm install --save @angular2-material/core @angular2-material/button
 ```
 Note: the core module is required as a peer dependency of other components.
 
