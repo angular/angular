@@ -60,7 +60,6 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   @include md-stacking-context();
 
   box-sizing: border-box;
-  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
   // TODO(hansl): Update this with a more robust solution.
@@ -76,7 +75,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   display: block;
 
   // Hide the sidenavs when they're closed.
-  overflow-x: hidden;
+  overflow: hidden;
 
   & > .md-sidenav-backdrop {
     @include md-sidenav-fullscreen();
@@ -103,13 +102,15 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
     @include md-stacking-context();
 
     display: block;
+    height: 100%;
+    overflow: auto;
   }
 
   > md-sidenav {
     @include md-stacking-context();
 
     display: block;
-    position: fixed;
+    position: absolute;
     top: 0;
     bottom: 0;
     z-index: 3;
