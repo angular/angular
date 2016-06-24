@@ -8,6 +8,8 @@ import {
   fakeAsync,
   tick,
 } from '@angular/core/testing';
+// TODO(iveysaur): Update to @angular/forms when we have rc.2
+import {NgControl} from '@angular/common';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, DebugElement, provide} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -15,7 +17,8 @@ import {
   MD_BUTTON_TOGGLE_DIRECTIVES,
   MdButtonToggleGroup,
   MdButtonToggle,
-  MdButtonToggleGroupMultiple
+  MdButtonToggleGroupMultiple,
+  MdButtonToggleChange,
 } from './button-toggle';
 import {
   MdUniqueSelectionDispatcher
@@ -189,6 +192,138 @@ describe('MdButtonToggle', () => {
     });
   });
 
+  describe('button toggle group with ngModel', () => {
+    let fixture: ComponentFixture<ButtonToggleGroupWithNgModel>;
+    let groupDebugElement: DebugElement;
+    let groupNativeElement: HTMLElement;
+    let buttonToggleDebugElements: DebugElement[];
+    let buttonToggleNativeElements: HTMLElement[];
+    let groupInstance: MdButtonToggleGroup;
+    let buttonToggleInstances: MdButtonToggle[];
+    let testComponent: ButtonToggleGroupWithNgModel;
+    let groupNgControl: NgControl;
+
+    beforeEach(async(() => {
+      builder.createAsync(ButtonToggleGroupWithNgModel).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+
+        testComponent = fixture.debugElement.componentInstance;
+
+        groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
+        groupNativeElement = groupDebugElement.nativeElement;
+        groupInstance = groupDebugElement.injector.get(MdButtonToggleGroup);
+        groupNgControl = groupDebugElement.injector.get(NgControl);
+
+        buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MdButtonToggle));
+        buttonToggleNativeElements =
+            buttonToggleDebugElements.map(debugEl => debugEl.nativeElement);
+        buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
+      });
+    }));
+
+    it('should set individual radio names based on the group name', () => {
+      expect(groupInstance.name).toBeTruthy();
+      for (let buttonToggle of buttonToggleInstances) {
+        expect(buttonToggle.name).toBe(groupInstance.name);
+      }
+
+      groupInstance.name = 'new name';
+      for (let buttonToggle of buttonToggleInstances) {
+        expect(buttonToggle.name).toBe(groupInstance.name);
+      }
+    });
+
+    it('should check the corresponding button toggle on a group value change', () => {
+      expect(groupInstance.value).toBeFalsy();
+      for (let buttonToggle of buttonToggleInstances) {
+        expect(buttonToggle.checked).toBeFalsy();
+      }
+
+      groupInstance.value = 'red';
+      for (let buttonToggle of buttonToggleInstances) {
+        expect(buttonToggle.checked).toBe(groupInstance.value === buttonToggle.value);
+      }
+      expect(groupInstance.selected.value).toBe(groupInstance.value);
+    });
+
+    it('should have the correct ngControl state initially and after interaction', fakeAsync(() => {
+      expect(groupNgControl.valid).toBe(true);
+      expect(groupNgControl.pristine).toBe(true);
+      expect(groupNgControl.touched).toBe(false);
+
+      buttonToggleInstances[1].checked = true;
+      fixture.detectChanges();
+      tick();
+
+      expect(groupNgControl.valid).toBe(true);
+      expect(groupNgControl.pristine).toBe(false);
+      expect(groupNgControl.touched).toBe(false);
+
+      let nativeRadioLabel = buttonToggleDebugElements[2].query(By.css('label')).nativeElement;
+      nativeRadioLabel.click();
+      fixture.detectChanges();
+      tick();
+
+      expect(groupNgControl.valid).toBe(true);
+      expect(groupNgControl.pristine).toBe(false);
+      expect(groupNgControl.touched).toBe(true);
+    }));
+
+    it('should update the ngModel value when selecting a button toggle', fakeAsync(() => {
+      buttonToggleInstances[1].checked = true;
+      fixture.detectChanges();
+
+      tick();
+
+      expect(testComponent.modelValue).toBe('green');
+    }));
+  });
+
+  describe('button toggle group with ngModel and change event', () => {
+    let fixture: ComponentFixture<ButtonToggleGroupWithNgModel>;
+    let groupDebugElement: DebugElement;
+    let groupNativeElement: HTMLElement;
+    let buttonToggleDebugElements: DebugElement[];
+    let buttonToggleNativeElements: HTMLElement[];
+    let groupInstance: MdButtonToggleGroup;
+    let buttonToggleInstances: MdButtonToggle[];
+    let testComponent: ButtonToggleGroupWithNgModel;
+    let groupNgControl: NgControl;
+
+    beforeEach(async(() => {
+      builder.createAsync(ButtonToggleGroupWithNgModel).then(f => {
+        fixture = f;
+
+        testComponent = fixture.debugElement.componentInstance;
+
+        groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
+        groupNativeElement = groupDebugElement.nativeElement;
+        groupInstance = groupDebugElement.injector.get(MdButtonToggleGroup);
+        groupNgControl = groupDebugElement.injector.get(NgControl);
+
+        buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MdButtonToggle));
+        buttonToggleNativeElements =
+            buttonToggleDebugElements.map(debugEl => debugEl.nativeElement);
+        buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
+
+        fixture.detectChanges();
+      });
+    }));
+
+    it('should update the model before firing change event', fakeAsync(() => {
+      expect(testComponent.modelValue).toBeUndefined();
+      expect(testComponent.lastEvent).toBeUndefined();
+
+      groupInstance.value = 'red';
+      fixture.detectChanges();
+
+      tick();
+      expect(testComponent.modelValue).toBe('red');
+      expect(testComponent.lastEvent.value).toBe('red');
+    }));
+  });
+
   describe('inside of a multiple selection group', () => {
     let fixture: ComponentFixture<ButtonTogglesInsideButtonToggleGroupMultiple>;
     let groupDebugElement: DebugElement;
@@ -316,6 +451,26 @@ describe('MdButtonToggle', () => {
 class ButtonTogglesInsideButtonToggleGroup {
   isGroupDisabled: boolean = false;
   groupValue: string = null;
+}
+
+@Component({
+  directives: [MD_BUTTON_TOGGLE_DIRECTIVES],
+  template: `
+  <md-button-toggle-group [(ngModel)]="modelValue" (change)="lastEvent = $event">
+    <md-button-toggle *ngFor="let option of options" [value]="option.value">
+      {{option.label}}
+    </md-button-toggle>
+  </md-button-toggle-group>
+  `
+})
+class ButtonToggleGroupWithNgModel {
+  modelValue: string;
+  options = [
+    {label: 'Red', value: 'red'},
+    {label: 'Green', value: 'green'},
+    {label: 'Blue', value: 'blue'},
+  ];
+  lastEvent: MdButtonToggleChange;
 }
 
 @Component({

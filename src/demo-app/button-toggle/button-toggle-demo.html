@@ -37,3 +37,13 @@
 
 <h1>Single Toggle</h1>
 <md-button-toggle>Yes</md-button-toggle>
+
+<h1>Dynamic Exclusive Selection</h1>
+<section class="demo-section">
+  <md-button-toggle-group name="pies" [(ngModel)]="favoritePie">
+    <md-button-toggle *ngFor="let pie of pieOptions" [value]="pie">
+      {{pie}}
+    </md-button-toggle>
+  </md-button-toggle-group>
+  <p>Your favorite type of pie is: {{favoritePie}}</p>
+</section>

@@ -12,4 +12,12 @@ import {MdIcon} from '@angular2-material/icon/icon';
   providers: [MdUniqueSelectionDispatcher],
   directives: [MD_BUTTON_TOGGLE_DIRECTIVES, MdIcon]
 })
-export class ButtonToggleDemo { }
+export class ButtonToggleDemo {
+  favoritePie = 'Apple';
+  pieOptions = [
+    'Apple',
+    'Cherry',
+    'Pecan',
+    'Lemon',
+  ];
+}
