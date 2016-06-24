@@ -38,4 +38,6 @@ export abstract class AbstractControlDirective {
   get untouched(): boolean { return isPresent(this.control) ? this.control.untouched : null; }
 
   get path(): string[] { return null; }
+
+  get empty(): boolean { return isPresent(this.control) ? this.control.empty : null; }
 }

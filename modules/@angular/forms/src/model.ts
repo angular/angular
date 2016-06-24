@@ -10,7 +10,8 @@ import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable, ObservableWrapper} from './facade/async';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
-import {isBlank, isPresent, isPromise, normalizeBool} from './facade/lang';
+import {isBlank, isEmptyValue, isPresent, isPromise, normalizeBool} from './facade/lang';
+
 
 /**
  * Indicates that a FormControl is valid, i.e. that no errors exist in the input value.
@@ -76,6 +77,7 @@ export abstract class AbstractControl {
   private _statusChanges: EventEmitter<any>;
   private _status: string;
   private _errors: {[key: string]: any};
+  private _empty: boolean = true;
   private _pristine: boolean = true;
   private _touched: boolean = false;
   private _parent: FormGroup|FormArray;
@@ -93,6 +95,8 @@ export abstract class AbstractControl {
    * Returns the errors of this control.
    */
   get errors(): {[key: string]: any} { return this._errors; }
+
+  get empty(): boolean { return this._empty; }
 
   get pristine(): boolean { return this._pristine; }
 
@@ -151,6 +155,7 @@ export abstract class AbstractControl {
 
     this._errors = this._runValidator();
     this._status = this._calculateStatus();
+    this._empty = isEmptyValue(this._value);
 
     if (this._status == VALID || this._status == PENDING) {
       this._runAsyncValidator(emitEvent);

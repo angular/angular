@@ -242,6 +242,30 @@ export function main() {
         });
       });
 
+      describe('empty', () => {
+        it('should be false after creating a control with value', () => {
+          var c = new FormControl('value');
+          expect(c.empty).toEqual(false);
+        });
+
+        it('should be true after create a control without value', () => {
+          var c = new FormControl('');
+          expect(c.empty).toEqual(true);
+        });
+
+        it('should be false after updating a control to have value', () => {
+          var c = new FormControl('');
+          c.updateValue('value');
+          expect(c.empty).toEqual(false);
+        });
+
+        it('should be true after updating a control to have no value', () => {
+          var c = new FormControl('value');
+          c.updateValue('');
+          expect(c.empty).toEqual(true);
+        });
+      });
+
       describe('updateValue', () => {
         var g: any /** TODO #9100 */, c: any /** TODO #9100 */;
         beforeEach(() => {

@@ -1531,14 +1531,14 @@ export function main() {
 
                      var input = fixture.debugElement.query(By.css('input')).nativeElement;
                      expect(sortedClassList(input)).toEqual([
-                       'ng-invalid', 'ng-pristine', 'ng-untouched'
+                       'ng-empty-value', 'ng-invalid', 'ng-pristine', 'ng-untouched'
                      ]);
 
                      dispatchEvent(input, 'blur');
                      fixture.detectChanges();
 
                      expect(sortedClassList(input)).toEqual([
-                       'ng-invalid', 'ng-pristine', 'ng-touched'
+                       'ng-empty-value', 'ng-invalid', 'ng-pristine', 'ng-touched'
                      ]);
 
                      input.value = 'updatedValue';
@@ -1568,14 +1568,14 @@ export function main() {
 
                      var input = fixture.debugElement.query(By.css('input')).nativeElement;
                      expect(sortedClassList(input)).toEqual([
-                       'ng-invalid', 'ng-pristine', 'ng-untouched'
+                       'ng-empty-value', 'ng-invalid', 'ng-pristine', 'ng-untouched'
                      ]);
 
                      dispatchEvent(input, 'blur');
                      fixture.detectChanges();
 
                      expect(sortedClassList(input)).toEqual([
-                       'ng-invalid', 'ng-pristine', 'ng-touched'
+                       'ng-empty-value', 'ng-invalid', 'ng-pristine', 'ng-touched'
                      ]);
 
                      input.value = 'updatedValue';
@@ -1602,14 +1602,14 @@ export function main() {
 
                      var input = fixture.debugElement.query(By.css('input')).nativeElement;
                      expect(sortedClassList(input)).toEqual([
-                       'ng-invalid', 'ng-pristine', 'ng-untouched'
+                       'ng-empty-value', 'ng-invalid', 'ng-pristine', 'ng-untouched'
                      ]);
 
                      dispatchEvent(input, 'blur');
                      fixture.detectChanges();
 
                      expect(sortedClassList(input)).toEqual([
-                       'ng-invalid', 'ng-pristine', 'ng-touched'
+                       'ng-empty-value', 'ng-invalid', 'ng-pristine', 'ng-touched'
                      ]);
 
                      input.value = 'updatedValue';

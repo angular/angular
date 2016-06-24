@@ -382,6 +382,7 @@ export function main() {
         expect(controlDir.dirty).toBe(control.dirty);
         expect(controlDir.touched).toBe(control.touched);
         expect(controlDir.untouched).toBe(control.untouched);
+        expect(controlDir.empty).toBe(control.empty);
       };
 
       beforeEach(() => {
@@ -431,6 +432,7 @@ export function main() {
         expect(ngModel.dirty).toBe(control.dirty);
         expect(ngModel.touched).toBe(control.touched);
         expect(ngModel.untouched).toBe(control.untouched);
+        expect(ngModel.empty).toBe(control.empty);
       });
 
       it('should set up validator', fakeAsync(() => {
