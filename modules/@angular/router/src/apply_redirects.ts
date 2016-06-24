@@ -13,6 +13,7 @@ import {of } from 'rxjs/observable/of';
 import {Route, RouterConfig} from './config';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlPathWithParams, UrlSegment, UrlTree, mapChildren} from './url_tree';
+import {merge} from './utils/collection';
 
 class NoMatch {
   constructor(public segment: UrlSegment = null) {}
@@ -38,7 +39,10 @@ export function applyRedirects(urlTree: UrlTree, config: RouterConfig): Observab
   }
 }
 
-function createUrlTree(urlTree: UrlTree, root: UrlSegment): Observable<UrlTree> {
+function createUrlTree(urlTree: UrlTree, rootCandidate: UrlSegment): Observable<UrlTree> {
+  const root = rootCandidate.pathsWithParams.length > 0 ?
+      new UrlSegment([], {[PRIMARY_OUTLET]: rootCandidate}) :
+      rootCandidate;
   return of (new UrlTree(root, urlTree.queryParams, urlTree.fragment));
 }
 
@@ -70,10 +74,10 @@ function expandPathsWithParams(
 function expandPathsWithParamsAgainstRoute(
     segment: UrlSegment, routes: Route[], route: Route, paths: UrlPathWithParams[], outlet: string,
     allowRedirects: boolean): UrlSegment {
-  if ((route.outlet ? route.outlet : PRIMARY_OUTLET) !== outlet) throw new NoMatch();
-  if (route.redirectTo && !allowRedirects) throw new NoMatch();
+  if (getOutlet(route) !== outlet) throw new NoMatch();
+  if (route.redirectTo !== undefined && !allowRedirects) throw new NoMatch();
 
-  if (route.redirectTo) {
+  if (route.redirectTo !== undefined) {
     return expandPathsWithParamsAgainstRouteUsingRedirect(segment, routes, route, paths, outlet);
   } else {
     return matchPathsWithParamsAgainstRoute(segment, route, paths);
@@ -115,21 +119,22 @@ function expandRegularPathWithParamsAgainstRouteUsingRedirect(
 }
 
 function matchPathsWithParamsAgainstRoute(
-    segment: UrlSegment, route: Route, paths: UrlPathWithParams[]): UrlSegment {
+    rawSegment: UrlSegment, route: Route, paths: UrlPathWithParams[]): UrlSegment {
   if (route.path === '**') {
     return new UrlSegment(paths, {});
   } else {
-    const {consumedPaths, lastChild} = match(segment, route, paths);
+    const {consumedPaths, lastChild} = match(rawSegment, route, paths);
     const childConfig = route.children ? route.children : [];
-    const slicedPath = paths.slice(lastChild);
+    const rawSlicedPath = paths.slice(lastChild);
 
-    if (childConfig.length === 0 && slicedPath.length === 0) {
-      return new UrlSegment(consumedPaths, {});
+    const {segment, slicedPath} = split(rawSegment, consumedPaths, rawSlicedPath, childConfig);
 
-      // TODO: check that the right segment is present
-    } else if (slicedPath.length === 0 && segment.hasChildren()) {
+    if (slicedPath.length === 0 && segment.hasChildren()) {
       const children = expandSegmentChildren(childConfig, segment);
       return new UrlSegment(consumedPaths, children);
+
+    } else if (childConfig.length === 0 && slicedPath.length === 0) {
+      return new UrlSegment(consumedPaths, {});
 
     } else {
       const cs = expandPathsWithParams(segment, childConfig, slicedPath, PRIMARY_OUTLET, true);
@@ -183,12 +188,11 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]): {
 function applyRedirectCommands(
     paths: UrlPathWithParams[], redirectTo: string,
     posParams: {[k: string]: UrlPathWithParams}): UrlPathWithParams[] {
-  if (redirectTo.startsWith('/')) {
-    const parts = redirectTo.substring(1).split('/');
-    return createPaths(redirectTo, parts, paths, posParams);
+  const r = redirectTo.startsWith('/') ? redirectTo.substring(1) : redirectTo;
+  if (r === '') {
+    return [];
   } else {
-    const parts = redirectTo.split('/');
-    return createPaths(redirectTo, parts, paths, posParams);
+    return createPaths(redirectTo, r.split('/'), paths, posParams);
   }
 }
 
@@ -218,4 +222,73 @@ function findOrCreatePath(part: string, paths: UrlPathWithParams[]): UrlPathWith
   } else {
     return new UrlPathWithParams(part, {});
   }
+}
+
+
+function split(
+    segment: UrlSegment, consumedPaths: UrlPathWithParams[], slicedPath: UrlPathWithParams[],
+    config: Route[]) {
+  if (slicedPath.length > 0 &&
+      containsEmptyPathRedirectsWithNamedOutlets(segment, slicedPath, config)) {
+    const s = new UrlSegment(
+        consumedPaths,
+        createChildrenForEmptyPaths(config, new UrlSegment(slicedPath, segment.children)));
+    return {segment: s, slicedPath: []};
+
+  } else if (slicedPath.length === 0 && containsEmptyPathRedirects(segment, slicedPath, config)) {
+    const s = new UrlSegment(
+        segment.pathsWithParams,
+        addEmptyPathsToChildrenIfNeeded(segment, slicedPath, config, segment.children));
+    return {segment: s, slicedPath};
+
+  } else {
+    return {segment, slicedPath};
+  }
+}
+
+function addEmptyPathsToChildrenIfNeeded(
+    segment: UrlSegment, slicedPath: UrlPathWithParams[], routes: Route[],
+    children: {[name: string]: UrlSegment}): {[name: string]: UrlSegment} {
+  const res: {[name: string]: UrlSegment} = {};
+  for (let r of routes) {
+    if (emptyPathRedirect(segment, slicedPath, r) && !children[getOutlet(r)]) {
+      res[getOutlet(r)] = new UrlSegment([], {});
+    }
+  }
+  return merge(children, res);
+}
+
+function createChildrenForEmptyPaths(
+    routes: Route[], primarySegment: UrlSegment): {[name: string]: UrlSegment} {
+  const res: {[name: string]: UrlSegment} = {};
+  res[PRIMARY_OUTLET] = primarySegment;
+  for (let r of routes) {
+    if (r.path === '') {
+      res[getOutlet(r)] = new UrlSegment([], {});
+    }
+  }
+  return res;
+}
+
+function containsEmptyPathRedirectsWithNamedOutlets(
+    segment: UrlSegment, slicedPath: UrlPathWithParams[], routes: Route[]): boolean {
+  return routes
+             .filter(
+                 r => emptyPathRedirect(segment, slicedPath, r) && getOutlet(r) !== PRIMARY_OUTLET)
+             .length > 0;
+}
+
+function containsEmptyPathRedirects(
+    segment: UrlSegment, slicedPath: UrlPathWithParams[], routes: Route[]): boolean {
+  return routes.filter(r => emptyPathRedirect(segment, slicedPath, r)).length > 0;
+}
+
+function emptyPathRedirect(
+    segment: UrlSegment, slicedPath: UrlPathWithParams[], r: Route): boolean {
+  if ((segment.hasChildren() || slicedPath.length > 0) && r.terminal) return false;
+  return r.path === '' && r.redirectTo !== undefined;
+}
+
+function getOutlet(route: Route): string {
+  return route.outlet ? route.outlet : PRIMARY_OUTLET;
 }

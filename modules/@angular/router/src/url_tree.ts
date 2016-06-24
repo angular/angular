@@ -75,6 +75,16 @@ export class UrlTree {
 }
 
 export class UrlSegment {
+  /**
+   * @internal
+   */
+  _sourceSegment: UrlSegment;
+
+  /**
+   * @internal
+   */
+  _pathIndexShift: number;
+
   public parent: UrlSegment = null;
   constructor(
       public pathsWithParams: UrlPathWithParams[], public children: {[key: string]: UrlSegment}) {
@@ -306,7 +316,11 @@ class UrlParser {
   }
 
   parsePathWithParams(): UrlPathWithParams {
-    let path = matchPathWithParams(this.remaining);
+    const path = matchPathWithParams(this.remaining);
+    if (path === '' && this.peekStartsWith(';')) {
+      throw new Error(`Empty path url segment cannot have parameters: '${this.remaining}'.`);
+    }
+
     this.capture(path);
     let matrixParams: {[key: string]: any} = {};
     if (this.peekStartsWith(';')) {

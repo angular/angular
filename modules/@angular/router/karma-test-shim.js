@@ -1,5 +1,5 @@
 /*global jasmine, __karma__, window*/
-Error.stackTraceLimit = 10;
+Error.stackTraceLimit = 5;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 __karma__.loaded = function () {
