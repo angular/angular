@@ -73,95 +73,37 @@ describe('applyRedirects', () => {
         'c/b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
   });
 
-  it('should redirect empty path', () => {
+  it('should support redirects with both main and aux', () => {
     checkRedirect(
-        [
-          {
-            path: 'a',
-            component: ComponentA,
-            children: [
-              {path: 'b', component: ComponentB},
-            ]
-          },
-          {path: '', redirectTo: 'a'}
-        ],
-        'b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+        [{
+          path: 'a',
+          children: [
+            {path: 'bb', component: ComponentB}, {path: 'b', redirectTo: 'bb'},
+
+            {path: 'cc', component: ComponentC, outlet: 'aux'},
+            {path: 'b', redirectTo: 'cc', outlet: 'aux'}
+          ]
+        }],
+        'a/(b//aux:b)', (t: UrlTree) => { compareTrees(t, tree('a/(bb//aux:cc)')); });
   });
 
-  it('should redirect empty path (global redirect)', () => {
+  it('should support redirects with both main and aux (with a nested redirect)', () => {
     checkRedirect(
-        [
-          {
-            path: 'a',
-            component: ComponentA,
-            children: [
-              {path: 'b', component: ComponentB},
-            ]
-          },
-          {path: '', redirectTo: '/a/b'}
-        ],
-        '', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
-  });
+        [{
+          path: 'a',
+          children: [
+            {path: 'bb', component: ComponentB}, {path: 'b', redirectTo: 'bb'},
 
-  xit('should support nested redirects', () => {
-    checkRedirect(
-        [
-          {
-            path: 'a',
-            component: ComponentA,
-            children: [{path: 'b', component: ComponentB}, {path: '', redirectTo: 'b'}]
-          },
-          {path: '', redirectTo: 'a'}
-        ],
-        '', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
-  });
-
-  xit('should support nested redirects (when redirected to an empty path)', () => {
-    checkRedirect(
-        [
-          {
-            path: '',
-            component: ComponentA,
-            children: [{path: 'b', component: ComponentB}, {path: '', redirectTo: 'b'}]
-          },
-          {path: 'a', redirectTo: ''}
-        ],
-        'a', (t: UrlTree) => { compareTrees(t, tree('b')); });
-  });
-
-  xit('should support redirects with both main and aux', () => {
-    checkRedirect(
-        [
-          {
-            path: 'a',
-            children: [
-              {path: 'b', component: ComponentB}, {path: '', redirectTo: 'b'},
-
-              {path: 'c', component: ComponentC, outlet: 'aux'},
-              {path: '', redirectTo: 'c', outlet: 'aux'}
-            ]
-          },
-          {path: 'a', redirectTo: ''}
-        ],
-        'a', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
-  });
-
-  it('should redirect empty path route only when terminal', () => {
-    const config = [
-      {
-        path: 'a',
-        component: ComponentA,
-        children: [
-          {path: 'b', component: ComponentB},
-        ]
-      },
-      {path: '', redirectTo: 'a', terminal: true}
-    ];
-
-    applyRedirects(tree('b'), config)
-        .subscribe(
-            (_) => { throw 'Should not be reached'; },
-            e => { expect(e.message).toEqual('Cannot match any routes: \'b\''); });
+            {
+              path: 'cc',
+              component: ComponentC,
+              outlet: 'aux',
+              children: [{path: 'dd', component: ComponentC}, {path: 'd', redirectTo: 'dd'}]
+            },
+            {path: 'b', redirectTo: 'cc/d', outlet: 'aux'}
+          ]
+        }],
+        'a/(b//aux:b)', (t: UrlTree) => { compareTrees(t, tree('a/(bb//aux:cc/dd)')); });
   });
 
   it('should redirect wild cards', () => {
@@ -184,6 +126,187 @@ describe('applyRedirects', () => {
           {path: '**', component: ComponentC}
         ],
         '/a/b/1', (t: UrlTree) => { compareTrees(t, tree('/global/1')); });
+  });
+
+  describe('empty paths', () => {
+    it('redirect from an empty path should work (local redirect)', () => {
+      checkRedirect(
+          [
+            {
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: 'b', component: ComponentB},
+              ]
+            },
+            {path: '', redirectTo: 'a'}
+          ],
+          'b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+    });
+
+    it('redirect from an empty path should work (global redirect)', () => {
+      checkRedirect(
+          [
+            {
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: 'b', component: ComponentB},
+              ]
+            },
+            {path: '', redirectTo: '/a/b'}
+          ],
+          '', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+    });
+
+    it('should redirect empty path route only when terminal', () => {
+      const config = [
+        {
+          path: 'a',
+          component: ComponentA,
+          children: [
+            {path: 'b', component: ComponentB},
+          ]
+        },
+        {path: '', redirectTo: 'a', terminal: true}
+      ];
+
+      applyRedirects(tree('b'), config)
+          .subscribe(
+              (_) => { throw 'Should not be reached'; },
+              e => { expect(e.message).toEqual('Cannot match any routes: \'b\''); });
+    });
+
+    it('redirect from an empty path should work (nested case)', () => {
+      checkRedirect(
+          [
+            {
+              path: 'a',
+              component: ComponentA,
+              children: [{path: 'b', component: ComponentB}, {path: '', redirectTo: 'b'}]
+            },
+            {path: '', redirectTo: 'a'}
+          ],
+          '', (t: UrlTree) => { compareTrees(t, tree('a/(b)')); });
+    });
+
+    it('redirect to an empty path should work', () => {
+      checkRedirect(
+          [
+            {path: '', component: ComponentA, children: [{path: 'b', component: ComponentB}]},
+            {path: 'a', redirectTo: ''}
+          ],
+          'a/b', (t: UrlTree) => { compareTrees(t, tree('b')); });
+    });
+
+    describe('aux split is in the middle', () => {
+      it('should create a new url segment (non-terminal)', () => {
+        checkRedirect(
+            [{
+              path: 'a',
+              children: [
+                {path: 'b', component: ComponentB},
+                {path: 'c', component: ComponentC, outlet: 'aux'},
+                {path: '', redirectTo: 'c', outlet: 'aux'}
+              ]
+            }],
+            'a/b', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+      });
+
+      it('should create a new url segment (terminal)', () => {
+        checkRedirect(
+            [{
+              path: 'a',
+              children: [
+                {path: 'b', component: ComponentB},
+                {path: 'c', component: ComponentC, outlet: 'aux'},
+                {path: '', terminal: true, redirectTo: 'c', outlet: 'aux'}
+              ]
+            }],
+            'a/b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+      });
+    });
+
+    describe('split at the end (no right child)', () => {
+      it('should create a new child (non-terminal)', () => {
+        checkRedirect(
+            [{
+              path: 'a',
+              children: [
+                {path: 'b', component: ComponentB}, {path: '', redirectTo: 'b'},
+                {path: 'c', component: ComponentC, outlet: 'aux'},
+                {path: '', redirectTo: 'c', outlet: 'aux'}
+              ]
+            }],
+            'a', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+      });
+
+      it('should create a new child (terminal)', () => {
+        checkRedirect(
+            [{
+              path: 'a',
+              children: [
+                {path: 'b', component: ComponentB}, {path: '', redirectTo: 'b'},
+                {path: 'c', component: ComponentC, outlet: 'aux'},
+                {path: '', terminal: true, redirectTo: 'c', outlet: 'aux'}
+              ]
+            }],
+            'a', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+      });
+
+      it('should work only only primary outlet', () => {
+        checkRedirect(
+            [{
+              path: 'a',
+              children: [
+                {path: 'b', component: ComponentB}, {path: '', redirectTo: 'b'},
+                {path: 'c', component: ComponentC, outlet: 'aux'}
+              ]
+            }],
+            'a/(aux:c)', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+      });
+    });
+
+    describe('split at the end (right child)', () => {
+      it('should create a new child (non-terminal)', () => {
+        checkRedirect(
+            [{
+              path: 'a',
+              children: [
+                {path: 'b', component: ComponentB, children: [{path: 'd', component: ComponentB}]},
+                {path: '', redirectTo: 'b'}, {
+                  path: 'c',
+                  component: ComponentC,
+                  outlet: 'aux',
+                  children: [{path: 'e', component: ComponentC}]
+                },
+                {path: '', redirectTo: 'c', outlet: 'aux'}
+              ]
+            }],
+            'a/(d//aux:e)', (t: UrlTree) => { compareTrees(t, tree('a/(b/d//aux:c/e)')); });
+      });
+
+      it('should not create a new child (terminal)', () => {
+        const config = [{
+          path: 'a',
+          children: [
+            {path: 'b', component: ComponentB, children: [{path: 'd', component: ComponentB}]},
+            {path: '', redirectTo: 'b'}, {
+              path: 'c',
+              component: ComponentC,
+              outlet: 'aux',
+              children: [{path: 'e', component: ComponentC}]
+            },
+            {path: '', terminal: true, redirectTo: 'c', outlet: 'aux'}
+          ]
+        }];
+
+        applyRedirects(tree('a/(d//aux:e)'), config)
+            .subscribe(
+                (_) => { throw 'Should not be reached'; },
+                e => { expect(e.message).toEqual('Cannot match any routes: \'a\''); });
+      });
+    });
   });
 });
 

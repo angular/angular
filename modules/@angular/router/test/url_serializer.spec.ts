@@ -27,31 +27,9 @@ describe('url serializer', () => {
     expect(url.serialize(tree)).toEqual('/one/two(left:three//right:four)');
   });
 
-  it('should parse segments with empty paths', () => {
-    const tree = url.parse('/one/two/(;a=1//right:;b=2)');
-
-    const c = tree.root.children[PRIMARY_OUTLET];
-    expectSegment(tree.root.children[PRIMARY_OUTLET], 'one/two', true);
-
-    expect(c.children[PRIMARY_OUTLET].pathsWithParams[0].path).toEqual('');
-    expect(c.children[PRIMARY_OUTLET].pathsWithParams[0].parameters).toEqual({a: '1'});
-
-    expect(c.children['right'].pathsWithParams[0].path).toEqual('');
-    expect(c.children['right'].pathsWithParams[0].parameters).toEqual({b: '2'});
-
-    expect(url.serialize(tree)).toEqual('/one/two/(;a=1//right:;b=2)');
-  });
-
-  it('should parse segments with empty paths (only aux)', () => {
-    const tree = url.parse('/one/two/(right:;b=2)');
-
-    const c = tree.root.children[PRIMARY_OUTLET];
-    expectSegment(tree.root.children[PRIMARY_OUTLET], 'one/two', true);
-
-    expect(c.children['right'].pathsWithParams[0].path).toEqual('');
-    expect(c.children['right'].pathsWithParams[0].parameters).toEqual({b: '2'});
-
-    expect(url.serialize(tree)).toEqual('/one/two/(right:;b=2)');
+  it('should not parse empty path segments with params', () => {
+    expect(() => url.parse('/one/two/(;a=1//right:;b=2)'))
+        .toThrowError(/Empty path url segment cannot have parameters/);
   });
 
   it('should parse scoped secondary segments', () => {
