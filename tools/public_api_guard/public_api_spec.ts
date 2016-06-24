@@ -879,7 +879,7 @@ const COMPILER = [
   'DirectiveAst.constructor(directive:CompileDirectiveMetadata, inputs:BoundDirectivePropertyAst[], hostProperties:BoundElementPropertyAst[], hostEvents:BoundEventAst[], sourceSpan:ParseSourceSpan)',
   'DirectiveAst.visit(visitor:TemplateAstVisitor, context:any):any',
   'ElementAst',
-  'ElementAst.constructor(name:string, attrs:AttrAst[], inputs:BoundElementPropertyAst[], outputs:BoundEventAst[], references:VariableAst[], directives:DirectiveAst[], providers:ProviderAst[], hasViewContainer:boolean, children:TemplateAst[], ngContentIndex:number, sourceSpan:ParseSourceSpan)',
+  'ElementAst.constructor(name:string, attrs:AttrAst[], inputs:BoundElementPropertyAst[], outputs:BoundEventAst[], references:ReferenceAst[], directives:DirectiveAst[], providers:ProviderAst[], hasViewContainer:boolean, children:TemplateAst[], ngContentIndex:number, sourceSpan:ParseSourceSpan)',
   'ElementAst.visit(visitor:TemplateAstVisitor, context:any):any',
   'EmbeddedTemplateAst',
   'EmbeddedTemplateAst.constructor(attrs:AttrAst[], outputs:BoundEventAst[], references:ReferenceAst[], variables:VariableAst[], directives:DirectiveAst[], providers:ProviderAst[], hasViewContainer:boolean, children:TemplateAst[], ngContentIndex:number, sourceSpan:ParseSourceSpan)',
