@@ -11,8 +11,8 @@
   </section>
 
   <section>
-    <a href="http://www.google.com" md-button color="primary">link</a>
-    <a href="http://www.google.com" md-raised-button>link</a>
+    <a href="http://www.google.com" md-button color="primary">SEARCH</a>
+    <a href="http://www.google.com" md-raised-button>SEARCH</a>
     <a href="http://www.google.com" md-fab>
       <md-icon class="md-24">check</md-icon>
     </a>
@@ -61,13 +61,15 @@
 
   <section>
     <div>
-      <p>isDisabled: {{isDisabled}}, clickCounter: <span id="clickCounter">{{clickCounter}}</span></p>
-      <button md-raised-button (click)="isDisabled=!isDisabled" id="disableToggle">Disable buttons</button>
-      <button md-raised-button (click)="button1.focus()" id="disableToggle">Focus 1</button>
-      <button md-raised-button (click)="button2.focus()" id="disableToggle">Focus 2</button>
-      <button md-raised-button (click)="button3.focus()" id="disableToggle">Focus 3</button>
+      <p>isDisabled: {{isDisabled}}, clickCounter: <span>{{clickCounter}}</span></p>
+      <button md-raised-button (click)="isDisabled=!isDisabled">
+        Disable buttons
+      </button>
+      <button md-raised-button (click)="button1.focus()">Focus 1</button>
+      <button md-raised-button (click)="button2.focus()">Focus 2</button>
+      <button md-raised-button (click)="button3.focus()">Focus 3</button>
     </div>
-    <button md-button #button1 [disabled]="isDisabled" (click)="clickCounter=clickCounter+1" id="testButton">off</button>
+    <button md-button #button1 [disabled]="isDisabled" (click)="clickCounter=clickCounter+1">off</button>
     <button md-button color="primary" [disabled]="isDisabled">off</button>
     <a href="http://www.google.com" #button2 md-button color="accent" [disabled]="isDisabled">off</a>
     <button md-raised-button #button3 color="primary" [disabled]="isDisabled">off</button>
@@ -80,15 +82,11 @@
     </button>
   </section>
   <section>
-    Link
-    <a href="http://www.google.com" md-button color="primary">link</a>
-    Button
-    <button md-button>flat</button>
+    <a href="http://www.google.com" md-button color="primary">SEARCH</a>
+    <button md-button>DANCE</button>
   </section>
   <section>
-    Link
-    <a href="http://www.google.com" md-raised-button color="primary">link</a>
-    Button
-    <button md-raised-button>button</button>
+    <a href="http://www.google.com" md-raised-button color="primary">SEARCH</a>
+    <button md-raised-button>DANCE</button>
   </section>
 </div>
