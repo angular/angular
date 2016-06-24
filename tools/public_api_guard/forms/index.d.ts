@@ -50,10 +50,12 @@ export declare abstract class AbstractControlDirective {
     };
     path: string[];
     pristine: boolean;
+    statusChanges: Observable<any>;
     touched: boolean;
     untouched: boolean;
     valid: boolean;
     value: any;
+    valueChanges: Observable<any>;
 }
 
 export declare class CheckboxControlValueAccessor implements ControlValueAccessor {

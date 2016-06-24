@@ -1247,10 +1247,10 @@ export function main() {
            let formValue: Object;
 
            ObservableWrapper.subscribe(
-               form.form.statusChanges, (status: string) => { formValidity = status; });
+               form.statusChanges, (status: string) => { formValidity = status; });
 
            ObservableWrapper.subscribe(
-               form.form.valueChanges, (value: string) => { formValue = value; });
+               form.valueChanges, (value: string) => { formValue = value; });
 
            tick();
 

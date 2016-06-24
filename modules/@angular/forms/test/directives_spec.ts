@@ -141,6 +141,8 @@ export function main() {
         expect(form.dirty).toBe(formModel.dirty);
         expect(form.touched).toBe(formModel.touched);
         expect(form.untouched).toBe(formModel.untouched);
+        expect(form.statusChanges).toBe(formModel.statusChanges);
+        expect(form.valueChanges).toBe(formModel.valueChanges);
       });
 
       describe('addControl', () => {
@@ -295,6 +297,8 @@ export function main() {
         expect(form.dirty).toBe(formModel.dirty);
         expect(form.touched).toBe(formModel.touched);
         expect(form.untouched).toBe(formModel.untouched);
+        expect(form.statusChanges).toBe(formModel.statusChanges);
+        expect(form.valueChanges).toBe(formModel.valueChanges);
       });
 
       describe('addControl & addFormGroup', () => {
@@ -367,6 +371,8 @@ export function main() {
         expect(controlGroupDir.dirty).toBe(formModel.dirty);
         expect(controlGroupDir.touched).toBe(formModel.touched);
         expect(controlGroupDir.untouched).toBe(formModel.untouched);
+        expect(controlGroupDir.statusChanges).toBe(formModel.statusChanges);
+        expect(controlGroupDir.valueChanges).toBe(formModel.valueChanges);
       });
     });
 
@@ -382,6 +388,8 @@ export function main() {
         expect(controlDir.dirty).toBe(control.dirty);
         expect(controlDir.touched).toBe(control.touched);
         expect(controlDir.untouched).toBe(control.untouched);
+        expect(controlDir.statusChanges).toBe(control.statusChanges);
+        expect(controlDir.valueChanges).toBe(control.valueChanges);
       };
 
       beforeEach(() => {
@@ -431,6 +439,8 @@ export function main() {
         expect(ngModel.dirty).toBe(control.dirty);
         expect(ngModel.touched).toBe(control.touched);
         expect(ngModel.untouched).toBe(control.untouched);
+        expect(ngModel.statusChanges).toBe(control.statusChanges);
+        expect(ngModel.valueChanges).toBe(control.valueChanges);
       });
 
       it('should set up validator', fakeAsync(() => {
@@ -469,6 +479,8 @@ export function main() {
         expect(controlNameDir.dirty).toBe(formModel.dirty);
         expect(controlNameDir.touched).toBe(formModel.touched);
         expect(controlNameDir.untouched).toBe(formModel.untouched);
+        expect(controlNameDir.statusChanges).toBe(formModel.statusChanges);
+        expect(controlNameDir.valueChanges).toBe(formModel.valueChanges);
       });
     });
   });

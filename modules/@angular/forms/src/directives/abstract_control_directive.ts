@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Observable} from '../facade/async';
 import {unimplemented} from '../facade/exceptions';
 import {isPresent} from '../facade/lang';
 import {AbstractControl} from '../model';
+
 
 
 /**
@@ -36,6 +38,14 @@ export abstract class AbstractControlDirective {
   get touched(): boolean { return isPresent(this.control) ? this.control.touched : null; }
 
   get untouched(): boolean { return isPresent(this.control) ? this.control.untouched : null; }
+
+  get statusChanges(): Observable<any> {
+    return isPresent(this.control) ? this.control.statusChanges : null;
+  }
+
+  get valueChanges(): Observable<any> {
+    return isPresent(this.control) ? this.control.valueChanges : null;
+  }
 
   get path(): string[] { return null; }
 }
