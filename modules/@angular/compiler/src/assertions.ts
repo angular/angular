@@ -28,7 +28,8 @@ const INTERPOLATION_BLACKLIST_REGEXPS = [
   /^\s*$/,        // empty
   /[<>]/,         // html tag
   /^[{}]$/,       // i18n expansion
-  /&(#|[a-z])/i,  // character reference
+  /&(#|[a-z])/i,  // character reference,
+  /^\/\//,        // comment
 ];
 
 export function assertInterpolationSymbols(identifier: string, value: any): void {

@@ -30,14 +30,12 @@ export class HtmlParseTreeResult {
 
 @Injectable()
 export class HtmlParser {
-  constructor(public _expressionParser: ExpressionParser) {}
-
   parse(
       sourceContent: string, sourceUrl: string, parseExpansionForms: boolean = false,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG):
       HtmlParseTreeResult {
-    var tokensAndErrors = tokenizeHtml(
-        sourceContent, sourceUrl, this._expressionParser, parseExpansionForms, interpolationConfig);
+    var tokensAndErrors =
+        tokenizeHtml(sourceContent, sourceUrl, parseExpansionForms, interpolationConfig);
     var treeAndErrors = new TreeBuilder(tokensAndErrors.tokens).build();
     return new HtmlParseTreeResult(
         treeAndErrors.rootNodes,

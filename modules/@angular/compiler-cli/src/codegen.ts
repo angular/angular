@@ -126,8 +126,7 @@ export class CodeGenerator {
     const reflectorHost = new ReflectorHost(program, compilerHost, options, reflectorHostContext);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
-    const expressionParser = new Parser(new Lexer());
-    const htmlParser = new HtmlParser(expressionParser);
+    const htmlParser = new HtmlParser();
     const config = new compiler.CompilerConfig({
       genDebugInfo: options.debug === true,
       defaultEncapsulation: ViewEncapsulation.Emulated,
@@ -135,6 +134,7 @@ export class CodeGenerator {
       useJit: false
     });
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
+    const expressionParser = new Parser(new Lexer());
     const tmplParser = new TemplateParser(
         expressionParser, new DomElementSchemaRegistry(), htmlParser,
         /*console*/ null, []);

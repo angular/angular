@@ -20,7 +20,7 @@ export function main() {
 
     beforeEach(() => {
       const expParser = new ExpressionParser(new ExpressionLexer());
-      const htmlParser = new HtmlParser(expParser);
+      const htmlParser = new HtmlParser();
       // TODO: pass expression parser
       extractor = new MessageExtractor(htmlParser, expParser, ['i18n-tag'], {'i18n-el': ['trans']});
     });

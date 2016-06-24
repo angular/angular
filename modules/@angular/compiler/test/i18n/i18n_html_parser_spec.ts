@@ -26,13 +26,14 @@ export function main() {
         template: string, messages: {[key: string]: string}, implicitTags: string[] = [],
         implicitAttrs: {[k: string]: string[]} = {},
         interpolation?: InterpolationConfig): HtmlParseTreeResult {
-      var expParser = new ExpressionParser(new ExpressionLexer());
-      let htmlParser = new HtmlParser(expParser);
+      let htmlParser = new HtmlParser();
 
       let msgs = '';
       StringMapWrapper.forEach(
           messages, (v: string, k: string) => msgs += `<msg id="${k}">${v}</msg>`);
       let res = deserializeXmb(`<message-bundle>${msgs}</message-bundle>`, 'someUrl');
+
+      const expParser = new ExpressionParser(new ExpressionLexer());
 
       return new I18nHtmlParser(
                  htmlParser, expParser, res.content, res.messages, implicitTags, implicitAttrs)

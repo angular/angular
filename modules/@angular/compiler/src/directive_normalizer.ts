@@ -14,6 +14,7 @@ import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMeta
 import {CompilerConfig} from './config';
 import {HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from './html_ast';
 import {HtmlParser} from './html_parser';
+import {InterpolationConfig} from './interpolation_config';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_preparser';
 import {UrlResolver} from './url_resolver';

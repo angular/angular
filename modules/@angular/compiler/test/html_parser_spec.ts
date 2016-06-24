@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
-import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
 import {HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst} from '@angular/compiler/src/html_ast';
 import {HtmlTokenType} from '@angular/compiler/src/html_lexer';
 import {HtmlParseTreeResult, HtmlParser, HtmlTreeError} from '@angular/compiler/src/html_parser';
@@ -19,14 +17,8 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './html_as
 export function main() {
   describe('HtmlParser', () => {
     var parser: HtmlParser;
-    var expLexer: ExpressionLexer;
-    var expParser: ExpressionParser;
 
-    beforeEach(() => {
-      expLexer = new ExpressionLexer();
-      expParser = new ExpressionParser(expLexer);
-      parser = new HtmlParser(expParser);
-    });
+    beforeEach(() => { parser = new HtmlParser(); });
 
     describe('parse', () => {
       describe('text nodes', () => {

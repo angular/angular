@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
-import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
 import {HtmlToken, HtmlTokenError, HtmlTokenType, tokenizeHtml} from '@angular/compiler/src/html_lexer';
 import {InterpolationConfig} from '@angular/compiler/src/interpolation_config';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
@@ -18,33 +16,41 @@ export function main() {
     describe('line/column numbers', () => {
       it('should work without newlines', () => {
         expect(tokenizeAndHumanizeLineColumn('<t>a</t>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, '0:0'], [HtmlTokenType.TAG_OPEN_END, '0:2'],
-          [HtmlTokenType.TEXT, '0:3'], [HtmlTokenType.TAG_CLOSE, '0:4'],
-          [HtmlTokenType.EOF, '0:8']
+          [HtmlTokenType.TAG_OPEN_START, '0:0'],
+          [HtmlTokenType.TAG_OPEN_END, '0:2'],
+          [HtmlTokenType.TEXT, '0:3'],
+          [HtmlTokenType.TAG_CLOSE, '0:4'],
+          [HtmlTokenType.EOF, '0:8'],
         ]);
       });
 
       it('should work with one newline', () => {
         expect(tokenizeAndHumanizeLineColumn('<t>\na</t>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, '0:0'], [HtmlTokenType.TAG_OPEN_END, '0:2'],
-          [HtmlTokenType.TEXT, '0:3'], [HtmlTokenType.TAG_CLOSE, '1:1'],
-          [HtmlTokenType.EOF, '1:5']
+          [HtmlTokenType.TAG_OPEN_START, '0:0'],
+          [HtmlTokenType.TAG_OPEN_END, '0:2'],
+          [HtmlTokenType.TEXT, '0:3'],
+          [HtmlTokenType.TAG_CLOSE, '1:1'],
+          [HtmlTokenType.EOF, '1:5'],
         ]);
       });
 
       it('should work with multiple newlines', () => {
         expect(tokenizeAndHumanizeLineColumn('<t\n>\na</t>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, '0:0'], [HtmlTokenType.TAG_OPEN_END, '1:0'],
-          [HtmlTokenType.TEXT, '1:1'], [HtmlTokenType.TAG_CLOSE, '2:1'],
-          [HtmlTokenType.EOF, '2:5']
+          [HtmlTokenType.TAG_OPEN_START, '0:0'],
+          [HtmlTokenType.TAG_OPEN_END, '1:0'],
+          [HtmlTokenType.TEXT, '1:1'],
+          [HtmlTokenType.TAG_CLOSE, '2:1'],
+          [HtmlTokenType.EOF, '2:5'],
         ]);
       });
 
       it('should work with CR and LF', () => {
         expect(tokenizeAndHumanizeLineColumn('<t\n>\r\na\r</t>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, '0:0'], [HtmlTokenType.TAG_OPEN_END, '1:0'],
-          [HtmlTokenType.TEXT, '1:1'], [HtmlTokenType.TAG_CLOSE, '2:1'],
-          [HtmlTokenType.EOF, '2:5']
+          [HtmlTokenType.TAG_OPEN_START, '0:0'],
+          [HtmlTokenType.TAG_OPEN_END, '1:0'],
+          [HtmlTokenType.TEXT, '1:1'],
+          [HtmlTokenType.TAG_CLOSE, '2:1'],
+          [HtmlTokenType.EOF, '2:5'],
         ]);
       });
     });
@@ -52,15 +58,19 @@ export function main() {
     describe('comments', () => {
       it('should parse comments', () => {
         expect(tokenizeAndHumanizeParts('<!--t\ne\rs\r\nt-->')).toEqual([
-          [HtmlTokenType.COMMENT_START], [HtmlTokenType.RAW_TEXT, 't\ne\ns\nt'],
-          [HtmlTokenType.COMMENT_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.COMMENT_START],
+          [HtmlTokenType.RAW_TEXT, 't\ne\ns\nt'],
+          [HtmlTokenType.COMMENT_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations',
          () => {expect(tokenizeAndHumanizeSourceSpans('<!--t\ne\rs\r\nt-->')).toEqual([
-           [HtmlTokenType.COMMENT_START, '<!--'], [HtmlTokenType.RAW_TEXT, 't\ne\rs\r\nt'],
-           [HtmlTokenType.COMMENT_END, '-->'], [HtmlTokenType.EOF, '']
+           [HtmlTokenType.COMMENT_START, '<!--'],
+           [HtmlTokenType.RAW_TEXT, 't\ne\rs\r\nt'],
+           [HtmlTokenType.COMMENT_END, '-->'],
+           [HtmlTokenType.EOF, ''],
          ])});
 
       it('should report <!- without -', () => {
@@ -77,15 +87,19 @@ export function main() {
 
       it('should accept comments finishing by too many dashes (even number)', () => {
         expect(tokenizeAndHumanizeSourceSpans('<!-- test ---->')).toEqual([
-          [HtmlTokenType.COMMENT_START, '<!--'], [HtmlTokenType.RAW_TEXT, ' test --'],
-          [HtmlTokenType.COMMENT_END, '-->'], [HtmlTokenType.EOF, '']
+          [HtmlTokenType.COMMENT_START, '<!--'],
+          [HtmlTokenType.RAW_TEXT, ' test --'],
+          [HtmlTokenType.COMMENT_END, '-->'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
 
       it('should accept comments finishing by too many dashes (odd number)', () => {
         expect(tokenizeAndHumanizeSourceSpans('<!-- test --->')).toEqual([
-          [HtmlTokenType.COMMENT_START, '<!--'], [HtmlTokenType.RAW_TEXT, ' test -'],
-          [HtmlTokenType.COMMENT_END, '-->'], [HtmlTokenType.EOF, '']
+          [HtmlTokenType.COMMENT_START, '<!--'],
+          [HtmlTokenType.RAW_TEXT, ' test -'],
+          [HtmlTokenType.COMMENT_END, '-->'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
     });
@@ -93,13 +107,15 @@ export function main() {
     describe('doctype', () => {
       it('should parse doctypes', () => {
         expect(tokenizeAndHumanizeParts('<!doctype html>')).toEqual([
-          [HtmlTokenType.DOC_TYPE, 'doctype html'], [HtmlTokenType.EOF]
+          [HtmlTokenType.DOC_TYPE, 'doctype html'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<!doctype html>')).toEqual([
-          [HtmlTokenType.DOC_TYPE, '<!doctype html>'], [HtmlTokenType.EOF, '']
+          [HtmlTokenType.DOC_TYPE, '<!doctype html>'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
 
@@ -113,15 +129,19 @@ export function main() {
     describe('CDATA', () => {
       it('should parse CDATA', () => {
         expect(tokenizeAndHumanizeParts('<![CDATA[t\ne\rs\r\nt]]>')).toEqual([
-          [HtmlTokenType.CDATA_START], [HtmlTokenType.RAW_TEXT, 't\ne\ns\nt'],
-          [HtmlTokenType.CDATA_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.CDATA_START],
+          [HtmlTokenType.RAW_TEXT, 't\ne\ns\nt'],
+          [HtmlTokenType.CDATA_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<![CDATA[t\ne\rs\r\nt]]>')).toEqual([
-          [HtmlTokenType.CDATA_START, '<![CDATA['], [HtmlTokenType.RAW_TEXT, 't\ne\rs\r\nt'],
-          [HtmlTokenType.CDATA_END, ']]>'], [HtmlTokenType.EOF, '']
+          [HtmlTokenType.CDATA_START, '<![CDATA['],
+          [HtmlTokenType.RAW_TEXT, 't\ne\rs\r\nt'],
+          [HtmlTokenType.CDATA_END, ']]>'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
 
@@ -141,36 +161,41 @@ export function main() {
     describe('open tags', () => {
       it('should parse open tags without prefix', () => {
         expect(tokenizeAndHumanizeParts('<test>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'test'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'test'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse namespace prefix', () => {
         expect(tokenizeAndHumanizeParts('<ns1:test>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, 'ns1', 'test'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, 'ns1', 'test'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse void tags', () => {
         expect(tokenizeAndHumanizeParts('<test/>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'test'], [HtmlTokenType.TAG_OPEN_END_VOID],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'test'],
+          [HtmlTokenType.TAG_OPEN_END_VOID],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should allow whitespace after the tag name', () => {
         expect(tokenizeAndHumanizeParts('<test >')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'test'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'test'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<test>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, '<test'], [HtmlTokenType.TAG_OPEN_END, '>'],
-          [HtmlTokenType.EOF, '']
+          [HtmlTokenType.TAG_OPEN_START, '<test'],
+          [HtmlTokenType.TAG_OPEN_END, '>'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
 
@@ -179,88 +204,134 @@ export function main() {
     describe('attributes', () => {
       it('should parse attributes without prefix', () => {
         expect(tokenizeAndHumanizeParts('<t a>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, 'a'],
-          [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
+        ]);
+      });
+
+      it('should parse attributes with interpolation', () => {
+        expect(tokenizeAndHumanizeParts('<t a="{{v}}" b="s{{m}}e" c="s{{m//c}}e">')).toEqual([
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.ATTR_VALUE, '{{v}}'],
+          [HtmlTokenType.ATTR_NAME, null, 'b'],
+          [HtmlTokenType.ATTR_VALUE, 's{{m}}e'],
+          [HtmlTokenType.ATTR_NAME, null, 'c'],
+          [HtmlTokenType.ATTR_VALUE, 's{{m//c}}e'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse attributes with prefix', () => {
         expect(tokenizeAndHumanizeParts('<t ns1:a>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, 'ns1', 'a'],
-          [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, 'ns1', 'a'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse attributes whose prefix is not valid', () => {
         expect(tokenizeAndHumanizeParts('<t (ns1:a)>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, '(ns1:a)'],
-          [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, '(ns1:a)'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse attributes with single quote value', () => {
         expect(tokenizeAndHumanizeParts('<t a=\'b\'>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, 'a'],
-          [HtmlTokenType.ATTR_VALUE, 'b'], [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.ATTR_VALUE, 'b'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse attributes with double quote value', () => {
         expect(tokenizeAndHumanizeParts('<t a="b">')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, 'a'],
-          [HtmlTokenType.ATTR_VALUE, 'b'], [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.ATTR_VALUE, 'b'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse attributes with unquoted value', () => {
         expect(tokenizeAndHumanizeParts('<t a=b>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, 'a'],
-          [HtmlTokenType.ATTR_VALUE, 'b'], [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.ATTR_VALUE, 'b'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should allow whitespace', () => {
         expect(tokenizeAndHumanizeParts('<t a = b >')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, 'a'],
-          [HtmlTokenType.ATTR_VALUE, 'b'], [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.ATTR_VALUE, 'b'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse attributes with entities in values', () => {
         expect(tokenizeAndHumanizeParts('<t a="&#65;&#x41;">')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, 'a'],
-          [HtmlTokenType.ATTR_VALUE, 'AA'], [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.ATTR_VALUE, 'AA'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should not decode entities without trailing ";"', () => {
         expect(tokenizeAndHumanizeParts('<t a="&amp" b="c&&d">')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, 'a'],
-          [HtmlTokenType.ATTR_VALUE, '&amp'], [HtmlTokenType.ATTR_NAME, null, 'b'],
-          [HtmlTokenType.ATTR_VALUE, 'c&&d'], [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.ATTR_VALUE, '&amp'],
+          [HtmlTokenType.ATTR_NAME, null, 'b'],
+          [HtmlTokenType.ATTR_VALUE, 'c&&d'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse attributes with "&" in values', () => {
         expect(tokenizeAndHumanizeParts('<t a="b && c &">')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, 'a'],
-          [HtmlTokenType.ATTR_VALUE, 'b && c &'], [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.ATTR_VALUE, 'b && c &'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse values with CR and LF', () => {
         expect(tokenizeAndHumanizeParts('<t a=\'t\ne\rs\r\nt\'>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 't'], [HtmlTokenType.ATTR_NAME, null, 'a'],
-          [HtmlTokenType.ATTR_VALUE, 't\ne\ns\nt'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 't'],
+          [HtmlTokenType.ATTR_NAME, null, 'a'],
+          [HtmlTokenType.ATTR_VALUE, 't\ne\ns\nt'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<t a=b>')).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, '<t'], [HtmlTokenType.ATTR_NAME, 'a'],
-          [HtmlTokenType.ATTR_VALUE, 'b'], [HtmlTokenType.TAG_OPEN_END, '>'],
-          [HtmlTokenType.EOF, '']
+          [HtmlTokenType.TAG_OPEN_START, '<t'],
+          [HtmlTokenType.ATTR_NAME, 'a'],
+          [HtmlTokenType.ATTR_VALUE, 'b'],
+          [HtmlTokenType.TAG_OPEN_END, '>'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
 
@@ -269,25 +340,29 @@ export function main() {
     describe('closing tags', () => {
       it('should parse closing tags without prefix', () => {
         expect(tokenizeAndHumanizeParts('</test>')).toEqual([
-          [HtmlTokenType.TAG_CLOSE, null, 'test'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_CLOSE, null, 'test'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse closing tags with prefix', () => {
         expect(tokenizeAndHumanizeParts('</ns1:test>')).toEqual([
-          [HtmlTokenType.TAG_CLOSE, 'ns1', 'test'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_CLOSE, 'ns1', 'test'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should allow whitespace', () => {
         expect(tokenizeAndHumanizeParts('</ test >')).toEqual([
-          [HtmlTokenType.TAG_CLOSE, null, 'test'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_CLOSE, null, 'test'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('</test>')).toEqual([
-          [HtmlTokenType.TAG_CLOSE, '</test>'], [HtmlTokenType.EOF, '']
+          [HtmlTokenType.TAG_CLOSE, '</test>'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
 
@@ -307,25 +382,29 @@ export function main() {
     describe('entities', () => {
       it('should parse named entities', () => {
         expect(tokenizeAndHumanizeParts('a&amp;b')).toEqual([
-          [HtmlTokenType.TEXT, 'a&b'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, 'a&b'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse hexadecimal entities', () => {
         expect(tokenizeAndHumanizeParts('&#x41;&#X41;')).toEqual([
-          [HtmlTokenType.TEXT, 'AA'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, 'AA'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse decimal entities', () => {
         expect(tokenizeAndHumanizeParts('&#65;')).toEqual([
-          [HtmlTokenType.TEXT, 'A'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, 'A'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('a&amp;b')).toEqual([
-          [HtmlTokenType.TEXT, 'a&amp;b'], [HtmlTokenType.EOF, '']
+          [HtmlTokenType.TEXT, 'a&amp;b'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
 
@@ -350,55 +429,57 @@ export function main() {
     describe('regular text', () => {
       it('should parse text', () => {
         expect(tokenizeAndHumanizeParts('a')).toEqual([
-          [HtmlTokenType.TEXT, 'a'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, 'a'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse interpolation', () => {
-        expect(tokenizeAndHumanizeParts('{{ a }}')).toEqual([
-          [HtmlTokenType.TEXT, '{{ a }}'], [HtmlTokenType.EOF]
-        ]);
-      });
-
-      it('should detect interpolation end', () => {
-        expect(tokenizeAndHumanizeParts('{{value|filter:{params: {strict: true}}}}')).toEqual([
-          [HtmlTokenType.TEXT, '{{ a }}'], [HtmlTokenType.EOF]
+        expect(tokenizeAndHumanizeParts('{{ a }}b{{ c // comment }}')).toEqual([
+          [HtmlTokenType.TEXT, '{{ a }}b{{ c // comment }}'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse interpolation with custom markers', () => {
         expect(tokenizeAndHumanizeParts('{% a %}', null, {start: '{%', end: '%}'})).toEqual([
-          [HtmlTokenType.TEXT, '{% a %}'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, '{% a %}'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should handle CR & LF', () => {
         expect(tokenizeAndHumanizeParts('t\ne\rs\r\nt')).toEqual([
-          [HtmlTokenType.TEXT, 't\ne\ns\nt'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, 't\ne\ns\nt'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse entities', () => {
         expect(tokenizeAndHumanizeParts('a&amp;b')).toEqual([
-          [HtmlTokenType.TEXT, 'a&b'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, 'a&b'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse text starting with "&"', () => {
         expect(tokenizeAndHumanizeParts('a && b &')).toEqual([
-          [HtmlTokenType.TEXT, 'a && b &'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, 'a && b &'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('a')).toEqual([
-          [HtmlTokenType.TEXT, 'a'], [HtmlTokenType.EOF, '']
+          [HtmlTokenType.TEXT, 'a'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
 
       it('should allow "<" in text nodes', () => {
         expect(tokenizeAndHumanizeParts('{{ a < b ? c : d }}')).toEqual([
-          [HtmlTokenType.TEXT, '{{ a < b ? c : d }}'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, '{{ a < b ? c : d }}'],
+          [HtmlTokenType.EOF],
         ]);
 
         expect(tokenizeAndHumanizeSourceSpans('<p>a<b</p>')).toEqual([
@@ -410,103 +491,124 @@ export function main() {
         ]);
 
         expect(tokenizeAndHumanizeParts('< a>')).toEqual([
-          [HtmlTokenType.TEXT, '< a>'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, '< a>'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
-      // TODO(vicb): make the lexer aware of Angular expressions
-      // see https://github.com/angular/angular/issues/5679
       it('should parse valid start tag in interpolation', () => {
         expect(tokenizeAndHumanizeParts('{{ a <b && c > d }}')).toEqual([
-          [HtmlTokenType.TEXT, '{{ a '], [HtmlTokenType.TAG_OPEN_START, null, 'b'],
-          [HtmlTokenType.ATTR_NAME, null, '&&'], [HtmlTokenType.ATTR_NAME, null, 'c'],
-          [HtmlTokenType.TAG_OPEN_END], [HtmlTokenType.TEXT, ' d }}'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, '{{ a '],
+          [HtmlTokenType.TAG_OPEN_START, null, 'b'],
+          [HtmlTokenType.ATTR_NAME, null, '&&'],
+          [HtmlTokenType.ATTR_NAME, null, 'c'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.TEXT, ' d }}'],
+          [HtmlTokenType.EOF],
         ]);
       });
-
     });
 
     describe('raw text', () => {
       it('should parse text', () => {
         expect(tokenizeAndHumanizeParts(`<script>t\ne\rs\r\nt</script>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'script'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.RAW_TEXT, 't\ne\ns\nt'], [HtmlTokenType.TAG_CLOSE, null, 'script'],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'script'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.RAW_TEXT, 't\ne\ns\nt'],
+          [HtmlTokenType.TAG_CLOSE, null, 'script'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should not detect entities', () => {
         expect(tokenizeAndHumanizeParts(`<script>&amp;</SCRIPT>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'script'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.RAW_TEXT, '&amp;'], [HtmlTokenType.TAG_CLOSE, null, 'script'],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'script'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.RAW_TEXT, '&amp;'],
+          [HtmlTokenType.TAG_CLOSE, null, 'script'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should ignore other opening tags', () => {
         expect(tokenizeAndHumanizeParts(`<script>a<div></script>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'script'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.RAW_TEXT, 'a<div>'], [HtmlTokenType.TAG_CLOSE, null, 'script'],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'script'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.RAW_TEXT, 'a<div>'],
+          [HtmlTokenType.TAG_CLOSE, null, 'script'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should ignore other closing tags', () => {
         expect(tokenizeAndHumanizeParts(`<script>a</test></script>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'script'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.RAW_TEXT, 'a</test>'], [HtmlTokenType.TAG_CLOSE, null, 'script'],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'script'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.RAW_TEXT, 'a</test>'],
+          [HtmlTokenType.TAG_CLOSE, null, 'script'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans(`<script>a</script>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, '<script'], [HtmlTokenType.TAG_OPEN_END, '>'],
-          [HtmlTokenType.RAW_TEXT, 'a'], [HtmlTokenType.TAG_CLOSE, '</script>'],
-          [HtmlTokenType.EOF, '']
+          [HtmlTokenType.TAG_OPEN_START, '<script'],
+          [HtmlTokenType.TAG_OPEN_END, '>'],
+          [HtmlTokenType.RAW_TEXT, 'a'],
+          [HtmlTokenType.TAG_CLOSE, '</script>'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
-
     });
 
     describe('escapable raw text', () => {
       it('should parse text', () => {
         expect(tokenizeAndHumanizeParts(`<title>t\ne\rs\r\nt</title>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'title'], [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.TAG_OPEN_START, null, 'title'],
+          [HtmlTokenType.TAG_OPEN_END],
           [HtmlTokenType.ESCAPABLE_RAW_TEXT, 't\ne\ns\nt'],
-          [HtmlTokenType.TAG_CLOSE, null, 'title'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_CLOSE, null, 'title'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should detect entities', () => {
         expect(tokenizeAndHumanizeParts(`<title>&amp;</title>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'title'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.ESCAPABLE_RAW_TEXT, '&'], [HtmlTokenType.TAG_CLOSE, null, 'title'],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'title'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.ESCAPABLE_RAW_TEXT, '&'],
+          [HtmlTokenType.TAG_CLOSE, null, 'title'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should ignore other opening tags', () => {
         expect(tokenizeAndHumanizeParts(`<title>a<div></title>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'title'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.ESCAPABLE_RAW_TEXT, 'a<div>'], [HtmlTokenType.TAG_CLOSE, null, 'title'],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'title'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.ESCAPABLE_RAW_TEXT, 'a<div>'],
+          [HtmlTokenType.TAG_CLOSE, null, 'title'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should ignore other closing tags', () => {
         expect(tokenizeAndHumanizeParts(`<title>a</test></title>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, 'title'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.ESCAPABLE_RAW_TEXT, 'a</test>'], [HtmlTokenType.TAG_CLOSE, null, 'title'],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.TAG_OPEN_START, null, 'title'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.ESCAPABLE_RAW_TEXT, 'a</test>'],
+          [HtmlTokenType.TAG_CLOSE, null, 'title'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans(`<title>a</title>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, '<title'], [HtmlTokenType.TAG_OPEN_END, '>'],
-          [HtmlTokenType.ESCAPABLE_RAW_TEXT, 'a'], [HtmlTokenType.TAG_CLOSE, '</title>'],
-          [HtmlTokenType.EOF, '']
+          [HtmlTokenType.TAG_OPEN_START, '<title'],
+          [HtmlTokenType.TAG_OPEN_END, '>'],
+          [HtmlTokenType.ESCAPABLE_RAW_TEXT, 'a'],
+          [HtmlTokenType.TAG_CLOSE, '</title>'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
 
@@ -516,65 +618,94 @@ export function main() {
       it('should parse an expansion form', () => {
         expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four} =5 {five} foo {bar} }', true))
             .toEqual([
-              [HtmlTokenType.EXPANSION_FORM_START], [HtmlTokenType.RAW_TEXT, 'one.two'],
-              [HtmlTokenType.RAW_TEXT, 'three'], [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'],
-              [HtmlTokenType.EXPANSION_CASE_EXP_START], [HtmlTokenType.TEXT, 'four'],
-              [HtmlTokenType.EXPANSION_CASE_EXP_END], [HtmlTokenType.EXPANSION_CASE_VALUE, '=5'],
-              [HtmlTokenType.EXPANSION_CASE_EXP_START], [HtmlTokenType.TEXT, 'five'],
-              [HtmlTokenType.EXPANSION_CASE_EXP_END], [HtmlTokenType.EXPANSION_CASE_VALUE, 'foo'],
-              [HtmlTokenType.EXPANSION_CASE_EXP_START], [HtmlTokenType.TEXT, 'bar'],
-              [HtmlTokenType.EXPANSION_CASE_EXP_END], [HtmlTokenType.EXPANSION_FORM_END],
-              [HtmlTokenType.EOF]
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'one.two'],
+              [HtmlTokenType.RAW_TEXT, 'three'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'four'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '=5'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'five'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, 'foo'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'bar'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.EOF],
             ]);
       });
 
       it('should parse an expansion form with text elements surrounding it', () => {
         expect(tokenizeAndHumanizeParts('before{one.two, three, =4 {four}}after', true)).toEqual([
-          [HtmlTokenType.TEXT, 'before'], [HtmlTokenType.EXPANSION_FORM_START],
-          [HtmlTokenType.RAW_TEXT, 'one.two'], [HtmlTokenType.RAW_TEXT, 'three'],
-          [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'], [HtmlTokenType.EXPANSION_CASE_EXP_START],
-          [HtmlTokenType.TEXT, 'four'], [HtmlTokenType.EXPANSION_CASE_EXP_END],
-          [HtmlTokenType.EXPANSION_FORM_END], [HtmlTokenType.TEXT, 'after'], [HtmlTokenType.EOF]
+          [HtmlTokenType.TEXT, 'before'],
+          [HtmlTokenType.EXPANSION_FORM_START],
+          [HtmlTokenType.RAW_TEXT, 'one.two'],
+          [HtmlTokenType.RAW_TEXT, 'three'],
+          [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'],
+          [HtmlTokenType.EXPANSION_CASE_EXP_START],
+          [HtmlTokenType.TEXT, 'four'],
+          [HtmlTokenType.EXPANSION_CASE_EXP_END],
+          [HtmlTokenType.EXPANSION_FORM_END],
+          [HtmlTokenType.TEXT, 'after'],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse an expansion forms with elements in it', () => {
         expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four <b>a</b>}}', true)).toEqual([
-          [HtmlTokenType.EXPANSION_FORM_START], [HtmlTokenType.RAW_TEXT, 'one.two'],
-          [HtmlTokenType.RAW_TEXT, 'three'], [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'],
-          [HtmlTokenType.EXPANSION_CASE_EXP_START], [HtmlTokenType.TEXT, 'four '],
-          [HtmlTokenType.TAG_OPEN_START, null, 'b'], [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.TEXT, 'a'], [HtmlTokenType.TAG_CLOSE, null, 'b'],
-          [HtmlTokenType.EXPANSION_CASE_EXP_END], [HtmlTokenType.EXPANSION_FORM_END],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.EXPANSION_FORM_START],
+          [HtmlTokenType.RAW_TEXT, 'one.two'],
+          [HtmlTokenType.RAW_TEXT, 'three'],
+          [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'],
+          [HtmlTokenType.EXPANSION_CASE_EXP_START],
+          [HtmlTokenType.TEXT, 'four '],
+          [HtmlTokenType.TAG_OPEN_START, null, 'b'],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.TEXT, 'a'],
+          [HtmlTokenType.TAG_CLOSE, null, 'b'],
+          [HtmlTokenType.EXPANSION_CASE_EXP_END],
+          [HtmlTokenType.EXPANSION_FORM_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
-      it('should parse an expansion forms with interpolation in it', () => {
+      it('should parse an expansion forms containing an interpolation', () => {
         expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four {{a}}}}', true)).toEqual([
-          [HtmlTokenType.EXPANSION_FORM_START], [HtmlTokenType.RAW_TEXT, 'one.two'],
-          [HtmlTokenType.RAW_TEXT, 'three'], [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'],
-          [HtmlTokenType.EXPANSION_CASE_EXP_START], [HtmlTokenType.TEXT, 'four {{a}}'],
-          [HtmlTokenType.EXPANSION_CASE_EXP_END], [HtmlTokenType.EXPANSION_FORM_END],
-          [HtmlTokenType.EOF]
+          [HtmlTokenType.EXPANSION_FORM_START],
+          [HtmlTokenType.RAW_TEXT, 'one.two'],
+          [HtmlTokenType.RAW_TEXT, 'three'],
+          [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'],
+          [HtmlTokenType.EXPANSION_CASE_EXP_START],
+          [HtmlTokenType.TEXT, 'four {{a}}'],
+          [HtmlTokenType.EXPANSION_CASE_EXP_END],
+          [HtmlTokenType.EXPANSION_FORM_END],
+          [HtmlTokenType.EOF],
         ]);
       });
 
       it('should parse nested expansion forms', () => {
         expect(tokenizeAndHumanizeParts(`{one.two, three, =4 { {xx, yy, =x {one}} }}`, true))
             .toEqual([
-              [HtmlTokenType.EXPANSION_FORM_START], [HtmlTokenType.RAW_TEXT, 'one.two'],
-              [HtmlTokenType.RAW_TEXT, 'three'], [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'],
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'one.two'],
+              [HtmlTokenType.RAW_TEXT, 'three'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '=4'],
               [HtmlTokenType.EXPANSION_CASE_EXP_START],
-
-              [HtmlTokenType.EXPANSION_FORM_START], [HtmlTokenType.RAW_TEXT, 'xx'],
-              [HtmlTokenType.RAW_TEXT, 'yy'], [HtmlTokenType.EXPANSION_CASE_VALUE, '=x'],
-              [HtmlTokenType.EXPANSION_CASE_EXP_START], [HtmlTokenType.TEXT, 'one'],
-              [HtmlTokenType.EXPANSION_CASE_EXP_END], [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.EXPANSION_FORM_START],
+              [HtmlTokenType.RAW_TEXT, 'xx'],
+              [HtmlTokenType.RAW_TEXT, 'yy'],
+              [HtmlTokenType.EXPANSION_CASE_VALUE, '=x'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_START],
+              [HtmlTokenType.TEXT, 'one'],
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
               [HtmlTokenType.TEXT, ' '],
-
-              [HtmlTokenType.EXPANSION_CASE_EXP_END], [HtmlTokenType.EXPANSION_FORM_END],
-              [HtmlTokenType.EOF]
+              [HtmlTokenType.EXPANSION_CASE_EXP_END],
+              [HtmlTokenType.EXPANSION_FORM_END],
+              [HtmlTokenType.EOF],
             ]);
       });
     });
@@ -594,8 +725,11 @@ export function main() {
     describe('unicode characters', () => {
       it('should support unicode characters', () => {
         expect(tokenizeAndHumanizeSourceSpans(`<p>İ</p>`)).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, '<p'], [HtmlTokenType.TAG_OPEN_END, '>'],
-          [HtmlTokenType.TEXT, 'İ'], [HtmlTokenType.TAG_CLOSE, '</p>'], [HtmlTokenType.EOF, '']
+          [HtmlTokenType.TAG_OPEN_START, '<p'],
+          [HtmlTokenType.TAG_OPEN_END, '>'],
+          [HtmlTokenType.TEXT, 'İ'],
+          [HtmlTokenType.TAG_CLOSE, '</p>'],
+          [HtmlTokenType.EOF, ''],
         ]);
       });
     });
@@ -606,8 +740,7 @@ export function main() {
 function tokenizeWithoutErrors(
     input: string, tokenizeExpansionForms: boolean = false,
     interpolationConfig?: InterpolationConfig): HtmlToken[] {
-  var tokenizeResult = tokenizeHtml(
-      input, 'someUrl', _getExpressionParser(), tokenizeExpansionForms, interpolationConfig);
+  var tokenizeResult = tokenizeHtml(input, 'someUrl', tokenizeExpansionForms, interpolationConfig);
 
   if (tokenizeResult.errors.length > 0) {
     const errorString = tokenizeResult.errors.join('\n');
@@ -638,10 +771,6 @@ function tokenizeAndHumanizeLineColumn(input: string): any[] {
 }
 
 function tokenizeAndHumanizeErrors(input: string): any[] {
-  return tokenizeHtml(input, 'someUrl', _getExpressionParser())
+  return tokenizeHtml(input, 'someUrl')
       .errors.map(e => [<any>e.tokenType, e.msg, humanizeLineColumn(e.span.start)]);
-}
-
-function _getExpressionParser(): ExpressionParser {
-  return new ExpressionParser(new ExpressionLexer());
 }
