@@ -1,3 +1,15 @@
+# 3.0.0-alpha.8 (2016-06-24)
+
+## Features
+* feat(router): add support for componentless routes
+* feat(router): add UMD bundles
+
+## Bug Fixes
+* fix(router): handle path:'' redirects and matches
+* fix(router): wildcard don't get notified on url changes
+* fix(router): default exact to false in routerLinkActiveOptions
+* fix(router): doesn't throw on canDeactivate when a route hasn't advanced
+
 # 3.0.0-alpha.7 (2016-06-17)
 
 ## Features
