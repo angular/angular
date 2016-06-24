@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {fakeAsync, flushMicrotasks, Log, tick, discardPeriodicTasks,} from '@angular/core/testing';
+import {Log, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {fakeAsync, flushMicrotasks, tick, discardPeriodicTasks,} from '@angular/core/testing';
 import {TimerWrapper, PromiseWrapper} from '../../router-deprecated/src/facade/async';
 import {BaseException} from '../../router-deprecated/src/facade/exceptions';
 import {Parser} from '../../compiler/src/expression_parser/parser';

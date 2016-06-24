@@ -18,7 +18,6 @@ import {Parse5DomAdapter} from '../src/parse5_adapter';
 import {DOCUMENT, BROWSER_SANITIZATION_PROVIDERS, EventManager, EVENT_MANAGER_PLUGINS, ELEMENT_PROBE_PROVIDERS, DomEventsPlugin,} from '@angular/platform-browser';
 import {getDOM, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, SharedStylesHost} from '../platform_browser_private';
 import {LocationStrategy} from '@angular/common';
-import {Log} from '@angular/core/testing';
 
 function initServerTests() {
   Parse5DomAdapter.makeCurrent();
@@ -74,7 +73,7 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
       DomSharedStylesHost, ELEMENT_PROBE_PROVIDERS,
       /* @ts2dart_Provider */ {provide: DirectiveResolver, useClass: MockDirectiveResolver},
-      /* @ts2dart_Provider */ {provide: ViewResolver, useClass: MockViewResolver}, Log,
+      /* @ts2dart_Provider */ {provide: ViewResolver, useClass: MockViewResolver},
       /* @ts2dart_Provider */ {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
       TestComponentBuilder,
       /* @ts2dart_Provider */ {provide: NgZone, useFactory: createNgZone},

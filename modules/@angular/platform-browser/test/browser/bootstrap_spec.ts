@@ -11,8 +11,7 @@ import {ApplicationRef, disposePlatform} from '@angular/core/src/application_ref
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {Log} from '@angular/core/testing';
-import {AsyncTestCompleter, afterEach, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {BROWSER_APP_PROVIDERS, BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
 import {BROWSER_APP_COMPILER_PROVIDERS, bootstrap} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -89,6 +88,8 @@ export function main() {
       testProviders: any /** TODO #9100 */, lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
+    beforeEachProviders(() => { return [Log]; });
+
     beforeEach(() => {
       disposePlatform();
 

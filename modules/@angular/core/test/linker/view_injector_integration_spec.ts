@@ -7,7 +7,7 @@
  */
 
 import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing/testing_internal';
-import {fakeAsync, flushMicrotasks, Log, tick} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {isBlank} from '../../src/facade/lang';
 import {Type, ViewContainerRef, TemplateRef, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, Directive, Component, DebugElement, forwardRef, Input, PipeTransform, Attribute, ViewMetadata, provide, Optional, Inject, Self, InjectMetadata, Pipe, Host, SkipSelfMetadata} from '@angular/core';

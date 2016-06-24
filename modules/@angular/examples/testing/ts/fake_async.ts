@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {clearPendingTimers, describe, expect, fakeAsync, it, tick} from '@angular/core/testing';
+import {describe, discardPeriodicTasks, expect, fakeAsync, it, tick} from '@angular/core/testing';
 
 
 // #docregion basic
@@ -25,14 +25,14 @@ describe('this test', () => {
 
 // #docregion pending
 describe('this test', () => {
-  it('aborts a timer', <any>fakeAsync((): void => {
+  it('aborts a periodic timer', <any>fakeAsync((): void => {
        // This timer is scheduled but doesn't need to complete for the
        // test to pass (maybe it's a timeout for some operation).
        // Leaving it will cause the test to fail...
-       setTimeout(() => {}, 100);
+       setInterval(() => {}, 100);
 
        // Unless we clean it up first.
-       clearPendingTimers();
+       discardPeriodicTasks();
      }));
 });
 // #enddocregion

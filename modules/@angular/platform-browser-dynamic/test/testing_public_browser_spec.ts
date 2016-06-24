@@ -7,7 +7,7 @@
  */
 
 import {it, iit, xit, describe, ddescribe, xdescribe, expect, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing';
-import {async, fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
+import {async, fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
 
 import {ROUTER_DIRECTIVES, Route} from '@angular/router-deprecated';
 

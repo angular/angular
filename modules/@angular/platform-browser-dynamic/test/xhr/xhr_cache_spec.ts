@@ -11,7 +11,7 @@ import {Component, provide} from '@angular/core';
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {fakeAsync, flushMicrotasks, Log, tick,} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {BaseException} from '../../src/facade/exceptions';

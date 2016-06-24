@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
-import {fakeAsync, flushMicrotasks, Log, tick} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {FormGroup, FormControl, FormArray, Validators} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+
+import {EventEmitter, ObservableWrapper, TimerWrapper} from '../src/facade/async';
 import {IS_DART, isPresent} from '../src/facade/lang';
 import {PromiseWrapper} from '../src/facade/promise';
-import {TimerWrapper, ObservableWrapper, EventEmitter} from '../src/facade/async';
 
 export function main() {
   function asyncValidator(expected: any /** TODO #9100 */, timeouts = /*@ts2dart_const*/ {}) {

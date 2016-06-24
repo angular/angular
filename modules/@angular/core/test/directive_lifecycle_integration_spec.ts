@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
-import {Log} from '@angular/core/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/compiler/testing';
-
-import {OnChanges, OnInit, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked} from '@angular/core';
-import {Directive, Component, ViewMetadata} from '@angular/core/src/metadata';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnInit} from '@angular/core';
+import {Component, Directive, ViewMetadata} from '@angular/core/src/metadata';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {Log, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {
+
+    beforeEachProviders(() => { return [Log]; });
 
     it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
        inject(

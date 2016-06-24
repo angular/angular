@@ -7,7 +7,7 @@
  */
 
 import {AbstractControl, Control, ControlArray, ControlGroup, Validators} from '@angular/common/src/forms-deprecated';
-import {Log, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
 import {EventEmitter, ObservableWrapper, TimerWrapper} from '../../src/facade/async';
