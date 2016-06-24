@@ -39,9 +39,12 @@ import {getDOM} from '../dom/dom_adapter';
  */
 const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|$))/gi;
 
-/** A pattern that matches safe data URLs. Only matches image and video types. */
+/* A pattern that matches safe srcset values */
+const SAFE_SRCSET_PATTERN = /^(?:(?:https?|file):|[^&:/?#]*(?:[/?#]|$))/gi;
+
+/** A pattern that matches safe data URLs. Only matches image, video and audio types. */
 const DATA_URL_PATTERN =
-    /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm));base64,[a-z0-9+\/]+=*$/i;
+    /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[a-z0-9+\/]+=*$/i;
 
 export function sanitizeUrl(url: string): string {
   url = String(url);
@@ -50,4 +53,9 @@ export function sanitizeUrl(url: string): string {
   if (isDevMode()) getDOM().log('WARNING: sanitizing unsafe URL value ' + url);
 
   return 'unsafe:' + url;
+}
+
+export function sanitizeSrcset(srcset: string): string {
+  srcset = String(srcset);
+  return srcset.split(',').map((srcset) => sanitizeUrl(srcset.trim())).join(', ');
 }
