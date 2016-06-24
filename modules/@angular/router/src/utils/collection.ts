@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export function shallowEqualArrays(a:any[], b:any[]):boolean {
+export function shallowEqualArrays(a: any[], b: any[]): boolean {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; ++i) {
     if (!shallowEqual(a[i], b[i])) return false;

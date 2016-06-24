@@ -991,9 +991,7 @@ class AbsoluteLinkCmp {
 })
 class DummyLinkCmp {
   private exact: boolean;
-  constructor(route: ActivatedRoute) {
-    this.exact = (<any>route.snapshot.params).exact === 'true';
-  }
+  constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
 }
 
 @Component({
@@ -1004,9 +1002,7 @@ class DummyLinkCmp {
 })
 class DummyLinkWithParentCmp {
   private exact: boolean;
-  constructor(route: ActivatedRoute) {
-    this.exact = (<any>route.snapshot.params).exact === 'true';
-  }
+  constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
 }
 
 @Component({
@@ -1029,7 +1025,8 @@ class LinkWithQueryParamsAndFragment {
 class SimpleCmp {
 }
 
-@Component({selector: 'collect-params-cmp', template: `collect-params`, directives: ROUTER_DIRECTIVES})
+@Component(
+    {selector: 'collect-params-cmp', template: `collect-params`, directives: ROUTER_DIRECTIVES})
 class CollectParamsCmp {
   private params: any = [];
   private urls: any = [];
@@ -1039,9 +1036,7 @@ class CollectParamsCmp {
     a.url.forEach(u => this.urls.push(u));
   }
 
-  recordedUrls(): string[] {
-    return this.urls.map(a => a.map(p => p.path).join('/'));
-  }
+  recordedUrls(): string[] { return this.urls.map(a => a.map(p => p.path).join('/')); }
 }
 
 @Component({selector: 'blank-cmp', template: ``, directives: ROUTER_DIRECTIVES})
