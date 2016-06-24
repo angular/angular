@@ -7,8 +7,8 @@
  */
 
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {fakeAsync, tick} from '@angular/core/testing';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {fakeAsync, tick, ComponentFixture} from '@angular/core/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {isPresent, stringify, isBlank,} from '../../src/facade/lang';

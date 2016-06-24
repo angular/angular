@@ -12,7 +12,7 @@ import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, x
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {BaseException} from '../../src/facade/exceptions';
 import {CachedXHR} from '../../src/xhr/xhr_cache';

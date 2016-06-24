@@ -8,7 +8,7 @@
 
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 
 import {ListWrapper} from '../../src/facade/collection';
 import {IS_DART} from '../../src/facade/lang';

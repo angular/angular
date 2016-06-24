@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, beforeEachProviders, ddescribe, xdescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {ListWrapper, StringMapWrapper, SetWrapper} from '../../src/facade/collection';
+import {NgClass, NgFor} from '@angular/common';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component, provide} from '@angular/core';
-import {NgFor, NgClass} from '@angular/common';
+import {ComponentFixture} from '@angular/core/testing';
+import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+
+import {ListWrapper, SetWrapper, StringMapWrapper} from '../../src/facade/collection';
 
 function detectChangesAndCheck(fixture: ComponentFixture<any>, classes: string) {
   fixture.detectChanges();

@@ -8,8 +8,9 @@
 
 import {Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
-import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component, provide} from '@angular/core';
+import {ComponentFixture} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT, Router} from '@angular/router-deprecated';
