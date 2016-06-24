@@ -1,18 +1,18 @@
 export declare class ComponentFixture<T> {
-    debugElement: DebugElement;
-    componentInstance: any;
-    nativeElement: any;
-    elementRef: ElementRef;
-    componentRef: ComponentRef<T>;
     changeDetectorRef: ChangeDetectorRef;
+    componentInstance: any;
+    componentRef: ComponentRef<T>;
+    debugElement: DebugElement;
+    elementRef: ElementRef;
+    nativeElement: any;
     ngZone: NgZone;
     constructor(componentRef: ComponentRef<T>, ngZone: NgZone, autoDetect: boolean);
-    detectChanges(checkNoChanges?: boolean): void;
-    checkNoChanges(): void;
     autoDetectChanges(autoDetect?: boolean): void;
+    checkNoChanges(): void;
+    destroy(): void;
+    detectChanges(checkNoChanges?: boolean): void;
     isStable(): boolean;
     whenStable(): Promise<any>;
-    destroy(): void;
 }
 
 export declare var ComponentFixtureAutoDetect: OpaqueToken;
@@ -26,44 +26,44 @@ export declare class MockDirectiveResolver extends DirectiveResolver {
 }
 
 export declare class MockSchemaRegistry implements ElementSchemaRegistry {
-    existingProperties: {
-        [key: string]: boolean;
-    };
     attrPropMapping: {
         [key: string]: string;
+    };
+    existingProperties: {
+        [key: string]: boolean;
     };
     constructor(existingProperties: {
         [key: string]: boolean;
     }, attrPropMapping: {
         [key: string]: string;
     });
+    getMappedPropName(attrName: string): string;
     hasProperty(tagName: string, property: string): boolean;
     securityContext(tagName: string, property: string): SecurityContext;
-    getMappedPropName(attrName: string): string;
 }
 
 export declare class MockViewResolver extends ViewResolver {
     constructor();
-    setView(component: Type, view: ViewMetadata): void;
-    setInlineTemplate(component: Type, template: string): void;
-    setAnimations(component: Type, animations: AnimationEntryMetadata[]): void;
     overrideViewDirective(component: Type, from: Type, to: Type): void;
     resolve(component: Type): ViewMetadata;
+    setAnimations(component: Type, animations: AnimationEntryMetadata[]): void;
+    setInlineTemplate(component: Type, template: string): void;
+    setView(component: Type, view: ViewMetadata): void;
 }
 
 export declare class TestComponentBuilder {
     constructor(_injector: Injector);
-    overrideTemplate(componentType: Type, template: string): TestComponentBuilder;
-    overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder;
-    overrideView(componentType: Type, view: ViewMetadata): TestComponentBuilder;
-    overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder;
-    overrideProviders(type: Type, providers: any[]): TestComponentBuilder;
-    overrideBindings(type: Type, providers: any[]): TestComponentBuilder;
-    overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder;
-    overrideViewBindings(type: Type, providers: any[]): TestComponentBuilder;
     createAsync(rootComponentType: Type): Promise<ComponentFixture<any>>;
     createFakeAsync(rootComponentType: Type): ComponentFixture<any>;
     createSync<C>(componentFactory: ComponentFactory<C>): ComponentFixture<C>;
+    overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder;
+    overrideBindings(type: Type, providers: any[]): TestComponentBuilder;
+    overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder;
+    overrideProviders(type: Type, providers: any[]): TestComponentBuilder;
+    overrideTemplate(componentType: Type, template: string): TestComponentBuilder;
+    overrideView(componentType: Type, view: ViewMetadata): TestComponentBuilder;
+    overrideViewBindings(type: Type, providers: any[]): TestComponentBuilder;
+    overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder;
 }
 
 export declare class TestComponentRenderer {

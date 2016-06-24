@@ -40,13 +40,13 @@ export declare function resetBaseTestProviders(): void;
 export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
 
 export declare class TestInjector {
-    reset(): void;
-    platformProviders: Array<Type | Provider | any[] | any>;
     applicationProviders: Array<Type | Provider | any[] | any>;
+    platformProviders: Array<Type | Provider | any[] | any>;
     addProviders(providers: Array<Type | Provider | any[] | any>): void;
     createInjector(): ReflectiveInjector;
-    get(token: any): any;
     execute(tokens: any[], fn: Function): any;
+    get(token: any): any;
+    reset(): void;
 }
 
 export declare function tick(millis?: number): void;

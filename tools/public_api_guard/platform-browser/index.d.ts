@@ -9,17 +9,17 @@ export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
 export declare function browserPlatform(): PlatformRef;
 
 export declare class BrowserPlatformLocation extends PlatformLocation {
-    constructor();
-    getBaseHrefFromDOM(): string;
-    onPopState(fn: UrlChangeListener): void;
-    onHashChange(fn: UrlChangeListener): void;
+    hash: string;
     pathname: string;
     search: string;
-    hash: string;
+    constructor();
+    back(): void;
+    forward(): void;
+    getBaseHrefFromDOM(): string;
+    onHashChange(fn: UrlChangeListener): void;
+    onPopState(fn: UrlChangeListener): void;
     pushState(state: any, title: string, url: string): void;
     replaceState(state: any, title: string, url: string): void;
-    forward(): void;
-    back(): void;
 }
 
 export declare class By {
@@ -41,18 +41,18 @@ export declare function disableDebugTools(): void;
 export declare const DOCUMENT: OpaqueToken;
 
 export declare class DomEventsPlugin extends EventManagerPlugin {
-    supports(eventName: string): boolean;
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
     addGlobalEventListener(target: string, eventName: string, handler: Function): Function;
+    supports(eventName: string): boolean;
 }
 
 export declare abstract class DomSanitizationService implements SanitizationService {
-    abstract sanitize(context: SecurityContext, value: any): string;
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
-    abstract bypassSecurityTrustStyle(value: string): SafeStyle;
-    abstract bypassSecurityTrustScript(value: string): SafeScript;
-    abstract bypassSecurityTrustUrl(value: string): SafeUrl;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
+    abstract bypassSecurityTrustScript(value: string): SafeScript;
+    abstract bypassSecurityTrustStyle(value: string): SafeStyle;
+    abstract bypassSecurityTrustUrl(value: string): SafeUrl;
+    abstract sanitize(context: SecurityContext, value: any): string;
 }
 
 export declare const ELEMENT_PROBE_PROVIDERS: any[];
@@ -69,8 +69,8 @@ export declare class EventManager {
 }
 
 export declare class FnArg {
-    value: any;
     type: Type;
+    value: any;
     constructor(value: any, type: Type);
 }
 
@@ -86,40 +86,40 @@ export declare class HammerGestureConfig {
 
 export declare class KeyEventsPlugin extends EventManagerPlugin {
     constructor();
-    supports(eventName: string): boolean;
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+    supports(eventName: string): boolean;
+    static eventCallback(element: HTMLElement, fullKey: any, handler: Function, zone: NgZone): Function;
+    static getEventFullKey(event: KeyboardEvent): string;
     static parseEventName(eventName: string): {
         [key: string]: string;
     };
-    static getEventFullKey(event: KeyboardEvent): string;
-    static eventCallback(element: HTMLElement, fullKey: any, handler: Function, zone: NgZone): Function;
 }
 
 export declare abstract class MessageBus implements MessageBusSource, MessageBusSink {
-    abstract initChannel(channel: string, runInZone?: boolean): void;
     abstract attachToZone(zone: NgZone): void;
     abstract from(channel: string): EventEmitter<any>;
+    abstract initChannel(channel: string, runInZone?: boolean): void;
     abstract to(channel: string): EventEmitter<any>;
 }
 
 export interface MessageBusSink {
-    initChannel(channel: string, runInZone: boolean): void;
     attachToZone(zone: NgZone): void;
+    initChannel(channel: string, runInZone: boolean): void;
     to(channel: string): EventEmitter<any>;
 }
 
 export interface MessageBusSource {
-    initChannel(channel: string, runInZone: boolean): void;
     attachToZone(zone: NgZone): void;
     from(channel: string): EventEmitter<any>;
+    initChannel(channel: string, runInZone: boolean): void;
 }
 
 export declare const PRIMITIVE: Type;
 
 export declare class ReceivedMessage {
-    method: string;
     args: any[];
     id: string;
+    method: string;
     type: string;
     constructor(data: {
         [key: string]: any;
@@ -157,14 +157,14 @@ export declare class Title {
 }
 
 export declare class UiArguments {
-    method: string;
     args: FnArg[];
+    method: string;
     constructor(method: string, args?: FnArg[]);
 }
 
 export declare class WebWorkerInstance {
-    worker: Worker;
     bus: MessageBus;
+    worker: Worker;
 }
 
 export declare const WORKER_APP_APPLICATION_PROVIDERS: Array<any>;

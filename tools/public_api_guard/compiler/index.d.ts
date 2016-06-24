@@ -1,60 +1,60 @@
 export declare class AttrAst implements TemplateAst {
     name: string;
-    value: string;
     sourceSpan: ParseSourceSpan;
+    value: string;
     constructor(name: string, value: string, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 
 export declare class BoundDirectivePropertyAst implements TemplateAst {
     directiveName: string;
+    sourceSpan: ParseSourceSpan;
     templateName: string;
     value: AST;
-    sourceSpan: ParseSourceSpan;
     constructor(directiveName: string, templateName: string, value: AST, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 
 export declare class BoundElementPropertyAst implements TemplateAst {
     name: string;
-    type: PropertyBindingType;
     securityContext: SecurityContext;
-    value: AST;
-    unit: string;
     sourceSpan: ParseSourceSpan;
+    type: PropertyBindingType;
+    unit: string;
+    value: AST;
     constructor(name: string, type: PropertyBindingType, securityContext: SecurityContext, value: AST, unit: string, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 
 export declare class BoundEventAst implements TemplateAst {
-    name: string;
-    target: string;
+    fullName: string;
     handler: AST;
+    name: string;
     sourceSpan: ParseSourceSpan;
+    target: string;
     constructor(name: string, target: string, handler: AST, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
-    fullName: string;
 }
 
 export declare class BoundTextAst implements TemplateAst {
-    value: AST;
     ngContentIndex: number;
     sourceSpan: ParseSourceSpan;
+    value: AST;
     constructor(value: AST, ngContentIndex: number, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 
 export declare class CompileDiDependencyMetadata {
     isAttribute: boolean;
-    isSelf: boolean;
     isHost: boolean;
-    isSkipSelf: boolean;
     isOptional: boolean;
+    isSelf: boolean;
+    isSkipSelf: boolean;
     isValue: boolean;
     query: CompileQueryMetadata;
-    viewQuery: CompileQueryMetadata;
     token: CompileTokenMetadata;
     value: any;
+    viewQuery: CompileQueryMetadata;
     constructor({isAttribute, isSelf, isHost, isSkipSelf, isOptional, isValue, query, viewQuery, token, value}?: {
         isAttribute?: boolean;
         isSelf?: boolean;
@@ -67,43 +67,18 @@ export declare class CompileDiDependencyMetadata {
         token?: CompileTokenMetadata;
         value?: any;
     });
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompileDiDependencyMetadata;
     toJson(): {
         [key: string]: any;
     };
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileDiDependencyMetadata;
 }
 
 export declare class CompileDirectiveMetadata implements CompileMetadataWithType {
-    static create({type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host, lifecycleHooks, providers, viewProviders, queries, viewQueries, precompile, template}?: {
-        type?: CompileTypeMetadata;
-        isComponent?: boolean;
-        selector?: string;
-        exportAs?: string;
-        changeDetection?: ChangeDetectionStrategy;
-        inputs?: string[];
-        outputs?: string[];
-        host?: {
-            [key: string]: string;
-        };
-        lifecycleHooks?: LifecycleHooks[];
-        providers?: Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>;
-        viewProviders?: Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>;
-        queries?: CompileQueryMetadata[];
-        viewQueries?: CompileQueryMetadata[];
-        precompile?: CompileTypeMetadata[];
-        template?: CompileTemplateMetadata;
-    }): CompileDirectiveMetadata;
-    type: CompileTypeMetadata;
-    isComponent: boolean;
-    selector: string;
-    exportAs: string;
     changeDetection: ChangeDetectionStrategy;
-    inputs: {
-        [key: string]: string;
-    };
-    outputs: {
+    exportAs: string;
+    hostAttributes: {
         [key: string]: string;
     };
     hostListeners: {
@@ -112,16 +87,23 @@ export declare class CompileDirectiveMetadata implements CompileMetadataWithType
     hostProperties: {
         [key: string]: string;
     };
-    hostAttributes: {
+    identifier: CompileIdentifierMetadata;
+    inputs: {
         [key: string]: string;
     };
+    isComponent: boolean;
     lifecycleHooks: LifecycleHooks[];
-    providers: CompileProviderMetadata[];
-    viewProviders: CompileProviderMetadata[];
-    queries: CompileQueryMetadata[];
-    viewQueries: CompileQueryMetadata[];
+    outputs: {
+        [key: string]: string;
+    };
     precompile: CompileTypeMetadata[];
+    providers: CompileProviderMetadata[];
+    queries: CompileQueryMetadata[];
+    selector: string;
     template: CompileTemplateMetadata;
+    type: CompileTypeMetadata;
+    viewProviders: CompileProviderMetadata[];
+    viewQueries: CompileQueryMetadata[];
     constructor({type, isComponent, selector, exportAs, changeDetection, inputs, outputs, hostListeners, hostProperties, hostAttributes, lifecycleHooks, providers, viewProviders, queries, viewQueries, precompile, template}?: {
         type?: CompileTypeMetadata;
         isComponent?: boolean;
@@ -151,22 +133,41 @@ export declare class CompileDirectiveMetadata implements CompileMetadataWithType
         precompile?: CompileTypeMetadata[];
         template?: CompileTemplateMetadata;
     });
-    identifier: CompileIdentifierMetadata;
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompileDirectiveMetadata;
     toJson(): {
         [key: string]: any;
     };
+    static create({type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host, lifecycleHooks, providers, viewProviders, queries, viewQueries, precompile, template}?: {
+        type?: CompileTypeMetadata;
+        isComponent?: boolean;
+        selector?: string;
+        exportAs?: string;
+        changeDetection?: ChangeDetectionStrategy;
+        inputs?: string[];
+        outputs?: string[];
+        host?: {
+            [key: string]: string;
+        };
+        lifecycleHooks?: LifecycleHooks[];
+        providers?: Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>;
+        viewProviders?: Array<CompileProviderMetadata | CompileTypeMetadata | CompileIdentifierMetadata | any[]>;
+        queries?: CompileQueryMetadata[];
+        viewQueries?: CompileQueryMetadata[];
+        precompile?: CompileTypeMetadata[];
+        template?: CompileTemplateMetadata;
+    }): CompileDirectiveMetadata;
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileDirectiveMetadata;
 }
 
 export declare class CompileFactoryMetadata implements CompileIdentifierMetadata, CompileMetadataWithIdentifier {
-    runtime: Function;
+    diDeps: CompileDiDependencyMetadata[];
+    identifier: CompileIdentifierMetadata;
+    moduleUrl: string;
     name: string;
     prefix: string;
-    moduleUrl: string;
+    runtime: Function;
     value: any;
-    diDeps: CompileDiDependencyMetadata[];
     constructor({runtime, name, moduleUrl, prefix, diDeps, value}: {
         runtime?: Function;
         name?: string;
@@ -175,20 +176,20 @@ export declare class CompileFactoryMetadata implements CompileIdentifierMetadata
         value?: boolean;
         diDeps?: CompileDiDependencyMetadata[];
     });
-    identifier: CompileIdentifierMetadata;
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompileFactoryMetadata;
     toJson(): {
         [key: string]: any;
     };
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileFactoryMetadata;
 }
 
 export declare class CompileIdentifierMetadata implements CompileMetadataWithIdentifier {
-    runtime: any;
+    identifier: CompileIdentifierMetadata;
+    moduleUrl: string;
     name: string;
     prefix: string;
-    moduleUrl: string;
+    runtime: any;
     value: any;
     constructor({runtime, name, moduleUrl, prefix, value}?: {
         runtime?: any;
@@ -197,58 +198,57 @@ export declare class CompileIdentifierMetadata implements CompileMetadataWithIde
         prefix?: string;
         value?: any;
     });
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompileIdentifierMetadata;
     toJson(): {
         [key: string]: any;
     };
-    identifier: CompileIdentifierMetadata;
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileIdentifierMetadata;
 }
 
 export declare abstract class CompileMetadataWithIdentifier {
+    identifier: CompileIdentifierMetadata;
     abstract toJson(): {
         [key: string]: any;
     };
-    identifier: CompileIdentifierMetadata;
 }
 
 export declare abstract class CompileMetadataWithType extends CompileMetadataWithIdentifier {
+    identifier: CompileIdentifierMetadata;
+    type: CompileTypeMetadata;
     abstract toJson(): {
         [key: string]: any;
     };
-    type: CompileTypeMetadata;
-    identifier: CompileIdentifierMetadata;
 }
 
 export declare class CompilePipeMetadata implements CompileMetadataWithType {
-    type: CompileTypeMetadata;
+    identifier: CompileIdentifierMetadata;
+    lifecycleHooks: LifecycleHooks[];
     name: string;
     pure: boolean;
-    lifecycleHooks: LifecycleHooks[];
+    type: CompileTypeMetadata;
     constructor({type, name, pure, lifecycleHooks}?: {
         type?: CompileTypeMetadata;
         name?: string;
         pure?: boolean;
         lifecycleHooks?: LifecycleHooks[];
     });
-    identifier: CompileIdentifierMetadata;
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompilePipeMetadata;
     toJson(): {
         [key: string]: any;
     };
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompilePipeMetadata;
 }
 
 export declare class CompileProviderMetadata {
-    token: CompileTokenMetadata;
-    useClass: CompileTypeMetadata;
-    useValue: any;
-    useExisting: CompileTokenMetadata;
-    useFactory: CompileFactoryMetadata;
     deps: CompileDiDependencyMetadata[];
     multi: boolean;
+    token: CompileTokenMetadata;
+    useClass: CompileTypeMetadata;
+    useExisting: CompileTokenMetadata;
+    useFactory: CompileFactoryMetadata;
+    useValue: any;
     constructor({token, useClass, useValue, useExisting, useFactory, deps, multi}: {
         token?: CompileTokenMetadata;
         useClass?: CompileTypeMetadata;
@@ -258,20 +258,20 @@ export declare class CompileProviderMetadata {
         deps?: CompileDiDependencyMetadata[];
         multi?: boolean;
     });
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompileProviderMetadata;
     toJson(): {
         [key: string]: any;
     };
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileProviderMetadata;
 }
 
 export declare class CompileQueryMetadata {
-    selectors: Array<CompileTokenMetadata>;
     descendants: boolean;
     first: boolean;
     propertyName: string;
     read: CompileTokenMetadata;
+    selectors: Array<CompileTokenMetadata>;
     constructor({selectors, descendants, first, propertyName, read}?: {
         selectors?: Array<CompileTokenMetadata>;
         descendants?: boolean;
@@ -279,12 +279,12 @@ export declare class CompileQueryMetadata {
         propertyName?: string;
         read?: CompileTokenMetadata;
     });
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompileQueryMetadata;
     toJson(): {
         [key: string]: any;
     };
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileQueryMetadata;
 }
 
 export declare const COMPILER_PROVIDERS: Array<any | Type | {
@@ -292,11 +292,13 @@ export declare const COMPILER_PROVIDERS: Array<any | Type | {
 } | any[]>;
 
 export declare class CompilerConfig {
-    renderTypes: RenderTypes;
     defaultEncapsulation: ViewEncapsulation;
-    useJit: boolean;
+    genDebugInfo: boolean;
+    logBindingUpdate: boolean;
     platformDirectives: any[];
     platformPipes: any[];
+    renderTypes: RenderTypes;
+    useJit: boolean;
     constructor({renderTypes, defaultEncapsulation, genDebugInfo, logBindingUpdate, useJit, platformDirectives, platformPipes}?: {
         renderTypes?: RenderTypes;
         defaultEncapsulation?: ViewEncapsulation;
@@ -306,19 +308,17 @@ export declare class CompilerConfig {
         platformDirectives?: any[];
         platformPipes?: any[];
     });
-    genDebugInfo: boolean;
-    logBindingUpdate: boolean;
 }
 
 export declare class CompileTemplateMetadata {
+    animations: CompileAnimationEntryMetadata[];
     encapsulation: ViewEncapsulation;
+    interpolation: [string, string];
+    ngContentSelectors: string[];
+    styleUrls: string[];
+    styles: string[];
     template: string;
     templateUrl: string;
-    styles: string[];
-    styleUrls: string[];
-    animations: CompileAnimationEntryMetadata[];
-    ngContentSelectors: string[];
-    interpolation: [string, string];
     constructor({encapsulation, template, templateUrl, styles, styleUrls, animations, ngContentSelectors, interpolation}?: {
         encapsulation?: ViewEncapsulation;
         template?: string;
@@ -329,43 +329,45 @@ export declare class CompileTemplateMetadata {
         animations?: CompileAnimationEntryMetadata[];
         interpolation?: [string, string];
     });
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompileTemplateMetadata;
     toJson(): {
         [key: string]: any;
     };
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileTemplateMetadata;
 }
 
 export declare class CompileTokenMetadata implements CompileMetadataWithIdentifier {
-    value: any;
+    assetCacheKey: any;
     identifier: CompileIdentifierMetadata;
     identifierIsInstance: boolean;
+    name: string;
+    runtimeCacheKey: any;
+    value: any;
     constructor({value, identifier, identifierIsInstance}: {
         value?: any;
         identifier?: CompileIdentifierMetadata;
         identifierIsInstance?: boolean;
     });
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompileTokenMetadata;
+    equalsTo(token2: CompileTokenMetadata): boolean;
     toJson(): {
         [key: string]: any;
     };
-    runtimeCacheKey: any;
-    assetCacheKey: any;
-    equalsTo(token2: CompileTokenMetadata): boolean;
-    name: string;
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileTokenMetadata;
 }
 
 export declare class CompileTypeMetadata implements CompileIdentifierMetadata, CompileMetadataWithType {
-    runtime: Type;
+    diDeps: CompileDiDependencyMetadata[];
+    identifier: CompileIdentifierMetadata;
+    isHost: boolean;
+    moduleUrl: string;
     name: string;
     prefix: string;
-    moduleUrl: string;
-    isHost: boolean;
+    runtime: Type;
+    type: CompileTypeMetadata;
     value: any;
-    diDeps: CompileDiDependencyMetadata[];
     constructor({runtime, name, moduleUrl, prefix, isHost, value, diDeps}?: {
         runtime?: Type;
         name?: string;
@@ -375,14 +377,12 @@ export declare class CompileTypeMetadata implements CompileIdentifierMetadata, C
         value?: any;
         diDeps?: CompileDiDependencyMetadata[];
     });
-    static fromJson(data: {
-        [key: string]: any;
-    }): CompileTypeMetadata;
-    identifier: CompileIdentifierMetadata;
-    type: CompileTypeMetadata;
     toJson(): {
         [key: string]: any;
     };
+    static fromJson(data: {
+        [key: string]: any;
+    }): CompileTypeMetadata;
 }
 
 export declare function createOfflineCompileUrlResolver(): UrlResolver;
@@ -394,9 +394,9 @@ export declare var DEFAULT_PACKAGE_URL_PROVIDER: {
 
 export declare class DirectiveAst implements TemplateAst {
     directive: CompileDirectiveMetadata;
-    inputs: BoundDirectivePropertyAst[];
-    hostProperties: BoundElementPropertyAst[];
     hostEvents: BoundEventAst[];
+    hostProperties: BoundElementPropertyAst[];
+    inputs: BoundDirectivePropertyAst[];
     sourceSpan: ParseSourceSpan;
     constructor(directive: CompileDirectiveMetadata, inputs: BoundDirectivePropertyAst[], hostProperties: BoundElementPropertyAst[], hostEvents: BoundEventAst[], sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
@@ -408,38 +408,38 @@ export declare class DirectiveResolver {
 }
 
 export declare class ElementAst implements TemplateAst {
-    name: string;
     attrs: AttrAst[];
-    inputs: BoundElementPropertyAst[];
-    outputs: BoundEventAst[];
-    references: ReferenceAst[];
-    directives: DirectiveAst[];
-    providers: ProviderAst[];
-    hasViewContainer: boolean;
     children: TemplateAst[];
+    directives: DirectiveAst[];
+    hasViewContainer: boolean;
+    inputs: BoundElementPropertyAst[];
+    name: string;
     ngContentIndex: number;
+    outputs: BoundEventAst[];
+    providers: ProviderAst[];
+    references: ReferenceAst[];
     sourceSpan: ParseSourceSpan;
     constructor(name: string, attrs: AttrAst[], inputs: BoundElementPropertyAst[], outputs: BoundEventAst[], references: ReferenceAst[], directives: DirectiveAst[], providers: ProviderAst[], hasViewContainer: boolean, children: TemplateAst[], ngContentIndex: number, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 
 export declare abstract class ElementSchemaRegistry {
+    abstract getMappedPropName(propName: string): string;
     abstract hasProperty(tagName: string, propName: string): boolean;
     abstract securityContext(tagName: string, propName: string): any;
-    abstract getMappedPropName(propName: string): string;
 }
 
 export declare class EmbeddedTemplateAst implements TemplateAst {
     attrs: AttrAst[];
-    outputs: BoundEventAst[];
-    references: ReferenceAst[];
-    variables: VariableAst[];
-    directives: DirectiveAst[];
-    providers: ProviderAst[];
-    hasViewContainer: boolean;
     children: TemplateAst[];
+    directives: DirectiveAst[];
+    hasViewContainer: boolean;
     ngContentIndex: number;
+    outputs: BoundEventAst[];
+    providers: ProviderAst[];
+    references: ReferenceAst[];
     sourceSpan: ParseSourceSpan;
+    variables: VariableAst[];
     constructor(attrs: AttrAst[], outputs: BoundEventAst[], references: ReferenceAst[], variables: VariableAst[], directives: DirectiveAst[], providers: ProviderAst[], hasViewContainer: boolean, children: TemplateAst[], ngContentIndex: number, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
@@ -461,9 +461,9 @@ export declare class NormalizedComponentWithViewDirectives {
 
 export declare class OfflineCompiler {
     constructor(_directiveNormalizer: DirectiveNormalizer, _templateParser: TemplateParser, _styleCompiler: StyleCompiler, _viewCompiler: ViewCompiler, _outputEmitter: OutputEmitter, _xhr: XHR);
-    normalizeDirectiveMetadata(directive: CompileDirectiveMetadata): Promise<CompileDirectiveMetadata>;
     compileTemplates(components: NormalizedComponentWithViewDirectives[]): SourceModule;
     loadAndCompileStylesheet(stylesheetUrl: string, shim: boolean, suffix: string): Promise<StyleSheetSourceWithImports>;
+    normalizeDirectiveMetadata(directive: CompileDirectiveMetadata): Promise<CompileDirectiveMetadata>;
 }
 
 export declare class PipeResolver {
@@ -480,12 +480,12 @@ export declare enum PropertyBindingType {
 }
 
 export declare class ProviderAst implements TemplateAst {
-    token: CompileTokenMetadata;
-    multiProvider: boolean;
     eager: boolean;
-    providers: CompileProviderMetadata[];
+    multiProvider: boolean;
     providerType: ProviderAstType;
+    providers: CompileProviderMetadata[];
     sourceSpan: ParseSourceSpan;
+    token: CompileTokenMetadata;
     constructor(token: CompileTokenMetadata, multiProvider: boolean, eager: boolean, providers: CompileProviderMetadata[], providerType: ProviderAstType, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
@@ -500,25 +500,25 @@ export declare enum ProviderAstType {
 
 export declare class ReferenceAst implements TemplateAst {
     name: string;
-    value: CompileTokenMetadata;
     sourceSpan: ParseSourceSpan;
+    value: CompileTokenMetadata;
     constructor(name: string, value: CompileTokenMetadata, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 
 export declare abstract class RenderTypes {
-    renderer: CompileIdentifierMetadata;
-    renderText: CompileIdentifierMetadata;
-    renderElement: CompileIdentifierMetadata;
     renderComment: CompileIdentifierMetadata;
-    renderNode: CompileIdentifierMetadata;
+    renderElement: CompileIdentifierMetadata;
     renderEvent: CompileIdentifierMetadata;
+    renderNode: CompileIdentifierMetadata;
+    renderText: CompileIdentifierMetadata;
+    renderer: CompileIdentifierMetadata;
 }
 
 export declare class RuntimeCompiler implements ComponentResolver {
     constructor(_metadataResolver: CompileMetadataResolver, _templateNormalizer: DirectiveNormalizer, _templateParser: TemplateParser, _styleCompiler: StyleCompiler, _viewCompiler: ViewCompiler, _xhr: XHR, _genConfig: CompilerConfig);
-    resolveComponent(component: Type | string): Promise<ComponentFactory<any>>;
     clearCache(): void;
+    resolveComponent(component: Type | string): Promise<ComponentFactory<any>>;
 }
 
 export declare class SourceModule {
@@ -535,26 +535,26 @@ export interface TemplateAst {
 }
 
 export interface TemplateAstVisitor {
-    visitNgContent(ast: NgContentAst, context: any): any;
-    visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any;
-    visitElement(ast: ElementAst, context: any): any;
-    visitReference(ast: ReferenceAst, context: any): any;
-    visitVariable(ast: VariableAst, context: any): any;
-    visitEvent(ast: BoundEventAst, context: any): any;
-    visitElementProperty(ast: BoundElementPropertyAst, context: any): any;
     visitAttr(ast: AttrAst, context: any): any;
     visitBoundText(ast: BoundTextAst, context: any): any;
-    visitText(ast: TextAst, context: any): any;
     visitDirective(ast: DirectiveAst, context: any): any;
     visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any;
+    visitElement(ast: ElementAst, context: any): any;
+    visitElementProperty(ast: BoundElementPropertyAst, context: any): any;
+    visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any;
+    visitEvent(ast: BoundEventAst, context: any): any;
+    visitNgContent(ast: NgContentAst, context: any): any;
+    visitReference(ast: ReferenceAst, context: any): any;
+    visitText(ast: TextAst, context: any): any;
+    visitVariable(ast: VariableAst, context: any): any;
 }
 
 export declare function templateVisitAll(visitor: TemplateAstVisitor, asts: TemplateAst[], context?: any): any[];
 
 export declare class TextAst implements TemplateAst {
-    value: string;
     ngContentIndex: number;
     sourceSpan: ParseSourceSpan;
+    value: string;
     constructor(value: string, ngContentIndex: number, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
@@ -566,8 +566,8 @@ export declare class UrlResolver {
 
 export declare class VariableAst implements TemplateAst {
     name: string;
-    value: string;
     sourceSpan: ParseSourceSpan;
+    value: string;
     constructor(name: string, value: string, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }

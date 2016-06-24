@@ -1,7 +1,7 @@
 export declare class AbstractProviderError extends BaseException {
+    context: any;
     constructor(injector: ReflectiveInjector, key: ReflectiveKey, constructResolvingMessage: Function);
     addKey(injector: ReflectiveInjector, key: ReflectiveKey): void;
-    context: any;
 }
 
 export declare abstract class AfterContentChecked {
@@ -23,20 +23,20 @@ export declare abstract class AfterViewInit {
 export declare function animate(timing: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
 
 export declare class AnimationAnimateMetadata extends AnimationMetadata {
-    timings: string | number;
     styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata;
+    timings: string | number;
     constructor(timings: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata);
 }
 
 export declare class AnimationEntryMetadata {
-    name: string;
     definitions: AnimationStateMetadata[];
+    name: string;
     constructor(name: string, definitions: AnimationStateMetadata[]);
 }
 
 export declare class AnimationGroupMetadata extends AnimationWithStepsMetadata {
-    constructor(_steps: AnimationMetadata[]);
     steps: AnimationMetadata[];
+    constructor(_steps: AnimationMetadata[]);
 }
 
 export declare class AnimationKeyframesSequenceMetadata extends AnimationMetadata {
@@ -48,21 +48,21 @@ export declare abstract class AnimationMetadata {
 }
 
 export declare abstract class AnimationPlayer {
-    abstract onDone(fn: Function): void;
-    abstract play(): void;
-    abstract pause(): void;
-    abstract restart(): void;
-    abstract finish(): void;
-    abstract destroy(): void;
-    abstract reset(): void;
-    abstract setPosition(p: any): void;
-    abstract getPosition(): number;
     parentPlayer: AnimationPlayer;
+    abstract destroy(): void;
+    abstract finish(): void;
+    abstract getPosition(): number;
+    abstract onDone(fn: Function): void;
+    abstract pause(): void;
+    abstract play(): void;
+    abstract reset(): void;
+    abstract restart(): void;
+    abstract setPosition(p: any): void;
 }
 
 export declare class AnimationSequenceMetadata extends AnimationWithStepsMetadata {
-    constructor(_steps: AnimationMetadata[]);
     steps: AnimationMetadata[];
+    constructor(_steps: AnimationMetadata[]);
 }
 
 export declare class AnimationStateDeclarationMetadata extends AnimationStateMetadata {
@@ -81,18 +81,18 @@ export declare class AnimationStateTransitionMetadata extends AnimationStateMeta
 }
 
 export declare class AnimationStyleMetadata extends AnimationMetadata {
+    offset: number;
     styles: Array<string | {
         [key: string]: string | number;
     }>;
-    offset: number;
     constructor(styles: Array<string | {
         [key: string]: string | number;
     }>, offset?: number);
 }
 
 export declare abstract class AnimationWithStepsMetadata extends AnimationMetadata {
-    constructor();
     steps: AnimationMetadata[];
+    constructor();
 }
 
 export declare const APP_ID: any;
@@ -104,16 +104,16 @@ export declare const APPLICATION_COMMON_PROVIDERS: Array<Type | {
 } | any[]>;
 
 export declare abstract class ApplicationRef {
-    abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
-    abstract registerDisposeListener(dispose: () => void): void;
-    abstract waitForAsyncInitializers(): Promise<any>;
-    abstract run(callback: Function): any;
-    abstract bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C>;
+    componentTypes: Type[];
     injector: Injector;
     zone: NgZone;
+    abstract bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C>;
     abstract dispose(): void;
+    abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
+    abstract registerDisposeListener(dispose: () => void): void;
+    abstract run(callback: Function): any;
     abstract tick(): void;
-    componentTypes: Type[];
+    abstract waitForAsyncInitializers(): Promise<any>;
 }
 
 export declare function asNativeElements(debugEls: DebugElement[]): any;
@@ -124,8 +124,8 @@ export declare var Attribute: AttributeMetadataFactory;
 
 export declare class AttributeMetadata extends DependencyMetadata {
     attributeName: string;
-    constructor(attributeName: string);
     token: AttributeMetadata;
+    constructor(attributeName: string);
     toString(): string;
 }
 
@@ -146,6 +146,10 @@ export declare class BaseException extends Error {
 export declare function bind(token: any): ProviderBuilder;
 
 export declare class Binding extends Provider {
+    toAlias: any;
+    toClass: Type;
+    toFactory: Function;
+    toValue: any;
     constructor(token: any, {toClass, toValue, toAlias, toFactory, deps, multi}: {
         toClass?: Type;
         toValue?: any;
@@ -154,10 +158,6 @@ export declare class Binding extends Provider {
         deps?: Object[];
         multi?: boolean;
     });
-    toClass: Type;
-    toAlias: any;
-    toFactory: Function;
-    toValue: any;
 }
 
 export declare enum ChangeDetectionStrategy {
@@ -170,26 +170,26 @@ export declare enum ChangeDetectionStrategy {
 }
 
 export declare abstract class ChangeDetectorRef {
-    abstract markForCheck(): void;
+    abstract checkNoChanges(): void;
     abstract detach(): void;
     abstract detectChanges(): void;
-    abstract checkNoChanges(): void;
+    abstract markForCheck(): void;
     abstract reattach(): void;
 }
 
 export declare function Class(clsDef: ClassDefinition): ConcreteType;
 
 export interface ClassDefinition {
-    extends?: Type;
     constructor: Function | any[];
+    extends?: Type;
     [x: string]: Type | Function | any[];
 }
 
 export declare class CollectionChangeRecord {
-    item: any;
-    trackById: any;
     currentIndex: number;
+    item: any;
     previousIndex: number;
+    trackById: any;
     constructor(item: any, trackById: any);
     toString(): string;
 }
@@ -211,31 +211,31 @@ export interface ComponentDecorator extends TypeDecorator {
 }
 
 export declare class ComponentFactory<C> {
+    componentType: Type;
     selector: string;
     constructor(selector: string, _viewFactory: Function, _componentType: Type);
-    componentType: Type;
     create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any): ComponentRef<C>;
 }
 
 export declare abstract class ComponentFactoryResolver {
-    static NULL: ComponentFactoryResolver;
     abstract resolveComponentFactory<T>(component: ClassWithConstructor<T>): ComponentFactory<T>;
+    static NULL: ComponentFactoryResolver;
 }
 
 export declare class ComponentMetadata extends DirectiveMetadata {
-    changeDetection: ChangeDetectionStrategy;
-    viewProviders: any[];
-    moduleId: string;
-    templateUrl: string;
-    template: string;
-    styleUrls: string[];
-    styles: string[];
     animations: AnimationEntryMetadata[];
+    changeDetection: ChangeDetectionStrategy;
     directives: Array<Type | any[]>;
-    pipes: Array<Type | any[]>;
     encapsulation: ViewEncapsulation;
     interpolation: [string, string];
+    moduleId: string;
+    pipes: Array<Type | any[]>;
     precompile: Array<Type | any[]>;
+    styleUrls: string[];
+    styles: string[];
+    template: string;
+    templateUrl: string;
+    viewProviders: any[];
     constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, directives, pipes, encapsulation, interpolation, precompile}?: {
         selector?: string;
         inputs?: string[];
@@ -324,19 +324,19 @@ export interface ComponentMetadataFactory {
 }
 
 export declare abstract class ComponentRef<C> {
-    location: ElementRef;
-    injector: Injector;
-    instance: C;
-    hostView: ViewRef;
     changeDetectorRef: ChangeDetectorRef;
     componentType: Type;
+    hostView: ViewRef;
+    injector: Injector;
+    instance: C;
+    location: ElementRef;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): void;
 }
 
 export declare abstract class ComponentResolver {
-    abstract resolveComponent(component: Type | string): Promise<ComponentFactory<any>>;
     abstract clearCache(): void;
+    abstract resolveComponent(component: Type | string): Promise<ComponentFactory<any>>;
 }
 
 export declare var ContentChild: ContentChildMetadataFactory;
@@ -389,62 +389,62 @@ export declare class CyclicDependencyError extends AbstractProviderError {
 }
 
 export declare class DebugElement extends DebugNode {
-    name: string;
-    properties: {
-        [key: string]: any;
-    };
     attributes: {
         [key: string]: string;
     };
+    childNodes: DebugNode[];
+    children: DebugElement[];
     classes: {
         [key: string]: boolean;
+    };
+    name: string;
+    nativeElement: any;
+    properties: {
+        [key: string]: any;
     };
     styles: {
         [key: string]: string;
     };
-    childNodes: DebugNode[];
-    nativeElement: any;
     constructor(nativeNode: any, parent: any, _debugInfo: RenderDebugInfo);
     addChild(child: DebugNode): void;
-    removeChild(child: DebugNode): void;
     insertChildrenAfter(child: DebugNode, newChildren: DebugNode[]): void;
     query(predicate: Predicate<DebugElement>): DebugElement;
     queryAll(predicate: Predicate<DebugElement>): DebugElement[];
     queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
-    children: DebugElement[];
+    removeChild(child: DebugNode): void;
     triggerEventHandler(eventName: string, eventObj: any): void;
 }
 
 export declare class DebugNode {
-    nativeNode: any;
-    listeners: EventListener[];
-    parent: DebugElement;
-    constructor(nativeNode: any, parent: DebugNode, _debugInfo: RenderDebugInfo);
-    injector: Injector;
     componentInstance: any;
     context: any;
+    injector: Injector;
+    listeners: EventListener[];
+    nativeNode: any;
+    parent: DebugElement;
+    providerTokens: any[];
     references: {
         [key: string]: any;
     };
-    providerTokens: any[];
     source: string;
+    constructor(nativeNode: any, parent: DebugNode, _debugInfo: RenderDebugInfo);
     inject(token: any): any;
 }
 
 export declare class DefaultIterableDiffer implements IterableDiffer {
-    constructor(_trackByFn?: TrackByFn);
     collection: any;
-    length: number;
-    forEachItem(fn: Function): void;
-    forEachPreviousItem(fn: Function): void;
-    forEachAddedItem(fn: Function): void;
-    forEachMovedItem(fn: Function): void;
-    forEachRemovedItem(fn: Function): void;
-    forEachIdentityChange(fn: Function): void;
-    diff(collection: any): DefaultIterableDiffer;
-    onDestroy(): void;
-    check(collection: any): boolean;
     isDirty: boolean;
+    length: number;
+    constructor(_trackByFn?: TrackByFn);
+    check(collection: any): boolean;
+    diff(collection: any): DefaultIterableDiffer;
+    forEachAddedItem(fn: Function): void;
+    forEachIdentityChange(fn: Function): void;
+    forEachItem(fn: Function): void;
+    forEachMovedItem(fn: Function): void;
+    forEachPreviousItem(fn: Function): void;
+    forEachRemovedItem(fn: Function): void;
+    onDestroy(): void;
     toString(): string;
 }
 
@@ -454,19 +454,19 @@ export interface DirectiveDecorator extends TypeDecorator {
 }
 
 export declare class DirectiveMetadata extends InjectableMetadata {
-    selector: string;
-    inputs: string[];
-    properties: string[];
-    outputs: string[];
     events: string[];
+    exportAs: string;
     host: {
         [key: string]: string;
     };
+    inputs: string[];
+    outputs: string[];
+    properties: string[];
     providers: any[];
-    exportAs: string;
     queries: {
         [key: string]: any;
     };
+    selector: string;
     constructor({selector, inputs, outputs, properties, events, host, providers, exportAs, queries}?: {
         selector?: string;
         inputs?: string[];
@@ -549,8 +549,8 @@ export declare class EventEmitter<T> extends Subject<T> {
 
 export declare class ExceptionHandler {
     constructor(_logger: any, _rethrowException?: boolean);
-    static exceptionToString(exception: any, stackTrace?: any, reason?: string): string;
     call(exception: any, stackTrace?: any, reason?: string): void;
+    static exceptionToString(exception: any, stackTrace?: any, reason?: string): string;
 }
 
 export declare class ExpressionChangedAfterItHasBeenCheckedException extends BaseException {
@@ -591,8 +591,8 @@ export interface HostBindingMetadataFactory {
 export declare var HostListener: HostListenerMetadataFactory;
 
 export declare class HostListenerMetadata {
-    eventName: string;
     args: string[];
+    eventName: string;
     constructor(eventName: string, args?: string[]);
 }
 
@@ -635,8 +635,8 @@ export interface InjectMetadataFactory {
 }
 
 export declare abstract class Injector {
-    static THROW_IF_NOT_FOUND: Object;
     get(token: any, notFoundValue?: any): any;
+    static THROW_IF_NOT_FOUND: Object;
 }
 
 export declare var Input: InputMetadataFactory;
@@ -653,11 +653,11 @@ export interface InputMetadataFactory {
 }
 
 export declare class InstantiationError extends WrappedException {
-    constructor(injector: ReflectiveInjector, originalException: any, originalStack: any, key: ReflectiveKey);
-    addKey(injector: ReflectiveInjector, key: ReflectiveKey): void;
-    wrapperMessage: string;
     causeKey: ReflectiveKey;
     context: any;
+    wrapperMessage: string;
+    constructor(injector: ReflectiveInjector, originalException: any, originalStack: any, key: ReflectiveKey);
+    addKey(injector: ReflectiveInjector, key: ReflectiveKey): void;
 }
 
 export declare class InvalidProviderError extends BaseException {
@@ -672,24 +672,24 @@ export interface IterableDiffer {
 }
 
 export interface IterableDifferFactory {
-    supports(objects: any): boolean;
     create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer;
+    supports(objects: any): boolean;
 }
 
 export declare class IterableDiffers {
     factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
+    find(iterable: any): IterableDifferFactory;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
     static extend(factories: IterableDifferFactory[]): Provider;
-    find(iterable: any): IterableDifferFactory;
 }
 
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
 export declare class KeyValueChangeRecord {
+    currentValue: any;
     key: any;
     previousValue: any;
-    currentValue: any;
     constructor(key: any);
     toString(): string;
 }
@@ -700,37 +700,37 @@ export interface KeyValueDiffer {
 }
 
 export interface KeyValueDifferFactory {
-    supports(objects: any): boolean;
     create(cdRef: ChangeDetectorRef): KeyValueDiffer;
+    supports(objects: any): boolean;
 }
 
 export declare class KeyValueDiffers {
     factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
+    find(kv: Object): KeyValueDifferFactory;
     static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
     static extend(factories: KeyValueDifferFactory[]): Provider;
-    find(kv: Object): KeyValueDifferFactory;
 }
 
 export declare function lockRunMode(): void;
 
 export declare class NgZone {
-    static isInAngularZone(): boolean;
-    static assertInAngularZone(): void;
-    static assertNotInAngularZone(): void;
+    hasPendingMacrotasks: boolean;
+    hasPendingMicrotasks: boolean;
+    isStable: boolean;
+    onError: EventEmitter<any>;
+    onMicrotaskEmpty: EventEmitter<any>;
+    onStable: EventEmitter<any>;
+    onUnstable: EventEmitter<any>;
     constructor({enableLongStackTrace}: {
         enableLongStackTrace?: boolean;
     });
-    onUnstable: EventEmitter<any>;
-    onMicrotaskEmpty: EventEmitter<any>;
-    onStable: EventEmitter<any>;
-    onError: EventEmitter<any>;
-    isStable: boolean;
-    hasPendingMicrotasks: boolean;
-    hasPendingMacrotasks: boolean;
     run(fn: () => any): any;
     runGuarded(fn: () => any): any;
     runOutsideAngular(fn: () => any): any;
+    static assertInAngularZone(): void;
+    static assertNotInAngularZone(): void;
+    static isInAngularZone(): boolean;
 }
 
 export declare class NgZoneError {
@@ -802,11 +802,11 @@ export declare var Pipe: PipeMetadataFactory;
 
 export declare class PipeMetadata extends InjectableMetadata {
     name: string;
+    pure: boolean;
     constructor({name, pure}: {
         name: string;
         pure?: boolean;
     });
-    pure: boolean;
 }
 
 export interface PipeMetadataFactory {
@@ -833,10 +833,10 @@ export declare const PLATFORM_INITIALIZER: any;
 export declare const PLATFORM_PIPES: OpaqueToken;
 
 export declare abstract class PlatformRef {
-    abstract registerDisposeListener(dispose: () => void): void;
+    disposed: boolean;
     injector: Injector;
     abstract dispose(): void;
-    disposed: boolean;
+    abstract registerDisposeListener(dispose: () => void): void;
 }
 
 export declare function provide(token: any, {useClass, useValue, useExisting, useFactory, deps, multi}: {
@@ -849,12 +849,13 @@ export declare function provide(token: any, {useClass, useValue, useExisting, us
 }): Provider;
 
 export declare class Provider {
+    dependencies: Object[];
+    multi: boolean;
     token: any;
     useClass: Type;
-    useValue: any;
     useExisting: any;
     useFactory: Function;
-    dependencies: Object[];
+    useValue: any;
     constructor(token: any, {useClass, useValue, useExisting, useFactory, deps, multi}: {
         useClass?: Type;
         useValue?: any;
@@ -863,51 +864,50 @@ export declare class Provider {
         deps?: Object[];
         multi?: boolean;
     });
-    multi: boolean;
 }
 
 export declare class ProviderBuilder {
     token: any;
     constructor(token: any);
-    toClass(type: Type): Provider;
-    toValue(value: any): Provider;
     toAlias(aliasToken: any): Provider;
+    toClass(type: Type): Provider;
     toFactory(factory: Function, dependencies?: any[]): Provider;
+    toValue(value: any): Provider;
 }
 
 export declare var Query: QueryMetadataFactory;
 
 export declare class QueryList<T> {
     changes: Observable<any>;
-    length: number;
+    dirty: boolean;
     first: T;
     last: T;
-    map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
+    length: number;
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
-    reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U;
     forEach(fn: (item: T, index: number, array: T[]) => void): void;
+    map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
+    notifyOnChanges(): void;
+    reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U;
+    reset(res: Array<T | any[]>): void;
+    setDirty(): void;
     some(fn: (value: T, index: number, array: T[]) => boolean): boolean;
     toArray(): T[];
     toString(): string;
-    reset(res: Array<T | any[]>): void;
-    notifyOnChanges(): void;
-    setDirty(): void;
-    dirty: boolean;
 }
 
 export declare class QueryMetadata extends DependencyMetadata {
     descendants: boolean;
     first: boolean;
+    isVarBindingQuery: boolean;
+    isViewQuery: boolean;
     read: any;
+    selector: any;
+    varBindings: string[];
     constructor(_selector: Type | string, {descendants, first, read}?: {
         descendants?: boolean;
         first?: boolean;
         read?: any;
     });
-    isViewQuery: boolean;
-    selector: any;
-    isVarBindingQuery: boolean;
-    varBindings: string[];
     toString(): string;
 }
 
@@ -923,70 +923,70 @@ export interface QueryMetadataFactory {
 }
 
 export declare abstract class ReflectiveInjector implements Injector {
+    parent: Injector;
+    createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
+    abstract get(token: any, notFoundValue?: any): any;
+    instantiateResolved(provider: ResolvedReflectiveProvider): any;
+    resolveAndCreateChild(providers: Array<Type | Provider | {
+        [k: string]: any;
+    } | any[]>): ReflectiveInjector;
+    resolveAndInstantiate(provider: Type | Provider): any;
+    static fromResolvedBindings(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
+    static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector): ReflectiveInjector;
     static resolve(providers: Array<Type | Provider | {
         [k: string]: any;
     } | any[]>): ResolvedReflectiveProvider[];
     static resolveAndCreate(providers: Array<Type | Provider | {
         [k: string]: any;
     } | any[]>, parent?: Injector): ReflectiveInjector;
-    static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector): ReflectiveInjector;
-    static fromResolvedBindings(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
-    parent: Injector;
-    resolveAndCreateChild(providers: Array<Type | Provider | {
-        [k: string]: any;
-    } | any[]>): ReflectiveInjector;
-    createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
-    resolveAndInstantiate(provider: Type | Provider): any;
-    instantiateResolved(provider: ResolvedReflectiveProvider): any;
-    abstract get(token: any, notFoundValue?: any): any;
 }
 
 export declare class ReflectiveKey {
-    token: Object;
-    id: number;
-    constructor(token: Object, id: number);
     displayName: string;
-    static get(token: Object): ReflectiveKey;
+    id: number;
+    token: Object;
+    constructor(token: Object, id: number);
     static numberOfKeys: number;
+    static get(token: Object): ReflectiveKey;
 }
 
 export declare class RenderComponentType {
-    id: string;
-    templateUrl: string;
-    slotCount: number;
     encapsulation: ViewEncapsulation;
+    id: string;
+    slotCount: number;
     styles: Array<string | any[]>;
+    templateUrl: string;
     constructor(id: string, templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation, styles: Array<string | any[]>);
 }
 
 export declare abstract class Renderer {
-    abstract selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugInfo): any;
+    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
+    abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
     abstract createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any;
-    abstract createViewRoot(hostElement: any): any;
     abstract createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any;
     abstract createText(parentElement: any, value: string, debugInfo?: RenderDebugInfo): any;
-    abstract projectNodes(parentElement: any, nodes: any[]): void;
-    abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
-    abstract detachView(viewRootNodes: any[]): void;
+    abstract createViewRoot(hostElement: any): any;
     abstract destroyView(hostElement: any, viewAllNodes: any[]): void;
+    abstract detachView(viewRootNodes: any[]): void;
+    abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): any;
     abstract listen(renderElement: any, name: string, callback: Function): Function;
     abstract listenGlobal(target: string, name: string, callback: Function): Function;
-    abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
-    abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void;
+    abstract projectNodes(parentElement: any, nodes: any[]): void;
+    abstract selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugInfo): any;
     abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string): void;
+    abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void;
     abstract setElementClass(renderElement: any, className: string, isAdd: boolean): any;
+    abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
     abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): any;
-    abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): any;
     abstract setText(renderNode: any, text: string): any;
-    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
 }
 
 export interface ResolvedReflectiveBinding extends ResolvedReflectiveProvider {
 }
 
 export declare class ResolvedReflectiveFactory {
-    factory: Function;
     dependencies: ReflectiveDependency[];
+    factory: Function;
     constructor(
         factory: Function,
         dependencies: ReflectiveDependency[]);
@@ -994,8 +994,8 @@ export declare class ResolvedReflectiveFactory {
 
 export interface ResolvedReflectiveProvider {
     key: ReflectiveKey;
-    resolvedFactories: ResolvedReflectiveFactory[];
     multiProvider: boolean;
+    resolvedFactories: ResolvedReflectiveFactory[];
 }
 
 export declare function resolveForwardRef(type: any): any;
@@ -1020,8 +1020,8 @@ export declare function sequence(steps: AnimationMetadata[]): AnimationSequenceM
 export declare function setTestabilityGetter(getter: GetTestability): void;
 
 export declare class SimpleChange {
-    previousValue: any;
     currentValue: any;
+    previousValue: any;
     constructor(previousValue: any, currentValue: any);
     isFirstChange(): boolean;
 }
@@ -1050,14 +1050,14 @@ export declare function style(tokens: string | {
 }>): AnimationStyleMetadata;
 
 export declare class SystemJsCmpFactoryResolver implements ComponentResolver {
-    resolveComponent(componentType: string | Type): Promise<ComponentFactory<any>>;
     clearCache(): void;
+    resolveComponent(componentType: string | Type): Promise<ComponentFactory<any>>;
 }
 
 export declare class SystemJsComponentResolver implements ComponentResolver {
     constructor(_resolver: ComponentResolver);
-    resolveComponent(componentType: string | Type): Promise<ComponentFactory<any>>;
     clearCache(): void;
+    resolveComponent(componentType: string | Type): Promise<ComponentFactory<any>>;
 }
 
 export declare abstract class TemplateRef<C> {
@@ -1067,22 +1067,22 @@ export declare abstract class TemplateRef<C> {
 
 export declare class Testability {
     constructor(_ngZone: NgZone);
-    increasePendingRequestCount(): number;
     decreasePendingRequestCount(): number;
-    isStable(): boolean;
-    whenStable(callback: Function): void;
-    getPendingRequestCount(): number;
     findBindings(using: any, provider: string, exactMatch: boolean): any[];
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
+    getPendingRequestCount(): number;
+    increasePendingRequestCount(): number;
+    isStable(): boolean;
+    whenStable(callback: Function): void;
 }
 
 export declare class TestabilityRegistry {
     constructor();
-    registerApplication(token: any, testability: Testability): void;
-    getTestability(elem: any): Testability;
-    getAllTestabilities(): Testability[];
-    getAllRootElements(): any[];
     findTestabilityInTree(elem: Node, findInAncestors?: boolean): Testability;
+    getAllRootElements(): any[];
+    getAllTestabilities(): Testability[];
+    getTestability(elem: any): Testability;
+    registerApplication(token: any, testability: Testability): void;
 }
 
 export interface TrackByFn {
@@ -1096,9 +1096,9 @@ export declare function trigger(name: string, animation: AnimationMetadata[]): A
 export declare var Type: FunctionConstructor;
 
 export interface TypeDecorator {
-    <T extends Type>(type: T): T;
-    (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
     annotations: any[];
+    (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
+    <T extends Type>(type: T): T;
     Class(obj: ClassDefinition): ConcreteType;
 }
 
@@ -1139,16 +1139,16 @@ export interface ViewChildrenMetadataFactory {
 export declare abstract class ViewContainerRef {
     element: ElementRef;
     injector: Injector;
+    length: number;
     parentInjector: Injector;
     abstract clear(): void;
-    abstract get(index: number): ViewRef;
-    length: number;
-    abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
     abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][]): ComponentRef<C>;
-    abstract insert(viewRef: ViewRef, index?: number): ViewRef;
-    abstract indexOf(viewRef: ViewRef): number;
-    abstract remove(index?: number): void;
+    abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
     abstract detach(index?: number): ViewRef;
+    abstract get(index: number): ViewRef;
+    abstract indexOf(viewRef: ViewRef): number;
+    abstract insert(viewRef: ViewRef, index?: number): ViewRef;
+    abstract remove(index?: number): void;
 }
 
 export interface ViewDecorator extends TypeDecorator {
@@ -1172,15 +1172,15 @@ export declare enum ViewEncapsulation {
 }
 
 export declare class ViewMetadata {
-    templateUrl: string;
-    template: string;
+    animations: AnimationEntryMetadata[];
+    directives: Array<Type | any[]>;
+    encapsulation: ViewEncapsulation;
+    interpolation: [string, string];
+    pipes: Array<Type | any[]>;
     styleUrls: string[];
     styles: string[];
-    directives: Array<Type | any[]>;
-    pipes: Array<Type | any[]>;
-    encapsulation: ViewEncapsulation;
-    animations: AnimationEntryMetadata[];
-    interpolation: [string, string];
+    template: string;
+    templateUrl: string;
     constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls, animations, interpolation}?: {
         templateUrl?: string;
         template?: string;
@@ -1222,12 +1222,12 @@ export interface ViewMetadataFactory {
 export declare var ViewQuery: QueryMetadataFactory;
 
 export declare class ViewQueryMetadata extends QueryMetadata {
+    isViewQuery: boolean;
     constructor(_selector: Type | string, {descendants, first, read}?: {
         descendants?: boolean;
         first?: boolean;
         read?: any;
     });
-    isViewQuery: boolean;
     toString(): string;
 }
 
@@ -1237,13 +1237,13 @@ export declare abstract class ViewRef {
 }
 
 export declare class WrappedException extends BaseWrappedException {
-    constructor(_wrapperMessage: string, _originalException: any, _originalStack?: any, _context?: any);
-    wrapperMessage: string;
-    wrapperStack: any;
-    originalException: any;
-    originalStack: any;
     context: any;
     message: string;
+    originalException: any;
+    originalStack: any;
+    wrapperMessage: string;
+    wrapperStack: any;
+    constructor(_wrapperMessage: string, _originalException: any, _originalStack?: any, _context?: any);
     toString(): string;
 }
 

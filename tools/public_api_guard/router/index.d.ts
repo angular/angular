@@ -1,17 +1,17 @@
 export declare class ActivatedRoute {
-    url: Observable<UrlPathWithParams[]>;
-    params: Observable<Params>;
-    outlet: string;
     component: Type | string;
+    outlet: string;
+    params: Observable<Params>;
     snapshot: ActivatedRouteSnapshot;
+    url: Observable<UrlPathWithParams[]>;
     toString(): string;
 }
 
 export declare class ActivatedRouteSnapshot {
-    url: UrlPathWithParams[];
-    params: Params;
-    outlet: string;
     component: Type | string;
+    outlet: string;
+    params: Params;
+    url: UrlPathWithParams[];
     toString(): string;
 }
 
@@ -50,9 +50,9 @@ export declare class NavigationEnd {
 }
 
 export declare class NavigationError {
+    error: any;
     id: number;
     url: string;
-    error: any;
     constructor(id: number, url: string, error: any);
     toString(): string;
 }
@@ -73,26 +73,26 @@ export declare const PRIMARY_OUTLET: string;
 export declare function provideRouter(config: RouterConfig, opts?: ExtraOptions): any[];
 
 export interface Route {
-    path?: string;
-    terminal?: boolean;
-    component?: Type | string;
-    outlet?: string;
     canActivate?: any[];
     canDeactivate?: any[];
-    redirectTo?: string;
     children?: Route[];
+    component?: Type | string;
+    outlet?: string;
+    path?: string;
+    redirectTo?: string;
+    terminal?: boolean;
 }
 
 export declare class Router {
+    events: Observable<Event>;
     routerState: RouterState;
     url: string;
-    events: Observable<Event>;
-    resetConfig(config: RouterConfig): void;
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment}?: NavigationExtras): UrlTree;
-    navigateByUrl(url: string | UrlTree): Promise<boolean>;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
-    serializeUrl(url: UrlTree): string;
+    navigateByUrl(url: string | UrlTree): Promise<boolean>;
     parseUrl(url: string): UrlTree;
+    resetConfig(config: RouterConfig): void;
+    serializeUrl(url: UrlTree): string;
 }
 
 export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkActive)[];
@@ -104,33 +104,33 @@ export declare class RouterOutletMap {
 }
 
 export declare class RouterState extends Tree<ActivatedRoute> {
-    queryParams: Observable<Params>;
     fragment: Observable<string>;
+    queryParams: Observable<Params>;
     snapshot: RouterStateSnapshot;
     toString(): string;
 }
 
 export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
-    url: string;
-    queryParams: Params;
     fragment: string;
+    queryParams: Params;
+    url: string;
     toString(): string;
 }
 
 export declare class RoutesRecognized {
     id: number;
+    state: RouterStateSnapshot;
     url: string;
     urlAfterRedirects: string;
-    state: RouterStateSnapshot;
     constructor(id: number, url: string, urlAfterRedirects: string, state: RouterStateSnapshot);
     toString(): string;
 }
 
 export declare class UrlPathWithParams {
-    path: string;
     parameters: {
         [key: string]: string;
     };
+    path: string;
     constructor(path: string, parameters: {
         [key: string]: string;
     });
@@ -143,10 +143,10 @@ export declare abstract class UrlSerializer {
 }
 
 export declare class UrlTree {
-    root: UrlSegment;
+    fragment: string;
     queryParams: {
         [key: string]: string;
     };
-    fragment: string;
+    root: UrlSegment;
     toString(): string;
 }

@@ -30,33 +30,33 @@ export declare class Headers {
     constructor(headers?: Headers | {
         [key: string]: any;
     });
-    static fromResponseHeaderString(headersString: string): Headers;
     append(name: string, value: string): void;
     delete(name: string): void;
+    entries(): void;
     forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void;
     get(header: string): string;
+    getAll(header: string): string[];
     has(header: string): boolean;
     keys(): string[];
     set(header: string, value: string | string[]): void;
-    values(): string[][];
     toJSON(): {
         [key: string]: any;
     };
-    getAll(header: string): string[];
-    entries(): void;
+    values(): string[][];
+    static fromResponseHeaderString(headersString: string): Headers;
 }
 
 export declare class Http {
     protected _backend: ConnectionBackend;
     protected _defaultOptions: RequestOptions;
     constructor(_backend: ConnectionBackend, _defaultOptions: RequestOptions);
-    request(url: string | Request, options?: RequestOptionsArgs): Observable<Response>;
+    delete(url: string, options?: RequestOptionsArgs): Observable<Response>;
     get(url: string, options?: RequestOptionsArgs): Observable<Response>;
+    head(url: string, options?: RequestOptionsArgs): Observable<Response>;
+    patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
     post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
     put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
-    delete(url: string, options?: RequestOptionsArgs): Observable<Response>;
-    patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
-    head(url: string, options?: RequestOptionsArgs): Observable<Response>;
+    request(url: string | Request, options?: RequestOptionsArgs): Observable<Response>;
 }
 
 export declare const HTTP_BINDINGS: any[];
@@ -94,17 +94,17 @@ export declare enum ReadyState {
 }
 
 export declare class Request {
-    method: RequestMethod;
     headers: Headers;
+    method: RequestMethod;
     url: string;
     withCredentials: boolean;
     constructor(requestOptions: RequestArgs);
-    text(): string;
-    json(): string;
     arrayBuffer(): ArrayBuffer;
     blob(): Blob;
     detectContentType(): ContentType;
     getBody(): any;
+    json(): string;
+    text(): string;
 }
 
 export declare enum RequestMethod {
@@ -118,46 +118,46 @@ export declare enum RequestMethod {
 }
 
 export declare class RequestOptions {
-    method: RequestMethod | string;
-    headers: Headers;
     body: any;
-    url: string;
+    headers: Headers;
+    method: RequestMethod | string;
     search: URLSearchParams;
+    url: string;
     withCredentials: boolean;
     constructor({method, headers, body, url, search, withCredentials}?: RequestOptionsArgs);
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
 export interface RequestOptionsArgs {
-    url?: string;
+    body?: any;
+    headers?: Headers;
     method?: string | RequestMethod;
     search?: string | URLSearchParams;
-    headers?: Headers;
-    body?: any;
+    url?: string;
     withCredentials?: boolean;
 }
 
 export declare class Response {
-    type: ResponseType;
+    bytesLoaded: number;
+    headers: Headers;
     ok: boolean;
-    url: string;
     status: number;
     statusText: string;
-    bytesLoaded: number;
     totalBytes: number;
-    headers: Headers;
+    type: ResponseType;
+    url: string;
     constructor(responseOptions: ResponseOptions);
+    arrayBuffer(): any;
     blob(): any;
     json(): any;
     text(): string;
-    arrayBuffer(): any;
     toString(): string;
 }
 
 export declare class ResponseOptions {
     body: string | Object;
-    status: number;
     headers: Headers;
+    status: number;
     url: string;
     constructor({body, status, headers, statusText, type, url}?: ResponseOptionsArgs);
     merge(options?: ResponseOptionsArgs): ResponseOptions;
@@ -181,20 +181,20 @@ export declare enum ResponseType {
 }
 
 export declare class URLSearchParams {
-    rawParams: string;
     paramsMap: Map<string, string[]>;
+    rawParams: string;
     constructor(rawParams?: string);
-    clone(): URLSearchParams;
-    has(param: string): boolean;
-    get(param: string): string;
-    getAll(param: string): string[];
-    set(param: string, val: string): void;
-    setAll(searchParams: URLSearchParams): void;
     append(param: string, val: string): void;
     appendAll(searchParams: URLSearchParams): void;
-    replaceAll(searchParams: URLSearchParams): void;
-    toString(): string;
+    clone(): URLSearchParams;
     delete(param: string): void;
+    get(param: string): string;
+    getAll(param: string): string[];
+    has(param: string): boolean;
+    replaceAll(searchParams: URLSearchParams): void;
+    set(param: string, val: string): void;
+    setAll(searchParams: URLSearchParams): void;
+    toString(): string;
 }
 
 export declare class XHRBackend implements ConnectionBackend {
@@ -203,9 +203,9 @@ export declare class XHRBackend implements ConnectionBackend {
 }
 
 export declare class XHRConnection implements Connection {
+    readyState: ReadyState;
     request: Request;
     response: Observable<Response>;
-    readyState: ReadyState;
     constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions);
     setDetectedContentType(req: any, _xhr: any): void;
 }

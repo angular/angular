@@ -3,9 +3,9 @@ export declare class MockBackend implements ConnectionBackend {
     connectionsArray: MockConnection[];
     pendingConnections: any;
     constructor();
-    verifyNoPendingRequests(): void;
-    resolveAllConnections(): void;
     createConnection(req: Request): MockConnection;
+    resolveAllConnections(): void;
+    verifyNoPendingRequests(): void;
 }
 
 export declare class MockConnection implements Connection {
@@ -13,7 +13,7 @@ export declare class MockConnection implements Connection {
     request: Request;
     response: ReplaySubject<Response>;
     constructor(req: Request);
-    mockRespond(res: Response): void;
     mockDownload(res: Response): void;
     mockError(err?: Error): void;
+    mockRespond(res: Response): void;
 }
