@@ -8,7 +8,7 @@
 
 import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '../facade/async';
+import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../facade/async';
 import {BaseException} from '../facade/exceptions';
 import {FormControl} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -79,7 +79,7 @@ export class NgModel extends NgControl implements OnChanges,
                 if (!this._registered) this._setUpControl();
 
                 if (isPropertyUpdated(changes, this.viewModel)) {
-                  this._control.updateValue(this.model);
+                  this._updateValue(this.model);
                   this.viewModel = this.model;
                 }
               }
@@ -120,7 +120,7 @@ export class NgModel extends NgControl implements OnChanges,
                 this._control.updateValueAndValidity({emitEvent: false});
               }
 
-              private _checkName() {
+              private _checkName(): void {
                 if (this.options && this.options.name) this.name = this.options.name;
 
                 if (!this._isStandalone() && !this.name) {
@@ -132,5 +132,9 @@ export class NgModel extends NgControl implements OnChanges,
                       Example 2: <input [(ngModel)]="person.firstName" [ngModelOptions]="{standalone: true}">
                    `);
                 }
+              }
+
+              private _updateValue(value: any): void {
+                PromiseWrapper.scheduleMicrotask(() => { this.control.updateValue(value); });
               }
 }

@@ -660,72 +660,67 @@ export function main() {
            })));
 
         it('with option values that are objects',
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter],
-               (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 const t = `<div>
+           fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+             const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
                       </select>
                   </div>`;
 
-                 tcb.overrideTemplate(MyComp8, t)
-                     .overrideProviders(MyComp8, providerArr)
-                     .createAsync(MyComp8)
-                     .then((fixture) => {
+             tcb.overrideTemplate(MyComp8, t)
+                 .overrideProviders(MyComp8, providerArr)
+                 .createAsync(MyComp8)
+                 .then((fixture) => {
 
-                       var testComp = fixture.debugElement.componentInstance;
-                       testComp.list = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
-                       testComp.selectedCity = testComp.list[1];
-                       fixture.detectChanges();
+                   var testComp = fixture.debugElement.componentInstance;
+                   testComp.list = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
+                   testComp.selectedCity = testComp.list[1];
+                   fixture.detectChanges();
 
-                       var select = fixture.debugElement.query(By.css('select'));
-                       var nycOption = fixture.debugElement.queryAll(By.css('option'))[1];
+                   var select = fixture.debugElement.query(By.css('select'));
+                   var nycOption = fixture.debugElement.queryAll(By.css('option'))[1];
 
-                       expect(select.nativeElement.value).toEqual('1: Object');
-                       expect(nycOption.nativeElement.selected).toBe(true);
+                   tick();
+                   expect(select.nativeElement.value).toEqual('1: Object');
+                   expect(nycOption.nativeElement.selected).toBe(true);
 
-                       select.nativeElement.value = '2: Object';
-                       dispatchEvent(select.nativeElement, 'change');
-                       fixture.detectChanges();
-                       TimerWrapper.setTimeout(() => {
-                         expect(testComp.selectedCity['name']).toEqual('Buffalo');
-                         async.done();
-                       }, 0);
-                     });
-               }));
+                   select.nativeElement.value = '2: Object';
+                   dispatchEvent(select.nativeElement, 'change');
+                   fixture.detectChanges();
+                   tick();
+                   expect(testComp.selectedCity['name']).toEqual('Buffalo');
+                 });
+           })));
 
         it('when new options are added (selection through the model)',
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter],
-               (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 const t = `<div>
+           fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+             const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
                       </select>
                   </div>`;
 
-                 tcb.overrideTemplate(MyComp8, t)
-                     .overrideProviders(MyComp8, providerArr)
-                     .createAsync(MyComp8)
-                     .then((fixture) => {
+             tcb.overrideTemplate(MyComp8, t)
+                 .overrideProviders(MyComp8, providerArr)
+                 .createAsync(MyComp8)
+                 .then((fixture) => {
 
-                       var testComp: MyComp8 = fixture.debugElement.componentInstance;
-                       testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
-                       testComp.selectedCity = testComp.list[1];
-                       fixture.detectChanges();
+                   var testComp: MyComp8 = fixture.debugElement.componentInstance;
+                   testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
+                   testComp.selectedCity = testComp.list[1];
+                   fixture.detectChanges();
 
-                       testComp.list.push({'name': 'Buffalo'});
-                       testComp.selectedCity = testComp.list[2];
-                       fixture.detectChanges();
+                   testComp.list.push({'name': 'Buffalo'});
+                   testComp.selectedCity = testComp.list[2];
+                   fixture.detectChanges();
+                   tick();
 
-                       var select = fixture.debugElement.query(By.css('select'));
-                       var buffalo = fixture.debugElement.queryAll(By.css('option'))[2];
-                       expect(select.nativeElement.value).toEqual('2: Object');
-                       expect(buffalo.nativeElement.selected).toBe(true);
-                       async.done();
-                     });
-               }));
+                   var select = fixture.debugElement.query(By.css('select'));
+                   var buffalo = fixture.debugElement.queryAll(By.css('option'))[2];
+                   expect(select.nativeElement.value).toEqual('2: Object');
+                   expect(buffalo.nativeElement.selected).toBe(true);
+                 });
+           })));
 
         it('when new options are added (selection through the UI)',
            inject(
@@ -763,101 +758,96 @@ export function main() {
 
 
         it('when options are removed',
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter],
-               (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 const t = `<div>
+           fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+             const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
                       </select>
                   </div>`;
-                 tcb.overrideTemplate(MyComp8, t)
-                     .overrideProviders(MyComp8, providerArr)
-                     .createAsync(MyComp8)
-                     .then((fixture) => {
+             tcb.overrideTemplate(MyComp8, t)
+                 .overrideProviders(MyComp8, providerArr)
+                 .createAsync(MyComp8)
+                 .then((fixture) => {
 
-                       var testComp: MyComp8 = fixture.debugElement.componentInstance;
-                       testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
-                       testComp.selectedCity = testComp.list[1];
-                       fixture.detectChanges();
+                   var testComp: MyComp8 = fixture.debugElement.componentInstance;
+                   testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
+                   testComp.selectedCity = testComp.list[1];
+                   fixture.detectChanges();
+                   tick();
 
-                       var select = fixture.debugElement.query(By.css('select'));
-                       expect(select.nativeElement.value).toEqual('1: Object');
+                   var select = fixture.debugElement.query(By.css('select'));
+                   expect(select.nativeElement.value).toEqual('1: Object');
 
-                       testComp.list.pop();
-                       fixture.detectChanges();
+                   testComp.list.pop();
+                   fixture.detectChanges();
+                   tick();
 
-                       expect(select.nativeElement.value).not.toEqual('1: Object');
-                       async.done();
-                     });
-               }));
+                   expect(select.nativeElement.value).not.toEqual('1: Object');
+                 });
+           })));
 
         it('when option values change identity while tracking by index',
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter],
-               (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 const t = `<div>
+           fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+             const t = `<div>
                       <select [(ngModel)]="selectedCity">
                         <option *ngFor="let c of list; trackBy:customTrackBy" [ngValue]="c">{{c}}</option>
                       </select>
                   </div>`;
 
-                 tcb.overrideTemplate(MyComp8, t)
-                     .overrideProviders(MyComp8, providerArr)
-                     .createAsync(MyComp8)
-                     .then((fixture) => {
+             tcb.overrideTemplate(MyComp8, t)
+                 .overrideProviders(MyComp8, providerArr)
+                 .createAsync(MyComp8)
+                 .then((fixture) => {
 
-                       var testComp = fixture.debugElement.componentInstance;
+                   var testComp = fixture.debugElement.componentInstance;
 
-                       testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
-                       testComp.selectedCity = testComp.list[0];
-                       fixture.detectChanges();
+                   testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
+                   testComp.selectedCity = testComp.list[0];
+                   fixture.detectChanges();
 
-                       testComp.list[1] = 'Buffalo';
-                       testComp.selectedCity = testComp.list[1];
-                       fixture.detectChanges();
+                   testComp.list[1] = 'Buffalo';
+                   testComp.selectedCity = testComp.list[1];
+                   fixture.detectChanges();
+                   tick();
 
-                       var select = fixture.debugElement.query(By.css('select'));
-                       var buffalo = fixture.debugElement.queryAll(By.css('option'))[1];
+                   var select = fixture.debugElement.query(By.css('select'));
+                   var buffalo = fixture.debugElement.queryAll(By.css('option'))[1];
 
-                       expect(select.nativeElement.value).toEqual('1: Buffalo');
-                       expect(buffalo.nativeElement.selected).toBe(true);
-                       async.done();
-                     });
-               }));
+                   expect(select.nativeElement.value).toEqual('1: Buffalo');
+                   expect(buffalo.nativeElement.selected).toBe(true);
+                 });
+           })));
 
         it('with duplicate option values',
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter],
-               (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 const t = `<div>
+           fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+             const t = `<div>
                       <select [(ngModel)]="selectedCity">
-                        <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
+                        <option *ngFor="let c of list" [ngValue]="c">{{c.name}}</option>
                       </select>
                   </div>`;
 
-                 tcb.overrideTemplate(MyComp8, t)
-                     .overrideProviders(MyComp8, providerArr)
-                     .createAsync(MyComp8)
-                     .then((fixture) => {
+             tcb.overrideTemplate(MyComp8, t)
+                 .overrideProviders(MyComp8, providerArr)
+                 .createAsync(MyComp8)
+                 .then((fixture) => {
 
-                       var testComp = fixture.debugElement.componentInstance;
+                   var testComp = fixture.debugElement.componentInstance;
 
-                       testComp.list = [{'name': 'NYC'}, {'name': 'SF'}, {'name': 'SF'}];
-                       testComp.selectedCity = testComp.list[0];
-                       fixture.detectChanges();
+                   testComp.list = [{'name': 'NYC'}, {'name': 'SF'}, {'name': 'SF'}];
+                   testComp.selectedCity = testComp.list[0];
+                   fixture.detectChanges();
 
-                       testComp.selectedCity = testComp.list[1];
-                       fixture.detectChanges();
+                   testComp.selectedCity = testComp.list[1];
+                   fixture.detectChanges();
+                   tick();
 
-                       var select = fixture.debugElement.query(By.css('select'));
-                       var firstSF = fixture.debugElement.queryAll(By.css('option'))[1];
+                   var select = fixture.debugElement.query(By.css('select'));
+                   var firstSF = fixture.debugElement.queryAll(By.css('option'))[1];
 
-                       expect(select.nativeElement.value).toEqual('1: Object');
-                       expect(firstSF.nativeElement.selected).toBe(true);
-                       async.done();
-                     });
-               }));
+                   expect(select.nativeElement.value).toEqual('1: Object');
+                   expect(firstSF.nativeElement.selected).toBe(true);
+                 });
+           })));
 
         it('when option values have same content, but different identities',
            inject(
@@ -1239,6 +1229,35 @@ export function main() {
            expect(fixture.debugElement.componentInstance.name).toEqual('updated');
          })));
 
+      it('should emit valueChanges and statusChanges on init',
+         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           const t = `<form>
+                  <input type="text" name="first" [ngModel]="name" minlength="3">
+                </form>`;
+
+           const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           fixture.debugElement.componentInstance.name = 'aa';
+           fixture.detectChanges();
+
+           expect(form.valid).toEqual(true);
+           expect(form.value).toEqual({});
+
+           let formValidity: string;
+           let formValue: Object;
+
+           ObservableWrapper.subscribe(
+               form.form.statusChanges, (status: string) => { formValidity = status; });
+
+           ObservableWrapper.subscribe(
+               form.form.valueChanges, (value: string) => { formValue = value; });
+
+           tick();
+
+           expect(formValidity).toEqual('INVALID');
+           expect(formValue).toEqual({first: 'aa'});
+         })));
+
       it('should not create a template-driven form when ngNoForm is used',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
@@ -1341,6 +1360,8 @@ export function main() {
            fixture.detectChanges();
 
            var input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+           tick();
            expect(input.value).toEqual('oldValue');
 
            input.value = 'updatedValue';
