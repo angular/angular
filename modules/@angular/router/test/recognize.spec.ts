@@ -107,20 +107,6 @@ describe('recognize', () => {
         });
   });
 
-  xit('should handle nested secondary routes', () => {
-    checkRecognize(
-        [
-          {path: 'a', component: ComponentA}, {path: 'b', component: ComponentB, outlet: 'left'},
-          {path: 'c', component: ComponentC, outlet: 'right'}
-        ],
-        'a(left:b(right:c))', (s: RouterStateSnapshot) => {
-          const c = s.children(s.root);
-          checkActivatedRoute(c[0], 'a', {}, ComponentA);
-          checkActivatedRoute(c[1], 'b', {}, ComponentB, 'left');
-          checkActivatedRoute(c[2], 'c', {}, ComponentC, 'right');
-        });
-  });
-
   it('should handle non top-level secondary routes', () => {
     checkRecognize(
         [
@@ -168,86 +154,219 @@ describe('recognize', () => {
         });
   });
 
-  describe('matching empty url', () => {
-    it('should support root index routes', () => {
-      recognize(RootComponent, [{path: '', component: ComponentA}], tree(''), '')
-          .forEach((s: RouterStateSnapshot) => {
-            checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
-          });
-    });
+  describe('empty path', () => {
+    describe('root', () => {
+      it('should work', () => {
+        checkRecognize([{path: '', component: ComponentA}], '', (s: RouterStateSnapshot) => {
+          checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
+        });
+      });
 
-    it('should support nested root index routes', () => {
-      recognize(
-          RootComponent,
-          [{path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}],
-          tree(''), '')
-          .forEach((s: RouterStateSnapshot) => {
-            checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
-            checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), '', {}, ComponentB);
-          });
-    });
+      it('should match when terminal', () => {
+        checkRecognize(
+            [{path: '', terminal: true, component: ComponentA}], '', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
+            });
+      });
 
-    it('should set url segment and index properly', () => {
-      const url = tree('');
-      recognize(
-          RootComponent,
-          [{path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}], url,
-          '')
-          .forEach((s: RouterStateSnapshot) => {
-            expect(s.root._urlSegment).toBe(url.root);
-            expect(s.root._lastPathIndex).toBe(-1);
-
-            const c = s.firstChild(s.root);
-            expect(c._urlSegment).toBe(url.root);
-            expect(c._lastPathIndex).toBe(-1);
-
-            const c2 = s.firstChild(<any>s.firstChild(s.root));
-            expect(c2._urlSegment).toBe(url.root);
-            expect(c2._lastPathIndex).toBe(-1);
-          });
-    });
-
-    it('should support index routes', () => {
-      recognize(
-          RootComponent,
-          [{path: 'a', component: ComponentA, children: [{path: '', component: ComponentB}]}],
-          tree('a'), 'a')
-          .forEach((s: RouterStateSnapshot) => {
-            checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
-            checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), '', {}, ComponentB);
-          });
-    });
-
-    it('should support index routes with children', () => {
-      recognize(
-          RootComponent, [{
-            path: '',
-            component: ComponentA,
-            children: [{
+      it('should not match when terminal', () => {
+        recognize(
+            RootComponent, [{
               path: '',
-              component: ComponentB,
-              children: [{path: 'c/:id', component: ComponentC}]
-            }]
-          }],
-          tree('c/10'), 'c/10')
-          .forEach((s: RouterStateSnapshot) => {
-            checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
-            checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), '', {}, ComponentB);
-            checkActivatedRoute(
-                s.firstChild(<any>s.firstChild(<any>s.firstChild(s.root))), 'c/10', {id: '10'},
-                ComponentC);
-          });
+              terminal: true,
+              component: ComponentA,
+              children: [{path: 'b', component: ComponentB}]
+            }],
+            tree('b'), '')
+            .subscribe(
+                () => {}, (e) => { expect(e.message).toEqual('Cannot match any routes: \'b\''); });
+      });
+
+      it('should work (nested case)', () => {
+        checkRecognize(
+            [{path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}], '',
+            (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
+              checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), '', {}, ComponentB);
+            });
+      });
+
+      it('should set url segment and index properly', () => {
+        const url = tree('');
+        recognize(
+            RootComponent,
+            [{path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}], url,
+            '')
+            .forEach((s: RouterStateSnapshot) => {
+              expect(s.root._urlSegment).toBe(url.root);
+              expect(s.root._lastPathIndex).toBe(-1);
+
+              const c = s.firstChild(s.root);
+              expect(c._urlSegment).toBe(url.root);
+              expect(c._lastPathIndex).toBe(-1);
+
+              const c2 = s.firstChild(<any>s.firstChild(s.root));
+              expect(c2._urlSegment).toBe(url.root);
+              expect(c2._lastPathIndex).toBe(-1);
+            });
+      });
     });
 
-    xit('should pass parameters to every nested index route (case with non-index route)', () => {
-      recognize(
-          RootComponent,
-          [{path: 'a', component: ComponentA, children: [{path: '', component: ComponentB}]}],
-          tree('/a;a=1'), '/a;a=1')
-          .forEach((s: RouterStateSnapshot) => {
-            checkActivatedRoute(s.firstChild(s.root), 'a', {a: '1'}, ComponentA);
-            checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), '', {a: '1'}, ComponentB);
-          });
+    describe('aux split is in the middle', () => {
+      it('should match (non-terminal)', () => {
+        checkRecognize(
+            [{
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: 'b', component: ComponentB},
+                {path: '', component: ComponentC, outlet: 'aux'}
+              ]
+            }],
+            'a/b', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+
+              const c = s.children(s.firstChild(s.root));
+              checkActivatedRoute(c[0], 'b', {}, ComponentB);
+              checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
+            });
+      });
+
+      it('should match (terminal)', () => {
+        checkRecognize(
+            [{
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: 'b', component: ComponentB},
+                {path: '', terminal: true, component: ComponentC, outlet: 'aux'}
+              ]
+            }],
+            'a/b', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+
+              const c = s.children(s.firstChild(s.root));
+              expect(c.length).toEqual(1);
+              checkActivatedRoute(c[0], 'b', {}, ComponentB);
+            });
+      });
+
+      it('should set url segment and index properly', () => {
+        const url = tree('a/b');
+        recognize(
+            RootComponent, [{
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: 'b', component: ComponentB},
+                {path: '', component: ComponentC, outlet: 'aux'}
+              ]
+            }],
+            url, 'a/b')
+            .forEach((s: RouterStateSnapshot) => {
+              expect(s.root._urlSegment).toBe(url.root);
+              expect(s.root._lastPathIndex).toBe(-1);
+
+              const a = s.firstChild(s.root);
+              expect(a._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+              expect(a._lastPathIndex).toBe(0);
+
+              const b = s.firstChild(a);
+              expect(b._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+              expect(b._lastPathIndex).toBe(1);
+
+              const c = s.children(a)[1];
+              expect(c._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+              expect(c._lastPathIndex).toBe(0);
+            });
+      });
+    });
+
+    describe('aux split at the end (no right child)', () => {
+      it('should match (non-terminal)', () => {
+        checkRecognize(
+            [{
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: '', component: ComponentB},
+                {path: '', component: ComponentC, outlet: 'aux'},
+              ]
+            }],
+            'a', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+
+              const c = s.children(s.firstChild(s.root));
+              checkActivatedRoute(c[0], '', {}, ComponentB);
+              checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
+            });
+      });
+
+      it('should match (terminal)', () => {
+        checkRecognize(
+            [{
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: '', terminal: true, component: ComponentB},
+                {path: '', terminal: true, component: ComponentC, outlet: 'aux'},
+              ]
+            }],
+            'a', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+
+              const c = s.children(s.firstChild(s.root));
+              checkActivatedRoute(c[0], '', {}, ComponentB);
+              checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
+            });
+      });
+
+      it('should work only only primary outlet', () => {
+        checkRecognize(
+            [{
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: '', component: ComponentB},
+                {path: 'c', component: ComponentC, outlet: 'aux'},
+              ]
+            }],
+            'a/(aux:c)', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+
+              const c = s.children(s.firstChild(s.root));
+              checkActivatedRoute(c[0], '', {}, ComponentB);
+              checkActivatedRoute(c[1], 'c', {}, ComponentC, 'aux');
+            });
+      });
+    });
+
+    describe('split at the end (right child)', () => {
+      it('should match (non-terminal)', () => {
+        checkRecognize(
+            [{
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: '', component: ComponentB, children: [{path: 'd', component: ComponentD}]},
+                {
+                  path: '',
+                  component: ComponentC,
+                  outlet: 'aux',
+                  children: [{path: 'e', component: ComponentE}]
+                },
+              ]
+            }],
+            'a/(d//aux:e)', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+
+              const c = s.children(s.firstChild(s.root));
+              checkActivatedRoute(c[0], '', {}, ComponentB);
+              checkActivatedRoute(s.firstChild(c[0]), 'd', {}, ComponentD);
+              checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
+              checkActivatedRoute(s.firstChild(c[1]), 'e', {}, ComponentE);
+            });
+      });
     });
   });
 
@@ -305,64 +424,6 @@ describe('recognize', () => {
 
             const c = s.firstChild(b);
             checkActivatedRoute(c, 'c', {}, ComponentC);
-          });
-    });
-
-    xit('should work with empty paths', () => {
-      checkRecognize(
-          [{
-            path: 'p/:id',
-            children: [
-              {path: '', component: ComponentA},
-              {path: '', component: ComponentB, outlet: 'aux'}
-            ]
-          }],
-          'p/11', (s: RouterStateSnapshot) => {
-            const p = s.firstChild(s.root);
-            checkActivatedRoute(p, 'p/11', {id: '11'}, undefined);
-
-            const c = s.children(p);
-            console.log('lsfs', c);
-            checkActivatedRoute(c[0], '', {}, ComponentA);
-            checkActivatedRoute(c[1], '', {}, ComponentB, 'aux');
-          });
-    });
-
-    xit('should work with empty paths and params', () => {
-      checkRecognize(
-          [{
-            path: 'p/:id',
-            children: [
-              {path: '', component: ComponentA},
-              {path: '', component: ComponentB, outlet: 'aux'}
-            ]
-          }],
-          'p/11/(;pa=33//aux:;pb=44)', (s: RouterStateSnapshot) => {
-            const p = s.firstChild(s.root);
-            checkActivatedRoute(p, 'p/11', {id: '11'}, undefined);
-
-            const c = s.children(p);
-            checkActivatedRoute(c[0], '', {pa: '33'}, ComponentA);
-            checkActivatedRoute(c[1], '', {pb: '44'}, ComponentB, 'aux');
-          });
-    });
-
-    xit('should work with only aux path', () => {
-      checkRecognize(
-          [{
-            path: 'p/:id',
-            children: [
-              {path: '', component: ComponentA},
-              {path: '', component: ComponentB, outlet: 'aux'}
-            ]
-          }],
-          'p/11', (s: RouterStateSnapshot) => {
-            const p = s.firstChild(s.root);
-            checkActivatedRoute(p, 'p/11(aux:;pb=44)', {id: '11'}, undefined);
-
-            const c = s.children(p);
-            checkActivatedRoute(c[0], '', {}, ComponentA);
-            checkActivatedRoute(c[1], '', {pb: '44'}, ComponentB, 'aux');
           });
     });
   });
@@ -441,3 +502,5 @@ class RootComponent {}
 class ComponentA {}
 class ComponentB {}
 class ComponentC {}
+class ComponentD {}
+class ComponentE {}

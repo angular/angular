@@ -48,8 +48,7 @@ function processSegment(config: Route[], segment: UrlSegment, extraParams: Param
   if (segment.pathsWithParams.length === 0 && segment.hasChildren()) {
     return processSegmentChildren(config, segment, extraParams);
   } else {
-    return [processPathsWithParams(
-        config, segment, 0, segment.pathsWithParams, extraParams, outlet)];
+    return processPathsWithParams(config, segment, 0, segment.pathsWithParams, extraParams, outlet);
   }
 }
 
@@ -72,7 +71,7 @@ function sortActivatedRouteSnapshots(nodes: TreeNode<ActivatedRouteSnapshot>[]):
 
 function processPathsWithParams(
     config: Route[], segment: UrlSegment, pathIndex: number, paths: UrlPathWithParams[],
-    extraParams: Params, outlet: string): TreeNode<ActivatedRouteSnapshot> {
+    extraParams: Params, outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
   for (let r of config) {
     try {
       return processPathsWithParamsAgainstRoute(r, segment, pathIndex, paths, extraParams, outlet);
@@ -84,8 +83,8 @@ function processPathsWithParams(
 }
 
 function processPathsWithParamsAgainstRoute(
-    route: Route, segment: UrlSegment, pathIndex: number, paths: UrlPathWithParams[],
-    parentExtraParams: Params, outlet: string): TreeNode<ActivatedRouteSnapshot> {
+    route: Route, rawSegment: UrlSegment, pathIndex: number, paths: UrlPathWithParams[],
+    parentExtraParams: Params, outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
   if (route.redirectTo) throw new NoMatch();
 
   if ((route.outlet ? route.outlet : PRIMARY_OUTLET) !== outlet) throw new NoMatch();
@@ -93,30 +92,33 @@ function processPathsWithParamsAgainstRoute(
   if (route.path === '**') {
     const params = paths.length > 0 ? last(paths).parameters : {};
     const snapshot = new ActivatedRouteSnapshot(
-        paths, merge(parentExtraParams, params), outlet, route.component, route, segment, -1);
-    return new TreeNode<ActivatedRouteSnapshot>(snapshot, []);
+        paths, merge(parentExtraParams, params), outlet, route.component, route,
+        getSourceSegment(rawSegment), getPathIndexShift(rawSegment) - 1);
+    return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
   }
 
   const {consumedPaths, parameters, extraParams, lastChild} =
-      match(segment, route, paths, parentExtraParams);
-  const snapshot = new ActivatedRouteSnapshot(
-      consumedPaths, parameters, outlet, route.component, route, segment,
-      pathIndex + lastChild - 1);
-  const slicedPath = paths.slice(lastChild);
+      match(rawSegment, route, paths, parentExtraParams);
+  const rawSlicedPath = paths.slice(lastChild);
   const childConfig = route.children ? route.children : [];
 
-  if (childConfig.length === 0 && slicedPath.length === 0) {
-    return new TreeNode<ActivatedRouteSnapshot>(snapshot, []);
+  const {segment, slicedPath} = split(rawSegment, consumedPaths, rawSlicedPath, childConfig);
 
-    // TODO: check that the right segment is present
-  } else if (slicedPath.length === 0 && segment.hasChildren()) {
+  const snapshot = new ActivatedRouteSnapshot(
+      consumedPaths, parameters, outlet, route.component, route, getSourceSegment(rawSegment),
+      getPathIndexShift(rawSegment) + pathIndex + lastChild - 1);
+
+  if (slicedPath.length === 0 && segment.hasChildren()) {
     const children = processSegmentChildren(childConfig, segment, extraParams);
-    return new TreeNode<ActivatedRouteSnapshot>(snapshot, children);
+    return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
+
+  } else if (childConfig.length === 0 && slicedPath.length === 0) {
+    return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
 
   } else {
-    const child = processPathsWithParams(
+    const children = processPathsWithParams(
         childConfig, segment, pathIndex + lastChild, slicedPath, extraParams, PRIMARY_OUTLET);
-    return new TreeNode<ActivatedRouteSnapshot>(snapshot, [child]);
+    return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
   }
 }
 
@@ -173,4 +175,103 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): v
     }
     names[n.value.outlet] = n.value;
   });
+}
+
+function getSourceSegment(segment: UrlSegment): UrlSegment {
+  let s = segment;
+  while (s._sourceSegment) {
+    s = s._sourceSegment;
+  }
+  return s;
+}
+
+function getPathIndexShift(segment: UrlSegment): number {
+  let s = segment;
+  let res = 0;
+  while (s._sourceSegment) {
+    s = s._sourceSegment;
+    res += segment._pathIndexShift;
+  }
+  return res;
+}
+
+function split(
+    segment: UrlSegment, consumedPaths: UrlPathWithParams[], slicedPath: UrlPathWithParams[],
+    config: Route[]) {
+  if (slicedPath.length > 0 &&
+      containsEmptyPathMatchesWithNamedOutlets(segment, slicedPath, config)) {
+    const s = new UrlSegment(
+        consumedPaths,
+        createChildrenForEmptyPaths(
+            segment, consumedPaths, config, new UrlSegment(slicedPath, segment.children)));
+    s._sourceSegment = segment;
+    s._pathIndexShift = 0;
+    return {segment: s, slicedPath: []};
+
+  } else if (slicedPath.length === 0 && containsEmptyPathMatches(segment, slicedPath, config)) {
+    const s = new UrlSegment(
+        segment.pathsWithParams,
+        addEmptyPathsToChildrenIfNeeded(segment, slicedPath, config, segment.children));
+    s._sourceSegment = segment;
+    s._pathIndexShift = 0;
+    return {segment: s, slicedPath};
+
+  } else {
+    return {segment, slicedPath};
+  }
+}
+
+function addEmptyPathsToChildrenIfNeeded(
+    segment: UrlSegment, slicedPath: UrlPathWithParams[], routes: Route[],
+    children: {[name: string]: UrlSegment}): {[name: string]: UrlSegment} {
+  const res: {[name: string]: UrlSegment} = {};
+  for (let r of routes) {
+    if (emptyPathMatch(segment, slicedPath, r) && !children[getOutlet(r)]) {
+      const s = new UrlSegment([], {});
+      s._sourceSegment = segment;
+      s._pathIndexShift = segment.pathsWithParams.length;
+      res[getOutlet(r)] = s;
+    }
+  }
+  return merge(children, res);
+}
+
+function createChildrenForEmptyPaths(
+    segment: UrlSegment, consumedPaths: UrlPathWithParams[], routes: Route[],
+    primarySegment: UrlSegment): {[name: string]: UrlSegment} {
+  const res: {[name: string]: UrlSegment} = {};
+  res[PRIMARY_OUTLET] = primarySegment;
+  primarySegment._sourceSegment = segment;
+  primarySegment._pathIndexShift = consumedPaths.length;
+
+  for (let r of routes) {
+    if (r.path === '') {
+      const s = new UrlSegment([], {});
+      s._sourceSegment = segment;
+      s._pathIndexShift = consumedPaths.length;
+      res[getOutlet(r)] = s;
+    }
+  }
+  return res;
+}
+
+function containsEmptyPathMatchesWithNamedOutlets(
+    segment: UrlSegment, slicedPath: UrlPathWithParams[], routes: Route[]): boolean {
+  return routes
+             .filter(r => emptyPathMatch(segment, slicedPath, r) && getOutlet(r) !== PRIMARY_OUTLET)
+             .length > 0;
+}
+
+function containsEmptyPathMatches(
+    segment: UrlSegment, slicedPath: UrlPathWithParams[], routes: Route[]): boolean {
+  return routes.filter(r => emptyPathMatch(segment, slicedPath, r)).length > 0;
+}
+
+function emptyPathMatch(segment: UrlSegment, slicedPath: UrlPathWithParams[], r: Route): boolean {
+  if ((segment.hasChildren() || slicedPath.length > 0) && r.terminal) return false;
+  return r.path === '' && r.redirectTo === undefined;
+}
+
+function getOutlet(route: Route): string {
+  return route.outlet ? route.outlet : PRIMARY_OUTLET;
 }
