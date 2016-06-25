@@ -26,7 +26,7 @@ let _FakeAsyncTestZoneSpecType = (Zone as any /** TODO #9100 */)['FakeAsyncTestZ
  * @param fn
  * @returns {Function} The function wrapped to be executed in the fakeAsync zone
  */
-export function fakeAsync(fn: Function): Function {
+export function fakeAsync(fn: Function): (...args: any[]) => any {
   if (Zone.current.get('FakeAsyncTestZoneSpec') != null) {
     throw new BaseException('fakeAsync() calls can not be nested');
   }

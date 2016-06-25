@@ -1,8 +1,10 @@
+export declare function addProviders(providers: Array<any>): void;
+
 export declare var afterEach: Function;
 
-export declare function async(fn: Function): Function;
+export declare function async(fn: Function): (done: any) => any;
 
-export declare function beforeEach(fn: Function): void;
+export declare var beforeEach: any;
 
 export declare function beforeEachProviders(fn: () => Array<any>): void;
 
@@ -27,7 +29,7 @@ export declare var ComponentFixtureAutoDetect: OpaqueToken;
 
 export declare var ComponentFixtureNoNgZone: OpaqueToken;
 
-export declare var ddescribe: Function;
+export declare var ddescribe: any;
 
 export declare var describe: Function;
 
@@ -35,26 +37,26 @@ export declare function discardPeriodicTasks(): void;
 
 export declare var expect: Function;
 
-export declare function fakeAsync(fn: Function): Function;
+export declare function fakeAsync(fn: Function): (...args: any[]) => any;
 
-export declare var fdescribe: Function;
+export declare var fdescribe: any;
 
-export declare function fit(name: string, fn: Function, timeOut?: number): void;
+export declare var fit: any;
 
 export declare function flushMicrotasks(): void;
 
 export declare function getTestInjector(): TestInjector;
 
-export declare function iit(name: string, fn: Function, timeOut?: number): void;
+export declare var iit: any;
 
-export declare function inject(tokens: any[], fn: Function): Function;
+export declare function inject(tokens: any[], fn: Function): () => any;
 
 export declare class InjectSetupWrapper {
     constructor(_providers: () => any);
-    inject(tokens: any[], fn: Function): Function;
+    inject(tokens: any[], fn: Function): () => any;
 }
 
-export declare function it(name: string, fn: Function, timeOut?: number): void;
+export declare var it: any;
 
 export declare function resetBaseTestProviders(): void;
 
@@ -95,4 +97,4 @@ export declare function withProviders(providers: () => any): InjectSetupWrapper;
 
 export declare var xdescribe: Function;
 
-export declare function xit(name: string, fn: Function, timeOut?: number): void;
+export declare var xit: any;
