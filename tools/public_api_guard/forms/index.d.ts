@@ -118,6 +118,18 @@ export declare class FormArray extends AbstractControl {
     removeAt(index: number): void;
 }
 
+export declare class FormArrayName extends ControlContainer implements OnInit, OnDestroy {
+    asyncValidator: AsyncValidatorFn;
+    control: FormArray;
+    formDirective: FormGroupDirective;
+    name: string;
+    path: string[];
+    validator: ValidatorFn;
+    constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+}
+
 export declare class FormBuilder {
     array(controlsConfig: any[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn): FormArray;
     control(value: Object, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]): FormControl;
@@ -194,12 +206,15 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     submitted: boolean;
     constructor(_validators: any[], _asyncValidators: any[]);
     addControl(dir: NgControl): void;
+    addFormArray(dir: FormArrayName): void;
     addFormGroup(dir: FormGroupName): void;
     getControl(dir: NgControl): FormControl;
+    getFormArray(dir: FormArrayName): FormArray;
     getFormGroup(dir: FormGroupName): FormGroup;
     ngOnChanges(changes: SimpleChanges): void;
     onSubmit(): boolean;
     removeControl(dir: NgControl): void;
+    removeFormArray(dir: FormArrayName): void;
     removeFormGroup(dir: FormGroupName): void;
     updateModel(dir: NgControl, value: any): void;
 }

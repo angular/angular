@@ -9,7 +9,7 @@
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
 import {hasConstructor, isBlank, isPresent, looseIdentical} from '../facade/lang';
-import {FormControl, FormGroup} from '../model';
+import {FormArray, FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
 
 import {AbstractControlDirective} from './abstract_control_directive';
@@ -22,6 +22,7 @@ import {NgControl} from './ng_control';
 import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator';
 import {NumberValueAccessor} from './number_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
+import {FormArrayName} from './reactive_directives/form_array_name';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
@@ -54,7 +55,8 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
 }
 
-export function setUpFormGroup(control: FormGroup, dir: AbstractFormGroupDirective) {
+export function setUpFormContainer(
+    control: FormGroup | FormArray, dir: AbstractFormGroupDirective | FormArrayName) {
   if (isBlank(control)) _throwError(dir, 'Cannot find control');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);

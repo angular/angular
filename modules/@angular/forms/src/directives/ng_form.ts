@@ -19,7 +19,7 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, setUpControl, setUpFormGroup} from './shared';
+import {composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from './shared';
 
 export const formDirectiveProvider: any =
     /*@ts2dart_const*/ {provide: ControlContainer, useExisting: forwardRef(() => NgForm)};
@@ -140,7 +140,7 @@ export class NgForm extends ControlContainer implements Form {
     PromiseWrapper.scheduleMicrotask(() => {
       var container = this._findContainer(dir.path);
       var group = new FormGroup({});
-      setUpFormGroup(group, dir);
+      setUpFormContainer(group, dir);
       container.registerControl(dir.name, group);
       group.updateValueAndValidity({emitEvent: false});
     });

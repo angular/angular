@@ -16,6 +16,7 @@ import {NgModel} from './directives/ng_model';
 import {NgModelGroup} from './directives/ng_model_group';
 import {NumberValueAccessor} from './directives/number_value_accessor';
 import {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
+import {FormArrayName} from './directives/reactive_directives/form_array_name';
 import {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 import {FormControlName} from './directives/reactive_directives/form_control_name';
 import {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
@@ -34,6 +35,7 @@ export {NgModel} from './directives/ng_model';
 export {NgModelGroup} from './directives/ng_model_group';
 export {NumberValueAccessor} from './directives/number_value_accessor';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
+export {FormArrayName} from './directives/reactive_directives/form_array_name';
 export {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 export {FormControlName} from './directives/reactive_directives/form_control_name';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
@@ -72,4 +74,6 @@ export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
 ];
 
 export const REACTIVE_FORM_DIRECTIVES: Type[] =
-    /*@ts2dart_const*/[FormControlDirective, FormGroupDirective, FormControlName, FormGroupName];
+    /*@ts2dart_const*/[
+      FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName
+    ];

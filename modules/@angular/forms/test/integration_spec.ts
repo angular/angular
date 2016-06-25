@@ -14,7 +14,7 @@ import {ComponentFixture} from '@angular/core/testing';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, FormControl, FormGroup, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, NgModel, REACTIVE_FORM_DIRECTIVES, Validator, Validators, disableDeprecatedForms, provideForms} from '@angular/forms';
+import {ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, FormArray, FormControl, FormGroup, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, NgModel, REACTIVE_FORM_DIRECTIVES, Validator, Validators, disableDeprecatedForms, provideForms} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
@@ -68,7 +68,7 @@ export function main() {
                  });
            }));
 
-    it('should update the control group values on DOM change',
+    it('should update the form group values on DOM change',
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
            (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
@@ -221,7 +221,7 @@ export function main() {
                  });
            }));
 
-    it('should update DOM elements when rebinding the control group',
+    it('should update DOM elements when rebinding the form group',
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
            (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
@@ -303,6 +303,77 @@ export function main() {
                    async.done();
                  });
            }));
+
+    it('should support form arrays',
+       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+         const form = new FormGroup({cities: cityArray});
+
+         const t = `<div [formGroup]="form">
+                <div formArrayName="cities">
+                  <div *ngFor="let city of cityArray.controls; let i=index">
+                    <input [formControlName]="i">
+                  </div>
+                </div>
+               </div>`;
+
+         tcb.overrideTemplate(MyComp8, t)
+             .overrideProviders(MyComp8, providerArr)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.debugElement.componentInstance.cityArray = cityArray;
+               fixture.detectChanges();
+               tick();
+
+               const inputs = fixture.debugElement.queryAll(By.css('input'));
+               expect(inputs[0].nativeElement.value).toEqual('SF');
+               expect(inputs[1].nativeElement.value).toEqual('NY');
+               expect(fixture.componentInstance.form.value).toEqual({cities: ['SF', 'NY']});
+
+               inputs[0].nativeElement.value = 'LA';
+               dispatchEvent(inputs[0].nativeElement, 'input');
+
+               fixture.detectChanges();
+               tick();
+
+               expect(fixture.componentInstance.form.value).toEqual({cities: ['LA', 'NY']});
+
+             });
+       })));
+
+    it('should support pushing new controls to form arrays',
+       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+         const form = new FormGroup({cities: cityArray});
+
+         const t = `<div [formGroup]="form">
+                <div formArrayName="cities">
+                  <div *ngFor="let city of cityArray.controls; let i=index">
+                    <input [formControlName]="i">
+                  </div>
+                </div>
+               </div>`;
+
+         tcb.overrideTemplate(MyComp8, t)
+             .overrideProviders(MyComp8, providerArr)
+             .createAsync(MyComp8)
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.debugElement.componentInstance.cityArray = cityArray;
+               fixture.detectChanges();
+               tick();
+
+               cityArray.push(new FormControl('LA'));
+               fixture.detectChanges();
+               tick();
+
+               const inputs = fixture.debugElement.queryAll(By.css('input'));
+               expect(inputs[2].nativeElement.value).toEqual('LA');
+               expect(fixture.componentInstance.form.value).toEqual({cities: ['SF', 'NY', 'LA']});
+
+             });
+       })));
 
     describe('different control types', () => {
       it('should support <input type=text>',

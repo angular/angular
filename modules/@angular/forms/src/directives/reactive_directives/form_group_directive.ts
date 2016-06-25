@@ -12,13 +12,14 @@ import {EventEmitter, ObservableWrapper} from '../../facade/async';
 import {ListWrapper, StringMapWrapper} from '../../facade/collection';
 import {BaseException} from '../../facade/exceptions';
 import {isBlank} from '../../facade/lang';
-import {FormControl, FormGroup} from '../../model';
+import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {NgControl} from '../ng_control';
-import {composeAsyncValidators, composeValidators, setUpControl, setUpFormGroup} from '../shared';
+import {composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from '../shared';
 
+import {FormArrayName} from './form_array_name';
 import {FormGroupName} from './form_group_name';
 
 export const formDirectiveProvider: any =
@@ -155,15 +156,25 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   removeControl(dir: NgControl): void { ListWrapper.remove(this.directives, dir); }
 
-  addFormGroup(dir: FormGroupName) {
+  addFormGroup(dir: FormGroupName): void {
     var ctrl: any = this.form.find(dir.path);
-    setUpFormGroup(ctrl, dir);
+    setUpFormContainer(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
-  removeFormGroup(dir: FormGroupName) {}
+  removeFormGroup(dir: FormGroupName): void {}
 
   getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.find(dir.path); }
+
+  addFormArray(dir: FormArrayName): void {
+    var ctrl: any = this.form.find(dir.path);
+    setUpFormContainer(ctrl, dir);
+    ctrl.updateValueAndValidity({emitEvent: false});
+  }
+
+  removeFormArray(dir: FormArrayName): void {}
+
+  getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form.find(dir.path); }
 
   updateModel(dir: NgControl, value: any): void {
     var ctrl  = <FormControl>this.form.find(dir.path);

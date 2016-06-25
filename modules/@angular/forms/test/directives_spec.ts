@@ -12,7 +12,7 @@ import {fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
 
 import {SpyNgControl, SpyValueAccessor} from './spies';
 
-import {FormGroup, FormControl, FormControlName, FormGroupName, NgModelGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/forms';
+import {FormGroup, FormControl, FormArray, FormArrayName, FormControlName, FormGroupName, NgModelGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/forms';
 
 import {selectValueAccessor, composeValidators} from '@angular/forms/src/directives/shared';
 import {TimerWrapper} from '../src/facade/async';
@@ -373,6 +373,30 @@ export function main() {
         expect(controlGroupDir.untouched).toBe(formModel.untouched);
         expect(controlGroupDir.statusChanges).toBe(formModel.statusChanges);
         expect(controlGroupDir.valueChanges).toBe(formModel.valueChanges);
+      });
+    });
+
+    describe('FormArrayName', () => {
+      var formModel: FormArray;
+      var formArrayDir: FormArrayName;
+
+      beforeEach(() => {
+        const parent = new FormGroupDirective([], []);
+        formModel = new FormArray([new FormControl('')]);
+        parent.form = new FormGroup({'array': formModel});
+        formArrayDir = new FormArrayName(parent, [], []);
+        formArrayDir.name = 'array';
+      });
+
+      it('should reexport control properties', () => {
+        expect(formArrayDir.control).toBe(formModel);
+        expect(formArrayDir.value).toBe(formModel.value);
+        expect(formArrayDir.valid).toBe(formModel.valid);
+        expect(formArrayDir.errors).toBe(formModel.errors);
+        expect(formArrayDir.pristine).toBe(formModel.pristine);
+        expect(formArrayDir.dirty).toBe(formModel.dirty);
+        expect(formArrayDir.touched).toBe(formModel.touched);
+        expect(formArrayDir.untouched).toBe(formModel.untouched);
       });
     });
 
