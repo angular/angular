@@ -70,14 +70,19 @@ export class Location {
     var browserBaseHref = this._platformStrategy.getBaseHref();
     this._baseHref = Location.stripTrailingSlash(_stripIndexHtml(browserBaseHref));
     this._platformStrategy.onPopState((ev) => {
-      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true, 'type': ev.type});
+      ObservableWrapper.callEmit(
+          this._subject, {'url': this.path(true), 'pop': true, 'type': ev.type});
     });
   }
 
   /**
    * Returns the normalized URL path.
    */
-  path(): string { return this.normalize(this._platformStrategy.path()); }
+  // TODO: vsavkin. Remove the boolean flag and always include hash once the deprecated router is
+  // removed.
+  path(includeHash: boolean = false): string {
+    return this.normalize(this._platformStrategy.path(includeHash));
+  }
 
   /**
    * Normalizes the given path and compares to the current normalized path.

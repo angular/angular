@@ -32,7 +32,7 @@ export class MockLocationStrategy extends LocationStrategy {
     ObservableWrapper.callEmit(this._subject, new _MockPopStateEvent(this.path()));
   }
 
-  path(): string { return this.internalPath; }
+  path(includeHash: boolean = false): string { return this.internalPath; }
 
   prepareExternalUrl(internal: string): string {
     if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {

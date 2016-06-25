@@ -98,9 +98,11 @@ export class PathLocationStrategy extends LocationStrategy {
     return Location.joinWithSlash(this._baseHref, internal);
   }
 
-  path(): string {
-    return this._platformLocation.pathname +
+  path(includeHash: boolean = false): string {
+    const pathname = this._platformLocation.pathname +
         Location.normalizeQueryParams(this._platformLocation.search);
+    const hash = this._platformLocation.hash;
+    return hash && includeHash ? `${pathname}${hash}` : pathname;
   }
 
   pushState(state: any, title: string, url: string, queryParams: string) {

@@ -123,7 +123,7 @@ export class Router {
    */
   initialNavigation(): void {
     this.setUpLocationChangeListener();
-    this.navigateByUrl(this.location.path());
+    this.navigateByUrl(this.location.path(true));
   }
 
   /**
