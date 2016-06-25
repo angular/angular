@@ -58,6 +58,10 @@ export declare abstract class AbstractControlDirective {
     valueChanges: Observable<any>;
 }
 
+export interface AsyncValidatorFn {
+    (c: AbstractControl): any;
+}
+
 export declare class CheckboxControlValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
@@ -323,6 +327,12 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
 
 export interface Validator {
     validate(c: AbstractControl): {
+        [key: string]: any;
+    };
+}
+
+export interface ValidatorFn {
+    (c: AbstractControl): {
         [key: string]: any;
     };
 }

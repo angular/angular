@@ -38,8 +38,9 @@ export {FormControlName} from './directives/reactive_directives/form_control_nam
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
 export {FormGroupName} from './directives/reactive_directives/form_group_name';
 export {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
-export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator, Validator} from './directives/validators';
+export {AsyncValidatorFn, MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator, Validator, ValidatorFn} from './directives/validators';
 export {FormBuilder} from './form_builder';
 export {AbstractControl, FormArray, FormControl, FormGroup} from './model';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
+
 export * from './form_providers';
