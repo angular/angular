@@ -102,6 +102,29 @@ export function isBlank(obj: any): boolean {
   return obj === undefined || obj === null;
 }
 
+export function isEmptyValue(val): boolean { 
+  if (val === undefined) { 
+    return true; 
+  } 
+  if (val === null) { 
+    return true; 
+  } 
+  if (val === '') { 
+    return true; 
+  } 
+  if (typeof val === 'string') { 
+    if (String.prototype.trim) { 
+      val = val.trim(); 
+    } else { 
+      val = val.replace(/^\s+|\s+$/g, ''); 
+    } 
+  } 
+  if (val.length !== undefined) { 
+    return val.length === 0; 
+  } 
+  return false; 
+}; 
+
 export function isBoolean(obj: any): boolean {
   return typeof obj === 'boolean';
 }
