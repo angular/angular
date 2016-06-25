@@ -23,6 +23,10 @@ export declare class ComponentFixture<T> {
     whenStable(): Promise<any>;
 }
 
+export declare var ComponentFixtureAutoDetect: OpaqueToken;
+
+export declare var ComponentFixtureNoNgZone: OpaqueToken;
+
 export declare var ddescribe: Function;
 
 export declare var describe: Function;
@@ -55,6 +59,25 @@ export declare function it(name: string, fn: Function, timeOut?: number): void;
 export declare function resetBaseTestProviders(): void;
 
 export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
+
+export declare class TestComponentBuilder {
+    protected _injector: Injector;
+    constructor(_injector: Injector);
+    createAsync(rootComponentType: Type): Promise<ComponentFixture<any>>;
+    createFakeAsync(rootComponentType: Type): ComponentFixture<any>;
+    protected createFromFactory<C>(ngZone: NgZone, componentFactory: ComponentFactory<C>): ComponentFixture<C>;
+    createSync<C>(componentFactory: ComponentFactory<C>): ComponentFixture<C>;
+    overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder;
+    overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder;
+    overrideProviders(type: Type, providers: any[]): TestComponentBuilder;
+    overrideTemplate(componentType: Type, template: string): TestComponentBuilder;
+    overrideView(componentType: Type, view: ViewMetadata): TestComponentBuilder;
+    overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder;
+}
+
+export declare class TestComponentRenderer {
+    insertRootElement(rootElementId: string): void;
+}
 
 export declare class TestInjector {
     applicationProviders: Array<Type | Provider | any[] | any>;

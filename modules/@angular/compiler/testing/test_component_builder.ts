@@ -6,37 +6,44 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, ChangeDetectorRef, ComponentFactory, ComponentRef, ComponentResolver, DebugElement, ElementRef, Injectable, Injector, NgZone, NgZoneError, OpaqueToken, ViewMetadata, getDebugNode} from '@angular/core';
-import {ComponentFixture, tick} from '@angular/core/testing';
+import {AnimationEntryMetadata, ComponentFactory, ComponentResolver, Injectable, Injector, NgZone, ViewMetadata} from '@angular/core';
+import {ComponentFixture, ComponentFixtureNoNgZone, TestComponentBuilder} from '@angular/core/testing';
 
 import {DirectiveResolver, ViewResolver} from '../index';
-import {ObservableWrapper, PromiseCompleter, PromiseWrapper} from '../src/facade/async';
-import {ListWrapper, MapWrapper} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
-import {IS_DART, Type, isBlank, isPresent, scheduleMicroTask} from '../src/facade/lang';
+import {MapWrapper} from '../src/facade/collection';
+import {IS_DART, Type, isPresent} from '../src/facade/lang';
 
 /**
- *  @deprecated
- *  Import ComponentFixture from @angular/core/testing instead.
+ * @deprecated Import TestComponentRenderer from @angular/core/testing
+ */
+export {TestComponentRenderer} from '@angular/core/testing';
+
+/**
+ * @deprecated Import TestComponentBuilder from @angular/core/testing
+ */
+export {TestComponentBuilder} from '@angular/core/testing';
+
+/**
+ * @deprecated Import ComponentFixture from @angular/core/testing
  */
 export {ComponentFixture} from '@angular/core/testing';
+
 /**
- * An abstract class for inserting the root test component element in a platform independent way.
+ * @deprecated Import ComponentFixtureNoNgZone from @angular/core/testing
  */
-export class TestComponentRenderer {
-  insertRootElement(rootElementId: string) {}
-}
-
-export var ComponentFixtureAutoDetect = new OpaqueToken('ComponentFixtureAutoDetect');
-export var ComponentFixtureNoNgZone = new OpaqueToken('ComponentFixtureNoNgZone');
-
-var _nextRootElementId = 0;
+export {ComponentFixtureNoNgZone} from '@angular/core/testing';
 
 /**
- * Builds a ComponentFixture for use in component level tests.
+ * @deprecated Import ComponentFixtureAutoDetect from @angular/core/testing
+ */
+export {ComponentFixtureAutoDetect} from '@angular/core/testing';
+
+
+/**
+ * A TestComponentBuilder that allows overriding based on the compiler.
  */
 @Injectable()
-export class TestComponentBuilder {
+export class OverridingTestComponentBuilder extends TestComponentBuilder {
   /** @internal */
   _bindingsOverrides = new Map<Type, any[]>();
   /** @internal */
@@ -51,11 +58,12 @@ export class TestComponentBuilder {
   _viewOverrides = new Map<Type, ViewMetadata>();
 
 
-  constructor(private _injector: Injector) {}
+
+  constructor(injector: Injector) { super(injector); }
 
   /** @internal */
-  _clone(): TestComponentBuilder {
-    let clone = new TestComponentBuilder(this._injector);
+  _clone(): OverridingTestComponentBuilder {
+    let clone = new OverridingTestComponentBuilder(this._injector);
     clone._viewOverrides = MapWrapper.clone(this._viewOverrides);
     clone._directiveOverrides = MapWrapper.clone(this._directiveOverrides);
     clone._templateOverrides = MapWrapper.clone(this._templateOverrides);
@@ -64,11 +72,7 @@ export class TestComponentBuilder {
     return clone;
   }
 
-  /**
-   * Overrides only the html of a {@link ComponentMetadata}.
-   * All the other properties of the component's {@link ViewMetadata} are preserved.
-   */
-  overrideTemplate(componentType: Type, template: string): TestComponentBuilder {
+  overrideTemplate(componentType: Type, template: string): OverridingTestComponentBuilder {
     let clone = this._clone();
     clone._templateOverrides.set(componentType, template);
     return clone;
@@ -81,19 +85,13 @@ export class TestComponentBuilder {
     return clone;
   }
 
-  /**
-   * Overrides a component's {@link ViewMetadata}.
-   */
-  overrideView(componentType: Type, view: ViewMetadata): TestComponentBuilder {
+  overrideView(componentType: Type, view: ViewMetadata): OverridingTestComponentBuilder {
     let clone = this._clone();
     clone._viewOverrides.set(componentType, view);
     return clone;
   }
 
-  /**
-   * Overrides the directives from the component {@link ViewMetadata}.
-   */
-  overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder {
+  overrideDirective(componentType: Type, from: Type, to: Type): OverridingTestComponentBuilder {
     let clone = this._clone();
     let overridesForComponent = clone._directiveOverrides.get(componentType);
     if (!isPresent(overridesForComponent)) {
@@ -104,65 +102,18 @@ export class TestComponentBuilder {
     return clone;
   }
 
-  /**
-   * Overrides one or more injectables configured via `providers` metadata property of a directive
-   * or
-   * component.
-   * Very useful when certain providers need to be mocked out.
-   *
-   * The providers specified via this method are appended to the existing `providers` causing the
-   * duplicated providers to
-   * be overridden.
-   */
-  overrideProviders(type: Type, providers: any[]): TestComponentBuilder {
+  overrideProviders(type: Type, providers: any[]): OverridingTestComponentBuilder {
     let clone = this._clone();
     clone._bindingsOverrides.set(type, providers);
     return clone;
   }
 
-  /**
-   * @deprecated
-   */
-  overrideBindings(type: Type, providers: any[]): TestComponentBuilder {
-    return this.overrideProviders(type, providers);
-  }
-
-  /**
-   * Overrides one or more injectables configured via `providers` metadata property of a directive
-   * or
-   * component.
-   * Very useful when certain providers need to be mocked out.
-   *
-   * The providers specified via this method are appended to the existing `providers` causing the
-   * duplicated providers to
-   * be overridden.
-   */
-  overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder {
+  overrideViewProviders(type: Type, providers: any[]): OverridingTestComponentBuilder {
     let clone = this._clone();
     clone._viewBindingsOverrides.set(type, providers);
     return clone;
   }
 
-  /**
-   * @deprecated
-   */
-  overrideViewBindings(type: Type, providers: any[]): TestComponentBuilder {
-    return this.overrideViewProviders(type, providers);
-  }
-
-  private _create<C>(ngZone: NgZone, componentFactory: ComponentFactory<C>): ComponentFixture<C> {
-    let rootElId = `root${_nextRootElementId++}`;
-    var testComponentRenderer: TestComponentRenderer = this._injector.get(TestComponentRenderer);
-    testComponentRenderer.insertRootElement(rootElId);
-
-    var componentRef = componentFactory.create(this._injector, [], `#${rootElId}`);
-    let autoDetect: boolean = this._injector.get(ComponentFixtureAutoDetect, false);
-    return new ComponentFixture<any /*C*/>(componentRef, ngZone, autoDetect);
-  }
-
-  /**
-   * Builds and returns a ComponentFixture.
-   */
   createAsync(rootComponentType: Type): Promise<ComponentFixture<any>> {
     let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
@@ -186,30 +137,9 @@ export class TestComponentBuilder {
 
       let promise: Promise<ComponentFactory<any>> =
           this._injector.get(ComponentResolver).resolveComponent(rootComponentType);
-      return promise.then(componentFactory => this._create(ngZone, componentFactory));
+      return promise.then(componentFactory => this.createFromFactory(ngZone, componentFactory));
     };
 
-    return ngZone == null ? initComponent() : ngZone.run(initComponent);
-  }
-
-  createFakeAsync(rootComponentType: Type): ComponentFixture<any> {
-    let result: any /** TODO #9100 */;
-    let error: any /** TODO #9100 */;
-    PromiseWrapper.then(
-        this.createAsync(rootComponentType), (_result) => { result = _result; },
-        (_error) => { error = _error; });
-    tick();
-    if (isPresent(error)) {
-      throw error;
-    }
-    return result;
-  }
-
-  createSync<C>(componentFactory: ComponentFactory<C>): ComponentFixture<C> {
-    let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
-    let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
-
-    let initComponent = () => this._create(ngZone, componentFactory);
     return ngZone == null ? initComponent() : ngZone.run(initComponent);
   }
 }

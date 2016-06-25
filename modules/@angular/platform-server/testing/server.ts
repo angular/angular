@@ -7,8 +7,9 @@
  */
 
 import {COMPILER_PROVIDERS, DirectiveResolver, ViewResolver, XHR} from '@angular/compiler';
-import {MockDirectiveResolver, MockViewResolver, TestComponentBuilder, TestComponentRenderer} from '@angular/compiler/testing';
+import {MockDirectiveResolver, MockViewResolver, OverridingTestComponentBuilder} from '@angular/compiler/testing';
 import {APPLICATION_COMMON_PROVIDERS, APP_ID, NgZone, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, RootRenderer} from '@angular/core';
+import {TestComponentBuilder, TestComponentRenderer} from '@angular/core/testing';
 
 import {AnimationDriver, NoOpAnimationDriver} from '../core_private';
 import {DOMTestComponentRenderer} from '../platform_browser_dynamic_testing_private';
@@ -71,9 +72,9 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       /* @ts2dart_Provider */ {provide: APP_ID, useValue: 'a'},
       /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
       DomSharedStylesHost, ELEMENT_PROBE_PROVIDERS,
+      {provide: TestComponentBuilder, useClass: OverridingTestComponentBuilder},
       /* @ts2dart_Provider */ {provide: DirectiveResolver, useClass: MockDirectiveResolver},
       /* @ts2dart_Provider */ {provide: ViewResolver, useClass: MockViewResolver},
       /* @ts2dart_Provider */ {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
-      TestComponentBuilder,
       /* @ts2dart_Provider */ {provide: NgZone, useFactory: createNgZone}
     ];
