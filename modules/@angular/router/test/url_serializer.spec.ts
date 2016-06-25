@@ -91,6 +91,13 @@ describe('url serializer', () => {
     expect(url.serialize(tree)).toEqual('/one;a=true');
   });
 
+  it('should parse query params (root)', () => {
+    const tree = url.parse('/?a=1&b=2');
+    expect(tree.root.children).toEqual({});
+    expect(tree.queryParams).toEqual({a: '1', b: '2'});
+    expect(url.serialize(tree)).toEqual('/?a=1&b=2');
+  });
+
   it('should parse query params', () => {
     const tree = url.parse('/one?a=1&b=2');
     expect(tree.queryParams).toEqual({a: '1', b: '2'});

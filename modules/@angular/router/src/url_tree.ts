@@ -277,7 +277,11 @@ class UrlParser {
   }
 
   parseRootSegment(): UrlSegment {
-    if (this.remaining === '' || this.remaining === '/') {
+    if (this.remaining.startsWith('/')) {
+      this.capture('/');
+    }
+
+    if (this.remaining === '' || this.remaining.startsWith('?')) {
       return new UrlSegment([], {});
     } else {
       return new UrlSegment([], this.parseSegmentChildren());
