@@ -276,6 +276,7 @@ export class Router {
     return new Promise((resolvePromise, rejectPromise) => {
       let updatedUrl: UrlTree;
       let state: RouterState;
+      let navigationIsSuccessful;
       applyRedirects(url, this.config)
           .mergeMap(u => {
             updatedUrl = u;
@@ -305,7 +306,8 @@ export class Router {
           .forEach((shouldActivate: boolean) => {
             if (!shouldActivate || id !== this.navigationId) {
               this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url)));
-              return Promise.resolve(false);
+              navigationIsSuccessful = false;
+              return;
             }
 
             new ActivateRoutes(state, this.currentRouterState).activate(this.outletMap);
@@ -320,14 +322,13 @@ export class Router {
                 this.location.go(path);
               }
             }
-            return Promise.resolve(true);
+            navigationIsSuccessful = true;
           })
           .then(
               () => {
                 this.routerEvents.next(
                     new NavigationEnd(id, this.serializeUrl(url), this.serializeUrl(updatedUrl)));
-                resolvePromise(true);
-
+                resolvePromise(navigationIsSuccessful);
               },
               e => {
                 this.routerEvents.next(new NavigationError(id, this.serializeUrl(url), e));

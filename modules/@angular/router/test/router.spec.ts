@@ -731,13 +731,17 @@ describe('Integration', () => {
                  advance(fixture);
                  expect(location.path()).toEqual('/team/22');
 
-                 router.navigateByUrl('/team/33');
+                 let successStatus;
+                 router.navigateByUrl('/team/33').then(res => successStatus = res);
                  advance(fixture);
                  expect(location.path()).toEqual('/team/33');
+                 expect(successStatus).toEqual(true);
 
-                 router.navigateByUrl('/team/44');
+                 let canceledStatus;
+                 router.navigateByUrl('/team/44').then(res => canceledStatus = res);
                  advance(fixture);
                  expect(location.path()).toEqual('/team/33');
+                 expect(canceledStatus).toEqual(false);
                })));
 
         it('works (componentless route)',
