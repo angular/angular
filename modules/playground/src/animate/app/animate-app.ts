@@ -26,7 +26,7 @@ import {
       <button (click)="state='start'">Start State</button>
       <button (click)="state='active'">Active State</button>
       |
-      <button (click)="state='void'">Void State</button>
+      <button (click)="state='gone'">Void State</button>
       <button (click)="state='default'">Unhandled (default) State</button>
       <button style="float:right" (click)="bgStatus='blur'">Blur Page</button>
       <hr />
@@ -48,7 +48,7 @@ import {
     ]),
     trigger("boxAnimation", [
       state("*", style({ "height": "*", "background-color": "#dddddd", "color":"black" })),
-      state("void, hidden", style({ "height": 0, "opacity": 0 })),
+      state(":void, hidden", style({ "height": 0, "opacity": 0 })),
       state("start", style({ "background-color": "red", "height": "*" })),
       state("active", style({ "background-color": "orange", "color": "white", "font-size":"100px" })),
 
@@ -79,7 +79,7 @@ export class AnimateApp {
   get state() { return this._state; }
   set state(s) {
     this._state = s;
-    if (s == 'void') {
+    if (s == 'gone') {
       this.items = [];
     } else {
       this.items = [

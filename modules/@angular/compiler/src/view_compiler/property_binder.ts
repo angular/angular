@@ -157,7 +157,10 @@ function bindAndWriteToRenderer(
         updateStmts.push(newRenderVar.set(renderValue).toDeclStmt());
         updateStmts.push(new o.IfStmt(
             newRenderVar.equals(o.importExpr(Identifiers.UNINITIALIZED)),
-            [newRenderVar.set(emptyStateValue).toStmt()]));
+            [newRenderVar.set(emptyStateValue).toStmt()],
+            [o.importExpr(Identifiers.assertValidAnimationState)
+                 .callFn([newRenderVar, o.literal(animationName)])
+                 .toStmt()]));
 
         updateStmts.push(
             animation.fnVariable.callFn([o.THIS_EXPR, renderNode, oldRenderVar, newRenderVar])

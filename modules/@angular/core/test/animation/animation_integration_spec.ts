@@ -54,7 +54,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         };
 
     describe('animation triggers', () => {
-      it('should trigger a state change animation from void => state',
+      it('should trigger a state change animation from :void => state',
          inject(
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
@@ -63,7 +63,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    trigger(
                        'myAnimation',
                        [transition(
-                           'void => *',
+                           ':void => *',
                            [style({'opacity': 0}), animate(500, style({'opacity': 1}))])]),
                    (fixture: any /** TODO #9100 */) => {
                      var cmp = fixture.debugElement.componentInstance;
@@ -80,7 +80,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    });
              })));
 
-      it('should trigger a state change animation from state => void',
+      it('should trigger a state change animation from state => :void',
          inject(
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
@@ -89,7 +89,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    trigger(
                        'myAnimation',
                        [transition(
-                           '* => void',
+                           '* => :void',
                            [style({'opacity': 1}), animate(500, style({'opacity': 0}))])]),
                    (fixture: any /** TODO #9100 */) => {
                      var cmp = fixture.debugElement.componentInstance;
@@ -107,6 +107,29 @@ function declareTests({useJit}: {useJit: boolean}) {
                      expect(keyframes2.length).toEqual(2);
                      expect(keyframes2[0]).toEqual([0, {'opacity': 1}]);
                      expect(keyframes2[1]).toEqual([1, {'opacity': 0}]);
+                   });
+             })));
+
+      it('should throw an error if a state value contains a leading colon value',
+         inject(
+             [TestComponentBuilder, AnimationDriver],
+             fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
+               makeAnimationCmp(
+                   tcb, '<div *ngIf="exp" [@myAnimation]="exp"></div>',
+                   trigger(
+                       'myAnimation',
+                       [transition(
+                           '* => :void',
+                           [style({'opacity': 1}), animate(500, style({'opacity': 0}))])]),
+                   (fixture: any /** TODO #9100 */) => {
+                     var cmp = fixture.debugElement.componentInstance;
+                     expect(() => {
+                       cmp.exp = ':boo';
+                       fixture.detectChanges();
+                       flushMicrotasks();
+                     })
+                         .toThrowError(
+                             /The provided value ":boo" for the animation trigger "myAnimation" is invalid because it is prefixed with a colon/);
                    });
              })));
 
@@ -161,7 +184,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                                                       'myAnimation',
                                                       [
                                                         state('*', style({'opacity': '1'})),
-                                                        state('void', style({'opacity': '0'})),
+                                                        state(':void', style({'opacity': '0'})),
                                                         transition('* => *', [animate('500ms')])
                                                       ])])
                    .createAsync(DummyIfCmp)
@@ -199,7 +222,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                tcb.overrideAnimations(DummyIfCmp, [
                        trigger('myAnimation', [
-                         transition('void => *', [
+                         transition(':void => *', [
                             style({'background': 'red'}),
                             style({'width': '100px'}),
                             style({'background': 'gold'}),
@@ -270,7 +293,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                  tcb.overrideAnimations(
                         DummyIfCmp,
                         [trigger('myAnimation', [transition(
-                                                    'void => *',
+                                                    ':void => *',
                                                     [
                                                       style({'opacity': '0'}),
                                                       animate(1000, style({'opacity': '0.5'})),
@@ -324,7 +347,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                  tcb.overrideAnimations(DummyIfCmp, [
                    trigger('myAnimation', [
-                     transition('void => *', [
+                     transition(':void => *', [
                             style({'width': 0, 'height': 0}),
                             group([animate(1000, style({'width': 100})), animate(5000, style({'height': 500}))]),
                             group([animate(1000, style({'width': 0})), animate(5000, style({'height': 0}))])
@@ -384,69 +407,68 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       describe('keyframes', () => {
-        it(
-            'should create an animation step with multiple keyframes',
-            inject(
-                [TestComponentBuilder, AnimationDriver], fakeAsync(
-                                                             (tcb: TestComponentBuilder,
-                                                              driver: MockAnimationDriver) => {
-                                                               tcb.overrideAnimations(
-                                                                      DummyIfCmp,
-                                                                      [trigger(
-                                                                          'myAnimation',
-                                                                          [transition(
-                                                                              'void => *',
-                                                                              [animate(
-                                                                                  1000, keyframes([
-                                                                                    style([{
-                                                                                      'width': 0,
-                                                                                      offset: 0
-                                                                                    }]),
-                                                                                    style([{
-                                                                                      'width': 100,
-                                                                                      offset: 0.25
-                                                                                    }]),
-                                                                                    style([{
-                                                                                      'width': 200,
-                                                                                      offset: 0.75
-                                                                                    }]),
-                                                                                    style([{
-                                                                                      'width': 300,
-                                                                                      offset: 1
-                                                                                    }])
-                                                                                  ]))])])])
-                                                                   .createAsync(DummyIfCmp)
-                                                                   .then((fixture) => {
+        it('should create an animation step with multiple keyframes',
+           inject(
+               [TestComponentBuilder, AnimationDriver], fakeAsync(
+                                                            (tcb: TestComponentBuilder,
+                                                             driver: MockAnimationDriver) => {
+                                                              tcb.overrideAnimations(
+                                                                     DummyIfCmp,
+                                                                     [trigger(
+                                                                         'myAnimation',
+                                                                         [transition(
+                                                                             ':void => *',
+                                                                             [animate(
+                                                                                 1000, keyframes([
+                                                                                   style([{
+                                                                                     'width': 0,
+                                                                                     offset: 0
+                                                                                   }]),
+                                                                                   style([{
+                                                                                     'width': 100,
+                                                                                     offset: 0.25
+                                                                                   }]),
+                                                                                   style([{
+                                                                                     'width': 200,
+                                                                                     offset: 0.75
+                                                                                   }]),
+                                                                                   style([{
+                                                                                     'width': 300,
+                                                                                     offset: 1
+                                                                                   }])
+                                                                                 ]))])])])
+                                                                  .createAsync(DummyIfCmp)
+                                                                  .then((fixture) => {
 
-                                                                     tick();
+                                                                    tick();
 
-                                                                     var cmp =
-                                                                         fixture.debugElement
-                                                                             .componentInstance;
-                                                                     cmp.exp = true;
-                                                                     fixture.detectChanges();
-                                                                     flushMicrotasks();
+                                                                    var cmp =
+                                                                        fixture.debugElement
+                                                                            .componentInstance;
+                                                                    cmp.exp = true;
+                                                                    fixture.detectChanges();
+                                                                    flushMicrotasks();
 
-                                                                     var keyframes =
-                                                                         driver
-                                                                             .log[0]
-                                                                                 ['keyframeLookup'];
-                                                                     expect(keyframes.length)
-                                                                         .toEqual(4);
-                                                                     expect(keyframes[0]).toEqual([
-                                                                       0, {'width': 0}
-                                                                     ]);
-                                                                     expect(keyframes[1]).toEqual([
-                                                                       0.25, {'width': 100}
-                                                                     ]);
-                                                                     expect(keyframes[2]).toEqual([
-                                                                       0.75, {'width': 200}
-                                                                     ]);
-                                                                     expect(keyframes[3]).toEqual([
-                                                                       1, {'width': 300}
-                                                                     ]);
-                                                                   });
-                                                             })));
+                                                                    var keyframes =
+                                                                        driver
+                                                                            .log[0]
+                                                                                ['keyframeLookup'];
+                                                                    expect(keyframes.length)
+                                                                        .toEqual(4);
+                                                                    expect(keyframes[0]).toEqual([
+                                                                      0, {'width': 0}
+                                                                    ]);
+                                                                    expect(keyframes[1]).toEqual([
+                                                                      0.25, {'width': 100}
+                                                                    ]);
+                                                                    expect(keyframes[2]).toEqual([
+                                                                      0.75, {'width': 200}
+                                                                    ]);
+                                                                    expect(keyframes[3]).toEqual([
+                                                                      1, {'width': 300}
+                                                                    ]);
+                                                                  });
+                                                            })));
 
         it('should fetch any keyframe styles that are not defined in the first keyframe from the previous entries or getCompuedStyle',
            inject(
@@ -454,7 +476,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                  tcb.overrideAnimations(DummyIfCmp, [
                    trigger('myAnimation', [
-                     transition('void => *', [
+                     transition(':void => *', [
                        style({ 'color': 'white' }),
                        animate(1000, style({ 'color': 'silver' })),
                        animate(1000, keyframes([
@@ -529,7 +551,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                tcb.overrideAnimations(DummyIfCmp, [
                         trigger('myAnimation', [
-                          transition('void => *', [
+                          transition(':void => *', [
                                                  style({'background': 'red', 'opacity': 0.5}),
                                                  animate(500, style({'background': 'black'})),
                                                  group([
@@ -635,7 +657,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    tcb, '<div class="my-if" *ngIf="exp" [@myAnimation]></div>',
                    trigger(
                        'myAnimation',
-                       [transition('* => void', [animate(1000, style({'opacity': 0}))])]),
+                       [transition('* => :void', [animate(1000, style({'opacity': 0}))])]),
                    (fixture: any /** TODO #9100 */) => {
                      tick();
 
@@ -855,7 +877,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                makeAnimationCmp(
                    tcb, `<div *ngIf="exp" @trigger><div class="inner"></div></div>`,
                    [
-                     trigger('trigger', [transition('* => void', [animate(1000)])]),
+                     trigger('trigger', [transition('* => :void', [animate(1000)])]),
                    ],
                    (fixture: any /** TODO #9100 */) => {
                      var cmp = fixture.debugElement.componentInstance;
@@ -974,7 +996,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    [trigger(
                        'status',
                        [
-                         state('void', style({'height': '100px'})),
+                         state(':void', style({'height': '100px'})),
                          transition('* => *', [animate(1000)])
                        ])],
                    (fixture: any /** TODO #9100 */) => {
@@ -1001,7 +1023,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    [trigger(
                        'status',
                        [
-                         state('void', style({'width': '0px'})),
+                         state(':void', style({'width': '0px'})),
                          state('final', style({'width': '100px'})),
                        ])],
                    (fixture: any /** TODO #9100 */) => {
@@ -1136,9 +1158,9 @@ function declareTests({useJit}: {useJit: boolean}) {
                    [trigger(
                        'status',
                        [
-                         state('void', style({'height': '100px', 'opacity': 0})),
+                         state(':void', style({'height': '100px', 'opacity': 0})),
                          state('final', style({'height': '333px', 'width': '200px'})),
-                         transition('void => final', [animate(1000)])
+                         transition(':void => final', [animate(1000)])
                        ])],
                    (fixture: any /** TODO #9100 */) => {
                      tick();
