@@ -518,10 +518,28 @@ describe('Integration', () => {
     it('should support top-level link',
        fakeAsync(
            inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-             let fixture = tcb.createFakeAsync(AbsoluteLinkCmp);
+             const fixture = tcb.createFakeAsync(RelativeLinkInIfCmp);
              advance(fixture);
 
-             expect(fixture.debugElement.nativeElement).toHaveText('link');
+             router.resetConfig(
+                 [{path: 'simple', component: SimpleCmp}, {path: '', component: BlankCmp}]);
+
+             router.navigateByUrl('/');
+             advance(fixture);
+             expect(fixture.debugElement.nativeElement).toHaveText(' ');
+             const cmp = fixture.debugElement.componentInstance;
+
+             cmp.show = true;
+             advance(fixture);
+
+             expect(fixture.debugElement.nativeElement).toHaveText('link ');
+             const native = fixture.debugElement.nativeElement.querySelector('a');
+
+             expect(native.getAttribute('href')).toEqual('/simple');
+             native.click();
+             advance(fixture);
+
+             expect(fixture.debugElement.nativeElement).toHaveText('link simple');
            })));
 
     it('should support query params and fragments',
@@ -731,13 +749,13 @@ describe('Integration', () => {
                  advance(fixture);
                  expect(location.path()).toEqual('/team/22');
 
-                 let successStatus;
+                 let successStatus: boolean;
                  router.navigateByUrl('/team/33').then(res => successStatus = res);
                  advance(fixture);
                  expect(location.path()).toEqual('/team/33');
                  expect(successStatus).toEqual(true);
 
-                 let canceledStatus;
+                 let canceledStatus: boolean;
                  router.navigateByUrl('/team/44').then(res => canceledStatus = res);
                  advance(fixture);
                  expect(location.path()).toEqual('/team/33');
@@ -1019,6 +1037,16 @@ class RelativeLinkCmp {
 
 @Component({
   selector: 'link-cmp',
+  template:
+      `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`,
+  directives: ROUTER_DIRECTIVES
+})
+class RelativeLinkInIfCmp {
+  show: boolean = false;
+}
+
+@Component({
+  selector: 'link-cmp',
   template: `<a [routerLink]="['../simple']" [queryParams]="{q: '1'}" fragment="f">link</a>`,
   directives: ROUTER_DIRECTIVES
 })
@@ -1040,7 +1068,9 @@ class CollectParamsCmp {
     a.url.forEach(u => this.urls.push(u));
   }
 
-  recordedUrls(): string[] { return this.urls.map(a => a.map(p => p.path).join('/')); }
+  recordedUrls(): string[] {
+    return this.urls.map((a: any) => a.map((p: any) => p.path).join('/'));
+  }
 }
 
 @Component({selector: 'blank-cmp', template: ``, directives: ROUTER_DIRECTIVES})

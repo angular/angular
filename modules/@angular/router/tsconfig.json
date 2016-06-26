@@ -8,6 +8,8 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": false,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
     "outDir": "../../../dist/all/@angular/router/",
     "paths": {
       "@angular/*": ["../../../dist/all/@angular/*"]

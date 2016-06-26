@@ -197,7 +197,7 @@ export declare class HashLocationStrategy extends LocationStrategy {
     forward(): void;
     getBaseHref(): string;
     onPopState(fn: UrlChangeListener): void;
-    path(): string;
+    path(includeHash?: boolean): string;
     prepareExternalUrl(internal: string): string;
     pushState(state: any, title: string, path: string, queryParams: string): void;
     replaceState(state: any, title: string, path: string, queryParams: string): void;
@@ -231,7 +231,7 @@ export declare class Location {
     go(path: string, query?: string): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
-    path(): string;
+    path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string): void;
     subscribe(onNext: (value: any) => void, onThrow?: (exception: any) => void, onReturn?: () => void): Object;
@@ -246,7 +246,7 @@ export declare abstract class LocationStrategy {
     abstract forward(): void;
     abstract getBaseHref(): string;
     abstract onPopState(fn: UrlChangeListener): void;
-    abstract path(): string;
+    abstract path(includeHash?: boolean): string;
     abstract prepareExternalUrl(internal: string): string;
     abstract pushState(state: any, title: string, url: string, queryParams: string): void;
     abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
@@ -495,7 +495,7 @@ export declare class PathLocationStrategy extends LocationStrategy {
     forward(): void;
     getBaseHref(): string;
     onPopState(fn: UrlChangeListener): void;
-    path(): string;
+    path(includeHash?: boolean): string;
     prepareExternalUrl(internal: string): string;
     pushState(state: any, title: string, url: string, queryParams: string): void;
     replaceState(state: any, title: string, url: string, queryParams: string): void;

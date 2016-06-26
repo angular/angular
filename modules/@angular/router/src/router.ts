@@ -276,7 +276,7 @@ export class Router {
     return new Promise((resolvePromise, rejectPromise) => {
       let updatedUrl: UrlTree;
       let state: RouterState;
-      let navigationIsSuccessful;
+      let navigationIsSuccessful: boolean;
       applyRedirects(url, this.config)
           .mergeMap(u => {
             updatedUrl = u;
@@ -494,6 +494,7 @@ class ActivateRoutes {
     const currRoot = this.currState ? this.currState._root : null;
 
     pushQueryParamsAndFragment(this.futureState);
+    advanceActivatedRoute(this.futureState.root);
     this.activateChildRoutes(futureRoot, currRoot, parentOutletMap);
   }
 
