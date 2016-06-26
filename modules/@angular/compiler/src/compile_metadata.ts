@@ -36,7 +36,7 @@ export abstract class CompileMetadataWithType extends CompileMetadataWithIdentif
 }
 
 export function metadataFromJson(data: {[key: string]: any}): any {
-  return (_COMPILE_METADATA_FROM_JSON as any /** TODO #9100 */)[data['class']](data);
+  return (_COMPILE_METADATA_FROM_JSON as any)[data['class']](data);
 }
 
 export class CompileAnimationEntryMetadata {
@@ -487,7 +487,7 @@ export class CompileTokenMap<VALUE> {
   get(token: CompileTokenMetadata): VALUE {
     var rk = token.runtimeCacheKey;
     var ak = token.assetCacheKey;
-    var result: any /** TODO #9100 */;
+    var result: VALUE;
     if (isPresent(rk)) {
       result = this._valueMap.get(rk);
     }

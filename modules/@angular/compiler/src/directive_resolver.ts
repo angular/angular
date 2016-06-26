@@ -97,7 +97,7 @@ export class DirectiveResolver {
       queries: {[key: string]: any}, directiveType: Type): DirectiveMetadata {
     var mergedInputs = isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
 
-    var mergedOutputs: any /** TODO #9100 */;
+    var mergedOutputs: string[];
     if (isPresent(dm.outputs)) {
       dm.outputs.forEach((propName: string) => {
         if (ListWrapper.contains(outputs, propName)) {
