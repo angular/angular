@@ -9,9 +9,11 @@
 import {AbstractControl, Control, ControlArray, ControlGroup, Validators} from '@angular/common/src/forms-deprecated';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {Observable} from 'rxjs/Observable';
 
 import {EventEmitter, ObservableWrapper, TimerWrapper} from '../../src/facade/async';
 import {PromiseWrapper} from '../../src/facade/promise';
+import {normalizeAsyncValidator} from '../../src/forms-deprecated/directives/normalize_validator';
 
 export function main() {
   function validator(key: string, error: any) {
@@ -19,6 +21,18 @@ export function main() {
       var r = {};
       (r as any /** TODO #9100 */)[key] = error;
       return r;
+    }
+  }
+
+  class AsyncValidatorDirective {
+    constructor(private expected: string, private error: any) {}
+
+    validate(c: any): {[key: string]: any;} {
+      return Observable.create((obs: any) => {
+        const error = this.expected !== c.value ? this.error : null;
+        obs.next(error);
+        obs.complete();
+      });
     }
   }
 
@@ -87,6 +101,17 @@ export function main() {
         });
       });
     });
+
+    it('should normalize and evaluate async validator-directives correctly', fakeAsync(() => {
+         const c = Validators.composeAsync(
+             [normalizeAsyncValidator(new AsyncValidatorDirective('expected', {'one': true}))]);
+
+         let value: any = null;
+         c(new Control()).then((v: any) => value = v);
+         tick(1);
+
+         expect(value).toEqual({'one': true});
+       }));
 
     describe('compose', () => {
       it('should return null when given null',
