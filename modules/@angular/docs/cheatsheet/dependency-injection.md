@@ -2,8 +2,6 @@
 Dependency injection configuration
 @cheatsheetIndex 9
 @description
-{@target ts}`import {provide} from 'angular2/core';`{@endtarget}
-{@target js}Available from the `ng.core` namespace{@endtarget}
 {@target dart}`import 'package:angular2/core.dart';`{@endtarget}
 
 @cheatsheetItem

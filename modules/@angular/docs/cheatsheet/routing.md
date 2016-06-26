@@ -2,7 +2,7 @@
 Routing and navigation
 @cheatsheetIndex 10
 @description
-{@target ts}`import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, ...} from 'angular2/router';`{@endtarget}
+{@target ts}`import {provideRouter, RouteConfig, ROUTER_DIRECTIVES, ...} from '@angular/router';`{@endtarget}
 {@target js}Available from the `ng.router` namespace{@endtarget}
 {@target dart}`import 'package:angular2/router.dart';`{@endtarget}
 

@@ -2,7 +2,7 @@
 Forms
 @cheatsheetIndex 3
 @description
-{@target ts}`import {FORM_DIRECTIVES} from 'angular2/common';`{@endtarget}
+{@target ts}`import {FORM_DIRECTIVES} from '@angular/common';`{@endtarget}
 {@target js}Available from `ng.common.FORM_DIRECTIVES`{@endtarget}
 {@target dart}Available using `platform_directives` in pubspec{@endtarget}
 
