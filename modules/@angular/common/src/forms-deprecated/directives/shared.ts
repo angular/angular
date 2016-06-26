@@ -23,6 +23,7 @@ import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator
 import {NumberValueAccessor} from './number_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
+import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
 
@@ -98,6 +99,7 @@ export function selectValueAccessor(
     } else if (
         hasConstructor(v, CheckboxControlValueAccessor) || hasConstructor(v, NumberValueAccessor) ||
         hasConstructor(v, SelectControlValueAccessor) ||
+        hasConstructor(v, SelectMultipleControlValueAccessor) ||
         hasConstructor(v, RadioControlValueAccessor)) {
       if (isPresent(builtinAccessor))
         _throwError(dir, 'More than one built-in value accessor matches');
