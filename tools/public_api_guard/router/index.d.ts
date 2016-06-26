@@ -106,6 +106,7 @@ export interface NavigationExtras {
     preserveQueryParams?: boolean;
     queryParams?: Params;
     relativeTo?: ActivatedRoute;
+    skipLocationChange?: boolean;
 }
 
 /** @stable */
@@ -173,7 +174,7 @@ export declare class Router {
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
-    navigateByUrl(url: string | UrlTree): Promise<boolean>;
+    navigateByUrl(url: string | UrlTree, extras?: NavigationExtras): Promise<boolean>;
     ngOnDestroy(): void;
     parseUrl(url: string): UrlTree;
     resetConfig(config: Routes): void;

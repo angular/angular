@@ -113,6 +113,52 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/team/33');
          })));
 
+  it('should skip location update when using NavigationExtras.skipLocationChange with navigateByUrl',
+     fakeAsync(inject(
+         [Router, TestComponentBuilder, Location],
+         (router: Router, tcb: TestComponentBuilder, location: Location) => {
+           const fixture = tcb.createFakeAsync(RootCmp);
+           advance(fixture);
+
+           router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+
+           router.navigateByUrl('/team/22');
+           advance(fixture);
+           expect(location.path()).toEqual('/team/22');
+
+           expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ , right:  ]');
+
+           router.navigateByUrl('/team/33', {skipLocationChange: true});
+           advance(fixture);
+
+           expect(location.path()).toEqual('/team/22');
+
+           expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ , right:  ]');
+         })));
+
+  it('should skip location update when using NavigationExtras.skipLocationChange with navigate',
+     fakeAsync(inject(
+         [Router, TestComponentBuilder, Location],
+         (router: Router, tcb: TestComponentBuilder, location: Location) => {
+           const fixture = tcb.createFakeAsync(RootCmp);
+           advance(fixture);
+
+           router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+
+           router.navigate(['/team/22']);
+           advance(fixture);
+           expect(location.path()).toEqual('/team/22');
+
+           expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ , right:  ]');
+
+           router.navigate(['/team/33'], {skipLocationChange: true});
+           advance(fixture);
+
+           expect(location.path()).toEqual('/team/22');
+
+           expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ , right:  ]');
+         })));
+
   it('should navigate back and forward',
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],

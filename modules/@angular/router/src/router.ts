@@ -46,6 +46,7 @@ export interface NavigationExtras {
   fragment?: string;
   preserveQueryParams?: boolean;
   preserveFragment?: boolean;
+  skipLocationChange?: boolean;
 }
 
 /**
@@ -261,17 +262,21 @@ export class Router {
    *
    * ```
    * router.navigateByUrl("/team/33/user/11");
+   *
+   * // Navigate without updating the URL
+   * router.navigateByUrl("/team/33/user/11", { skipLocationChange: true });
    * ```
    *
    * In opposite to `navigate`, `navigateByUrl` takes a whole URL
    * and does not apply any delta to the current one.
    */
-  navigateByUrl(url: string|UrlTree): Promise<boolean> {
+  navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
+      Promise<boolean> {
     if (url instanceof UrlTree) {
-      return this.scheduleNavigation(url, false);
+      return this.scheduleNavigation(url, extras);
     } else {
       const urlTree = this.urlSerializer.parse(url);
-      return this.scheduleNavigation(urlTree, false);
+      return this.scheduleNavigation(urlTree, extras);
     }
   }
 
@@ -288,13 +293,17 @@ export class Router {
    *
    * ```
    * router.navigate(['team', 33, 'team', '11], {relativeTo: route});
+   *
+   * // Navigate without updating the URL
+   * router.navigate(['team', 33, 'team', '11], {relativeTo: route, skipLocationChange: true });
    * ```
    *
    * In opposite to `navigateByUrl`, `navigate` always takes a delta
    * that is applied to the current URL.
    */
-  navigate(commands: any[], extras: NavigationExtras = {}): Promise<boolean> {
-    return this.scheduleNavigation(this.createUrlTree(commands, extras), false);
+  navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
+      Promise<boolean> {
+    return this.scheduleNavigation(this.createUrlTree(commands, extras), extras);
   }
 
   /**
@@ -319,10 +328,10 @@ export class Router {
     }
   }
 
-  private scheduleNavigation(url: UrlTree, preventPushState: boolean): Promise<boolean> {
+  private scheduleNavigation(url: UrlTree, extras: NavigationExtras): Promise<boolean> {
     const id = ++this.navigationId;
     this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
-    return Promise.resolve().then((_) => this.runNavigate(url, preventPushState, id));
+    return Promise.resolve().then((_) => this.runNavigate(url, extras.skipLocationChange, id));
   }
 
   private setUpLocationChangeListener(): void {
