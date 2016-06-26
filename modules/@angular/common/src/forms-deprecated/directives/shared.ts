@@ -98,7 +98,8 @@ export function selectValueAccessor(
 
     } else if (
         hasConstructor(v, CheckboxControlValueAccessor) || hasConstructor(v, NumberValueAccessor) ||
-        hasConstructor(v, SelectControlValueAccessor) || hasConstructor(v, SelectMultipleControlValueAccessor) ||
+        hasConstructor(v, SelectControlValueAccessor) ||
+        hasConstructor(v, SelectMultipleControlValueAccessor) ||
         hasConstructor(v, RadioControlValueAccessor)) {
       if (isPresent(builtinAccessor))
         _throwError(dir, 'More than one built-in value accessor matches');
