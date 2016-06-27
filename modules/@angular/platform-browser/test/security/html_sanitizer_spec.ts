@@ -42,6 +42,14 @@ export function main() {
       t.expect(sanitizeHtml('<a xlink:href="javascript:foo()">t</a>'))
           .toEqual('<a xlink:href="unsafe:javascript:foo()">t</a>');
     });
+    t.it('supports HTML5 elements', () => {
+      t.expect(sanitizeHtml('<main><summary>Works</summary></main>'))
+          .toEqual('<main><summary>Works</summary></main>');
+    });
+    t.it('sanitizes srcset attributes', () => {
+      t.expect(sanitizeHtml('<img srcset="/foo.png 400px, javascript:evil() 23px">'))
+          .toEqual('<img srcset="/foo.png 400px, unsafe:javascript:evil() 23px">');
+    });
 
     t.it('supports sanitizing plain text', () => {
       t.expect(sanitizeHtml('Hello, World')).toEqual('Hello, World');
