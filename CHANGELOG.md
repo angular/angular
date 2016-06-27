@@ -14,7 +14,7 @@
 * **forms:** ngModel should export as ngModel ([8e6e90e](https://github.com/angular/angular/commit/8e6e90e))
 * **guards:** Cancel in-flight guards if one returns false ([97cf0e4](https://github.com/angular/angular/commit/97cf0e4))
 * **HtmlParser:** add missing ; ([c60ef45](https://github.com/angular/angular/commit/c60ef45))
-* **HtmlParser:** consider <ng-container> when adding required parents ([9ba400d](https://github.com/angular/angular/commit/9ba400d))
+* **HtmlParser:** consider `<ng-container>` when adding required parents ([9ba400d](https://github.com/angular/angular/commit/9ba400d))
 * **HtmlParser:** do not add required parents to template root elements ([e484c62](https://github.com/angular/angular/commit/e484c62)), closes [#5967](https://github.com/angular/angular/issues/5967)
 * **HTTP/XhrBackend:** correctly set the status code on errors (#9355) ([12c4904](https://github.com/angular/angular/commit/12c4904)), closes [angular/http#54](https://github.com/angular/http/issues/54)
 * **NumberPipe:** fix broken RegExp ([49bf3f5](https://github.com/angular/angular/commit/49bf3f5))
@@ -31,7 +31,7 @@
 * **compiler-cli:** add a `debug` option to control the output ([1eaa193](https://github.com/angular/angular/commit/1eaa193)), closes [#9208](https://github.com/angular/angular/issues/9208)
 * **core:** ensure CSS parser tracks start/end values and understands complex pseudo selecto ([935c39a](https://github.com/angular/angular/commit/935c39a))
 * **datePipe:** numeric string support ([5c8d315](https://github.com/angular/angular/commit/5c8d315))
-* **DomElementSchemaRegistry:** add support for <ng-content> and <ng-container> ([b620f4f](https://github.com/angular/angular/commit/b620f4f))
+* **DomElementSchemaRegistry:** add support for `<ng-content>` and `<ng-container>` ([b620f4f](https://github.com/angular/angular/commit/b620f4f))
 * **I18N Expander:** do not add extra `<ul>` & `<li>` around ICU messages (#9283) ([721f53f](https://github.com/angular/angular/commit/721f53f)), closes [#9072](https://github.com/angular/angular/issues/9072)
 * **MessageExtractor:** do not expand ICU messages before extraction ([04a50f5](https://github.com/angular/angular/commit/04a50f5))
 * **QueryList:** support index in callbacks ([5fe6075](https://github.com/angular/angular/commit/5fe6075)), closes [#9278](https://github.com/angular/angular/issues/9278)
@@ -763,7 +763,7 @@ After:
 * **i18n:** add ngPlural directive ([df1f78e](https://github.com/angular/angular/commit/df1f78e))
 * **i18n:** implement a simple version of message extractor ([095db67](https://github.com/angular/angular/commit/095db67)), closes [#7454](https://github.com/angular/angular/issues/7454)
 * **shadow_css:** support `/deep/` and `>>>` ([cb38d72](https://github.com/angular/angular/commit/cb38d72)), closes [#7562](https://github.com/angular/angular/issues/7562) [#7563](https://github.com/angular/angular/issues/7563)
-* **TAG_DEFINITIONS:** include <meta> and <base> ([2c7c3e3](https://github.com/angular/angular/commit/2c7c3e3)), closes [#7455](https://github.com/angular/angular/issues/7455)
+* **TAG_DEFINITIONS:** include `<meta>` and `<base>` ([2c7c3e3](https://github.com/angular/angular/commit/2c7c3e3)), closes [#7455](https://github.com/angular/angular/issues/7455)
 
 ### BREAKING CHANGES
 
@@ -952,7 +952,7 @@ And install typings such as `jasmine`, `angular-protractor`, or `selenium-webdri
 to satisfy the type-checker.
 
 If you rely on es6 APIs other than Promises and Collections, you will need to
-install the es6-shim typing instead of using the <reference> tag above.
+install the es6-shim typing instead of using the `<reference>` tag above.
 Angular previously exposed typings for the entire ES6 API.
 
 <a name="2.0.0-beta.5"></a>
@@ -984,7 +984,7 @@ This release was incorrect; replaced with beta.6.
 ### Features
 
 * **change_detection:** allow all legal programs in the dev mode ([42231f5](https://github.com/angular/angular/commit/42231f5))
-* **dart/transform:** Generate all code into <file>.template.dart ([8c36aa8](https://github.com/angular/angular/commit/8c36aa8))
+* **dart/transform:** Generate all code into `<file>.template.dart` ([8c36aa8](https://github.com/angular/angular/commit/8c36aa8))
 * **debug:** replace DebugElement with new Debug DOM ([e1bf3d3](https://github.com/angular/angular/commit/e1bf3d3))
 * **ngFor:** add custom trackBy function support ([cee2318](https://github.com/angular/angular/commit/cee2318)), closes [#6779](https://github.com/angular/angular/issues/6779)
 * **upgrade:** support bindToController with binding definitions ([99e6500](https://github.com/angular/angular/commit/99e6500)), closes [#4784](https://github.com/angular/angular/issues/4784)
@@ -1353,7 +1353,7 @@ Use imports from `angular2/compiler` instead.
 * **HtmlLexer:** tag name must follow "<" without space ([47f1d12](https://github.com/angular/angular/commit/47f1d12))
 * **HtmlParser:** Do not add parent element for template children ([3a43861](https://github.com/angular/angular/commit/3a43861)), closes [#5638](https://github.com/angular/angular/issues/5638)
 * **HtmlParser:** ignore LF immediately following pre, textarea & listing ([eb0ea93](https://github.com/angular/angular/commit/eb0ea93)), closes [#5630](https://github.com/angular/angular/issues/5630) [#5688](https://github.com/angular/angular/issues/5688)
-* **HtmlParser:** mark <source> elements as void ([50490b5](https://github.com/angular/angular/commit/50490b5)), closes [#5663](https://github.com/angular/angular/issues/5663) [#5668](https://github.com/angular/angular/issues/5668)
+* **HtmlParser:** mark `<source>` elements as void ([50490b5](https://github.com/angular/angular/commit/50490b5)), closes [#5663](https://github.com/angular/angular/issues/5663) [#5668](https://github.com/angular/angular/issues/5668)
 * **npm:** move es6-shim from devDependencies to dependencies ([21542ed](https://github.com/angular/angular/commit/21542ed))
 * **package:** relock RxJS to alpha.11 ([4b1618c](https://github.com/angular/angular/commit/4b1618c)), closes [#5643](https://github.com/angular/angular/issues/5643) [#5644](https://github.com/angular/angular/issues/5644)
 * **router:** set correct redirect/default URL from hashchange ([aa85856](https://github.com/angular/angular/commit/aa85856)), closes [#5590](https://github.com/angular/angular/issues/5590) [#5683](https://github.com/angular/angular/issues/5683)
@@ -2340,7 +2340,7 @@ class HelloCmp implements OnInit {
 * **http/http:** allow for commonjs as ngHttp ([16eb8ce](https://github.com/angular/angular/commit/16eb8ce)), closes [#3633](https://github.com/angular/angular/issues/3633)
 * **injector:** support getRootInjectors on dehydrated injectors. ([92da543](https://github.com/angular/angular/commit/92da543)), closes [#3760](https://github.com/angular/angular/issues/3760)
 * **injectors:** reset the construction counter in dynamic strategy. ([272ad61](https://github.com/angular/angular/commit/272ad61)), closes [#3635](https://github.com/angular/angular/issues/3635)
-* <template> tag for browsers that do not suppor them ([ddcfd46](https://github.com/angular/angular/commit/ddcfd46)), closes [#3636](https://github.com/angular/angular/issues/3636)
+* `<template>` tag for browsers that do not suppor them ([ddcfd46](https://github.com/angular/angular/commit/ddcfd46)), closes [#3636](https://github.com/angular/angular/issues/3636)
 * **karma:** corrected race condition with RX loading ([8dc509f](https://github.com/angular/angular/commit/8dc509f))
 * **parser:** detect and report interpolation in expressions ([b039ec3](https://github.com/angular/angular/commit/b039ec3)), closes [#3645](https://github.com/angular/angular/issues/3645) [#3750](https://github.com/angular/angular/issues/3750)
 * **router:** allow router-link to link to redirects ([72e0b8f](https://github.com/angular/angular/commit/72e0b8f)), closes [#3335](https://github.com/angular/angular/issues/3335) [#3624](https://github.com/angular/angular/issues/3624)
