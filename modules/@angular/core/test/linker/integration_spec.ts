@@ -2000,6 +2000,31 @@ function declareTests({useJit}: {useJit: boolean}) {
                      });
                }));
 
+        it('should support foreignObjects with document fragments',
+           inject(
+               [TestComponentBuilder, AsyncTestCompleter],
+               (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+                 tcb.overrideView(
+                        MyComp, new ViewMetadata({
+                          template:
+                              '<svg><foreignObject><xhtml:div><p>Test</p></xhtml:div></foreignObject></svg>'
+                        }))
+                     .createAsync(MyComp)
+                     .then((fixture) => {
+                       var el = fixture.debugElement.nativeElement;
+                       var svg = getDOM().childNodes(el)[0];
+                       var foreignObject = getDOM().childNodes(svg)[0];
+                       var p = getDOM().childNodes(foreignObject)[0];
+                       expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
+                           .toEqual('http://www.w3.org/2000/svg');
+                       expect(getDOM().getProperty(<Element>foreignObject, 'namespaceURI'))
+                           .toEqual('http://www.w3.org/2000/svg');
+                       expect(getDOM().getProperty(<Element>p, 'namespaceURI'))
+                           .toEqual('http://www.w3.org/1999/xhtml');
+
+                       async.done();
+                     });
+               }));
       });
 
       describe('attributes', () => {
