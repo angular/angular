@@ -51,6 +51,10 @@ function validateNode(route: Route): void {
   }
   if (route.path.startsWith('/')) {
     throw new Error(
-        `Invalid route configuration of route '${route.path}': path cannot start with a slash`);
+        `Invalid configuration of route '${route.path}': path cannot start with a slash`);
+  }
+  if (route.path === '' && !!route.redirectTo && !route.terminal) {
+    throw new Error(
+        `Invalid configuration of route '${route.path}': terminal: true is required with an empty path and redirectTo`);
   }
 }

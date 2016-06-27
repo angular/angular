@@ -36,7 +36,13 @@ describe('config', () => {
     it('should throw when path starts with a slash', () => {
       expect(() => {
         validateConfig([<any>{path: '/a', componenta: '', redirectTo: 'b'}]);
-      }).toThrowError(`Invalid route configuration of route '/a': path cannot start with a slash`);
+      }).toThrowError(`Invalid configuration of route '/a': path cannot start with a slash`);
+    });
+
+    it('should throw when an empty path and redirectTo are used without terminal: true', () => {
+      expect(() => {
+        validateConfig([<any>{path: '', redirectTo: 'a'}]);
+      }).toThrowError(`Invalid configuration of route '': terminal: true is required with an empty path and redirectTo`));
     });
   });
 });
