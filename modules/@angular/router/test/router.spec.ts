@@ -28,10 +28,8 @@ describe('Integration', () => {
         provide: Router,
         useFactory: (resolver: ComponentResolver, urlSerializer: UrlSerializer,
                      outletMap: RouterOutletMap, location: Location, injector: Injector) => {
-          const r =
-              new Router(RootCmp, resolver, urlSerializer, outletMap, location, injector, config);
-          r.initialNavigation();
-          return r;
+          return new Router(
+              RootCmp, resolver, urlSerializer, outletMap, location, injector, config);
         },
         deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
       },
@@ -39,26 +37,24 @@ describe('Integration', () => {
     ];
   });
 
-  it('should navigate with a provided config',
-     fakeAsync(inject(
-         [Router, TestComponentBuilder, Location],
-         (router: Router, tcb: TestComponentBuilder, location: Location) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+  fit('should navigate with a provided config',
+      fakeAsync(inject(
+          [Router, TestComponentBuilder, Location],
+          (router: Router, tcb: TestComponentBuilder, location: Location) => {
+            const fixture = createRoot(tcb, router, RootCmp);
 
-           router.navigateByUrl('/simple');
-           advance(fixture);
+            router.navigateByUrl('/simple');
+            advance(fixture);
 
-           expect(location.path()).toEqual('/simple');
-         })));
+            expect(location.path()).toEqual('/simple');
+          })));
 
 
   it('should update location when navigating',
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],
          (router: Router, tcb: TestComponentBuilder, location: Location) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
 
@@ -76,8 +72,7 @@ describe('Integration', () => {
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],
          (router: Router, tcb: TestComponentBuilder, location: Location) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{
              path: 'team/:id',
@@ -108,8 +103,7 @@ describe('Integration', () => {
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],
          (router: Router, tcb: TestComponentBuilder, location: Location) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{
              path: 'team/:id',
@@ -130,8 +124,7 @@ describe('Integration', () => {
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],
          (router: Router, tcb: TestComponentBuilder, location: Location) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{path: '**', component: CollectParamsCmp}]);
 
@@ -153,8 +146,7 @@ describe('Integration', () => {
   it('should support secondary routes',
      fakeAsync(
          inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{
              path: 'team/:id',
@@ -175,8 +167,7 @@ describe('Integration', () => {
   it('should deactivate outlets',
      fakeAsync(
          inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{
              path: 'team/:id',
@@ -200,8 +191,7 @@ describe('Integration', () => {
   it('should deactivate nested outlets',
      fakeAsync(
          inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([
              {
@@ -227,8 +217,7 @@ describe('Integration', () => {
   it('should set query params and fragment',
      fakeAsync(
          inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{path: 'query', component: QueryParamsAndFragmentCmp}]);
 
@@ -244,8 +233,7 @@ describe('Integration', () => {
   it('should push params only when they change',
      fakeAsync(
          inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{
              path: 'team/:id',
@@ -271,8 +259,7 @@ describe('Integration', () => {
   it('should work when navigating to /',
      fakeAsync(
          inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([
              {path: '', terminal: true, component: SimpleCmp},
@@ -293,8 +280,7 @@ describe('Integration', () => {
   it('should cancel in-flight navigations',
      fakeAsync(
          inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
@@ -331,8 +317,7 @@ describe('Integration', () => {
   it('should handle failed navigations gracefully',
      fakeAsync(
          inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
@@ -361,8 +346,7 @@ describe('Integration', () => {
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],
          (router: Router, tcb: TestComponentBuilder, location: Location) => {
-           const fixture = tcb.createFakeAsync(RootCmp);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([{
              path: 'team/:id',
@@ -390,8 +374,7 @@ describe('Integration', () => {
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],
          (router: Router, tcb: TestComponentBuilder, location: Location) => {
-           const fixture = tcb.createFakeAsync(RootCmpWithTwoOutlets);
-           advance(fixture);
+           const fixture = createRoot(tcb, router, RootCmpWithTwoOutlets);
 
            router.resetConfig([
              {
@@ -448,8 +431,7 @@ describe('Integration', () => {
        fakeAsync(inject(
            [Router, TestComponentBuilder, Location],
            (router: Router, tcb: TestComponentBuilder, location: Location) => {
-             const fixture = tcb.createFakeAsync(RootCmpWithTwoOutlets);
-             advance(fixture);
+             const fixture = createRoot(tcb, router, RootCmpWithTwoOutlets);
 
              router.resetConfig([{
                path: 'parent/:id',
@@ -499,8 +481,7 @@ describe('Integration', () => {
     it('should support string router links',
        fakeAsync(
            inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-             const fixture = tcb.createFakeAsync(RootCmp);
-             advance(fixture);
+             const fixture = createRoot(tcb, router, RootCmp);
 
              router.resetConfig([{
                path: 'team/:id',
@@ -526,8 +507,7 @@ describe('Integration', () => {
     it('should support absolute router links',
        fakeAsync(
            inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-             const fixture = tcb.createFakeAsync(RootCmp);
-             advance(fixture);
+             const fixture = createRoot(tcb, router, RootCmp);
 
              router.resetConfig([{
                path: 'team/:id',
@@ -553,8 +533,7 @@ describe('Integration', () => {
     it('should support relative router links',
        fakeAsync(
            inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-             const fixture = tcb.createFakeAsync(RootCmp);
-             advance(fixture);
+             const fixture = createRoot(tcb, router, RootCmp);
 
              router.resetConfig([{
                path: 'team/:id',
@@ -580,7 +559,7 @@ describe('Integration', () => {
     it('should support top-level link',
        fakeAsync(
            inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-             const fixture = tcb.createFakeAsync(RelativeLinkInIfCmp);
+             const fixture = createRoot(tcb, router, RelativeLinkInIfCmp);
              advance(fixture);
 
              router.resetConfig(
@@ -608,8 +587,7 @@ describe('Integration', () => {
        fakeAsync(inject(
            [Router, Location, TestComponentBuilder],
            (router: Router, location: Location, tcb: TestComponentBuilder) => {
-             const fixture = tcb.createFakeAsync(RootCmp);
-             advance(fixture);
+             const fixture = createRoot(tcb, router, RootCmp);
 
              router.resetConfig([{
                path: 'team/:id',
@@ -638,8 +616,7 @@ describe('Integration', () => {
     it('should work', fakeAsync(inject(
                           [Router, TestComponentBuilder, Location],
                           (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                            const fixture = tcb.createFakeAsync(RootCmp);
-                            advance(fixture);
+                            const fixture = createRoot(tcb, router, RootCmp);
 
                             router.resetConfig([
                               {path: 'old/team/:id', redirectTo: 'team/:id'},
@@ -662,8 +639,7 @@ describe('Integration', () => {
            fakeAsync(inject(
                [Router, TestComponentBuilder, Location],
                (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                 const fixture = tcb.createFakeAsync(RootCmp);
-                 advance(fixture);
+                 const fixture = createRoot(tcb, router, RootCmp);
 
                  router.resetConfig(
                      [{path: 'team/:id', component: TeamCmp, canActivate: ['alwaysFalse']}]);
@@ -684,8 +660,7 @@ describe('Integration', () => {
             it('works', fakeAsync(inject(
                             [Router, TestComponentBuilder, Location],
                             (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                              const fixture = tcb.createFakeAsync(RootCmp);
-                              advance(fixture);
+                              const fixture = createRoot(tcb, router, RootCmp);
 
                               router.resetConfig([{
                                 path: 'parent',
@@ -710,8 +685,7 @@ describe('Integration', () => {
            fakeAsync(inject(
                [Router, TestComponentBuilder, Location],
                (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                 const fixture = tcb.createFakeAsync(RootCmp);
-                 advance(fixture);
+                 const fixture = createRoot(tcb, router, RootCmp);
 
                  router.resetConfig(
                      [{path: 'team/:id', component: TeamCmp, canActivate: ['alwaysTrue']}]);
@@ -735,8 +709,7 @@ describe('Integration', () => {
         it('works', fakeAsync(inject(
                         [Router, TestComponentBuilder, Location],
                         (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                          const fixture = tcb.createFakeAsync(RootCmp);
-                          advance(fixture);
+                          const fixture = createRoot(tcb, router, RootCmp);
 
                           router.resetConfig(
                               [{path: 'team/:id', component: TeamCmp, canActivate: [AlwaysTrue]}]);
@@ -760,8 +733,7 @@ describe('Integration', () => {
            fakeAsync(inject(
                [Router, TestComponentBuilder, Location],
                (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                 const fixture = tcb.createFakeAsync(RootCmp);
-                 advance(fixture);
+                 const fixture = createRoot(tcb, router, RootCmp);
 
                  router.resetConfig(
                      [{path: 'team/:id', component: TeamCmp, canActivate: ['CanActivate']}]);
@@ -800,8 +772,7 @@ describe('Integration', () => {
            fakeAsync(inject(
                [Router, TestComponentBuilder, Location],
                (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                 const fixture = tcb.createFakeAsync(RootCmp);
-                 advance(fixture);
+                 const fixture = createRoot(tcb, router, RootCmp);
 
                  router.resetConfig([
                    {path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivateTeam']}
@@ -828,8 +799,7 @@ describe('Integration', () => {
            fakeAsync(inject(
                [Router, TestComponentBuilder, Location],
                (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                 const fixture = tcb.createFakeAsync(RootCmp);
-                 advance(fixture);
+                 const fixture = createRoot(tcb, router, RootCmp);
 
                  router.resetConfig([{
                    path: 'parent/:id',
@@ -854,8 +824,7 @@ describe('Integration', () => {
            fakeAsync(inject(
                [Router, TestComponentBuilder, Location],
                (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                 const fixture = tcb.createFakeAsync(RootCmp);
-                 advance(fixture);
+                 const fixture = createRoot(tcb, router, RootCmp);
 
                  router.resetConfig([{
                    path: 'team/:id',
@@ -902,8 +871,7 @@ describe('Integration', () => {
            fakeAsync(inject(
                [Router, TestComponentBuilder, Location],
                (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                 const fixture = tcb.createFakeAsync(RootCmp);
-                 advance(fixture);
+                 const fixture = createRoot(tcb, router, RootCmp);
 
                  router.resetConfig(
                      [{path: 'team/:id', component: TeamCmp, canDeactivate: [AlwaysTrue]}]);
@@ -930,8 +898,7 @@ describe('Integration', () => {
          fakeAsync(inject(
              [Router, TestComponentBuilder, Location],
              (router: Router, tcb: TestComponentBuilder, location: Location) => {
-               const fixture = tcb.createFakeAsync(RootCmp);
-               advance(fixture);
+               const fixture = createRoot(tcb, router, RootCmp);
 
                router.resetConfig(
                    [{path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivate']}]);
@@ -952,8 +919,7 @@ describe('Integration', () => {
        fakeAsync(inject(
            [Router, TestComponentBuilder, Location],
            (router: Router, tcb: TestComponentBuilder, location: Location) => {
-             const fixture = tcb.createFakeAsync(RootCmp);
-             advance(fixture);
+             const fixture = createRoot(tcb, router, RootCmp);
 
              router.resetConfig([{
                path: 'team/:id',
@@ -983,8 +949,7 @@ describe('Integration', () => {
        fakeAsync(inject(
            [Router, TestComponentBuilder, Location],
            (router: Router, tcb: TestComponentBuilder, location: Location) => {
-             const fixture = tcb.createFakeAsync(RootCmp);
-             advance(fixture);
+             const fixture = createRoot(tcb, router, RootCmp);
 
              router.resetConfig([{
                path: 'team/:id',
@@ -1014,8 +979,7 @@ describe('Integration', () => {
        fakeAsync(inject(
            [Router, TestComponentBuilder, Location],
            (router: Router, tcb: TestComponentBuilder, location: Location) => {
-             const fixture = tcb.createFakeAsync(RootCmp);
-             advance(fixture);
+             const fixture = createRoot(tcb, router, RootCmp);
 
              router.resetConfig([{
                path: 'team/:id',
@@ -1099,16 +1063,6 @@ class RelativeLinkCmp {
 
 @Component({
   selector: 'link-cmp',
-  template:
-      `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`,
-  directives: ROUTER_DIRECTIVES
-})
-class RelativeLinkInIfCmp {
-  show: boolean = false;
-}
-
-@Component({
-  selector: 'link-cmp',
   template: `<a [routerLink]="['../simple']" [queryParams]="{q: '1'}" fragment="f">link</a>`,
   directives: ROUTER_DIRECTIVES
 })
@@ -1188,9 +1142,25 @@ class RouteCmp {
 }
 
 @Component({
+  selector: 'link-cmp',
+  template:
+      `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`,
+  directives: ROUTER_DIRECTIVES,
+  precompile: [BlankCmp, SimpleCmp]
+})
+class RelativeLinkInIfCmp {
+  show: boolean = false;
+}
+
+@Component({
   selector: 'root-cmp',
   template: `<router-outlet></router-outlet>`,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [ROUTER_DIRECTIVES],
+  precompile: [
+    BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
+    RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
+    QueryParamsAndFragmentCmp
+  ]
 })
 class RootCmp {
 }
@@ -1199,7 +1169,8 @@ class RootCmp {
   selector: 'root-cmp',
   template:
       `primary {<router-outlet></router-outlet>} right {<router-outlet name="right"></router-outlet>}`,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [ROUTER_DIRECTIVES],
+  precompile: [BlankCmp, SimpleCmp, RouteCmp, UserCmp]
 })
 class RootCmpWithTwoOutlets {
 }
@@ -1207,4 +1178,12 @@ class RootCmpWithTwoOutlets {
 function advance(fixture: ComponentFixture<any>): void {
   tick();
   fixture.detectChanges();
+}
+
+function createRoot(tcb: TestComponentBuilder, router: Router, type: any): ComponentFixture<any> {
+  const f = tcb.createFakeAsync(type);
+  advance(f);
+  router.initialNavigation();
+  advance(f);
+  return f;
 }
