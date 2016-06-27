@@ -28,10 +28,12 @@ export declare class By {
     static directive(type: Type): Predicate<DebugElement>;
 }
 
+/** @experimental */
 export declare abstract class ClientMessageBroker {
     abstract runOnService(args: UiArguments, returnType: Type): Promise<any>;
 }
 
+/** @experimental */
 export declare abstract class ClientMessageBrokerFactory {
     abstract createMessageBroker(channel: string, runInZone?: boolean): ClientMessageBroker;
 }
@@ -68,6 +70,7 @@ export declare class EventManager {
     getZone(): NgZone;
 }
 
+/** @experimental */
 export declare class FnArg {
     type: Type;
     value: any;
@@ -95,6 +98,7 @@ export declare class KeyEventsPlugin extends EventManagerPlugin {
     };
 }
 
+/** @experimental */
 export declare abstract class MessageBus implements MessageBusSource, MessageBusSink {
     abstract attachToZone(zone: NgZone): void;
     abstract from(channel: string): EventEmitter<any>;
@@ -102,20 +106,24 @@ export declare abstract class MessageBus implements MessageBusSource, MessageBus
     abstract to(channel: string): EventEmitter<any>;
 }
 
+/** @experimental */
 export interface MessageBusSink {
     attachToZone(zone: NgZone): void;
     initChannel(channel: string, runInZone: boolean): void;
     to(channel: string): EventEmitter<any>;
 }
 
+/** @experimental */
 export interface MessageBusSource {
     attachToZone(zone: NgZone): void;
     from(channel: string): EventEmitter<any>;
     initChannel(channel: string, runInZone: boolean): void;
 }
 
+/** @experimental */
 export declare const PRIMITIVE: Type;
 
+/** @experimental */
 export declare class ReceivedMessage {
     args: any[];
     id: string;
@@ -143,6 +151,7 @@ export interface SafeUrl extends SafeValue {
 
 export declare var SecurityContext: typeof t.SecurityContext;
 
+/** @experimental */
 export declare abstract class ServiceMessageBroker {
     abstract registerMethod(methodName: string, signature: Type[], method: Function, returnType?: Type): void;
 }
@@ -151,24 +160,29 @@ export declare abstract class ServiceMessageBrokerFactory {
     abstract createMessageBroker(channel: string, runInZone?: boolean): ServiceMessageBroker;
 }
 
+/** @experimental */
 export declare class Title {
     getTitle(): string;
     setTitle(newTitle: string): void;
 }
 
+/** @experimental */
 export declare class UiArguments {
     args: FnArg[];
     method: string;
     constructor(method: string, args?: FnArg[]);
 }
 
+/** @experimental */
 export declare class WebWorkerInstance {
     bus: MessageBus;
     worker: Worker;
 }
 
+/** @experimental */
 export declare const WORKER_APP_APPLICATION_PROVIDERS: Array<any>;
 
+/** @experimental */
 export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     provide: typeof PlatformLocation;
     useClass: typeof WebWorkerPlatformLocation;
@@ -179,12 +193,16 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     deps: (typeof PlatformLocation | typeof NgZone)[];
 })[];
 
+/** @experimental */
 export declare const WORKER_APP_PLATFORM_PROVIDERS: Array<any>;
 
+/** @experimental */
 export declare const WORKER_SCRIPT: OpaqueToken;
 
+/** @experimental */
 export declare const WORKER_UI_APPLICATION_PROVIDERS: Array<any>;
 
+/** @experimental */
 export declare const WORKER_UI_LOCATION_PROVIDERS: (typeof MessageBasedPlatformLocation | typeof BrowserPlatformLocation | {
     provide: any;
     useFactory: (injector: Injector) => () => void;
@@ -192,10 +210,14 @@ export declare const WORKER_UI_LOCATION_PROVIDERS: (typeof MessageBasedPlatformL
     deps: typeof Injector[];
 })[];
 
+/** @experimental */
 export declare const WORKER_UI_PLATFORM_PROVIDERS: Array<any>;
 
+/** @experimental */
 export declare const WORKER_UI_STARTABLE_MESSAGING_SERVICE: OpaqueToken;
 
+/** @experimental */
 export declare function workerAppPlatform(): PlatformRef;
 
+/** @experimental */
 export declare function workerUiPlatform(): PlatformRef;
