@@ -1,3 +1,4 @@
+/** @experimental */
 export declare abstract class AbstractControl {
     asyncValidator: AsyncValidatorFn;
     dirty: boolean;
@@ -38,6 +39,7 @@ export declare abstract class AbstractControl {
     }): void;
 }
 
+/** @experimental */
 export declare abstract class AbstractControlDirective {
     control: AbstractControl;
     dirty: boolean;
@@ -52,14 +54,17 @@ export declare abstract class AbstractControlDirective {
     value: any;
 }
 
+/** @stable */
 export declare const APP_BASE_HREF: OpaqueToken;
 
+/** @stable */
 export declare class AsyncPipe implements OnDestroy {
     constructor(_ref: ChangeDetectorRef);
     ngOnDestroy(): void;
     transform(obj: Observable<any> | Promise<any> | EventEmitter<any>): any;
 }
 
+/** @experimental */
 export declare class CheckboxControlValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
@@ -69,10 +74,13 @@ export declare class CheckboxControlValueAccessor implements ControlValueAccesso
     writeValue(value: any): void;
 }
 
+/** @experimental */
 export declare const COMMON_DIRECTIVES: Type[][];
 
+/** @experimental */
 export declare const COMMON_PIPES: (typeof AsyncPipe | typeof SlicePipe | typeof ReplacePipe | typeof I18nPluralPipe | typeof I18nSelectPipe)[];
 
+/** @experimental */
 export declare class Control extends AbstractControl {
     constructor(value?: any, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     registerOnChange(fn: Function): void;
@@ -83,6 +91,7 @@ export declare class Control extends AbstractControl {
     }): void;
 }
 
+/** @experimental */
 export declare class ControlArray extends AbstractControl {
     controls: AbstractControl[];
     length: number;
@@ -93,12 +102,14 @@ export declare class ControlArray extends AbstractControl {
     removeAt(index: number): void;
 }
 
+/** @experimental */
 export declare class ControlContainer extends AbstractControlDirective {
     formDirective: Form;
     name: string;
     path: string[];
 }
 
+/** @experimental */
 export declare class ControlGroup extends AbstractControl {
     controls: {
         [key: string]: AbstractControl;
@@ -116,26 +127,32 @@ export declare class ControlGroup extends AbstractControl {
     removeControl(name: string): void;
 }
 
+/** @experimental */
 export interface ControlValueAccessor {
     registerOnChange(fn: any): void;
     registerOnTouched(fn: any): void;
     writeValue(obj: any): void;
 }
 
+/** @stable */
 export declare const CORE_DIRECTIVES: Type[];
 
+/** @experimental */
 export declare class CurrencyPipe implements PipeTransform {
     transform(value: any, currencyCode?: string, symbolDisplay?: boolean, digits?: string): string;
 }
 
+/** @experimental */
 export declare class DatePipe implements PipeTransform {
     transform(value: any, pattern?: string): string;
 }
 
+/** @experimental */
 export declare class DecimalPipe implements PipeTransform {
     transform(value: any, digits?: string): string;
 }
 
+/** @experimental */
 export declare class DefaultValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
@@ -145,6 +162,7 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
+/** @experimental */
 export interface Form {
     addControl(dir: NgControl): void;
     addControlGroup(dir: NgControlGroup): void;
@@ -155,10 +173,13 @@ export interface Form {
     updateModel(dir: NgControl, value: any): void;
 }
 
+/** @experimental */
 export declare const FORM_DIRECTIVES: Type[];
 
+/** @experimental */
 export declare const FORM_PROVIDERS: Type[];
 
+/** @experimental */
 export declare class FormBuilder {
     array(controlsConfig: any[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn): ControlArray;
     control(value: Object, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn): Control;
@@ -169,6 +190,7 @@ export declare class FormBuilder {
     }): ControlGroup;
 }
 
+/** @stable */
 export declare class HashLocationStrategy extends LocationStrategy {
     constructor(_platformLocation: PlatformLocation, _baseHref?: string);
     back(): void;
@@ -181,6 +203,7 @@ export declare class HashLocationStrategy extends LocationStrategy {
     replaceState(state: any, title: string, path: string, queryParams: string): void;
 }
 
+/** @experimental */
 export declare class I18nPluralPipe implements PipeTransform {
     constructor(_localization: NgLocalization);
     transform(value: number, pluralMap: {
@@ -188,16 +211,19 @@ export declare class I18nPluralPipe implements PipeTransform {
     }): string;
 }
 
+/** @experimental */
 export declare class I18nSelectPipe implements PipeTransform {
     transform(value: string, mapping: {
         [key: string]: string;
     }): string;
 }
 
+/** @stable */
 export declare class JsonPipe implements PipeTransform {
     transform(value: any): string;
 }
 
+/** @stable */
 export declare class Location {
     constructor(platformStrategy: LocationStrategy);
     back(): void;
@@ -214,6 +240,7 @@ export declare class Location {
     static stripTrailingSlash(url: string): string;
 }
 
+/** @stable */
 export declare abstract class LocationStrategy {
     abstract back(): void;
     abstract forward(): void;
@@ -225,10 +252,12 @@ export declare abstract class LocationStrategy {
     abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
 }
 
+/** @experimental */
 export declare class LowerCasePipe implements PipeTransform {
     transform(value: string): string;
 }
 
+/** @experimental */
 export declare class MaxLengthValidator implements Validator {
     constructor(maxLength: string);
     validate(c: AbstractControl): {
@@ -236,6 +265,7 @@ export declare class MaxLengthValidator implements Validator {
     };
 }
 
+/** @experimental */
 export declare class MinLengthValidator implements Validator {
     constructor(minLength: string);
     validate(c: AbstractControl): {
@@ -243,12 +273,16 @@ export declare class MinLengthValidator implements Validator {
     };
 }
 
+/** @experimental */
 export declare const NG_ASYNC_VALIDATORS: OpaqueToken;
 
+/** @experimental */
 export declare const NG_VALIDATORS: OpaqueToken;
 
+/** @experimental */
 export declare const NG_VALUE_ACCESSOR: OpaqueToken;
 
+/** @stable */
 export declare class NgClass implements DoCheck, OnDestroy {
     initialClasses: string;
     rawClass: string | string[] | Set<string> | {
@@ -259,6 +293,7 @@ export declare class NgClass implements DoCheck, OnDestroy {
     ngOnDestroy(): void;
 }
 
+/** @experimental */
 export declare abstract class NgControl extends AbstractControlDirective {
     asyncValidator: AsyncValidatorFn;
     name: string;
@@ -267,6 +302,7 @@ export declare abstract class NgControl extends AbstractControlDirective {
     abstract viewToModelUpdate(newValue: any): void;
 }
 
+/** @experimental */
 export declare class NgControlGroup extends ControlContainer implements OnInit, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: ControlGroup;
@@ -278,6 +314,7 @@ export declare class NgControlGroup extends ControlContainer implements OnInit, 
     ngOnInit(): void;
 }
 
+/** @experimental */
 export declare class NgControlName extends NgControl implements OnChanges, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: Control;
@@ -292,6 +329,7 @@ export declare class NgControlName extends NgControl implements OnChanges, OnDes
     viewToModelUpdate(newValue: any): void;
 }
 
+/** @experimental */
 export declare class NgControlStatus {
     ngClassDirty: boolean;
     ngClassInvalid: boolean;
@@ -302,6 +340,7 @@ export declare class NgControlStatus {
     constructor(cd: NgControl);
 }
 
+/** @stable */
 export declare class NgFor implements DoCheck {
     ngForOf: any;
     ngForTemplate: TemplateRef<NgForRow>;
@@ -310,6 +349,7 @@ export declare class NgFor implements DoCheck {
     ngDoCheck(): void;
 }
 
+/** @experimental */
 export declare class NgForm extends ControlContainer implements Form {
     control: ControlGroup;
     controls: {
@@ -331,6 +371,7 @@ export declare class NgForm extends ControlContainer implements Form {
     updateModel(dir: NgControl, value: any): void;
 }
 
+/** @experimental */
 export declare class NgFormControl extends NgControl implements OnChanges {
     asyncValidator: AsyncValidatorFn;
     control: Control;
@@ -345,6 +386,7 @@ export declare class NgFormControl extends NgControl implements OnChanges {
     viewToModelUpdate(newValue: any): void;
 }
 
+/** @experimental */
 export declare class NgFormModel extends ControlContainer implements Form, OnChanges {
     control: ControlGroup;
     directives: NgControl[];
@@ -365,15 +407,18 @@ export declare class NgFormModel extends ControlContainer implements Form, OnCha
     updateModel(dir: NgControl, value: any): void;
 }
 
+/** @stable */
 export declare class NgIf {
     ngIf: any;
     constructor(_viewContainer: ViewContainerRef, _templateRef: TemplateRef<Object>);
 }
 
+/** @experimental */
 export declare abstract class NgLocalization {
     abstract getPluralCategory(value: any): string;
 }
 
+/** @experimental */
 export declare class NgModel extends NgControl implements OnChanges {
     asyncValidator: AsyncValidatorFn;
     control: Control;
@@ -387,6 +432,7 @@ export declare class NgModel extends NgControl implements OnChanges {
     viewToModelUpdate(newValue: any): void;
 }
 
+/** @experimental */
 export declare class NgPlural implements AfterContentInit {
     cases: QueryList<NgPluralCase>;
     ngPlural: number;
@@ -394,11 +440,13 @@ export declare class NgPlural implements AfterContentInit {
     ngAfterContentInit(): void;
 }
 
+/** @experimental */
 export declare class NgPluralCase {
     value: string;
     constructor(value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef);
 }
 
+/** @experimental */
 export declare class NgSelectOption implements OnDestroy {
     id: string;
     ngValue: any;
@@ -407,6 +455,7 @@ export declare class NgSelectOption implements OnDestroy {
     ngOnDestroy(): void;
 }
 
+/** @stable */
 export declare class NgStyle implements DoCheck {
     rawStyle: {
         [key: string]: string;
@@ -415,26 +464,31 @@ export declare class NgStyle implements DoCheck {
     ngDoCheck(): void;
 }
 
+/** @experimental */
 export declare class NgSwitch {
     ngSwitch: any;
 }
 
+/** @experimental */
 export declare class NgSwitchCase {
     ngSwitchCase: any;
     ngSwitchWhen: any;
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
 }
 
+/** @experimental */
 export declare class NgSwitchDefault {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, sswitch: NgSwitch);
 }
 
+/** @experimental */
 export declare class NgTemplateOutlet {
     ngOutletContext: Object;
     ngTemplateOutlet: TemplateRef<Object>;
     constructor(_viewContainerRef: ViewContainerRef);
 }
 
+/** @stable */
 export declare class PathLocationStrategy extends LocationStrategy {
     constructor(_platformLocation: PlatformLocation, href?: string);
     back(): void;
@@ -447,6 +501,7 @@ export declare class PathLocationStrategy extends LocationStrategy {
     replaceState(state: any, title: string, url: string, queryParams: string): void;
 }
 
+/** @experimental */
 export declare class PatternValidator implements Validator {
     constructor(pattern: string);
     validate(c: AbstractControl): {
@@ -454,10 +509,12 @@ export declare class PatternValidator implements Validator {
     };
 }
 
+/** @experimental */
 export declare class PercentPipe implements PipeTransform {
     transform(value: any, digits?: string): string;
 }
 
+/** @stable */
 export declare abstract class PlatformLocation {
     hash: string;
     pathname: string;
@@ -471,19 +528,23 @@ export declare abstract class PlatformLocation {
     abstract replaceState(state: any, title: string, url: string): void;
 }
 
+/** @experimental */
 export declare class RadioButtonState {
     checked: boolean;
     value: string;
     constructor(checked: boolean, value: string);
 }
 
+/** @deprecated */
 export declare class ReplacePipe implements PipeTransform {
     transform(value: any, pattern: string | RegExp, replacement: Function | string): any;
 }
 
+/** @experimental */
 export declare class RequiredValidator {
 }
 
+/** @experimental */
 export declare class SelectControlValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
@@ -494,14 +555,17 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
     writeValue(value: any): void;
 }
 
+/** @stable */
 export declare class SlicePipe implements PipeTransform {
     transform(value: any, start: number, end?: number): any;
 }
 
+/** @experimental */
 export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
 }
 
+/** @stable */
 export interface UrlChangeEvent {
     type: string;
 }
@@ -516,6 +580,7 @@ export interface Validator {
     };
 }
 
+/** @experimental */
 export declare class Validators {
     static compose(validators: ValidatorFn[]): ValidatorFn;
     static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn;

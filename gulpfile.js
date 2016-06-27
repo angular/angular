@@ -53,7 +53,8 @@ const publicApiArgs = [
   '--stripExportPattern', '^__',
   '--allowModuleIdentifiers', 'jasmine',
   '--allowModuleIdentifiers', 'protractor',
-  '--allowModuleIdentifiers', 'angular'
+  '--allowModuleIdentifiers', 'angular',
+  '--onStabilityMissing', 'warn'
 ].concat(entrypoints);
 
 // Note that these two commands work on built d.ts files instead of the source
