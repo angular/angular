@@ -101,6 +101,12 @@ export declare abstract class JSONPConnection implements Connection {
 }
 
 /** @experimental */
+export declare class QueryEncoder {
+    encodeKey(k: string): string;
+    encodeValue(v: string): string;
+}
+
+/** @experimental */
 export declare enum ReadyState {
     Unsent = 0,
     Open = 1,
@@ -209,7 +215,7 @@ export declare enum ResponseType {
 export declare class URLSearchParams {
     paramsMap: Map<string, string[]>;
     rawParams: string;
-    constructor(rawParams?: string);
+    constructor(rawParams?: string, queryEncoder?: QueryEncoder);
     append(param: string, val: string): void;
     appendAll(searchParams: URLSearchParams): void;
     clone(): URLSearchParams;
