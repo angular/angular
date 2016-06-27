@@ -11,7 +11,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DefaultUrlSerializer, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Router, RouterConfig, RouterOutletMap, RouterStateSnapshot, RoutesRecognized, UrlSerializer} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DefaultUrlSerializer, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterConfig, RouterOutletMap, RouterStateSnapshot, RoutesRecognized, UrlSerializer} from '../index';
 
 describe('Integration', () => {
 
@@ -432,6 +432,68 @@ describe('Integration', () => {
            expect(fixture.debugElement.nativeElement)
                .toHaveText('primary {simple} right {user victor}');
          })));
+
+  describe('data', () => {
+    class ResolveSix implements Resolve<TeamCmp> {
+      resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number { return 6; }
+    }
+
+    beforeEachProviders(
+        () =>
+            [{provide: 'resolveTwo', useValue: (a: any, b: any) => 2},
+             {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
+             {provide: 'resolveSix', useClass: ResolveSix}]);
+
+    it('should provide resolved data',
+       fakeAsync(inject(
+           [Router, TestComponentBuilder, Location],
+           (router: Router, tcb: TestComponentBuilder, location: Location) => {
+             const fixture = tcb.createFakeAsync(RootCmpWithTwoOutlets);
+             advance(fixture);
+
+             router.resetConfig([{
+               path: 'parent/:id',
+               data: {one: 1},
+               resolve: {two: 'resolveTwo'},
+               children: [
+                 {path: '', data: {three: 3}, resolve: {four: 'resolveFour'}, component: RouteCmp},
+                 {
+                   path: '',
+                   data: {five: 5},
+                   resolve: {six: 'resolveSix'},
+                   component: RouteCmp,
+                   outlet: 'right'
+                 }
+               ]
+             }]);
+
+             router.navigateByUrl('/parent/1');
+             advance(fixture);
+
+             const primaryCmp = fixture.debugElement.children[1].componentInstance;
+             const rightCmp = fixture.debugElement.children[3].componentInstance;
+
+             expect(primaryCmp.route.snapshot.data).toEqual({one: 1, two: 2, three: 3, four: 4});
+             expect(rightCmp.route.snapshot.data).toEqual({one: 1, two: 2, five: 5, six: 6});
+
+             let primaryRecorded: any[] = [];
+             primaryCmp.route.data.forEach((rec: any) => primaryRecorded.push(rec));
+
+             let rightRecorded: any[] = [];
+             rightCmp.route.data.forEach((rec: any) => rightRecorded.push(rec));
+
+             router.navigateByUrl('/parent/2');
+             advance(fixture);
+
+             expect(primaryRecorded).toEqual([
+               {one: 1, three: 3, two: 2, four: 4}, {one: 1, three: 3, two: 2, four: 4}
+             ]);
+             expect(rightRecorded).toEqual([
+               {one: 1, five: 5, two: 2, six: 6}, {one: 1, five: 5, two: 2, six: 6}
+             ]);
+           })));
+  });
+
 
   describe('router links', () => {
     it('should support string router links',
@@ -1118,6 +1180,11 @@ class QueryParamsAndFragmentCmp {
     this.name = router.routerState.queryParams.map(p => p['name']);
     this.fragment = router.routerState.fragment;
   }
+}
+
+@Component({selector: 'route-cmp', template: `route`, directives: ROUTER_DIRECTIVES})
+class RouteCmp {
+  constructor(public route: ActivatedRoute) {}
 }
 
 @Component({

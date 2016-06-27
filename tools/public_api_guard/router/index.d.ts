@@ -1,5 +1,6 @@
 export declare class ActivatedRoute {
     component: Type | string;
+    data: Observable<Data>;
     outlet: string;
     params: Observable<Params>;
     snapshot: ActivatedRouteSnapshot;
@@ -9,6 +10,7 @@ export declare class ActivatedRoute {
 
 export declare class ActivatedRouteSnapshot {
     component: Type | string;
+    data: Data;
     outlet: string;
     params: Params;
     url: UrlPathWithParams[];
@@ -22,6 +24,10 @@ export interface CanActivate {
 export interface CanDeactivate<T> {
     canDeactivate(component: T, route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean;
 }
+
+export declare type Data = {
+    [name: string]: any;
+};
 
 export declare class DefaultUrlSerializer implements UrlSerializer {
     parse(url: string): UrlTree;
@@ -72,14 +78,24 @@ export declare const PRIMARY_OUTLET: string;
 
 export declare function provideRouter(config: RouterConfig, opts?: ExtraOptions): any[];
 
+export interface Resolve<T> {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | any;
+}
+
+export declare type ResolveData = {
+    [name: string]: any;
+};
+
 export interface Route {
     canActivate?: any[];
     canDeactivate?: any[];
     children?: Route[];
     component?: Type | string;
+    data?: Data;
     outlet?: string;
     path?: string;
     redirectTo?: string;
+    resolve?: ResolveData;
     terminal?: boolean;
 }
 

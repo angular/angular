@@ -9,6 +9,12 @@
 import {Type} from '@angular/core';
 
 export type RouterConfig = Route[];
+export type Data = {
+  [name: string]: any
+};
+export type ResolveData = {
+  [name: string]: any
+};
 
 export interface Route {
   path?: string;
@@ -19,6 +25,8 @@ export interface Route {
   canDeactivate?: any[];
   redirectTo?: string;
   children?: Route[];
+  data?: Data;
+  resolve?: ResolveData;
 }
 
 export function validateConfig(config: RouterConfig): void {

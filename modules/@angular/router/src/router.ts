@@ -9,8 +9,10 @@
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/mergeAll';
+import 'rxjs/add/operator/reduce';
 import 'rxjs/add/operator/every';
 import 'rxjs/add/observable/from';
+import 'rxjs/add/observable/forkJoin';
 
 import {Location} from '@angular/common';
 import {ComponentResolver, Injector, ReflectiveInjector, Type} from '@angular/core';
@@ -20,17 +22,17 @@ import {Subscription} from 'rxjs/Subscription';
 import {of } from 'rxjs/observable/of';
 
 import {applyRedirects} from './apply_redirects';
-import {RouterConfig, validateConfig} from './config';
+import {Data, ResolveData, RouterConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
 import {recognize} from './recognize';
 import {resolve} from './resolve';
 import {RouterOutletMap} from './router_outlet_map';
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, InheritedResolve, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
 import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlSerializer, UrlTree, createEmptyUrlTree} from './url_tree';
-import {forEach, shallowEqual} from './utils/collection';
+import {forEach, merge, shallowEqual} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 export interface NavigationExtras {
@@ -277,6 +279,7 @@ export class Router {
       let updatedUrl: UrlTree;
       let state: RouterState;
       let navigationIsSuccessful: boolean;
+      let preActivation: PreActivation;
       applyRedirects(url, this.config)
           .mergeMap(u => {
             updatedUrl = u;
@@ -296,11 +299,20 @@ export class Router {
           })
           .map((newState: RouterState) => {
             state = newState;
-
+            preActivation =
+                new PreActivation(state.snapshot, this.currentRouterState.snapshot, this.injector);
+            preActivation.traverse(this.outletMap);
           })
           .mergeMap(_ => {
-            return new GuardChecks(state.snapshot, this.currentRouterState.snapshot, this.injector)
-                .check(this.outletMap);
+            return preActivation.checkGuards();
+
+          })
+          .mergeMap(shouldActivate => {
+            if (shouldActivate) {
+              return preActivation.resolveData().map(() => shouldActivate);
+            } else {
+              return of (shouldActivate);
+            }
 
           })
           .forEach((shouldActivate: boolean) => {
@@ -345,18 +357,20 @@ class CanDeactivate {
   constructor(public component: Object, public route: ActivatedRouteSnapshot) {}
 }
 
-class GuardChecks {
+class PreActivation {
   private checks: Array<CanActivate|CanDeactivate> = [];
   constructor(
       private future: RouterStateSnapshot, private curr: RouterStateSnapshot,
       private injector: Injector) {}
 
-  check(parentOutletMap: RouterOutletMap): Observable<boolean> {
+  traverse(parentOutletMap: RouterOutletMap): void {
     const futureRoot = this.future._root;
     const currRoot = this.curr ? this.curr._root : null;
     this.traverseChildRoutes(futureRoot, currRoot, parentOutletMap);
-    if (this.checks.length === 0) return of (true);
+  }
 
+  checkGuards(): Observable<boolean> {
+    if (this.checks.length === 0) return of (true);
     return Observable.from(this.checks)
         .map(s => {
           if (s instanceof CanActivate) {
@@ -369,6 +383,19 @@ class GuardChecks {
         })
         .mergeAll()
         .every(result => result === true);
+  }
+
+  resolveData(): Observable<any> {
+    if (this.checks.length === 0) return of (null);
+    return Observable.from(this.checks)
+        .mergeMap(s => {
+          if (s instanceof CanActivate) {
+            return this.runResolve(s.route);
+          } else {
+            return of (null);
+          }
+        })
+        .reduce((_, __) => _);
   }
 
   private traverseChildRoutes(
@@ -476,6 +503,32 @@ class GuardChecks {
         .mergeAll()
         .every(result => result === true);
   }
+
+  private runResolve(future: ActivatedRouteSnapshot): Observable<any> {
+    const resolve = future._resolve;
+    return this.resolveNode(resolve.current, future).map(resolvedData => {
+      resolve.resolvedData = resolvedData;
+      future.data = merge(future.data, resolve.flattenedResolvedData);
+      return null;
+    });
+  }
+
+  private resolveNode(resolve: ResolveData, future: ActivatedRouteSnapshot): Observable<any> {
+    const resolvingObs: Observable<any>[] = [];
+    const resolvedData: {[k: string]: any} = {};
+    forEach(resolve, (v: any, k: string) => {
+      const resolver = this.injector.get(v);
+      const obs = resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
+                                     wrapIntoObservable(resolver(future, this.future));
+      resolvingObs.push(obs.map((_: any) => { resolvedData[k] = _; }));
+    });
+
+    if (resolvingObs.length > 0) {
+      return Observable.forkJoin(resolvingObs).map(r => resolvedData);
+    } else {
+      return of (resolvedData);
+    }
+  }
 }
 
 function wrapIntoObservable<T>(value: T | Observable<T>): Observable<T> {
@@ -492,7 +545,6 @@ class ActivateRoutes {
   activate(parentOutletMap: RouterOutletMap): void {
     const futureRoot = this.futureState._root;
     const currRoot = this.currState ? this.currState._root : null;
-
     pushQueryParamsAndFragment(this.futureState);
     advanceActivatedRoute(this.futureState.root);
     this.activateChildRoutes(futureRoot, currRoot, parentOutletMap);

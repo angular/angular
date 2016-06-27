@@ -154,6 +154,57 @@ describe('recognize', () => {
         });
   });
 
+  describe('data', () => {
+    it('should set static data', () => {
+      checkRecognize(
+          [{path: 'a', data: {one: 1}, component: ComponentA}], 'a', (s: RouterStateSnapshot) => {
+            const r: ActivatedRouteSnapshot = s.firstChild(s.root);
+            expect(r.data).toEqual({one: 1});
+          });
+    });
+
+    it('should merge componentless route\'s data', () => {
+      checkRecognize(
+          [{
+            path: 'a',
+            data: {one: 1},
+            children: [{path: 'b', data: {two: 2}, component: ComponentB}]
+          }],
+          'a/b', (s: RouterStateSnapshot) => {
+            const r: ActivatedRouteSnapshot = s.firstChild(<any>s.firstChild(s.root));
+            expect(r.data).toEqual({one: 1, two: 2});
+          });
+    });
+
+    it('should set resolved data', () => {
+      checkRecognize(
+          [{path: 'a', resolve: {one: 'some-token'}, component: ComponentA}], 'a',
+          (s: RouterStateSnapshot) => {
+            const r: ActivatedRouteSnapshot = s.firstChild(s.root);
+            expect(r._resolve.current).toEqual({one: 'some-token'});
+          });
+    });
+
+    it('should reuse componentless route\'s resolve', () => {
+      checkRecognize(
+          [{
+            path: 'a',
+            resolve: {one: 'one'},
+            children: [
+              {path: '', resolve: {two: 'two'}, component: ComponentB},
+              {path: '', resolve: {three: 'three'}, component: ComponentC, outlet: 'aux'}
+            ]
+          }],
+          'a', (s: RouterStateSnapshot) => {
+            const a: ActivatedRouteSnapshot = s.firstChild(s.root);
+            const c: ActivatedRouteSnapshot[] = s.children(<any>a);
+
+            expect(c[0]._resolve.parent).toBe(a._resolve);
+            expect(c[1]._resolve.parent).toBe(a._resolve);
+          });
+    });
+  });
+
   describe('empty path', () => {
     describe('root', () => {
       it('should work', () => {

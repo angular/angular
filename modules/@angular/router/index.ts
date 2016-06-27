@@ -11,8 +11,8 @@ import {RouterLinkActive} from './src/directives/router_link_active';
 import {RouterOutlet} from './src/directives/router_outlet';
 
 export {ExtraOptions} from './src/common_router_providers';
-export {Route, RouterConfig} from './src/config';
-export {CanActivate, CanDeactivate} from './src/interfaces';
+export {Data, ResolveData, Route, RouterConfig} from './src/config';
+export {CanActivate, CanDeactivate, Resolve} from './src/interfaces';
 export {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RoutesRecognized} from './src/router';
 export {RouterOutletMap} from './src/router_outlet_map';
 export {provideRouter} from './src/router_providers';

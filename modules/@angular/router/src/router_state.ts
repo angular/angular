@@ -10,10 +10,10 @@ import {ComponentFactory, Type} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 
-import {Route} from './config';
+import {Data, ResolveData, Route} from './config';
 import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlPathWithParams, UrlSegment, UrlTree} from './url_tree';
-import {shallowEqual, shallowEqualArrays} from './utils/collection';
+import {merge, shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
 
@@ -49,10 +49,11 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type): RouterS
   const snapshot = createEmptyStateSnapshot(urlTree, rootComponent);
   const emptyUrl = new BehaviorSubject([new UrlPathWithParams('', {})]);
   const emptyParams = new BehaviorSubject({});
+  const emptyData = new BehaviorSubject({});
   const emptyQueryParams = new BehaviorSubject({});
   const fragment = new BehaviorSubject('');
-  const activated =
-      new ActivatedRoute(emptyUrl, emptyParams, PRIMARY_OUTLET, rootComponent, snapshot.root);
+  const activated = new ActivatedRoute(
+      emptyUrl, emptyParams, emptyData, PRIMARY_OUTLET, rootComponent, snapshot.root);
   activated.snapshot = snapshot.root;
   return new RouterState(
       new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment, snapshot);
@@ -60,10 +61,12 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type): RouterS
 
 function createEmptyStateSnapshot(urlTree: UrlTree, rootComponent: Type): RouterStateSnapshot {
   const emptyParams = {};
+  const emptyData = {};
   const emptyQueryParams = {};
   const fragment = '';
   const activated = new ActivatedRouteSnapshot(
-      [], emptyParams, PRIMARY_OUTLET, rootComponent, null, urlTree.root, -1);
+      [], emptyParams, emptyData, PRIMARY_OUTLET, rootComponent, null, urlTree.root, -1,
+      InheritedResolve.empty);
   return new RouterStateSnapshot(
       '', new TreeNode<ActivatedRouteSnapshot>(activated, []), emptyQueryParams, fragment);
 }
@@ -93,7 +96,7 @@ export class ActivatedRoute {
    */
   constructor(
       public url: Observable<UrlPathWithParams[]>, public params: Observable<Params>,
-      public outlet: string, public component: Type|string,
+      public data: Observable<Data>, public outlet: string, public component: Type|string,
       futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
   }
@@ -101,6 +104,25 @@ export class ActivatedRoute {
   toString(): string {
     return this.snapshot ? this.snapshot.toString() : `Future(${this._futureSnapshot})`;
   }
+}
+
+export class InheritedResolve {
+  /**
+   * @internal
+   */
+  resolvedData = {};
+
+  constructor(public parent: InheritedResolve, public current: ResolveData) {}
+
+  /**
+   * @internal
+   */
+  get flattenedResolvedData(): Data {
+    return this.parent ? merge(this.parent.flattenedResolvedData, this.resolvedData) :
+                         this.resolvedData;
+  }
+
+  static get empty(): InheritedResolve { return new InheritedResolve(null, {}); }
 }
 
 /**
@@ -131,16 +153,20 @@ export class ActivatedRouteSnapshot {
   /** @internal */
   _lastPathIndex: number;
 
+  /** @internal */
+  _resolve: InheritedResolve;
+
   /**
    * @internal
    */
   constructor(
-      public url: UrlPathWithParams[], public params: Params, public outlet: string,
-      public component: Type|string, routeConfig: Route, urlSegment: UrlSegment,
-      lastPathIndex: number) {
+      public url: UrlPathWithParams[], public params: Params, public data: Data,
+      public outlet: string, public component: Type|string, routeConfig: Route,
+      urlSegment: UrlSegment, lastPathIndex: number, resolve: InheritedResolve) {
     this._routeConfig = routeConfig;
     this._urlSegment = urlSegment;
     this._lastPathIndex = lastPathIndex;
+    this._resolve = resolve;
   }
 
   toString(): string {
@@ -191,6 +217,7 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
   if (route.snapshot) {
     if (!shallowEqual(route.snapshot.params, route._futureSnapshot.params)) {
       (<any>route.params).next(route._futureSnapshot.params);
+      (<any>route.data).next(route._futureSnapshot.data);
     }
     if (!shallowEqualArrays(route.snapshot.url, route._futureSnapshot.url)) {
       (<any>route.url).next(route._futureSnapshot.url);
@@ -198,5 +225,6 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
     route.snapshot = route._futureSnapshot;
   } else {
     route.snapshot = route._futureSnapshot;
+    (<any>route.data).next(route._futureSnapshot.data);
   }
 }
