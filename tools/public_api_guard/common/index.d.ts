@@ -565,15 +565,17 @@ export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
 }
 
-/** @stable */
+/** @experimental */
 export interface UrlChangeEvent {
     type: string;
 }
 
+/** @experimental */
 export interface UrlChangeListener {
     (e: UrlChangeEvent): any;
 }
 
+/** @experimental */
 export interface Validator {
     validate(c: AbstractControl): {
         [key: string]: any;

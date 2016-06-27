@@ -1,13 +1,16 @@
+/** @experimental */
 export declare const BROWSER_APP_PROVIDERS: Array<any>;
 
+/** @experimental */
 export declare const BROWSER_PLATFORM_PROVIDERS: Array<any>;
 
-export declare const BROWSER_PROVIDERS: any[];
-
+/** @experimental */
 export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
 
+/** @experimental */
 export declare function browserPlatform(): PlatformRef;
 
+/** @stable */
 export declare class BrowserPlatformLocation extends PlatformLocation {
     hash: string;
     pathname: string;
@@ -22,6 +25,7 @@ export declare class BrowserPlatformLocation extends PlatformLocation {
     replaceState(state: any, title: string, url: string): void;
 }
 
+/** @experimental */
 export declare class By {
     static all(): Predicate<DebugElement>;
     static css(selector: string): Predicate<DebugElement>;
@@ -38,16 +42,13 @@ export declare abstract class ClientMessageBrokerFactory {
     abstract createMessageBroker(channel: string, runInZone?: boolean): ClientMessageBroker;
 }
 
+/** @experimental */
 export declare function disableDebugTools(): void;
 
+/** @stable */
 export declare const DOCUMENT: OpaqueToken;
 
-export declare class DomEventsPlugin extends EventManagerPlugin {
-    addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
-    addGlobalEventListener(target: string, eventName: string, handler: Function): Function;
-    supports(eventName: string): boolean;
-}
-
+/** @stable */
 export declare abstract class DomSanitizationService implements SanitizationService {
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
@@ -57,12 +58,13 @@ export declare abstract class DomSanitizationService implements SanitizationServ
     abstract sanitize(context: SecurityContext, value: any): string;
 }
 
-export declare const ELEMENT_PROBE_PROVIDERS: any[];
-
+/** @experimental */
 export declare function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T>;
 
+/** @stable */
 export declare const EVENT_MANAGER_PLUGINS: OpaqueToken;
 
+/** @stable */
 export declare class EventManager {
     constructor(plugins: EventManagerPlugin[], _zone: NgZone);
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
@@ -77,25 +79,16 @@ export declare class FnArg {
     constructor(value: any, type: Type);
 }
 
+/** @experimental */
 export declare const HAMMER_GESTURE_CONFIG: OpaqueToken;
 
+/** @experimental */
 export declare class HammerGestureConfig {
     events: string[];
     overrides: {
         [key: string]: Object;
     };
     buildHammer(element: HTMLElement): HammerInstance;
-}
-
-export declare class KeyEventsPlugin extends EventManagerPlugin {
-    constructor();
-    addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
-    supports(eventName: string): boolean;
-    static eventCallback(element: HTMLElement, fullKey: any, handler: Function, zone: NgZone): Function;
-    static getEventFullKey(event: KeyboardEvent): string;
-    static parseEventName(eventName: string): {
-        [key: string]: string;
-    };
 }
 
 /** @experimental */
@@ -134,21 +127,27 @@ export declare class ReceivedMessage {
     });
 }
 
+/** @stable */
 export interface SafeHtml extends SafeValue {
 }
 
+/** @stable */
 export interface SafeResourceUrl extends SafeValue {
 }
 
+/** @stable */
 export interface SafeScript extends SafeValue {
 }
 
+/** @stable */
 export interface SafeStyle extends SafeValue {
 }
 
+/** @stable */
 export interface SafeUrl extends SafeValue {
 }
 
+/** @experimental */
 export declare var SecurityContext: typeof t.SecurityContext;
 
 /** @experimental */
@@ -156,6 +155,7 @@ export declare abstract class ServiceMessageBroker {
     abstract registerMethod(methodName: string, signature: Type[], method: Function, returnType?: Type): void;
 }
 
+/** @experimental */
 export declare abstract class ServiceMessageBrokerFactory {
     abstract createMessageBroker(channel: string, runInZone?: boolean): ServiceMessageBroker;
 }

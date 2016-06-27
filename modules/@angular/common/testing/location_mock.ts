@@ -15,6 +15,8 @@ import {LocationStrategy} from '../src/location/location_strategy';
 
 /**
  * A spy for {@link Location} that allows tests to fire simulated location events.
+ *
+ * @experimental
  */
 @Injectable()
 export class SpyLocation implements Location {

@@ -18,12 +18,16 @@ export * from './private_export_testing'
 
 /**
  * Default platform providers for testing.
+ *
+ * @stable
  */
 export const TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     [TEST_BROWSER_PLATFORM_PROVIDERS];
 
 /**
  * Default application providers for testing.
+ *
+ * @stable
  */
 export const TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   TEST_BROWSER_APPLICATION_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS,

@@ -20,4 +20,8 @@ export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot
 export {PRIMARY_OUTLET, Params} from './src/shared';
 export {DefaultUrlSerializer, UrlPathWithParams, UrlSerializer, UrlTree} from './src/url_tree';
 
+
+/**
+ * @experimental
+ */
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkActive];

@@ -44,12 +44,16 @@ function createNgZone(): NgZone {
 
 /**
  * Default platform providers for testing.
+ *
+ * @stable
  */
 export const TEST_BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     TEST_BROWSER_STATIC_PLATFORM_PROVIDERS;
 
 /**
  * Default application providers for testing without a compiler.
+ *
+ * @stable
  */
 export const TEST_BROWSER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     [BROWSER_APP_PROVIDERS, ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS];

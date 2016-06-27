@@ -53,8 +53,11 @@ export abstract class PlatformLocation {
 /**
  * A serializable version of the event from onPopState or onHashChange
  *
- * @stable
+ * @experimental
  */
 export interface UrlChangeEvent { type: string; }
 
+/**
+ * @experimental
+ */
 export interface UrlChangeListener { (e: UrlChangeEvent): any; }

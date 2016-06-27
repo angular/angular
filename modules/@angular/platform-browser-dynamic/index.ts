@@ -18,6 +18,9 @@ import {CachedXHR} from './src/xhr/xhr_cache';
 import {XHRImpl} from './src/xhr/xhr_impl';
 
 
+/**
+ * @experimental
+ */
 export const BROWSER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   COMPILER_PROVIDERS, {
     provide: CompilerConfig,
@@ -32,6 +35,9 @@ export const BROWSER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]
 ];
 
 
+/**
+ * @experimental
+ */
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
     [{provide: XHR, useClass: CachedXHR}];
 
@@ -104,6 +110,9 @@ export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
  *   app injector to override default injection behavior.
  *
  * Returns a `Promise` of {@link ComponentRef}.
+ *
+ * @experimental This api cannot be used with the offline compiler and thus is still subject to
+ * change.
  */
 export function bootstrap(
     appComponentType: Type,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APPLICATION_COMMON_PROVIDERS, APP_INITIALIZER, ApplicationRef, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, createPlatform, getPlatform} from '@angular/core';
+import {APPLICATION_COMMON_PROVIDERS, APP_INITIALIZER, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, createPlatform, getPlatform} from '@angular/core';
 
 import {AnimationDriver, NoOpAnimationDriver, wtfInit} from '../core_private';
 
@@ -37,7 +37,8 @@ const WORKER_RENDER_PLATFORM_MARKER = new OpaqueToken('WorkerRenderPlatformMarke
 /**
  * Wrapper class that exposes the Worker
  * and underlying {@link MessageBus} for lower level message passing.
- * @experimental
+ *
+ * @experimental WebWorker support is currently experimental.
  */
 @Injectable()
 export class WebWorkerInstance {
@@ -52,7 +53,7 @@ export class WebWorkerInstance {
 }
 
 /**
- * @experimental
+ * @experimental WebWorker support is currently experimental.
  */
 export const WORKER_SCRIPT: OpaqueToken = new OpaqueToken('WebWorkerScript');
 
@@ -61,13 +62,13 @@ export const WORKER_SCRIPT: OpaqueToken = new OpaqueToken('WebWorkerScript');
  * created.
  *
  * TODO(vicb): create an interface for startable services to implement
- * @experimental
+ * @experimental WebWorker support is currently experimental.
  */
 export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
     new OpaqueToken('WorkerRenderStartableMsgService');
 
 /**
- * @experimental
+ * @experimental WebWorker support is currently experimental.
  */
 export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   PLATFORM_COMMON_PROVIDERS, {provide: WORKER_RENDER_PLATFORM_MARKER, useValue: true},
@@ -75,7 +76,7 @@ export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/
 ];
 
 /**
- * @experimental
+ * @experimental WebWorker support is currently experimental.
  */
 export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   APPLICATION_COMMON_PROVIDERS,
@@ -128,7 +129,7 @@ function initWebWorkerRenderPlatform(): void {
 }
 
 /**
- * @experimental
+ * @experimental WebWorker support is currently experimental.
  */
 export function workerUiPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {

@@ -23,6 +23,10 @@ var modifierKeyGetters: {[key: string]: (event: KeyboardEvent) => boolean} = {
   'shift': (event: KeyboardEvent) => event.shiftKey
 };
 
+
+/**
+ * @experimental
+ */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
   constructor() { super(); }

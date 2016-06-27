@@ -41,7 +41,8 @@ var _inPlatformCreate: boolean = false;
  * One important assertion this disables verifies that a change detection pass
  * does not result in additional changes to any bindings (also known as
  * unidirectional data flow).
- * @stable
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export function enableProdMode(): void {
   if (_runModeLocked) {
@@ -56,6 +57,8 @@ export function enableProdMode(): void {
  * This can only be read after `lockRunMode` has been called.
  *
  * By default, this is true, unless a user calls `enableProdMode`.
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export function isDevMode(): boolean {
   if (!_runModeLocked) {
@@ -68,6 +71,8 @@ export function isDevMode(): boolean {
  * Locks the run mode of Angular. After this has been called,
  * it can't be changed any more. I.e. `isDevMode()` will always
  * return the same value.
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export function lockRunMode(): void {
   _runModeLocked = true;
@@ -76,7 +81,8 @@ export function lockRunMode(): void {
 /**
  * Creates a platform.
  * Platforms have to be eagerly created via this function.
- * @experimental
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatform(injector: Injector): PlatformRef {
   if (_inPlatformCreate) {
@@ -99,7 +105,8 @@ export function createPlatform(injector: Injector): PlatformRef {
 /**
  * Checks that there currently is a platform
  * which contains the given token as a provider.
- * @experimental
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export function assertPlatform(requiredToken: any): PlatformRef {
   var platform = getPlatform();
@@ -115,7 +122,8 @@ export function assertPlatform(requiredToken: any): PlatformRef {
 
 /**
  * Dispose the existing platform.
- * @experimental
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export function disposePlatform(): void {
   if (isPresent(_platform) && !_platform.disposed) {
@@ -125,7 +133,8 @@ export function disposePlatform(): void {
 
 /**
  * Returns the current platform.
- * @experimental
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export function getPlatform(): PlatformRef {
   return isPresent(_platform) && !_platform.disposed ? _platform : null;
@@ -134,7 +143,8 @@ export function getPlatform(): PlatformRef {
 /**
  * Shortcut for ApplicationRef.bootstrap.
  * Requires a platform to be created first.
- * @experimental
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export function coreBootstrap<C>(
     componentFactory: ComponentFactory<C>, injector: Injector): ComponentRef<C> {
@@ -146,7 +156,8 @@ export function coreBootstrap<C>(
  * Resolves the componentFactory for the given component,
  * waits for asynchronous initializers and bootstraps the component.
  * Requires a platform to be created first.
- * @experimental
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export function coreLoadAndBootstrap(
     componentType: Type, injector: Injector): Promise<ComponentRef<any>> {
@@ -166,7 +177,8 @@ export function coreLoadAndBootstrap(
  *
  * A page's platform is initialized implicitly when {@link bootstrap}() is called, or
  * explicitly by calling {@link createPlatform}().
- * @stable
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export abstract class PlatformRef {
   /**
@@ -228,7 +240,8 @@ export class PlatformRef_ extends PlatformRef {
  * A reference to an Angular application running on a page.
  *
  * For more about Angular applications, see the documentation for {@link bootstrap}.
- * @stable
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
  */
 export abstract class ApplicationRef {
   /**

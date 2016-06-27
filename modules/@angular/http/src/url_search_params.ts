@@ -32,6 +32,8 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
  *   - setAll()
  *   - appendAll()
  *   - replaceAll()
+ *
+ * @experimental
  */
 export class URLSearchParams {
   paramsMap: Map<string, string[]>;

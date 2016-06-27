@@ -18,7 +18,7 @@ import {FormBuilder as NewFormBuilder} from './form_builder';
 
 
 
-/*
+/**
  * Shorthand set of providers used for building Angular forms.
  *
  * ### Example
@@ -43,6 +43,10 @@ function flatten(platformDirectives: any[]): any[] {
   return flattenedDirectives;
 }
 
+
+/**
+ * @experimental
+ */
 export function disableDeprecatedForms(): any[] {
   return [{
     provide: CompilerConfig,
@@ -55,6 +59,9 @@ export function disableDeprecatedForms(): any[] {
   }];
 }
 
+/**
+ * @experimental
+ */
 export function provideForms(): any[] {
   return [
     {provide: PLATFORM_DIRECTIVES, useValue: NEW_FORM_DIRECTIVES, multi: true}, FORM_PROVIDERS

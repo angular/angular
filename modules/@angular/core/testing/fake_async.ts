@@ -25,6 +25,8 @@ let _FakeAsyncTestZoneSpecType = (Zone as any /** TODO #9100 */)['FakeAsyncTestZ
  *
  * @param fn
  * @returns {Function} The function wrapped to be executed in the fakeAsync zone
+ *
+ * @experimental
  */
 export function fakeAsync(fn: Function): (...args: any[]) => any {
   if (Zone.current.get('FakeAsyncTestZoneSpec') != null) {
@@ -73,6 +75,7 @@ function _getFakeAsyncZoneSpec(): any {
  *
  * {@example testing/ts/fake_async.ts region='basic'}
  *
+ * @experimental
  */
 export function tick(millis: number = 0): void {
   _getFakeAsyncZoneSpec().tick(millis);
@@ -80,6 +83,8 @@ export function tick(millis: number = 0): void {
 
 /**
  * Discard all remaining periodic tasks.
+ *
+ * @experimental
  */
 export function discardPeriodicTasks(): void {
   let zoneSpec = _getFakeAsyncZoneSpec();
@@ -89,6 +94,8 @@ export function discardPeriodicTasks(): void {
 
 /**
  * Flush any pending microtasks.
+ *
+ * @experimental
  */
 export function flushMicrotasks(): void {
   _getFakeAsyncZoneSpec().flushMicrotasks();

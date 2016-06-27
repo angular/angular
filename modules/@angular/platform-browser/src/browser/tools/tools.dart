@@ -15,6 +15,8 @@ import 'common_tools.dart' show AngularTools;
  * 1. Type `ng.` (usually the console will show auto-complete suggestion)
  * 1. Try the change detection profiler `ng.profiler.timeChangeDetection()`
  *    then hit Enter.
+ *
+ * @experimental All debugging apis are currently experimental.
  */
 void enableDebugTools(ComponentRef<dynamic> ref) {
   final tools = new AngularTools(ref);
@@ -29,6 +31,8 @@ void enableDebugTools(ComponentRef<dynamic> ref) {
 
 /**
  * Disables Angular 2 tools.
+ *
+ * @experimental All debugging apis are currently experimental.
  */
 void disableDebugTools() {
   context.deleteProperty('ng');

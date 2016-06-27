@@ -15,8 +15,8 @@ import {CompilerConfig} from '@angular/compiler';
 import {Component, ViewMetadata} from '@angular/core/src/metadata';
 import {IS_DART} from '../../src/facade/lang';
 import {el} from '@angular/platform-browser/testing/browser_util';
+import {DomSanitizationService} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
-import {DomSanitizationService} from '@angular/platform-browser';
 
 const ANCHOR_ELEMENT = /*@ts2dart_const*/ new OpaqueToken('AnchorElement');
 

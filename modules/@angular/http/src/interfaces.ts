@@ -16,11 +16,15 @@ import {URLSearchParams} from './url_search_params';
  *
  * The primary purpose of a `ConnectionBackend` is to create new connections to fulfill a given
  * {@link Request}.
+ *
+ * @experimental
  */
 export abstract class ConnectionBackend { abstract createConnection(request: any): Connection; }
 
 /**
  * Abstract class from which real connections are derived.
+ *
+ * @experimental
  */
 export abstract class Connection {
   readyState: ReadyState;
@@ -28,12 +32,18 @@ export abstract class Connection {
   response: any;  // TODO: generic of <Response>;
 }
 
-/** An XSRFStrategy configures XSRF protection (e.g. via headers) on an HTTP request. */
+/**
+ * An XSRFStrategy configures XSRF protection (e.g. via headers) on an HTTP request.
+ *
+ * @experimental
+ */
 export abstract class XSRFStrategy { abstract configureRequest(req: Request): void; }
 
 /**
  * Interface for options to construct a RequestOptions, based on
  * [RequestInit](https://fetch.spec.whatwg.org/#requestinit) from the Fetch spec.
+ *
+ * @experimental
  */
 export interface RequestOptionsArgs {
   url?: string;
@@ -52,6 +62,8 @@ export interface RequestArgs extends RequestOptionsArgs { url: string; }
 /**
  * Interface for options to construct a Response, based on
  * [ResponseInit](https://fetch.spec.whatwg.org/#responseinit) from the Fetch spec.
+ *
+ * @experimental
  */
 export type ResponseOptionsArgs = {
   // TODO: Support Blob, ArrayBuffer, JSON

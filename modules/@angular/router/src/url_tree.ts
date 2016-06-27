@@ -62,6 +62,8 @@ function containsSegmentHelper(
 
 /**
  * A URL in the tree form.
+ *
+ * @experimental
  */
 export class UrlTree {
   /**
@@ -96,6 +98,10 @@ export class UrlSegment {
   toString(): string { return serializePaths(this); }
 }
 
+
+/**
+ * @experimental
+ */
 export class UrlPathWithParams {
   constructor(public path: string, public parameters: {[key: string]: string}) {}
   toString(): string { return serializePath(this); }
@@ -153,6 +159,8 @@ export function mapChildrenIntoArray<T>(
 
 /**
  * Defines a way to serialize/deserialize a url tree.
+ *
+ * @experimental
  */
 export abstract class UrlSerializer {
   /**
@@ -168,6 +176,8 @@ export abstract class UrlSerializer {
 
 /**
  * A default implementation of the serialization.
+ *
+ * @experimental
  */
 export class DefaultUrlSerializer implements UrlSerializer {
   parse(url: string): UrlTree {

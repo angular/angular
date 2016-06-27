@@ -1,3 +1,4 @@
+/** @experimental */
 export declare class SpyLocation implements Location {
     urlChanges: string[];
     back(): void;

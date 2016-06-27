@@ -15,6 +15,7 @@ import {Type, isFunction, stringify} from '../facade/lang';
  * ### Example
  *
  * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref_fn'}
+ * @experimental
  */
 export interface ForwardRefFn { (): any; }
 

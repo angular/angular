@@ -34,6 +34,8 @@ const BROWSER_PLATFORM_MARKER = new OpaqueToken('BrowserPlatformMarker');
  * A set of providers to initialize the Angular platform in a web browser.
  *
  * Used automatically by `bootstrap`, or can be passed to {@link platform}.
+ *
+ * @experimental API related to bootstrapping are still under review.
  */
 export const BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   {provide: BROWSER_PLATFORM_MARKER, useValue: true}, PLATFORM_COMMON_PROVIDERS,
@@ -41,6 +43,9 @@ export const BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> 
   {provide: PlatformLocation, useClass: BrowserPlatformLocation}
 ];
 
+/**
+ * @experimental
+ */
 export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = [
   {provide: SanitizationService, useExisting: DomSanitizationService},
   {provide: DomSanitizationService, useClass: DomSanitizationServiceImpl},
@@ -50,6 +55,8 @@ export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = [
  * A set of providers to initialize an Angular application in a web browser.
  *
  * Used automatically by `bootstrap`, or can be passed to {@link PlatformRef.application}.
+ *
+ * @experimental API related to bootstrapping are still under review.
  */
 export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   APPLICATION_COMMON_PROVIDERS, FORM_PROVIDERS, BROWSER_SANITIZATION_PROVIDERS,
@@ -66,6 +73,9 @@ export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   Testability, EventManager, ELEMENT_PROBE_PROVIDERS
 ];
 
+/**
+ * @experimental API related to bootstrapping are still under review.
+ */
 export function browserPlatform(): PlatformRef {
   if (isBlank(getPlatform())) {
     createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));

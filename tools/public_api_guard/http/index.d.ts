@@ -1,31 +1,38 @@
+/** @experimental */
 export declare class BaseRequestOptions extends RequestOptions {
     constructor();
 }
 
+/** @experimental */
 export declare class BaseResponseOptions extends ResponseOptions {
     constructor();
 }
 
+/** @experimental */
 export declare class BrowserXhr {
     constructor();
     build(): any;
 }
 
+/** @experimental */
 export declare abstract class Connection {
     readyState: ReadyState;
     request: Request;
     response: any;
 }
 
+/** @experimental */
 export declare abstract class ConnectionBackend {
     abstract createConnection(request: any): Connection;
 }
 
+/** @experimental */
 export declare class CookieXSRFStrategy implements XSRFStrategy {
     constructor(_cookieName?: string, _headerName?: string);
     configureRequest(req: Request): void;
 }
 
+/** @experimental */
 export declare class Headers {
     constructor(headers?: Headers | {
         [key: string]: any;
@@ -46,6 +53,7 @@ export declare class Headers {
     static fromResponseHeaderString(headersString: string): Headers;
 }
 
+/** @experimental */
 export declare class Http {
     protected _backend: ConnectionBackend;
     protected _defaultOptions: RequestOptions;
@@ -62,23 +70,29 @@ export declare class Http {
 /** @deprecated */
 export declare const HTTP_BINDINGS: any[];
 
+/** @experimental */
 export declare const HTTP_PROVIDERS: any[];
 
+/** @experimental */
 export declare function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions): Http;
 
 /** @deprecated */
 export declare const JSON_BINDINGS: any[];
 
+/** @experimental */
 export declare class Jsonp extends Http {
     constructor(backend: ConnectionBackend, defaultOptions: RequestOptions);
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response>;
 }
 
+/** @experimental */
 export declare const JSONP_PROVIDERS: any[];
 
+/** @experimental */
 export declare abstract class JSONPBackend extends ConnectionBackend {
 }
 
+/** @experimental */
 export declare abstract class JSONPConnection implements Connection {
     readyState: ReadyState;
     request: Request;
@@ -86,6 +100,7 @@ export declare abstract class JSONPConnection implements Connection {
     abstract finished(data?: any): void;
 }
 
+/** @experimental */
 export declare enum ReadyState {
     Unsent = 0,
     Open = 1,
@@ -95,6 +110,7 @@ export declare enum ReadyState {
     Cancelled = 5,
 }
 
+/** @experimental */
 export declare class Request {
     headers: Headers;
     method: RequestMethod;
@@ -109,6 +125,7 @@ export declare class Request {
     text(): string;
 }
 
+/** @experimental */
 export declare enum RequestMethod {
     Get = 0,
     Post = 1,
@@ -119,6 +136,7 @@ export declare enum RequestMethod {
     Patch = 6,
 }
 
+/** @experimental */
 export declare class RequestOptions {
     body: any;
     headers: Headers;
@@ -130,6 +148,7 @@ export declare class RequestOptions {
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
+/** @experimental */
 export interface RequestOptionsArgs {
     body?: any;
     headers?: Headers;
@@ -139,6 +158,7 @@ export interface RequestOptionsArgs {
     withCredentials?: boolean;
 }
 
+/** @experimental */
 export declare class Response {
     bytesLoaded: number;
     headers: Headers;
@@ -156,6 +176,7 @@ export declare class Response {
     toString(): string;
 }
 
+/** @experimental */
 export declare class ResponseOptions {
     body: string | Object;
     headers: Headers;
@@ -165,6 +186,7 @@ export declare class ResponseOptions {
     merge(options?: ResponseOptionsArgs): ResponseOptions;
 }
 
+/** @experimental */
 export declare type ResponseOptionsArgs = {
     body?: string | Object | FormData;
     status?: number;
@@ -174,6 +196,7 @@ export declare type ResponseOptionsArgs = {
     url?: string;
 };
 
+/** @experimental */
 export declare enum ResponseType {
     Basic = 0,
     Cors = 1,
@@ -182,6 +205,7 @@ export declare enum ResponseType {
     Opaque = 4,
 }
 
+/** @experimental */
 export declare class URLSearchParams {
     paramsMap: Map<string, string[]>;
     rawParams: string;
@@ -199,11 +223,13 @@ export declare class URLSearchParams {
     toString(): string;
 }
 
+/** @experimental */
 export declare class XHRBackend implements ConnectionBackend {
     constructor(_browserXHR: BrowserXhr, _baseResponseOptions: ResponseOptions, _xsrfStrategy: XSRFStrategy);
     createConnection(request: Request): XHRConnection;
 }
 
+/** @experimental */
 export declare class XHRConnection implements Connection {
     readyState: ReadyState;
     request: Request;
@@ -212,6 +238,7 @@ export declare class XHRConnection implements Connection {
     setDetectedContentType(req: any, _xhr: any): void;
 }
 
+/** @experimental */
 export declare abstract class XSRFStrategy {
     abstract configureRequest(req: Request): void;
 }

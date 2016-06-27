@@ -47,6 +47,8 @@ const _EMPTY_LIST: any[] /** TODO #9100 */ = /*@ts2dart_const*/[];
  *
  * expect(injector.get('message')).toEqual('Hello');
  * ```
+ *
+ * @experimental
  */
 export interface ResolvedReflectiveProvider {
   /**

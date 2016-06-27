@@ -13,6 +13,9 @@ import {BaseException} from '../src/facade/exceptions';
 import {FunctionWrapper, isPresent} from '../src/facade/lang';
 import {AsyncTestCompleter} from './async_test_completer';
 
+/**
+ * @experimental
+ */
 export class TestInjector {
   private _instantiated: boolean = false;
 
@@ -64,6 +67,9 @@ export class TestInjector {
 
 var _testInjector: TestInjector = null;
 
+/**
+ * @experimental
+ */
 export function getTestInjector() {
   if (_testInjector == null) {
     _testInjector = new TestInjector();
@@ -81,6 +87,8 @@ export function getTestInjector() {
  *
  * Test Providers for individual platforms are available from
  * 'angular2/platform/testing/<platform_name>'.
+ *
+ * @experimental
  */
 export function setBaseTestProviders(
     platformProviders: Array<Type|Provider|any[]>,
@@ -101,6 +109,8 @@ export function setBaseTestProviders(
 
 /**
  * Reset the providers for the test injector.
+ *
+ * @experimental
  */
 export function resetBaseTestProviders() {
   var testInjector = getTestInjector();
@@ -131,6 +141,7 @@ export function resetBaseTestProviders() {
  * eventually
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
+ * @stable
  */
 export function inject(tokens: any[], fn: Function): () => any {
   let testInjector = getTestInjector();
@@ -148,6 +159,9 @@ export function inject(tokens: any[], fn: Function): () => any {
   }
 }
 
+/**
+ * @experimental
+ */
 export class InjectSetupWrapper {
   constructor(private _providers: () => any) {}
 
@@ -166,6 +180,9 @@ export class InjectSetupWrapper {
   }
 }
 
+/**
+ * @experimental
+ */
 export function withProviders(providers: () => any) {
   return new InjectSetupWrapper(providers);
 }

@@ -30,6 +30,8 @@ import {RouterConfig} from './config';
  *
  * bootstrap(AppCmp, [provideRouter(router)]);
  * ```
+ *
+ * @experimental
  */
 export function provideRouter(config: RouterConfig, opts: ExtraOptions = {}): any[] {
   return [

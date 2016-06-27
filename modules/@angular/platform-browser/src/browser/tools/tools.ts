@@ -23,6 +23,8 @@ var context = <any>global;
  * 1. Type `ng.` (usually the console will show auto-complete suggestion)
  * 1. Try the change detection profiler `ng.profiler.timeChangeDetection()`
  *    then hit Enter.
+ *
+ * @experimental All debugging apis are currently experimental.
  */
 export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
   context.ng = new AngularTools(ref);
@@ -31,6 +33,8 @@ export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
 
 /**
  * Disables Angular 2 tools.
+ *
+ * @experimental All debugging apis are currently experimental.
  */
 export function disableDebugTools(): void {
   delete context.ng;

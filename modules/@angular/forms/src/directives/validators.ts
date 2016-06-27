@@ -30,6 +30,8 @@ import {NG_VALIDATORS, Validators} from '../validators';
  *   }
  * }
  * ```
+ *
+ * @experimental
  */
 export interface Validator { validate(c: AbstractControl): {[key: string]: any}; }
 
@@ -60,7 +62,14 @@ export const REQUIRED_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ 
 export class RequiredValidator {
 }
 
+/**
+ * @experimental
+ */
 export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
+
+/**
+ * @experimental
+ */
 export interface AsyncValidatorFn {
   (c: AbstractControl): any /*Promise<{[key: string]: any}>|Observable<{[key: string]: any}>*/;
 }

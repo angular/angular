@@ -30,6 +30,8 @@ import {NG_VALIDATORS, Validators} from '../validators';
  *   }
  * }
  * ```
+ *
+ * @experimental
  */
 export interface Validator { validate(c: AbstractControl): {[key: string]: any}; }
 

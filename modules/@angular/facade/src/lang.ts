@@ -59,6 +59,9 @@ var _global: BrowserNodeGlobal = globalScope;
 
 export {_global as global};
 
+/**
+ * @stable
+ */
 export var Type = Function;
 
 /**
@@ -66,6 +69,8 @@ export var Type = Function;
  *
  * An example of a `Type` is `MyCustomComponent` class, which in JavaScript is be represented by
  * the `MyCustomComponent` constructor function.
+ *
+ * @stable
  */
 export interface Type extends Function {}
 

@@ -43,6 +43,8 @@ export interface NavigationExtras {
 
 /**
  * An event triggered when a navigation starts
+ *
+ * @experimental
  */
 export class NavigationStart {
   constructor(public id: number, public url: string) {}
@@ -52,6 +54,8 @@ export class NavigationStart {
 
 /**
  * An event triggered when a navigation ends successfully
+ *
+ * @experimental
  */
 export class NavigationEnd {
   constructor(public id: number, public url: string, public urlAfterRedirects: string) {}
@@ -63,6 +67,8 @@ export class NavigationEnd {
 
 /**
  * An event triggered when a navigation is canceled
+ *
+ * @experimental
  */
 export class NavigationCancel {
   constructor(public id: number, public url: string) {}
@@ -72,6 +78,8 @@ export class NavigationCancel {
 
 /**
  * An event triggered when a navigation fails due to unexpected error
+ *
+ * @experimental
  */
 export class NavigationError {
   constructor(public id: number, public url: string, public error: any) {}
@@ -83,6 +91,8 @@ export class NavigationError {
 
 /**
  * An event triggered when routes are recognized
+ *
+ * @experimental
  */
 export class RoutesRecognized {
   constructor(
@@ -94,10 +104,15 @@ export class RoutesRecognized {
   }
 }
 
+/**
+ * @experimental
+ */
 export type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError;
 
 /**
  * The `Router` is responsible for mapping URLs to components.
+ *
+ * @experimental
  */
 export class Router {
   private currentUrlTree: UrlTree;
@@ -350,9 +365,16 @@ export class Router {
   }
 }
 
+/**
+ * @experimental
+ */
 class CanActivate {
   constructor(public route: ActivatedRouteSnapshot) {}
 }
+
+/**
+ * @experimental
+ */
 class CanDeactivate {
   constructor(public component: Object, public route: ActivatedRouteSnapshot) {}
 }

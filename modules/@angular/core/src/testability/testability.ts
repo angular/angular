@@ -138,6 +138,9 @@ export class TestabilityRegistry {
 /**
  * Adapter interface for retrieving the `Testability` service associated for a
  * particular context.
+ *
+ * @experimental Testability apis are primarily intended to be used by e2e test tool vendors like
+ * the Protractor team.
  */
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;

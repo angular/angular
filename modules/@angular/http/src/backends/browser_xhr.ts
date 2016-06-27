@@ -12,6 +12,8 @@ import {Injectable} from '@angular/core';
  * A backend for http that uses the `XMLHttpRequest` browser API.
  *
  * Take care not to evaluate this in non-browser contexts.
+ *
+ * @experimental
  */
 @Injectable()
 export class BrowserXhr {

@@ -7,25 +7,35 @@
  */
 
 import {BaseException} from '../facade/exceptions';
-import {NumberWrapper, isArray, isPresent, isString, isStringMap} from '../facade/lang';
+import {NumberWrapper, isArray, isPresent, isString} from '../facade/lang';
 
+/**
+ * @experimental Animation support is experimental.
+ */
 export const AUTO_STYLE = '*';
 
 /**
  * Metadata representing the entry of animations.
  * Instances of this class are provided via the animation DSL when the {@link trigger trigger
  * animation function} is called.
+ *
+ * @experimental Animation support is experimental.
  */
 export class AnimationEntryMetadata {
   constructor(public name: string, public definitions: AnimationStateMetadata[]) {}
 }
 
+/**
+ * @experimental Animation support is experimental.
+ */
 export abstract class AnimationStateMetadata {}
 
 /**
  * Metadata representing the entry of animations.
  * Instances of this class are provided via the animation DSL when the {@link state state animation
  * function} is called.
+ *
+ * @experimental Animation support is experimental.
  */
 export class AnimationStateDeclarationMetadata extends AnimationStateMetadata {
   constructor(public stateNameExpr: string, public styles: AnimationStyleMetadata) { super(); }
@@ -35,17 +45,24 @@ export class AnimationStateDeclarationMetadata extends AnimationStateMetadata {
  * Metadata representing the entry of animations.
  * Instances of this class are provided via the animation DSL when the
  * {@link transition transition animation function} is called.
+ *
+ * @experimental Animation support is experimental.
  */
 export class AnimationStateTransitionMetadata extends AnimationStateMetadata {
   constructor(public stateChangeExpr: string, public steps: AnimationMetadata) { super(); }
 }
 
+/**
+ * @experimental Animation support is experimental.
+ */
 export abstract class AnimationMetadata {}
 
 /**
  * Metadata representing the entry of animations.
  * Instances of this class are provided via the animation DSL when the {@link keyframes keyframes
  * animation function} is called.
+ *
+ * @experimental Animation support is experimental.
  */
 export class AnimationKeyframesSequenceMetadata extends AnimationMetadata {
   constructor(public steps: AnimationStyleMetadata[]) { super(); }
@@ -55,6 +72,8 @@ export class AnimationKeyframesSequenceMetadata extends AnimationMetadata {
  * Metadata representing the entry of animations.
  * Instances of this class are provided via the animation DSL when the {@link style style animation
  * function} is called.
+ *
+ * @experimental Animation support is experimental.
  */
 export class AnimationStyleMetadata extends AnimationMetadata {
   constructor(
@@ -67,6 +86,8 @@ export class AnimationStyleMetadata extends AnimationMetadata {
  * Metadata representing the entry of animations.
  * Instances of this class are provided via the animation DSL when the {@link animate animate
  * animation function} is called.
+ *
+ * @experimental Animation support is experimental.
  */
 export class AnimationAnimateMetadata extends AnimationMetadata {
   constructor(
@@ -76,6 +97,9 @@ export class AnimationAnimateMetadata extends AnimationMetadata {
   }
 }
 
+/**
+ * @experimental Animation support is experimental.
+ */
 export abstract class AnimationWithStepsMetadata extends AnimationMetadata {
   constructor() { super(); }
   get steps(): AnimationMetadata[] { throw new BaseException('NOT IMPLEMENTED: Base Class'); }
@@ -85,6 +109,8 @@ export abstract class AnimationWithStepsMetadata extends AnimationMetadata {
  * Metadata representing the entry of animations.
  * Instances of this class are provided via the animation DSL when the {@link sequence sequence
  * animation function} is called.
+ *
+ * @experimental Animation support is experimental.
  */
 export class AnimationSequenceMetadata extends AnimationWithStepsMetadata {
   constructor(private _steps: AnimationMetadata[]) { super(); }
@@ -95,6 +121,8 @@ export class AnimationSequenceMetadata extends AnimationWithStepsMetadata {
  * Metadata representing the entry of animations.
  * Instances of this class are provided via the animation DSL when the {@link group group animation
  * function} is called.
+ *
+ * @experimental Animation support is experimental.
  */
 export class AnimationGroupMetadata extends AnimationWithStepsMetadata {
   constructor(private _steps: AnimationMetadata[]) { super(); }
@@ -150,6 +178,8 @@ export class AnimationGroupMetadata extends AnimationWithStepsMetadata {
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
+ *
+ * @experimental Animation support is experimental.
  */
 export function animate(
     timing: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata =
@@ -197,6 +227,8 @@ export function animate(
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
+ *
+ * @experimental Animation support is experimental.
  */
 export function group(steps: AnimationMetadata[]): AnimationGroupMetadata {
   return new AnimationGroupMetadata(steps);
@@ -238,6 +270,8 @@ export function group(steps: AnimationMetadata[]): AnimationGroupMetadata {
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
+ *
+ * @experimental Animation support is experimental.
  */
 export function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata {
   return new AnimationSequenceMetadata(steps);
@@ -287,6 +321,8 @@ export function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata 
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
+ *
+ * @experimental Animation support is experimental.
  */
 export function style(
     tokens: string | {[key: string]: string | number} |
@@ -362,6 +398,8 @@ export function style(
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
+ *
+ * @experimental Animation support is experimental.
  */
 export function state(
     stateNameExpr: string, styles: AnimationStyleMetadata): AnimationStateDeclarationMetadata {
@@ -414,6 +452,8 @@ export function state(
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
+ *
+ * @experimental Animation support is experimental.
  */
 export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata {
   return new AnimationKeyframesSequenceMetadata(steps);
@@ -504,6 +544,8 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
+ *
+ * @experimental Animation support is experimental.
  */
 export function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]):
     AnimationStateTransitionMetadata {
@@ -565,6 +607,8 @@ export function transition(stateChangeExpr: string, steps: AnimationMetadata | A
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
+ *
+ * @experimental Animation support is experimental.
  */
 export function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata {
   return new AnimationEntryMetadata(name, animation);

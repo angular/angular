@@ -16,7 +16,8 @@ import {EventEmitter} from '../../facade/async';
  * Communication is based on a channel abstraction. Messages published in a
  * given channel to one MessageBusSink are received on the same channel
  * by the corresponding MessageBusSource.
- * @experimental
+ *
+ * @experimental WebWorker support in Angular is currenlty experimental.
  */
 export abstract class MessageBus implements MessageBusSource, MessageBusSink {
   /**
@@ -51,7 +52,7 @@ export abstract class MessageBus implements MessageBusSource, MessageBusSink {
 }
 
 /**
- * @experimental
+ * @experimental WebWorker support in Angular is currenlty experimental.
  */
 export interface MessageBusSource {
   /**
@@ -77,7 +78,7 @@ export interface MessageBusSource {
 }
 
 /**
- * @experimental
+ * @experimental WebWorker support in Angular is currenlty experimental.
  */
 export interface MessageBusSink {
   /**

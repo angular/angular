@@ -60,6 +60,7 @@ export declare abstract class AbstractControlDirective {
     valueChanges: Observable<any>;
 }
 
+/** @experimental */
 export interface AsyncValidatorFn {
     (c: AbstractControl): any;
 }
@@ -98,6 +99,7 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
+/** @experimental */
 export declare function disableDeprecatedForms(): any[];
 
 /** @experimental */
@@ -114,6 +116,7 @@ export interface Form {
 /** @experimental */
 export declare const FORM_DIRECTIVES: Type[];
 
+/** @experimental */
 export declare const FORM_PROVIDERS: Type[];
 
 /** @experimental */
@@ -352,8 +355,10 @@ export declare class PatternValidator implements Validator {
     };
 }
 
+/** @experimental */
 export declare function provideForms(): any[];
 
+/** @experimental */
 export declare const REACTIVE_FORM_DIRECTIVES: Type[];
 
 /** @experimental */
@@ -371,12 +376,14 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
     writeValue(value: any): void;
 }
 
+/** @experimental */
 export interface Validator {
     validate(c: AbstractControl): {
         [key: string]: any;
     };
 }
 
+/** @experimental */
 export interface ValidatorFn {
     (c: AbstractControl): {
         [key: string]: any;

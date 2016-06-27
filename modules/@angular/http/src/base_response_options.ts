@@ -40,6 +40,8 @@ import {ResponseOptionsArgs} from './interfaces';
  *
  * console.log('res.json():', res.json()); // Object {name: "Jeff"}
  * ```
+ *
+ * @experimental
  */
 export class ResponseOptions {
   // TODO: ArrayBuffer | FormData | Blob
@@ -155,6 +157,8 @@ export class ResponseOptions {
  * console.log('res.headers.get("framework"):', res.headers.get('framework')); // angular
  * console.log('res.text():', res.text()); // Angular;
  * ```
+ *
+ * @experimental
  */
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {

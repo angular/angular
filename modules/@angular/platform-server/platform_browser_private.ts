@@ -20,3 +20,7 @@ export type DomSharedStylesHost = typeof t.DomSharedStylesHost;
 export var DomSharedStylesHost: typeof t.DomSharedStylesHost = r.DomSharedStylesHost;
 export type SharedStylesHost = typeof t.SharedStylesHost;
 export var SharedStylesHost: typeof t.SharedStylesHost = r.SharedStylesHost;
+export type ELEMENT_PROBE_PROVIDERS = typeof t.ELEMENT_PROBE_PROVIDERS;
+export var ELEMENT_PROBE_PROVIDERS: typeof t.ELEMENT_PROBE_PROVIDERS = r.ELEMENT_PROBE_PROVIDERS;
+export type DomEventsPlugin = typeof t.DomEventsPlugin;
+export var DomEventsPlugin: typeof t.DomEventsPlugin = r.DomEventsPlugin;

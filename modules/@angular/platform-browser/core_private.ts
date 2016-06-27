@@ -16,6 +16,10 @@ export var VIEW_ENCAPSULATION_VALUES: typeof t.VIEW_ENCAPSULATION_VALUES =
     r.VIEW_ENCAPSULATION_VALUES;
 export type DebugDomRootRenderer = t.DebugDomRootRenderer;
 export var DebugDomRootRenderer: typeof t.DebugDomRootRenderer = r.DebugDomRootRenderer;
+/**
+ * @experimental bogus marker to pass the ts-api-guardian's check - this api should be public so
+ * this line will go away when that happens
+ */
 export var SecurityContext: typeof t.SecurityContext = r.SecurityContext;
 export type SecurityContext = t.SecurityContext;
 export var SanitizationService: typeof t.SanitizationService = r.SanitizationService;

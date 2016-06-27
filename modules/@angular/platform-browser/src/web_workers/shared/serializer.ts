@@ -20,7 +20,7 @@ import {LocationType} from './serialized_types';
 // PRIMITIVE is any type that does not need to be serialized (string, number, boolean)
 // We set it to String so that it is considered a Type.
 /**
- * @experimental
+ * @experimental WebWorker support in Angular is currently experimental.
  */
 export const PRIMITIVE: Type = String;
 

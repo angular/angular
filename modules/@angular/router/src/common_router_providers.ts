@@ -18,6 +18,9 @@ import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 export const ROUTER_CONFIG = new OpaqueToken('ROUTER_CONFIG');
 export const ROUTER_OPTIONS = new OpaqueToken('ROUTER_OPTIONS');
 
+/**
+ * @experimental
+ */
 export interface ExtraOptions { enableTracing?: boolean; }
 
 export function setupRouter(
@@ -76,6 +79,8 @@ export function setupRouterInitializer(injector: Injector) {
  *
  * bootstrap(AppCmp, [provideRouter(router)]);
  * ```
+ *
+ * @experimental
  */
 export function provideRouter(_config: RouterConfig, _opts: ExtraOptions): any[] {
   return [

@@ -8,7 +8,8 @@
 
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {Component} from '@angular/core';
-import {KeyEventsPlugin} from '@angular/platform-browser';
+// TODO: remove deep import by reimplementing the event name serialization
+import {KeyEventsPlugin} from "@angular/platform-browser/src/dom/events/key_events";
 
 @Component({
   selector: 'key-events-app',

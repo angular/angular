@@ -23,7 +23,8 @@ import {Response} from '../src/static_response';
  *
  * Mock Connection to represent a {@link Connection} for tests.
  *
- **/
+ * @experimental
+ */
 export class MockConnection implements Connection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
   // descriptive than XHR states.
@@ -141,7 +142,9 @@ export class MockConnection implements Connection {
  * ```
  *
  * This method only exists in the mock implementation, not in real Backends.
- **/
+ *
+ * @experimental
+ */
 @Injectable()
 export class MockBackend implements ConnectionBackend {
   /**

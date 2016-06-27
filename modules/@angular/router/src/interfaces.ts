@@ -11,6 +11,8 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 
 /**
  * An interface a class can implement to be a guard deciding if a route can be activated.
+ *
+ * @experimental
  */
 export interface CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
@@ -19,12 +21,17 @@ export interface CanActivate {
 
 /**
  * An interface a class can implement to be a guard deciding if a route can be deactivated.
+ *
+ * @experimental
  */
 export interface CanDeactivate<T> {
   canDeactivate(component: T, route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
       Observable<boolean>|boolean;
 }
 
+/**
+ * @experimental
+ */
 export interface Resolve<T> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any>|any;
 }

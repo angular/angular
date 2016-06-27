@@ -25,33 +25,40 @@ export declare abstract class AfterViewInit {
     abstract ngAfterViewInit(): any;
 }
 
+/** @experimental */
 export declare function animate(timing: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
 
+/** @experimental */
 export declare class AnimationAnimateMetadata extends AnimationMetadata {
     styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata;
     timings: string | number;
     constructor(timings: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata);
 }
 
+/** @experimental */
 export declare class AnimationEntryMetadata {
     definitions: AnimationStateMetadata[];
     name: string;
     constructor(name: string, definitions: AnimationStateMetadata[]);
 }
 
+/** @experimental */
 export declare class AnimationGroupMetadata extends AnimationWithStepsMetadata {
     steps: AnimationMetadata[];
     constructor(_steps: AnimationMetadata[]);
 }
 
+/** @experimental */
 export declare class AnimationKeyframesSequenceMetadata extends AnimationMetadata {
     steps: AnimationStyleMetadata[];
     constructor(steps: AnimationStyleMetadata[]);
 }
 
+/** @experimental */
 export declare abstract class AnimationMetadata {
 }
 
+/** @experimental */
 export declare abstract class AnimationPlayer {
     parentPlayer: AnimationPlayer;
     abstract destroy(): void;
@@ -65,26 +72,31 @@ export declare abstract class AnimationPlayer {
     abstract setPosition(p: any): void;
 }
 
+/** @experimental */
 export declare class AnimationSequenceMetadata extends AnimationWithStepsMetadata {
     steps: AnimationMetadata[];
     constructor(_steps: AnimationMetadata[]);
 }
 
+/** @experimental */
 export declare class AnimationStateDeclarationMetadata extends AnimationStateMetadata {
     stateNameExpr: string;
     styles: AnimationStyleMetadata;
     constructor(stateNameExpr: string, styles: AnimationStyleMetadata);
 }
 
+/** @experimental */
 export declare abstract class AnimationStateMetadata {
 }
 
+/** @experimental */
 export declare class AnimationStateTransitionMetadata extends AnimationStateMetadata {
     stateChangeExpr: string;
     steps: AnimationMetadata;
     constructor(stateChangeExpr: string, steps: AnimationMetadata);
 }
 
+/** @experimental */
 export declare class AnimationStyleMetadata extends AnimationMetadata {
     offset: number;
     styles: Array<string | {
@@ -95,6 +107,7 @@ export declare class AnimationStyleMetadata extends AnimationMetadata {
     }>, offset?: number);
 }
 
+/** @experimental */
 export declare abstract class AnimationWithStepsMetadata extends AnimationMetadata {
     steps: AnimationMetadata[];
     constructor();
@@ -111,7 +124,7 @@ export declare const APPLICATION_COMMON_PROVIDERS: Array<Type | {
     [k: string]: any;
 } | any[]>;
 
-/** @stable */
+/** @experimental */
 export declare abstract class ApplicationRef {
     componentTypes: Type[];
     injector: Injector;
@@ -142,11 +155,13 @@ export declare class AttributeMetadata extends DependencyMetadata {
     toString(): string;
 }
 
+/** @stable */
 export interface AttributeMetadataFactory {
     (name: string): TypeDecorator;
     new (name: string): AttributeMetadata;
 }
 
+/** @experimental */
 export declare const AUTO_STYLE: string;
 
 /** @stable */
@@ -194,6 +209,7 @@ export declare abstract class ChangeDetectorRef {
 /** @stable */
 export declare function Class(clsDef: ClassDefinition): ConcreteType;
 
+/** @stable */
 export interface ClassDefinition {
     constructor: Function | any[];
     extends?: Type;
@@ -213,6 +229,7 @@ export declare class CollectionChangeRecord {
 /** @stable */
 export declare var Component: ComponentMetadataFactory;
 
+/** @stable */
 export interface ComponentDecorator extends TypeDecorator {
     View(obj: {
         templateUrl?: string;
@@ -227,6 +244,7 @@ export interface ComponentDecorator extends TypeDecorator {
     }): ViewDecorator;
 }
 
+/** @stable */
 export declare class ComponentFactory<C> {
     componentType: Type;
     selector: string;
@@ -234,6 +252,7 @@ export declare class ComponentFactory<C> {
     create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any): ComponentRef<C>;
 }
 
+/** @stable */
 export declare abstract class ComponentFactoryResolver {
     abstract resolveComponentFactory<T>(component: ClassWithConstructor<T>): ComponentFactory<T>;
     static NULL: ComponentFactoryResolver;
@@ -282,6 +301,7 @@ export declare class ComponentMetadata extends DirectiveMetadata {
     });
 }
 
+/** @stable */
 export interface ComponentMetadataFactory {
     (obj: {
         selector?: string;
@@ -485,6 +505,7 @@ export declare class DefaultIterableDiffer implements IterableDiffer {
 /** @stable */
 export declare var Directive: DirectiveMetadataFactory;
 
+/** @stable */
 export interface DirectiveDecorator extends TypeDecorator {
 }
 
@@ -518,6 +539,7 @@ export declare class DirectiveMetadata extends InjectableMetadata {
     });
 }
 
+/** @stable */
 export interface DirectiveMetadataFactory {
     (obj: {
         selector?: string;
@@ -565,6 +587,7 @@ export declare abstract class DynamicComponentLoader {
     abstract loadNextToLocation(type: Type, location: ViewContainerRef, providers?: ResolvedReflectiveProvider[], projectableNodes?: any[][]): Promise<ComponentRef<any>>;
 }
 
+/** @stable */
 export declare class ElementRef {
     /** @stable */ nativeElement: any;
     constructor(nativeElement: any);
@@ -577,7 +600,7 @@ export declare abstract class EmbeddedViewRef<C> extends ViewRef {
     abstract destroy(): any;
 }
 
-/** @stable */
+/** @experimental */
 export declare function enableProdMode(): void;
 
 /** @stable */
@@ -604,6 +627,7 @@ export declare class ExpressionChangedAfterItHasBeenCheckedException extends Bas
 /** @experimental */
 export declare function forwardRef(forwardRefFn: ForwardRefFn): Type;
 
+/** @experimental */
 export interface ForwardRefFn {
     (): any;
 }
@@ -614,11 +638,13 @@ export declare function getDebugNode(nativeNode: any): DebugNode;
 /** @experimental */
 export declare function getPlatform(): PlatformRef;
 
+/** @experimental */
 export interface GetTestability {
     addToWindow(registry: TestabilityRegistry): void;
     findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean): Testability;
 }
 
+/** @experimental */
 export declare function group(steps: AnimationMetadata[]): AnimationGroupMetadata;
 
 /** @stable */
@@ -732,6 +758,7 @@ export declare class InvalidProviderError extends BaseException {
     constructor(provider: any);
 }
 
+/** @experimental */
 export declare function isDevMode(): boolean;
 
 /** @stable */
@@ -740,6 +767,7 @@ export interface IterableDiffer {
     onDestroy(): any;
 }
 
+/** @stable */
 export interface IterableDifferFactory {
     create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer;
     supports(objects: any): boolean;
@@ -754,6 +782,7 @@ export declare class IterableDiffers {
     static extend(factories: IterableDifferFactory[]): Provider;
 }
 
+/** @experimental */
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
 /** @stable */
@@ -765,11 +794,13 @@ export declare class KeyValueChangeRecord {
     toString(): string;
 }
 
+/** @stable */
 export interface KeyValueDiffer {
     diff(object: any): any;
     onDestroy(): any;
 }
 
+/** @stable */
 export interface KeyValueDifferFactory {
     create(cdRef: ChangeDetectorRef): KeyValueDiffer;
     supports(objects: any): boolean;
@@ -784,6 +815,7 @@ export declare class KeyValueDiffers {
     static extend(factories: KeyValueDifferFactory[]): Provider;
 }
 
+/** @experimental */
 export declare function lockRunMode(): void;
 
 /** @experimental */
@@ -818,6 +850,7 @@ export declare class NoAnnotationError extends BaseException {
     constructor(typeOrFunc: any, params: any[][]);
 }
 
+/** @stable */
 export declare class NoComponentFactoryError extends BaseException {
     component: Function;
     constructor(component: Function);
@@ -911,6 +944,7 @@ export interface PipeMetadataFactory {
     }): any;
 }
 
+/** @stable */
 export interface PipeTransform {
     transform(value: any, ...args: any[]): any;
 }
@@ -927,7 +961,7 @@ export declare const PLATFORM_INITIALIZER: any;
 /** @stable */
 export declare const PLATFORM_PIPES: OpaqueToken;
 
-/** @stable */
+/** @experimental */
 export declare abstract class PlatformRef {
     disposed: boolean;
     injector: Injector;
@@ -1025,6 +1059,7 @@ export interface QueryMetadataFactory {
     }): QueryMetadata;
 }
 
+/** @stable */
 export declare abstract class ReflectiveInjector implements Injector {
     parent: Injector;
     createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
@@ -1100,6 +1135,7 @@ export declare class ResolvedReflectiveFactory {
         dependencies: ReflectiveDependency[]);
 }
 
+/** @experimental */
 export interface ResolvedReflectiveProvider {
     key: ReflectiveKey;
     multiProvider: boolean;
@@ -1128,6 +1164,7 @@ export interface SelfMetadataFactory {
     new (): SelfMetadata;
 }
 
+/** @experimental */
 export declare function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata;
 
 /** @experimental */
@@ -1160,8 +1197,10 @@ export interface SkipSelfMetadataFactory {
     new (): SkipSelfMetadata;
 }
 
+/** @experimental */
 export declare function state(stateNameExpr: string, styles: AnimationStyleMetadata): AnimationStateDeclarationMetadata;
 
+/** @experimental */
 export declare function style(tokens: string | {
     [key: string]: string | number;
 } | Array<string | {
@@ -1209,16 +1248,21 @@ export declare class TestabilityRegistry {
     registerApplication(token: any, testability: Testability): void;
 }
 
+/** @stable */
 export interface TrackByFn {
     (index: number, item: any): any;
 }
 
+/** @experimental */
 export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
 
+/** @experimental */
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;
 
+/** @stable */
 export declare var Type: FunctionConstructor;
 
+/** @stable */
 export interface TypeDecorator {
     annotations: any[];
     (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
@@ -1282,6 +1326,7 @@ export declare abstract class ViewContainerRef {
     abstract remove(index?: number): void;
 }
 
+/** @experimental */
 export interface ViewDecorator extends TypeDecorator {
     View(obj: {
         templateUrl?: string;
@@ -1303,6 +1348,7 @@ export declare enum ViewEncapsulation {
     None = 2,
 }
 
+/** @experimental */
 export declare class ViewMetadata {
     animations: AnimationEntryMetadata[];
     directives: Array<Type | any[]>;
@@ -1326,6 +1372,7 @@ export declare class ViewMetadata {
     });
 }
 
+/** @experimental */
 export interface ViewMetadataFactory {
     (obj: {
         templateUrl?: string;
@@ -1399,6 +1446,7 @@ export declare var wtfEndTimeRange: (range: any) => void;
 /** @experimental */
 export declare var wtfLeave: <T>(scope: any, returnValue?: T) => T;
 
+/** @experimental */
 export interface WtfScopeFn {
     (arg0?: any, arg1?: any): any;
 }

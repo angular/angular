@@ -14,7 +14,7 @@ import {RenderDebugInfo} from '../render/api';
 export class EventListener { constructor(public name: string, public callback: Function){}; }
 
 /**
- * @experimental
+ * @experimental All debugging apis are currently experimental.
  */
 export class DebugNode {
   nativeNode: any;
@@ -58,7 +58,7 @@ export class DebugNode {
 }
 
 /**
- * @experimental
+ * @experimental All debugging apis are currently experimental.
  */
 export class DebugElement extends DebugNode {
   name: string;

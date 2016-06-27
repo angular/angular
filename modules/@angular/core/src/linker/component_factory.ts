@@ -86,6 +86,10 @@ export class ComponentRef_<C> extends ComponentRef<C> {
  * @ts2dart_const
  */
 const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
+
+/**
+ * @stable
+ */
 export class ComponentFactory<C> {
   constructor(
       public selector: string, private _viewFactory: Function, private _componentType: Type) {}

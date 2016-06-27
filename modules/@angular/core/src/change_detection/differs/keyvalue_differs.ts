@@ -15,6 +15,8 @@ import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
  * A differ that tracks changes made to an object over time.
+ *
+ * @stable
  */
 export interface KeyValueDiffer {
   diff(object: any): any /** TODO #9100 */;
@@ -23,6 +25,8 @@ export interface KeyValueDiffer {
 
 /**
  * Provides a factory for {@link KeyValueDiffer}.
+ *
+ * @stable
  */
 export interface KeyValueDifferFactory {
   supports(objects: any): boolean;

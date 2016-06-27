@@ -24,6 +24,8 @@ var _global = <any>(typeof window === 'undefined' ? global : window);
  *   })
  * });
  * ```
+ *
+ * @stable
  */
 export function async(fn: Function): (done: any) => any {
   // If we're running using the Jasmine test framework, adapt to call the 'done'

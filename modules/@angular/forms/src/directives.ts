@@ -73,6 +73,9 @@ export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
   RequiredValidator, MinLengthValidator, MaxLengthValidator, PatternValidator
 ];
 
+/**
+ * @experimental
+ */
 export const REACTIVE_FORM_DIRECTIVES: Type[] =
     /*@ts2dart_const*/[
       FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName

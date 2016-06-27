@@ -16,7 +16,7 @@ import {MessageBus} from './message_bus';
 import {Serializer} from './serializer';
 
 /**
- * @experimental
+ * @experimental WebWorker support in Angular is experimental.
  */
 export abstract class ClientMessageBrokerFactory {
   /**
@@ -44,7 +44,7 @@ export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
 }
 
 /**
- * @experimental
+ * @experimental WebWorker support in Angular is experimental.
  */
 export abstract class ClientMessageBroker {
   abstract runOnService(args: UiArguments, returnType: Type): Promise<any>;
@@ -163,14 +163,14 @@ class MessageData {
 }
 
 /**
- * @experimental
+ * @experimental WebWorker support in Angular is experimental.
  */
 export class FnArg {
   constructor(public value: any /** TODO #9100 */, public type: Type) {}
 }
 
 /**
- * @experimental
+ * @experimental WebWorker support in Angular is experimental.
  */
 export class UiArguments {
   constructor(public method: string, public args?: FnArg[]) {}

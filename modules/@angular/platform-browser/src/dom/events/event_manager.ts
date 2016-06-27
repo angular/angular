@@ -12,8 +12,14 @@ import {ListWrapper} from '../../facade/collection';
 import {BaseException} from '../../facade/exceptions';
 
 
+/**
+ * @stable
+ */
 export const EVENT_MANAGER_PLUGINS: OpaqueToken = new OpaqueToken('EventManagerPlugins');
 
+/**
+ * @stable
+ */
 @Injectable()
 export class EventManager {
   private _plugins: EventManagerPlugin[];

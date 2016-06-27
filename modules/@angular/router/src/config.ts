@@ -8,14 +8,29 @@
 
 import {Type} from '@angular/core';
 
+/**
+ * @experimental
+ */
 export type RouterConfig = Route[];
+
+/**
+ * @experimental
+ */
 export type Data = {
   [name: string]: any
 };
+
+/**
+ * @experimental
+ */
 export type ResolveData = {
   [name: string]: any
 };
 
+
+/**
+ * @experimental
+ */
 export interface Route {
   path?: string;
 

@@ -20,6 +20,8 @@ import {supportsState} from './history';
  * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
  * This class should not be used directly by an application developer. Instead, use
  * {@link Location}.
+ *
+ * @stable
  */
 @Injectable()
 export class BrowserPlatformLocation extends PlatformLocation {

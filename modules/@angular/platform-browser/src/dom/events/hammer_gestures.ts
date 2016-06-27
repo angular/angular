@@ -13,6 +13,12 @@ import {isPresent} from '../../facade/lang';
 
 import {HammerGesturesPluginCommon} from './hammer_common';
 
+/**
+ * A DI token that you can use to provide{@link HammerGestureConfig} to Angular. Use it to configure
+ * Hammer gestures.
+ *
+ * @experimental
+ */
 export const HAMMER_GESTURE_CONFIG: OpaqueToken = new OpaqueToken('HammerGestureConfig');
 
 export interface HammerInstance {
@@ -20,6 +26,9 @@ export interface HammerInstance {
   off(eventName: string, callback: Function): void;
 }
 
+/**
+ * @experimental
+ */
 @Injectable()
 export class HammerGestureConfig {
   events: string[] = [];

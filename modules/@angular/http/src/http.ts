@@ -103,7 +103,8 @@ function mergeOptions(
  * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));
  * ```
  *
- **/
+ * @experimental
+ */
 @Injectable()
 export class Http {
   constructor(protected _backend: ConnectionBackend, protected _defaultOptions: RequestOptions) {}
@@ -186,6 +187,10 @@ export class Http {
   }
 }
 
+
+/**
+ * @experimental
+ */
 @Injectable()
 export class Jsonp extends Http {
   constructor(backend: ConnectionBackend, defaultOptions: RequestOptions) {

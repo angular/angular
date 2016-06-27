@@ -16,6 +16,8 @@ import {tick} from './fake_async';
 
 /**
  * Fixture for debugging and testing a component.
+ *
+ * @stable
  */
 export class ComponentFixture<T> {
   /**

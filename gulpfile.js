@@ -32,8 +32,10 @@ const entrypoints = [
   'dist/packages-dist/core/testing.d.ts',
   'dist/packages-dist/common/index.d.ts',
   'dist/packages-dist/common/testing.d.ts',
-  'dist/packages-dist/compiler/index.d.ts',
-  'dist/packages-dist/compiler/testing.d.ts',
+  // The API surface of the compiler is currently unstable - all of the important APIs are exposed
+  // via @angular/core, @angular/platform-browser or @angular/platform-browser-dynamic instead.
+  //'dist/packages-dist/compiler/index.d.ts',
+  //'dist/packages-dist/compiler/testing.d.ts',
   'dist/packages-dist/upgrade/index.d.ts',
   'dist/packages-dist/platform-browser/index.d.ts',
   'dist/packages-dist/platform-browser/testing.d.ts',
@@ -54,7 +56,7 @@ const publicApiArgs = [
   '--allowModuleIdentifiers', 'jasmine',
   '--allowModuleIdentifiers', 'protractor',
   '--allowModuleIdentifiers', 'angular',
-  '--onStabilityMissing', 'warn'
+  '--onStabilityMissing', 'error'
 ].concat(entrypoints);
 
 // Note that these two commands work on built d.ts files instead of the source

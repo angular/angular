@@ -9,6 +9,10 @@
 import {BaseException} from '../facade/exceptions';
 import {scheduleMicroTask} from '../facade/lang';
 
+
+/**
+ * @experimental Animation support is experimental.
+ */
 export abstract class AnimationPlayer {
   abstract onDone(fn: Function): void;
   abstract play(): void;

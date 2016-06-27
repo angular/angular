@@ -25,14 +25,18 @@ export interface IterableDiffer {
 }
 
 /**
-  * An optional function passed into {@link NgFor} that defines how to track
-  * items in an iterable (e.g. by index or id)
+ * An optional function passed into {@link NgFor} that defines how to track
+ * items in an iterable (e.g. by index or id)
+ *
+ * @stable
  */
 export interface TrackByFn { (index: number, item: any): any; }
 
 
 /**
  * Provides a factory for {@link IterableDiffer}.
+ *
+ * @stable
  */
 export interface IterableDifferFactory {
   supports(objects: any): boolean;

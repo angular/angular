@@ -12,6 +12,10 @@ import {ClassWithConstructor, stringify} from '../facade/lang';
 
 import {ComponentFactory} from './component_factory';
 
+
+/**
+ * @stable
+ */
 export class NoComponentFactoryError extends BaseException {
   constructor(public component: Function) {
     super(`No component factory found for ${stringify(component)}`);
@@ -24,6 +28,9 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
   }
 }
 
+/**
+ * @stable
+ */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = new _NullComponentFactoryResolver();
   abstract resolveComponentFactory<T>(component: ClassWithConstructor<T>): ComponentFactory<T>;

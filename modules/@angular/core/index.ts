@@ -9,7 +9,7 @@
 /**
  * @module
  * @description
- * Starting point to import all public core APIs.
+ * Entry point from which you should import all public core APIs.
  */
 export * from './src/metadata';
 export * from './src/util';
