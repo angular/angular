@@ -118,9 +118,7 @@ export class RuntimeCompiler implements ComponentResolver {
             this._metadataResolver.getViewDirectivesMetadata(dep.comp.type.runtime);
         let childViewPipes: CompilePipeMetadata[] =
             this._metadataResolver.getViewPipesMetadata(dep.comp.type.runtime);
-        let childIsRecursive = childCompilingComponentsPath.indexOf(childCacheKey) > -1 ||
-            childViewDirectives.some(
-                dir => childCompilingComponentsPath.indexOf(dir.type.runtime) > -1);
+        let childIsRecursive = childCompilingComponentsPath.indexOf(childCacheKey) > -1;
         childCompilingComponentsPath.push(childCacheKey);
 
         let childComp = this._loadAndCompileComponent(

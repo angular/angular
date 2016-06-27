@@ -12,7 +12,7 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {IS_DART} from '../../src/facade/lang';
 
-import {Component, Pipe, PipeTransform, provide, ViewMetadata, PLATFORM_PIPES, OpaqueToken, Injector, forwardRef} from '@angular/core';
+import {Component, Pipe, PipeTransform, provide, ViewMetadata, OpaqueToken, Injector} from '@angular/core';
 import {NgIf, NgClass} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
 
@@ -170,7 +170,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     it('should support ngClass before a component and content projection inside of an ngIf',
        inject(
-           [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any) => {
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
              tcb.overrideView(
                     MyComp1, new ViewMetadata({
                       template: `A<cmp-content *ngIf="true" [ngClass]="'red'">B</cmp-content>C`,
@@ -184,15 +185,6 @@ function declareTests({useJit}: {useJit: boolean}) {
                  });
            }));
 
-    it('should handle mutual recursion entered from multiple sides - #7084',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async: any) => {
-             tcb.createAsync(FakeRecursiveComp).then((fixture) => {
-               fixture.detectChanges();
-               expect(fixture.nativeElement).toHaveText('[]');
-               async.done();
-             });
-           }));
 
   });
 }
@@ -214,38 +206,4 @@ class CustomPipe implements PipeTransform {
 
 @Component({selector: 'cmp-content', template: `<ng-content></ng-content>`})
 class CmpWithNgContent {
-}
-
-@Component({
-  selector: 'left',
-  template: `L<right *ngIf="false"></right>`,
-  directives: [
-    NgIf,
-    forwardRef(() => RightComp),
-  ]
-})
-class LeftComp {
-}
-
-@Component({
-  selector: 'right',
-  template: `R<left *ngIf="false"></left>`,
-  directives: [
-    NgIf,
-    forwardRef(() => LeftComp),
-  ]
-})
-class RightComp {
-}
-
-@Component({
-  selector: 'fakeRecursiveComp',
-  template: `[<left *ngIf="false"></left><right *ngIf="false"></right>]`,
-  directives: [
-    NgIf,
-    forwardRef(() => LeftComp),
-    forwardRef(() => RightComp),
-  ]
-})
-export class FakeRecursiveComp {
 }
