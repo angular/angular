@@ -615,6 +615,45 @@ export function main() {
                    });
              }));
 
+      it('should support removing controls from <type=radio>',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `
+                <input type="radio" [formControl]="showRadio" value="yes">
+                <input type="radio" [formControl]="showRadio" value="no">
+                <form [formGroup]="form">
+                  <div *ngIf="showRadio.value === 'yes'">
+                    <input type="radio" formControlName="food" value="chicken">
+                    <input type="radio" formControlName="food" value="fish">
+                  </div>
+                </form>`;
+
+               const ctrl = new FormControl('fish');
+               const showRadio = new FormControl('yes');
+               const form = new FormGroup({'food': ctrl});
+
+               tcb.overrideTemplate(MyComp8, t)
+                   .overrideProviders(MyComp8, providerArr)
+                   .createAsync(MyComp8)
+                   .then((fixture) => {
+                     fixture.debugElement.componentInstance.form = form;
+                     fixture.debugElement.componentInstance.showRadio = showRadio;
+                     showRadio.valueChanges.subscribe((change) => {
+                       (change === 'yes') ? form.addControl('food', new FormControl('fish')) :
+                                            form.removeControl('food');
+                     });
+                     fixture.detectChanges();
+
+                     const input = fixture.debugElement.query(By.css('[value="no"]'));
+                     dispatchEvent(input.nativeElement, 'change');
+
+                     fixture.detectChanges();
+                     expect(form.value).toEqual({});
+                     async.done();
+                   });
+             }));
+
       describe('should support <select>', () => {
         it('with basic selection',
            inject(
