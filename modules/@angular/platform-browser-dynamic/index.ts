@@ -134,7 +134,8 @@ export function bootstrapWorkerUi(
   // Return a promise so that we keep the same semantics as Dart,
   // and we might want to wait for the app side to come up
   // in the future...
-  return PromiseWrapper.resolve(app.get(ApplicationRef));
+  let appRef: ApplicationRef = app.get(ApplicationRef);
+  return PromiseWrapper.resolve(appRef.runInitializers()).then(() => appRef);
 }
 
 

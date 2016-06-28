@@ -106,7 +106,7 @@ export function main() {
            }]);
            expect(() => app.bootstrap(someCompFactory))
                .toThrowError(
-                   'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using waitForAsyncInitializers().');
+                   'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using runInitializers().');
          }));
     });
   });

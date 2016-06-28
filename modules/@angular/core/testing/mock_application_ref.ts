@@ -26,7 +26,7 @@ export class MockApplicationRef extends ApplicationRef {
 
   run(callback: Function): any { return null; }
 
-  waitForAsyncInitializers(): Promise<any> { return null; }
+  runInitializers(): Promise<any>|any { return null; }
 
   dispose(): void {}
 

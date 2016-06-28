@@ -9,7 +9,7 @@
 import {ObservableWrapper, PromiseWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
-import {IS_DART, Type, isBlank, isPresent, isPromise} from '../src/facade/lang';
+import {IS_DART, Type, isBlank, isFunction, isPresent, isPromise} from '../src/facade/lang';
 
 import {APP_INITIALIZER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
@@ -20,6 +20,7 @@ import {ComponentResolver} from './linker/component_resolver';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {NgZone, NgZoneError} from './zone/ng_zone';
+
 
 /**
  * Create an Angular zone.
@@ -136,9 +137,13 @@ export function getPlatform(): PlatformRef {
  * Requires a platform to be created first.
  * @experimental
  */
-export function coreBootstrap<C>(
-    componentFactory: ComponentFactory<C>, injector: Injector): ComponentRef<C> {
-  var appRef: ApplicationRef = injector.get(ApplicationRef);
+export function coreBootstrap<C>(componentFactory: ComponentFactory<C>, injector: Injector): ComponentRef<C> {
+  let appRef: ApplicationRef = injector.get(ApplicationRef);
+  let initializers: Promise<any>|any = appRef.run(() => appRef.runInitializers());
+  if (isPromise(initializers)) {
+    throw new BaseException(
+        '`coreBootstrap` should only run synchronous initializers. Consider using `coreLoadAndBootstrap` to resolve async initializers');
+  }
   return appRef.bootstrap(componentFactory);
 }
 
@@ -154,7 +159,7 @@ export function coreLoadAndBootstrap(
   return appRef.run(() => {
     var componentResolver: ComponentResolver = injector.get(ComponentResolver);
     return PromiseWrapper
-        .all([componentResolver.resolveComponent(componentType), appRef.waitForAsyncInitializers()])
+        .all([componentResolver.resolveComponent(componentType), appRef.runInitializers()])
         .then((arr) => appRef.bootstrap(arr[0]));
   });
 }
@@ -246,7 +251,7 @@ export abstract class ApplicationRef {
    * Returns a promise that resolves when all asynchronous application initializers
    * are done.
    */
-  abstract waitForAsyncInitializers(): Promise<any>;
+  abstract runInitializers(): Promise<any>|any;
 
   /**
    * Runs the given callback in the zone and returns the result of the callback.
@@ -323,7 +328,6 @@ export class ApplicationRef_ extends ApplicationRef {
 
   private _exceptionHandler: ExceptionHandler;
 
-  private _asyncInitDonePromise: Promise<any>;
   private _asyncInitDone: boolean;
 
   constructor(private _platform: PlatformRef_, private _zone: NgZone, private _injector: Injector) {
@@ -331,28 +335,6 @@ export class ApplicationRef_ extends ApplicationRef {
     var zone: NgZone = _injector.get(NgZone);
     this._enforceNoNewChanges = isDevMode();
     zone.run(() => { this._exceptionHandler = _injector.get(ExceptionHandler); });
-    this._asyncInitDonePromise = this.run(() => {
-      let inits: Function[] = _injector.get(APP_INITIALIZER, null);
-      var asyncInitResults: any[] /** TODO #9100 */ = [];
-      var asyncInitDonePromise: any /** TODO #9100 */;
-      if (isPresent(inits)) {
-        for (var i = 0; i < inits.length; i++) {
-          var initResult = inits[i]();
-          if (isPromise(initResult)) {
-            asyncInitResults.push(initResult);
-          }
-        }
-      }
-      if (asyncInitResults.length > 0) {
-        asyncInitDonePromise =
-            PromiseWrapper.all(asyncInitResults).then((_) => this._asyncInitDone = true);
-        this._asyncInitDone = false;
-      } else {
-        this._asyncInitDone = true;
-        asyncInitDonePromise = PromiseWrapper.resolve(true);
-      }
-      return asyncInitDonePromise;
-    });
     ObservableWrapper.subscribe(zone.onError, (error: NgZoneError) => {
       this._exceptionHandler.call(error.error, error.stackTrace);
     });
@@ -374,7 +356,34 @@ export class ApplicationRef_ extends ApplicationRef {
     ListWrapper.remove(this._changeDetectorRefs, changeDetector);
   }
 
-  waitForAsyncInitializers(): Promise<any> { return this._asyncInitDonePromise; }
+  runInitializers(): Promise<any>|any {
+    return this.run(() => {
+      let inits: Function[] = this._injector.get(APP_INITIALIZER, null);
+      var asyncInitResults: any[] /** TODO #9100 */ = [];
+      var asyncInitDonePromise: any /** TODO #9100 */ = null;
+      if (isPresent(inits)) {
+        for (let i = 0; i < inits.length; i++) {
+          let init = inits[i];
+          let initResult = init;
+          if (isFunction(init)) {
+            initResult = init();
+          }
+          if (isPromise(initResult)) {
+            asyncInitResults.push(initResult);
+          }
+        }
+      }
+      if (asyncInitResults.length > 0) {
+        asyncInitDonePromise =
+            PromiseWrapper.all(asyncInitResults).then((_) => this._asyncInitDone = true);
+        this._asyncInitDone = false;
+      } else {
+        this._asyncInitDone = true;
+        asyncInitDonePromise = null;
+      }
+      return asyncInitDonePromise;
+    });
+  }
 
   run(callback: Function): any {
     var zone = this.injector.get(NgZone);
@@ -407,7 +416,7 @@ export class ApplicationRef_ extends ApplicationRef {
   bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C> {
     if (!this._asyncInitDone) {
       throw new BaseException(
-          'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using waitForAsyncInitializers().');
+          'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using runInitializers().');
     }
     return this.run(() => {
       this._rootComponentTypes.push(componentFactory.componentType);
