@@ -123,7 +123,7 @@ export declare class Router {
 }
 
 /** @experimental */
-export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkActive)[];
+export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkWithHref | typeof RouterLinkActive)[];
 
 /** @stable */
 export declare type RouterConfig = Route[];

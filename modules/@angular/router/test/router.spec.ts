@@ -476,7 +476,6 @@ describe('Integration', () => {
            })));
   });
 
-
   describe('router links', () => {
     it('should support string router links',
        fakeAsync(
@@ -498,6 +497,31 @@ describe('Integration', () => {
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.getAttribute('href')).toEqual('/team/33/simple');
+             native.click();
+             advance(fixture);
+
+             expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, right:  }');
+           })));
+
+    it('should support using links on non-a tags',
+       fakeAsync(
+           inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
+             const fixture = createRoot(tcb, router, RootCmp);
+
+             router.resetConfig([{
+               path: 'team/:id',
+               component: TeamCmp,
+               children: [
+                 {path: 'link', component: StringLinkButtonCmp},
+                 {path: 'simple', component: SimpleCmp}
+               ]
+             }]);
+
+             router.navigateByUrl('/team/22/link');
+             advance(fixture);
+             expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, right:  }');
+
+             const native = fixture.debugElement.nativeElement.querySelector('button');
              native.click();
              advance(fixture);
 
@@ -1025,6 +1049,15 @@ class StringLinkCmp {
 
 @Component({
   selector: 'link-cmp',
+  template: `<button routerLink
+="/team/33/simple">link</button>`,
+  directives: ROUTER_DIRECTIVES
+})
+class StringLinkButtonCmp {
+}
+
+@Component({
+  selector: 'link-cmp',
   template: `<router-outlet></router-outlet><a [routerLink]="['/team/33/simple']">link</a>`,
   directives: ROUTER_DIRECTIVES
 })
@@ -1159,7 +1192,7 @@ class RelativeLinkInIfCmp {
   precompile: [
     BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
     RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
-    QueryParamsAndFragmentCmp
+    QueryParamsAndFragmentCmp, StringLinkButtonCmp
   ]
 })
 class RootCmp {

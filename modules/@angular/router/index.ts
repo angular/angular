@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RouterLink} from './src/directives/router_link';
+import {RouterLink, RouterLinkWithHref} from './src/directives/router_link';
 import {RouterLinkActive} from './src/directives/router_link_active';
 import {RouterOutlet} from './src/directives/router_outlet';
 
@@ -24,4 +24,4 @@ export {DefaultUrlSerializer, UrlPathWithParams, UrlSerializer, UrlTree} from '.
 /**
  * @experimental
  */
-export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkActive];
+export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];

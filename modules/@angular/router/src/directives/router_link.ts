@@ -54,8 +54,54 @@ import {UrlTree} from '../url_tree';
  *
  * @stable
  */
-@Directive({selector: '[routerLink]'})
-export class RouterLink implements OnChanges {
+@Directive({selector: ':not(a)[routerLink]'})
+export class RouterLink {
+  @Input() target: string;
+  private commands: any[] = [];
+  @Input() queryParams: {[k: string]: any};
+  @Input() fragment: string;
+
+  urlTree: UrlTree;
+
+  /**
+   * @internal
+   */
+  constructor(
+      private router: Router, private route: ActivatedRoute,
+      private locationStrategy: LocationStrategy) {}
+
+  @Input()
+  set routerLink(data: any[]|string) {
+    if (Array.isArray(data)) {
+      this.commands = <any>data;
+    } else {
+      this.commands = [data];
+    }
+  }
+
+  @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
+  onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
+    if (button !== 0 || ctrlKey || metaKey) {
+      return true;
+    }
+
+    if (typeof this.target === 'string' && this.target != '_self') {
+      return true;
+    }
+
+    this.router.navigate(
+        this.commands,
+        {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
+    return false;
+  }
+}
+
+/**
+ * See {@link RouterLink} for more information.
+ * @stable
+ */
+@Directive({selector: 'a[routerLink]'})
+export class RouterLinkWithHref implements OnChanges {
   @Input() target: string;
   private commands: any[] = [];
   @Input() queryParams: {[k: string]: any};

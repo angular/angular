@@ -10,9 +10,10 @@ import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChang
 import {Subscription} from 'rxjs/Subscription';
 
 import {NavigationEnd, Router} from '../router';
-import {containsTree} from '../url_tree';
+import {UrlTree, containsTree} from '../url_tree';
 
-import {RouterLink} from './router_link';
+import {RouterLink, RouterLinkWithHref} from './router_link';
+
 
 /**
  * The RouterLinkActive directive lets you add a CSS class to an element when the link's route
@@ -59,6 +60,8 @@ import {RouterLink} from './router_link';
 @Directive({selector: '[routerLinkActive]'})
 export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
   @ContentChildren(RouterLink) private links: QueryList<RouterLink>;
+  @ContentChildren(RouterLinkWithHref) private linksWithHrefs: QueryList<RouterLinkWithHref>;
+
   private classes: string[] = [];
   private subscription: Subscription;
 
@@ -77,6 +80,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
   ngAfterContentInit(): void {
     this.links.changes.subscribe(s => this.update());
+    this.linksWithHrefs.changes.subscribe(s => this.update());
     this.update();
   }
 
@@ -93,15 +97,20 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   ngOnDestroy(): any { this.subscription.unsubscribe(); }
 
   private update(): void {
-    if (!this.links || this.links.length === 0) return;
+    if (!this.links || !this.linksWithHrefs) return;
 
     const currentUrlTree = this.router.parseUrl(this.router.url);
-    const isActive = this.links.reduce(
-        (res, link) =>
+    const isActiveLinks = this.reduceList(currentUrlTree, this.links);
+    const isActiveLinksWithHrefs = this.reduceList(currentUrlTree, this.linksWithHrefs);
+    this.classes.forEach(
+        c => this.renderer.setElementClass(
+            this.element.nativeElement, c, isActiveLinks || isActiveLinksWithHrefs));
+  }
+
+  private reduceList(currentUrlTree: UrlTree, q: QueryList<any>): boolean {
+    return q.reduce(
+        (res: boolean, link: any) =>
             res || containsTree(currentUrlTree, link.urlTree, this.routerLinkActiveOptions.exact),
         false);
-
-    this.classes.forEach(
-        c => this.renderer.setElementClass(this.element.nativeElement, c, isActive));
   }
 }
