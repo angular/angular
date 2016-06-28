@@ -7,7 +7,7 @@
  */
 
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 
@@ -34,7 +34,7 @@ export function main() {
     };
   }
 
-  function asyncValidatorReturningObservable(c: any /** TODO #9100 */) {
+  function asyncValidatorReturningObservable(c: FormControl) {
     var e = new EventEmitter();
     PromiseWrapper.scheduleMicrotask(() => ObservableWrapper.callEmit(e, {'async': true}));
     return e;
@@ -581,7 +581,7 @@ export function main() {
       });
 
       describe('valueChanges', () => {
-        var g: any /** TODO #9100 */, c1: any /** TODO #9100 */, c2: any /** TODO #9100 */;
+        var g: FormGroup, c1: FormControl, c2: FormControl;
 
         beforeEach(() => {
           c1 = new FormControl('old1');
@@ -660,6 +660,25 @@ export function main() {
                 [AsyncTestCompleter], (async: AsyncTestCompleter) => {
                                           // hard to test without hacking zones
                                       }));
+      });
+
+      describe('statusChanges', () => {
+        const control = new FormControl('', asyncValidatorReturningObservable);
+        const group = new FormGroup({'one': control});
+
+        // TODO(kara): update these tests to use fake Async
+        it('should fire a statusChange if child has async validation change',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const loggedValues: string[] = [];
+             ObservableWrapper.subscribe(group.statusChanges, (status: string) => {
+               loggedValues.push(status);
+               if (loggedValues.length === 2) {
+                 expect(loggedValues).toEqual(['PENDING', 'INVALID']);
+               }
+               async.done();
+             });
+             control.updateValue('');
+           }));
       });
 
       describe('getError', () => {
