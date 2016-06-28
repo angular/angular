@@ -83,6 +83,11 @@ export interface SafeResourceUrl extends SafeValue {}
  * does not start with a suspicious protocol, or an HTML snippet that does not contain dangerous
  * code. The sanitizer leaves safe values intact.
  *
+ * @security Calling this API disables Angular's built-in sanitization for the value passed in.
+ * Carefully check and audit all values and code paths going into this call. Make sure any user
+ * data is appropriately escaped for this security context. Attacker-controlled data introduced
+ * by unsanitized values exposes your application to XSS risks.
+ *
  * @stable
  */
 export abstract class DomSanitizationService implements SanitizationService {

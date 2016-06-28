@@ -59,9 +59,6 @@ var _global: BrowserNodeGlobal = globalScope;
 
 export {_global as global};
 
-/**
- * @stable
- */
 export var Type = Function;
 
 /**

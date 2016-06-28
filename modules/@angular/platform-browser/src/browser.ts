@@ -44,6 +44,9 @@ export const BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> 
 ];
 
 /**
+ * @security Replacing built-in sanitization providers exposes the application to XSS risks.
+ * Attacker-controlled data introduced by an unsanitized provider could expose your
+ * application to XSS risks.
  * @experimental
  */
 export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = [
