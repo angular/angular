@@ -13,7 +13,8 @@
  * element.
  *
  * @security Permitting direct access to the DOM can make your application more vulnerable to
- * XSS attacks. Carefully review any use of `ElementRef` in your code.
+ * XSS attacks. Carefully review any use of `ElementRef` in your code. For more detail, see the
+ * [Security Guide](http://g.co/ng/security).
  *
  * @stable
  */

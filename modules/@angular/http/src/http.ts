@@ -208,7 +208,8 @@ export class Jsonp extends Http {
    * contents retrieved from a remote source, attacker-controlled data introduced by an untrusted
    * source could expose your application to XSS risks. Data exposed by JSONP may also be
    * readable by malicious third-party websites. In addition, JSONP introduces potential risk for
-   * future security issues (e.g. content sniffing).
+   * future security issues (e.g. content sniffing).  For more detail, see the
+   * [Security Guide](http://g.co/ng/security).
    */
   request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
     var responseObservable: any;

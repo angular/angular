@@ -86,7 +86,8 @@ export interface SafeResourceUrl extends SafeValue {}
  * @security Calling this API disables Angular's built-in sanitization for the value passed in.
  * Carefully check and audit all values and code paths going into this call. Make sure any user
  * data is appropriately escaped for this security context. Attacker-controlled data introduced
- * by unsanitized values exposes your application to XSS risks.
+ * by unsanitized values exposes your application to XSS risks.  For more detail, see the
+ * [Security Guide](http://g.co/ng/security).
  *
  * @stable
  */

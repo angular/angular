@@ -35,7 +35,7 @@ import {XHR} from './xhr';
  * @security  When compiling templates at runtime, you must
  * ensure that the entire template comes from a trusted source.
  * Attacker-controlled data introduced by a template could expose your
- * application to XSS risks.
+ * application to XSS risks.  For more detail, see the [Security Guide](http://g.co/ng/security).
  */
 @Injectable()
 export class RuntimeCompiler implements ComponentResolver {
