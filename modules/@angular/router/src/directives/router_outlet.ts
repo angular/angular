@@ -53,7 +53,7 @@ export class RouterOutlet {
     const snapshot = activatedRoute._futureSnapshot;
     const component: any = <any>snapshot._routeConfig.component;
 
-    let factory;
+    let factory: ComponentFactory<any>;
     try {
       factory = typeof component === 'string' ?
           snapshot._resolvedComponentFactory :

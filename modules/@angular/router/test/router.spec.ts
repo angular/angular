@@ -37,17 +37,17 @@ describe('Integration', () => {
     ];
   });
 
-  fit('should navigate with a provided config',
-      fakeAsync(inject(
-          [Router, TestComponentBuilder, Location],
-          (router: Router, tcb: TestComponentBuilder, location: Location) => {
-            const fixture = createRoot(tcb, router, RootCmp);
+  it('should navigate with a provided config',
+     fakeAsync(inject(
+         [Router, TestComponentBuilder, Location],
+         (router: Router, tcb: TestComponentBuilder, location: Location) => {
+           const fixture = createRoot(tcb, router, RootCmp);
 
-            router.navigateByUrl('/simple');
-            advance(fixture);
+           router.navigateByUrl('/simple');
+           advance(fixture);
 
-            expect(location.path()).toEqual('/simple');
-          })));
+           expect(location.path()).toEqual('/simple');
+         })));
 
 
   it('should update location when navigating',
@@ -262,7 +262,7 @@ describe('Integration', () => {
            const fixture = createRoot(tcb, router, RootCmp);
 
            router.resetConfig([
-             {path: '', terminal: true, component: SimpleCmp},
+             {path: '', pathMatch: 'full', component: SimpleCmp},
              {path: 'user/:name', component: UserCmp}
            ]);
 
@@ -830,7 +830,7 @@ describe('Integration', () => {
                    path: 'team/:id',
                    component: TeamCmp,
                    children: [
-                     {path: '', terminal: true, component: SimpleCmp}, {
+                     {path: '', pathMatch: 'full', component: SimpleCmp}, {
                        path: 'user/:name',
                        component: UserCmp,
                        canDeactivate: ['CanDeactivateUser']

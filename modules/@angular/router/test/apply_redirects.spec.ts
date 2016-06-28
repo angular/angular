@@ -160,7 +160,7 @@ describe('applyRedirects', () => {
     });
 
     it('should redirect empty path route only when terminal', () => {
-      const config = [
+      const config: RouterConfig = [
         {
           path: 'a',
           component: ComponentA,
@@ -168,7 +168,7 @@ describe('applyRedirects', () => {
             {path: 'b', component: ComponentB},
           ]
         },
-        {path: '', redirectTo: 'a', terminal: true}
+        {path: '', redirectTo: 'a', pathMatch: 'full'}
       ];
 
       applyRedirects(tree('b'), config)
@@ -220,7 +220,7 @@ describe('applyRedirects', () => {
               children: [
                 {path: 'b', component: ComponentB},
                 {path: 'c', component: ComponentC, outlet: 'aux'},
-                {path: '', terminal: true, redirectTo: 'c', outlet: 'aux'}
+                {path: '', pathMatch: 'full', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
             'a/b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
@@ -287,7 +287,7 @@ describe('applyRedirects', () => {
       });
 
       it('should not create a new child (terminal)', () => {
-        const config = [{
+        const config: RouterConfig = [{
           path: 'a',
           children: [
             {path: 'b', component: ComponentB, children: [{path: 'd', component: ComponentB}]},
@@ -297,7 +297,7 @@ describe('applyRedirects', () => {
               outlet: 'aux',
               children: [{path: 'e', component: ComponentC}]
             },
-            {path: '', terminal: true, redirectTo: 'c', outlet: 'aux'}
+            {path: '', pathMatch: 'full', redirectTo: 'c', outlet: 'aux'}
           ]
         }];
 

@@ -215,7 +215,8 @@ describe('recognize', () => {
 
       it('should match when terminal', () => {
         checkRecognize(
-            [{path: '', terminal: true, component: ComponentA}], '', (s: RouterStateSnapshot) => {
+            [{path: '', pathMatch: 'full', component: ComponentA}], '',
+            (s: RouterStateSnapshot) => {
               checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
             });
       });
@@ -224,7 +225,7 @@ describe('recognize', () => {
         recognize(
             RootComponent, [{
               path: '',
-              terminal: true,
+              pathMatch: 'full',
               component: ComponentA,
               children: [{path: 'b', component: ComponentB}]
             }],
@@ -290,7 +291,7 @@ describe('recognize', () => {
               component: ComponentA,
               children: [
                 {path: 'b', component: ComponentB},
-                {path: '', terminal: true, component: ComponentC, outlet: 'aux'}
+                {path: '', pathMatch: 'full', component: ComponentC, outlet: 'aux'}
               ]
             }],
             'a/b', (s: RouterStateSnapshot) => {
@@ -359,8 +360,8 @@ describe('recognize', () => {
               path: 'a',
               component: ComponentA,
               children: [
-                {path: '', terminal: true, component: ComponentB},
-                {path: '', terminal: true, component: ComponentC, outlet: 'aux'},
+                {path: '', pathMatch: 'full', component: ComponentB},
+                {path: '', pathMatch: 'full', component: ComponentC, outlet: 'aux'},
               ]
             }],
             'a', (s: RouterStateSnapshot) => {

@@ -18,7 +18,12 @@ export type ResolveData = {
 
 export interface Route {
   path?: string;
+
+  /**
+   * @deprecated - use `pathMatch` instead
+   */
   terminal?: boolean;
+  pathMatch?: 'full'|'prefix';
   component?: Type|string;
   outlet?: string;
   canActivate?: any[];
@@ -52,5 +57,12 @@ function validateNode(route: Route): void {
   if (route.path.startsWith('/')) {
     throw new Error(
         `Invalid route configuration of route '${route.path}': path cannot start with a slash`);
+  }
+  if (route.path === '' && route.redirectTo !== undefined &&
+      (route.terminal === undefined && route.pathMatch === undefined)) {
+    const exp =
+        `The default value of 'pathMatch' is 'prefix', but often the intent is to use 'full'.`;
+    throw new Error(
+        `Invalid route configuration of route '{path: "${route.path}", redirectTo: "${route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
   }
 }

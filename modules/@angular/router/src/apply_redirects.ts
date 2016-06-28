@@ -149,7 +149,8 @@ function match(segment: UrlSegment, route: Route, paths: UrlPathWithParams[]): {
   positionalParamSegments: {[k: string]: UrlPathWithParams}
 } {
   if (route.path === '') {
-    if (route.terminal && (segment.hasChildren() || paths.length > 0)) {
+    if ((route.terminal || route.pathMatch === 'full') &&
+        (segment.hasChildren() || paths.length > 0)) {
       throw new NoMatch();
     } else {
       return {consumedPaths: [], lastChild: 0, positionalParamSegments: {}};
@@ -286,7 +287,8 @@ function containsEmptyPathRedirects(
 
 function emptyPathRedirect(
     segment: UrlSegment, slicedPath: UrlPathWithParams[], r: Route): boolean {
-  if ((segment.hasChildren() || slicedPath.length > 0) && r.terminal) return false;
+  if ((segment.hasChildren() || slicedPath.length > 0) && (r.terminal || r.pathMatch === 'full'))
+    return false;
   return r.path === '' && r.redirectTo !== undefined;
 }
 

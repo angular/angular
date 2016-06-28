@@ -87,17 +87,9 @@ export declare type ResolveData = {
 };
 
 export interface Route {
-    canActivate?: any[];
-    canDeactivate?: any[];
-    children?: Route[];
-    component?: Type | string;
-    data?: Data;
-    outlet?: string;
     path?: string;
-    redirectTo?: string;
-    resolve?: ResolveData;
-    terminal?: boolean;
-}
+    pathMatch?:
+    /** @deprecated */ terminal?: boolean;
 
 export declare class Router {
     events: Observable<Event>;

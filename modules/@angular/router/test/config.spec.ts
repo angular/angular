@@ -3,7 +3,7 @@ import {validateConfig} from '../src/config';
 describe('config', () => {
   describe('validateConfig', () => {
     it('should not throw when no errors', () => {
-      validateConfig([{path: '', redirectTo: 'b'}, {path: 'b', component: ComponentA}]);
+      validateConfig([{path: 'a', redirectTo: 'b'}, {path: 'b', component: ComponentA}]);
     });
 
     it('should throw when redirectTo and children are used together', () => {
@@ -35,9 +35,16 @@ describe('config', () => {
 
     it('should throw when path starts with a slash', () => {
       expect(() => {
-        validateConfig([<any>{path: '/a', componenta: '', redirectTo: 'b'}]);
+        validateConfig([<any>{path: '/a', redirectTo: 'b'}]);
       }).toThrowError(`Invalid route configuration of route '/a': path cannot start with a slash`);
     });
+
+    it('should throw when emptyPath is used with redirectTo without explicitly providing matching',
+       () => {
+         expect(() => {
+           validateConfig([<any>{path: '', redirectTo: 'b'}]);
+         }).toThrowError(/Invalid route configuration of route '{path: "", redirectTo: "b"}'/);
+       });
   });
 });
 
