@@ -203,7 +203,7 @@ export class Jsonp extends Http {
    * object can be provided as the 2nd argument. The options object will be merged with the values
    * of {@link BaseRequestOptions} before performing the request.
    *
-   * @security JSON + CORS is a safer alternative to JSONP for most applications, and is
+   * @security Regular XHR is the safest alternative to JSONP for most applications, and is
    * supported by all current browsers. Because JSONP creates a `<script>` element with
    * contents retrieved from a remote source, attacker-controlled data introduced by an untrusted
    * source could expose your application to XSS risks. Data exposed by JSONP may also be

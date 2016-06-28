@@ -83,11 +83,10 @@ export interface SafeResourceUrl extends SafeValue {}
  * does not start with a suspicious protocol, or an HTML snippet that does not contain dangerous
  * code. The sanitizer leaves safe values intact.
  *
- * @security Calling this API disables Angular's built-in sanitization for the value passed in.
- * Carefully check and audit all values and code paths going into this call. Make sure any user
- * data is appropriately escaped for this security context. Attacker-controlled data introduced
- * by unsanitized values exposes your application to XSS risks.  For more detail, see the
- * [Security Guide](http://g.co/ng/security).
+ * @security Calling any of the `bypassSecurityTrust...` APIs disables Angular's built-in
+ * sanitization for the value passed in. Carefully check and audit all values and code paths going
+ * into this call. Make sure any user data is appropriately escaped for this security context.
+ * For more detail, see the [Security Guide](http://g.co/ng/security).
  *
  * @stable
  */
@@ -107,21 +106,24 @@ export abstract class DomSanitizationService implements SanitizationService {
    * is unsafe (e.g. contains `<script>` tags) and the code should be executed. The sanitizer will
    * leave safe HTML intact, so in most situations this method should not be used.
    *
-   * WARNING: calling this method with untrusted user data will cause severe security bugs!
+   * **WARNING:** calling this method with untrusted user data exposes your application to XSS
+   * security risks!
    */
   abstract bypassSecurityTrustHtml(value: string): SafeHtml;
 
   /**
    * Bypass security and trust the given value to be safe style value (CSS).
    *
-   * WARNING: calling this method with untrusted user data will cause severe security bugs!
+   * **WARNING:** calling this method with untrusted user data exposes your application to XSS
+   * security risks!
    */
   abstract bypassSecurityTrustStyle(value: string): SafeStyle;
 
   /**
    * Bypass security and trust the given value to be safe JavaScript.
    *
-   * WARNING: calling this method with untrusted user data will cause severe security bugs!
+   * **WARNING:** calling this method with untrusted user data exposes your application to XSS
+   * security risks!
    */
   abstract bypassSecurityTrustScript(value: string): SafeScript;
 
@@ -129,7 +131,8 @@ export abstract class DomSanitizationService implements SanitizationService {
    * Bypass security and trust the given value to be a safe style URL, i.e. a value that can be used
    * in hyperlinks or `<img src>`.
    *
-   * WARNING: calling this method with untrusted user data will cause severe security bugs!
+   * **WARNING:** calling this method with untrusted user data exposes your application to XSS
+   * security risks!
    */
   abstract bypassSecurityTrustUrl(value: string): SafeUrl;
 
@@ -137,7 +140,8 @@ export abstract class DomSanitizationService implements SanitizationService {
    * Bypass security and trust the given value to be a safe resource URL, i.e. a location that may
    * be used to load executable code from, like `<script src>`, or `<iframe src>`.
    *
-   * WARNING: calling this method with untrusted user data will cause severe security bugs!
+   * **WARNING:** calling this method with untrusted user data exposes your application to XSS
+   * security risks!
    */
   abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
 }

@@ -42,7 +42,7 @@ export var DEFAULT_PACKAGE_URL_PROVIDER = {
  * ## Example
  *
  * {@example compiler/ts/url_resolver/url_resolver.ts region='url_resolver'}
- * 
+ *
  * @security  When compiling templates at runtime, you must
  * ensure that the entire template comes from a trusted source.
  * Attacker-controlled data introduced by a template could expose your

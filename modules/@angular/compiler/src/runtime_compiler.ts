@@ -32,9 +32,8 @@ import {XHR} from './xhr';
  * extracts templates, and eventually produces a compiled version of the component
  * ready for linking into an application.
  *
- * @security  When compiling templates at runtime, you must
- * ensure that the entire template comes from a trusted source.
- * Attacker-controlled data introduced by a template could expose your
+ * @security  When compiling templates at runtime, you must ensure that the entire template comes
+ * from a trusted source. Attacker-controlled data introduced by a template could expose your
  * application to XSS risks.  For more detail, see the [Security Guide](http://g.co/ng/security).
  */
 @Injectable()
