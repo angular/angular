@@ -178,12 +178,8 @@ export declare class Binding extends Provider {
 
 /** @stable */
 export declare enum ChangeDetectionStrategy {
-    CheckOnce = 0,
-    Checked = 1,
-    CheckAlways = 2,
-    Detached = 3,
-    OnPush = 4,
-    Default = 5,
+    OnPush = 0,
+    Default = 1,
 }
 
 /** @stable */

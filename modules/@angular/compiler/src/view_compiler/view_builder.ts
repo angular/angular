@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
-import {ViewType, isDefaultChangeDetectionStrategy} from '../../core_private';
+import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../../core_private';
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata, CompileTypeMetadata} from '../compile_metadata';
 import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
@@ -19,7 +19,7 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView} from './compile_view';
-import {ChangeDetectionStrategyEnum, DetectChangesVars, InjectMethodVars, ViewConstructorVars, ViewEncapsulationEnum, ViewProperties, ViewTypeEnum} from './constants';
+import {ChangeDetectorStatusEnum, DetectChangesVars, InjectMethodVars, ViewConstructorVars, ViewEncapsulationEnum, ViewProperties, ViewTypeEnum} from './constants';
 import {createDiTokenExpression, createFlatArray, getViewFactoryName} from './util';
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
@@ -446,7 +446,7 @@ function createViewClass(
     o.variable(view.className), renderCompTypeVar, ViewTypeEnum.fromValue(view.viewType),
     ViewConstructorVars.viewUtils, ViewConstructorVars.parentInjector,
     ViewConstructorVars.declarationEl,
-    ChangeDetectionStrategyEnum.fromValue(getChangeDetectionMode(view))
+    ChangeDetectorStatusEnum.fromValue(getChangeDetectionMode(view))
   ];
   if (view.genConfig.genDebugInfo) {
     superConstructorArgs.push(nodeDebugInfosVar);
@@ -608,14 +608,14 @@ function getContextType(view: CompileView): o.Type {
   return o.DYNAMIC_TYPE;
 }
 
-function getChangeDetectionMode(view: CompileView): ChangeDetectionStrategy {
-  var mode: ChangeDetectionStrategy;
+function getChangeDetectionMode(view: CompileView): ChangeDetectorStatus {
+  var mode: ChangeDetectorStatus;
   if (view.viewType === ViewType.COMPONENT) {
     mode = isDefaultChangeDetectionStrategy(view.component.changeDetection) ?
-        ChangeDetectionStrategy.CheckAlways :
-        ChangeDetectionStrategy.CheckOnce;
+        ChangeDetectorStatus.CheckAlways :
+        ChangeDetectorStatus.CheckOnce;
   } else {
-    mode = ChangeDetectionStrategy.CheckAlways;
+    mode = ChangeDetectorStatus.CheckAlways;
   }
   return mode;
 }

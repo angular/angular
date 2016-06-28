@@ -9,36 +9,26 @@
 import {isBlank} from '../facade/lang';
 
 /**
- * Describes the current state of the change detector.
- */
-export enum ChangeDetectorState {
-  /**
-   * `NeverChecked` means that the change detector has not been checked yet, and
-   * initialization methods should be called during detection.
-   */
-  NeverChecked,
-
-  /**
-   * `CheckedBefore` means that the change detector has successfully completed at least
-   * one detection previously.
-   */
-  CheckedBefore,
-
-  /**
-   * `Errored` means that the change detector encountered an error checking a binding
-   * or calling a directive lifecycle method and is now in an inconsistent state. Change
-   * detectors in this state will no longer detect changes.
-   */
-  Errored,
-}
-
-
-/**
  * Describes within the change detector which strategy will be used the next time change
  * detection is triggered.
  * @stable
  */
 export enum ChangeDetectionStrategy {
+  /**
+   * `OnPush` means that the change detector's mode will be set to `CheckOnce` during hydration.
+   */
+  OnPush,
+
+  /**
+   * `Default` means that the change detector's mode will be set to `CheckAlways` during hydration.
+   */
+  Default,
+}
+
+/**
+ * Describes the status of the detector.
+ */
+export enum ChangeDetectorStatus {
   /**
    * `CheckedOnce` means that after calling detectChanges the mode of the change detector
    * will become `Checked`.
@@ -64,35 +54,35 @@ export enum ChangeDetectionStrategy {
   Detached,
 
   /**
-   * `OnPush` means that the change detector's mode will be set to `CheckOnce` during hydration.
+   * `Errored` means that the change detector encountered an error checking a binding
+   * or calling a directive lifecycle method and is now in an inconsistent state. Change
+   * detectors in this state will no longer detect changes.
    */
-  OnPush,
+  Errored,
 
   /**
-   * `Default` means that the change detector's mode will be set to `CheckAlways` during hydration.
+   * `Destroyed` means that the change detector is destroyed.
    */
-  Default,
+  Destroyed,
 }
 
 /**
  * List of possible {@link ChangeDetectionStrategy} values.
  */
 export var CHANGE_DETECTION_STRATEGY_VALUES = [
-  ChangeDetectionStrategy.CheckOnce,
-  ChangeDetectionStrategy.Checked,
-  ChangeDetectionStrategy.CheckAlways,
-  ChangeDetectionStrategy.Detached,
   ChangeDetectionStrategy.OnPush,
   ChangeDetectionStrategy.Default,
 ];
-
 /**
- * List of possible {@link ChangeDetectorState} values.
+ * List of possible {@link ChangeDetectorStatus} values.
  */
-export var CHANGE_DETECTOR_STATE_VALUES = [
-  ChangeDetectorState.NeverChecked,
-  ChangeDetectorState.CheckedBefore,
-  ChangeDetectorState.Errored,
+export var CHANGE_DETECTOR_STATUS_VALUES = [
+  ChangeDetectorStatus.CheckOnce,
+  ChangeDetectorStatus.Checked,
+  ChangeDetectorStatus.CheckAlways,
+  ChangeDetectorStatus.Detached,
+  ChangeDetectorStatus.Errored,
+  ChangeDetectorStatus.Destroyed,
 ];
 
 export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy):

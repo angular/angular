@@ -1,4 +1,4 @@
-export './src/core/change_detection/constants.dart' show isDefaultChangeDetectionStrategy, ChangeDetectorState, CHANGE_DETECTION_STRATEGY_VALUES;
+export './src/core/change_detection/constants.dart' show isDefaultChangeDetectionStrategy, CHANGE_DETECTION_STRATEGY_VALUES;
 export './src/core/di/reflective_provider.dart' show constructDependencies;
 export './src/core/metadata/lifecycle_hooks.dart' show LifecycleHooks, LIFECYCLE_HOOKS_VALUES;
 export './src/core/reflection/reflector_reader.dart' show ReflectorReader;

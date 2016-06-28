@@ -13,12 +13,11 @@ import {DirectiveAst} from '../template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
-import {ChangeDetectorStateEnum, DetectChangesVars} from './constants';
+import {DetectChangesVars} from './constants';
 
 
 
-var STATE_IS_NEVER_CHECKED =
-    o.THIS_EXPR.prop('cdState').identical(ChangeDetectorStateEnum.NeverChecked);
+var STATE_IS_NEVER_CHECKED = o.THIS_EXPR.prop('numberOfChecks').identical(new o.LiteralExpr(0));
 var NOT_THROW_ON_CHANGES = o.not(DetectChangesVars.throwOnChange);
 
 export function bindDirectiveDetectChangesLifecycleCallbacks(

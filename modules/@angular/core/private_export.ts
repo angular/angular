@@ -43,8 +43,8 @@ import * as decorators from './src/util/decorators';
 
 export declare namespace __core_private_types__ {
   export var isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy;
-  export type ChangeDetectorState = constants.ChangeDetectorState;
-  export var ChangeDetectorState: typeof constants.ChangeDetectorState;
+  export type ChangeDetectorStatus = constants.ChangeDetectorStatus;
+  export var ChangeDetectorStatus: typeof constants.ChangeDetectorStatus;
   export var CHANGE_DETECTION_STRATEGY_VALUES: typeof constants.CHANGE_DETECTION_STRATEGY_VALUES;
   export var constructDependencies: typeof reflective_provider.constructDependencies;
   export type LifecycleHooks = lifecycle_hooks.LifecycleHooks;
@@ -137,7 +137,7 @@ export declare namespace __core_private_types__ {
 
 export var __core_private__ = {
   isDefaultChangeDetectionStrategy: constants.isDefaultChangeDetectionStrategy,
-  ChangeDetectorState: constants.ChangeDetectorState,
+  ChangeDetectorStatus: constants.ChangeDetectorStatus,
   CHANGE_DETECTION_STRATEGY_VALUES: constants.CHANGE_DETECTION_STRATEGY_VALUES,
   constructDependencies: reflective_provider.constructDependencies,
   LifecycleHooks: lifecycle_hooks.LifecycleHooks,

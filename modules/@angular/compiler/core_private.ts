@@ -10,8 +10,8 @@ import {__core_private__ as r, __core_private_types__ as t} from '@angular/core'
 
 export var isDefaultChangeDetectionStrategy: typeof t.isDefaultChangeDetectionStrategy =
     r.isDefaultChangeDetectionStrategy;
-export type ChangeDetectorState = t.ChangeDetectorState;
-export var ChangeDetectorState: typeof t.ChangeDetectorState = r.ChangeDetectorState;
+export type ChangeDetectorStatus = t.ChangeDetectorStatus;
+export var ChangeDetectorStatus: typeof t.ChangeDetectorStatus = r.ChangeDetectorStatus;
 export var CHANGE_DETECTION_STRATEGY_VALUES: typeof t.CHANGE_DETECTION_STRATEGY_VALUES =
     r.CHANGE_DETECTION_STRATEGY_VALUES;
 export var constructDependencies: typeof t.constructDependencies = r.constructDependencies;

@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
-import {ChangeDetectorState, ViewType} from '../../core_private';
+import {ChangeDetectorStatus, ViewType} from '../../core_private';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import {isBlank, resolveEnumToken} from '../facade/lang';
 import {Identifiers} from '../identifiers';
@@ -42,25 +42,24 @@ export class ViewEncapsulationEnum {
   static None = ViewEncapsulationEnum.fromValue(ViewEncapsulation.None);
 }
 
-export class ChangeDetectorStateEnum {
-  static fromValue(value: ChangeDetectorState): o.Expression {
-    return _enumExpression(Identifiers.ChangeDetectorState, value);
-  }
-  static NeverChecked = ChangeDetectorStateEnum.fromValue(ChangeDetectorState.NeverChecked);
-  static CheckedBefore = ChangeDetectorStateEnum.fromValue(ChangeDetectorState.CheckedBefore);
-  static Errored = ChangeDetectorStateEnum.fromValue(ChangeDetectorState.Errored);
-}
-
 export class ChangeDetectionStrategyEnum {
   static fromValue(value: ChangeDetectionStrategy): o.Expression {
     return _enumExpression(Identifiers.ChangeDetectionStrategy, value);
   }
-  static CheckOnce = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.CheckOnce);
-  static Checked = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.Checked);
-  static CheckAlways = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.CheckAlways);
-  static Detached = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.Detached);
   static OnPush = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.OnPush);
   static Default = ChangeDetectionStrategyEnum.fromValue(ChangeDetectionStrategy.Default);
+}
+
+export class ChangeDetectorStatusEnum {
+  static fromValue(value: ChangeDetectorStatusEnum): o.Expression {
+    return _enumExpression(Identifiers.ChangeDetectorStatus, value);
+  }
+  static CheckOnce = ChangeDetectorStatusEnum.fromValue(ChangeDetectorStatus.CheckOnce);
+  static Checked = ChangeDetectorStatusEnum.fromValue(ChangeDetectorStatus.Checked);
+  static CheckAlways = ChangeDetectorStatusEnum.fromValue(ChangeDetectorStatus.CheckAlways);
+  static Detached = ChangeDetectorStatusEnum.fromValue(ChangeDetectorStatus.Detached);
+  static Errored = ChangeDetectorStatusEnum.fromValue(ChangeDetectorStatus.Errored);
+  static Destroyed = ChangeDetectorStatusEnum.fromValue(ChangeDetectorStatus.Destroyed);
 }
 
 export class ViewConstructorVars {

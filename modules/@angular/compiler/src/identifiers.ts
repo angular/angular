@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactoryResolver, ElementRef, Injector, QueryList, RenderComponentType, Renderer, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 
-import {AnimationGroupPlayer as AnimationGroupPlayer_, AnimationKeyframe as AnimationKeyframe_, AnimationSequencePlayer as AnimationSequencePlayer_, AnimationStyles as AnimationStyles_, AppElement, AppView, ChangeDetectorState, CodegenComponentFactoryResolver, DebugAppView, DebugContext, EMPTY_ARRAY, EMPTY_MAP, NoOpAnimationPlayer as NoOpAnimationPlayer_, SecurityContext, StaticNodeDebugInfo, TemplateRef_, ValueUnwrapper, ViewType, ViewUtils, balanceAnimationKeyframes as impBalanceAnimationKeyframes, castByValue, checkBinding, clearStyles as impClearStyles, collectAndResolveStyles as impCollectAndResolveStyles, devModeEqual, flattenNestedViewRenderNodes, interpolate, prepareFinalAnimationStyles as impBalanceAnimationStyles, pureProxy1, pureProxy10, pureProxy2, pureProxy3, pureProxy4, pureProxy5, pureProxy6, pureProxy7, pureProxy8, pureProxy9, renderStyles as impRenderStyles, uninitialized} from '../core_private';
+import {AnimationGroupPlayer as AnimationGroupPlayer_, AnimationKeyframe as AnimationKeyframe_, AnimationSequencePlayer as AnimationSequencePlayer_, AnimationStyles as AnimationStyles_, AppElement, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, DebugAppView, DebugContext, EMPTY_ARRAY, EMPTY_MAP, NoOpAnimationPlayer as NoOpAnimationPlayer_, SecurityContext, StaticNodeDebugInfo, TemplateRef_, ValueUnwrapper, ViewType, ViewUtils, balanceAnimationKeyframes as impBalanceAnimationKeyframes, castByValue, checkBinding, clearStyles as impClearStyles, collectAndResolveStyles as impCollectAndResolveStyles, devModeEqual, flattenNestedViewRenderNodes, interpolate, prepareFinalAnimationStyles as impBalanceAnimationStyles, pureProxy1, pureProxy10, pureProxy2, pureProxy3, pureProxy4, pureProxy5, pureProxy6, pureProxy7, pureProxy8, pureProxy9, renderStyles as impRenderStyles, uninitialized} from '../core_private';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 import {assetUrl} from './util';
@@ -41,7 +41,7 @@ var impStaticNodeDebugInfo = StaticNodeDebugInfo;
 var impRenderer = Renderer;
 var impSimpleChange = SimpleChange;
 var impUninitialized = uninitialized;
-var impChangeDetectorState = ChangeDetectorState;
+var impChangeDetectorStatus = ChangeDetectorStatus;
 var impFlattenNestedViewRenderNodes = flattenNestedViewRenderNodes;
 var impDevModeEqual = devModeEqual;
 var impInterpolate = interpolate;
@@ -140,8 +140,8 @@ export class Identifiers {
       {name: 'SimpleChange', moduleUrl: CD_MODULE_URL, runtime: impSimpleChange});
   static uninitialized = new CompileIdentifierMetadata(
       {name: 'uninitialized', moduleUrl: CD_MODULE_URL, runtime: impUninitialized});
-  static ChangeDetectorState = new CompileIdentifierMetadata(
-      {name: 'ChangeDetectorState', moduleUrl: CD_MODULE_URL, runtime: impChangeDetectorState});
+  static ChangeDetectorStatus = new CompileIdentifierMetadata(
+      {name: 'ChangeDetectorStatus', moduleUrl: CD_MODULE_URL, runtime: impChangeDetectorStatus});
   static checkBinding = new CompileIdentifierMetadata(
       {name: 'checkBinding', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: impCheckBinding});
   static flattenNestedViewRenderNodes = new CompileIdentifierMetadata({

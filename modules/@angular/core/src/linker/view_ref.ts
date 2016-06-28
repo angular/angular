@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {ChangeDetectionStrategy, ChangeDetectorStatus} from '../change_detection/constants';
 import {unimplemented} from '../facade/exceptions';
 
 import {AppView} from './view';
@@ -89,7 +89,7 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 
 export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
   /** @internal */
-  _originalMode: ChangeDetectionStrategy;
+  _originalMode: ChangeDetectorStatus;
 
   constructor(private _view: AppView<C>) {
     this._view = _view;
@@ -105,7 +105,7 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
   get destroyed(): boolean { return this._view.destroyed; }
 
   markForCheck(): void { this._view.markPathToRootAsCheckOnce(); }
-  detach(): void { this._view.cdMode = ChangeDetectionStrategy.Detached; }
+  detach(): void { this._view.cdMode = ChangeDetectorStatus.Detached; }
   detectChanges(): void { this._view.detectChanges(false); }
   checkNoChanges(): void { this._view.detectChanges(true); }
   reattach(): void {

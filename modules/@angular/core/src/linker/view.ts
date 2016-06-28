@@ -16,7 +16,7 @@ import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
 import {ViewUtils, arrayLooseIdentical, ensureSlotCount, flattenNestedViewRenderNodes, mapLooseIdentical} from './view_utils';
 
-import {ChangeDetectorRef, ChangeDetectionStrategy, ChangeDetectorState,} from '../change_detection/change_detection';
+import {ChangeDetectorRef, ChangeDetectionStrategy, ChangeDetectorStatus,} from '../change_detection/change_detection';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {ExpressionChangedAfterItHasBeenCheckedException, ViewDestroyedException, ViewWrappedException} from './exceptions';
 import {StaticNodeDebugInfo, DebugContext} from './debug_context';
@@ -47,13 +47,9 @@ export abstract class AppView<T> {
   viewChildren: AppView<any>[] = [];
   viewContainerElement: AppElement = null;
 
-  // The names of the below fields must be kept in sync with codegen_name_util.ts or
-  // change detection will fail.
-  cdState: ChangeDetectorState = ChangeDetectorState.NeverChecked;
+  numberOfChecks: number = 0;
 
   projectableNodes: Array<any|any[]>;
-
-  destroyed: boolean = false;
 
   renderer: Renderer;
 
@@ -66,7 +62,7 @@ export abstract class AppView<T> {
   constructor(
       public clazz: any, public componentType: RenderComponentType, public type: ViewType,
       public viewUtils: ViewUtils, public parentInjector: Injector,
-      public declarationAppElement: AppElement, public cdMode: ChangeDetectionStrategy) {
+      public declarationAppElement: AppElement, public cdMode: ChangeDetectorStatus) {
     this.ref = new ViewRef_(this);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
       this.renderer = viewUtils.renderComponent(componentType);
@@ -74,6 +70,8 @@ export abstract class AppView<T> {
       this.renderer = declarationAppElement.parentView.renderer;
     }
   }
+
+  get destroyed(): boolean { return this.cdMode === ChangeDetectorStatus.Destroyed; }
 
   cancelActiveAnimation(element: any, animationName: string, removeAllAnimations: boolean = false) {
     if (removeAllAnimations) {
@@ -176,7 +174,7 @@ export abstract class AppView<T> {
   }
 
   private _destroyRecurse() {
-    if (this.destroyed) {
+    if (this.cdMode === ChangeDetectorStatus.Destroyed) {
       return;
     }
     var children = this.contentChildren;
@@ -189,7 +187,7 @@ export abstract class AppView<T> {
     }
     this.destroyLocal();
 
-    this.destroyed = true;
+    this.cdMode = ChangeDetectorStatus.Destroyed;
   }
 
   destroyLocal() {
@@ -254,17 +252,16 @@ export abstract class AppView<T> {
 
   detectChanges(throwOnChange: boolean): void {
     var s = _scope_check(this.clazz);
-    if (this.cdMode === ChangeDetectionStrategy.Checked ||
-        this.cdState === ChangeDetectorState.Errored)
+    if (this.cdMode === ChangeDetectorStatus.Checked ||
+        this.cdMode === ChangeDetectorStatus.Errored)
       return;
-    if (this.destroyed) {
+    if (this.cdMode === ChangeDetectorStatus.Destroyed) {
       this.throwDestroyedError('detectChanges');
     }
     this.detectChangesInternal(throwOnChange);
-    if (this.cdMode === ChangeDetectionStrategy.CheckOnce)
-      this.cdMode = ChangeDetectionStrategy.Checked;
+    if (this.cdMode === ChangeDetectorStatus.CheckOnce) this.cdMode = ChangeDetectorStatus.Checked;
 
-    this.cdState = ChangeDetectorState.CheckedBefore;
+    this.numberOfChecks++;
     wtfLeave(s);
   }
 
@@ -279,7 +276,7 @@ export abstract class AppView<T> {
   detectContentChildrenChanges(throwOnChange: boolean) {
     for (var i = 0; i < this.contentChildren.length; ++i) {
       var child = this.contentChildren[i];
-      if (child.cdMode === ChangeDetectionStrategy.Detached) continue;
+      if (child.cdMode === ChangeDetectorStatus.Detached) continue;
       child.detectChanges(throwOnChange);
     }
   }
@@ -287,7 +284,7 @@ export abstract class AppView<T> {
   detectViewChildrenChanges(throwOnChange: boolean) {
     for (var i = 0; i < this.viewChildren.length; ++i) {
       var child = this.viewChildren[i];
-      if (child.cdMode === ChangeDetectionStrategy.Detached) continue;
+      if (child.cdMode === ChangeDetectorStatus.Detached) continue;
       child.detectChanges(throwOnChange);
     }
   }
@@ -304,13 +301,13 @@ export abstract class AppView<T> {
     this.viewContainerElement = null;
   }
 
-  markAsCheckOnce(): void { this.cdMode = ChangeDetectionStrategy.CheckOnce; }
+  markAsCheckOnce(): void { this.cdMode = ChangeDetectorStatus.CheckOnce; }
 
   markPathToRootAsCheckOnce(): void {
     let c: AppView<any> = this;
-    while (isPresent(c) && c.cdMode !== ChangeDetectionStrategy.Detached) {
-      if (c.cdMode === ChangeDetectionStrategy.Checked) {
-        c.cdMode = ChangeDetectionStrategy.CheckOnce;
+    while (isPresent(c) && c.cdMode !== ChangeDetectorStatus.Detached) {
+      if (c.cdMode === ChangeDetectorStatus.Checked) {
+        c.cdMode = ChangeDetectorStatus.CheckOnce;
       }
       let parentEl =
           c.type === ViewType.COMPONENT ? c.declarationAppElement : c.viewContainerElement;
@@ -328,7 +325,7 @@ export class DebugAppView<T> extends AppView<T> {
 
   constructor(
       clazz: any, componentType: RenderComponentType, type: ViewType, viewUtils: ViewUtils,
-      parentInjector: Injector, declarationAppElement: AppElement, cdMode: ChangeDetectionStrategy,
+      parentInjector: Injector, declarationAppElement: AppElement, cdMode: ChangeDetectorStatus,
       public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
     super(clazz, componentType, type, viewUtils, parentInjector, declarationAppElement, cdMode);
   }
@@ -393,7 +390,7 @@ export class DebugAppView<T> extends AppView<T> {
   private _rethrowWithContext(e: any, stack: any) {
     if (!(e instanceof ViewWrappedException)) {
       if (!(e instanceof ExpressionChangedAfterItHasBeenCheckedException)) {
-        this.cdState = ChangeDetectorState.Errored;
+        this.cdMode = ChangeDetectorStatus.Errored;
       }
       if (isPresent(this._currentDebugContext)) {
         throw new ViewWrappedException(e, stack, this._currentDebugContext);

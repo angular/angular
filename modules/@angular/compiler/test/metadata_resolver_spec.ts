@@ -31,7 +31,7 @@ export function main() {
            expect(meta.type.runtime).toBe(ComponentWithEverything);
            expect(meta.type.name).toEqual(stringify(ComponentWithEverything));
            expect(meta.lifecycleHooks).toEqual(LIFECYCLE_HOOKS_VALUES);
-           expect(meta.changeDetection).toBe(ChangeDetectionStrategy.CheckAlways);
+           expect(meta.changeDetection).toBe(ChangeDetectionStrategy.Default);
            expect(meta.inputs).toEqual({'someProp': 'someProp'});
            expect(meta.outputs).toEqual({'someEvent': 'someEvent'});
            expect(meta.hostListeners).toEqual({'someHostListener': 'someHostListenerExpr'});
@@ -152,7 +152,7 @@ class ComponentWithoutModuleId {
   },
   exportAs: 'someExportAs',
   moduleId: 'someModuleId',
-  changeDetection: ChangeDetectionStrategy.CheckAlways,
+  changeDetection: ChangeDetectionStrategy.Default,
   template: 'someTemplate',
   templateUrl: 'someTemplateUrl',
   encapsulation: ViewEncapsulation.Emulated,
