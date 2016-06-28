@@ -242,14 +242,17 @@ export function main() {
          ]));
          expect(log.result()).toEqual('platform_init1; platform_init2');
          log.clear();
-         var a = ReflectiveInjector.resolveAndCreate(
+         let a = ReflectiveInjector.resolveAndCreate(
              [
                BROWSER_APP_PROVIDERS,
                {provide: APP_INITIALIZER, useValue: log.fn('app_init1'), multi: true},
                {provide: APP_INITIALIZER, useValue: log.fn('app_init2'), multi: true}
              ],
              p.injector);
-         a.get(ApplicationRef);
+         expect(log.result()).toEqual('');
+
+         let appRef = a.get(ApplicationRef);
+         appRef.runInitializers();
 
          expect(log.result()).toEqual('app_init1; app_init2');
        }));

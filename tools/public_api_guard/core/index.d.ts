@@ -135,7 +135,7 @@ export declare abstract class ApplicationRef {
     abstract registerDisposeListener(dispose: () => void): void;
     abstract run(callback: Function): any;
     abstract tick(): void;
-    abstract waitForAsyncInitializers(): Promise<any>;
+    abstract runInitializers(): Promise<any> | any;
 }
 
 /** @experimental */
