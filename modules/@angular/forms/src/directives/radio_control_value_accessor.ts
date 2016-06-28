@@ -9,6 +9,7 @@
 import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer, forwardRef} from '@angular/core';
 
 import {ListWrapper} from '../facade/collection';
+import {BaseException} from '../facade/exceptions';
 import {isPresent} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
@@ -50,7 +51,8 @@ export class RadioControlRegistry {
   }
 
   private _isSameGroup(
-      controlPair: [NgControl, RadioControlValueAccessor], accessor: RadioControlValueAccessor) {
+      controlPair: [NgControl, RadioControlValueAccessor],
+      accessor: RadioControlValueAccessor): boolean {
     if (!controlPair[0].control) return false;
     return controlPair[0].control.root === accessor._control.control.root &&
         controlPair[1].name === accessor.name;
@@ -92,6 +94,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   onTouched = () => {}
 
   @Input() name: string;
+  @Input() formControlName: string;
   @Input() value: any;
 
   constructor(
@@ -100,6 +103,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
 
   ngOnInit(): void {
     this._control = this._injector.get(NgControl);
+    this._checkName();
     this._registry.add(this._control, this);
   }
 
@@ -123,4 +127,18 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   fireUncheck(value: any): void { this.writeValue(value); }
 
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
+
+  private _checkName(): void {
+    if (this.name && this.formControlName && this.name !== this.formControlName) {
+      this._throwNameError();
+    }
+    if (!this.name && this.formControlName) this.name = this.formControlName;
+  }
+
+  private _throwNameError(): void {
+    throw new BaseException(`
+      If you define both a name and a formControlName attribute on your radio button, their values
+      must match. Ex: <input type="radio" formControlName="food" name="food">
+    `);
+  }
 }

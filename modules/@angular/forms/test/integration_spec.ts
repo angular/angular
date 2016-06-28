@@ -615,6 +615,76 @@ export function main() {
                    });
              }));
 
+      it('should use formControlName to group radio buttons when name is absent',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form [formGroup]="form">
+                  <input type="radio" formControlName="food" value="chicken">
+                  <input type="radio" formControlName="food" value="fish">
+                  <input type="radio" formControlName="drink" value="cola">
+                  <input type="radio" formControlName="drink" value="sprite">
+                </form>`;
+
+               const foodCtrl = new FormControl('fish');
+               const drinkCtrl = new FormControl('sprite');
+               tcb.overrideTemplate(MyComp8, t)
+                   .overrideProviders(MyComp8, providerArr)
+                   .createAsync(MyComp8)
+                   .then((fixture) => {
+                     fixture.debugElement.componentInstance.form =
+                         new FormGroup({'food': foodCtrl, 'drink': drinkCtrl});
+                     fixture.detectChanges();
+
+                     const inputs = fixture.debugElement.queryAll(By.css('input'));
+                     expect(inputs[0].nativeElement.checked).toEqual(false);
+                     expect(inputs[1].nativeElement.checked).toEqual(true);
+                     expect(inputs[2].nativeElement.checked).toEqual(false);
+                     expect(inputs[3].nativeElement.checked).toEqual(true);
+
+                     dispatchEvent(inputs[0].nativeElement, 'change');
+                     inputs[0].nativeElement.checked = true;
+                     fixture.detectChanges();
+
+                     const value = fixture.debugElement.componentInstance.form.value;
+                     expect(value.food).toEqual('chicken');
+                     expect(inputs[1].nativeElement.checked).toEqual(false);
+                     expect(inputs[2].nativeElement.checked).toEqual(false);
+                     expect(inputs[3].nativeElement.checked).toEqual(true);
+
+                     drinkCtrl.updateValue('cola');
+                     fixture.detectChanges();
+
+                     expect(inputs[0].nativeElement.checked).toEqual(true);
+                     expect(inputs[1].nativeElement.checked).toEqual(false);
+                     expect(inputs[2].nativeElement.checked).toEqual(true);
+                     expect(inputs[3].nativeElement.checked).toEqual(false);
+
+                     async.done();
+                   });
+             }));
+
+      it('should throw if radio button name does not match formControlName attr',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form [formGroup]="form">
+                  <input type="radio" formControlName="food" name="drink" value="chicken">
+                </form>`;
+
+               tcb.overrideTemplate(MyComp8, t)
+                   .overrideProviders(MyComp8, providerArr)
+                   .createAsync(MyComp8)
+                   .then((fixture) => {
+                     fixture.debugElement.componentInstance.form =
+                         new FormGroup({'food': new FormControl('fish')});
+                     expect(() => fixture.detectChanges())
+                         .toThrowError(
+                             new RegExp('If you define both a name and a formControlName'));
+                     async.done();
+                   });
+             }));
+
       it('should support removing controls from <type=radio>',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
