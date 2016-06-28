@@ -30,7 +30,7 @@ export class ReflectiveDependency {
   }
 }
 
-const _EMPTY_LIST: any[] /** TODO #9100 */ = /*@ts2dart_const*/[];
+const _EMPTY_LIST: any[] = /*@ts2dart_const*/[];
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.
@@ -105,13 +105,13 @@ export class ResolvedReflectiveFactory {
  */
 export function resolveReflectiveFactory(provider: Provider): ResolvedReflectiveFactory {
   var factoryFn: Function;
-  var resolvedDeps: any /** TODO #9100 */;
+  var resolvedDeps: ReflectiveDependency[];
   if (isPresent(provider.useClass)) {
     var useClass = resolveForwardRef(provider.useClass);
     factoryFn = reflector.factory(useClass);
     resolvedDeps = _dependenciesFor(useClass);
   } else if (isPresent(provider.useExisting)) {
-    factoryFn = (aliasInstance: any /** TODO #9100 */) => aliasInstance;
+    factoryFn = (aliasInstance: any) => aliasInstance;
     resolvedDeps = [ReflectiveDependency.fromKey(ReflectiveKey.get(provider.useExisting))];
   } else if (isPresent(provider.useFactory)) {
     factoryFn = provider.useFactory;
@@ -169,7 +169,7 @@ export function mergeResolvedReflectiveProviders(
         normalizedProvidersMap.set(provider.key.id, provider);
       }
     } else {
-      var resolvedProvider: any /** TODO #9100 */;
+      var resolvedProvider: ResolvedReflectiveProvider;
       if (provider.multiProvider) {
         resolvedProvider = new ResolvedReflectiveProvider_(
             provider.key, ListWrapper.clone(provider.resolvedFactories), provider.multiProvider);

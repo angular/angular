@@ -194,7 +194,7 @@ export class CssParser {
   /** @internal */
   _parseStyleSheet(delimiters: number): CssStyleSheetAst {
     const start = this._getScannerIndex();
-    var results: any[] /** TODO #9100 */ = [];
+    var results: CssAst[] = [];
     this._scanner.consumeEmptyStatements();
     while (this._scanner.peek != chars.$EOF) {
       this._scanner.setMode(CssLexerMode.BLOCK);
@@ -325,7 +325,7 @@ export class CssParser {
   _parseSelectors(delimiters: number): CssSelectorAst[] {
     delimiters |= LBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG;
 
-    var selectors: any[] /** TODO #9100 */ = [];
+    var selectors: CssSelectorAst[] = [];
     var isParsingSelectors = true;
     while (isParsingSelectors) {
       selectors.push(this._parseSelector(delimiters));
@@ -378,7 +378,7 @@ export class CssParser {
 
     this._consume(CssTokenType.Character, '{');
 
-    var definitions: any[] /** TODO #9100 */ = [];
+    var definitions: CssKeyframeDefinitionAst[] = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       definitions.push(this._parseKeyframeDefinition(delimiters));
     }
@@ -392,7 +392,7 @@ export class CssParser {
   /** @internal */
   _parseKeyframeDefinition(delimiters: number): CssKeyframeDefinitionAst {
     const start = this._getScannerIndex();
-    var stepTokens: any[] /** TODO #9100 */ = [];
+    var stepTokens: CssToken[] = [];
     delimiters |= LBRACE_DELIM_FLAG;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       stepTokens.push(this._parseKeyframeLabel(delimiters | COMMA_DELIM_FLAG));
@@ -701,7 +701,7 @@ export class CssParser {
 
   /** @internal */
   _collectUntilDelim(delimiters: number, assertType: CssTokenType = null): CssToken[] {
-    var tokens: any[] /** TODO #9100 */ = [];
+    var tokens: CssToken[] = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       var val = isPresent(assertType) ? this._consume(assertType) : this._scan();
       tokens.push(val);
@@ -720,7 +720,7 @@ export class CssParser {
     this._consume(CssTokenType.Character, '{');
     this._scanner.consumeEmptyStatements();
 
-    var results: any[] /** TODO #9100 */ = [];
+    var results: CssAst[] = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       results.push(this._parseRule(delimiters));
     }
@@ -770,7 +770,7 @@ export class CssParser {
     this._scanner.setMode(CssLexerMode.STYLE_BLOCK);
 
     var prop = this._consume(CssTokenType.Identifier);
-    var parseValue: any /** TODO #9100 */, value: any /** TODO #9100 */ = null;
+    var parseValue: boolean, value: CssStyleValueAst = null;
 
     // the colon value separates the prop from the style.
     // there are a few cases as to what could happen if it
