@@ -26,6 +26,7 @@ export function main() {
     function expectSanitize(v: string) { return t.expect(sanitizeStyle(v)); }
 
     t.it('sanitizes values', () => {
+      expectSanitize('').toEqual('');
       expectSanitize('abc').toEqual('abc');
       expectSanitize('50px').toEqual('50px');
       expectSanitize('rgb(255, 0, 0)').toEqual('rgb(255, 0, 0)');
