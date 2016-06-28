@@ -11,15 +11,15 @@
  * Intended to be used in a build step.
  */
 import * as compiler from '@angular/compiler';
-import {ViewEncapsulation, lockRunMode} from '@angular/core';
+import {AppModuleMetadata, ComponentMetadata, ViewEncapsulation, lockRunMode} from '@angular/core';
 import {AngularCompilerOptions} from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './compiler_private';
+import {AppModuleCompiler, CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './compiler_private';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
-import {StaticReflector} from './static_reflector';
+import {StaticReflector, StaticSymbol} from './static_reflector';
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 
@@ -40,26 +40,9 @@ export class CodeGenerator {
     lockRunMode();
   }
 
-  private generateSource(metadatas: compiler.CompileDirectiveMetadata[]) {
-    const normalize = (metadata: compiler.CompileDirectiveMetadata) => {
-      const directiveType = metadata.type.runtime;
-      const directives = this.resolver.getViewDirectivesMetadata(directiveType);
-      return Promise.all(directives.map(d => this.compiler.normalizeDirectiveMetadata(d)))
-          .then(normalizedDirectives => {
-            const pipes = this.resolver.getViewPipesMetadata(directiveType);
-            return new compiler.NormalizedComponentWithViewDirectives(
-                metadata, normalizedDirectives, pipes);
-          });
-    };
-    return Promise.all(metadatas.map(normalize))
-        .then(
-            normalizedCompWithDirectives =>
-                this.compiler.compileTemplates(normalizedCompWithDirectives));
-  }
-
-  private readComponents(absSourcePath: string) {
-    const result: Promise<compiler.CompileDirectiveMetadata>[] = [];
+  private readFileMetadata(absSourcePath: string): FileMetadata {
     const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
+    const result: FileMetadata = {components: [], appModules: [], fileUrl: absSourcePath};
     if (!moduleMetadata) {
       console.log(`WARNING: no metadata found for ${absSourcePath}`);
       return result;
@@ -75,13 +58,14 @@ export class CodeGenerator {
         continue;
       }
       const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
-      let directive: compiler.CompileDirectiveMetadata;
-      directive = this.resolver.maybeGetDirectiveMetadata(<any>staticType);
-
-      if (!directive || !directive.isComponent) {
-        continue;
-      }
-      result.push(this.compiler.normalizeDirectiveMetadata(directive));
+      const annotations = this.staticReflector.annotations(staticType);
+      annotations.forEach((annotation) => {
+        if (annotation instanceof AppModuleMetadata) {
+          result.appModules.push(staticType);
+        } else if (annotation instanceof ComponentMetadata) {
+          result.components.push(staticType);
+        }
+      });
     }
     return result;
   }
@@ -102,30 +86,31 @@ export class CodeGenerator {
   }
 
   codegen(): Promise<any> {
-    const generateOneFile = (absSourcePath: string) =>
-        Promise.all(this.readComponents(absSourcePath))
-            .then((metadatas: compiler.CompileDirectiveMetadata[]) => {
-              if (!metadatas || !metadatas.length) {
-                return;
-              }
-              return this.generateSource(metadatas);
-            })
-            .then(generatedModules => {
-              if (generatedModules) {
-                generatedModules.forEach((generatedModule) => {
-                  const sourceFile = this.program.getSourceFile(absSourcePath);
-                  const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
-                  this.host.writeFile(
-                      emitPath, PREAMBLE + generatedModule.source, false, () => {}, [sourceFile]);
-                });
-              }
-            })
-            .catch((e) => { console.error(e.stack); });
-    var compPromises = this.program.getSourceFiles()
-                           .map(sf => sf.fileName)
-                           .filter(f => !GENERATED_FILES.test(f))
-                           .map(generateOneFile);
-    return Promise.all(compPromises);
+    let filePaths =
+        this.program.getSourceFiles().map(sf => sf.fileName).filter(f => !GENERATED_FILES.test(f));
+    let fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
+    let appModules = fileMetas.reduce((appModules, fileMeta) => {
+      appModules.push(...fileMeta.appModules);
+      return appModules;
+    }, <StaticSymbol[]>[]);
+    let analyzedAppModules = this.compiler.analyzeModules(appModules);
+    return Promise
+        .all(fileMetas.map(
+            (fileMeta) => this.compiler
+                              .compile(
+                                  fileMeta.fileUrl, analyzedAppModules, fileMeta.components,
+                                  fileMeta.appModules)
+                              .then((generatedModules) => {
+                                generatedModules.forEach((generatedModule) => {
+                                  const sourceFile = this.program.getSourceFile(fileMeta.fileUrl);
+                                  const emitPath =
+                                      this.calculateEmitPath(generatedModule.moduleUrl);
+                                  this.host.writeFile(
+                                      emitPath, PREAMBLE + generatedModule.source, false, () => {},
+                                      [sourceFile]);
+                                });
+                              })))
+        .catch((e) => { console.error(e.stack); });
   }
 
   static create(
@@ -158,14 +143,20 @@ export class CodeGenerator {
     const tmplParser = new TemplateParser(
         parser, new DomElementSchemaRegistry(), htmlParser,
         /*console*/ null, []);
-    const offlineCompiler = new compiler.OfflineCompiler(
-        normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
-        new TypeScriptEmitter(reflectorHost));
     const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), config, staticReflector);
+    const offlineCompiler = new compiler.OfflineCompiler(
+        resolver, normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
+        new AppModuleCompiler(), new TypeScriptEmitter(reflectorHost));
 
     return new CodeGenerator(
         options, program, compilerHost, staticReflector, resolver, offlineCompiler, reflectorHost);
   }
+}
+
+interface FileMetadata {
+  fileUrl: string;
+  components: StaticSymbol[];
+  appModules: StaticSymbol[];
 }

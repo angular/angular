@@ -7,7 +7,11 @@
  */
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
+import {StringMapWrapper} from '../facade/collection';
+import {BaseException} from '../facade/exceptions';
 import {isBlank, isPresent, isString} from '../facade/lang';
+import {ValueTransformer, visitValue} from '../util';
+
 
 
 //// Types
@@ -875,10 +879,6 @@ export function importType(
   return isPresent(id) ? new ExternalType(id, typeParams, typeModifiers) : null;
 }
 
-export function literal(value: any, type: Type = null): LiteralExpr {
-  return new LiteralExpr(value, type);
-}
-
 export function literalArr(values: Expression[], type: Type = null): LiteralArrayExpr {
   return new LiteralArrayExpr(values, type);
 }
@@ -894,4 +894,31 @@ export function not(expr: Expression): NotExpr {
 
 export function fn(params: FnParam[], body: Statement[], type: Type = null): FunctionExpr {
   return new FunctionExpr(params, body, type);
+}
+
+export function literal(value: any, type: Type = null): Expression {
+  return visitValue(value, new _ValueOutputAstTransformer(), type);
+}
+
+class _ValueOutputAstTransformer implements ValueTransformer {
+  visitArray(arr: any[], type: Type): Expression {
+    return literalArr(arr.map(value => visitValue(value, this, null)), type);
+  }
+  visitStringMap(map: {[key: string]: any}, type: MapType): Expression {
+    var entries: Array<string|Expression>[] = [];
+    StringMapWrapper.forEach(map, (value: any, key: string) => {
+      entries.push([key, visitValue(value, this, null)]);
+    });
+    return literalMap(entries, type);
+  }
+  visitPrimitive(value: any, type: Type): Expression { return new LiteralExpr(value, type); }
+  visitOther(value: any, type: Type): Expression {
+    if (value instanceof CompileIdentifierMetadata) {
+      return importExpr(value);
+    } else if (value instanceof Expression) {
+      return value;
+    } else {
+      throw new BaseException(`Illegal state: Don't now how to compile value ${value}`);
+    }
+  }
 }

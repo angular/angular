@@ -138,6 +138,63 @@ export declare abstract class ApplicationRef {
     abstract waitForAsyncInitializers(): Promise<any>;
 }
 
+/** @stable */
+export declare var AppModule: AppModuleMetadataFactory;
+
+/** @stable */
+export interface AppModuleDecorator extends TypeDecorator {
+}
+
+/** @stable */
+export declare class AppModuleFactory<T> {
+    moduleType: ConcreteType<T>;
+    constructor(_injectorClass: {
+        new (parentInjector: Injector): AppModuleInjector<T>;
+    }, _moduleype: ConcreteType<T>);
+    create(parentInjector?: Injector): AppModuleRef<T>;
+}
+
+/** @stable */
+export declare class AppModuleMetadata extends InjectableMetadata {
+    directives: Array<Type | any[]>;
+    modules: Array<Type | any[]>;
+    pipes: Array<Type | any[]>;
+    precompile: Array<Type | any[]>;
+    providers: any[];
+    constructor({providers, directives, pipes, precompile, modules}?: {
+        providers?: any[];
+        directives?: Array<Type | any[]>;
+        pipes?: Array<Type | any[]>;
+        precompile?: Array<Type | any[]>;
+        modules?: Array<Type | any[]>;
+    });
+}
+
+/** @stable */
+export interface AppModuleMetadataFactory {
+    (obj: {
+        providers?: any[];
+        directives?: Array<Type | any[]>;
+        pipes?: Array<Type | any[]>;
+        precompile?: Array<Type | any[]>;
+        modules?: Array<Type | any[]>;
+    }): AppModuleDecorator;
+    new (obj: {
+        providers?: any[];
+        directives?: Array<Type | any[]>;
+        pipes?: Array<Type | any[]>;
+        precompile?: Array<Type | any[]>;
+        modules?: Array<Type | any[]>;
+    }): AppModuleMetadata;
+}
+
+/** @stable */
+export declare abstract class AppModuleRef<T> {
+    componentFactoryResolver: ComponentFactoryResolver;
+    injector: Injector;
+    instance: T;
+}
+
 /** @experimental */
 export declare function asNativeElements(debugEls: DebugElement[]): any;
 
@@ -229,9 +286,17 @@ export declare class CollectionChangeRecord {
 /** @stable */
 export declare class Compiler {
     clearCache(): void;
-    clearCacheFor(compType: Type): void;
-    compileComponentAsync<T>(component: ConcreteType<T>): Promise<ComponentFactory<T>>;
-    compileComponentSync<T>(component: ConcreteType<T>): ComponentFactory<T>;
+    clearCacheFor(type: Type): void;
+    compileAppModuleAsync<T>(moduleType: ConcreteType<T>, metadata?: AppModuleMetadata): Promise<AppModuleFactory<T>>;
+    compileAppModuleSync<T>(moduleType: ConcreteType<T>, metadata?: AppModuleMetadata): AppModuleFactory<T>;
+    compileComponentAsync<T>(component: ConcreteType<T>, {moduleDirectives, modulePipes}?: {
+        moduleDirectives?: ConcreteType<any>[];
+        modulePipes?: ConcreteType<any>[];
+    }): Promise<ComponentFactory<T>>;
+    compileComponentSync<T>(component: ConcreteType<T>, {moduleDirectives, modulePipes}?: {
+        moduleDirectives?: ConcreteType<any>[];
+        modulePipes?: ConcreteType<any>[];
+    }): ComponentFactory<T>;
 }
 
 /** @stable */
@@ -733,6 +798,7 @@ export interface InjectMetadataFactory {
 /** @stable */
 export declare abstract class Injector {
     get(token: any, notFoundValue?: any): any;
+    static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
 }
 

@@ -29,6 +29,7 @@ export var CodegenComponentFactoryResolver: typeof t.CodegenComponentFactoryReso
 export var AppView: typeof t.AppView = r.AppView;
 export type DebugAppView<T> = t.DebugAppView<T>;
 export var DebugAppView: typeof t.DebugAppView = r.DebugAppView;
+export var AppModuleInjector: typeof t.AppModuleInjector = r.AppModuleInjector;
 export type ViewType = t.ViewType;
 export var ViewType: typeof t.ViewType = r.ViewType;
 export var MAX_INTERPOLATION_VALUES: typeof t.MAX_INTERPOLATION_VALUES = r.MAX_INTERPOLATION_VALUES;

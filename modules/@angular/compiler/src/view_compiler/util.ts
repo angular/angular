@@ -13,6 +13,7 @@ import * as o from '../output/output_ast';
 import {CompileTokenMetadata, CompileDirectiveMetadata,} from '../compile_metadata';
 import {CompileView} from './compile_view';
 import {Identifiers} from '../identifiers';
+import {createDiTokenExpression} from '../util';
 
 export function getPropertyInView(
     property: o.Expression, callingView: CompileView, definedView: CompileView): o.Expression {
@@ -53,18 +54,6 @@ export function injectFromViewParentInjector(
 export function getViewFactoryName(
     component: CompileDirectiveMetadata, embeddedTemplateIndex: number): string {
   return `viewFactory_${component.type.name}${embeddedTemplateIndex}`;
-}
-
-
-export function createDiTokenExpression(token: CompileTokenMetadata): o.Expression {
-  if (isPresent(token.value)) {
-    return o.literal(token.value);
-  } else if (token.identifierIsInstance) {
-    return o.importExpr(token.identifier)
-        .instantiate([], o.importType(token.identifier, [], [o.TypeModifier.Const]));
-  } else {
-    return o.importExpr(token.identifier);
-  }
 }
 
 export function createFlatArray(expressions: o.Expression[]): o.Expression {

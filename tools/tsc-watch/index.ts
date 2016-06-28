@@ -6,10 +6,8 @@ import {TSC, TscWatch, reportError} from './tsc_watch';
 export * from './tsc_watch';
 import 'reflect-metadata';
 
-const OFFLINE_COMPILE = [
-  'output/output_emitter_codegen_untyped', 'output/output_emitter_codegen_typed',
-  'offline_compiler_codegen_untyped', 'offline_compiler_codegen_typed'
-];
+const OFFLINE_COMPILE =
+    ['output/output_emitter_codegen_untyped', 'output/output_emitter_codegen_typed'];
 
 function processOutputEmitterCodeGen(): Promise<number> {
   return new Promise((resolve, reject) => {

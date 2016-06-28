@@ -14,6 +14,7 @@ import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
+import {createDiTokenExpression} from '../util';
 
 import {CompileBinding} from './compile_binding';
 import {CompileElement, CompileNode} from './compile_element';
@@ -22,7 +23,7 @@ import {CompilePipe} from './compile_pipe';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
 import {EventHandlerVars} from './constants';
 import {NameResolver} from './expression_converter';
-import {createDiTokenExpression, createPureProxy, getPropertyInView, getViewFactoryName, injectFromViewParentInjector} from './util';
+import {createPureProxy, getPropertyInView, getViewFactoryName, injectFromViewParentInjector} from './util';
 
 export class CompileView implements NameResolver {
   public viewType: ViewType;

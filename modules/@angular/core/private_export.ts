@@ -21,6 +21,7 @@ import * as console from './src/console';
 import * as debug from './src/debug/debug_renderer';
 import * as provider_util from './src/di/provider_util';
 import * as reflective_provider from './src/di/reflective_provider';
+import * as app_module_factory from './src/linker/app_module_factory';
 import * as component_factory_resolver from './src/linker/component_factory_resolver';
 import * as component_resolver from './src/linker/component_resolver';
 import * as debug_context from './src/linker/debug_context';
@@ -58,6 +59,7 @@ export declare namespace __core_private_types__ {
   export type AppElement = element.AppElement;
   export var AppElement: typeof element.AppElement;
   export var AppView: typeof view.AppView;
+  export var AppModuleInjector: typeof app_module_factory.AppModuleInjector;
   export type DebugAppView<T> = view.DebugAppView<T>;
   export var DebugAppView: typeof view.DebugAppView;
   export type ViewType = view_type.ViewType;
@@ -148,6 +150,7 @@ export var __core_private__ = {
   AppElement: element.AppElement,
   AppView: view.AppView,
   DebugAppView: view.DebugAppView,
+  AppModuleInjector: app_module_factory.AppModuleInjector,
   ViewType: view_type.ViewType,
   MAX_INTERPOLATION_VALUES: view_utils.MAX_INTERPOLATION_VALUES,
   checkBinding: view_utils.checkBinding,
