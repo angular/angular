@@ -59,8 +59,6 @@ var _global: BrowserNodeGlobal = globalScope;
 
 export {_global as global};
 
-export var Type = Function;
-
 /**
  * Runtime representation a type that a Component or other object is instances of.
  *
@@ -69,6 +67,9 @@ export var Type = Function;
  *
  * @stable
  */
+export var Type = Function;
+
+
 export interface Type extends Function {}
 
 /**
