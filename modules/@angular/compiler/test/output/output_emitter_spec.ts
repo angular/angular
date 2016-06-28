@@ -14,7 +14,7 @@ import * as typed from './output_emitter_codegen_typed';
 import * as untyped from './output_emitter_codegen_untyped';
 import {jitStatements} from '@angular/compiler/src/output/output_jit';
 import {interpretStatements} from '@angular/compiler/src/output/output_interpreter';
-import {codegenStmts, ExternalClass, DynamicClassInstanceFactory} from './output_emitter_util';
+import {codegenStmts, ExternalClass} from './output_emitter_util';
 import {EventEmitter} from '@angular/core';
 import {ViewType} from '@angular/core/src/linker/view_type';
 import {BaseException} from '@angular/core';
@@ -23,8 +23,7 @@ import {browserDetection} from '@angular/platform-browser/testing/browser_util'
 
 export function main() {
   var outputDefs: any[] /** TODO #9100 */ = []; outputDefs.push({
-    'getExpressions': () => interpretStatements(
-                          codegenStmts, 'getExpressions', new DynamicClassInstanceFactory()),
+    'getExpressions': () => interpretStatements(codegenStmts, 'getExpressions'),
     'name': 'interpreted'
   });
   if (IS_DART || !getDOM().supportsDOMEvents()) {

@@ -12,7 +12,7 @@ import {isBlank} from '../../src/facade/lang';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {SimpleJsImportGenerator} from '../offline_compiler_util';
+import {SimpleJsImportGenerator} from './output_emitter_util';
 
 var someModuleUrl = 'asset:somePackage/lib/somePath';
 var anotherModuleUrl = 'asset:somePackage/lib/someOtherPath';

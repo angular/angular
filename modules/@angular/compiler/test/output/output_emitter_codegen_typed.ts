@@ -15,9 +15,8 @@ import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {unimplemented} from '../../src/facade/exceptions';
 import {IS_DART, print} from '../../src/facade/lang';
 import {assetUrl} from '../../src/util';
-import {SimpleJsImportGenerator} from '../offline_compiler_util';
 
-import {codegenExportsVars, codegenStmts} from './output_emitter_util';
+import {SimpleJsImportGenerator, codegenExportsVars, codegenStmts} from './output_emitter_util';
 
 export function getExpressions(): any {
   return unimplemented();

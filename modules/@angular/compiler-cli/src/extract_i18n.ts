@@ -22,7 +22,7 @@ import * as compiler from '@angular/compiler';
 import {ViewEncapsulation, lockRunMode} from '@angular/core';
 
 import {StaticReflector} from './static_reflector';
-import {CompileMetadataResolver, HtmlParser, DirectiveNormalizer, Lexer, Parser, TemplateParser, DomElementSchemaRegistry, StyleCompiler, ViewCompiler, TypeScriptEmitter, MessageExtractor, removeDuplicates, ExtractionResult, Message, ParseError, serializeXmb,} from './compiler_private';
+import {CompileMetadataResolver, HtmlParser, DirectiveNormalizer, Lexer, Parser, DomElementSchemaRegistry, TypeScriptEmitter, MessageExtractor, removeDuplicates, ExtractionResult, Message, ParseError, serializeXmb,} from './compiler_private';
 
 import {ReflectorHost} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
@@ -40,42 +40,27 @@ class Extractor {
   constructor(
       private _options: tsc.AngularCompilerOptions, private _program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: StaticReflector,
-      private _resolver: CompileMetadataResolver, private _compiler: compiler.OfflineCompiler,
+      private _resolver: CompileMetadataResolver, private _normalizer: DirectiveNormalizer,
       private _reflectorHost: ReflectorHost, private _extractor: MessageExtractor) {
     lockRunMode();
   }
 
-  private _extractCmpMessages(metadatas: compiler.CompileDirectiveMetadata[]):
-      Promise<ExtractionResult> {
-    if (!metadatas || !metadatas.length) {
+  private _extractCmpMessages(components: compiler.CompileDirectiveMetadata[]): ExtractionResult {
+    if (!components || !components.length) {
       return null;
     }
 
-    const normalize = (metadata: compiler.CompileDirectiveMetadata) => {
-      const directiveType = metadata.type.runtime;
-      const directives = this._resolver.getViewDirectivesMetadata(directiveType);
-      return Promise.all(directives.map(d => this._compiler.normalizeDirectiveMetadata(d)))
-          .then(normalizedDirectives => {
-            const pipes = this._resolver.getViewPipesMetadata(directiveType);
-            return new compiler.NormalizedComponentWithViewDirectives(
-                metadata, normalizedDirectives, pipes);
-          });
-    };
+    let messages: Message[] = [];
+    let errors: ParseError[] = [];
+    components.forEach(metadata => {
+      let url = _dirPaths.get(metadata);
+      let result = this._extractor.extract(metadata.template.template, url);
+      errors = errors.concat(result.errors);
+      messages = messages.concat(result.messages);
+    });
 
-    return Promise.all(metadatas.map(normalize))
-        .then((cmps: compiler.NormalizedComponentWithViewDirectives[]) => {
-          let messages: Message[] = [];
-          let errors: ParseError[] = [];
-          cmps.forEach(cmp => {
-            let url = _dirPaths.get(cmp.component);
-            let result = this._extractor.extract(cmp.component.template.template, url);
-            errors = errors.concat(result.errors);
-            messages = messages.concat(result.messages);
-          });
-
-          // Extraction Result might contain duplicate messages at this point
-          return new ExtractionResult(messages, errors);
-        });
+    // Extraction Result might contain duplicate messages at this point
+    return new ExtractionResult(messages, errors);
   }
 
   private _readComponents(absSourcePath: string): Promise<compiler.CompileDirectiveMetadata>[] {
@@ -96,7 +81,7 @@ class Extractor {
       directive = this._resolver.maybeGetDirectiveMetadata(<any>staticType);
 
       if (directive && directive.isComponent) {
-        let promise = this._compiler.normalizeDirectiveMetadata(directive);
+        let promise = this._normalizer.normalizeDirective(directive).asyncResult;
         promise.then(md => _dirPaths.set(md, absSourcePath));
         result.push(promise);
       }
@@ -165,12 +150,6 @@ class Extractor {
     });
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const parser = new Parser(new Lexer());
-    const tmplParser = new TemplateParser(
-        parser, new DomElementSchemaRegistry(), htmlParser,
-        /*console*/ null, []);
-    const offlineCompiler = new compiler.OfflineCompiler(
-        normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
-        new TypeScriptEmitter(reflectorHost));
     const resolver = new CompileMetadataResolver(
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         new compiler.ViewResolver(staticReflector), config, staticReflector);
@@ -179,7 +158,7 @@ class Extractor {
     const extractor = new MessageExtractor(htmlParser, parser, [], {});
 
     return new Extractor(
-        options, program, compilerHost, staticReflector, resolver, offlineCompiler, reflectorHost,
+        options, program, compilerHost, staticReflector, resolver, normalizer, reflectorHost,
         extractor);
   }
 }

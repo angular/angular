@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as app_module_compiler from './src/app_module_compiler';
 import * as directive_normalizer from './src/directive_normalizer';
 import * as lexer from './src/expression_parser/lexer';
 import * as parser from './src/expression_parser/parser';
@@ -97,6 +98,9 @@ export var StyleCompiler = style_compiler.StyleCompiler;
 
 export type ViewCompiler = view_compiler.ViewCompiler;
 export var ViewCompiler = view_compiler.ViewCompiler;
+
+export type AppModuleCompiler = app_module_compiler.AppModuleCompiler;
+export var AppModuleCompiler = app_module_compiler.AppModuleCompiler;
 
 export type TypeScriptEmitter = ts_emitter.TypeScriptEmitter;
 export var TypeScriptEmitter = ts_emitter.TypeScriptEmitter;

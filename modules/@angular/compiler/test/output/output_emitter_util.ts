@@ -8,7 +8,7 @@
 
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {DynamicInstance, InstanceFactory} from '@angular/compiler/src/output/output_interpreter';
+import {ImportGenerator} from '@angular/compiler/src/output/path_util';
 import {assetUrl} from '@angular/compiler/src/util';
 import {EventEmitter} from '@angular/core';
 import {ViewType} from '@angular/core/src/linker/view_type';
@@ -253,22 +253,13 @@ function createOperatorFn(op: o.BinaryOperator) {
       o.DYNAMIC_TYPE);
 }
 
-export class DynamicClassInstanceFactory implements InstanceFactory {
-  createInstance(
-      superClass: any, clazz: any, args: any[], props: Map<string, any>,
-      getters: Map<string, Function>, methods: Map<string, Function>): any {
-    if (superClass === ExternalClass) {
-      return new _InterpretiveDynamicClass(args, clazz, props, getters, methods);
+export class SimpleJsImportGenerator implements ImportGenerator {
+  getImportPath(moduleUrlStr: string, importedUrlStr: string): string {
+    var importedAssetUrl = ImportGenerator.parseAssetUrl(importedUrlStr);
+    if (importedAssetUrl) {
+      return `${importedAssetUrl.packageName}/${importedAssetUrl.modulePath}`;
+    } else {
+      return importedUrlStr;
     }
-    throw new BaseException(`Can't instantiate class ${superClass} in interpretative mode`);
   }
-}
-
-class _InterpretiveDynamicClass extends ExternalClass implements DynamicInstance {
-  constructor(
-      args: any[], public clazz: any, public props: Map<string, any>,
-      public getters: Map<string, Function>, public methods: Map<string, Function>) {
-    super(args[0]);
-  }
-  childMethod(a: any /** TODO #9100 */) { return this.methods.get('childMethod')(a); }
 }

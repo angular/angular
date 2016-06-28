@@ -11,11 +11,12 @@ import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {CHANGE_DETECTION_STRATEGY_VALUES, LIFECYCLE_HOOKS_VALUES, LifecycleHooks, VIEW_ENCAPSULATION_VALUES, reflector} from '../core_private';
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 import {BaseException, unimplemented} from '../src/facade/exceptions';
-import {NumberWrapper, RegExpWrapper, Type, isArray, isBlank, isBoolean, isNumber, isPresent, isString, normalizeBlank, normalizeBool, serializeEnum} from '../src/facade/lang';
+import {NumberWrapper, RegExpWrapper, Type, isArray, isBlank, isBoolean, isNumber, isPresent, isString, isStringMap, normalizeBlank, normalizeBool, serializeEnum} from '../src/facade/lang';
 
 import {CssSelector} from './selector';
 import {getUrlScheme} from './url_resolver';
 import {sanitizeIdentifier, splitAtColon} from './util';
+
 
 
 // group 2: "event" from "(event)"
@@ -468,12 +469,14 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
 export class CompileTokenMap<VALUE> {
   private _valueMap = new Map<any, VALUE>();
   private _values: VALUE[] = [];
+  private _tokens: CompileTokenMetadata[] = [];
 
   add(token: CompileTokenMetadata, value: VALUE) {
     var existing = this.get(token);
     if (isPresent(existing)) {
       throw new BaseException(`Can only add to a TokenMap! Token: ${token.name}`);
     }
+    this._tokens.push(token);
     this._values.push(value);
     var rk = token.runtimeCacheKey;
     if (isPresent(rk)) {
@@ -496,6 +499,7 @@ export class CompileTokenMap<VALUE> {
     }
     return result;
   }
+  keys(): CompileTokenMetadata[] { return this._tokens; }
   values(): VALUE[] { return this._values; }
   get size(): number { return this._values.length; }
 }
@@ -966,7 +970,61 @@ export class CompilePipeMetadata implements CompileMetadataWithType {
   }
 }
 
+/**
+ * Metadata regarding compilation of a directive.
+ */
+export class CompileAppModuleMetadata implements CompileMetadataWithType {
+  type: CompileTypeMetadata;
+  providers: CompileProviderMetadata[];
+  directives: CompileTypeMetadata[];
+  pipes: CompileTypeMetadata[];
+  precompile: CompileTypeMetadata[];
+  modules: CompileTypeMetadata[];
+
+  constructor({type, providers, directives, pipes, precompile, modules}: {
+    type?: CompileTypeMetadata,
+    providers?: Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
+    directives?: CompileTypeMetadata[],
+    pipes?: CompileTypeMetadata[],
+    precompile?: CompileTypeMetadata[],
+    modules?: CompileTypeMetadata[]
+  } = {}) {
+    this.type = type;
+    this.directives = _normalizeArray(directives);
+    this.pipes = _normalizeArray(pipes);
+    this.providers = _normalizeArray(providers);
+    this.precompile = _normalizeArray(precompile);
+    this.modules = _normalizeArray(modules);
+  }
+
+  get identifier(): CompileIdentifierMetadata { return this.type; }
+
+  static fromJson(data: {[key: string]: any}): CompileAppModuleMetadata {
+    return new CompileAppModuleMetadata({
+      type: isPresent(data['type']) ? CompileTypeMetadata.fromJson(data['type']) : data['type'],
+      providers: _arrayFromJson(data['providers'], metadataFromJson),
+      directives: _arrayFromJson(data['directives'], metadataFromJson),
+      pipes: _arrayFromJson(data['pipes'], metadataFromJson),
+      precompile: _arrayFromJson(data['precompile'], CompileTypeMetadata.fromJson),
+      modules: _arrayFromJson(data['modules'], CompileTypeMetadata.fromJson)
+    });
+  }
+
+  toJson(): {[key: string]: any} {
+    return {
+      'class': 'AppModule',
+      'type': isPresent(this.type) ? this.type.toJson() : this.type,
+      'providers': _arrayToJson(this.providers),
+      'directives': _arrayToJson(this.directives),
+      'pipes': _arrayToJson(this.pipes),
+      'precompile': _arrayToJson(this.precompile),
+      'modules': _arrayToJson(this.modules)
+    };
+  }
+}
+
 var _COMPILE_METADATA_FROM_JSON = {
+  'AppModule': CompileAppModuleMetadata.fromJson,
   'Directive': CompileDirectiveMetadata.fromJson,
   'Pipe': CompilePipeMetadata.fromJson,
   'Type': CompileTypeMetadata.fromJson,
@@ -1005,4 +1063,13 @@ function _objToJson(obj: any): string|{[key: string]: any} {
 
 function _normalizeArray(obj: any[]): any[] {
   return isPresent(obj) ? obj : [];
+}
+
+export function isStaticSymbol(value: any): value is StaticSymbol {
+  return isStringMap(value) && isPresent(value['name']) && isPresent(value['filePath']);
+}
+
+export interface StaticSymbol {
+  name: string;
+  filePath: string;
 }

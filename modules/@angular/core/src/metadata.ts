@@ -14,10 +14,12 @@
 import {ChangeDetectionStrategy} from '../src/change_detection/change_detection';
 
 import {AnimationEntryMetadata} from './animation/metadata';
+import {AppModuleMetadata} from './metadata/app_module';
 import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
 import {ViewEncapsulation, ViewMetadata} from './metadata/view';
 
+export {AppModuleMetadata} from './metadata/app_module';
 export {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 export {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
 export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from './metadata/lifecycle_hooks';
@@ -82,6 +84,16 @@ export interface ViewDecorator extends TypeDecorator {
     interpolation?: [string, string]
   }): ViewDecorator;
 }
+
+/**
+ * Interface for the {@link AppModuleMetadata} decorator function.
+ *
+ * See {@link AppModuleMetadataFactory}.
+ *
+ * @stable
+ */
+export interface AppModuleDecorator extends TypeDecorator {}
+
 
 /**
  * {@link DirectiveMetadata} factory for creating annotations, decorators or DSL.
@@ -475,6 +487,28 @@ export interface HostBindingMetadataFactory {
 export interface HostListenerMetadataFactory {
   (eventName: string, args?: string[]): any;
   new (eventName: string, args?: string[]): any;
+}
+
+/**
+ * {@link AppModuleMetadata} factory for creating annotations, decorators or DSL.
+ *
+ * @stable
+ */
+export interface AppModuleMetadataFactory {
+  (obj: {
+    providers?: any[],
+    directives?: Array<Type|any[]>,
+    pipes?: Array<Type|any[]>,
+    precompile?: Array<Type|any[]>,
+    modules?: Array<Type|any[]>,
+  }): AppModuleDecorator;
+  new (obj: {
+    providers?: any[],
+    directives?: Array<Type|any[]>,
+    pipes?: Array<Type|any[]>,
+    precompile?: Array<Type|any[]>,
+    modules?: Array<Type|any[]>,
+  }): AppModuleMetadata;
 }
 
 // TODO(alexeagle): remove the duplication of this doc. It is copied from ComponentMetadata.
@@ -1499,3 +1533,11 @@ export var HostBinding: HostBindingMetadataFactory = makePropDecorator(HostBindi
  * @Annotation
  */
 export var HostListener: HostListenerMetadataFactory = makePropDecorator(HostListenerMetadata);
+
+/**
+ * Declares an app module.
+ * @stable
+ * @Annotation
+ */
+export var AppModule: AppModuleMetadataFactory =
+    <AppModuleMetadataFactory>makeDecorator(AppModuleMetadata);

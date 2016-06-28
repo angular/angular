@@ -20,13 +20,8 @@ import {HtmlParser} from './html_parser';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_preparser';
 import {UrlResolver} from './url_resolver';
+import {SyncAsyncResult} from './util';
 import {XHR} from './xhr';
-
-export class NormalizeDirectiveResult {
-  constructor(
-      public syncResult: CompileDirectiveMetadata,
-      public asyncResult: Promise<CompileDirectiveMetadata>) {}
-}
 
 @Injectable()
 export class DirectiveNormalizer {
@@ -56,10 +51,11 @@ export class DirectiveNormalizer {
     return result;
   }
 
-  normalizeDirective(directive: CompileDirectiveMetadata): NormalizeDirectiveResult {
+  normalizeDirective(directive: CompileDirectiveMetadata):
+      SyncAsyncResult<CompileDirectiveMetadata> {
     if (!directive.isComponent) {
       // For non components there is nothing to be normalized yet.
-      return new NormalizeDirectiveResult(directive, Promise.resolve(directive));
+      return new SyncAsyncResult(directive, Promise.resolve(directive));
     }
     let normalizedTemplateSync: CompileTemplateMetadata = null;
     let normalizedTemplateAsync: Promise<CompileTemplateMetadata>;
@@ -74,11 +70,10 @@ export class DirectiveNormalizer {
     if (normalizedTemplateSync && normalizedTemplateSync.styleUrls.length === 0) {
       // sync case
       let normalizedDirective = _cloneDirectiveWithTemplate(directive, normalizedTemplateSync);
-      return new NormalizeDirectiveResult(
-          normalizedDirective, Promise.resolve(normalizedDirective));
+      return new SyncAsyncResult(normalizedDirective, Promise.resolve(normalizedDirective));
     } else {
       // async case
-      return new NormalizeDirectiveResult(
+      return new SyncAsyncResult(
           null,
           normalizedTemplateAsync
               .then((normalizedTemplate) => this.normalizeExternalStylesheets(normalizedTemplate))

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CompileTokenMetadata} from './compile_metadata';
 import {StringMapWrapper} from './facade/collection';
-import {IS_DART, StringWrapper, isArray, isBlank, isPrimitive, isStrictStringMap} from './facade/lang';
+import {IS_DART, StringWrapper, isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
+import * as o from './output/output_ast';
 
 export var MODULE_SUFFIX = IS_DART ? '.dart' : '';
 
@@ -77,6 +79,25 @@ export function assetUrl(pkg: string, path: string = null, type: string = 'src')
       return `asset:@angular/lib/${pkg}/index`;
     } else {
       return `asset:@angular/lib/${pkg}/src/${path}`;
+    }
+  }
+}
+
+export function createDiTokenExpression(token: CompileTokenMetadata): o.Expression {
+  if (isPresent(token.value)) {
+    return o.literal(token.value);
+  } else if (token.identifierIsInstance) {
+    return o.importExpr(token.identifier)
+        .instantiate([], o.importType(token.identifier, [], [o.TypeModifier.Const]));
+  } else {
+    return o.importExpr(token.identifier);
+  }
+}
+
+export class SyncAsyncResult<T> {
+  constructor(public syncResult: T, public asyncResult: Promise<T> = null) {
+    if (!asyncResult) {
+      asyncResult = Promise.resolve(syncResult);
     }
   }
 }
