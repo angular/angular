@@ -92,7 +92,10 @@ export function sanitizeStyle(value: string): string {
     return value;  // Safe style values.
   }
 
-  if (isDevMode()) getDOM().log('WARNING: sanitizing unsafe style value ' + value);
+  if (isDevMode()) {
+    getDOM().log(
+        `WARNING: sanitizing unsafe style value ${value} (see http://g.co/ng/security#xss).`);
+  }
 
   return 'unsafe';
 }
