@@ -56,7 +56,6 @@ import {UrlTree} from '../url_tree';
  */
 @Directive({selector: ':not(a)[routerLink]'})
 export class RouterLink {
-  @Input() target: string;
   private commands: any[] = [];
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
@@ -73,7 +72,7 @@ export class RouterLink {
   @Input()
   set routerLink(data: any[]|string) {
     if (Array.isArray(data)) {
-      this.commands = <any>data;
+      this.commands = data;
     } else {
       this.commands = [data];
     }
@@ -82,10 +81,6 @@ export class RouterLink {
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
     if (button !== 0 || ctrlKey || metaKey) {
-      return true;
-    }
-
-    if (typeof this.target === 'string' && this.target != '_self') {
       return true;
     }
 
@@ -122,7 +117,7 @@ export class RouterLinkWithHref implements OnChanges {
   @Input()
   set routerLink(data: any[]|string) {
     if (Array.isArray(data)) {
-      this.commands = <any>data;
+      this.commands = data;
     } else {
       this.commands = [data];
     }

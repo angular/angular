@@ -125,7 +125,7 @@ export class Router {
   private config: RouterConfig;
 
   /**
-   * @internal
+   * Creates the router service.
    */
   constructor(
       private rootComponentType: Type, private resolver: ComponentResolver,

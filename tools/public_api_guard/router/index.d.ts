@@ -114,6 +114,7 @@ export declare class Router {
     events: Observable<Event>;
     routerState: RouterState;
     url: string;
+    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, config: RouterConfig);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment}?: NavigationExtras): UrlTree;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree): Promise<boolean>;
