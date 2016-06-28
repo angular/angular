@@ -32,7 +32,7 @@ import {Tree, TreeNode} from './utils/tree';
  * }
  * ```
  *
- * @experimental
+ * @stable
  */
 export class RouterState extends Tree<ActivatedRoute> {
   /**
@@ -75,8 +75,7 @@ function createEmptyStateSnapshot(urlTree: UrlTree, rootComponent: Type): Router
 
 /**
  * Contains the information about a component loaded in an outlet. The information is provided
- * through
- * the params and urlSegments observables.
+ * through the params, urlSegments, and data observables.
  *
  * ### Usage
  *
@@ -84,11 +83,12 @@ function createEmptyStateSnapshot(urlTree: UrlTree, rootComponent: Type): Router
  * class MyComponent {
  *   constructor(route: ActivatedRoute) {
  *     const id: Observable<string> = route.params.map(p => p.id);
+ *     const data = route.data.map(d => d.user); //includes `data` and `resolve`
  *   }
  * }
  * ```
  *
- * @experimental
+ * @stable
  */
 export class ActivatedRoute {
   /** @internal */
@@ -110,6 +110,9 @@ export class ActivatedRoute {
   }
 }
 
+/**
+ * @internal
+ */
 export class InheritedResolve {
   /**
    * @internal
@@ -138,11 +141,12 @@ export class InheritedResolve {
  * class MyComponent {
  *   constructor(route: ActivatedRoute) {
  *     const id: string = route.snapshot.params.id;
+ *     const data = route.snapshot.data;
  *   }
  * }
  * ```
  *
- * @experimental
+ * @stable
  */
 export class ActivatedRouteSnapshot {
   /**
@@ -195,7 +199,7 @@ export class ActivatedRouteSnapshot {
  * }
  * ```
  *
- * @experimental
+ * @stable
  */
 export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   /**

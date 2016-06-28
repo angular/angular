@@ -25,10 +25,10 @@ import {RouterConfig} from './config';
  * }
  *
  * const router = [
- *   {path: '/home', component: Home}
+ *   {path: 'home', component: Home}
  * ];
  *
- * bootstrap(AppCmp, [provideRouter(router)]);
+ * bootstrap(AppCmp, [provideRouter(router, {enableTracing: true})]);
  * ```
  *
  * @experimental

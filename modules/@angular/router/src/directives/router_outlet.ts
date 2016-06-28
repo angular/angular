@@ -12,6 +12,19 @@ import {RouterOutletMap} from '../router_outlet_map';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
+/**
+ * A router outlet is a placeholder that Angular dynamically fills based on the application's route.
+ *
+ * ## Use
+ *
+ * ```
+ * <router-outlet></router-outlet>
+ * <router-outlet name="left"></router-outlet>
+ * <router-outlet name="right"></router-outlet>
+ * ```
+ *
+ * @stable
+ */
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {
   private activated: ComponentRef<any>;
@@ -61,8 +74,10 @@ export class RouterOutlet {
     } catch (e) {
       if (!(e instanceof NoComponentFactoryError)) throw e;
       const componentName = component ? component.name : null;
+
       console.warn(
-          `No component factory found for '${componentName}'. Add '${componentName}' to the 'precompile' list of your application component. This will be required in a future release of the router.`);
+          `'${componentName}' not found in precompile array.  To ensure all components referred to by the RouterConfig are compiled, you must add '${componentName}' to the 'precompile' array of your application component. This will be required in a future release of the router.`);
+
       factory = snapshot._resolvedComponentFactory;
     }
 

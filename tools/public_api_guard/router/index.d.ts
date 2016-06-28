@@ -1,4 +1,4 @@
-/** @experimental */
+/** @stable */
 export declare class ActivatedRoute {
     component: Type | string;
     data: Observable<Data>;
@@ -9,7 +9,7 @@ export declare class ActivatedRoute {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class ActivatedRouteSnapshot {
     component: Type | string;
     data: Data;
@@ -19,17 +19,17 @@ export declare class ActivatedRouteSnapshot {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export interface CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean;
 }
 
-/** @experimental */
+/** @stable */
 export interface CanDeactivate<T> {
     canDeactivate(component: T, route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean;
 }
 
-/** @experimental */
+/** @stable */
 export declare type Data = {
     [name: string]: any;
 };
@@ -40,7 +40,7 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
     serialize(tree: UrlTree): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError;
 
 /** @experimental */
@@ -48,7 +48,7 @@ export interface ExtraOptions {
     enableTracing?: boolean;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NavigationCancel {
     id: number;
     url: string;
@@ -56,7 +56,7 @@ export declare class NavigationCancel {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NavigationEnd {
     id: number;
     url: string;
@@ -65,7 +65,7 @@ export declare class NavigationEnd {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NavigationError {
     error: any;
     id: number;
@@ -74,7 +74,7 @@ export declare class NavigationError {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NavigationStart {
     id: number;
     url: string;
@@ -98,18 +98,18 @@ export interface Resolve<T> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | any;
 }
 
-/** @experimental */
+/** @stable */
 export declare type ResolveData = {
     [name: string]: any;
 };
 
-/** @experimental */
+/** @stable */
 export interface Route {
     path?: string;
     pathMatch?:
     /** @deprecated */ terminal?: boolean;
 
-/** @experimental */
+/** @stable */
 export declare class Router {
     events: Observable<Event>;
     routerState: RouterState;
@@ -125,15 +125,15 @@ export declare class Router {
 /** @experimental */
 export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkActive)[];
 
-/** @experimental */
+/** @stable */
 export declare type RouterConfig = Route[];
 
-/** @experimental */
+/** @stable */
 export declare class RouterOutletMap {
     registerOutlet(name: string, outlet: RouterOutlet): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class RouterState extends Tree<ActivatedRoute> {
     fragment: Observable<string>;
     queryParams: Observable<Params>;
@@ -141,7 +141,7 @@ export declare class RouterState extends Tree<ActivatedRoute> {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
     fragment: string;
     queryParams: Params;
@@ -149,7 +149,7 @@ export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class RoutesRecognized {
     id: number;
     state: RouterStateSnapshot;
@@ -159,7 +159,7 @@ export declare class RoutesRecognized {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class UrlPathWithParams {
     parameters: {
         [key: string]: string;
@@ -177,7 +177,7 @@ export declare abstract class UrlSerializer {
     abstract serialize(tree: UrlTree): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class UrlTree {
     fragment: string;
     queryParams: {

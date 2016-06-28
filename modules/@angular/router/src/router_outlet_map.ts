@@ -9,7 +9,7 @@
 import {RouterOutlet} from './directives/router_outlet';
 
 /**
- * @experimental
+ * @stable
  */
 export class RouterOutletMap {
   /** @internal */
