@@ -34,12 +34,56 @@ export function main() {
     });
 
 
+    it('should optionally accept a custom parser', () => {
+      let fooEveryThingParser = {
+        encodeKey() { return 'I AM KEY'; },
+        encodeValue() { return 'I AM VALUE'; }
+      };
+      let params = new URLSearchParams('', fooEveryThingParser);
+      params.set('myKey', 'myValue');
+      expect(params.toString()).toBe('I AM KEY=I AM VALUE');
+    });
+
+
     it('should encode special characters in params', () => {
       var searchParams = new URLSearchParams();
       searchParams.append('a', '1+1');
       searchParams.append('b c', '2');
       searchParams.append('d%', '3$');
-      expect(searchParams.toString()).toEqual('a=1%2B1&b%20c=2&d%25=3%24');
+      expect(searchParams.toString()).toEqual('a=1+1&b%20c=2&d%25=3$');
+    });
+
+
+    it('should not encode allowed characters', () => {
+      /*
+       * https://tools.ietf.org/html/rfc3986#section-3.4
+       * Allowed: ( pchar / "/" / "?" )
+       * pchar: unreserved / pct-encoded / sub-delims / ":" / "@"
+       * unreserved: ALPHA / DIGIT / "-" / "." / "_" / "~"
+       * pct-encoded: "%" HEXDIG HEXDIG
+       * sub-delims: "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+       *
+       * & and = are excluded and should be encoded inside keys and values
+       * because URLSearchParams is responsible for inserting this.
+       **/
+
+      let params = new URLSearchParams();
+      '! $ \' ( ) * + , ; A 9 - . _ ~ ? /'.split(' ').forEach(
+          (char, idx) => { params.set(`a${idx}`, char); });
+      expect(params.toString())
+          .toBe(
+              `a0=!&a1=$&a2=\'&a3=(&a4=)&a5=*&a6=+&a7=,&a8=;&a9=A&a10=9&a11=-&a12=.&a13=_&a14=~&a15=?&a16=/`
+                  .replace(/\s/g, ''));
+
+
+      // Original example from https://github.com/angular/angular/issues/9348 for posterity
+      params = new URLSearchParams();
+      params.set('q', 'repo:janbaer/howcani+type:issue');
+      params.set('sort', 'created');
+      params.set('order', 'desc');
+      params.set('page', '1');
+      expect(params.toString())
+          .toBe('q=repo:janbaer/howcani+type:issue&sort=created&order=desc&page=1');
     });
 
 

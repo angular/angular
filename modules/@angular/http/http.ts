@@ -34,7 +34,8 @@ export {Http, Jsonp} from './src/http';
 export {Connection, ConnectionBackend, RequestOptionsArgs, ResponseOptionsArgs, XSRFStrategy} from './src/interfaces';
 export {Request} from './src/static_request';
 export {Response} from './src/static_response';
-export {URLSearchParams} from './src/url_search_params';
+export {QueryEncoder, URLSearchParams} from './src/url_search_params';
+
 
 
 /**

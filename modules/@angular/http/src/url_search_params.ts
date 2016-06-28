@@ -14,7 +14,7 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
   if (rawParams.length > 0) {
     var params: string[] = rawParams.split('&');
     params.forEach((param: string) => {
-      var split: string[] = param.split('=');
+      var split: string[] = param.split('=', 2);
       var key = split[0];
       var val = split[1];
       var list = isPresent(map.get(key)) ? map.get(key) : [];
@@ -23,6 +23,27 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
     });
   }
   return map;
+}
+/**
+ * @experimental
+ **/
+export class QueryEncoder {
+  encodeKey(k: string): string { return standardEncoding(k); }
+
+  encodeValue(v: string): string { return standardEncoding(v); }
+}
+
+function standardEncoding(v: string): string {
+  return encodeURIComponent(v)
+      .replace(/%40/gi, '@')
+      .replace(/%3A/gi, ':')
+      .replace(/%24/gi, '$')
+      .replace(/%2C/gi, ',')
+      .replace(/%3B/gi, ';')
+      .replace(/%2B/gi, '+')
+      .replace(/%3D/gi, ';')
+      .replace(/%3F/gi, '?')
+      .replace(/%2F/gi, '/');
 }
 
 /**
@@ -33,11 +54,39 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
  *   - appendAll()
  *   - replaceAll()
  *
+ * This class accepts an optional second parameter of ${@link QueryEncoder},
+ * which is used to serialize parameters before making a request. By default,
+ * `QueryEncoder` encodes keys and values of parameters using `encodeURIComponent`,
+ * and then un-encodes certain characters that are allowed to be part of the query
+ * according to IETF RFC 3986: https://tools.ietf.org/html/rfc3986.
+ *
+ * These are the characters that are not encoded: `! $ \' ( ) * + , ; A 9 - . _ ~ ? /`
+ *
+ * If the set of allowed query characters is not acceptable for a particular backend,
+ * `QueryEncoder` can be subclassed and provided as the 2nd argument to URLSearchParams.
+ *
+ * ```
+ * import {URLSearchParams, QueryEncoder} from '@angular/http';
+ * class MyQueryEncoder extends QueryEncoder {
+ *   encodeKey(k: string): string {
+ *     return myEncodingFunction(k);
+ *   }
+ *
+ *   encodeValue(v: string): string {
+ *     return myEncodingFunction(v);
+ *   }
+ * }
+ *
+ * let params = new URLSearchParams('', new MyQueryEncoder());
+ * ```
  * @experimental
  */
 export class URLSearchParams {
   paramsMap: Map<string, string[]>;
-  constructor(public rawParams: string = '') { this.paramsMap = paramParser(rawParams); }
+  constructor(
+      public rawParams: string = '', private queryEncoder: QueryEncoder = new QueryEncoder()) {
+    this.paramsMap = paramParser(rawParams);
+  }
 
   clone(): URLSearchParams {
     var clone = new URLSearchParams();
@@ -133,7 +182,9 @@ export class URLSearchParams {
   toString(): string {
     var paramsList: string[] = [];
     this.paramsMap.forEach((values, k) => {
-      values.forEach(v => paramsList.push(encodeURIComponent(k) + '=' + encodeURIComponent(v)));
+      values.forEach(
+          v => paramsList.push(
+              this.queryEncoder.encodeKey(k) + '=' + this.queryEncoder.encodeValue(v)));
     });
     return paramsList.join('&');
   }
