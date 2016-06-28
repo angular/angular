@@ -1,7 +1,6 @@
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {HTTP_PROVIDERS} from '@angular/http';
-import {ROUTER_PROVIDERS} from '@angular/router';
 import {provide} from '@angular/core';
 import {Renderer} from '@angular/core';
 
@@ -12,9 +11,10 @@ import {MdGestureConfig} from '@angular2-material/core/gestures/MdGestureConfig'
 import {MdIconRegistry} from '@angular2-material/icon/icon-registry';
 
 import {E2EApp} from './e2e-app/e2e-app';
+import {E2E_APP_ROUTE_PROVIDER} from './e2e-app/routes';
 
 bootstrap(E2EApp, [
-  ROUTER_PROVIDERS,
+  E2E_APP_ROUTE_PROVIDER,
   MdLiveAnnouncer,
   provide(OVERLAY_CONTAINER_TOKEN, {useValue: createOverlayContainer()}),
   HTTP_PROVIDERS,

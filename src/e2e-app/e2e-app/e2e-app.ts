@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Route, Routes, ROUTER_DIRECTIVES} from '@angular/router';
+import {ROUTER_DIRECTIVES} from '@angular/router';
 
 import {Dir} from '@angular2-material/core/rtl/dir';
 import {MdButton} from '@angular2-material/button/button';
@@ -7,8 +7,6 @@ import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav/sidenav';
 import {MD_LIST_DIRECTIVES} from '@angular2-material/list/list';
 import {MdIcon} from '@angular2-material/icon/icon';
 import {MdToolbar} from '@angular2-material/toolbar/toolbar';
-
-import {ButtonE2E} from '../button/button-e2e';
 
 
 @Component({
@@ -35,8 +33,4 @@ export class Home {}
   ],
   pipes: []
 })
-@Routes([
-  new Route({path: '/', component: Home}),
-  new Route({path: '/button', component: ButtonE2E})
-])
 export class E2EApp { }
