@@ -855,7 +855,7 @@ export declare class NgZoneError {
 
 /** @stable */
 export declare class NoAnnotationError extends BaseException {
-    constructor(typeOrFunc: any, params: any[][]);
+    constructor(typeOrFunc: Type | Function, params: any[][]);
 }
 
 /** @stable */
@@ -906,7 +906,7 @@ export interface OptionalMetadataFactory {
 
 /** @stable */
 export declare class OutOfBoundsError extends BaseException {
-    constructor(index: any);
+    constructor(index: number);
 }
 
 /** @stable */
