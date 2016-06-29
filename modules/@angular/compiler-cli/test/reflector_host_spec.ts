@@ -92,6 +92,10 @@ describe('reflector_host', () => {
      () => {
          expect(reflectorHost.getMetadataFor('node_modules/@angular/core.d.ts'))
              .toEqual({__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}})});
+
+  it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
+    expect(reflectorHost.getMetadataFor('node_modules/@angular/unused.d.ts')).toBeUndefined();
+  });
 });
 
 const dummyModule = 'export let foo: any[];'
@@ -115,8 +119,8 @@ const FILES: Entry = {
           'core.d.ts': dummyModule,
           'core.metadata.json':
               `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
-          'router-deprecated':
-              {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}}
+          'router-deprecated': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
+          'unused.d.ts': dummyModule
         }
       }
     }
