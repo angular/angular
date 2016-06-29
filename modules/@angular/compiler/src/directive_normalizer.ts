@@ -9,6 +9,7 @@
 import {Injectable, ViewEncapsulation} from '@angular/core';
 
 import {PromiseWrapper} from '../src/facade/async';
+import {MapWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {isBlank, isPresent} from '../src/facade/lang';
 
@@ -173,7 +174,7 @@ export class DirectiveNormalizer {
                    return this._loadMissingExternalStylesheets(
                        stylesheet.styleUrls, loadedStylesheets);
                  })))
-        .then((_) => Array.from(loadedStylesheets.values()));
+        .then((_) => MapWrapper.values(loadedStylesheets));
   }
 
   normalizeStylesheet(stylesheet: CompileStylesheetMetadata): CompileStylesheetMetadata {

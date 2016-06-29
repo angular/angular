@@ -172,13 +172,15 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
     var depTemplates = compileResult.dependencies.map((dep) => {
       let depTemplate: CompiledTemplate;
       if (dep instanceof ViewFactoryDependency) {
-        depTemplate = this._getCompiledTemplate(dep.comp.runtime);
-        dep.placeholder.runtime = depTemplate.proxyViewFactory;
-        dep.placeholder.name = `viewFactory_${dep.comp.name}`;
+        let vfd = <ViewFactoryDependency>dep;
+        depTemplate = this._getCompiledTemplate(vfd.comp.runtime);
+        vfd.placeholder.runtime = depTemplate.proxyViewFactory;
+        vfd.placeholder.name = `viewFactory_${vfd.comp.name}`;
       } else if (dep instanceof ComponentFactoryDependency) {
-        depTemplate = this._getCompiledHostTemplate(dep.comp.runtime);
-        dep.placeholder.runtime = depTemplate.proxyComponentFactory;
-        dep.placeholder.name = `compFactory_${dep.comp.name}`;
+        let cfd = <ComponentFactoryDependency>dep;
+        depTemplate = this._getCompiledHostTemplate(cfd.comp.runtime);
+        cfd.placeholder.runtime = depTemplate.proxyComponentFactory;
+        cfd.placeholder.name = `compFactory_${cfd.comp.name}`;
       }
       return depTemplate;
     });
