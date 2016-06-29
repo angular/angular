@@ -321,12 +321,6 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       var hasTemplateBinding = this._parseInlineTemplateBinding(
           attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateElementVars);
 
-      if (hasTemplateBinding && isTemplateElement) {
-        this._reportError(
-            `Can't have template bindings on a <template> element but the '${attr.name}' attribute was used`,
-            attr.sourceSpan);
-      }
-
       if (hasTemplateBinding && hasInlineTemplates) {
         this._reportError(
             `Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with *`,

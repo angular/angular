@@ -1153,15 +1153,11 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 <ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content> ("[ERROR ->]<ng-content>content</ng-content>"): TestComp@0:0`);
       });
 
-      it('should report when *attr is used on a template element', () => {
-        expect(() => parse('<template *ngIf>', [])).toThrowError(`Template parse errors:
-Can't have template bindings on a <template> element but the '*ngIf' attribute was used ("<template [ERROR ->]*ngIf>"): TestComp@0:10`);
-      });
+      it('should treat *attr on a template element as valid',
+         () => { expect(() => parse('<template *ngIf>', [])).not.toThrowError(); });
 
-      it('should report when a template attribute is used on a template element', () => {
-        expect(() => parse('<template template="ngIf">', [])).toThrowError(`Template parse errors:
-Can't have template bindings on a <template> element but the 'template' attribute was used ("<template [ERROR ->]template="ngIf">"): TestComp@0:10`);
-      });
+      it('should treat template attribute on a template element as valid',
+         () => { expect(() => parse('<template template="ngIf">', [])).not.toThrowError(); });
 
       it('should report when mutliple *attrs are used on the same element', () => {
         expect(() => parse('<div *ngIf *ngFor>', [])).toThrowError(`Template parse errors:
