@@ -96,7 +96,15 @@ export class UrlSegment {
     forEach(children, (v: any, k: any) => v.parent = this);
   }
 
-  hasChildren(): boolean { return Object.keys(this.children).length > 0; }
+  /**
+   * Return true if the segment has child segments
+   */
+  hasChildren(): boolean { return this.numberOfChildren > 0; }
+
+  /**
+   * Returns the number of child sements.
+   */
+  get numberOfChildren(): number { return Object.keys(this.children).length; }
 
   toString(): string { return serializePaths(this); }
 }

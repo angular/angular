@@ -235,16 +235,25 @@ function split(
     const s = new UrlSegment(
         consumedPaths,
         createChildrenForEmptyPaths(config, new UrlSegment(slicedPath, segment.children)));
-    return {segment: s, slicedPath: []};
+    return {segment: mergeTrivialChildren(s), slicedPath: []};
 
   } else if (slicedPath.length === 0 && containsEmptyPathRedirects(segment, slicedPath, config)) {
     const s = new UrlSegment(
         segment.pathsWithParams,
         addEmptyPathsToChildrenIfNeeded(segment, slicedPath, config, segment.children));
-    return {segment: s, slicedPath};
+    return {segment: mergeTrivialChildren(s), slicedPath};
 
   } else {
     return {segment, slicedPath};
+  }
+}
+
+function mergeTrivialChildren(s: UrlSegment): UrlSegment {
+  if (s.numberOfChildren === 1 && s.children[PRIMARY_OUTLET]) {
+    const c = s.children[PRIMARY_OUTLET];
+    return new UrlSegment(s.pathsWithParams.concat(c.pathsWithParams), c.children);
+  } else {
+    return s;
   }
 }
 

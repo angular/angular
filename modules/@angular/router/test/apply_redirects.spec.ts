@@ -187,7 +187,7 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: 'a'}
           ],
-          '', (t: UrlTree) => { compareTrees(t, tree('a/(b)')); });
+          '', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
     });
 
     it('redirect to an empty path should work', () => {
