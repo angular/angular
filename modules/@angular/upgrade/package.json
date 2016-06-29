@@ -9,7 +9,8 @@
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser": "0.0.0-PLACEHOLDER"
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",
