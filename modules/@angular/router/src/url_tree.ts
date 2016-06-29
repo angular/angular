@@ -23,8 +23,7 @@ export function containsTree(container: UrlTree, containee: UrlTree, exact: bool
 
 function equalSegments(container: UrlSegment, containee: UrlSegment): boolean {
   if (!equalPath(container.pathsWithParams, containee.pathsWithParams)) return false;
-  if (Object.keys(container.children).length !== Object.keys(containee.children).length)
-    return false;
+  if (container.numberOfChildren !== containee.numberOfChildren) return false;
   for (let c in containee.children) {
     if (!container.children[c]) return false;
     if (!equalSegments(container.children[c], containee.children[c])) return false;
@@ -41,7 +40,7 @@ function containsSegmentHelper(
   if (container.pathsWithParams.length > containeePaths.length) {
     const current = container.pathsWithParams.slice(0, containeePaths.length);
     if (!equalPath(current, containeePaths)) return false;
-    if (Object.keys(containee.children).length > 0) return false;
+    if (containee.hasChildren()) return false;
     return true;
 
   } else if (container.pathsWithParams.length === containeePaths.length) {
@@ -56,6 +55,7 @@ function containsSegmentHelper(
     const current = containeePaths.slice(0, container.pathsWithParams.length);
     const next = containeePaths.slice(container.pathsWithParams.length);
     if (!equalPath(container.pathsWithParams, current)) return false;
+    if (!container.children[PRIMARY_OUTLET]) return false;
     return containsSegmentHelper(container.children[PRIMARY_OUTLET], containee, next);
   }
 }

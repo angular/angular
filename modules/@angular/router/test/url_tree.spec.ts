@@ -62,6 +62,12 @@ describe('UrlTree', () => {
         const t2 = serializer.parse('/one/(two//right:four)');
         expect(containsTree(t1, t2, false)).toBe(false);
       });
+
+      it('should return false when containee has extra paths', () => {
+        const t1 = serializer.parse('/one');
+        const t2 = serializer.parse('/one/two');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
     });
   });
 });
