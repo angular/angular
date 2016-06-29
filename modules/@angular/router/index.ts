@@ -19,9 +19,12 @@ export {provideRouter} from './src/router_providers';
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './src/router_state';
 export {PRIMARY_OUTLET, Params} from './src/shared';
 export {DefaultUrlSerializer, UrlPathWithParams, UrlSerializer, UrlTree} from './src/url_tree';
+export {RouterLink, RouterLinkWithHref} from './src/directives/router_link';
+export {RouterLinkActive} from './src/directives/router_link_active';
+export {RouterOutlet} from './src/directives/router_outlet';
 
 
 /**
- * @experimental
+ * @stable
  */
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];

@@ -123,11 +123,54 @@ export declare class Router {
     serializeUrl(url: UrlTree): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkWithHref | typeof RouterLinkActive)[];
 
 /** @stable */
 export declare type RouterConfig = Route[];
+
+/** @stable */
+export declare class RouterLink {
+    fragment: string;
+    queryParams: {
+        [k: string]: any;
+    };
+    routerLink: any[] | string;
+    urlTree: UrlTree;
+    onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
+}
+
+/** @stable */
+export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
+    routerLinkActive: string[] | string;
+    ngAfterContentInit(): void;
+    ngOnChanges(changes: {}): any;
+    ngOnDestroy(): any;
+}
+
+/** @stable */
+export declare class RouterLinkWithHref implements OnChanges {
+    fragment: string;
+    href: string;
+    queryParams: {
+        [k: string]: any;
+    };
+    routerLink: any[] | string;
+    target: string;
+    urlTree: UrlTree;
+    ngOnChanges(changes: {}): any;
+    onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
+}
+
+/** @stable */
+export declare class RouterOutlet {
+    activatedRoute: ActivatedRoute;
+    component: Object;
+    isActivated: boolean;
+    outletMap: RouterOutletMap;
+    activate(activatedRoute: ActivatedRoute, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
+    deactivate(): void;
+}
 
 /** @stable */
 export declare class RouterOutletMap {
