@@ -50,7 +50,9 @@ export function sanitizeUrl(url: string): string {
   url = String(url);
   if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN)) return url;
 
-  if (isDevMode()) getDOM().log('WARNING: sanitizing unsafe URL value ' + url);
+  if (isDevMode()) {
+    getDOM().log(`WARNING: sanitizing unsafe URL value ${url} (see http://g.co/ng/security#xss)`);
+  }
 
   return 'unsafe:' + url;
 }

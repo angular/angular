@@ -175,15 +175,18 @@ export class DomSanitizationServiceImpl extends DomSanitizationService {
           return value.changingThisBreaksApplicationSecurity;
         }
         this.checkNotSafeValue(value, 'ResourceURL');
-        throw new Error('unsafe value used in a resource URL context');
+        throw new Error(
+            'unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
       default:
-        throw new Error(`Unexpected SecurityContext ${ctx}`);
+        throw new Error(`Unexpected SecurityContext ${ctx} (see http://g.co/ng/security#xss)`);
     }
   }
 
   private checkNotSafeValue(value: any, expectedType: string) {
     if (value instanceof SafeValueImpl) {
-      throw new Error(`Required a safe ${expectedType}, got a ${value.getTypeName()}`);
+      throw new Error(
+          `Required a safe ${expectedType}, got a ${value.getTypeName()} ` +
+          `(see http://g.co/ng/security#xss)`);
     }
   }
 
@@ -204,7 +207,8 @@ abstract class SafeValueImpl implements SafeValue {
   abstract getTypeName(): string;
 
   toString() {
-    return `SafeValue must use [property]=binding: ${this.changingThisBreaksApplicationSecurity}`;
+    return `SafeValue must use [property]=binding: ${this.changingThisBreaksApplicationSecurity}` +
+        ` (see http://g.co/ng/security#xss)`;
   }
 }
 
