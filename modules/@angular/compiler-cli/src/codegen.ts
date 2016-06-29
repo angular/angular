@@ -131,7 +131,15 @@ export class CodeGenerator {
   static create(
       options: AngularCompilerOptions, program: ts.Program, compilerHost: ts.CompilerHost,
       reflectorHostContext?: ReflectorHostContext): CodeGenerator {
-    const xhr: compiler.XHR = {get: (s: string) => Promise.resolve(compilerHost.readFile(s))};
+    const xhr: compiler.XHR = {
+      get: (s: string) => {
+        if (!compilerHost.fileExists(s)) {
+          // TODO: We should really have a test for error cases like this!
+          throw new Error(`Compilation failed. Resource file not found: ${s}`);
+        }
+        return Promise.resolve(compilerHost.readFile(s));
+      }
+    };
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
     const reflectorHost = new ReflectorHost(program, compilerHost, options, reflectorHostContext);
     const staticReflector = new StaticReflector(reflectorHost);
