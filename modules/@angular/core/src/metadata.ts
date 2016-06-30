@@ -761,7 +761,7 @@ export var Component: ComponentMetadataFactory =
  *   overlayManager:OverlayManager; // NOT YET IMPLEMENTED
  *
  *   constructor(overlayManager:OverlayManager) {
- *     this.overlay = overlay;
+ *     this.overlayManager = overlayManager;
  *   }
  *
  *   onMouseEnter() {
