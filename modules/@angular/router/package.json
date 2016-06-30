@@ -1,6 +1,6 @@
 {
   "name": "@angular/router",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.2",
   "description": "",
   "main": "index.js",
   "jsnext:main": "esm/index.js",

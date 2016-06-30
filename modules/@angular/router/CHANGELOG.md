@@ -1,3 +1,9 @@
+# 3.0.0-beta.2 (2016-06-30)
+
+## Bug Fixes
+* fix(router): remove private and internal annotations
+* fix(router): remove the precompile warning
+
 # 3.0.0-beta.1 (2016-06-30)
 
 ## Features
