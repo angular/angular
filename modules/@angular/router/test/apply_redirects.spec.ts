@@ -115,17 +115,17 @@ describe('applyRedirects', () => {
         '/a/1(aux:c/d)', (t: UrlTree) => { compareTrees(t, tree('/404')); });
   });
 
-  it('should support global redirects', () => {
+  it('should support absolute redirects', () => {
     checkRedirect(
         [
           {
             path: 'a',
             component: ComponentA,
-            children: [{path: 'b/:id', redirectTo: '/global/:id'}]
+            children: [{path: 'b/:id', redirectTo: '/absolute/:id'}]
           },
           {path: '**', component: ComponentC}
         ],
-        '/a/b/1', (t: UrlTree) => { compareTrees(t, tree('/global/1')); });
+        '/a/b/1', (t: UrlTree) => { compareTrees(t, tree('/absolute/1')); });
   });
 
   describe('empty paths', () => {
@@ -144,7 +144,7 @@ describe('applyRedirects', () => {
           'b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
     });
 
-    it('redirect from an empty path should work (global redirect)', () => {
+    it('redirect from an empty path should work (absolute redirect)', () => {
       checkRedirect(
           [
             {

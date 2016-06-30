@@ -18,7 +18,7 @@ import {merge} from './utils/collection';
 class NoMatch {
   constructor(public segment: UrlSegment = null) {}
 }
-class GlobalRedirect {
+class AbsoluteRedirect {
   constructor(public paths: UrlPathWithParams[]) {}
 }
 
@@ -26,7 +26,7 @@ export function applyRedirects(urlTree: UrlTree, config: RouterConfig): Observab
   try {
     return createUrlTree(urlTree, expandSegment(config, urlTree.root, PRIMARY_OUTLET));
   } catch (e) {
-    if (e instanceof GlobalRedirect) {
+    if (e instanceof AbsoluteRedirect) {
       return createUrlTree(
           urlTree, new UrlSegment([], {[PRIMARY_OUTLET]: new UrlSegment(e.paths, {})}));
     } else if (e instanceof NoMatch) {
@@ -98,7 +98,7 @@ function expandPathsWithParamsAgainstRouteUsingRedirect(
 function expandWildCardWithParamsAgainstRouteUsingRedirect(route: Route): UrlSegment {
   const newPaths = applyRedirectCommands([], route.redirectTo, {});
   if (route.redirectTo.startsWith('/')) {
-    throw new GlobalRedirect(newPaths);
+    throw new AbsoluteRedirect(newPaths);
   } else {
     return new UrlSegment(newPaths, {});
   }
@@ -111,7 +111,7 @@ function expandRegularPathWithParamsAgainstRouteUsingRedirect(
   const newPaths =
       applyRedirectCommands(consumedPaths, route.redirectTo, <any>positionalParamSegments);
   if (route.redirectTo.startsWith('/')) {
-    throw new GlobalRedirect(newPaths);
+    throw new AbsoluteRedirect(newPaths);
   } else {
     return expandPathsWithParams(
         segment, routes, newPaths.concat(paths.slice(lastChild)), outlet, false);

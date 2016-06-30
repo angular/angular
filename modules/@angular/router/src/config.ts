@@ -94,7 +94,7 @@ import {Type} from '@angular/core';
  * '/team/11/user/jim', and then will instantiate the team component with the user component
  * in it.
  *
- * If the `redirectTo` value starts with a '/', then it is a global redirect. E.g., if in the
+ * If the `redirectTo` value starts with a '/', then it is an absolute redirect. E.g., if in the
  * example above we change the `redirectTo` to `/user/:name`, the result url will be '/user/jim'.
  *
  * ### Empty Path
