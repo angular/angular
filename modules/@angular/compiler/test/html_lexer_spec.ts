@@ -507,6 +507,22 @@ export function main() {
           [HtmlTokenType.EOF],
         ]);
       });
+
+      it('should be able to escape {', () => {
+        expect(tokenizeAndHumanizeParts('{{ "{" }}')).toEqual([
+          [HtmlTokenType.TEXT, '{{ "{" }}'],
+          [HtmlTokenType.EOF],
+        ]);
+      });
+
+      it('should be able to escape {{', () => {
+        expect(tokenizeAndHumanizeParts('{{ "{{" }}')).toEqual([
+          [HtmlTokenType.TEXT, '{{ "{{" }}'],
+          [HtmlTokenType.EOF],
+        ]);
+      });
+
+
     });
 
     describe('raw text', () => {
