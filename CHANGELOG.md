@@ -124,14 +124,17 @@
   stringifyElement,
   expect (and custom matchers for Jasmine)
   ```
-* testing: Before:
+* testing: 
+  
+  Before:
 
       expect(...).toThrowErrorWith(msg);
 
   After:
 
       expect(...).toThrowError(msg);
-  * testing: Before:
+
+  Before:
 
       expect(...).toMatchPattern(pattern);
 
