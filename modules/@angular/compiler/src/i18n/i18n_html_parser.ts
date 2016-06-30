@@ -19,7 +19,7 @@ import {I18N_ATTR, I18N_ATTR_PREFIX, I18nError, Part, dedupePhName, extractPhNam
 
 const _PLACEHOLDER_ELEMENT = 'ph';
 const _NAME_ATTR = 'name';
-const _PLACEHOLDER_EXPANDED_REGEXP = /<ph(\s)+name=("(\w)+")><\/ph>/gi;
+const _PLACEHOLDER_EXPANDED_REGEXP = /<ph\s+name="(\w+)"><\/ph>/gi;
 
 /**
  * Creates an i18n-ed version of the parsed template.
@@ -49,7 +49,7 @@ const _PLACEHOLDER_EXPANDED_REGEXP = /<ph(\s)+name=("(\w)+")><\/ph>/gi;
  *     corresponding original expressions
  */
 export class I18nHtmlParser implements HtmlParser {
-  errors: ParseError[];
+  private _errors: ParseError[];
   private _interpolationConfig: InterpolationConfig;
 
   constructor(
@@ -61,7 +61,7 @@ export class I18nHtmlParser implements HtmlParser {
       sourceContent: string, sourceUrl: string, parseExpansionForms: boolean = false,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG):
       HtmlParseTreeResult {
-    this.errors = [];
+    this._errors = [];
     this._interpolationConfig = interpolationConfig;
 
     let res = this._htmlParser.parse(sourceContent, sourceUrl, true, interpolationConfig);
@@ -72,16 +72,17 @@ export class I18nHtmlParser implements HtmlParser {
 
     const nodes = this._recurse(res.rootNodes);
 
-    return this.errors.length > 0 ? new HtmlParseTreeResult([], this.errors) :
-                                    new HtmlParseTreeResult(nodes, []);
+    return this._errors.length > 0 ? new HtmlParseTreeResult([], this._errors) :
+                                     new HtmlParseTreeResult(nodes, []);
   }
 
+  // Merge the translation recursively
   private _processI18nPart(part: Part): HtmlAst[] {
     try {
       return part.hasI18n ? this._mergeI18Part(part) : this._recurseIntoI18nPart(part);
     } catch (e) {
       if (e instanceof I18nError) {
-        this.errors.push(e);
+        this._errors.push(e);
         return [];
       } else {
         throw e;
@@ -89,128 +90,143 @@ export class I18nHtmlParser implements HtmlParser {
     }
   }
 
+  private _recurseIntoI18nPart(p: Part): HtmlAst[] {
+    // we found an element without an i18n attribute
+    // we need to recurse in case its children may have i18n set
+    // we also need to translate its attributes
+    if (isPresent(p.rootElement)) {
+      const root = p.rootElement;
+      const children = this._recurse(p.children);
+      const attrs = this._i18nAttributes(root);
+      return [new HtmlElementAst(
+          root.name, attrs, children, root.sourceSpan, root.startSourceSpan, root.endSourceSpan)];
+    }
+
+    if (isPresent(p.rootTextNode)) {
+      // a text node without i18n or interpolation, nothing to do
+      return [p.rootTextNode];
+    }
+
+    return this._recurse(p.children);
+  }
+
+  private _recurse(nodes: HtmlAst[]): HtmlAst[] {
+    let parts = partition(nodes, this._errors, this._implicitTags);
+    return ListWrapper.flatten(parts.map(p => this._processI18nPart(p)));
+  }
+
+  // Look for the translated message and merge it back to the tree
   private _mergeI18Part(part: Part): HtmlAst[] {
     let message = part.createMessage(this._expressionParser, this._interpolationConfig);
     let messageId = id(message);
+
     if (!StringMapWrapper.contains(this._messages, messageId)) {
       throw new I18nError(
           part.sourceSpan,
           `Cannot find message for id '${messageId}', content '${message.content}'.`);
     }
 
-    let parsedMessage = this._messages[messageId];
-    return this._mergeTrees(part, parsedMessage, part.children);
+    const translation = this._messages[messageId];
+    return this._mergeTrees(part, translation);
   }
 
-  private _recurseIntoI18nPart(p: Part): HtmlAst[] {
-    // we found an element without an i18n attribute
-    // we need to recurse in cause its children may have i18n set
-    // we also need to translate its attributes
-    if (isPresent(p.rootElement)) {
-      let root = p.rootElement;
-      let children = this._recurse(p.children);
-      let attrs = this._i18nAttributes(root);
-      return [new HtmlElementAst(
-          root.name, attrs, children, root.sourceSpan, root.startSourceSpan, root.endSourceSpan)];
 
-      // a text node without i18n or interpolation, nothing to do
-    } else if (isPresent(p.rootTextNode)) {
-      return [p.rootTextNode];
-
-    } else {
-      return this._recurse(p.children);
+  private _mergeTrees(part: Part, translation: HtmlAst[]): HtmlAst[] {
+    if (isPresent(part.rootTextNode)) {
+      // this should never happen with a part. Parts that have root text node should not be merged.
+      throw new BaseException('should not be reached');
     }
-  }
 
-  private _recurse(nodes: HtmlAst[]): HtmlAst[] {
-    let parts = partition(nodes, this.errors, this._implicitTags);
-    return ListWrapper.flatten(parts.map(p => this._processI18nPart(p)));
-  }
-
-  private _mergeTrees(p: Part, translated: HtmlAst[], original: HtmlAst[]): HtmlAst[] {
-    let l = new _CreateNodeMapping();
-    htmlVisitAll(l, original);
+    const visitor = new _NodeMappingVisitor();
+    htmlVisitAll(visitor, part.children);
 
     // merge the translated tree with the original tree.
     // we do it by preserving the source code position of the original tree
-    let merged = this._mergeTreesHelper(translated, l.mapping);
+    const translatedAst = this._expandPlaceholders(translation, visitor.mapping);
 
     // if the root element is present, we need to create a new root element with its attributes
     // translated
-    if (isPresent(p.rootElement)) {
-      let root = p.rootElement;
-      let attrs = this._i18nAttributes(root);
+    if (part.rootElement) {
+      const root = part.rootElement;
+      const attrs = this._i18nAttributes(root);
       return [new HtmlElementAst(
-          root.name, attrs, merged, root.sourceSpan, root.startSourceSpan, root.endSourceSpan)];
-
-      // this should never happen with a part. Parts that have root text node should not be merged.
-    } else if (isPresent(p.rootTextNode)) {
-      throw new BaseException('should not be reached');
-
-    } else {
-      return merged;
+          root.name, attrs, translatedAst, root.sourceSpan, root.startSourceSpan,
+          root.endSourceSpan)];
     }
+
+    return translatedAst;
   }
 
-  private _mergeTreesHelper(translated: HtmlAst[], mapping: HtmlAst[]): HtmlAst[] {
-    return translated.map(t => {
-      if (t instanceof HtmlElementAst) {
-        return this._mergeElementOrInterpolation(t, translated, mapping);
-
-      } else if (t instanceof HtmlTextAst) {
-        return t;
-
-      } else {
-        throw new BaseException('should not be reached');
+  /**
+   * The translation AST is composed on text nodes and placeholder elements
+   */
+  private _expandPlaceholders(translation: HtmlAst[], mapping: HtmlAst[]): HtmlAst[] {
+    return translation.map(node => {
+      if (node instanceof HtmlElementAst) {
+        // This node is a placeholder, replace with the original content
+        return this._expandPlaceholdersInNode(node, mapping);
       }
+
+      if (node instanceof HtmlTextAst) {
+        return node;
+      }
+
+      throw new BaseException('should not be reached');
     });
   }
 
-  private _mergeElementOrInterpolation(
-      t: HtmlElementAst, translated: HtmlAst[], mapping: HtmlAst[]): HtmlAst {
-    let name = this._getName(t);
-    let type = name[0];
+  private _expandPlaceholdersInNode(node: HtmlElementAst, mapping: HtmlAst[]): HtmlAst {
+    let name = this._getName(node);
     let index = NumberWrapper.parseInt(name.substring(1), 10);
     let originalNode = mapping[index];
 
-    if (type == 't') {
-      return this._mergeTextInterpolation(t, <HtmlTextAst>originalNode);
-    } else if (type == 'e') {
-      return this._mergeElement(t, <HtmlElementAst>originalNode, mapping);
-    } else {
-      throw new BaseException('should not be reached');
+    if (originalNode instanceof HtmlTextAst) {
+      return this._mergeTextInterpolation(node, originalNode);
     }
+
+    if (originalNode instanceof HtmlElementAst) {
+      return this._mergeElement(node, originalNode, mapping);
+    }
+
+    throw new BaseException('should not be reached');
   }
 
-  private _getName(t: HtmlElementAst): string {
-    if (t.name != _PLACEHOLDER_ELEMENT) {
+  // Extract the value of a <ph> name attribute
+  private _getName(node: HtmlElementAst): string {
+    if (node.name != _PLACEHOLDER_ELEMENT) {
       throw new I18nError(
-          t.sourceSpan,
-          `Unexpected tag "${t.name}". Only "${_PLACEHOLDER_ELEMENT}" tags are allowed.`);
+          node.sourceSpan,
+          `Unexpected tag "${node.name}". Only "${_PLACEHOLDER_ELEMENT}" tags are allowed.`);
     }
-    let names = t.attrs.filter(a => a.name == _NAME_ATTR);
-    if (names.length == 0) {
-      throw new I18nError(t.sourceSpan, `Missing "${_NAME_ATTR}" attribute.`);
+
+    const nameAttr = node.attrs.find(a => a.name == _NAME_ATTR);
+
+    if (nameAttr) {
+      return nameAttr.value;
     }
-    return names[0].value;
+
+    throw new I18nError(node.sourceSpan, `Missing "${_NAME_ATTR}" attribute.`);
   }
 
-  private _mergeTextInterpolation(t: HtmlElementAst, originalNode: HtmlTextAst): HtmlTextAst {
-    let split = this._expressionParser.splitInterpolation(
+  private _mergeTextInterpolation(node: HtmlElementAst, originalNode: HtmlTextAst): HtmlTextAst {
+    const split = this._expressionParser.splitInterpolation(
         originalNode.value, originalNode.sourceSpan.toString(), this._interpolationConfig);
-    let exps = isPresent(split) ? split.expressions : [];
 
-    let messageSubstring =
-        this._messagesContent.substring(t.startSourceSpan.end.offset, t.endSourceSpan.start.offset);
-    let translated =
-        this._replacePlaceholdersWithExpressions(messageSubstring, exps, originalNode.sourceSpan);
+    const exps = split ? split.expressions : [];
+
+    const messageSubstring = this._messagesContent.substring(
+        node.startSourceSpan.end.offset, node.endSourceSpan.start.offset);
+
+    let translated = this._replacePlaceholdersWithInterpolations(
+        messageSubstring, exps, originalNode.sourceSpan);
 
     return new HtmlTextAst(translated, originalNode.sourceSpan);
   }
 
-  private _mergeElement(t: HtmlElementAst, originalNode: HtmlElementAst, mapping: HtmlAst[]):
+  private _mergeElement(node: HtmlElementAst, originalNode: HtmlElementAst, mapping: HtmlAst[]):
       HtmlElementAst {
-    let children = this._mergeTreesHelper(t.children, mapping);
+    const children = this._expandPlaceholders(node.children, mapping);
+
     return new HtmlElementAst(
         originalNode.name, this._i18nAttributes(originalNode), children, originalNode.sourceSpan,
         originalNode.startSourceSpan, originalNode.endSourceSpan);
@@ -226,9 +242,9 @@ export class I18nHtmlParser implements HtmlParser {
 
       let message: Message;
 
-      let i18ns = el.attrs.filter(a => a.name == `${I18N_ATTR_PREFIX}${attr.name}`);
+      let i18nAttr = el.attrs.find(a => a.name == `${I18N_ATTR_PREFIX}${attr.name}`);
 
-      if (i18ns.length == 0) {
+      if (!i18nAttr) {
         if (implicitAttrs.indexOf(attr.name) == -1) {
           res.push(attr);
           return;
@@ -236,13 +252,13 @@ export class I18nHtmlParser implements HtmlParser {
         message = messageFromAttribute(this._expressionParser, this._interpolationConfig, attr);
       } else {
         message = messageFromI18nAttribute(
-            this._expressionParser, this._interpolationConfig, el, i18ns[0]);
+            this._expressionParser, this._interpolationConfig, el, i18nAttr);
       }
 
       let messageId = id(message);
 
       if (StringMapWrapper.contains(this._messages, messageId)) {
-        let updatedMessage = this._replaceInterpolationInAttr(attr, this._messages[messageId]);
+        const updatedMessage = this._replaceInterpolationInAttr(attr, this._messages[messageId]);
         res.push(new HtmlAttrAst(attr.name, updatedMessage, attr.sourceSpan));
 
       } else {
@@ -251,43 +267,44 @@ export class I18nHtmlParser implements HtmlParser {
             `Cannot find message for id '${messageId}', content '${message.content}'.`);
       }
     });
+
     return res;
   }
 
   private _replaceInterpolationInAttr(attr: HtmlAttrAst, msg: HtmlAst[]): string {
-    let split = this._expressionParser.splitInterpolation(
+    const split = this._expressionParser.splitInterpolation(
         attr.value, attr.sourceSpan.toString(), this._interpolationConfig);
-    let exps = isPresent(split) ? split.expressions : [];
+    const exps = isPresent(split) ? split.expressions : [];
 
-    let first = msg[0];
-    let last = msg[msg.length - 1];
+    const first = msg[0];
+    const last = msg[msg.length - 1];
 
-    let start = first.sourceSpan.start.offset;
-    let end =
+    const start = first.sourceSpan.start.offset;
+    const end =
         last instanceof HtmlElementAst ? last.endSourceSpan.end.offset : last.sourceSpan.end.offset;
-    let messageSubstring = this._messagesContent.substring(start, end);
+    const messageSubstring = this._messagesContent.substring(start, end);
 
-    return this._replacePlaceholdersWithExpressions(messageSubstring, exps, attr.sourceSpan);
+    return this._replacePlaceholdersWithInterpolations(messageSubstring, exps, attr.sourceSpan);
   };
 
-  private _replacePlaceholdersWithExpressions(
+  private _replacePlaceholdersWithInterpolations(
       message: string, exps: string[], sourceSpan: ParseSourceSpan): string {
-    let expMap = this._buildExprMap(exps);
-    return RegExpWrapper.replaceAll(_PLACEHOLDER_EXPANDED_REGEXP, message, (match: string[]) => {
-      let nameWithQuotes = match[2];
-      let name = nameWithQuotes.substring(1, nameWithQuotes.length - 1);
-      return this._convertIntoExpression(name, expMap, sourceSpan);
-    });
+    const expMap = this._buildExprMap(exps);
+
+    return message.replace(
+        _PLACEHOLDER_EXPANDED_REGEXP,
+        (_: string, name: string) => this._convertIntoExpression(name, expMap, sourceSpan));
   }
 
   private _buildExprMap(exps: string[]): Map<string, string> {
-    let expMap = new Map<string, string>();
-    let usedNames = new Map<string, number>();
+    const expMap = new Map<string, string>();
+    const usedNames = new Map<string, number>();
 
-    for (var i = 0; i < exps.length; i++) {
-      let phName = extractPhNameFromInterpolation(exps[i], i);
+    for (let i = 0; i < exps.length; i++) {
+      const phName = extractPhNameFromInterpolation(exps[i], i);
       expMap.set(dedupePhName(usedNames, phName), exps[i]);
     }
+
     return expMap;
   }
 
@@ -295,31 +312,26 @@ export class I18nHtmlParser implements HtmlParser {
       name: string, expMap: Map<string, string>, sourceSpan: ParseSourceSpan) {
     if (expMap.has(name)) {
       return `${this._interpolationConfig.start}${expMap.get(name)}${this._interpolationConfig.end}`;
-    } else {
-      throw new I18nError(sourceSpan, `Invalid interpolation name '${name}'`);
     }
+
+    throw new I18nError(sourceSpan, `Invalid interpolation name '${name}'`);
   }
 }
 
-class _CreateNodeMapping implements HtmlAstVisitor {
+// Creates a list of elements and text nodes in the AST
+// The indexes match the placeholders indexes
+class _NodeMappingVisitor implements HtmlAstVisitor {
   mapping: HtmlAst[] = [];
 
   visitElement(ast: HtmlElementAst, context: any): any {
     this.mapping.push(ast);
     htmlVisitAll(this, ast.children);
-    return null;
   }
 
-  visitAttr(ast: HtmlAttrAst, context: any): any { return null; }
+  visitText(ast: HtmlTextAst, context: any): any { this.mapping.push(ast); }
 
-  visitText(ast: HtmlTextAst, context: any): any {
-    this.mapping.push(ast);
-    return null;
-  }
-
-  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
-
-  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
-
-  visitComment(ast: HtmlCommentAst, context: any): any { return ''; }
+  visitAttr(ast: HtmlAttrAst, context: any): any {}
+  visitExpansion(ast: HtmlExpansionAst, context: any): any {}
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any {}
+  visitComment(ast: HtmlCommentAst, context: any): any {}
 }

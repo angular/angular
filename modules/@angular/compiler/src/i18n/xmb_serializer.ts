@@ -34,9 +34,8 @@ export class XmbDeserializationError extends ParseError {
 }
 
 export function deserializeXmb(content: string, url: string): XmbDeserializationResult {
-  const parser = new HtmlParser();
   const normalizedContent = _expandPlaceholder(content.trim());
-  const parsed = parser.parse(normalizedContent, url);
+  const parsed = new HtmlParser().parse(normalizedContent, url);
 
   if (parsed.errors.length > 0) {
     return new XmbDeserializationResult(null, {}, parsed.errors);
@@ -47,9 +46,9 @@ export function deserializeXmb(content: string, url: string): XmbDeserialization
         null, {}, [new XmbDeserializationError(null, `Missing element "${_BUNDLE_ELEMENT}"`)]);
   }
 
-  let bundleEl = <HtmlElementAst>parsed.rootNodes[0];  // test this
-  let errors: ParseError[] = [];
-  let messages: {[key: string]: HtmlAst[]} = {};
+  const bundleEl = <HtmlElementAst>parsed.rootNodes[0];  // test this
+  const errors: ParseError[] = [];
+  const messages: {[key: string]: HtmlAst[]} = {};
 
   _createMessages(bundleEl.children, messages, errors);
 
@@ -65,31 +64,26 @@ function _checkRootElement(nodes: HtmlAst[]): boolean {
 
 function _createMessages(
     nodes: HtmlAst[], messages: {[key: string]: HtmlAst[]}, errors: ParseError[]): void {
-  nodes.forEach((item) => {
-    if (item instanceof HtmlElementAst) {
-      let msg = <HtmlElementAst>item;
+  nodes.forEach((node) => {
+    if (node instanceof HtmlElementAst) {
+      let msg = <HtmlElementAst>node;
 
       if (msg.name != _MSG_ELEMENT) {
         errors.push(
-            new XmbDeserializationError(item.sourceSpan, `Unexpected element "${msg.name}"`));
+            new XmbDeserializationError(node.sourceSpan, `Unexpected element "${msg.name}"`));
         return;
       }
 
-      let id = _id(msg);
-      if (isBlank(id)) {
+      let idAttr = msg.attrs.find(a => a.name == _ID_ATTR);
+
+      if (idAttr) {
+        messages[idAttr.value] = msg.children;
+      } else {
         errors.push(
-            new XmbDeserializationError(item.sourceSpan, `"${_ID_ATTR}" attribute is missing`));
-        return;
+            new XmbDeserializationError(node.sourceSpan, `"${_ID_ATTR}" attribute is missing`));
       }
-
-      messages[id] = msg.children;
     }
   });
-}
-
-function _id(el: HtmlElementAst): string {
-  let ids = el.attrs.filter(a => a.name == _ID_ATTR);
-  return ids.length > 0 ? ids[0].value : null;
 }
 
 function _serializeMessage(m: Message): string {

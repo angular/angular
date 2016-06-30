@@ -101,7 +101,6 @@ export class TemplateParser {
   tryParse(
       component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveMetadata[],
       pipes: CompilePipeMetadata[], templateUrl: string): TemplateParseResult {
-    // TODO: bad ???
     let interpolationConfig: any;
     if (component.template) {
       interpolationConfig = InterpolationConfig.fromArray(component.template.interpolation);

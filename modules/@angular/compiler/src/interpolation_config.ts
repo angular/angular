@@ -11,8 +11,7 @@ import {isBlank} from './facade/lang';
 
 export class InterpolationConfig {
   static fromArray(markers: [string, string]): InterpolationConfig {
-    if (isBlank(markers)) {
-      // TODO:bad ??
+    if (!markers) {
       return DEFAULT_INTERPOLATION_CONFIG;
     }
 

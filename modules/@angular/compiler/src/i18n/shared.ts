@@ -70,7 +70,8 @@ export class Part {
       return this.rootTextNode.sourceSpan;
     }
 
-    return this.children[0].sourceSpan;
+    return new ParseSourceSpan(
+        this.children[0].sourceSpan.start, this.children[this.children.length - 1].sourceSpan.end);
   }
 
   createMessage(parser: ExpressionParser, interpolationConfig: InterpolationConfig): Message {
@@ -117,8 +118,8 @@ export function description(i18n: string): string {
 export function messageFromI18nAttribute(
     parser: ExpressionParser, interpolationConfig: InterpolationConfig, p: HtmlElementAst,
     i18nAttr: HtmlAttrAst): Message {
-  let expectedName = i18nAttr.name.substring(5);
-  let attr = p.attrs.find(a => a.name == expectedName);
+  const expectedName = i18nAttr.name.substring(5);
+  const attr = p.attrs.find(a => a.name == expectedName);
 
   if (attr) {
     return messageFromAttribute(
@@ -131,7 +132,7 @@ export function messageFromI18nAttribute(
 export function messageFromAttribute(
     parser: ExpressionParser, interpolationConfig: InterpolationConfig, attr: HtmlAttrAst,
     meaning: string = null, description: string = null): Message {
-  let value = removeInterpolation(attr.value, attr.sourceSpan, parser, interpolationConfig);
+  const value = removeInterpolation(attr.value, attr.sourceSpan, parser, interpolationConfig);
   return new Message(value, meaning, description);
 }
 

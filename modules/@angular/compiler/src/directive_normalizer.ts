@@ -20,7 +20,6 @@ import {PreparsedElementType, preparseElement} from './template_preparser';
 import {UrlResolver} from './url_resolver';
 import {SyncAsyncResult} from './util';
 import {XHR} from './xhr';
-import {InterpolationConfig} from './interpolation_config';
 
 @Injectable()
 export class DirectiveNormalizer {
