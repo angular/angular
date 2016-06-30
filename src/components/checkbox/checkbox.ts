@@ -11,7 +11,7 @@ import {
     forwardRef,
     AfterContentInit
 } from '@angular/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/common';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
 /**
  * Monotonically increasing integer used to auto-generate unique ids for checkbox components.
@@ -20,7 +20,7 @@ let nextId = 0;
 
 /**
  * Provider Expression that allows md-checkbox to register as a ControlValueAccessor. This allows it
- * to support [(ngModel)] and ngControl.
+ * to support [(ngModel)].
  */
 export const MD_CHECKBOX_CONTROL_VALUE_ACCESSOR = new Provider(
     NG_VALUE_ACCESSOR, {

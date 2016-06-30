@@ -17,7 +17,7 @@ import {
 import {
     NG_VALUE_ACCESSOR,
     ControlValueAccessor,
-} from '@angular/common';
+} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {
     MdUniqueSelectionDispatcher

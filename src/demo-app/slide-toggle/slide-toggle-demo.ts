@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FORM_DIRECTIVES} from '@angular/common';
+import {FORM_DIRECTIVES} from '@angular/forms';
 import {MdSlideToggle} from '@angular2-material/slide-toggle/slide-toggle';
 
 @Component({

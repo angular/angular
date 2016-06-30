@@ -8,8 +8,7 @@ import {
   fakeAsync,
   tick,
 } from '@angular/core/testing';
-// TODO(iveysaur): Update to @angular/forms when we have rc.2
-import {NgControl} from '@angular/common';
+import {NgControl, disableDeprecatedForms, provideForms} from '@angular/forms';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, DebugElement, provide} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -30,6 +29,8 @@ describe('MdButtonToggle', () => {
   let dispatcher: MdUniqueSelectionDispatcher;
 
   beforeEachProviders(() => [
+    disableDeprecatedForms(),
+    provideForms(),
     provide(MdUniqueSelectionDispatcher, {useFactory: () => {
       dispatcher = new MdUniqueSelectionDispatcher();
       return dispatcher;

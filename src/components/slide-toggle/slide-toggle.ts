@@ -12,7 +12,7 @@ import {
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR
-} from '@angular/common';
+} from '@angular/forms';
 import { BooleanFieldValue } from '@angular2-material/core/annotations/field-value';
 import { Observable } from 'rxjs/Observable';
 

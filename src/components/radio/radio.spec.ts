@@ -8,7 +8,7 @@ import {
   fakeAsync,
   tick
 } from '@angular/core/testing';
-import {FORM_DIRECTIVES, NgControl} from '@angular/common';
+import {FORM_DIRECTIVES, NgControl, disableDeprecatedForms, provideForms} from '@angular/forms';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, DebugElement, provide} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -23,6 +23,8 @@ describe('MdRadio', () => {
   let dispatcher: MdUniqueSelectionDispatcher;
 
   beforeEachProviders(() => [
+    disableDeprecatedForms(),
+    provideForms(),
     provide(MdUniqueSelectionDispatcher, {useFactory: () => {
       dispatcher = new MdUniqueSelectionDispatcher();
       return dispatcher;
@@ -278,7 +280,7 @@ describe('MdRadio', () => {
       expect(groupInstance.selected.value).toBe(groupInstance.value);
     });
 
-    it('should have the correct ngControl state initially and after interaction', fakeAsync(() => {
+    it('should have the correct control state initially and after interaction', fakeAsync(() => {
       // The control should start off valid, pristine, and untouched.
       expect(groupNgControl.valid).toBe(true);
       expect(groupNgControl.pristine).toBe(true);

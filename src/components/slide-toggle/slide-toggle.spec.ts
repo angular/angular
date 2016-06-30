@@ -3,6 +3,7 @@ import {
   describe,
   expect,
   beforeEach,
+  beforeEachProviders,
   inject,
   async
 } from '@angular/core/testing';
@@ -10,10 +11,15 @@ import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing'
 import {By} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 import {MdSlideToggle, MdSlideToggleChange} from './slide-toggle';
-import {NgControl} from '@angular/common';
+import {NgControl, disableDeprecatedForms, provideForms} from '@angular/forms';
 
 describe('MdSlideToggle', () => {
   let builder: TestComponentBuilder;
+
+  beforeEachProviders(() => [
+    disableDeprecatedForms(),
+    provideForms(),
+  ]);
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
@@ -244,7 +250,7 @@ describe('MdSlideToggle', () => {
       fixture.detectChanges();
     });
 
-    it('should have the correct ngControl state initially and after interaction', () => {
+    it('should have the correct control state initially and after interaction', () => {
       // The control should start off valid, pristine, and untouched.
       expect(slideToggleControl.valid).toBe(true);
       expect(slideToggleControl.pristine).toBe(true);
@@ -269,7 +275,7 @@ describe('MdSlideToggle', () => {
       expect(slideToggleControl.touched).toBe(true);
     });
 
-    it('should not set the ngControl to touched when changing the state programmatically', () => {
+    it('should not set the control to touched when changing the state programmatically', () => {
       // The control should start off with being untouched.
       expect(slideToggleControl.touched).toBe(false);
 
@@ -288,7 +294,7 @@ describe('MdSlideToggle', () => {
       expect(slideToggleElement.classList).not.toContain('md-checked');
     });
 
-    it('should not set the ngControl to touched when changing the model', () => {
+    it('should not set the control to touched when changing the model', () => {
       // The control should start off with being untouched.
       expect(slideToggleControl.touched).toBe(false);
 

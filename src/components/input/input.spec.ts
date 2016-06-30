@@ -3,12 +3,14 @@ import {
   it,
   expect,
   beforeEach,
+  beforeEachProviders,
   fakeAsync,
   inject,
   tick,
 } from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component} from '@angular/core';
+import {disableDeprecatedForms, provideForms} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {
   MdInput,
@@ -18,6 +20,11 @@ import {
 
 describe('MdInput', function () {
   var builder: TestComponentBuilder;
+
+  beforeEachProviders(() => [
+    disableDeprecatedForms(),
+    provideForms(),
+  ]);
 
   beforeEach(inject([TestComponentBuilder], function (tcb: TestComponentBuilder) {
     builder = tcb;

@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
-import {FORM_DIRECTIVES, NgFor} from '@angular/common';
+import {NgFor} from '@angular/common';
+import {FORM_DIRECTIVES} from '@angular/forms';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input/input';
 import {MdButton} from '@angular2-material/button/button';
 import {MdCard} from '@angular2-material/card/card';

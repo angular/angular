@@ -17,7 +17,7 @@ import {
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
-} from '@angular/common';
+} from '@angular/forms';
 import {
   MdUniqueSelectionDispatcher
 } from '@angular2-material/core/coordination/unique-selection-dispatcher';

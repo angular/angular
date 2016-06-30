@@ -1,13 +1,20 @@
 import {
     it,
     beforeEach,
+    beforeEachProviders,
     inject,
     async,
     fakeAsync,
     flushMicrotasks,
     tick
 } from '@angular/core/testing';
-import {FORM_DIRECTIVES, NgModel, NgControl} from '@angular/common';
+import {
+    FORM_DIRECTIVES,
+    NgModel,
+    NgControl,
+    disableDeprecatedForms,
+    provideForms
+} from '@angular/forms';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -21,6 +28,11 @@ import {PromiseCompleter} from '@angular2-material/core/async/promise-completer'
 describe('MdCheckbox', () => {
   let builder: TestComponentBuilder;
   let fixture: ComponentFixture<any>;
+
+  beforeEachProviders(() => [
+    disableDeprecatedForms(),
+    provideForms(),
+  ]);
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
@@ -432,7 +444,7 @@ describe('MdCheckbox', () => {
     });
   });
 
-  describe('with ngModel and ngControl', () => {
+  describe('with ngModel', () => {
     beforeEach(async(() => {
       builder.createAsync(CheckboxWithFormDirectives).then(f => {
         f.detectChanges();
@@ -501,12 +513,12 @@ class SingleCheckbox {
   onCheckboxClick(event: Event) {}
 }
 
-/** Simple component for testing an MdCheckbox with ngModel and ngControl. */
+/** Simple component for testing an MdCheckbox with ngModel. */
 @Component({
   directives: [MdCheckbox, FORM_DIRECTIVES, NgModel],
   template: `
     <form>
-      <md-checkbox ngControl="cb" [(ngModel)]="isGood">Be good</md-checkbox>
+      <md-checkbox name="cb" [(ngModel)]="isGood">Be good</md-checkbox>
     </form>
   `,
 })

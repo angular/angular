@@ -20,8 +20,8 @@ import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor,
   NgModel,
-  NgIf,
-} from '@angular/common';
+} from '@angular/forms';
+import {NgIf} from '@angular/common';
 import {BooleanFieldValue} from '@angular2-material/core/annotations/field-value';
 import {MdError} from '@angular2-material/core/errors/error';
 import {Observable} from 'rxjs/Observable';
