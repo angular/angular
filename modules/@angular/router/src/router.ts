@@ -19,7 +19,7 @@ import {ComponentResolver, Injector, ReflectiveInjector, Type} from '@angular/co
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {of } from 'rxjs/observable/of';
+import {of} from 'rxjs/observable/of';
 
 import {applyRedirects} from './apply_redirects';
 import {Data, ResolveData, RouterConfig, validateConfig} from './config';
