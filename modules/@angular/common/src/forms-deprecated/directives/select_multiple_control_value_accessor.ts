@@ -47,7 +47,7 @@ abstract class HTMLCollection {
  */
 @Directive({
   selector: 'select[multiple][ngControl],select[multiple][ngFormControl],select[multiple][ngModel]',
-  host: {'(input)': 'onChange($event.target)', '(blur)': 'onTouched()'},
+  host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
 })
 export class SelectMultipleControlValueAccessor implements ControlValueAccessor {
