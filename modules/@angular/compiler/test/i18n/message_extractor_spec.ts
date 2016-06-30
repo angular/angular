@@ -82,14 +82,15 @@ export function main() {
     it('should replace interpolation with placeholders (text nodes)', () => {
       let res = extractor.extract('<div i18n>Hi {{one}} and {{two}}</div>', 'someurl');
       expect(res.messages).toEqual([new Message(
-          '<ph name="t0">Hi <ph name="0"/> and <ph name="1"/></ph>', null, null)]);
+          '<ph name="t0">Hi <ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/></ph>',
+          null, null)]);
     });
 
     it('should replace interpolation with placeholders (attributes)', () => {
       let res =
           extractor.extract('<div title=\'Hi {{one}} and {{two}}\' i18n-title></div>', 'someurl');
       expect(res.messages).toEqual([new Message(
-          'Hi <ph name="0"/> and <ph name="1"/>', null, null)]);
+          'Hi <ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/>', null, null)]);
     });
 
     it('should replace interpolation with named placeholders if provided (text nodes)', () => {
@@ -142,7 +143,7 @@ export function main() {
       let res =
           extractor.extract('<div i18n><div>zero{{a}}<div>{{b}}</div></div></div>', 'someurl');
       expect(res.messages).toEqual([new Message(
-          '<ph name="e0"><ph name="t1">zero<ph name="0"/></ph><ph name="e2"><ph name="t3"><ph name="0"/></ph></ph></ph>',
+          '<ph name="e0"><ph name="t1">zero<ph name="INTERPOLATION_0"/></ph><ph name="e2"><ph name="t3"><ph name="INTERPOLATION_0"/></ph></ph></ph>',
           null, null)]);
     });
 

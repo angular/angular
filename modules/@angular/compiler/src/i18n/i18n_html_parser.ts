@@ -17,7 +17,7 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import {expandNodes} from './expander';
 import {Message, id} from './message';
-import {I18N_ATTR, I18N_ATTR_PREFIX, I18nError, Part, dedupePhName, getPhNameFromBinding, messageFromAttribute, messageFromI18nAttribute, partition} from './shared';
+import {I18N_ATTR, I18N_ATTR_PREFIX, I18nError, Part, dedupePhName, extractPhNameFromInterpolation, messageFromAttribute, messageFromI18nAttribute, partition} from './shared';
 
 const _PLACEHOLDER_ELEMENT = 'ph';
 const _NAME_ATTR = 'name';
@@ -289,7 +289,7 @@ export class I18nHtmlParser implements HtmlParser {
     let usedNames = new Map<string, number>();
 
     for (var i = 0; i < exps.length; i++) {
-      let phName = getPhNameFromBinding(exps[i], i);
+      let phName = extractPhNameFromInterpolation(exps[i], i);
       expMap.set(dedupePhName(usedNames, phName), exps[i]);
     }
     return expMap;

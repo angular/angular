@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Parser} from '../expression_parser/parser';
+import {Parser as ExpressionParser} from '../expression_parser/parser';
 import {StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../html_ast';
 import {InterpolationConfig} from '../interpolation_config';
@@ -15,7 +15,7 @@ import {Message} from './message';
 
 export const I18N_ATTR = 'i18n';
 export const I18N_ATTR_PREFIX = 'i18n-';
-var CUSTOM_PH_EXP = /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*"([\s\S]*?)"[\s\S]*\)/g;
+const _CUSTOM_PH_EXP = /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*"([\s\S]*?)"[\s\S]*\)/g;
 
 /**
  * An i18n error.
@@ -73,7 +73,7 @@ export class Part {
     return this.children[0].sourceSpan;
   }
 
-  createMessage(parser: Parser, interpolationConfig: InterpolationConfig): Message {
+  createMessage(parser: ExpressionParser, interpolationConfig: InterpolationConfig): Message {
     return new Message(
         stringifyNodes(this.children, parser, interpolationConfig), meaning(this.i18n),
         description(this.i18n));
@@ -115,7 +115,7 @@ export function description(i18n: string): string {
  * @internal
  */
 export function messageFromI18nAttribute(
-    parser: Parser, interpolationConfig: InterpolationConfig, p: HtmlElementAst,
+    parser: ExpressionParser, interpolationConfig: InterpolationConfig, p: HtmlElementAst,
     i18nAttr: HtmlAttrAst): Message {
   let expectedName = i18nAttr.name.substring(5);
   let attr = p.attrs.find(a => a.name == expectedName);
@@ -129,62 +129,82 @@ export function messageFromI18nAttribute(
 }
 
 export function messageFromAttribute(
-    parser: Parser, interpolationConfig: InterpolationConfig, attr: HtmlAttrAst,
+    parser: ExpressionParser, interpolationConfig: InterpolationConfig, attr: HtmlAttrAst,
     meaning: string = null, description: string = null): Message {
   let value = removeInterpolation(attr.value, attr.sourceSpan, parser, interpolationConfig);
   return new Message(value, meaning, description);
 }
 
+/**
+ * Replace interpolation in the `value` string with placeholders
+ */
 export function removeInterpolation(
-    value: string, source: ParseSourceSpan, parser: Parser,
+    value: string, source: ParseSourceSpan, expressionParser: ExpressionParser,
     interpolationConfig: InterpolationConfig): string {
   try {
-    let parsed = parser.splitInterpolation(value, source.toString(), interpolationConfig);
-    let usedNames = new Map<string, number>();
+    const parsed =
+        expressionParser.splitInterpolation(value, source.toString(), interpolationConfig);
+    const usedNames = new Map<string, number>();
     if (isPresent(parsed)) {
       let res = '';
       for (let i = 0; i < parsed.strings.length; ++i) {
         res += parsed.strings[i];
         if (i != parsed.strings.length - 1) {
-          let customPhName = getPhNameFromBinding(parsed.expressions[i], i);
+          let customPhName = extractPhNameFromInterpolation(parsed.expressions[i], i);
           customPhName = dedupePhName(usedNames, customPhName);
           res += `<ph name="${customPhName}"/>`;
         }
       }
       return res;
-    } else {
-      return value;
     }
+
+    return value;
   } catch (e) {
     return value;
   }
 }
 
-export function getPhNameFromBinding(input: string, index: number): string {
-  let customPhMatch = StringWrapper.split(input, CUSTOM_PH_EXP);
-  return customPhMatch.length > 1 ? customPhMatch[1] : `${index}`;
+/**
+ * Extract the placeholder name from the interpolation.
+ *
+ * Use a custom name when specified (ie: `{{<expression> //i18n(ph="FIRST")}}`) otherwise generate a
+ * unique name.
+ */
+export function extractPhNameFromInterpolation(input: string, index: number): string {
+  let customPhMatch = StringWrapper.split(input, _CUSTOM_PH_EXP);
+  return customPhMatch.length > 1 ? customPhMatch[1] : `INTERPOLATION_${index}`;
 }
 
+/**
+ * Return a unique placeholder name based on the given name
+ */
 export function dedupePhName(usedNames: Map<string, number>, name: string): string {
-  let duplicateNameCount = usedNames.get(name);
-  if (isPresent(duplicateNameCount)) {
+  const duplicateNameCount = usedNames.get(name);
+
+  if (duplicateNameCount) {
     usedNames.set(name, duplicateNameCount + 1);
     return `${name}_${duplicateNameCount}`;
-  } else {
-    usedNames.set(name, 1);
-    return name;
   }
+
+  usedNames.set(name, 1);
+  return name;
 }
 
+/**
+ * Convert a list of nodes to a string message.
+ *
+ */
 export function stringifyNodes(
-    nodes: HtmlAst[], parser: Parser, interpolationConfig: InterpolationConfig): string {
-  let visitor = new _StringifyVisitor(parser, interpolationConfig);
+    nodes: HtmlAst[], expressionParser: ExpressionParser,
+    interpolationConfig: InterpolationConfig): string {
+  const visitor = new _StringifyVisitor(expressionParser, interpolationConfig);
   return htmlVisitAll(visitor, nodes).join('');
 }
 
 class _StringifyVisitor implements HtmlAstVisitor {
   private _index: number = 0;
-  constructor(private _parser: Parser, private _interpolationConfig: InterpolationConfig) {}
+  constructor(
+      private _parser: ExpressionParser, private _interpolationConfig: InterpolationConfig) {}
 
   visitElement(ast: HtmlElementAst, context: any): any {
     let name = this._index++;

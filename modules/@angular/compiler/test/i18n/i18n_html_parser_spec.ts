@@ -67,8 +67,9 @@ export function main() {
 
     it('should handle interpolation', () => {
       let translations: {[key: string]: string} = {};
-      translations[id(new Message('<ph name="0"/> and <ph name="1"/>', null, null))] =
-          '<ph name="1"/> or <ph name="0"/>';
+      translations[id(new Message(
+          '<ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/>', null, null))] =
+          '<ph name="INTERPOLATION_1"/> or <ph name="INTERPOLATION_0"/>';
 
       expect(humanizeDom(parse('<div value=\'{{a}} and {{b}}\' i18n-value></div>', translations)))
           .toEqual([[HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', '{{b}} or {{a}}']]);
@@ -76,8 +77,9 @@ export function main() {
 
     it('should handle interpolation with config', () => {
       let translations: {[key: string]: string} = {};
-      translations[id(new Message('<ph name="0"/> and <ph name="1"/>', null, null))] =
-          '<ph name="1"/> or <ph name="0"/>';
+      translations[id(new Message(
+          '<ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/>', null, null))] =
+          '<ph name="INTERPOLATION_1"/> or <ph name="INTERPOLATION_0"/>';
 
       expect(humanizeDom(parse(
                  '<div value=\'{%a%} and {%b%}\' i18n-value></div>', translations, [], {},
@@ -135,8 +137,9 @@ export function main() {
     it('should support interpolation', () => {
       let translations: {[key: string]: string} = {};
       translations[id(new Message(
-          '<ph name="e0">a</ph><ph name="e2"><ph name="t3">b<ph name="0"/></ph></ph>', null,
-          null))] = '<ph name="e2"><ph name="t3"><ph name="0"/>B</ph></ph><ph name="e0">A</ph>';
+          '<ph name="e0">a</ph><ph name="e2"><ph name="t3">b<ph name="INTERPOLATION_0"/></ph></ph>',
+          null, null))] =
+          '<ph name="e2"><ph name="t3"><ph name="INTERPOLATION_0"/>B</ph></ph><ph name="e0">A</ph>';
       expect(humanizeDom(parse('<div i18n><a>a</a><b>b{{i}}</b></div>', translations))).toEqual([
         [HtmlElementAst, 'div', 0],
         [HtmlElementAst, 'b', 1],
@@ -237,11 +240,12 @@ export function main() {
 
       it('should error when the translation refers to an invalid expression', () => {
         let translations: {[key: string]: string} = {};
-        translations[id(new Message('hi <ph name="0"/>', null, null))] = 'hi <ph name="99"/>';
+        translations[id(new Message('hi <ph name="INTERPOLATION_0"/>', null, null))] =
+            'hi <ph name="INTERPOLATION_99"/>';
 
         expect(
             humanizeErrors(parse('<div value=\'hi {{a}}\' i18n-value></div>', translations).errors))
-            .toEqual(['Invalid interpolation name \'99\'']);
+            .toEqual(['Invalid interpolation name \'INTERPOLATION_99\'']);
       });
     });
 
