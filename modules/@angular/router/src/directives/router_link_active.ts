@@ -59,17 +59,14 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  */
 @Directive({selector: '[routerLinkActive]'})
 export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
-  @ContentChildren(RouterLink) private links: QueryList<RouterLink>;
-  @ContentChildren(RouterLinkWithHref) private linksWithHrefs: QueryList<RouterLinkWithHref>;
+  @ContentChildren(RouterLink) links: QueryList<RouterLink>;
+  @ContentChildren(RouterLinkWithHref) linksWithHrefs: QueryList<RouterLinkWithHref>;
 
   private classes: string[] = [];
   private subscription: Subscription;
 
   @Input() private routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
-  /**
-   * @internal
-   */
   constructor(private router: Router, private element: ElementRef, private renderer: Renderer) {
     this.subscription = router.events.subscribe(s => {
       if (s instanceof NavigationEnd) {
