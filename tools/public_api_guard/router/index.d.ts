@@ -137,12 +137,16 @@ export declare class RouterLink {
     };
     routerLink: any[] | string;
     urlTree: UrlTree;
+    constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
     onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
 }
 
 /** @stable */
 export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
+    links: QueryList<RouterLink>;
+    linksWithHrefs: QueryList<RouterLinkWithHref>;
     routerLinkActive: string[] | string;
+    constructor(router: Router, element: ElementRef, renderer: Renderer);
     ngAfterContentInit(): void;
     ngOnChanges(changes: {}): any;
     ngOnDestroy(): any;

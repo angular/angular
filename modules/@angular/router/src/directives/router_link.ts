@@ -62,9 +62,6 @@ export class RouterLink {
 
   urlTree: UrlTree;
 
-  /**
-   * @internal
-   */
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {}
