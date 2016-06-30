@@ -151,7 +151,7 @@
 
   Before:
   ```js
-  import {beforeEachProviders, it, describe, inject} from '@angular/testing/core';
+  import {beforeEachProviders, it, describe, inject} from '@angular/core/testing';
 
   describe('my code', () => {
     beforeEachProviders(() => [MyService]);
@@ -164,7 +164,7 @@
 
   After:
   ```js
-  import {addProviders, inject} from '@angular/testing/core';
+  import {addProviders, inject} from '@angular/core/testing';
 
   describe('my code', () => {
     beforeEach(() => {
