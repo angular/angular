@@ -28,7 +28,9 @@ export declare abstract class AbstractControl {
     markAsPending({onlySelf}?: {
         onlySelf?: boolean;
     }): void;
-    markAsTouched(): void;
+    markAsTouched({onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
     setAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[]): void;
     setErrors(errors: {
         [key: string]: any;

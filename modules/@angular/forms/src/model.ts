@@ -120,7 +120,14 @@ export abstract class AbstractControl {
 
   clearValidators(): void { this.validator = null; }
 
-  markAsTouched(): void { this._touched = true; }
+  markAsTouched({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+    this._touched = true;
+
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent.markAsTouched({onlySelf: onlySelf});
+    }
+  }
 
   markAsDirty({onlySelf}: {onlySelf?: boolean} = {}): void {
     onlySelf = normalizeBool(onlySelf);
