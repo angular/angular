@@ -1,3 +1,21 @@
+# 3.0.0-beta.1 (2016-06-30)
+
+## Features
+* feat(router): make router links work on non-a tags
+* feat(router): add pathMatch property to replace terminal
+* feat(router): use componentFactoryResolver
+* feat(router): implement data and resolve
+
+## Bug Fixes
+* fix(router): fix RouterLinkActive to handle the case when the link has extra paths
+* fix(router): redirect should not add unnecessary brackets
+* fix(router): reexport router directives
+* fix(router): make the constructor of the router service public
+* fix(router): top-levels do not work in ngIf
+* fix(router): canceled navigations should return a promise that is resolved with false
+* fix(router): handle empty path with query params
+* fix(router): preserve fragment on initial load
+
 # 3.0.0-alpha.8 (2016-06-24)
 
 ## Features
