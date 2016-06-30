@@ -71,7 +71,7 @@ export function main() {
                });
                rtr.navigateByUrl('/parent-activate/child-activate').then((_) => {
                  fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('parent {activate cmp}');
+                 expect(fixture.debugElement.nativeElement).toHaveText('parent [activate cmp]');
                  expect(log).toEqual([
                    'parent activate: null -> /parent-activate', 'activate: null -> /child-activate'
                  ]);
@@ -106,7 +106,7 @@ export function main() {
                  if (ev.startsWith('deactivate')) {
                    completer.resolve(true);
                    fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('parent {deactivate cmp}');
+                   expect(fixture.debugElement.nativeElement).toHaveText('parent [deactivate cmp]');
                  }
                });
                rtr.navigateByUrl('/a').then((_) => {
@@ -130,14 +130,14 @@ export function main() {
              .then((_) => {
                fixture.detectChanges();
                expect(log).toEqual([]);
-               expect(fixture.debugElement.nativeElement).toHaveText('reuse {A}');
+               expect(fixture.debugElement.nativeElement).toHaveText('reuse [A]');
                expect(cmpInstanceCount).toBe(1);
              })
              .then((_) => rtr.navigateByUrl('/on-reuse/2/b'))
              .then((_) => {
                fixture.detectChanges();
                expect(log).toEqual(['reuse: /on-reuse/1 -> /on-reuse/2']);
-               expect(fixture.debugElement.nativeElement).toHaveText('reuse {B}');
+               expect(fixture.debugElement.nativeElement).toHaveText('reuse [B]');
                expect(cmpInstanceCount).toBe(1);
                async.done();
              });
@@ -153,14 +153,14 @@ export function main() {
              .then((_) => {
                fixture.detectChanges();
                expect(log).toEqual([]);
-               expect(fixture.debugElement.nativeElement).toHaveText('reuse {A}');
+               expect(fixture.debugElement.nativeElement).toHaveText('reuse [A]');
                expect(cmpInstanceCount).toBe(1);
              })
              .then((_) => rtr.navigateByUrl('/never-reuse/2/b'))
              .then((_) => {
                fixture.detectChanges();
                expect(log).toEqual([]);
-               expect(fixture.debugElement.nativeElement).toHaveText('reuse {B}');
+               expect(fixture.debugElement.nativeElement).toHaveText('reuse [B]');
                expect(cmpInstanceCount).toBe(2);
                async.done();
              });
@@ -180,7 +180,7 @@ export function main() {
                });
                rtr.navigateByUrl('/can-activate/a').then((_) => {
                  fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('routerCanActivate {A}');
+                 expect(fixture.debugElement.nativeElement).toHaveText('routerCanActivate [A]');
                  expect(log).toEqual(['routerCanActivate: null -> /can-activate']);
                  async.done();
                });
@@ -215,7 +215,7 @@ export function main() {
              .then((_) => rtr.navigateByUrl('/can-deactivate/a'))
              .then((_) => {
                fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('routerCanDeactivate {A}');
+               expect(fixture.debugElement.nativeElement).toHaveText('routerCanDeactivate [A]');
                expect(log).toEqual([]);
 
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -241,7 +241,7 @@ export function main() {
              .then((_) => rtr.navigateByUrl('/can-deactivate/a'))
              .then((_) => {
                fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('routerCanDeactivate {A}');
+               expect(fixture.debugElement.nativeElement).toHaveText('routerCanDeactivate [A]');
                expect(log).toEqual([]);
 
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -252,7 +252,7 @@ export function main() {
 
                rtr.navigateByUrl('/a').then((_) => {
                  fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('routerCanDeactivate {A}');
+                 expect(fixture.debugElement.nativeElement).toHaveText('routerCanDeactivate [A]');
                  expect(log).toEqual(['routerCanDeactivate: /can-deactivate -> /a']);
                  async.done();
                });
@@ -380,7 +380,7 @@ class ActivateCmp implements OnActivate {
 
 @Component({
   selector: 'parent-activate-cmp',
-  template: `parent {<router-outlet></router-outlet>}`,
+  template: `parent [<router-outlet></router-outlet>]`,
   directives: [RouterOutlet]
 })
 @RouteConfig([new Route({path: '/child-activate', component: ActivateCmp})])
@@ -410,7 +410,7 @@ class WaitDeactivateCmp implements OnDeactivate {
 
 @Component({
   selector: 'parent-deactivate-cmp',
-  template: `parent {<router-outlet></router-outlet>}`,
+  template: `parent [<router-outlet></router-outlet>]`,
   directives: [RouterOutlet]
 })
 @RouteConfig([new Route({path: '/child-deactivate', component: WaitDeactivateCmp})])
@@ -422,7 +422,7 @@ class ParentDeactivateCmp implements OnDeactivate {
 
 @Component({
   selector: 'reuse-cmp',
-  template: `reuse {<router-outlet></router-outlet>}`,
+  template: `reuse [<router-outlet></router-outlet>]`,
   directives: [RouterOutlet]
 })
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
@@ -437,7 +437,7 @@ class ReuseCmp implements OnReuse,
 
 @Component({
   selector: 'never-reuse-cmp',
-  template: `reuse {<router-outlet></router-outlet>}`,
+  template: `reuse [<router-outlet></router-outlet>]`,
   directives: [RouterOutlet]
 })
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
@@ -452,7 +452,7 @@ class NeverReuseCmp implements OnReuse,
 
 @Component({
   selector: 'can-activate-cmp',
-  template: `routerCanActivate {<router-outlet></router-outlet>}`,
+  template: `routerCanActivate [<router-outlet></router-outlet>]`,
   directives: [RouterOutlet]
 })
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
@@ -468,7 +468,7 @@ class CanActivateCmp {
 
 @Component({
   selector: 'can-deactivate-cmp',
-  template: `routerCanDeactivate {<router-outlet></router-outlet>}`,
+  template: `routerCanDeactivate [<router-outlet></router-outlet>]`,
   directives: [RouterOutlet]
 })
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])

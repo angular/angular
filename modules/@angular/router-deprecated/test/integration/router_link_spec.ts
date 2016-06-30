@@ -440,9 +440,9 @@ function parentCmpLoader() {
 
 @Component({
   selector: 'parent-cmp',
-  template: `{ <a [routerLink]="['./Grandchild']" class="grandchild-link">Grandchild</a>
+  template: `[ <a [routerLink]="['./Grandchild']" class="grandchild-link">Grandchild</a>
                <a [routerLink]="['./BetterGrandchild']" class="better-grandchild-link">Better Grandchild</a>
-               <router-outlet></router-outlet> }`,
+               <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([

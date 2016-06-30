@@ -72,13 +72,13 @@ export function main() {
 
     it('should navigate to child routes',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         compile(tcb, 'outer { <router-outlet></router-outlet> }')
+         compile(tcb, 'outer [ <router-outlet></router-outlet> ]')
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
              .then((_) => rtr.navigateByUrl('/a/b'))
              .then((_) => {
                fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               expect(fixture.debugElement.nativeElement).toHaveText('outer [ inner [ hello ] ]');
                async.done();
              });
        }));
@@ -86,13 +86,13 @@ export function main() {
     it('should navigate to child routes that capture an empty path',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
-         compile(tcb, 'outer { <router-outlet></router-outlet> }')
+         compile(tcb, 'outer [ <router-outlet></router-outlet> ]')
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
              .then((_) => rtr.navigateByUrl('/a'))
              .then((_) => {
                fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               expect(fixture.debugElement.nativeElement).toHaveText('outer [ inner [ hello ] ]');
                async.done();
              });
        }));
@@ -101,14 +101,14 @@ export function main() {
        inject(
            [AsyncTestCompleter, Location],
            (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
-             compile(tcb, 'outer { <router-outlet></router-outlet> }')
+             compile(tcb, 'outer [ <router-outlet></router-outlet> ]')
                  .then((rtc) => {fixture = rtc})
                  .then((_) => rtr.config([new Route({path: '/...', component: ParentCmp})]))
                  .then((_) => rtr.navigateByUrl('/b'))
                  .then((_) => {
                    fixture.detectChanges();
                    expect(fixture.debugElement.nativeElement)
-                       .toHaveText('outer { inner { hello } }');
+                       .toHaveText('outer [ inner [ hello ] ]');
                    expect(location.urlChanges).toEqual(['/b']);
                    async.done();
                  });
@@ -116,13 +116,13 @@ export function main() {
 
     it('should navigate to child routes of async routes',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         compile(tcb, 'outer { <router-outlet></router-outlet> }')
+         compile(tcb, 'outer [ <router-outlet></router-outlet> ]')
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([new AsyncRoute({path: '/a/...', loader: parentLoader})]))
              .then((_) => rtr.navigateByUrl('/a/b'))
              .then((_) => {
                fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               expect(fixture.debugElement.nativeElement).toHaveText('outer [ inner [ hello ] ]');
                async.done();
              });
        }));
@@ -154,14 +154,14 @@ export function main() {
              .then((_) => {
                fixture.detectChanges();
                expect(cmpInstanceCount).toBe(1);
-               expect(fixture.debugElement.nativeElement).toHaveText('team angular { hello rado }');
+               expect(fixture.debugElement.nativeElement).toHaveText('team angular [ hello rado ]');
              })
              .then((_) => rtr.navigateByUrl('/team/angular/user/victor'))
              .then((_) => {
                fixture.detectChanges();
                expect(cmpInstanceCount).toBe(1);
                expect(fixture.debugElement.nativeElement)
-                   .toHaveText('team angular { hello victor }');
+                   .toHaveText('team angular [ hello victor ]');
                async.done();
              });
        }));
@@ -176,14 +176,14 @@ export function main() {
                fixture.detectChanges();
                expect(cmpInstanceCount).toBe(1);
                expect(childCmpInstanceCount).toBe(1);
-               expect(fixture.debugElement.nativeElement).toHaveText('team angular { hello rado }');
+               expect(fixture.debugElement.nativeElement).toHaveText('team angular [ hello rado ]');
              })
              .then((_) => rtr.navigateByUrl('/team/dart/user/rado'))
              .then((_) => {
                fixture.detectChanges();
                expect(cmpInstanceCount).toBe(2);
                expect(childCmpInstanceCount).toBe(2);
-               expect(fixture.debugElement.nativeElement).toHaveText('team dart { hello rado }');
+               expect(fixture.debugElement.nativeElement).toHaveText('team dart [ hello rado ]');
                async.done();
              });
        }));
@@ -284,7 +284,7 @@ function parentLoader() {
 
 @Component({
   selector: 'parent-cmp',
-  template: `inner { <router-outlet></router-outlet> }`,
+  template: `inner [ <router-outlet></router-outlet> ]`,
   directives: [RouterOutlet],
 })
 @RouteConfig([
@@ -297,7 +297,7 @@ class ParentCmp {
 
 @Component({
   selector: 'team-cmp',
-  template: `team {{id}} { <router-outlet></router-outlet> }`,
+  template: `team {{id}} [ <router-outlet></router-outlet> ]`,
   directives: [RouterOutlet],
 })
 @RouteConfig([new Route({path: '/user/:name', component: UserCmp})])

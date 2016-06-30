@@ -7,33 +7,26 @@
  */
 
 import {Inject, Injectable, OpaqueToken, Optional, SecurityContext} from '@angular/core';
-
 import {Console, MAX_INTERPOLATION_VALUES} from '../core_private';
-
 import {ListWrapper, StringMapWrapper, SetWrapper,} from '../src/facade/collection';
-import {RegExpWrapper, isPresent, StringWrapper, isBlank, isArray} from '../src/facade/lang';
+import {RegExpWrapper, isPresent, StringWrapper, isBlank} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
 import {AST, Interpolation, ASTWithSource, TemplateBinding, RecursiveAstVisitor, BindingPipe, ParserError} from './expression_parser/ast';
 import {Parser} from './expression_parser/parser';
 import {CompileDirectiveMetadata, CompilePipeMetadata, CompileMetadataWithType, CompileTokenMetadata,} from './compile_metadata';
-import {HtmlParser} from './html_parser';
+import {HtmlParser, HtmlParseTreeResult} from './html_parser';
 import {splitNsName, mergeNsAndName} from './html_tags';
 import {ParseSourceSpan, ParseError, ParseErrorLevel} from './parse_util';
 import {InterpolationConfig} from './interpolation_config';
-
 import {ElementAst, BoundElementPropertyAst, BoundEventAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst, ProviderAst, ProviderAstType, VariableAst} from './template_ast';
 import {CssSelector, SelectorMatcher} from './selector';
-
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {preparseElement, PreparsedElementType} from './template_preparser';
-
 import {isStyleUrlResolvable} from './style_url_resolver';
-
 import {HtmlAstVisitor, HtmlElementAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, HtmlExpansionAst, HtmlExpansionCaseAst, htmlVisitAll} from './html_ast';
-
 import {splitAtColon} from './util';
 import {identifierToken, Identifiers} from './identifiers';
-
+import {expandNodes} from './expander';
 import {ProviderElementContext, ProviderViewContext} from './provider_parser';
 
 // Group 1 = "bind-"
@@ -113,10 +106,17 @@ export class TemplateParser {
     if (component.template) {
       interpolationConfig = InterpolationConfig.fromArray(component.template.interpolation);
     }
-    const htmlAstWithErrors =
-        this._htmlParser.parse(template, templateUrl, false, interpolationConfig);
+    let htmlAstWithErrors =
+        this._htmlParser.parse(template, templateUrl, true, interpolationConfig);
     const errors: ParseError[] = htmlAstWithErrors.errors;
     let result: TemplateAst[];
+
+    if (errors.length == 0) {
+      // Transform ICU messages to angular directives
+      const expandedHtmlAst = expandNodes(htmlAstWithErrors.rootNodes);
+      errors.push(...expandedHtmlAst.errors);
+      htmlAstWithErrors = new HtmlParseTreeResult(expandedHtmlAst.nodes, errors);
+    }
 
     if (htmlAstWithErrors.rootNodes.length > 0) {
       const uniqDirectives = <CompileDirectiveMetadata[]>removeDuplicates(directives);
@@ -137,10 +137,12 @@ export class TemplateParser {
     if (errors.length > 0) {
       return new TemplateParseResult(result, errors);
     }
+
     if (isPresent(this.transforms)) {
       this.transforms.forEach(
           (transform: TemplateAstVisitor) => { result = templateVisitAll(transform, result); });
     }
+
     return new TemplateParseResult(result, errors);
   }
 

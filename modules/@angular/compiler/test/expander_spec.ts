@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlAttrAst, HtmlElementAst, HtmlTextAst} from '@angular/compiler/src/html_ast';
-import {HtmlParser} from '@angular/compiler/src/html_parser';
-import {ExpansionResult, expandNodes} from '@angular/compiler/src/i18n/expander';
-import {ParseError} from '@angular/compiler/src/parse_util';
-import {humanizeNodes} from '@angular/compiler/test/html_ast_spec_utils';
-import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
+import {ddescribe, describe, expect, iit, it} from '../../core/testing/testing_internal';
+import {ExpansionResult, expandNodes} from '../src/expander';
+import {HtmlAttrAst, HtmlElementAst, HtmlTextAst} from '../src/html_ast';
+import {HtmlParser} from '../src/html_parser';
+import {ParseError} from '../src/parse_util';
+
+import {humanizeNodes} from './html_ast_spec_utils';
 
 export function main() {
   describe('Expander', () => {

@@ -58,7 +58,7 @@ export function main() {
          ]).then((applicationRef) => {
            var router = applicationRef.instance.router;
            router.subscribe((_: any /** TODO #9100 */) => {
-             expect(el).toHaveText('outer { hello }');
+             expect(el).toHaveText('outer [ hello ]');
              expect(applicationRef.instance.location.path()).toEqual('');
              async.done();
            });
@@ -95,9 +95,9 @@ export function main() {
                  var position = 0;
                  var flipped = false;
                  var history = [
-                   ['/parent/child', 'root { parent { hello } }', '/super-parent/child'],
-                   ['/super-parent/child', 'root { super-parent { hello2 } }', '/parent/child'],
-                   ['/parent/child', 'root { parent { hello } }', false]
+                   ['/parent/child', 'root [ parent [ hello ] ]', '/super-parent/child'],
+                   ['/super-parent/child', 'root [ super-parent [ hello2 ] ]', '/parent/child'],
+                   ['/parent/child', 'root [ parent [ hello ] ]', false]
                  ];
 
                  router.subscribe((_: any /** TODO #9100 */) => {
@@ -147,7 +147,7 @@ export function main() {
                  var router = fixture.debugElement.componentInstance.router;
                  router.subscribe((_: any /** TODO #9100 */) => {
                    expect(fixture.debugElement.nativeElement)
-                       .toHaveText('root { parent { hello } }');
+                       .toHaveText('root [ parent [ hello ] ]');
                    expect(fixture.debugElement.componentInstance.location.path())
                        .toEqual('/parent/child');
                    async.done();
@@ -168,7 +168,7 @@ export function main() {
                    var router = fixture.debugElement.componentInstance.router;
                    router.subscribe((_: any /** TODO #9100 */) => {
                      expect(fixture.debugElement.nativeElement)
-                         .toHaveText('root { parent { hello } }');
+                         .toHaveText('root [ parent [ hello ] ]');
                      expect(fixture.debugElement.componentInstance.location.path())
                          .toEqual('/my/app/parent/child');
                      async.done();
@@ -252,7 +252,7 @@ class Hello2Cmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `outer { <router-outlet></router-outlet> }`,
+  template: `outer [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new Route({path: '/', component: HelloCmp})])
@@ -288,7 +288,7 @@ class AppWithOutletListeners {
 
 @Component({
   selector: 'parent-cmp',
-  template: `parent { <router-outlet></router-outlet> }`,
+  template: `parent [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new Route({path: '/child', component: HelloCmp})])
@@ -297,7 +297,7 @@ class ParentCmp {
 
 @Component({
   selector: 'super-parent-cmp',
-  template: `super-parent { <router-outlet></router-outlet> }`,
+  template: `super-parent [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new Route({path: '/child', component: Hello2Cmp})])
@@ -306,7 +306,7 @@ class SuperParentCmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `root { <router-outlet></router-outlet> }`,
+  template: `root [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([
@@ -340,7 +340,7 @@ class BrokenCmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `outer { <router-outlet></router-outlet> }`,
+  template: `outer [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([new Route({path: '/cause-error', component: BrokenCmp})])

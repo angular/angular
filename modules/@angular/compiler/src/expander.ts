@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
-import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../html_ast';
-import {ParseError} from '../parse_util';
-import {I18nError} from './shared';
+import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from './html_ast';
+import {ParseError, ParseSourceSpan} from './parse_util';
 
 // http://cldr.unicode.org/index/cldr-spec/plural-rules
 const PLURAL_CASES: string[] = ['zero', 'one', 'two', 'few', 'many', 'other'];
@@ -46,6 +44,10 @@ export class ExpansionResult {
   constructor(public nodes: HtmlAst[], public expanded: boolean, public errors: ParseError[]) {}
 }
 
+export class ExpansionError extends ParseError {
+  constructor(span: ParseSourceSpan, errorMsg: string) { super(span, errorMsg); }
+}
+
 /**
  * Expand expansion forms (plural, select) to directives
  *
@@ -74,14 +76,14 @@ class _Expander implements HtmlAstVisitor {
   }
 
   visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any {
-    throw new BaseException('Should not be reached');
+    throw new Error('Should not be reached');
   }
 }
 
 function _expandPluralForm(ast: HtmlExpansionAst, errors: ParseError[]): HtmlElementAst {
   const children = ast.cases.map(c => {
     if (PLURAL_CASES.indexOf(c.value) == -1 && !c.value.match(/^=\d+$/)) {
-      errors.push(new I18nError(
+      errors.push(new ExpansionError(
           c.valueSourceSpan,
           `Plural cases should be "=<number>" or one of ${PLURAL_CASES.join(", ")}`));
     }

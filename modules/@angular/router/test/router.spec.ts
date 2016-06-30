@@ -1,7 +1,7 @@
 import 'rxjs/add/operator/map';
 
 import {Location} from '@angular/common';
-import {AppModule, AppModuleFactory, AppModuleFactoryLoader, Compiler, Component, Injectable} from '@angular/core';
+import {AppModule, AppModuleFactoryLoader, Component} from '@angular/core';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {addProviders, configureModule, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -118,7 +118,7 @@ describe('Integration', () => {
            (<any>location).simulateHashChange('/team/22/user/fedor');
            advance(fixture);
 
-           expect(fixture.debugElement.nativeElement).toHaveText('team 22 { user fedor, right:  }');
+           expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ user fedor, right:  ]');
          })));
 
   it('should update the location when the matched route does not change',
@@ -162,7 +162,7 @@ describe('Integration', () => {
            advance(fixture);
 
            expect(fixture.debugElement.nativeElement)
-               .toHaveText('team 22 { user victor, right: simple }');
+               .toHaveText('team 22 [ user victor, right: simple ]');
          })));
 
   it('should deactivate outlets',
@@ -186,7 +186,7 @@ describe('Integration', () => {
            advance(fixture);
 
            expect(fixture.debugElement.nativeElement)
-               .toHaveText('team 22 { user victor, right:  }');
+               .toHaveText('team 22 [ user victor, right:  ]');
          })));
 
   it('should deactivate nested outlets',
@@ -394,27 +394,27 @@ describe('Integration', () => {
            advance(fixture);
            expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
            expect(fixture.debugElement.nativeElement)
-               .toHaveText('primary {simple} right {user victor}');
+               .toHaveText('primary [simple] right [user victor]');
 
            // navigate to the same route with different params (reuse)
            router.navigateByUrl('/parent/22/(simple//right:user/fedor)');
            advance(fixture);
            expect(location.path()).toEqual('/parent/22/(simple//right:user/fedor)');
            expect(fixture.debugElement.nativeElement)
-               .toHaveText('primary {simple} right {user fedor}');
+               .toHaveText('primary [simple] right [user fedor]');
 
            // navigate to a normal route (check deactivation)
            router.navigateByUrl('/user/victor');
            advance(fixture);
            expect(location.path()).toEqual('/user/victor');
-           expect(fixture.debugElement.nativeElement).toHaveText('primary {user victor} right {}');
+           expect(fixture.debugElement.nativeElement).toHaveText('primary [user victor] right []');
 
            // navigate back to a componentless route
            router.navigateByUrl('/parent/11/(simple//right:user/victor)');
            advance(fixture);
            expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
            expect(fixture.debugElement.nativeElement)
-               .toHaveText('primary {simple} right {user victor}');
+               .toHaveText('primary [simple] right [user victor]');
          })));
 
   it('should emit an event when an outlet gets activated',
@@ -538,14 +538,14 @@ describe('Integration', () => {
 
              router.navigateByUrl('/team/22/link');
              advance(fixture);
-             expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, right:  }');
+             expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.getAttribute('href')).toEqual('/team/33/simple');
              native.click();
              advance(fixture);
 
-             expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, right:  }');
+             expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
            })));
 
     it('should update hrefs when query params change',
@@ -591,13 +591,13 @@ describe('Integration', () => {
 
              router.navigateByUrl('/team/22/link');
              advance(fixture);
-             expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, right:  }');
+             expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
              const native = fixture.debugElement.nativeElement.querySelector('button');
              native.click();
              advance(fixture);
 
-             expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, right:  }');
+             expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
            })));
 
     it('should support absolute router links',
@@ -616,14 +616,14 @@ describe('Integration', () => {
 
              router.navigateByUrl('/team/22/link');
              advance(fixture);
-             expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, right:  }');
+             expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.getAttribute('href')).toEqual('/team/33/simple');
              native.click();
              advance(fixture);
 
-             expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, right:  }');
+             expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
            })));
 
     it('should support relative router links',
@@ -642,14 +642,14 @@ describe('Integration', () => {
 
              router.navigateByUrl('/team/22/link');
              advance(fixture);
-             expect(fixture.debugElement.nativeElement).toHaveText('team 22 { link, right:  }');
+             expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.getAttribute('href')).toEqual('/team/22/simple');
              native.click();
              advance(fixture);
 
-             expect(fixture.debugElement.nativeElement).toHaveText('team 22 { simple, right:  }');
+             expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ simple, right:  ]');
            })));
 
     it('should support top-level link',
@@ -702,7 +702,7 @@ describe('Integration', () => {
              native.click();
              advance(fixture);
 
-             expect(fixture.debugElement.nativeElement).toHaveText('team 22 { simple, right:  }');
+             expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ simple, right:  ]');
 
              expect(location.path()).toEqual('/team/22/simple?q=1#f');
            })));
@@ -1127,7 +1127,7 @@ describe('Integration', () => {
                      loader: SpyAppModuleFactoryLoader) => {
                       @Component({
                         selector: 'lazy',
-                        template: 'lazy-loaded-parent {<router-outlet></router-outlet>}',
+                        template: 'lazy-loaded-parent [<router-outlet></router-outlet>]',
                         directives: ROUTER_DIRECTIVES
                       })
                       class ParentLazyLoadedComponent {
@@ -1160,7 +1160,7 @@ describe('Integration', () => {
 
                       expect(location.path()).toEqual('/lazy/loaded/child');
                       expect(fixture.debugElement.nativeElement)
-                          .toHaveText('lazy-loaded-parent {lazy-loaded-child}');
+                          .toHaveText('lazy-loaded-parent [lazy-loaded-child]');
                     })));
 
     it('error emit an error when cannot load a config',
@@ -1287,7 +1287,7 @@ class BlankCmp {
 @Component({
   selector: 'team-cmp',
   template:
-      `team {{id | async}} { <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> }`,
+      `team {{id | async}} [ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 class TeamCmp {
@@ -1376,7 +1376,7 @@ class RootCmp {
 @Component({
   selector: 'root-cmp',
   template:
-      `primary {<router-outlet></router-outlet>} right {<router-outlet name="right"></router-outlet>}`,
+      `primary [<router-outlet></router-outlet>] right [<router-outlet name="right"></router-outlet>]`,
   directives: [ROUTER_DIRECTIVES],
   precompile: [BlankCmp, SimpleCmp, RouteCmp, UserCmp]
 })

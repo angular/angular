@@ -59,7 +59,7 @@ export function main() {
          bootstrap(HierarchyAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
            router.subscribe((_: any /** TODO #9100 */) => {
-             expect(el).toHaveText('root { parent { hello } }');
+             expect(el).toHaveText('root [ parent [ hello ] ]');
              expect(applicationRef.instance.location.path()).toEqual('/parent/child');
              async.done();
            });
@@ -73,7 +73,7 @@ export function main() {
          bootstrap(RedirectAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
            router.subscribe((_: any /** TODO #9100 */) => {
-             expect(el).toHaveText('root { hello }');
+             expect(el).toHaveText('root [ hello ]');
              expect(applicationRef.instance.location.path()).toEqual('/after');
              async.done();
            });
@@ -87,7 +87,7 @@ export function main() {
          bootstrap(AsyncAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
            router.subscribe((_: any /** TODO #9100 */) => {
-             expect(el).toHaveText('root { hello }');
+             expect(el).toHaveText('root [ hello ]');
              expect(applicationRef.instance.location.path()).toEqual('/hello');
              async.done();
            });
@@ -101,7 +101,7 @@ export function main() {
          bootstrap(AuxAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
            router.subscribe((_: any /** TODO #9100 */) => {
-             expect(el).toHaveText('root { hello } aside { hello }');
+             expect(el).toHaveText('root [ hello ] aside [ hello ]');
              expect(applicationRef.instance.location.path()).toEqual('/hello(aside)');
              async.done();
            });
@@ -115,7 +115,7 @@ export function main() {
          bootstrap(ConciseAsyncAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
            router.subscribe((_: any /** TODO #9100 */) => {
-             expect(el).toHaveText('root { hello }');
+             expect(el).toHaveText('root [ hello ]');
              expect(applicationRef.instance.location.path()).toEqual('/hello');
              async.done();
            });
@@ -129,7 +129,7 @@ export function main() {
          bootstrap(ExplicitConstructorAppCmp, testBindings).then((applicationRef) => {
            var router = applicationRef.instance.router;
            router.subscribe((_: any /** TODO #9100 */) => {
-             expect(el).toHaveText('root { hello }');
+             expect(el).toHaveText('root [ hello ]');
              expect(applicationRef.instance.location.path()).toEqual('/hello');
              async.done();
            });
@@ -181,7 +181,7 @@ class HelloCmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `root { <router-outlet></router-outlet> }`,
+  template: `root [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([
@@ -197,7 +197,7 @@ function HelloLoader(): Promise<any> {
 
 @Component({
   selector: 'app-cmp',
-  template: `root { <router-outlet></router-outlet> }`,
+  template: `root [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([
@@ -209,7 +209,7 @@ class AsyncAppCmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `root { <router-outlet></router-outlet> }`,
+  template: `root [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([
@@ -222,7 +222,7 @@ class ConciseAsyncAppCmp {
 @Component({
   selector: 'app-cmp',
   template:
-      `root { <router-outlet></router-outlet> } aside { <router-outlet name="aside"></router-outlet> }`,
+      `root [ <router-outlet></router-outlet> ] aside [ <router-outlet name="aside"></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([{path: '/hello', component: HelloCmp}, {aux: 'aside', component: HelloCmp}])
@@ -232,7 +232,7 @@ class AuxAppCmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `root { <router-outlet></router-outlet> }`,
+  template: `root [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([
@@ -244,7 +244,7 @@ class ExplicitConstructorAppCmp {
 
 @Component({
   selector: 'parent-cmp',
-  template: `parent { <router-outlet></router-outlet> }`,
+  template: `parent [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([{path: '/child', component: HelloCmp}])
@@ -253,7 +253,7 @@ class ParentCmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `root { <router-outlet></router-outlet> }`,
+  template: `root [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([{path: '/parent/...', component: ParentCmp}])
@@ -263,7 +263,7 @@ class HierarchyAppCmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `root { <router-outlet></router-outlet> }`,
+  template: `root [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([{path: '/hello'}])
@@ -272,7 +272,7 @@ class WrongConfigCmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `root { <router-outlet></router-outlet> }`,
+  template: `root [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([{path: '/child', component: HelloCmp, name: 'child'}])
@@ -281,7 +281,7 @@ class BadAliasNameCmp {
 
 @Component({
   selector: 'app-cmp',
-  template: `root { <router-outlet></router-outlet> }`,
+  template: `root [ <router-outlet></router-outlet> ]`,
   directives: ROUTER_DIRECTIVES
 })
 @RouteConfig([

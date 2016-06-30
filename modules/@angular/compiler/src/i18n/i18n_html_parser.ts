@@ -14,14 +14,12 @@ import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, Ht
 import {HtmlParseTreeResult, HtmlParser} from '../html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../interpolation_config';
 import {ParseError, ParseSourceSpan} from '../parse_util';
-
-import {expandNodes} from './expander';
 import {Message, id} from './message';
 import {I18N_ATTR, I18N_ATTR_PREFIX, I18nError, Part, dedupePhName, extractPhNameFromInterpolation, messageFromAttribute, messageFromI18nAttribute, partition} from './shared';
 
 const _PLACEHOLDER_ELEMENT = 'ph';
 const _NAME_ATTR = 'name';
-let _PLACEHOLDER_EXPANDED_REGEXP = /<ph(\s)+name=("(\w)+")><\/ph>/gi;
+const _PLACEHOLDER_EXPANDED_REGEXP = /<ph(\s)+name=("(\w)+")><\/ph>/gi;
 
 /**
  * Creates an i18n-ed version of the parsed template.
@@ -72,9 +70,7 @@ export class I18nHtmlParser implements HtmlParser {
       return res;
     }
 
-    const expanded = expandNodes(res.rootNodes);
-    const nodes = this._recurse(expanded.nodes);
-    this.errors.push(...expanded.errors);
+    const nodes = this._recurse(res.rootNodes);
 
     return this.errors.length > 0 ? new HtmlParseTreeResult([], this.errors) :
                                     new HtmlParseTreeResult(nodes, []);

@@ -43,7 +43,7 @@ export function userCmpLoader() {
 
 @Component({
   selector: 'parent-cmp',
-  template: `inner { <router-outlet></router-outlet> }`,
+  template: `inner [ <router-outlet></router-outlet> ]`,
   directives: [ROUTER_DIRECTIVES],
 })
 @RouteConfig([new Route({path: '/b', component: HelloCmp, name: 'Child'})])
@@ -57,7 +57,7 @@ export function parentCmpLoader() {
 
 @Component({
   selector: 'parent-cmp',
-  template: `inner { <router-outlet></router-outlet> }`,
+  template: `inner [ <router-outlet></router-outlet> ]`,
   directives: [ROUTER_DIRECTIVES],
 })
 @RouteConfig([new AsyncRoute({path: '/b', loader: helloCmpLoader, name: 'Child'})])
@@ -70,7 +70,7 @@ export function asyncParentCmpLoader() {
 
 @Component({
   selector: 'parent-cmp',
-  template: `inner { <router-outlet></router-outlet> }`,
+  template: `inner [ <router-outlet></router-outlet> ]`,
   directives: [ROUTER_DIRECTIVES],
 })
 @RouteConfig(
@@ -85,7 +85,7 @@ export function asyncDefaultParentCmpLoader() {
 
 @Component({
   selector: 'parent-cmp',
-  template: `inner { <router-outlet></router-outlet> }`,
+  template: `inner [ <router-outlet></router-outlet> ]`,
   directives: [ROUTER_DIRECTIVES],
 })
 @RouteConfig([new Route({path: '/b', component: HelloCmp, name: 'Child', useAsDefault: true})])
@@ -99,7 +99,7 @@ export function parentWithDefaultCmpLoader() {
 
 @Component({
   selector: 'team-cmp',
-  template: `team {{id}} | user { <router-outlet></router-outlet> }`,
+  template: `team {{id}} | user [ <router-outlet></router-outlet> ]`,
   directives: [ROUTER_DIRECTIVES],
 })
 @RouteConfig([new Route({path: '/user/:name', component: UserCmp, name: 'User'})])
@@ -110,7 +110,7 @@ export class TeamCmp {
 
 @Component({
   selector: 'team-cmp',
-  template: `team {{id}} | user { <router-outlet></router-outlet> }`,
+  template: `team {{id}} | user [ <router-outlet></router-outlet> ]`,
   directives: [ROUTER_DIRECTIVES],
 })
 @RouteConfig([new AsyncRoute({path: '/user/:name', loader: userCmpLoader, name: 'User'})])
@@ -140,7 +140,7 @@ export class RedirectToParentCmp {
 }
 
 
-@Component({selector: 'dynamic-loader-cmp', template: `{ <div #viewport></div> }`})
+@Component({selector: 'dynamic-loader-cmp', template: `[ <div #viewport></div> ]`})
 @RouteConfig([new Route({path: '/', component: HelloCmp})])
 export class DynamicLoaderCmp {
   private _componentRef: ComponentRef<any> = null;
