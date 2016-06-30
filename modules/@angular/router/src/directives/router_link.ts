@@ -7,11 +7,13 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Directive, HostBinding, HostListener, Input, OnChanges} from '@angular/core';
+import {Directive, HostBinding, HostListener, Input, OnChanges, OnDestroy} from '@angular/core';
+import {Subscription} from 'rxjs/Subscription';
 
-import {Router} from '../router';
+import {NavigationEnd, Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
+
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -93,11 +95,12 @@ export class RouterLink {
  * @stable
  */
 @Directive({selector: 'a[routerLink]'})
-export class RouterLinkWithHref implements OnChanges {
+export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @Input() target: string;
   private commands: any[] = [];
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
+  private subscription: Subscription;
 
   // the url displayed on the anchor element.
   @HostBinding() href: string;
@@ -109,7 +112,13 @@ export class RouterLinkWithHref implements OnChanges {
    */
   constructor(
       private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy) {}
+      private locationStrategy: LocationStrategy) {
+    this.subscription = router.events.subscribe(s => {
+      if (s instanceof NavigationEnd) {
+        this.updateTargetUrlAndHref();
+      }
+    });
+  }
 
   @Input()
   set routerLink(data: any[]|string) {
@@ -121,6 +130,7 @@ export class RouterLinkWithHref implements OnChanges {
   }
 
   ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
+  ngOnDestroy(): any { this.subscription.unsubscribe(); }
 
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {

@@ -503,6 +503,33 @@ describe('Integration', () => {
              expect(fixture.debugElement.nativeElement).toHaveText('team 33 { simple, right:  }');
            })));
 
+    it('should update hrefs when query params change',
+       fakeAsync(
+           inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
+
+             @Component({
+               selector: 'someRoot',
+               template: `<router-outlet></router-outlet><a routerLink="/home">Link</a>`,
+               directives: ROUTER_DIRECTIVES
+             })
+             class RootCmpWithLink {
+             }
+
+             const fixture = createRoot(tcb, router, RootCmpWithLink);
+
+             router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+             const native = fixture.debugElement.nativeElement.querySelector('a');
+
+             router.navigateByUrl('/home?q=123');
+             advance(fixture);
+             expect(native.getAttribute('href')).toEqual('/home?q=123');
+
+             router.navigateByUrl('/home?q=456');
+             advance(fixture);
+             expect(native.getAttribute('href')).toEqual('/home?q=456');
+           })));
+
     it('should support using links on non-a tags',
        fakeAsync(
            inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
@@ -1155,6 +1182,14 @@ class UserCmp {
 }
 
 @Component({
+  selector: 'wrapper',
+  template: `<router-outlet></router-outlet>`,
+  directives: [ROUTER_DIRECTIVES]
+})
+class WrapperCmp {
+}
+
+@Component({
   selector: 'query-cmp',
   template: `query: {{name | async}} fragment: {{fragment | async}}`,
   directives: [ROUTER_DIRECTIVES]
@@ -1192,7 +1227,7 @@ class RelativeLinkInIfCmp {
   precompile: [
     BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
     RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
-    QueryParamsAndFragmentCmp, StringLinkButtonCmp
+    QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp
   ]
 })
 class RootCmp {
