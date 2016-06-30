@@ -12,10 +12,10 @@ import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_ast';
 import {TEMPLATE_TRANSFORMS, TemplateParser, splitClasses} from '@angular/compiler/src/template_parser';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
+import {SecurityContext} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {SecurityContext} from '../core_private';
 import {Identifiers, identifierToken} from '../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../src/interpolation_config';
 

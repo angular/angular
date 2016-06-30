@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FORM_PROVIDERS, PlatformLocation} from '@angular/common';
-import {APPLICATION_COMMON_PROVIDERS, ExceptionHandler, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, createPlatform, getPlatform} from '@angular/core';
+import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS, PlatformLocation} from '@angular/common';
+import {APPLICATION_COMMON_PROVIDERS, AppModule, AppModuleFactory, AppModuleRef, ExceptionHandler, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, SanitizationService, Testability, assertPlatform, createPlatform, getPlatform, isDevMode} from '@angular/core';
 
-import {AnimationDriver, NoOpAnimationDriver, SanitizationService, wtfInit} from '../core_private';
+import {wtfInit} from '../core_private';
+import {AnimationDriver} from '../src/dom/animation_driver';
 import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -26,7 +27,6 @@ import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {isBlank} from './facade/lang';
 import {DomSanitizationService, DomSanitizationServiceImpl} from './security/dom_sanitization_service';
-
 
 const BROWSER_PLATFORM_MARKER = new OpaqueToken('BrowserPlatformMarker');
 
@@ -86,23 +86,71 @@ export function browserPlatform(): PlatformRef {
   return assertPlatform(BROWSER_PLATFORM_MARKER);
 }
 
-function initDomAdapter() {
+export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
   wtfInit();
   BrowserGetTestability.init();
 }
 
-function _exceptionHandler(): ExceptionHandler {
+export function _exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(getDOM());
 }
 
-function _document(): any {
+export function _document(): any {
   return getDOM().defaultDoc();
 }
 
-function _resolveDefaultAnimationDriver(): AnimationDriver {
+export function _resolveDefaultAnimationDriver(): AnimationDriver {
   if (getDOM().supportsWebAnimation()) {
     return new WebAnimationsDriver();
   }
-  return new NoOpAnimationDriver();
+  return AnimationDriver.NOOP;
+}
+
+/**
+ * The app module for the browser.
+ * @stable
+ */
+@AppModule({
+  providers: [
+    BROWSER_APP_PROVIDERS,
+  ],
+  directives: COMMON_DIRECTIVES,
+  pipes: COMMON_PIPES
+})
+export class BrowserModule {
+}
+
+/**
+ * Creates an instance of an `@AppModule` for the browser platform
+ * for offline compilation.
+ *
+ * ## Simple Example
+ *
+ * ```typescript
+ * my_module.ts:
+ *
+ * @AppModule({
+ *   modules: [BrowserModule]
+ * })
+ * class MyModule {}
+ *
+ * main.ts:
+ * import {MyModuleNgFactory} from './my_module.ngfactory';
+ * import {bootstrapModuleFactory} from '@angular/platform-browser';
+ *
+ * let moduleRef = bootstrapModuleFactory(MyModuleNgFactory);
+ * ```
+ * @stable
+ */
+export function bootstrapModuleFactory<M>(moduleFactory: AppModuleFactory<M>): AppModuleRef<M> {
+  let platformInjector = browserPlatform().injector;
+  // Note: We need to create the NgZone _before_ we instantiate the module,
+  // as instantiating the module creates some providers eagerly.
+  // So we create a mini parent injector that just contains the new NgZone and
+  // pass that as parent to the AppModuleFactory.
+  let ngZone = new NgZone({enableLongStackTrace: isDevMode()});
+  let ngZoneInjector =
+      ReflectiveInjector.resolveAndCreate([{provide: NgZone, useValue: ngZone}], platformInjector);
+  return ngZone.run(() => { return moduleFactory.create(ngZoneInjector); });
 }

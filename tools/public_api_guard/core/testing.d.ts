@@ -16,7 +16,7 @@ export declare function beforeEachProviders(fn: () => Array<any>): void;
 /** @stable */
 export declare class ComponentFixture<T> {
     changeDetectorRef: ChangeDetectorRef;
-    componentInstance: any;
+    componentInstance: T;
     componentRef: ComponentRef<T>;
     debugElement: DebugElement;
     elementRef: ElementRef;

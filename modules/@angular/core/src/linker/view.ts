@@ -28,7 +28,6 @@ import {AnimationPlayer} from '../animation/animation_player';
 import {AnimationGroupPlayer} from '../animation/animation_group_player';
 import {AnimationKeyframe} from '../animation/animation_keyframe';
 import {AnimationStyles} from '../animation/animation_styles';
-import {AnimationDriver} from '../animation/animation_driver';
 import {ActiveAnimationPlayersMap} from '../animation/active_animation_players_map';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);

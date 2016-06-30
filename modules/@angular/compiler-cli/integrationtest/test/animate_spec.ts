@@ -5,19 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-require('reflect-metadata');
-require('zone.js/dist/zone-node.js');
-require('zone.js/dist/long-stack-trace-zone.js');
-
-import {AnimateCmpNgFactory} from '../src/animate.ngfactory';
-import {ReflectiveInjector, DebugElement, getDebugNode, lockRunMode} from '@angular/core';
-import {serverPlatform} from '@angular/platform-server';
-import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
-
-
-// Need to lock the mode explicitely as this test is not using Angular's testing framework.
-lockRunMode();
+import './init';
+import {DebugElement} from '@angular/core';
+import {AnimateCmp} from '../src/animate';
+import {createComponent} from './util';
 
 describe('template codegen output', () => {
   function findTargetElement(elm: DebugElement): DebugElement {
@@ -27,23 +18,21 @@ describe('template codegen output', () => {
   }
 
   it('should apply the animate states to the element', (done) => {
-    const appInjector =
-        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, serverPlatform().injector);
-    var comp = AnimateCmpNgFactory.create(appInjector);
-    var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
+    const compFixture = createComponent(AnimateCmp);
+    var debugElement = compFixture.debugElement;
 
     var targetDebugElement = findTargetElement(<DebugElement>debugElement);
 
-    comp.instance.setAsOpen();
-    comp.changeDetectorRef.detectChanges();
+    compFixture.componentInstance.setAsOpen();
+    compFixture.detectChanges();
 
     setTimeout(() => {
       expect(targetDebugElement.styles['height']).toEqual(null);
       expect(targetDebugElement.styles['borderColor']).toEqual('green');
       expect(targetDebugElement.styles['color']).toEqual('green');
 
-      comp.instance.setAsClosed();
-      comp.changeDetectorRef.detectChanges();
+      compFixture.componentInstance.setAsClosed();
+      compFixture.detectChanges();
 
       setTimeout(() => {
         expect(targetDebugElement.styles['height']).toEqual('0px');
@@ -55,23 +44,21 @@ describe('template codegen output', () => {
   });
 
   it('should apply the default animate state to the element', (done) => {
-    const appInjector =
-        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, serverPlatform().injector);
-    var comp = AnimateCmpNgFactory.create(appInjector);
-    var debugElement = <DebugElement>getDebugNode(comp.location.nativeElement);
+    const compFixture = createComponent(AnimateCmp);
+    var debugElement = compFixture.debugElement;
 
     var targetDebugElement = findTargetElement(<DebugElement>debugElement);
 
-    comp.instance.setAsSomethingElse();
-    comp.changeDetectorRef.detectChanges();
+    compFixture.componentInstance.setAsSomethingElse();
+    compFixture.detectChanges();
 
     setTimeout(() => {
       expect(targetDebugElement.styles['height']).toEqual(null);
       expect(targetDebugElement.styles['borderColor']).toEqual('black');
       expect(targetDebugElement.styles['color']).toEqual('black');
 
-      comp.instance.setAsClosed();
-      comp.changeDetectorRef.detectChanges();
+      compFixture.componentInstance.setAsClosed();
+      compFixture.detectChanges();
 
       setTimeout(() => {
         expect(targetDebugElement.styles['height']).not.toEqual(null);

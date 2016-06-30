@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Only needed to satisfy the check in core/src/util/decorators.ts
-// TODO(alexeagle): maybe remove that check?
-require('reflect-metadata');
-require('zone.js/dist/zone-node.js');
-require('zone.js/dist/long-stack-trace-zone.js');
+import './init';
 let serializer = require('@angular/compiler/src/i18n/xmb_serializer.js');
 
 import * as fs from 'fs';

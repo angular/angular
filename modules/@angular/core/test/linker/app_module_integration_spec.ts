@@ -1,8 +1,8 @@
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
-import {AppModule, AppModuleMetadata, Compiler, Component, ComponentFactoryResolver, ComponentRef, DebugElement, Host, Inject, Injectable, Injector, OpaqueToken, Optional, Provider, SelfMetadata, SkipSelf, SkipSelfMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
+import {AppModule, AppModuleMetadata, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Host, Inject, Injectable, Injector, OpaqueToken, Optional, Provider, SelfMetadata, SkipSelf, SkipSelfMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {BaseException} from '../../src/facade/exceptions';
 import {ConcreteType, IS_DART, Type, stringify} from '../../src/facade/lang';
@@ -195,6 +195,26 @@ function declareTests({useJit}: {useJit: boolean}) {
                        }));
         checkNgIfAndLowerCasePipe(compFixture, compFixture.debugElement.children[0]);
       });
+
+      it('should provide a Compiler instance that uses the directives/pipes of the module', () => {
+        let appModule = compiler.compileAppModuleSync(ModuleWithDirectivesAndPipes).create();
+        let boundCompiler: Compiler = appModule.injector.get(Compiler);
+        var cf = boundCompiler.compileComponentSync(CompUsingModuleDirectiveAndPipe);
+        let compFixture = new ComponentFixture(cf.create(injector), null, false);
+        checkNgIfAndLowerCasePipe(compFixture, compFixture.debugElement);
+      });
+
+      it('should provide a ComponentResolver instance that uses the directives/pipes of the module',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           let appModule = compiler.compileAppModuleSync(ModuleWithDirectivesAndPipes).create();
+           let boundCompiler: ComponentResolver = appModule.injector.get(ComponentResolver);
+           boundCompiler.resolveComponent(CompUsingModuleDirectiveAndPipe).then((cf) => {
+             let compFixture = new ComponentFixture(cf.create(injector), null, false);
+             checkNgIfAndLowerCasePipe(compFixture, compFixture.debugElement);
+             async.done();
+           });
+         }));
+
     });
 
     describe('providers', function() {
@@ -470,6 +490,19 @@ function declareTests({useJit}: {useJit: boolean}) {
           expect(injector.get(ModuleWithProvider)).toBeAnInstanceOf(ModuleWithProvider);
           expect(injector.get('a')).toBe('aValue');
           expect(injector.get('someToken')).toBe('someValue');
+        });
+
+        it('should override the providers of nested modules', () => {
+          var injector = compiler
+                             .compileAppModuleSync(
+                                 SomeModule, new AppModuleMetadata({
+                                   providers: [{provide: 'someToken', useValue: 'someNewValue'}],
+                                   modules: [ModuleWithProvider]
+                                 }))
+                             .create()
+                             .injector;
+          expect(injector.get('someToken')).toBe('someNewValue');
+
         });
       });
 

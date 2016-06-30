@@ -7,12 +7,9 @@
  */
 
 import {Component, ComponentFactoryResolver, Inject, OpaqueToken} from '@angular/core';
+import {BasicComp} from './basic';
 
-@Component({selector: 'cmp', template: ''})
-export class SomeComp {
-}
-
-@Component({selector: 'cmp-precompile', template: '', precompile: [SomeComp]})
+@Component({selector: 'cmp-precompile', template: '', precompile: [BasicComp]})
 export class CompWithPrecompile {
   constructor(public cfr: ComponentFactoryResolver) {}
 }

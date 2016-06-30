@@ -308,6 +308,13 @@ describe('StaticReflector', () => {
         .toEqual(host.getStaticSymbol('/src/extern.d.ts', 'nonExisting'));
   });
 
+  it('should simplify a function reference as a static symbol', () => {
+    expect(simplify(
+               new StaticSymbol('/src/cases', 'myFunction'),
+               ({__symbolic: 'function', parameters: ['a'], value: []})))
+        .toEqual(host.getStaticSymbol('/src/cases', 'myFunction'));
+  });
+
   it('should simplify values initialized with a function call', () => {
     expect(simplify(new StaticSymbol('/tmp/src/function-reference.ts', ''), {
       __symbolic: 'reference',

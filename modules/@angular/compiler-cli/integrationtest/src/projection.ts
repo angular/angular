@@ -9,13 +9,13 @@
 import {Component} from '@angular/core';
 
 @Component({selector: 'comp-with-proj', template: '<ng-content></ng-content>'})
-export class CompWithProjection {
+export class CompWithNgContent {
 }
 
 @Component({
   selector: 'main',
   template: '<comp-with-proj><span greeting="Hello world!"></span></comp-with-proj>',
-  directives: [CompWithProjection]
+  directives: [CompWithNgContent]
 })
-export class MainComp {
+export class ProjectingComp {
 }

@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-
-import {SanitizationService, SecurityContext} from '../../core_private';
+import {Injectable, SanitizationService, SecurityContext} from '@angular/core';
 
 import {sanitizeHtml} from './html_sanitizer';
 import {sanitizeStyle} from './style_sanitizer';

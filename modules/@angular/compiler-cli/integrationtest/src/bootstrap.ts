@@ -6,12 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectiveInjector, coreBootstrap} from '@angular/core';
-import {BROWSER_APP_PROVIDERS, browserPlatform} from '@angular/platform-browser';
+import {browserPlatform} from '@angular/platform-browser';
+import {BasicComp} from './basic';
+import {MainModuleNgFactory} from './module.ngfactory';
 
-import {Basic} from './basic';
-import {BasicNgFactory} from './basic.ngfactory';
-
-const appInjector =
-    ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
-coreBootstrap(BasicNgFactory, appInjector);
+MainModuleNgFactory.create().instance.appRef.bootstrap(BasicComp);

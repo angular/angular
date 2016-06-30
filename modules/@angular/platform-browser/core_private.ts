@@ -16,24 +16,12 @@ export var VIEW_ENCAPSULATION_VALUES: typeof t.VIEW_ENCAPSULATION_VALUES =
     r.VIEW_ENCAPSULATION_VALUES;
 export type DebugDomRootRenderer = t.DebugDomRootRenderer;
 export var DebugDomRootRenderer: typeof t.DebugDomRootRenderer = r.DebugDomRootRenderer;
-/**
- * @experimental bogus marker to pass the ts-api-guardian's check - this api should be public so
- * this line will go away when that happens
- */
-export var SecurityContext: typeof t.SecurityContext = r.SecurityContext;
-export type SecurityContext = t.SecurityContext;
-export var SanitizationService: typeof t.SanitizationService = r.SanitizationService;
-export type SanitizationService = t.SanitizationService;
 export var reflector: typeof t.reflector = r.reflector;
 
 export type NoOpAnimationPlayer = t.NoOpAnimationPlayer;
 export var NoOpAnimationPlayer: typeof t.NoOpAnimationPlayer = r.NoOpAnimationPlayer;
 export type AnimationPlayer = t.AnimationPlayer;
 export var AnimationPlayer: typeof t.AnimationPlayer = r.AnimationPlayer;
-export type NoOpAnimationDriver = t.NoOpAnimationDriver;
-export var NoOpAnimationDriver: typeof t.NoOpAnimationDriver = r.NoOpAnimationDriver;
-export type AnimationDriver = t.AnimationDriver;
-export var AnimationDriver: typeof t.AnimationDriver = r.AnimationDriver;
 export type AnimationSequencePlayer = t.AnimationSequencePlayer;
 export var AnimationSequencePlayer: typeof t.AnimationSequencePlayer = r.AnimationSequencePlayer;
 export type AnimationGroupPlayer = t.AnimationGroupPlayer;

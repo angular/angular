@@ -8,6 +8,7 @@
 
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {AppModule, Component, ComponentFactoryResolver, Injectable} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
 @Injectable()
 export class SomeService {
@@ -39,7 +40,7 @@ export class NestedModule {
   pipes: [LowerCasePipe],
   providers: [SomeService],
   precompile: [SomeComp],
-  modules: [NestedModule]
+  modules: [NestedModule, BrowserModule]
 })
 export class SomeModule {
 }
@@ -48,6 +49,7 @@ export class SomeModule {
   directives: [NgIf],
   pipes: [LowerCasePipe],
   precompile: [ParentComp],
+  modules: [BrowserModule]
 })
 export class SomeModuleUsingParentComp {
 }

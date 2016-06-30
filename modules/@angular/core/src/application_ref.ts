@@ -9,23 +9,35 @@
 import {ObservableWrapper, PromiseWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
-import {IS_DART, Type, isBlank, isPresent, isPromise} from '../src/facade/lang';
+import {ConcreteType, IS_DART, Type, isBlank, isPresent, isPromise} from '../src/facade/lang';
 
 import {APP_INITIALIZER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 import {Console} from './console';
-import {Injectable, Injector} from './di';
+import {Inject, Injectable, Injector, Optional, OptionalMetadata, SkipSelf, SkipSelfMetadata, forwardRef} from './di';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
+import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {ComponentResolver} from './linker/component_resolver';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {NgZone, NgZoneError} from './zone/ng_zone';
 
+
+
 /**
  * Create an Angular zone.
  * @experimental
  */
-export function createNgZone(): NgZone {
+export function createNgZone(parent: NgZone): NgZone {
+  // If an NgZone is already present in the parent injector,
+  // use that one. Creating the NgZone in the same injector as the
+  // application is dangerous as some services might get created before
+  // the NgZone has been created.
+  // We keep the NgZone factory in the application providers for
+  // backwards compatibility for now though.
+  if (parent) {
+    return parent;
+  }
   return new NgZone({enableLongStackTrace: isDevMode()});
 }
 
@@ -279,7 +291,7 @@ export abstract class ApplicationRef {
    * ### Example
    * {@example core/ts/platform/platform.ts region='longform'}
    */
-  abstract bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C>;
+  abstract bootstrap<C>(componentFactory: ComponentFactory<C>|ConcreteType<C>): ComponentRef<C>;
 
   /**
    * Retrieve the application {@link Injector}.
@@ -334,18 +346,19 @@ export class ApplicationRef_ extends ApplicationRef {
   /** @internal */
   private _enforceNoNewChanges: boolean = false;
 
-  private _exceptionHandler: ExceptionHandler;
-
   private _asyncInitDonePromise: Promise<any>;
   private _asyncInitDone: boolean;
 
-  constructor(private _platform: PlatformRef_, private _zone: NgZone, private _injector: Injector) {
+  constructor(
+      private _platform: PlatformRef_, private _zone: NgZone, private _console: Console,
+      private _injector: Injector, private _exceptionHandler: ExceptionHandler,
+      private _componentFactoryResolver: ComponentFactoryResolver,
+      @Optional() private _testabilityRegistry: TestabilityRegistry,
+      @Optional() private _testability: Testability,
+      @Optional() @Inject(APP_INITIALIZER) inits: Function[]) {
     super();
-    var zone: NgZone = _injector.get(NgZone);
     this._enforceNoNewChanges = isDevMode();
-    zone.run(() => { this._exceptionHandler = _injector.get(ExceptionHandler); });
     this._asyncInitDonePromise = this.run(() => {
-      let inits: Function[] = _injector.get(APP_INITIALIZER, null);
       var asyncInitResults: Promise<any>[] = [];
       var asyncInitDonePromise: Promise<any>;
       if (isPresent(inits)) {
@@ -366,7 +379,7 @@ export class ApplicationRef_ extends ApplicationRef {
       }
       return asyncInitDonePromise;
     });
-    ObservableWrapper.subscribe(zone.onError, (error: NgZoneError) => {
+    ObservableWrapper.subscribe(this._zone.onError, (error: NgZoneError) => {
       this._exceptionHandler.call(error.error, error.stackTrace);
     });
     ObservableWrapper.subscribe(
@@ -390,7 +403,6 @@ export class ApplicationRef_ extends ApplicationRef {
   waitForAsyncInitializers(): Promise<any> { return this._asyncInitDonePromise; }
 
   run(callback: Function): any {
-    var zone = this.injector.get(NgZone);
     var result: any;
     // Note: Don't use zone.runGuarded as we want to know about
     // the thrown exception!
@@ -398,7 +410,7 @@ export class ApplicationRef_ extends ApplicationRef {
     // of `zone.run` as Dart swallows rejected promises
     // via the onError callback of the promise.
     var completer = PromiseWrapper.completer();
-    zone.run(() => {
+    this._zone.run(() => {
       try {
         result = callback();
         if (isPromise(result)) {
@@ -417,12 +429,19 @@ export class ApplicationRef_ extends ApplicationRef {
     return isPromise(result) ? completer.promise : result;
   }
 
-  bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C> {
+  bootstrap<C>(componentOrFactory: ComponentFactory<C>|ConcreteType<C>): ComponentRef<C> {
     if (!this._asyncInitDone) {
       throw new BaseException(
           'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using waitForAsyncInitializers().');
     }
     return this.run(() => {
+      let componentFactory: ComponentFactory<C>;
+      if (componentOrFactory instanceof ComponentFactory) {
+        componentFactory = componentOrFactory;
+      } else {
+        componentFactory =
+            this._componentFactoryResolver.resolveComponentFactory(componentOrFactory);
+      }
       this._rootComponentTypes.push(componentFactory.componentType);
       var compRef = componentFactory.create(this._injector, [], componentFactory.selector);
       compRef.onDestroy(() => { this._unloadComponent(compRef); });
@@ -433,11 +452,10 @@ export class ApplicationRef_ extends ApplicationRef {
       }
 
       this._loadComponent(compRef);
-      let c: Console = this._injector.get(Console);
       if (isDevMode()) {
         let prodDescription = IS_DART ? 'Production mode is disabled in Dart.' :
                                         'Call enableProdMode() to enable the production mode.';
-        c.log(`Angular 2 is running in the development mode. ${prodDescription}`);
+        this._console.log(`Angular 2 is running in the development mode. ${prodDescription}`);
       }
       return compRef;
     });
@@ -500,7 +518,11 @@ export const PLATFORM_CORE_PROVIDERS =
     ];
 
 export const APPLICATION_CORE_PROVIDERS = /*@ts2dart_const*/[
-  /* @ts2dart_Provider */ {provide: NgZone, useFactory: createNgZone, deps: [] as any},
+  /* @ts2dart_Provider */ {
+    provide: NgZone,
+    useFactory: createNgZone,
+    deps: <any>[[new SkipSelfMetadata(), new OptionalMetadata(), NgZone]]
+  },
   ApplicationRef_,
   /* @ts2dart_Provider */ {provide: ApplicationRef, useExisting: ApplicationRef_},
 ];

@@ -28,7 +28,7 @@ export class ComponentFixture<T> {
   /**
    * The instance of the root component class.
    */
-  componentInstance: any;
+  componentInstance: T;
 
   /**
    * The native element at the root of the component.

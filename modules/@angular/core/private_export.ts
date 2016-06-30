@@ -8,7 +8,6 @@
 
 import {Provider} from './index';
 import {ANY_STATE as ANY_STATE_, DEFAULT_STATE as DEFAULT_STATE_, EMPTY_STATE as EMPTY_STATE_, FILL_STYLE_FLAG as FILL_STYLE_FLAG_} from './src/animation/animation_constants';
-import {AnimationDriver as AnimationDriver_, NoOpAnimationDriver as NoOpAnimationDriver_} from './src/animation/animation_driver';
 import {AnimationGroupPlayer as AnimationGroupPlayer_} from './src/animation/animation_group_player';
 import {AnimationKeyframe as AnimationKeyframe_} from './src/animation/animation_keyframe';
 import {AnimationPlayer as AnimationPlayer_, NoOpAnimationPlayer as NoOpAnimationPlayer_} from './src/animation/animation_player';
@@ -77,10 +76,6 @@ export declare namespace __core_private_types__ {
   export var ValueUnwrapper: typeof change_detection_util.ValueUnwrapper;
   export type RenderDebugInfo = api.RenderDebugInfo;
   export var RenderDebugInfo: typeof api.RenderDebugInfo;
-  export type SecurityContext = security.SecurityContext;
-  export var SecurityContext: typeof security.SecurityContext;
-  export type SanitizationService = security.SanitizationService;
-  export var SanitizationService: typeof security.SanitizationService;
   export type TemplateRef_<C> = template_ref.TemplateRef_<C>;
   export var TemplateRef_: typeof template_ref.TemplateRef_;
   export var wtfInit: typeof wtf_init.wtfInit;
@@ -113,10 +108,6 @@ export declare namespace __core_private_types__ {
   export var NoOpAnimationPlayer: typeof NoOpAnimationPlayer_;
   export type AnimationPlayer = AnimationPlayer_;
   export var AnimationPlayer: typeof AnimationPlayer_;
-  export type NoOpAnimationDriver = NoOpAnimationDriver_;
-  export var NoOpAnimationDriver: typeof NoOpAnimationDriver_;
-  export type AnimationDriver = AnimationDriver_;
-  export var AnimationDriver: typeof AnimationDriver_;
   export type AnimationSequencePlayer = AnimationSequencePlayer_;
   export var AnimationSequencePlayer: typeof AnimationSequencePlayer_;
   export type AnimationGroupPlayer = AnimationGroupPlayer_;
@@ -164,8 +155,6 @@ export var __core_private__ = {
   uninitialized: change_detection_util.uninitialized,
   ValueUnwrapper: change_detection_util.ValueUnwrapper,
   RenderDebugInfo: api.RenderDebugInfo,
-  SecurityContext: security.SecurityContext,
-  SanitizationService: security.SanitizationService,
   TemplateRef_: template_ref.TemplateRef_,
   wtfInit: wtf_init.wtfInit,
   ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities,
@@ -191,8 +180,6 @@ export var __core_private__ = {
   Reflector: reflection.Reflector,
   NoOpAnimationPlayer: NoOpAnimationPlayer_,
   AnimationPlayer: AnimationPlayer_,
-  NoOpAnimationDriver: NoOpAnimationDriver_,
-  AnimationDriver: AnimationDriver_,
   AnimationSequencePlayer: AnimationSequencePlayer_,
   AnimationGroupPlayer: AnimationGroupPlayer_,
   AnimationKeyframe: AnimationKeyframe_,

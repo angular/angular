@@ -1,4 +1,13 @@
 /** @experimental */
+export declare abstract class AnimationDriver {
+    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
+    static NOOP: AnimationDriver;
+}
+
+/** @stable */
+export declare function bootstrapModuleFactory<M>(moduleFactory: AppModuleFactory<M>): AppModuleRef<M>;
+
+/** @experimental */
 export declare const BROWSER_APP_PROVIDERS: Array<any>;
 
 /** @experimental */
@@ -6,6 +15,10 @@ export declare const BROWSER_PLATFORM_PROVIDERS: Array<any>;
 
 /** @experimental */
 export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
+
+/** @stable */
+export declare class BrowserModule {
+}
 
 /** @experimental */
 export declare function browserPlatform(): PlatformRef;
@@ -146,9 +159,6 @@ export interface SafeStyle extends SafeValue {
 /** @stable */
 export interface SafeUrl extends SafeValue {
 }
-
-/** @experimental */
-export declare var SecurityContext: typeof t.SecurityContext;
 
 /** @experimental */
 export declare abstract class ServiceMessageBroker {

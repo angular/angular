@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModuleFactory, AppModuleMetadata, Compiler, ComponentFactory, ComponentResolver, Injectable} from '@angular/core';
+import {AppModuleFactory, AppModuleMetadata, Compiler, ComponentFactory, ComponentResolver, Injectable, Provider} from '@angular/core';
 
 import {BaseException} from '../src/facade/exceptions';
 import {ConcreteType, IS_DART, Type, isBlank, isString, stringify} from '../src/facade/lang';
@@ -76,6 +76,14 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
     let componentCompilePromises: Promise<any>[] = [];
     if (!appModuleFactory || !useCache) {
       var compileModuleMeta = this._metadataResolver.getAppModuleMetadata(moduleType, metadata);
+      let boundCompiler = new BoundCompiler(
+          this, compileModuleMeta.directives.map(dir => dir.type.runtime),
+          compileModuleMeta.pipes.map((pipe) => pipe.type.runtime));
+      // Always provide a bound Compiler / ComponentResolver
+      compileModuleMeta.providers.push(this._metadataResolver.getProviderMetadata(
+          new Provider(Compiler, {useValue: boundCompiler})));
+      compileModuleMeta.providers.push(this._metadataResolver.getProviderMetadata(
+          new Provider(ComponentResolver, {useExisting: Compiler})));
       var compileResult = this._appModuleCompiler.compile(compileModuleMeta);
       compileResult.dependencies.forEach((dep) => {
         let compileResult = this._compileComponent(
@@ -102,21 +110,18 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
         appModuleFactory, Promise.all(componentCompilePromises).then(() => appModuleFactory));
   }
 
-  compileComponentAsync<T>(compType: ConcreteType<T>, {moduleDirectives = [], modulePipes = []}: {
-    moduleDirectives?: ConcreteType<any>[],
-    modulePipes?: ConcreteType<any>[]
-  } = {}): Promise<ComponentFactory<T>> {
-    return this._compileComponent(compType, false, moduleDirectives, modulePipes).asyncResult;
+  compileComponentAsync<T>(compType: ConcreteType<T>): Promise<ComponentFactory<T>> {
+    return this._compileComponent(compType, false, [], []).asyncResult;
   }
 
-  compileComponentSync<T>(compType: ConcreteType<T>, {moduleDirectives = [], modulePipes = []}: {
-    moduleDirectives?: ConcreteType<any>[],
-    modulePipes?: ConcreteType<any>[]
-  } = {}): ComponentFactory<T> {
-    return this._compileComponent(compType, true, moduleDirectives, modulePipes).syncResult;
+  compileComponentSync<T>(compType: ConcreteType<T>): ComponentFactory<T> {
+    return this._compileComponent(compType, true, [], []).syncResult;
   }
 
-  private _compileComponent<T>(
+  /**
+   * @internal
+   */
+  _compileComponent<T>(
       compType: ConcreteType<T>, isSync: boolean, moduleDirectives: ConcreteType<any>[],
       modulePipes: ConcreteType<any>[]): SyncAsyncResult<ComponentFactory<T>> {
     var templates =
@@ -342,4 +347,51 @@ function assertComponent(meta: CompileDirectiveMetadata) {
   if (!meta.isComponent) {
     throw new BaseException(`Could not compile '${meta.type.name}' because it is not a component.`);
   }
+}
+
+/**
+ * A wrapper around `Compiler` and `ComponentResolver` that
+ * provides default patform directives / pipes.
+ */
+class BoundCompiler implements Compiler, ComponentResolver {
+  constructor(
+      private _delegate: RuntimeCompiler, private _directives: any[], private _pipes: any[]) {}
+
+  resolveComponent(component: Type|string): Promise<ComponentFactory<any>> {
+    if (isString(component)) {
+      return PromiseWrapper.reject(
+          new BaseException(`Cannot resolve component using '${component}'.`), null);
+    }
+    return this.compileComponentAsync(<ConcreteType<any>>component);
+  }
+
+  compileComponentAsync<T>(compType: ConcreteType<T>): Promise<ComponentFactory<T>> {
+    return this._delegate._compileComponent(compType, false, this._directives, this._pipes)
+        .asyncResult;
+  }
+
+  compileComponentSync<T>(compType: ConcreteType<T>): ComponentFactory<T> {
+    return this._delegate._compileComponent(compType, true, this._directives, this._pipes)
+        .syncResult;
+  }
+
+  compileAppModuleSync<T>(moduleType: ConcreteType<T>, metadata: AppModuleMetadata = null):
+      AppModuleFactory<T> {
+    return this._delegate.compileAppModuleSync(moduleType, metadata);
+  }
+
+  compileAppModuleAsync<T>(moduleType: ConcreteType<T>, metadata: AppModuleMetadata = null):
+      Promise<AppModuleFactory<T>> {
+    return this._delegate.compileAppModuleAsync(moduleType, metadata);
+  }
+
+  /**
+   * Clears all caches
+   */
+  clearCache(): void { this._delegate.clearCache(); }
+
+  /**
+   * Clears the cache for the given component/appModule.
+   */
+  clearCacheFor(type: Type) { this._delegate.clearCacheFor(type); }
 }

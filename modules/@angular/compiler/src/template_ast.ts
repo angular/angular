@@ -12,7 +12,7 @@ import {AST} from './expression_parser/ast';
 
 import {CompileDirectiveMetadata, CompileTokenMetadata, CompileProviderMetadata,} from './compile_metadata';
 import {ParseSourceSpan} from './parse_util';
-import {SecurityContext} from '../core_private';
+import {SecurityContext} from '@angular/core';
 
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.

@@ -40,6 +40,10 @@ export function main() {
   var renderLog: RenderLog;
   var directiveLog: DirectiveLog;
 
+  function createCompFixture<T>(template: string): ComponentFixture<TestComponent>;
+  function createCompFixture<T>(template: string, compType: ConcreteType<T>): ComponentFixture<T>;
+  function createCompFixture<T>(
+      template: string, compType: ConcreteType<T>, _tcb: TestComponentBuilder): ComponentFixture<T>;
   function createCompFixture<T>(
       template: string, compType: ConcreteType<T> = <any>TestComponent,
       _tcb: TestComponentBuilder = null): ComponentFixture<T> {
@@ -58,19 +62,23 @@ export function main() {
     return nodes.map(node => node.injector.get(dirType));
   }
 
+  function _bindSimpleProp<T>(bindAttr: string): ComponentFixture<TestComponent>;
+  function _bindSimpleProp<T>(bindAttr: string, compType: ConcreteType<T>): ComponentFixture<T>;
   function _bindSimpleProp<T>(
       bindAttr: string, compType: ConcreteType<T> = <any>TestComponent): ComponentFixture<T> {
     var template = `<div ${bindAttr}></div>`;
     return createCompFixture(template, compType);
   }
 
+  function _bindSimpleValue(expression: any): ComponentFixture<TestComponent>;
+  function _bindSimpleValue<T>(expression: any, compType: ConcreteType<T>): ComponentFixture<T>;
   function _bindSimpleValue<T>(
       expression: any, compType: ConcreteType<T> = <any>TestComponent): ComponentFixture<T> {
     return _bindSimpleProp(`[someProp]='${expression}'`, compType);
   }
 
-  function _bindAndCheckSimpleValue<T>(
-      expression: any, compType: ConcreteType<T> = <any>TestComponent): string[] {
+  function _bindAndCheckSimpleValue(
+      expression: any, compType: ConcreteType<any> = TestComponent): string[] {
     var ctx = _bindSimpleValue(expression, compType);
     ctx.detectChanges(false);
     return renderLog.log;

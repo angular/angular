@@ -9,10 +9,9 @@
 import {HtmlElementAst} from '@angular/compiler/src/html_ast';
 import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
+import {SecurityContext} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
-
-import {SecurityContext} from '../../core_private';
 
 import {extractSchema} from './schema_extractor';
 

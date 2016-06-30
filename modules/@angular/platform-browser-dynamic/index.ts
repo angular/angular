@@ -8,14 +8,16 @@
 
 import {COMMON_DIRECTIVES, COMMON_PIPES} from '@angular/common';
 import {COMPILER_PROVIDERS, CompilerConfig, XHR} from '@angular/compiler';
-import {ApplicationRef, ComponentRef, PLATFORM_DIRECTIVES, PLATFORM_PIPES, ReflectiveInjector, Type, coreLoadAndBootstrap} from '@angular/core';
-import {BROWSER_APP_PROVIDERS, WORKER_APP_APPLICATION_PROVIDERS, WORKER_SCRIPT, WORKER_UI_APPLICATION_PROVIDERS, browserPlatform, workerAppPlatform, workerUiPlatform} from '@angular/platform-browser';
+import {AppModule, AppModuleRef, ApplicationRef, Compiler, ComponentRef, ComponentResolver, ExceptionHandler, PLATFORM_DIRECTIVES, PLATFORM_PIPES, ReflectiveInjector, Type, coreLoadAndBootstrap, isDevMode, lockRunMode} from '@angular/core';
+import {BROWSER_APP_PROVIDERS, BrowserModule, WORKER_APP_APPLICATION_PROVIDERS, WORKER_SCRIPT, WORKER_UI_APPLICATION_PROVIDERS, bootstrapModuleFactory, browserPlatform, workerAppPlatform, workerUiPlatform} from '@angular/platform-browser';
 
 import {ReflectionCapabilities, reflector} from './core_private';
+import {getDOM, initDomAdapter} from './platform_browser_private';
 import {PromiseWrapper} from './src/facade/async';
-import {isPresent} from './src/facade/lang';
+import {ConcreteType, isPresent, stringify} from './src/facade/lang';
 import {CachedXHR} from './src/xhr/xhr_cache';
 import {XHRImpl} from './src/xhr/xhr_impl';
+
 
 
 /**
@@ -41,7 +43,55 @@ export const BROWSER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]
 export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
     [{provide: XHR, useClass: CachedXHR}];
 
+function _initGlobals() {
+  lockRunMode();
+  initDomAdapter();
+  reflector.reflectionCapabilities = new ReflectionCapabilities();
+}
 
+/**
+ * Creates the runtime compiler for the browser.
+ *
+ * @stable
+ */
+export function browserCompiler({useDebug, useJit = true, providers = []}: {
+  useDebug?: boolean,
+  useJit?: boolean,
+  providers?: Array<any /*Type | Provider | any[]*/>
+} = {}): Compiler {
+  _initGlobals();
+  if (useDebug === undefined) {
+    useDebug = isDevMode();
+  }
+  const injector = ReflectiveInjector.resolveAndCreate([
+    COMPILER_PROVIDERS, {
+      provide: CompilerConfig,
+      useValue: new CompilerConfig({genDebugInfo: useDebug, useJit: useJit})
+    },
+    {provide: XHR, useClass: XHRImpl}, providers ? providers : []
+  ]);
+  return injector.get(Compiler);
+}
+
+/**
+ * Creates an instance of an `@AppModule` for the browser platform.
+ *
+ * ## Simple Example
+ *
+ * ```typescript
+ * @AppModule({
+ *   modules: [BrowserModule]
+ * })
+ * class MyModule {}
+ *
+ * let moduleRef = bootstrapModule(MyModule);
+ * ```
+ * @stable
+ */
+export function bootstrapModule<M>(
+    moduleType: ConcreteType<M>, compiler: Compiler = browserCompiler()): Promise<AppModuleRef<M>> {
+  return compiler.compileAppModuleAsync(moduleType).then(bootstrapModuleFactory);
+}
 
 /**
  * Bootstrapping for Angular applications.
@@ -102,30 +152,108 @@ export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
  * applications on a page, Angular treats each application injector's services as private
  * to that application.
  *
- * ## API
+ * ## API (version 1)
  *
  * - `appComponentType`: The root component which should act as the application. This is
  *   a reference to a `Type` which is annotated with `@Component(...)`.
  * - `customProviders`: An additional set of providers that can be added to the
  *   app injector to override default injection behavior.
  *
+ * ## API (version 2)
+ * - `appComponentType`: The root component which should act as the application. This is
+ *   a reference to a `Type` which is annotated with `@Component(...)`.
+ * - `providers`, `directives`, `pipes`, `modules`, `precompile`: Defines the properties
+ *   of the dynamically created module that is used to bootstrap the module.
+ *
  * Returns a `Promise` of {@link ComponentRef}.
  *
  * @experimental This api cannot be used with the offline compiler and thus is still subject to
  * change.
  */
-export function bootstrap(
-    appComponentType: Type,
-    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<any>> {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-  let providers = [
-    BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS,
-    isPresent(customProviders) ? customProviders : []
-  ];
-  var appInjector = ReflectiveInjector.resolveAndCreate(providers, browserPlatform().injector);
-  return coreLoadAndBootstrap(appComponentType, appInjector);
-}
+// Note: We are using typescript overloads here to have 2 function signatures!
+export function bootstrap<C>(
+    appComponentType: ConcreteType<C>,
+    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<C>>;
+export function bootstrap<C>(
+    appComponentType: ConcreteType<C>,
+    {providers, directives, pipes, modules, precompile, compiler}?: {
+      providers?: Array<any /*Type | Provider | any[]*/>,
+      directives?: any[],
+      pipes?: any[],
+      modules?: any[],
+      precompile?: any[],
+      compiler?: Compiler
+    }): Promise<ComponentRef<C>>;
+export function bootstrap<C>(
+    appComponentType: ConcreteType<C>,
+    customProvidersOrDynamicModule?: Array<any /*Type | Provider | any[]*/>| {
+      providers: Array<any /*Type | Provider | any[]*/>,
+      directives: any[],
+      pipes: any[],
+      modules: any[],
+      precompile: any[],
+      compiler: Compiler
+    }): Promise<ComponentRef<C>> {
+  _initGlobals();
+  let compiler: Compiler;
+  let compilerProviders: any = [];
+  let providers: any[] = [];
+  let directives: any[] = [];
+  let pipes: any[] = [];
+  let modules: any[] = [];
+  let precompile: any[] = [];
+  if (customProvidersOrDynamicModule instanceof Array) {
+    providers = customProvidersOrDynamicModule;
+  } else if (customProvidersOrDynamicModule) {
+    providers = normalizeArray(customProvidersOrDynamicModule.providers);
+    directives = normalizeArray(customProvidersOrDynamicModule.directives);
+    pipes = normalizeArray(customProvidersOrDynamicModule.pipes);
+    modules = normalizeArray(customProvidersOrDynamicModule.modules);
+    precompile = normalizeArray(customProvidersOrDynamicModule.precompile);
+    compiler = customProvidersOrDynamicModule.compiler;
+  }
+  if (providers && providers.length > 0) {
+    // Note: This is a hack to still support the old way
+    // of configuring platform directives / pipes and the compiler xhr.
+    // This will soon be deprecated!
+    let inj = ReflectiveInjector.resolveAndCreate(providers);
+    let compilerConfig: CompilerConfig = inj.get(CompilerConfig, null);
+    if (compilerConfig) {
+      // Note: forms read the platform directives / pipes, modify them
+      // and provide a CompilerConfig out of it
+      directives = directives.concat(compilerConfig.platformDirectives);
+      pipes = pipes.concat(compilerConfig.platformPipes);
+    } else {
+      // If nobody provided a CompilerConfig, use the
+      // PLATFORM_DIRECTIVES / PLATFORM_PIPES values directly.
+      directives = directives.concat(inj.get(PLATFORM_DIRECTIVES, []));
+      pipes = pipes.concat(inj.get(PLATFORM_PIPES, []));
+    }
+    let xhr = inj.get(XHR, null);
+    if (xhr) {
+      compilerProviders.push([{provide: XHR, useValue: xhr}]);
+    }
+  }
+  if (!compiler) {
+    compiler = browserCompiler({providers: compilerProviders});
+  }
 
+  @AppModule({
+    providers: providers,
+    modules: modules.concat([BrowserModule]),
+    directives: directives,
+    pipes: pipes,
+    precompile: precompile.concat([appComponentType])
+  })
+  class DynamicModule {
+    constructor(public appRef: ApplicationRef) {}
+  }
+
+  return bootstrapModule(DynamicModule, compiler)
+      .then(
+          (moduleRef) => moduleRef.instance.appRef.waitForAsyncInitializers().then(
+              () => moduleRef.instance.appRef.bootstrap(appComponentType)));
+}
 
 /**
  * @experimental
@@ -177,4 +305,8 @@ export function bootstrapWorkerApp(
       ],
       workerAppPlatform().injector);
   return coreLoadAndBootstrap(appComponentType, appInjector);
+}
+
+function normalizeArray(arr: any[]): any[] {
+  return arr ? arr : [];
 }

@@ -9,16 +9,16 @@
 import {NgIf} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
 import {TestComponentBuilder} from '@angular/compiler/testing';
+import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
 
 import {Component} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
-import {AnimationDriver} from '../../src/animation/animation_driver';
 import {AnimationEntryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {AUTO_STYLE} from '../../src/animation/metadata';
 import {IS_DART, isArray, isPresent} from '../../src/facade/lang';
 import {fakeAsync, flushMicrotasks, tick} from '../../testing';
-import {MockAnimationDriver} from '../../testing/animation/mock_animation_driver';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {

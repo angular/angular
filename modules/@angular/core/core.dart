@@ -7,7 +7,7 @@ export './src/core/di.dart' hide ForwardRefFn, resolveForwardRef, forwardRef;
 export './src/facade/facade.dart';
 export './src/core/application_ref.dart' show createPlatform, assertPlatform,
     disposePlatform, getPlatform,
-    coreLoadAndBootstrap, coreBootstrap, createNgZone, PlatformRef, ApplicationRef;
+    coreLoadAndBootstrap, coreBootstrap, PlatformRef, ApplicationRef;
 export './src/core/application_tokens.dart' show APP_ID,
   APP_INITIALIZER,
   PACKAGE_ROOT_URL,

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, SecurityContext} from '@angular/core';
 
-import {SecurityContext} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 

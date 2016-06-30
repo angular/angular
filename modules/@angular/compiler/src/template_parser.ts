@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, Optional} from '@angular/core';
+import {Inject, Injectable, OpaqueToken, Optional, SecurityContext} from '@angular/core';
 
-import {Console, MAX_INTERPOLATION_VALUES, SecurityContext} from '../core_private';
+import {Console, MAX_INTERPOLATION_VALUES} from '../core_private';
 
 import {ListWrapper, StringMapWrapper, SetWrapper,} from '../src/facade/collection';
 import {RegExpWrapper, isPresent, StringWrapper, isBlank, isArray} from '../src/facade/lang';

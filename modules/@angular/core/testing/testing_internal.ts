@@ -13,7 +13,6 @@ import {Math, global, isFunction, isPromise} from '../src/facade/lang';
 import {AsyncTestCompleter} from './async_test_completer';
 import {getTestInjector, inject} from './test_injector';
 
-export {MockAnimationDriver} from './animation/mock_animation_driver';
 export {MockAnimationPlayer} from './animation/mock_animation_player';
 export {AsyncTestCompleter} from './async_test_completer';
 export {inject} from './test_injector';

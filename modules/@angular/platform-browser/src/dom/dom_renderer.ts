@@ -14,11 +14,12 @@ import {Json, RegExpWrapper, StringWrapper, isArray, isBlank, isPresent, isStrin
 
 import {DomSharedStylesHost} from './shared_styles_host';
 
-import {AnimationKeyframe, AnimationStyles, AnimationPlayer, AnimationDriver, RenderDebugInfo,} from '../../core_private';
+import {AnimationKeyframe, AnimationStyles, AnimationPlayer, RenderDebugInfo,} from '../../core_private';
 
 import {EventManager} from './events/event_manager';
 import {DOCUMENT} from './dom_tokens';
 import {getDOM} from './dom_adapter';
+import {AnimationDriver} from './animation_driver';
 import {camelCaseToDashCase} from './util';
 
 const NAMESPACE_URIS = {

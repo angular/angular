@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, Component, Directive, ExceptionHandler, Inject, OnDestroy, PLATFORM_INITIALIZER, ReflectiveInjector, coreLoadAndBootstrap, createPlatform, provide} from '@angular/core';
+import {LowerCasePipe, NgIf} from '@angular/common';
+import {XHR} from '@angular/compiler';
+import {APP_INITIALIZER, Component, Directive, ExceptionHandler, Inject, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, ReflectiveInjector, coreLoadAndBootstrap, createPlatform, provide} from '@angular/core';
 import {ApplicationRef, disposePlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {ComponentFixture} from '@angular/core/testing';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {BROWSER_APP_PROVIDERS, BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
 import {BROWSER_APP_COMPILER_PROVIDERS, bootstrap} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -69,6 +72,19 @@ class HelloOnDestroyTickCmp implements OnDestroy {
   ngOnDestroy(): void { this.appRef.tick(); }
 }
 
+@Component({selector: 'hello-app', templateUrl: './sometemplate.html'})
+class HelloUrlCmp {
+  greeting = 'hello';
+}
+
+@Component({
+  selector: 'hello-app',
+  template: `<div  [title]="'HELLO' | lowercase"></div><div *ngIf="show"></div>`
+})
+class HelloCmpUsingPlatformDirectiveAndPipe {
+  show: boolean = false;
+}
+
 class _ArrayLogger {
   res: any[] = [];
   log(s: any): void { this.res.push(s); }
@@ -108,15 +124,9 @@ export function main() {
     afterEach(disposePlatform);
 
     it('should throw if bootstrapped Directive is not a Component', () => {
-      var logger = new _ArrayLogger();
-      var exceptionHandler = new ExceptionHandler(logger, false);
-      expect(
-          () => bootstrap(
-              HelloRootDirectiveIsNotCmp,
-              [testProviders, {provide: ExceptionHandler, useValue: exceptionHandler}]))
+      expect(() => bootstrap(HelloRootDirectiveIsNotCmp))
           .toThrowError(
               `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
-      expect(logger.res.join('')).toContain('Could not compile');
     });
 
     it('should throw if no element is found',
@@ -270,5 +280,40 @@ export function main() {
            });
          });
        }));
+
+    // Note: This will soon be deprecated as bootstrap creates a separate injector for the compiler,
+    // i.e. such providers needs to go into that injecotr (when calling `browserCompiler`);
+    it('should still allow to provide a custom xhr via the regular providers',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         let spyXhr: XHR = {get: (url: string) => Promise.resolve('{{greeting}} world!')};
+         bootstrap(HelloUrlCmp, testProviders.concat([{provide: XHR, useValue: spyXhr}]))
+             .then((compRef) => {
+               expect(el).toHaveText('hello world!');
+               async.done();
+             });
+       }));
+
+    // Note: This will soon be deprecated as bootstrap creates a separate injector for the compiler,
+    // i.e. such providers needs to go into that injecotr (when calling `browserCompiler`);
+    it('should still allow to provide platform directives/pipes via the regular providers',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         bootstrap(HelloCmpUsingPlatformDirectiveAndPipe, testProviders.concat([
+           {provide: PLATFORM_DIRECTIVES, useValue: [NgIf]},
+           {provide: PLATFORM_PIPES, useValue: [LowerCasePipe]}
+         ])).then((compRef) => {
+           let compFixture = new ComponentFixture(compRef, null, null);
+           let el = compFixture.debugElement;
+           // Test that ngIf works
+           expect(el.children.length).toBe(1);
+           compFixture.componentInstance.show = true;
+           compFixture.detectChanges();
+           expect(el.children.length).toBe(2);
+
+           // Test that lowercase pipe works
+           expect(el.children[0].properties['title']).toBe('hello');
+           async.done();
+         });
+       }));
+
   });
 }

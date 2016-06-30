@@ -129,7 +129,7 @@ export declare abstract class ApplicationRef {
     componentTypes: Type[];
     injector: Injector;
     zone: NgZone;
-    abstract bootstrap<C>(componentFactory: ComponentFactory<C>): ComponentRef<C>;
+    abstract bootstrap<C>(componentFactory: ComponentFactory<C> | ConcreteType<C>): ComponentRef<C>;
     abstract dispose(): void;
     abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
     abstract registerDisposeListener(dispose: () => void): void;
@@ -289,14 +289,8 @@ export declare class Compiler {
     clearCacheFor(type: Type): void;
     compileAppModuleAsync<T>(moduleType: ConcreteType<T>, metadata?: AppModuleMetadata): Promise<AppModuleFactory<T>>;
     compileAppModuleSync<T>(moduleType: ConcreteType<T>, metadata?: AppModuleMetadata): AppModuleFactory<T>;
-    compileComponentAsync<T>(component: ConcreteType<T>, {moduleDirectives, modulePipes}?: {
-        moduleDirectives?: ConcreteType<any>[];
-        modulePipes?: ConcreteType<any>[];
-    }): Promise<ComponentFactory<T>>;
-    compileComponentSync<T>(component: ConcreteType<T>, {moduleDirectives, modulePipes}?: {
-        moduleDirectives?: ConcreteType<any>[];
-        modulePipes?: ConcreteType<any>[];
-    }): ComponentFactory<T>;
+    compileComponentAsync<T>(component: ConcreteType<T>): Promise<ComponentFactory<T>>;
+    compileComponentSync<T>(component: ConcreteType<T>): ComponentFactory<T>;
 }
 
 /** @stable */
@@ -500,9 +494,6 @@ export declare function coreBootstrap<C>(componentFactory: ComponentFactory<C>, 
 
 /** @experimental */
 export declare function coreLoadAndBootstrap(componentType: Type, injector: Injector): Promise<ComponentRef<any>>;
-
-/** @experimental */
-export declare function createNgZone(): NgZone;
 
 /** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
@@ -1222,6 +1213,21 @@ export declare function resolveForwardRef(type: any): any;
 /** @experimental */
 export declare abstract class RootRenderer {
     abstract renderComponent(componentType: RenderComponentType): Renderer;
+}
+
+/** @stable */
+export declare abstract class SanitizationService {
+    abstract sanitize(context: SecurityContext, value: string): string;
+}
+
+/** @stable */
+export declare enum SecurityContext {
+    NONE = 0,
+    HTML = 1,
+    STYLE = 2,
+    SCRIPT = 3,
+    URL = 4,
+    RESOURCE_URL = 5,
 }
 
 /** @stable */

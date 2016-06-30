@@ -246,7 +246,7 @@ export class StaticReflector implements ReflectorReader {
     let calling = new Map<StaticSymbol, boolean>();
 
     function simplifyInContext(context: StaticSymbol, value: any, depth: number): any {
-      function resolveReference(expression: any): StaticSymbol {
+      function resolveReference(context: StaticSymbol, expression: any): StaticSymbol {
         let staticSymbol: StaticSymbol;
         if (expression['module']) {
           staticSymbol = _this.host.findDeclaration(
@@ -257,25 +257,34 @@ export class StaticReflector implements ReflectorReader {
         return staticSymbol;
       }
 
-      function isOpaqueToken(value: any): boolean {
+      function resolveReferenceValue(staticSymbol: StaticSymbol): any {
+        let result: any = staticSymbol;
+        let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
+        let declarationValue =
+            moduleMetadata ? moduleMetadata['metadata'][staticSymbol.name] : null;
+        return declarationValue;
+      }
+
+      function isOpaqueToken(context: StaticSymbol, value: any): boolean {
         if (value && value.__symbolic === 'new' && value.expression) {
           let target = value.expression;
           if (target.__symbolic == 'reference') {
-            return sameSymbol(resolveReference(target), _this.opaqueToken);
+            return sameSymbol(resolveReference(context, target), _this.opaqueToken);
           }
         }
         return false;
       }
 
       function simplifyCall(expression: any) {
-        let context: {[name: string]: string}|undefined = undefined;
+        let callContext: {[name: string]: string}|undefined = undefined;
         if (expression['__symbolic'] == 'call') {
           let target = expression['expression'];
+          let targetFunction: any;
           if (target && target.__symbolic === 'reference') {
-            context = {name: target.name};
+            callContext = {name: target.name};
+            targetFunction = resolveReferenceValue(resolveReference(context, target));
           }
-          let targetFunction = simplify(target);
-          if (targetFunction['__symbolic'] == 'function') {
+          if (targetFunction && targetFunction['__symbolic'] == 'function') {
             if (calling.get(targetFunction)) {
               throw new Error('Recursion not supported');
             }
@@ -309,7 +318,8 @@ export class StaticReflector implements ReflectorReader {
           // non-angular decorator, and we should just ignore it.
           return {__symbolic: 'ignore'};
         }
-        return simplify({__symbolic: 'error', message: 'Function call not supported', context});
+        return simplify(
+            {__symbolic: 'error', message: 'Function call not supported', context: callContext});
       }
 
       function simplify(expression: any): any {
@@ -421,13 +431,11 @@ export class StaticReflector implements ReflectorReader {
                     return localValue;
                   }
                 }
-                staticSymbol = resolveReference(expression);
+                staticSymbol = resolveReference(context, expression);
                 let result: any = staticSymbol;
-                let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
-                let declarationValue =
-                    moduleMetadata ? moduleMetadata['metadata'][staticSymbol.name] : null;
+                let declarationValue = resolveReferenceValue(result);
                 if (declarationValue) {
-                  if (isOpaqueToken(declarationValue)) {
+                  if (isOpaqueToken(staticSymbol, declarationValue)) {
                     // If the referenced symbol is initalized by a new OpaqueToken we can keep the
                     // reference to the symbol.
                     return staticSymbol;
@@ -438,7 +446,7 @@ export class StaticReflector implements ReflectorReader {
               case 'class':
                 return context;
               case 'function':
-                return expression;
+                return context;
               case 'new':
               case 'call':
                 // Determine if the function is a built-in conversion

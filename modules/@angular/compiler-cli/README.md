@@ -27,13 +27,30 @@ Then you can add an import statement in the `bootstrap` allowing you to bootstra
 generated code:
 
 ```typescript
-import {ComponentResolver, ReflectiveInjector, coreBootstrap} from '@angular/core';
-import {BROWSER_APP_PROVIDERS, browserPlatform} from '@angular/platform-browser';
+main_module.ts
+-------------
+import {BrowserModule} from '@angular/platform-browser';
+import {Component, AppModule, ApplicationRef} from '@angular/core';
 
-import {MyComponentNgFactory} from './mycomponent.ngfactory';
+@Component(...)
+export class MyComponent {}
 
-const appInjector = ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, browserPlatform().injector);
-coreBootstrap(MyComponentNgFactory, appInjector);
+@AppModule({
+  modules: [BrowserModule],
+  precompile: [MyComponent]
+})
+export class MainModule {
+  constructor(appRef: ApplicationRef) {
+    appRef.bootstrap(MyComponent);
+  }
+}
+
+bootstrap.ts
+-------------
+
+import {MainModuleNgFactory} from './main_module.ngfactory';
+
+MainModuleNgFactory.create(browserPlatform().injector);
 ```
 
 ## Configuration

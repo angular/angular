@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationDriver} from '../../src/animation/animation_driver';
-import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
-import {AnimationPlayer} from '../../src/animation/animation_player';
-import {AnimationStyles} from '../../src/animation/animation_styles';
-import {StringMapWrapper} from '../../src/facade/collection';
-import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
+import {AnimationPlayer} from '@angular/core';
+import {MockAnimationPlayer} from '@angular/core/testing/testing_internal';
+
+import {AnimationKeyframe, AnimationStyles} from '../core_private';
+import {AnimationDriver} from '../src/dom/animation_driver';
+import {StringMapWrapper} from '../src/facade/collection';
 
 export class MockAnimationDriver extends AnimationDriver {
   log: any[] /** TODO #9100 */ = [];

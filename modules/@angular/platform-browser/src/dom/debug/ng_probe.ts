@@ -30,7 +30,7 @@ export function inspectNativeElement(element: any /** TODO #9100 */): DebugNode 
   return getDebugNode(element);
 }
 
-function _createConditionalRootRenderer(rootRenderer: any /** TODO #9100 */) {
+export function _createConditionalRootRenderer(rootRenderer: any /** TODO #9100 */) {
   if (isDevMode()) {
     return _createRootRenderer(rootRenderer);
   }

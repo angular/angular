@@ -8,10 +8,11 @@
 
 import {AUTO_STYLE, BaseException} from '@angular/core';
 
-import {AnimationDriver, AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer} from '../../core_private';
+import {AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isNumber, isPresent} from '../facade/lang';
 
+import {AnimationDriver} from './animation_driver';
 import {getDOM} from './dom_adapter';
 import {DomAnimatePlayer} from './dom_animate_player';
 import {dashCaseToCamelCase} from './util';

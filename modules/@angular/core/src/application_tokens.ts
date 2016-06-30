@@ -23,7 +23,7 @@ import {OpaqueToken} from './di';
  */
 export const APP_ID: any = /*@ts2dart_const*/ new OpaqueToken('AppId');
 
-function _appIdRandomProviderFactory() {
+export function _appIdRandomProviderFactory() {
   return `${_randomChar()}${_randomChar()}${_randomChar()}`;
 }
 
@@ -35,7 +35,7 @@ export const APP_ID_RANDOM_PROVIDER =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
       provide: APP_ID,
       useFactory: _appIdRandomProviderFactory,
-      deps: [] as any
+      deps: <any[]>[]
     };
 
 function _randomChar(): string {

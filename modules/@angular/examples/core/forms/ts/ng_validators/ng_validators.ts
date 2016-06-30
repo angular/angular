@@ -9,7 +9,7 @@
 import {NG_VALIDATORS} from '@angular/common';
 import {bootstrap} from '@angular/platform-browser-dynamic';
 
-let MyApp: Function = null;
+class MyApp {}
 let myValidator: any = null;
 
 // #docregion ng_validators

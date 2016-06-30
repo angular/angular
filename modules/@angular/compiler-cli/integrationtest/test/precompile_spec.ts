@@ -6,22 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugElement, ReflectiveInjector, getDebugNode, lockRunMode} from '@angular/core';
-import {BROWSER_APP_PROVIDERS, By} from '@angular/platform-browser';
-import {serverPlatform} from '@angular/platform-server';
-
-import {SomeComp} from '../src/precompile';
-import {CompWithPrecompileNgFactory} from '../src/precompile.ngfactory';
-
-// Need to lock the mode explicitely as this test is not using Angular's testing framework.
-lockRunMode();
+import './init';
+import {BasicComp} from '../src/basic';
+import {CompWithPrecompile} from '../src/precompile';
+import {createComponent} from './util';
 
 describe('content projection', () => {
   it('should support basic content projection', () => {
-    const appInjector =
-        ReflectiveInjector.resolveAndCreate(BROWSER_APP_PROVIDERS, serverPlatform().injector);
-    var compWithPrecompile = CompWithPrecompileNgFactory.create(appInjector).instance;
-    var cf = compWithPrecompile.cfr.resolveComponentFactory(SomeComp);
-    expect(cf.componentType).toBe(SomeComp);
+    var compFixture = createComponent(CompWithPrecompile);
+    var cf = compFixture.componentInstance.cfr.resolveComponentFactory(BasicComp);
+    expect(cf.componentType).toBe(BasicComp);
   });
 });

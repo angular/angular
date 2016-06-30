@@ -11,7 +11,7 @@ import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {Type} from '@angular/core';
 import {SpyChangeDetectorRef} from './spies';
 import {ApplicationRef_, ApplicationRef, PLATFORM_CORE_PROVIDERS, APPLICATION_CORE_PROVIDERS} from '@angular/core/src/application_ref';
-import {Injector, APP_INITIALIZER, Component, ReflectiveInjector, coreLoadAndBootstrap, PlatformRef, createPlatform, disposePlatform, ComponentResolver, ChangeDetectorRef} from '@angular/core';
+import {Injector, APP_INITIALIZER, Component, ReflectiveInjector, coreLoadAndBootstrap, PlatformRef, createPlatform, disposePlatform, ComponentResolver, ComponentFactoryResolver, ChangeDetectorRef} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {BaseException} from '../src/facade/exceptions';
 import {PromiseWrapper, PromiseCompleter, TimerWrapper} from '../src/facade/async';
@@ -40,7 +40,7 @@ export function main() {
             APPLICATION_CORE_PROVIDERS, {provide: Console, useValue: new _MockConsole()},
             {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
             {provide: ComponentResolver, useValue: new _MockComponentResolver(someCompFactory)},
-            providers
+            {provide: ComponentFactoryResolver, useValue: ComponentFactoryResolver.NULL}, providers
           ],
           platform.injector);
       return appInjector.get(ApplicationRef);

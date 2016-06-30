@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, SecurityContext, isDefaultChangeDetectionStrategy} from '../../core_private';
+import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
 import * as cdAst from '../expression_parser/ast';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
@@ -25,7 +25,7 @@ import {camelCaseToDashCase} from '../util';
 import {convertCdExpressionToIr} from './expression_converter';
 
 import {CompileBinding} from './compile_binding';
-import {BaseException} from '@angular/core';
+import {BaseException, SecurityContext} from '@angular/core';
 
 
 function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {

@@ -12,7 +12,7 @@ import {Component} from '@angular/core';
   selector: 'my-comp',
   template: '<div></div>',
 })
-export class MyComp {
+export class MultipleComponentsMyComp {
 }
 
 @Component({

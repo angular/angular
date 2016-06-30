@@ -10,9 +10,8 @@ import {COMPILER_PROVIDERS, DirectiveResolver, ViewResolver, XHR} from '@angular
 import {MockDirectiveResolver, MockViewResolver, OverridingTestComponentBuilder} from '@angular/compiler/testing';
 import {APPLICATION_COMMON_PROVIDERS, APP_ID, NgZone, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, RootRenderer} from '@angular/core';
 import {TestComponentBuilder, TestComponentRenderer} from '@angular/core/testing';
-import {BROWSER_SANITIZATION_PROVIDERS, DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager} from '@angular/platform-browser';
+import {AnimationDriver, BROWSER_SANITIZATION_PROVIDERS, DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager} from '@angular/platform-browser';
 
-import {AnimationDriver, NoOpAnimationDriver} from '../core_private';
 import {DOMTestComponentRenderer} from '../platform_browser_dynamic_testing_private';
 import {DomEventsPlugin, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, ELEMENT_PROBE_PROVIDERS, SharedStylesHost, getDOM} from '../platform_browser_private';
 import {Parse5DomAdapter} from '../src/parse5_adapter';
@@ -63,7 +62,7 @@ export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | an
       /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: appDoc},
       /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
       /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
-      /* @ts2dart_Provider */ {provide: AnimationDriver, useClass: NoOpAnimationDriver},
+      /* @ts2dart_Provider */ {provide: AnimationDriver, useValue: AnimationDriver.NOOP},
       EventManager,
       /* @ts2dart_Provider */ {
         provide: EVENT_MANAGER_PLUGINS,

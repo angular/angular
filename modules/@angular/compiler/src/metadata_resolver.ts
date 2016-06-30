@@ -196,29 +196,11 @@ export class CompileMetadataResolver {
         throw new BaseException(
             `Could not compile '${stringify(moduleType)}' because it is not an AppModule.`);
       }
-      let providers: any[] = [];
-      if (meta.providers) {
-        providers.push(...this.getProvidersMetadata(meta.providers));
-      }
-
-      let directives: cpl.CompileTypeMetadata[] = [];
-      if (meta.directives) {
-        directives.push(...flattenArray(meta.directives)
-                            .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
-      }
-
-      let pipes: cpl.CompileTypeMetadata[] = [];
-      if (meta.pipes) {
-        pipes.push(...flattenArray(meta.pipes)
-                       .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
-      }
-
-      let precompile: cpl.CompileTypeMetadata[] = [];
-      if (meta.precompile) {
-        precompile.push(...flattenArray(meta.precompile)
-                            .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
-      }
       let modules: cpl.CompileTypeMetadata[] = [];
+      let providers: any[] = [];
+      let directives: cpl.CompileTypeMetadata[] = [];
+      let pipes: cpl.CompileTypeMetadata[] = [];
+      let precompile: cpl.CompileTypeMetadata[] = [];
       if (meta.modules) {
         flattenArray(meta.modules).forEach((moduleType) => {
           var meta = this.getAppModuleMetadata(moduleType);
@@ -229,6 +211,22 @@ export class CompileMetadataResolver {
           modules.push(meta.type);
           modules.push(...meta.modules);
         });
+      }
+
+      if (meta.providers) {
+        providers.push(...this.getProvidersMetadata(meta.providers));
+      }
+      if (meta.directives) {
+        directives.push(...flattenArray(meta.directives)
+                            .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
+      }
+      if (meta.pipes) {
+        pipes.push(...flattenArray(meta.pipes)
+                       .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
+      }
+      if (meta.precompile) {
+        precompile.push(...flattenArray(meta.precompile)
+                            .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
       }
 
       compileMeta = new cpl.CompileAppModuleMetadata({
