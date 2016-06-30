@@ -1,3 +1,182 @@
+<a name="2.0.0-rc.4"></a>
+# [2.0.0-rc.4](https://github.com/angular/angular/compare/2.0.0-rc.3...2.0.0-rc.4) (2016-06-30)
+
+
+### Bug Fixes
+
+* **animations:** ensure void => * animations are triggered when an expression is omitted ([e0b0a59](https://github.com/angular/angular/commit/e0b0a59)), closes [#9327](https://github.com/angular/angular/issues/9327) [#9381](https://github.com/angular/angular/issues/9381)
+* **animations:** make sure the easing value is passed into the web-animations player ([c43aec2](https://github.com/angular/angular/commit/c43aec2)), closes [#9517](https://github.com/angular/angular/issues/9517) [#9523](https://github.com/angular/angular/issues/9523)
+* **common:** add license header to localization.ts ([5150344](https://github.com/angular/angular/commit/5150344))
+* **common/testing:** remove internal MockLocationStrategy from common/testing ([#9562](https://github.com/angular/angular/issues/9562)) ([dcf7512](https://github.com/angular/angular/commit/dcf7512))
+* **compiler:** don't inject `viewProviders` into content child elements ([9ed8f2d](https://github.com/angular/angular/commit/9ed8f2d))
+* **compiler:** make code easier to type check ([51d4c9d](https://github.com/angular/angular/commit/51d4c9d)), closes [#9701](https://github.com/angular/angular/issues/9701)
+* **compiler:** report not existing files as errors ([e81dea6](https://github.com/angular/angular/commit/e81dea6)), closes [#9690](https://github.com/angular/angular/issues/9690)
+* **Compiler:** relax childIsRecursive check ([#8705](https://github.com/angular/angular/issues/8705)) ([3d5bb23](https://github.com/angular/angular/commit/3d5bb23))
+* **core:** improve error message for broken bindings ([df759b8](https://github.com/angular/angular/commit/df759b8)), closes [#6820](https://github.com/angular/angular/issues/6820) [#9536](https://github.com/angular/angular/issues/9536)
+* **core:** properly report missing providers and viewProviders ([#9411](https://github.com/angular/angular/issues/9411)) ([f114dd3](https://github.com/angular/angular/commit/f114dd3)), closes [#8237](https://github.com/angular/angular/issues/8237)
+* **core:** report duplicate template bindings in templates ([098b461](https://github.com/angular/angular/commit/098b461)), closes [#7315](https://github.com/angular/angular/issues/7315) [#9462](https://github.com/angular/angular/issues/9462)
+* **core/testing:** clean up the core testing public API ([#9466](https://github.com/angular/angular/issues/9466)) ([8a9e9c7](https://github.com/angular/angular/commit/8a9e9c7))
+* **core/testing:** move ComponentFixture to core ([#9386](https://github.com/angular/angular/issues/9386)) ([1143b03](https://github.com/angular/angular/commit/1143b03))
+* **core/testing compiler/testing:** move TestComponentBuilder to core/testing ([#9590](https://github.com/angular/angular/issues/9590)) ([a33195d](https://github.com/angular/angular/commit/a33195d)), closes [#9585](https://github.com/angular/angular/issues/9585)
+* **forms:** add select multiple accessor as built-in accessor ([9f00a1b](https://github.com/angular/angular/commit/9f00a1b))
+* **forms:** async validator-directives process Observables correctly ([#8186](https://github.com/angular/angular/issues/8186)) ([eef9512](https://github.com/angular/angular/commit/eef9512))
+* **forms:** emit statusChange when child controls have async validator ([#9652](https://github.com/angular/angular/issues/9652)) ([797914e](https://github.com/angular/angular/commit/797914e))
+* **forms:** make radio button selection logic more flexible ([#9646](https://github.com/angular/angular/issues/9646)) ([ed0ade6](https://github.com/angular/angular/commit/ed0ade6)), closes [#9558](https://github.com/angular/angular/issues/9558)
+* **forms:** ngModel should emit valueChanges and statusChanges asynchronously ([97a2119](https://github.com/angular/angular/commit/97a2119))
+* **http:** add search param escaping for keys ([#9166](https://github.com/angular/angular/issues/9166)) ([a5f2e20](https://github.com/angular/angular/commit/a5f2e20))
+* **http:** don't encode values that are allowed in query ([#9651](https://github.com/angular/angular/issues/9651)) ([1620426](https://github.com/angular/angular/commit/1620426)), closes [#9348](https://github.com/angular/angular/issues/9348)
+* **ngc:** correct dependencies for compiler-cli ([826f89f](https://github.com/angular/angular/commit/826f89f)), closes [#9540](https://github.com/angular/angular/issues/9540)
+* **ngc:** work with typescript[@next](https://github.com/next) ([f463e09](https://github.com/angular/angular/commit/f463e09))
+* **NgSwitch:** display deprecation message only once ([398060d](https://github.com/angular/angular/commit/398060d))
+* **platform-browser/testing:** clean up public api for platform-browser/testing ([#9519](https://github.com/angular/angular/issues/9519)) ([3d8eb8c](https://github.com/angular/angular/commit/3d8eb8c))
+* **platform-browser/testing-e2e:** clean up unused exports from e2e testing helpers ([#9387](https://github.com/angular/angular/issues/9387)) ([894747c](https://github.com/angular/angular/commit/894747c))
+* **public API:** update golden files ([ae4fa56](https://github.com/angular/angular/commit/ae4fa56))
+* **security:** allow empty CSS values. ([#9675](https://github.com/angular/angular/issues/9675)) ([2d9d7f1](https://github.com/angular/angular/commit/2d9d7f1))
+* **security:** no warning when sanitizing escaped html ([#9392](https://github.com/angular/angular/issues/9392)) ([#9413](https://github.com/angular/angular/issues/9413)) ([98cef76](https://github.com/angular/angular/commit/98cef76))
+* **testing:** remove the `toMatchPattern` matcher (jasmine has `toMatch`) ([6420f75](https://github.com/angular/angular/commit/6420f75))
+* public api surface fixes + stability markers ([24eb838](https://github.com/angular/angular/commit/24eb838)), closes [#9236](https://github.com/angular/angular/issues/9236) [#9235](https://github.com/angular/angular/issues/9235)
+* support *directive on `<template>` ([#9691](https://github.com/angular/angular/issues/9691)) ([3fec279](https://github.com/angular/angular/commit/3fec279)), closes [#7315](https://github.com/angular/angular/issues/7315)
+* **testing:** remove the `toThrowErrorWith` matcher (jasmine has `toThrowError`) ([e1e5c40](https://github.com/angular/angular/commit/e1e5c40))
+* **typings:** don't test compiler-cli typings on TS 1.8 ([54dbed4](https://github.com/angular/angular/commit/54dbed4))
+* **upgrade:** add peerDependency on platform-browser-dynamic ([#9674](https://github.com/angular/angular/issues/9674)) ([e2116c5](https://github.com/angular/angular/commit/e2116c5)), closes [#9623](https://github.com/angular/angular/issues/9623)
+
+
+### Features
+
+* **compiler:** support sync runtime compile ([bf598d6](https://github.com/angular/angular/commit/bf598d6)), closes [#7084](https://github.com/angular/angular/issues/7084) [#9594](https://github.com/angular/angular/issues/9594)
+* **core:** add `[@Component](https://github.com/Component).precompile` and `ComponentFactoryResolver` ([6c5b653](https://github.com/angular/angular/commit/6c5b653)), closes [#9543](https://github.com/angular/angular/issues/9543)
+* **core:** split ChangeDetectorStrategy into ChangeDetectionStrategy and ChangeDetectorStatus ([e12b127](https://github.com/angular/angular/commit/e12b127))
+* **DomRenderer:** Adding support for document fragments in SVG foreign objects ([#9458](https://github.com/angular/angular/issues/9458)) ([3644eef](https://github.com/angular/angular/commit/3644eef))
+* **forms:** add support for formArrayName ([c03e1f2](https://github.com/angular/angular/commit/c03e1f2)), closes [#9251](https://github.com/angular/angular/issues/9251)
+* **forms:** add support for standalone ngModel dirs inside forms ([6edf047](https://github.com/angular/angular/commit/6edf047)), closes [#9230](https://github.com/angular/angular/issues/9230)
+* **forms:** expose ValidatorFn and AsyncValidatorFn ([17dcbf6](https://github.com/angular/angular/commit/17dcbf6)), closes [#8834](https://github.com/angular/angular/issues/8834)
+* **forms:** make valueChanges and statusChanges available on abstract control directives ([de12710](https://github.com/angular/angular/commit/de12710))
+* **forms:** support updating of validators on exiting controls ([#9516](https://github.com/angular/angular/issues/9516)) ([638fd74](https://github.com/angular/angular/commit/638fd74))
+* **forms:** use formControlName on radio buttons when name is absent ([#9681](https://github.com/angular/angular/issues/9681)) ([0961bd1](https://github.com/angular/angular/commit/0961bd1))
+* **QueryList:** implement some() ([#9464](https://github.com/angular/angular/issues/9464)) ([f6a410a](https://github.com/angular/angular/commit/f6a410a)), closes [#9443](https://github.com/angular/angular/issues/9443)
+* **router:** add pathMatch property to replace terminal ([fcfddbf](https://github.com/angular/angular/commit/fcfddbf))
+* **router:** implement data and resolve ([f2f1ec0](https://github.com/angular/angular/commit/f2f1ec0))
+* **router:** use componentFactoryResolver ([dc64e90](https://github.com/angular/angular/commit/dc64e90))
+* **security:** allow more HTML5 elements and attributes in sanitizers ([6605eb3](https://github.com/angular/angular/commit/6605eb3)), closes [#9438](https://github.com/angular/angular/issues/9438)
+
+
+### BREAKING CHANGES
+
+* http: The changes to Http's URLSearchParams serialization now 
+  prevent encoding of these characters inside query parameters
+  which were previously converted to percent-encoded values `@ : $ , ; + ; ? /`
+
+  The default encoding behavior can be overridden by extending
+  QueryEncoder, as documented in the URLSearchParams service.
+* Previously multiple template bindings on one element
+  (ex. `<div *ngIf='..' *ngFor='...'>`) were allowed but most of the time
+  were leading to undesired result. It is possible that a small number
+  of applications will see template parse errors that should be fixed by
+  nesting elements or using `<template>` tags explicitly.
+* DomEventsPlugin and KeyEventsPlugin previously exported from core are no longer public - these classes are implementation detail.
+
+  Previously deprecated BROWSER_PROVIDERS was completely removed from platform-browser.
+* core/testing compiler/testing: `TestComponentBuilder` is now imported from `@angular/core/testing`. Imports
+  from `@angular/compiler/testing` are deprecated.
+
+  Before:
+
+  ```
+  import {TestComponentBuilder, TestComponentRenderer, ComponentFixtureAutoDetect} from '@angular/compiler/testing';
+  ```
+
+  After:
+  ```
+  import {TestComponentBuilder, TestComponentRenderer, ComponentFixtureAutoDetect} from '@angular/core/testing';
+  ```
+* common/testing: MockLocationStrategy was intended to be internal only and is now removed
+  from the `@angular/common/testing` public api.
+
+  Use `SpyLocation` from `@angular/common/testing` for location testing.
+* compiler: `TestComponentBuilder.createSync` now takes a component type
+  and throws if not all templates are either inlined
+  are compiled before via `createAsync`.
+* core/testing: Remove the following APIs from `@angular/core/testing`, which have been deprecated or were
+  never intended to be publicly exported:
+
+  ```
+  injectAsync
+  clearPendingTimers
+  Log
+  MockAppliacationHref
+  MockNgZone
+  clearPendingTimers
+  getTypeOf
+  instantiateType
+  ```
+
+  Instead of `injectAsync`, use `async(inject())`.
+
+  `clearPendingTimers` is no longer required.
+* platform-browser/testing: The following are no longer publicly exported APIs. They were intended as internal
+  utilities and you should use your own util:
+
+  ```
+  browserDetection,
+  dispatchEvent,
+  el,
+  normalizeCSS,
+  stringifyElement,
+  expect (and custom matchers for Jasmine)
+  ```
+* testing: Before:
+
+      expect(...).toThrowErrorWith(msg);
+
+  After:
+
+      expect(...).toThrowError(msg);
+  * testing: Before:
+
+      expect(...).toMatchPattern(pattern);
+
+  After:
+
+      expect(...).toMatch(pattern);
+* core/testing: `ComponentFixture` will be moving out of `@angular/compiler/testing` to `@angular/core/testing` in
+  this release. For now, it is deprecated from `@angular/compiler/testing`.
+
+
+* The async function now determines whether it should return a promise
+  or instead call a done function parameter. Importing Jasmine functions
+  from `@angular/core/testing` is no longer necessary and is now deprecated.
+
+  Additionally, beforeEachProviders is also deprecated, as it is specific
+  to the testing framework. Instead, use the new addProviders method directly.
+
+  Before:
+  ```js
+  import {beforeEachProviders, it, describe, inject} from '@angular/testing/core';
+
+  describe('my code', () => {
+    beforeEachProviders(() => [MyService]);
+
+    it('does stuff', inject([MyService], (service) => {
+      // actual test
+    });
+  });
+  ```
+
+  After:
+  ```js
+  import {addProviders, inject} from '@angular/testing/core';
+
+  describe('my code', () => {
+    beforeEach(() => {
+      addProviders([MyService]);
+    });
+
+    it('does stuff', inject([MyService], (service) => {
+      // actual test
+    });
+  });
+  ```
+
 <a name="2.0.0-rc.3"></a>
 # 2.0.0-rc.3 (2016-06-21)
 
