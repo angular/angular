@@ -101,6 +101,22 @@ gulp.task('lint', ['format:enforce', 'tools:build'], () => {
 
 gulp.task('tools:build', (done) => { tsc('tools/', done); });
 
+gulp.task('check-cycle', (done) => {
+  var madge = require('madge');
+
+  var dependencyObject = madge(['dist/all/'], {
+    format: 'cjs',
+    extensions: ['.js'],
+    onParseFile: function(data) { data.src = data.src.replace(/\/\* circular \*\//g, "//"); }
+  });
+  var circularDependencies = dependencyObject.circular().getArray();
+  if (circularDependencies.length > 0) {
+    console.log('Found circular dependencies!');
+    console.log(circularDependencies);
+    process.exit(1);
+  }
+  done();
+});
 
 gulp.task('serve', () => {
   let connect = require('gulp-connect');
@@ -131,7 +147,6 @@ gulp.task('changelog', () => {
     }))
     .pipe(gulp.dest('./'));
 });
-
 
 function tsc(projectPath, done) {
   let child_process = require('child_process');

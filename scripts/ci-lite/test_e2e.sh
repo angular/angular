@@ -26,6 +26,8 @@ echo 'travis_fold:end:test.buildPackages'
 ./tools/typings-test/test.sh
 $(npm bin)/gulp public-api:enforce
 
+$(npm bin)/gulp check-cycle
+
 echo 'travis_fold:start:test.e2e.localChrome'
 cd dist/
 $(npm bin)/gulp serve &
