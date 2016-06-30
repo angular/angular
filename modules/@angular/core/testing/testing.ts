@@ -12,7 +12,7 @@
  * allows tests to be asynchronous by either returning a promise or using a 'done' parameter.
  */
 
-import {TestInjector, getTestInjector} from './test_injector';
+import {TestBed, getTestBed} from './test_injector';
 
 declare var global: any;
 
@@ -107,11 +107,11 @@ export var iit = _global.fit;
 export var xit = _global.xit;
 
 
-var testInjector: TestInjector = getTestInjector();
+var testBed: TestBed = getTestBed();
 
 // Reset the test providers before each test.
 if (_global.beforeEach) {
-  beforeEach(() => { testInjector.reset(); });
+  beforeEach(() => { testBed.reset(); });
 }
 
 /**
@@ -123,7 +123,7 @@ if (_global.beforeEach) {
 export function addProviders(providers: Array<any>): void {
   if (!providers) return;
   try {
-    testInjector.addProviders(providers);
+    testBed.addProviders(providers);
   } catch (e) {
     throw new Error(
         'addProviders can\'t be called after the injector has been already created for this test. ' +
