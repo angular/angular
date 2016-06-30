@@ -12,6 +12,7 @@ import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers, identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
+import {convertValueToOutputAst} from '../output/value_util';
 import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst} from '../template_ast';
 
 import {CompileView} from './compile_view';
@@ -165,7 +166,7 @@ export class CompileElement extends CompileNode {
           return o.importExpr(provider.useClass)
               .instantiate(depsExpr, o.importType(provider.useClass));
         } else {
-          return o.literal(provider.useValue);
+          return convertValueToOutputAst(provider.useValue);
         }
       });
       var propName = `_${resolvedProvider.token.name}_${this.nodeIndex}_${this._instances.size}`;

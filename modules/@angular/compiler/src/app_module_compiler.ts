@@ -12,6 +12,7 @@ import {CompileAppModuleMetadata, CompileDiDependencyMetadata, CompileIdentifier
 import {isBlank, isPresent} from './facade/lang';
 import {Identifiers, identifierToken} from './identifiers';
 import * as o from './output/output_ast';
+import {convertValueToOutputAst} from './output/value_util';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {AppModuleProviderParser} from './provider_parser';
 import {ProviderAst, ProviderAstType} from './template_ast';
@@ -140,7 +141,7 @@ class _InjectorBuilder {
       result =
           o.importExpr(provider.useClass).instantiate(depsExpr, o.importType(provider.useClass));
     } else {
-      result = o.literal(provider.useValue);
+      result = convertValueToOutputAst(provider.useValue);
     }
     return result;
   }

@@ -896,29 +896,6 @@ export function fn(params: FnParam[], body: Statement[], type: Type = null): Fun
   return new FunctionExpr(params, body, type);
 }
 
-export function literal(value: any, type: Type = null): Expression {
-  return visitValue(value, new _ValueOutputAstTransformer(), type);
-}
-
-class _ValueOutputAstTransformer implements ValueTransformer {
-  visitArray(arr: any[], type: Type): Expression {
-    return literalArr(arr.map(value => visitValue(value, this, null)), type);
-  }
-  visitStringMap(map: {[key: string]: any}, type: MapType): Expression {
-    var entries: Array<string|Expression>[] = [];
-    StringMapWrapper.forEach(map, (value: any, key: string) => {
-      entries.push([key, visitValue(value, this, null)]);
-    });
-    return literalMap(entries, type);
-  }
-  visitPrimitive(value: any, type: Type): Expression { return new LiteralExpr(value, type); }
-  visitOther(value: any, type: Type): Expression {
-    if (value instanceof CompileIdentifierMetadata) {
-      return importExpr(value);
-    } else if (value instanceof Expression) {
-      return value;
-    } else {
-      throw new BaseException(`Illegal state: Don't now how to compile value ${value}`);
-    }
-  }
+export function literal(value: any, type: Type = null): LiteralExpr {
+  return new LiteralExpr(value, type);
 }
