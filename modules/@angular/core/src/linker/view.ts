@@ -28,7 +28,7 @@ import {AnimationPlayer} from '../animation/animation_player';
 import {AnimationGroupPlayer} from '../animation/animation_group_player';
 import {AnimationKeyframe} from '../animation/animation_keyframe';
 import {AnimationStyles} from '../animation/animation_styles';
-import {ActiveAnimationPlayersMap} from '../animation/active_animation_players_map';
+import {ViewAnimationMap} from '../animation/view_animation_map';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
@@ -54,7 +54,7 @@ export abstract class AppView<T> {
 
   private _hasExternalHostElement: boolean;
 
-  public activeAnimationPlayers = new ActiveAnimationPlayersMap();
+  public animationPlayers = new ViewAnimationMap();
 
   public context: T;
 
@@ -74,20 +74,26 @@ export abstract class AppView<T> {
 
   cancelActiveAnimation(element: any, animationName: string, removeAllAnimations: boolean = false) {
     if (removeAllAnimations) {
-      this.activeAnimationPlayers.findAllPlayersByElement(element).forEach(
-          player => player.destroy());
+      this.animationPlayers.findAllPlayersByElement(element).forEach(player => player.destroy());
     } else {
-      var player = this.activeAnimationPlayers.find(element, animationName);
+      var player = this.animationPlayers.find(element, animationName);
       if (isPresent(player)) {
         player.destroy();
       }
     }
   }
 
-  registerAndStartAnimation(element: any, animationName: string, player: AnimationPlayer): void {
-    this.activeAnimationPlayers.set(element, animationName, player);
-    player.onDone(() => { this.activeAnimationPlayers.remove(element, animationName); });
-    player.play();
+  queueAnimation(element: any, animationName: string, player: AnimationPlayer): void {
+    this.animationPlayers.set(element, animationName, player);
+    player.onDone(() => { this.animationPlayers.remove(element, animationName); });
+  }
+
+  triggerQueuedAnimations() {
+    this.animationPlayers.getAllPlayers().forEach(player => {
+      if (!player.hasStarted()) {
+        player.play();
+      }
+    });
   }
 
   create(context: T, givenProjectableNodes: Array<any|any[]>, rootSelectorOrNode: string|any):
@@ -201,10 +207,10 @@ export abstract class AppView<T> {
     this.destroyInternal();
     this.dirtyParentQueriesInternal();
 
-    if (this.activeAnimationPlayers.length == 0) {
+    if (this.animationPlayers.length == 0) {
       this.renderer.destroyView(hostElement, this.allNodes);
     } else {
-      var player = new AnimationGroupPlayer(this.activeAnimationPlayers.getAllPlayers());
+      var player = new AnimationGroupPlayer(this.animationPlayers.getAllPlayers());
       player.onDone(() => { this.renderer.destroyView(hostElement, this.allNodes); });
     }
   }
@@ -221,10 +227,10 @@ export abstract class AppView<T> {
 
   detach(): void {
     this.detachInternal();
-    if (this.activeAnimationPlayers.length == 0) {
+    if (this.animationPlayers.length == 0) {
       this.renderer.detachView(this.flatRootNodes);
     } else {
-      var player = new AnimationGroupPlayer(this.activeAnimationPlayers.getAllPlayers());
+      var player = new AnimationGroupPlayer(this.animationPlayers.getAllPlayers());
       player.onDone(() => { this.renderer.detachView(this.flatRootNodes); });
     }
   }

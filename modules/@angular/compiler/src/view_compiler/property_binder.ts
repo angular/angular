@@ -8,6 +8,7 @@
 
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
 import * as cdAst from '../expression_parser/ast';
+import {Map} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -35,6 +36,8 @@ function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
 function createCurrValueExpr(exprIndex: number): o.ReadVarExpr {
   return o.variable(`currVal_${exprIndex}`);  // fix syntax highlighting: `
 }
+
+var _animationViewCheckedFlagMap = new Map<CompileView, boolean>();
 
 function bind(
     view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,
@@ -170,6 +173,12 @@ function bindAndWriteToRenderer(
         view.detachMethod.addStmt(
             animation.fnVariable.callFn([o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue])
                 .toStmt());
+
+        if (!_animationViewCheckedFlagMap.get(view)) {
+          _animationViewCheckedFlagMap.set(view, true);
+          view.afterViewLifecycleCallbacksMethod.addStmt(
+              o.THIS_EXPR.callMethod('triggerQueuedAnimations', []).toStmt());
+        }
 
         break;
     }

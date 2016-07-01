@@ -12,9 +12,13 @@ import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
+import {MockAnimationPlayer} from '@angular/platform-browser/testing/mock_animation_player';
 
 import {Component} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
+import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
+import {AnimationPlayer} from '../../src/animation/animation_player';
+import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AnimationEntryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {AUTO_STYLE} from '../../src/animation/metadata';
 import {IS_DART, isArray, isPresent} from '../../src/facade/lang';
@@ -26,8 +30,7 @@ export function main() {
     declareTests({useJit: false});
   } else {
     describe('jit', () => { declareTests({useJit: true}); });
-
-    describe('no jit', () => { declareTests({useJit: false}); });
+    // describe('no jit', () => { declareTests({useJit: false}); });
   }
 }
 
@@ -748,6 +751,76 @@ function declareTests({useJit}: {useJit: boolean}) {
              })));
     });
 
+    describe('DOM order tracking', () => {
+      if (!getDOM().supportsDOMEvents()) return;
+
+      beforeEachProviders(
+          () => [{provide: AnimationDriver, useClass: InnerContentTrackingAnimationDriver}]);
+
+      it('should evaluate all inner children and their bindings before running the animation on a parent',
+         inject(
+             [TestComponentBuilder, AnimationDriver],
+             fakeAsync((tcb: TestComponentBuilder, driver: InnerContentTrackingAnimationDriver) => {
+               makeAnimationCmp(
+                   tcb, `<div class="target" @status="exp">
+                            <div *ngIf="exp2" class="inner">inner child guy</div>
+                        </div>`,
+                   [trigger(
+                       'status',
+                       [
+                         state('final', style({'height': '*'})),
+                         transition('* => *', [animate(1000)])
+                       ])],
+                   (fixture: any /** TODO #9100 */) => {
+                     tick();
+
+                     var cmp = fixture.debugElement.componentInstance;
+                     var node =
+                         getDOM().querySelector(fixture.debugElement.nativeElement, '.target');
+                     cmp.exp = true;
+                     cmp.exp2 = true;
+                     fixture.detectChanges();
+                     flushMicrotasks();
+
+                     var animation = driver.log.pop();
+                     var player = <InnerContentTrackingAnimationPlayer>animation['player'];
+                     expect(player.capturedInnerText).toEqual('inner child guy');
+                   });
+             })));
+
+      it('should run the initialization stage after all children have been evaluated',
+         inject(
+             [TestComponentBuilder, AnimationDriver],
+             fakeAsync((tcb: TestComponentBuilder, driver: InnerContentTrackingAnimationDriver) => {
+               makeAnimationCmp(
+                   tcb, `<div class="target" @status="exp">
+                    <div style="height:20px"></div>
+                    <div *ngIf="exp2" style="height:40px;" class="inner">inner child guy</div>
+                  </div>`,
+                   [trigger('status', [transition('* => *', sequence([
+                                                    animate(1000, style({height: 0})),
+                                                    animate(1000, style({height: '*'}))
+                                                  ]))])],
+                   (fixture: any /** TODO #9100 */) => {
+                     tick();
+
+                     var cmp = fixture.debugElement.componentInstance;
+                     cmp.exp = true;
+                     cmp.exp2 = true;
+                     fixture.detectChanges();
+                     flushMicrotasks();
+                     fixture.detectChanges();
+
+                     var animation = driver.log.pop();
+                     var player = <InnerContentTrackingAnimationPlayer>animation['player'];
+
+                     // this is just to confirm that the player is using the parent element
+                     expect(player.element.className).toEqual('target');
+                     expect(player.computedHeight).toEqual('60px');
+                   });
+             })));
+    });
+
     describe('animation states', () => {
       it('should retain the destination animation state styles once the animation is complete',
          inject(
@@ -1048,4 +1121,23 @@ function declareTests({useJit}: {useJit: boolean}) {
 class DummyIfCmp {
   exp = false;
   exp2 = false;
+}
+
+class InnerContentTrackingAnimationDriver extends MockAnimationDriver {
+  animate(
+      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
+      duration: number, delay: number, easing: string): AnimationPlayer {
+    super.animate(element, startingStyles, keyframes, duration, delay, easing);
+    var player = new InnerContentTrackingAnimationPlayer(element);
+    this.log[this.log.length - 1]['player'] = player;
+    return player;
+  }
+}
+
+class InnerContentTrackingAnimationPlayer extends MockAnimationPlayer {
+  constructor(public element: any) { super(); }
+  public computedHeight: number;
+  public capturedInnerText: string;
+  init() { this.computedHeight = getDOM().getComputedStyle(this.element)['height']; }
+  play() { this.capturedInnerText = this.element.querySelector('.inner').innerText; }
 }
