@@ -21,38 +21,7 @@ export function main() {
     beforeEach(() => {
       const expParser = new ExpressionParser(new ExpressionLexer());
       const htmlParser = new HtmlParser();
-      // TODO: pass expression parser
       extractor = new MessageExtractor(htmlParser, expParser, ['i18n-tag'], {'i18n-el': ['trans']});
-    });
-
-    it('should extract from elements with the i18n attr', () => {
-      let res = extractor.extract('<div i18n=\'meaning|desc\'>message</div>', 'someurl');
-      expect(res.messages).toEqual([new Message('message', 'meaning', 'desc')]);
-    });
-
-    it('should extract from elements with the i18n attr without a desc', () => {
-      let res = extractor.extract('<div i18n=\'meaning\'>message</div>', 'someurl');
-      expect(res.messages).toEqual([new Message('message', 'meaning', null)]);
-    });
-
-    it('should extract from elements with the i18n attr without a meaning', () => {
-      let res = extractor.extract('<div i18n>message</div>', 'someurl');
-      expect(res.messages).toEqual([new Message('message', null, null)]);
-    });
-
-    it('should extract from attributes', () => {
-      let res = extractor.extract(
-          `
-        <div
-          title1='message1' i18n-title1='meaning1|desc1'
-          title2='message2' i18n-title2='meaning2|desc2'>
-        </div>
-      `,
-          'someurl');
-
-      expect(res.messages).toEqual([
-        new Message('message1', 'meaning1', 'desc1'), new Message('message2', 'meaning2', 'desc2')
-      ]);
     });
 
     it('should extract from partitions', () => {
@@ -79,90 +48,159 @@ export function main() {
       expect(res.messages).toEqual([new Message('message1', 'meaning1', 'desc1')]);
     });
 
-    it('should replace interpolation with placeholders (text nodes)', () => {
-      let res = extractor.extract('<div i18n>Hi {{one}} and {{two}}</div>', 'someurl');
-      expect(res.messages).toEqual([new Message(
-          '<ph name="t0">Hi <ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/></ph>',
-          null, null)]);
+    describe('ICU messages', () => {
+      it('should replace icu messages with placeholders', () => {
+        let res = extractor.extract('<div i18n>{count, plural, =0 {text} }</div>', 'someurl');
+        expect(res.messages).toEqual([new Message(
+            '<ph name="x0">{count, plural =0 {text}}</ph>', null, null)]);
+      });
+
+      it('should replace HTML with placeholders in ICU cases', () => {
+        let res =
+            extractor.extract('<div i18n>{count, plural, =0 {<p>html</p>} }</div>', 'someurl');
+        expect(res.messages).toEqual([new Message(
+            '<ph name="x0">{count, plural =0 {<ph name="e1">html</ph>}}</ph>', null, null)]);
+      });
+
+      it('should replace interpolation with placeholders in ICU cases', () => {
+        let res =
+            extractor.extract('<div i18n>{count, plural, =0 {{{interpolation}}}}</div>', 'someurl');
+        expect(res.messages).toEqual([new Message(
+            '<ph name="x0">{count, plural =0 {<ph name="t1"><ph name="INTERPOLATION_0"/></ph>}}</ph>',
+            null, null)]);
+      });
+
+      it('should not replace nested interpolation with placeholders in ICU cases', () => {
+        let res = extractor.extract(
+            '<div i18n>{count, plural, =0 {{sex, gender, =m {{{he}}} =f {<b>she</b>}}}}</div>',
+            'someurl');
+        expect(res.messages).toEqual([new Message(
+            '<ph name="x0">{count, plural =0 {{sex, gender =m {<ph name="t2"><ph name="INTERPOLATION_0"/></ph>} =f {<ph name="e3">she</ph>}}}}</ph>',
+            null, null)]);
+      });
     });
 
-    it('should replace interpolation with placeholders (attributes)', () => {
-      let res =
-          extractor.extract('<div title=\'Hi {{one}} and {{two}}\' i18n-title></div>', 'someurl');
-      expect(res.messages).toEqual([new Message(
-          'Hi <ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/>', null, null)]);
-    });
+    describe('interpolation', () => {
+      it('should replace interpolation with placeholders (text nodes)', () => {
+        let res = extractor.extract('<div i18n>Hi {{one}} and {{two}}</div>', 'someurl');
+        expect(res.messages).toEqual([new Message(
+            '<ph name="t0">Hi <ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/></ph>',
+            null, null)]);
+      });
 
-    it('should replace interpolation with named placeholders if provided (text nodes)', () => {
-      let res = extractor.extract(
-          `
+      it('should replace interpolation with placeholders (attributes)', () => {
+        let res =
+            extractor.extract('<div title=\'Hi {{one}} and {{two}}\' i18n-title></div>', 'someurl');
+        expect(res.messages).toEqual([new Message(
+            'Hi <ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/>', null, null)]);
+      });
+
+      it('should replace interpolation with named placeholders if provided (text nodes)', () => {
+        let res = extractor.extract(
+            `
         <div i18n>Hi {{one //i18n(ph="FIRST")}} and {{two //i18n(ph="SECOND")}}</div>`,
-          'someurl');
-      expect(res.messages).toEqual([new Message(
-          '<ph name="t0">Hi <ph name="FIRST"/> and <ph name="SECOND"/></ph>', null, null)]);
-    });
+            'someurl');
+        expect(res.messages).toEqual([new Message(
+            '<ph name="t0">Hi <ph name="FIRST"/> and <ph name="SECOND"/></ph>', null, null)]);
+      });
 
-    it('should replace interpolation with named placeholders if provided (attributes)', () => {
-      let res = extractor.extract(
-          `
+      it('should replace interpolation with named placeholders if provided (attributes)', () => {
+        let res = extractor.extract(
+            `
       <div title='Hi {{one //i18n(ph="FIRST")}} and {{two //i18n(ph="SECOND")}}'
         i18n-title></div>`,
-          'someurl');
-      expect(res.messages).toEqual([new Message(
-          'Hi <ph name="FIRST"/> and <ph name="SECOND"/>', null, null)]);
+            'someurl');
+        expect(res.messages).toEqual([new Message(
+            'Hi <ph name="FIRST"/> and <ph name="SECOND"/>', null, null)]);
+      });
     });
 
-    it('should match named placeholders with extra spacing', () => {
-      let res = extractor.extract(
-          `
+    describe('placehoders', () => {
+      it('should match named placeholders with extra spacing', () => {
+        let res = extractor.extract(
+            `
       <div title='Hi {{one // i18n ( ph = "FIRST" )}} and {{two // i18n ( ph = "SECOND" )}}'
         i18n-title></div>`,
-          'someurl');
-      expect(res.messages).toEqual([new Message(
-          'Hi <ph name="FIRST"/> and <ph name="SECOND"/>', null, null)]);
-    });
+            'someurl');
+        expect(res.messages).toEqual([new Message(
+            'Hi <ph name="FIRST"/> and <ph name="SECOND"/>', null, null)]);
+      });
 
-    it('should suffix duplicate placeholder names with numbers', () => {
-      let res = extractor.extract(
-          `
+      it('should suffix duplicate placeholder names with numbers', () => {
+        let res = extractor.extract(
+            `
       <div title='Hi {{one //i18n(ph="FIRST")}} and {{two //i18n(ph="FIRST")}} and {{three //i18n(ph="FIRST")}}'
         i18n-title></div>`,
-          'someurl');
-      expect(res.messages).toEqual([new Message(
-          'Hi <ph name="FIRST"/> and <ph name="FIRST_1"/> and <ph name="FIRST_2"/>', null, null)]);
+            'someurl');
+        expect(res.messages).toEqual([new Message(
+            'Hi <ph name="FIRST"/> and <ph name="FIRST_1"/> and <ph name="FIRST_2"/>', null,
+            null)]);
+      });
     });
 
-    it('should handle html content', () => {
-      let res = extractor.extract(
-          '<div i18n><div attr="value">zero<div>one</div></div><div>two</div></div>', 'someurl');
-      expect(res.messages).toEqual([new Message(
-          '<ph name="e0">zero<ph name="e2">one</ph></ph><ph name="e4">two</ph>', null, null)]);
-    });
+    describe('html', () => {
+      it('should extract from elements with the i18n attr', () => {
+        let res = extractor.extract('<div i18n=\'meaning|desc\'>message</div>', 'someurl');
+        expect(res.messages).toEqual([new Message('message', 'meaning', 'desc')]);
+      });
 
-    it('should handle html content with interpolation', () => {
-      let res =
-          extractor.extract('<div i18n><div>zero{{a}}<div>{{b}}</div></div></div>', 'someurl');
-      expect(res.messages).toEqual([new Message(
-          '<ph name="e0"><ph name="t1">zero<ph name="INTERPOLATION_0"/></ph><ph name="e2"><ph name="t3"><ph name="INTERPOLATION_0"/></ph></ph></ph>',
-          null, null)]);
-    });
+      it('should extract from elements with the i18n attr without a desc', () => {
+        let res = extractor.extract('<div i18n=\'meaning\'>message</div>', 'someurl');
+        expect(res.messages).toEqual([new Message('message', 'meaning', null)]);
+      });
 
-    it('should extract from nested elements', () => {
-      let res = extractor.extract(
-          '<div title="message1" i18n-title="meaning1|desc1"><div i18n="meaning2|desc2">message2</div></div>',
-          'someurl');
-      expect(res.messages).toEqual([
-        new Message('message2', 'meaning2', 'desc2'), new Message('message1', 'meaning1', 'desc1')
-      ]);
-    });
+      it('should extract from elements with the i18n attr without a meaning', () => {
+        let res = extractor.extract('<div i18n>message</div>', 'someurl');
+        expect(res.messages).toEqual([new Message('message', null, null)]);
+      });
 
-    it('should extract messages from attributes in i18n blocks', () => {
-      let res = extractor.extract(
-          '<div i18n><div attr="value" i18n-attr="meaning|desc">message</div></div>', 'someurl');
-      expect(res.messages).toEqual([
-        new Message('<ph name="e0">message</ph>', null, null),
-        new Message('value', 'meaning', 'desc')
-      ]);
+      it('should extract from attributes', () => {
+        let res = extractor.extract(
+            `
+        <div
+          title1='message1' i18n-title1='meaning1|desc1'
+          title2='message2' i18n-title2='meaning2|desc2'>
+        </div>
+      `,
+            'someurl');
+
+        expect(res.messages).toEqual([
+          new Message('message1', 'meaning1', 'desc1'), new Message('message2', 'meaning2', 'desc2')
+        ]);
+      });
+
+      it('should handle html content', () => {
+        let res = extractor.extract(
+            '<div i18n><div attr="value">zero<div>one</div></div><div>two</div></div>', 'someurl');
+        expect(res.messages).toEqual([new Message(
+            '<ph name="e0">zero<ph name="e2">one</ph></ph><ph name="e4">two</ph>', null, null)]);
+      });
+
+      it('should handle html content with interpolation', () => {
+        let res =
+            extractor.extract('<div i18n><div>zero{{a}}<div>{{b}}</div></div></div>', 'someurl');
+        expect(res.messages).toEqual([new Message(
+            '<ph name="e0"><ph name="t1">zero<ph name="INTERPOLATION_0"/></ph><ph name="e2"><ph name="t3"><ph name="INTERPOLATION_0"/></ph></ph></ph>',
+            null, null)]);
+      });
+
+      it('should extract from nested elements', () => {
+        let res = extractor.extract(
+            '<div title="message1" i18n-title="meaning1|desc1"><div i18n="meaning2|desc2">message2</div></div>',
+            'someurl');
+        expect(res.messages).toEqual([
+          new Message('message2', 'meaning2', 'desc2'), new Message('message1', 'meaning1', 'desc1')
+        ]);
+      });
+
+      it('should extract messages from attributes in i18n blocks', () => {
+        let res = extractor.extract(
+            '<div i18n><div attr="value" i18n-attr="meaning|desc">message</div></div>', 'someurl');
+        expect(res.messages).toEqual([
+          new Message('<ph name="e0">message</ph>', null, null),
+          new Message('value', 'meaning', 'desc')
+        ]);
+      });
     });
 
     it('should remove duplicate messages', () => {

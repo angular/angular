@@ -74,10 +74,12 @@ export class Part {
         this.children[0].sourceSpan.start, this.children[this.children.length - 1].sourceSpan.end);
   }
 
-  createMessage(parser: ExpressionParser, interpolationConfig: InterpolationConfig): Message {
-    return new Message(
-        stringifyNodes(this.children, parser, interpolationConfig), meaning(this.i18n),
-        description(this.i18n));
+  createMessages(parser: ExpressionParser, interpolationConfig: InterpolationConfig): Message[] {
+    let {message, icuMessages} = stringifyNodes(this.children, parser, interpolationConfig);
+    return [
+      new Message(message, meaning(this.i18n), description(this.i18n)),
+      ...icuMessages.map(icu => new Message(icu, null))
+    ];
   }
 }
 
@@ -197,28 +199,33 @@ export function dedupePhName(usedNames: Map<string, number>, name: string): stri
  */
 export function stringifyNodes(
     nodes: HtmlAst[], expressionParser: ExpressionParser,
-    interpolationConfig: InterpolationConfig): string {
+    interpolationConfig: InterpolationConfig): {message: string, icuMessages: string[]} {
   const visitor = new _StringifyVisitor(expressionParser, interpolationConfig);
-  return htmlVisitAll(visitor, nodes).join('');
+  const icuMessages: string[] = [];
+  const message = htmlVisitAll(visitor, nodes, icuMessages).join('');
+  return {message, icuMessages};
 }
 
 class _StringifyVisitor implements HtmlAstVisitor {
   private _index: number = 0;
+  private _nestedExpansion = 0;
+
   constructor(
-      private _parser: ExpressionParser, private _interpolationConfig: InterpolationConfig) {}
+      private _expressionParser: ExpressionParser,
+      private _interpolationConfig: InterpolationConfig) {}
 
   visitElement(ast: HtmlElementAst, context: any): any {
-    let name = this._index++;
-    let children = this._join(htmlVisitAll(this, ast.children), '');
-    return `<ph name="e${name}">${children}</ph>`;
+    const index = this._index++;
+    const children = this._join(htmlVisitAll(this, ast.children), '');
+    return `<ph name="e${index}">${children}</ph>`;
   }
 
   visitAttr(ast: HtmlAttrAst, context: any): any { return null; }
 
   visitText(ast: HtmlTextAst, context: any): any {
-    let index = this._index++;
-    let noInterpolation =
-        removeInterpolation(ast.value, ast.sourceSpan, this._parser, this._interpolationConfig);
+    const index = this._index++;
+    const noInterpolation = removeInterpolation(
+        ast.value, ast.sourceSpan, this._expressionParser, this._interpolationConfig);
     if (noInterpolation != ast.value) {
       return `<ph name="t${index}">${noInterpolation}</ph>`;
     }
@@ -227,9 +234,19 @@ class _StringifyVisitor implements HtmlAstVisitor {
 
   visitComment(ast: HtmlCommentAst, context: any): any { return ''; }
 
-  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+  visitExpansion(ast: HtmlExpansionAst, context: any): any {
+    const index = this._index++;
+    this._nestedExpansion++;
+    const content = `{${ast.switchValue}, ${ast.type}${htmlVisitAll(this, ast.cases).join('')}}`;
+    this._nestedExpansion--;
 
-  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
+    return this._nestedExpansion == 0 ? `<ph name="x${index}">${content}</ph>` : content;
+  }
+
+  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any {
+    const expStr = htmlVisitAll(this, ast.expression).join('');
+    return ` ${ast.value} {${expStr}}`;
+  }
 
   private _join(strs: string[], str: string): string {
     return strs.filter(s => s.length > 0).join(str);

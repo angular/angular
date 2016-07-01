@@ -123,7 +123,7 @@ export class MessageExtractor {
 
   private _extractMessagesFromPart(part: Part, interpolationConfig: InterpolationConfig): void {
     if (part.hasI18n) {
-      this._messages.push(part.createMessage(this._expressionParser, interpolationConfig));
+      this._messages.push(...part.createMessages(this._expressionParser, interpolationConfig));
       this._recurseToExtractMessagesFromAttributes(part.children, interpolationConfig);
     } else {
       this._recurse(part.children, interpolationConfig);

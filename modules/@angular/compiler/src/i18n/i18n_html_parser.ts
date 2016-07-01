@@ -117,7 +117,10 @@ export class I18nHtmlParser implements HtmlParser {
 
   // Look for the translated message and merge it back to the tree
   private _mergeI18Part(part: Part): HtmlAst[] {
-    let message = part.createMessage(this._expressionParser, this._interpolationConfig);
+    let messages = part.createMessages(this._expressionParser, this._interpolationConfig);
+    // TODO - dirty smoke fix
+    let message = messages[0];
+
     let messageId = id(message);
 
     if (!StringMapWrapper.contains(this._messages, messageId)) {

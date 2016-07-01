@@ -46,131 +46,134 @@ export function main() {
       ]);
     });
 
-    it('should replace attributes', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('some message', 'meaning', null))] = 'another message';
+    describe('interpolation', () => {
+      it('should handle interpolation', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message(
+            '<ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/>', null, null))] =
+            '<ph name="INTERPOLATION_1"/> or <ph name="INTERPOLATION_0"/>';
 
-      expect(
-          humanizeDom(parse(
-              '<div value=\'some message\' i18n-value=\'meaning|comment\'></div>', translations)))
-          .toEqual([[HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', 'another message']]);
+        expect(humanizeDom(parse('<div value=\'{{a}} and {{b}}\' i18n-value></div>', translations)))
+            .toEqual([[HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', '{{b}} or {{a}}']]);
+      });
+
+      it('should handle interpolation with config', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message(
+            '<ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/>', null, null))] =
+            '<ph name="INTERPOLATION_1"/> or <ph name="INTERPOLATION_0"/>';
+
+        expect(humanizeDom(parse(
+                   '<div value=\'{%a%} and {%b%}\' i18n-value></div>', translations, [], {},
+                   InterpolationConfig.fromArray(['{%', '%}']))))
+            .toEqual([
+              [HtmlElementAst, 'div', 0],
+              [HtmlAttrAst, 'value', '{%b%} or {%a%}'],
+            ]);
+      });
+
+      it('should handle interpolation with custom placeholder names', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('<ph name="FIRST"/> and <ph name="SECOND"/>', null, null))] =
+            '<ph name="SECOND"/> or <ph name="FIRST"/>';
+
+        expect(
+            humanizeDom(parse(
+                `<div value='{{a //i18n(ph="FIRST")}} and {{b //i18n(ph="SECOND")}}' i18n-value></div>`,
+                translations)))
+            .toEqual([
+              [HtmlElementAst, 'div', 0],
+              [HtmlAttrAst, 'value', '{{b //i18n(ph="SECOND")}} or {{a //i18n(ph="FIRST")}}']
+            ]);
+      });
+
+      it('should handle interpolation with duplicate placeholder names', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('<ph name="FIRST"/> and <ph name="FIRST_1"/>', null, null))] =
+            '<ph name="FIRST_1"/> or <ph name="FIRST"/>';
+
+        expect(
+            humanizeDom(parse(
+                `<div value='{{a //i18n(ph="FIRST")}} and {{b //i18n(ph="FIRST")}}' i18n-value></div>`,
+                translations)))
+            .toEqual([
+              [HtmlElementAst, 'div', 0],
+              [HtmlAttrAst, 'value', '{{b //i18n(ph="FIRST")}} or {{a //i18n(ph="FIRST")}}']
+            ]);
+      });
+
+      it('should support interpolation', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message(
+            '<ph name="e0">a</ph><ph name="e2"><ph name="t3">b<ph name="INTERPOLATION_0"/></ph></ph>',
+            null, null))] =
+            '<ph name="e2"><ph name="t3"><ph name="INTERPOLATION_0"/>B</ph></ph><ph name="e0">A</ph>';
+        expect(humanizeDom(parse('<div i18n><a>a</a><b>b{{i}}</b></div>', translations))).toEqual([
+          [HtmlElementAst, 'div', 0],
+          [HtmlElementAst, 'b', 1],
+          [HtmlTextAst, '{{i}}B', 2],
+          [HtmlElementAst, 'a', 1],
+          [HtmlTextAst, 'A', 2],
+        ]);
+      });
     });
 
-    it('should replace elements with the i18n attr', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('message', 'meaning', null))] = 'another message';
+    describe('html', () => {
+      it('should handle nested html', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('<ph name="e0">a</ph><ph name="e2">b</ph>', null, null))] =
+            '<ph name="e2">B</ph><ph name="e0">A</ph>';
 
-      expect(humanizeDom(parse('<div i18n=\'meaning|desc\'>message</div>', translations))).toEqual([
-        [HtmlElementAst, 'div', 0], [HtmlTextAst, 'another message', 1]
-      ]);
-    });
+        expect(humanizeDom(parse('<div i18n><a>a</a><b>b</b></div>', translations))).toEqual([
+          [HtmlElementAst, 'div', 0],
+          [HtmlElementAst, 'b', 1],
+          [HtmlTextAst, 'B', 2],
+          [HtmlElementAst, 'a', 1],
+          [HtmlTextAst, 'A', 2],
+        ]);
+      });
 
-    it('should handle interpolation', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message(
-          '<ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/>', null, null))] =
-          '<ph name="INTERPOLATION_1"/> or <ph name="INTERPOLATION_0"/>';
+      it('should i18n attributes of placeholder elements', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('<ph name="e0">a</ph>', null, null))] = '<ph name="e0">A</ph>';
+        translations[id(new Message('b', null, null))] = 'B';
 
-      expect(humanizeDom(parse('<div value=\'{{a}} and {{b}}\' i18n-value></div>', translations)))
-          .toEqual([[HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', '{{b}} or {{a}}']]);
-    });
+        expect(humanizeDom(parse('<div i18n><a value="b" i18n-value>a</a></div>', translations)))
+            .toEqual([
+              [HtmlElementAst, 'div', 0],
+              [HtmlElementAst, 'a', 1],
+              [HtmlAttrAst, 'value', 'B'],
+              [HtmlTextAst, 'A', 2],
+            ]);
+      });
 
-    it('should handle interpolation with config', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message(
-          '<ph name="INTERPOLATION_0"/> and <ph name="INTERPOLATION_1"/>', null, null))] =
-          '<ph name="INTERPOLATION_1"/> or <ph name="INTERPOLATION_0"/>';
+      it('should preserve non-i18n attributes', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('message', null, null))] = 'another message';
 
-      expect(humanizeDom(parse(
-                 '<div value=\'{%a%} and {%b%}\' i18n-value></div>', translations, [], {},
-                 InterpolationConfig.fromArray(['{%', '%}']))))
-          .toEqual([
-            [HtmlElementAst, 'div', 0],
-            [HtmlAttrAst, 'value', '{%b%} or {%a%}'],
-          ]);
-    });
+        expect(humanizeDom(parse('<div i18n value="b">message</div>', translations))).toEqual([
+          [HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', 'b'],
+          [HtmlTextAst, 'another message', 1]
+        ]);
+      });
 
-    it('should handle interpolation with custom placeholder names', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('<ph name="FIRST"/> and <ph name="SECOND"/>', null, null))] =
-          '<ph name="SECOND"/> or <ph name="FIRST"/>';
+      it('should replace attributes', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('some message', 'meaning', null))] = 'another message';
 
-      expect(
-          humanizeDom(parse(
-              `<div value='{{a //i18n(ph="FIRST")}} and {{b //i18n(ph="SECOND")}}' i18n-value></div>`,
-              translations)))
-          .toEqual([
-            [HtmlElementAst, 'div', 0],
-            [HtmlAttrAst, 'value', '{{b //i18n(ph="SECOND")}} or {{a //i18n(ph="FIRST")}}']
-          ]);
-    });
+        expect(
+            humanizeDom(parse(
+                '<div value=\'some message\' i18n-value=\'meaning|comment\'></div>', translations)))
+            .toEqual([[HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', 'another message']]);
+      });
 
-    it('should handle interpolation with duplicate placeholder names', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('<ph name="FIRST"/> and <ph name="FIRST_1"/>', null, null))] =
-          '<ph name="FIRST_1"/> or <ph name="FIRST"/>';
+      it('should replace elements with the i18n attr', () => {
+        let translations: {[key: string]: string} = {};
+        translations[id(new Message('message', 'meaning', null))] = 'another message';
 
-      expect(
-          humanizeDom(parse(
-              `<div value='{{a //i18n(ph="FIRST")}} and {{b //i18n(ph="FIRST")}}' i18n-value></div>`,
-              translations)))
-          .toEqual([
-            [HtmlElementAst, 'div', 0],
-            [HtmlAttrAst, 'value', '{{b //i18n(ph="FIRST")}} or {{a //i18n(ph="FIRST")}}']
-          ]);
-    });
-
-    it('should handle nested html', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('<ph name="e0">a</ph><ph name="e2">b</ph>', null, null))] =
-          '<ph name="e2">B</ph><ph name="e0">A</ph>';
-
-      expect(humanizeDom(parse('<div i18n><a>a</a><b>b</b></div>', translations))).toEqual([
-        [HtmlElementAst, 'div', 0],
-        [HtmlElementAst, 'b', 1],
-        [HtmlTextAst, 'B', 2],
-        [HtmlElementAst, 'a', 1],
-        [HtmlTextAst, 'A', 2],
-      ]);
-    });
-
-    it('should support interpolation', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message(
-          '<ph name="e0">a</ph><ph name="e2"><ph name="t3">b<ph name="INTERPOLATION_0"/></ph></ph>',
-          null, null))] =
-          '<ph name="e2"><ph name="t3"><ph name="INTERPOLATION_0"/>B</ph></ph><ph name="e0">A</ph>';
-      expect(humanizeDom(parse('<div i18n><a>a</a><b>b{{i}}</b></div>', translations))).toEqual([
-        [HtmlElementAst, 'div', 0],
-        [HtmlElementAst, 'b', 1],
-        [HtmlTextAst, '{{i}}B', 2],
-        [HtmlElementAst, 'a', 1],
-        [HtmlTextAst, 'A', 2],
-      ]);
-    });
-
-    it('should i18n attributes of placeholder elements', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('<ph name="e0">a</ph>', null, null))] = '<ph name="e0">A</ph>';
-      translations[id(new Message('b', null, null))] = 'B';
-
-      expect(humanizeDom(parse('<div i18n><a value="b" i18n-value>a</a></div>', translations)))
-          .toEqual([
-            [HtmlElementAst, 'div', 0],
-            [HtmlElementAst, 'a', 1],
-            [HtmlAttrAst, 'value', 'B'],
-            [HtmlTextAst, 'A', 2],
-          ]);
-    });
-
-    it('should preserve non-i18n attributes', () => {
-      let translations: {[key: string]: string} = {};
-      translations[id(new Message('message', null, null))] = 'another message';
-
-      expect(humanizeDom(parse('<div i18n value="b">message</div>', translations))).toEqual([
-        [HtmlElementAst, 'div', 0], [HtmlAttrAst, 'value', 'b'],
-        [HtmlTextAst, 'another message', 1]
-      ]);
+        expect(humanizeDom(parse('<div i18n=\'meaning|desc\'>message</div>', translations)))
+            .toEqual([[HtmlElementAst, 'div', 0], [HtmlTextAst, 'another message', 1]]);
+      });
     });
 
     it('should extract from partitions', () => {
