@@ -11,9 +11,7 @@ import {AUTO_STYLE, BaseException} from '@angular/core';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isNumber, isPresent} from '../facade/lang';
-
 import {AnimationDriver} from './animation_driver';
-import {getDOM} from './dom_adapter';
 import {DomAnimatePlayer} from './dom_animate_player';
 import {dashCaseToCamelCase} from './util';
 import {WebAnimationsPlayer} from './web_animations_player';
@@ -21,19 +19,17 @@ import {WebAnimationsPlayer} from './web_animations_player';
 export class WebAnimationsDriver implements AnimationDriver {
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): AnimationPlayer {
-    var anyElm = <any>element;
-
+      duration: number, delay: number, easing: string): WebAnimationsPlayer {
     var formattedSteps: {[key: string]: string | number}[] = [];
     var startingStyleLookup: {[key: string]: string | number} = {};
     if (isPresent(startingStyles) && startingStyles.styles.length > 0) {
-      startingStyleLookup = _populateStyles(anyElm, startingStyles, {});
+      startingStyleLookup = _populateStyles(element, startingStyles, {});
       startingStyleLookup['offset'] = 0;
       formattedSteps.push(startingStyleLookup);
     }
 
     keyframes.forEach((keyframe: AnimationKeyframe) => {
-      let data = _populateStyles(anyElm, keyframe.styles, startingStyleLookup);
+      let data = _populateStyles(element, keyframe.styles, startingStyleLookup);
       data['offset'] = keyframe.offset;
       formattedSteps.push(data);
     });
@@ -60,14 +56,7 @@ export class WebAnimationsDriver implements AnimationDriver {
       playerOptions['easing'] = easing;
     }
 
-    var player = this._triggerWebAnimation(anyElm, formattedSteps, playerOptions);
-
-    return new WebAnimationsPlayer(player, duration);
-  }
-
-  /** @internal */
-  _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {
-    return elm.animate(keyframes, options);
+    return new WebAnimationsPlayer(element, formattedSteps, playerOptions);
   }
 }
 
@@ -78,9 +67,8 @@ function _populateStyles(
   styles.styles.forEach((entry) => {
     StringMapWrapper.forEach(entry, (val: any, prop: string) => {
       var formattedProp = dashCaseToCamelCase(prop);
-      data[formattedProp] = val == AUTO_STYLE ?
-          _computeStyle(element, formattedProp) :
-          val.toString() + _resolveStyleUnit(val, prop, formattedProp);
+      data[formattedProp] =
+          val == AUTO_STYLE ? val : val.toString() + _resolveStyleUnit(val, prop, formattedProp);
     });
   });
   StringMapWrapper.forEach(defaultStyles, (value: string, prop: string) => {
@@ -153,8 +141,4 @@ function _isPixelDimensionStyle(prop: string): boolean {
     default:
       return false;
   }
-}
-
-function _computeStyle(element: any, prop: string): string {
-  return getDOM().getComputedStyle(element)[prop];
 }
