@@ -231,14 +231,27 @@ export function main() {
 
       describe('dirty', () => {
         it('should be false after creating a control', () => {
-          var c = new FormControl('value');
+          const c = new FormControl('value');
           expect(c.dirty).toEqual(false);
         });
 
         it('should be true after changing the value of the control', () => {
-          var c = new FormControl('value');
+          const c = new FormControl('value');
           c.markAsDirty();
           expect(c.dirty).toEqual(true);
+        });
+      });
+
+      describe('touched', () => {
+        it('should be false after creating a control', () => {
+          const c = new FormControl('value');
+          expect(c.touched).toEqual(false);
+        });
+
+        it('should be true after markAsTouched runs', () => {
+          const c = new FormControl('value');
+          c.markAsTouched();
+          expect(c.touched).toEqual(true);
         });
       });
 
@@ -504,7 +517,7 @@ export function main() {
       });
 
       describe('dirty', () => {
-        var c: any /** TODO #9100 */, g: any /** TODO #9100 */;
+        var c: FormControl, g: FormGroup;
 
         beforeEach(() => {
           c = new FormControl('value');
@@ -513,10 +526,28 @@ export function main() {
 
         it('should be false after creating a control', () => { expect(g.dirty).toEqual(false); });
 
-        it('should be false after changing the value of the control', () => {
+        it('should be true after changing the value of the control', () => {
           c.markAsDirty();
 
           expect(g.dirty).toEqual(true);
+        });
+      });
+
+
+      describe('touched', () => {
+        var c: FormControl, g: FormGroup;
+
+        beforeEach(() => {
+          c = new FormControl('value');
+          g = new FormGroup({'one': c});
+        });
+
+        it('should be false after creating a control', () => { expect(g.touched).toEqual(false); });
+
+        it('should be true after control is marked as touched', () => {
+          c.markAsTouched();
+
+          expect(g.touched).toEqual(true);
         });
       });
 
@@ -817,12 +848,31 @@ export function main() {
 
         it('should be false after creating a control', () => { expect(a.dirty).toEqual(false); });
 
-        it('should be false after changing the value of the control', () => {
+        it('should be true after changing the value of the control', () => {
           c.markAsDirty();
 
           expect(a.dirty).toEqual(true);
         });
       });
+
+      describe('touched', () => {
+        var c: FormControl;
+        var a: FormArray;
+
+        beforeEach(() => {
+          c = new FormControl('value');
+          a = new FormArray([c]);
+        });
+
+        it('should be false after creating a control', () => { expect(a.touched).toEqual(false); });
+
+        it('should be true after child control is marked as touched', () => {
+          c.markAsTouched();
+
+          expect(a.touched).toEqual(true);
+        });
+      });
+
 
       describe('pending', () => {
         var c: FormControl;
