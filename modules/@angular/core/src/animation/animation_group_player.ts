@@ -14,6 +14,8 @@ import {AnimationPlayer} from './animation_player';
 export class AnimationGroupPlayer implements AnimationPlayer {
   private _subscriptions: Function[] = [];
   private _finished = false;
+  private _started = false;
+
   public parentPlayer: AnimationPlayer = null;
 
   constructor(private _players: AnimationPlayer[]) {
@@ -44,9 +46,19 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     }
   }
 
+  init(): void { this._players.forEach(player => player.init()); }
+
   onDone(fn: Function): void { this._subscriptions.push(fn); }
 
-  play() { this._players.forEach(player => player.play()); }
+  hasStarted() { return this._started; }
+
+  play() {
+    if (!isPresent(this.parentPlayer)) {
+      this.init();
+    }
+    this._started = true;
+    this._players.forEach(player => player.play());
+  }
 
   pause(): void { this._players.forEach(player => player.pause()); }
 

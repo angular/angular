@@ -11,7 +11,7 @@ import {isPresent} from '../facade/lang';
 
 import {AnimationPlayer} from './animation_player';
 
-export class ActiveAnimationPlayersMap {
+export class ViewAnimationMap {
   private _map = new Map<any, {[key: string]: AnimationPlayer}>();
   private _allPlayers: AnimationPlayer[] = [];
 
@@ -25,9 +25,9 @@ export class ActiveAnimationPlayersMap {
   }
 
   findAllPlayersByElement(element: any): AnimationPlayer[] {
-    var players: any[] /** TODO #9100 */ = [];
+    var players: AnimationPlayer[] = [];
     StringMapWrapper.forEach(
-        this._map.get(element), (player: any /** TODO #9100 */) => players.push(player));
+        this._map.get(element), (player: AnimationPlayer) => players.push(player));
     return players;
   }
 

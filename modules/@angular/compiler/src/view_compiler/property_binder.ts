@@ -36,6 +36,8 @@ function createCurrValueExpr(exprIndex: number): o.ReadVarExpr {
   return o.variable(`currVal_${exprIndex}`);  // fix syntax highlighting: `
 }
 
+const _animationViewCheckedFlagMap = new Map<CompileView, boolean>();
+
 function bind(
     view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,
     parsedExpression: cdAst.AST, context: o.Expression, actions: o.Statement[],
@@ -170,6 +172,13 @@ function bindAndWriteToRenderer(
         view.detachMethod.addStmt(
             animation.fnVariable.callFn([o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue])
                 .toStmt());
+
+        if (!_animationViewCheckedFlagMap.get(view)) {
+          _animationViewCheckedFlagMap.set(view, true);
+          var triggerStmt = o.THIS_EXPR.callMethod('triggerQueuedAnimations', []).toStmt();
+          view.afterViewLifecycleCallbacksMethod.addStmt(triggerStmt);
+          view.detachMethod.addStmt(triggerStmt);
+        }
 
         break;
     }
