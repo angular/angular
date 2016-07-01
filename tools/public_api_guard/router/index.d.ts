@@ -172,6 +172,7 @@ export declare class RouterOutlet {
     component: Object;
     isActivated: boolean;
     outletMap: RouterOutletMap;
+    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver, name: string);
     activate(activatedRoute: ActivatedRoute, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
     deactivate(): void;
 }
