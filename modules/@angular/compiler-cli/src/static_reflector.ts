@@ -474,7 +474,7 @@ export class StaticReflector implements ReflectorReader {
                 let message = produceErrorMessage(expression);
                 if (expression['line']) {
                   message =
-                      `${message} (position ${expression['line']}:${expression['character']} in the original .ts file)`;
+                      `${message} (position ${expression['line']+1}:${expression['character']+1} in the original .ts file)`;
                 }
                 throw new Error(message);
             }

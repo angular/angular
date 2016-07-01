@@ -112,7 +112,7 @@ describe('StaticReflector', () => {
     let SomeClass = host.findDeclaration('src/error-reporting', 'SomeClass');
     expect(() => reflector.annotations(SomeClass))
         .toThrow(new Error(
-            'Error encountered resolving symbol values statically. A reasonable error message (position 12:33 in the original .ts file), resolving symbol ErrorSym in /tmp/src/error-references.d.ts, resolving symbol Link2 in /tmp/src/error-references.d.ts, resolving symbol Link1 in /tmp/src/error-references.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts'));
+            'Error encountered resolving symbol values statically. A reasonable error message (position 13:34 in the original .ts file), resolving symbol ErrorSym in /tmp/src/error-references.d.ts, resolving symbol Link2 in /tmp/src/error-references.d.ts, resolving symbol Link1 in /tmp/src/error-references.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts'));
   });
 
   it('should simplify primitive into itself', () => {

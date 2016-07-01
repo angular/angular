@@ -354,8 +354,8 @@ export class Evaluator {
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
-        const getReference: (typeNameNode: ts.Identifier | ts.QualifiedName) =>
-            MetadataSymbolicReferenceExpression | MetadataError = node => {
+        const getReference: (typeNameNode: ts.Identifier | ts.QualifiedName) => MetadataValue =
+            node => {
               if (typeNameNode.kind === ts.SyntaxKind.QualifiedName) {
                 const qualifiedName = <ts.QualifiedName>node;
                 const left = this.evaluateNode(qualifiedName.left);
@@ -364,7 +364,8 @@ export class Evaluator {
                     __symbolic: 'reference', module: left.module, name: qualifiedName.right.text
                   }
                 }
-                return errorSymbol('Qualified type names not supported', node);
+                // Record a type reference to a declared type as a select.
+                return {__symbolic: 'select', expression: left, member: qualifiedName.right.text};
               } else {
                 const identifier = <ts.Identifier>typeNameNode;
                 let symbol = this.symbols.resolve(identifier.text);
