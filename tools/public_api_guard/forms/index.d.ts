@@ -377,6 +377,17 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
 }
 
 /** @experimental */
+export declare class SelectMultipleControlValueAccessor implements ControlValueAccessor {
+    onChange: (_: any) => void;
+    onTouched: () => void;
+    value: any;
+    constructor();
+    registerOnChange(fn: (value: any) => any): void;
+    registerOnTouched(fn: () => any): void;
+    writeValue(value: any): void;
+}
+
+/** @experimental */
 export interface Validator {
     validate(c: AbstractControl): {
         [key: string]: any;
