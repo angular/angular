@@ -137,11 +137,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
-    if (button !== 0 || ctrlKey || metaKey) {
-      return true;
-    }
-
-    if (typeof this.target === 'string' && this.target != '_self') {
+    if (button !== 0 || ctrlKey || metaKey || this.target !== '_self') {
       return true;
     }
 
