@@ -83,9 +83,12 @@ export class RouterLink {
       return true;
     }
 
-    this.router.navigate(
+    this.urlTree = this.router.createUrlTreeUsingFutureUrl(
         this.commands,
         {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
+
+    this.router.navigateByUrl(this.urlTree);
+
     return false;
   }
 }
@@ -147,9 +150,10 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   private updateTargetUrlAndHref(): void {
-    this.urlTree = this.router.createUrlTree(
+    this.urlTree = this.router.createUrlTreeUsingFutureUrl(
         this.commands,
         {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
+
     if (this.urlTree) {
       this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
     }

@@ -153,7 +153,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 }
 
 /** @stable */
-export declare class RouterLinkWithHref implements OnChanges {
+export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     fragment: string;
     href: string;
     queryParams: {
@@ -163,6 +163,7 @@ export declare class RouterLinkWithHref implements OnChanges {
     target: string;
     urlTree: UrlTree;
     ngOnChanges(changes: {}): any;
+    ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
 }
 

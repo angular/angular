@@ -71,7 +71,7 @@ export class RouterOutlet {
     } catch (e) {
       if (!(e instanceof NoComponentFactoryError)) throw e;
 
-      // TODO: vsavkin uncomment this once CompoentResolver is deprecated
+      // TODO: vsavkin uncomment this once ComponentResolver is deprecated
       // const componentName = component ? component.name : null;
       // console.warn(
       //     `'${componentName}' not found in precompile array.  To ensure all components referred
@@ -84,5 +84,6 @@ export class RouterOutlet {
 
     const inj = ReflectiveInjector.fromResolvedProviders(providers, this.location.parentInjector);
     this.activated = this.location.createComponent(factory, this.location.length, inj, []);
+    this.activated.changeDetectorRef.detectChanges();
   }
 }
