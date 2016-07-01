@@ -78,9 +78,11 @@ var DATE_FORMATS = {
   LLLL: datePartGetterFactory(nameCondition('month', 4)),
   dd: datePartGetterFactory(digitCondition('day', 2)),
   d: datePartGetterFactory(digitCondition('day', 1)),
-  HH: hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), false))),
+  HH: digitModifier(
+      hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), false)))),
   H: hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), false))),
-  hh: hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), true))),
+  hh: digitModifier(
+      hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), true)))),
   h: hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), true))),
   jj: datePartGetterFactory(digitCondition('hour', 2)),
   j: datePartGetterFactory(digitCondition('hour', 1)),
