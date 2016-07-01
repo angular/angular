@@ -19,7 +19,7 @@ export function main() {
     var pipe: DatePipe;
 
     beforeEach(() => {
-      date = DateWrapper.create(2015, 6, 15, 21, 3, 1);
+      date = DateWrapper.create(2015, 6, 15, 9, 3, 1);
       pipe = new DatePipe();
     });
 
@@ -56,8 +56,10 @@ export function main() {
           expect(pipe.transform(date, 'd')).toEqual('15');
           expect(pipe.transform(date, 'E')).toEqual('Mon');
           expect(pipe.transform(date, 'EEEE')).toEqual('Monday');
-          expect(pipe.transform(date, 'H')).toEqual('21');
-          expect(pipe.transform(date, 'j')).toEqual('9 PM');
+          expect(pipe.transform(date, 'h')).toEqual('9');
+          expect(pipe.transform(date, 'hh')).toEqual('09');
+          expect(pipe.transform(date, 'HH')).toEqual('09');
+          expect(pipe.transform(date, 'j')).toEqual('9 AM');
           expect(pipe.transform(date, 'm')).toEqual('3');
           expect(pipe.transform(date, 's')).toEqual('1');
           expect(pipe.transform(date, 'mm')).toEqual('03');
@@ -74,22 +76,22 @@ export function main() {
           expect(pipe.transform(date, 'MEd')).toEqual('6Mon15');
           expect(pipe.transform(date, 'MMMd')).toEqual('Jun15');
           expect(pipe.transform(date, 'yMMMMEEEEd')).toEqual('Monday, June 15, 2015');
-          expect(pipe.transform(date, 'jms')).toEqual('9:03:01 PM');
+
           expect(pipe.transform(date, 'ms')).toEqual('31');
-          expect(pipe.transform(date, 'jm')).toEqual('9:03 PM');
+          expect(pipe.transform(date, 'jm')).toEqual('9:03 AM');
         });
 
         it('should format with pattern aliases', () => {
-          expect(pipe.transform(date, 'medium')).toEqual('Jun 15, 2015, 9:03:01 PM');
-          expect(pipe.transform(date, 'short')).toEqual('6/15/2015, 9:03 PM');
+          expect(pipe.transform(date, 'medium')).toEqual('Jun 15, 2015, 9:03:01 AM');
+          expect(pipe.transform(date, 'short')).toEqual('6/15/2015, 9:03 AM');
           expect(pipe.transform(date, 'dd/MM/yyyy')).toEqual('15/06/2015');
           expect(pipe.transform(date, 'MM/dd/yyyy')).toEqual('06/15/2015');
           expect(pipe.transform(date, 'fullDate')).toEqual('Monday, June 15, 2015');
           expect(pipe.transform(date, 'longDate')).toEqual('June 15, 2015');
           expect(pipe.transform(date, 'mediumDate')).toEqual('Jun 15, 2015');
           expect(pipe.transform(date, 'shortDate')).toEqual('6/15/2015');
-          expect(pipe.transform(date, 'mediumTime')).toEqual('9:03:01 PM');
-          expect(pipe.transform(date, 'shortTime')).toEqual('9:03 PM');
+          expect(pipe.transform(date, 'mediumTime')).toEqual('9:03:01 AM');
+          expect(pipe.transform(date, 'shortTime')).toEqual('9:03 AM');
         });
       });
     }
