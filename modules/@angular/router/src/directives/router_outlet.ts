@@ -31,9 +31,6 @@ export class RouterOutlet {
   private _activatedRoute: ActivatedRoute;
   public outletMap: RouterOutletMap;
 
-  /**
-   * @internal
-   */
   constructor(
       parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
       private componentFactoryResolver: ComponentFactoryResolver, @Attribute('name') name: string) {
