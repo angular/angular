@@ -12,7 +12,7 @@ import {fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
 
 import {SpyNgControl, SpyValueAccessor} from './spies';
 
-import {FormGroup, FormControl, FormArray, FormArrayName, FormControlName, FormGroupName, NgModelGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/forms';
+import {FormGroup, FormControl, FormArray, FormArrayName, FormControlName, FormGroupName, NgModelGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor, Validator} from '@angular/forms';
 
 import {selectValueAccessor, composeValidators} from '@angular/forms/src/directives/shared';
 import {TimerWrapper} from '../src/facade/async';
@@ -77,6 +77,13 @@ export function main() {
           ])).toEqual(selectAccessor);
         });
 
+        it('should return select multiple accessor when provided', () => {
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor();
+          expect(selectValueAccessor(dir, [
+            defaultAccessor, selectMultipleAccessor
+          ])).toEqual(selectMultipleAccessor);
+        });
+
         it('should throw when more than one build-in accessor is provided', () => {
           var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
           var selectAccessor = new SelectControlValueAccessor(null, null);
@@ -87,6 +94,14 @@ export function main() {
           var customAccessor = new SpyValueAccessor();
           var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
           expect(selectValueAccessor(dir, <any>[defaultAccessor, customAccessor, checkboxAccessor]))
+              .toEqual(customAccessor);
+        });
+
+        it('should return custom accessor when provided with select multiple', () => {
+          const customAccessor = new SpyValueAccessor();
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor();
+          expect(selectValueAccessor(
+                     dir, <any>[defaultAccessor, customAccessor, selectMultipleAccessor]))
               .toEqual(customAccessor);
         });
 
