@@ -19,10 +19,8 @@ import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect,
 import {Identifiers, identifierToken} from '../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../src/interpolation_config';
 
-import {Unparser} from './expression_parser/unparser';
+import {unparse} from './expression_parser/unparser';
 import {TEST_PROVIDERS} from './test_bindings';
-
-var expressionUnparser = new Unparser();
 
 var someModuleUrl = 'package:someModule';
 
@@ -809,7 +807,7 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
             expect(() => parse('<div #a></div><div #a></div>', []))  .toThrowError(
               `Template parse errors:
 Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>"): TestComp@0:19`);
-           
+
         });
 
             it(
@@ -817,7 +815,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
             () => {
                 expect(() => parse('<div #a><template #a><span>OK</span></template></div>', []))
                   .not.toThrowError();
-               
+
             });
 
         it('should assign references with empty value to components', () => {
@@ -1504,17 +1502,14 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitEvent(ast: BoundEventAst, context: any): any {
-    var res = [
-      BoundEventAst, ast.name, ast.target,
-      expressionUnparser.unparse(ast.handler, this.interpolationConfig)
-    ];
+    var res = [BoundEventAst, ast.name, ast.target, unparse(ast.handler, this.interpolationConfig)];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
   visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
     var res = [
-      BoundElementPropertyAst, ast.type, ast.name,
-      expressionUnparser.unparse(ast.value, this.interpolationConfig), ast.unit
+      BoundElementPropertyAst, ast.type, ast.name, unparse(ast.value, this.interpolationConfig),
+      ast.unit
     ];
     this.result.push(this._appendContext(ast, res));
     return null;
@@ -1525,7 +1520,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitBoundText(ast: BoundTextAst, context: any): any {
-    var res = [BoundTextAst, expressionUnparser.unparse(ast.value, this.interpolationConfig)];
+    var res = [BoundTextAst, unparse(ast.value, this.interpolationConfig)];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
@@ -1544,8 +1539,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
   }
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
     var res = [
-      BoundDirectivePropertyAst, ast.directiveName,
-      expressionUnparser.unparse(ast.value, this.interpolationConfig)
+      BoundDirectivePropertyAst, ast.directiveName, unparse(ast.value, this.interpolationConfig)
     ];
     this.result.push(this._appendContext(ast, res));
     return null;
@@ -1590,7 +1584,7 @@ class TemplateContentProjectionHumanizer implements TemplateAstVisitor {
   visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }
   visitAttr(ast: AttrAst, context: any): any { return null; }
   visitBoundText(ast: BoundTextAst, context: any): any {
-    this.result.push([`#text(${expressionUnparser.unparse(ast.value)})`, ast.ngContentIndex]);
+    this.result.push([`#text(${unparse(ast.value)})`, ast.ngContentIndex]);
     return null;
   }
   visitText(ast: TextAst, context: any): any {

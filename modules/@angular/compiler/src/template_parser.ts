@@ -13,7 +13,7 @@ import {Console, MAX_INTERPOLATION_VALUES} from '../core_private';
 import {ListWrapper, StringMapWrapper, SetWrapper,} from '../src/facade/collection';
 import {RegExpWrapper, isPresent, StringWrapper, isBlank, isArray} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
-import {AST, Interpolation, ASTWithSource, TemplateBinding, RecursiveAstVisitor, BindingPipe} from './expression_parser/ast';
+import {AST, Interpolation, ASTWithSource, TemplateBinding, RecursiveAstVisitor, BindingPipe, ParserError} from './expression_parser/ast';
 import {Parser} from './expression_parser/parser';
 import {CompileDirectiveMetadata, CompilePipeMetadata, CompileMetadataWithType,} from './compile_metadata';
 import {HtmlParser} from './html_parser';
@@ -190,10 +190,17 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     this.errors.push(new TemplateParseError(message, sourceSpan, level));
   }
 
+  private _reportParserErors(errors: ParserError[], sourceSpan: ParseSourceSpan) {
+    for (let error of errors) {
+      this._reportError(error.message, sourceSpan);
+    }
+  }
+
   private _parseInterpolation(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     var sourceInfo = sourceSpan.start.toString();
     try {
       var ast = this._exprParser.parseInterpolation(value, sourceInfo, this._interpolationConfig);
+      if (ast) this._reportParserErors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       if (isPresent(ast) &&
           (<Interpolation>ast.ast).expressions.length > MAX_INTERPOLATION_VALUES) {
@@ -211,6 +218,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var sourceInfo = sourceSpan.start.toString();
     try {
       var ast = this._exprParser.parseAction(value, sourceInfo, this._interpolationConfig);
+      if (ast) this._reportParserErors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
@@ -223,6 +231,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var sourceInfo = sourceSpan.start.toString();
     try {
       var ast = this._exprParser.parseBinding(value, sourceInfo, this._interpolationConfig);
+      if (ast) this._reportParserErors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
@@ -235,6 +244,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var sourceInfo = sourceSpan.start.toString();
     try {
       var bindingsResult = this._exprParser.parseTemplateBindings(value, sourceInfo);
+      this._reportParserErors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (isPresent(binding.expression)) {
           this._checkPipes(binding.expression, sourceSpan);

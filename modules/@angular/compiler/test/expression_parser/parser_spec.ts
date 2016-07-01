@@ -6,64 +6,79 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe} from '@angular/compiler/src/expression_parser/ast';
+import {AST, ASTWithSource, BindingPipe, Interpolation, LiteralPrimitive, ParserError, TemplateBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
-import {Parser} from '@angular/compiler/src/expression_parser/parser';
+import {Parser, TemplateBindingParseResult} from '@angular/compiler/src/expression_parser/parser';
 import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing';
 
 import {isBlank, isPresent} from '../../src/facade/lang';
 
-import {Unparser} from './unparser';
+import {unparse} from './unparser';
+import {validate} from './validator';
 
 export function main() {
   function createParser() { return new Parser(new Lexer()); }
 
-  function parseAction(text: string, location: any = null): any {
+  function parseAction(text: string, location: any = null): ASTWithSource {
     return createParser().parseAction(text, location);
   }
 
-  function parseBinding(text: string, location: any = null): any {
+  function parseBinding(text: string, location: any = null): ASTWithSource {
     return createParser().parseBinding(text, location);
   }
 
-  function parseTemplateBindings(text: string, location: any = null): any {
-    return createParser().parseTemplateBindings(text, location).templateBindings;
+  function parseTemplateBindingsResult(
+      text: string, location: any = null): TemplateBindingParseResult {
+    return createParser().parseTemplateBindings(text, location);
+  }
+  function parseTemplateBindings(text: string, location: any = null): TemplateBinding[] {
+    return parseTemplateBindingsResult(text, location).templateBindings;
   }
 
-  function parseInterpolation(text: string, location: any = null): any {
+  function parseInterpolation(text: string, location: any = null): ASTWithSource {
     return createParser().parseInterpolation(text, location);
   }
 
-  function parseSimpleBinding(text: string, location: any = null): any {
+  function parseSimpleBinding(text: string, location: any = null): ASTWithSource {
     return createParser().parseSimpleBinding(text, location);
   }
-
-  function unparse(ast: AST): string { return new Unparser().unparse(ast); }
 
   function checkInterpolation(exp: string, expected?: string) {
     var ast = parseInterpolation(exp);
     if (isBlank(expected)) expected = exp;
     expect(unparse(ast)).toEqual(expected);
+    validate(ast);
   }
 
   function checkBinding(exp: string, expected?: string) {
     var ast = parseBinding(exp);
     if (isBlank(expected)) expected = exp;
     expect(unparse(ast)).toEqual(expected);
+    validate(ast);
   }
 
   function checkAction(exp: string, expected?: string) {
     var ast = parseAction(exp);
     if (isBlank(expected)) expected = exp;
     expect(unparse(ast)).toEqual(expected);
+    validate(ast);
   }
 
-  function expectActionError(text: any /** TODO #9100 */) {
-    return expect(() => parseAction(text));
+  function expectError(ast: {errors: ParserError[]}, message: string) {
+    for (var error of ast.errors) {
+      if (error.message.indexOf(message) >= 0) {
+        return;
+      }
+    }
+    throw Error(`Expected an error containing "${message}" to be reported`);
   }
 
-  function expectBindingError(text: any /** TODO #9100 */) {
-    return expect(() => parseBinding(text));
+  function expectActionError(text: string, message: string) {
+    expectError(validate(parseAction(text)), message);
+  }
+
+  function expectBindingError(text: string, message: string) {
+    expectError(validate(parseBinding(text)), message);
   }
 
   describe('parser', () => {
@@ -140,8 +155,8 @@ export function main() {
         });
 
         it('should only allow identifier, string, or keyword as map key', () => {
-          expectActionError('{(:0}').toThrowError(/expected identifier, keyword, or string/);
-          expectActionError('{1234:0}').toThrowError(/expected identifier, keyword, or string/);
+          expectActionError('{(:0}', 'expected identifier, keyword, or string');
+          expectActionError('{1234:0}', 'expected identifier, keyword, or string');
         });
       });
 
@@ -152,9 +167,9 @@ export function main() {
         });
 
         it('should only allow identifier or keyword as member names', () => {
-          expectActionError('x.(').toThrowError(/identifier or keyword/);
-          expectActionError('x. 1234').toThrowError(/identifier or keyword/);
-          expectActionError('x."foo"').toThrowError(/identifier or keyword/);
+          expectActionError('x.(', 'identifier or keyword');
+          expectActionError('x. 1234', 'identifier or keyword');
+          expectActionError('x."foo"', 'identifier or keyword');
         });
 
         it('should parse safe field access', () => {
@@ -182,9 +197,8 @@ export function main() {
           checkAction('false ? 10 : 20');
         });
 
-        it('should throw on incorrect ternary operator syntax', () => {
-          expectActionError('true?1').toThrowError(
-              /Parser Error: Conditional expression true\?1 requires all 3 expressions/);
+        it('should report incorrect ternary operator syntax', () => {
+          expectActionError('true?1', 'Conditional expression true?1 requires all 3 expressions');
         });
       });
 
@@ -195,39 +209,35 @@ export function main() {
           checkAction('a = 123; b = 234;');
         });
 
-        it('should throw on safe field assignments', () => {
-          expectActionError('a?.a = 123').toThrowError(/cannot be used in the assignment/);
-        });
+        it('should report on safe field assignments',
+           () => { expectActionError('a?.a = 123', 'cannot be used in the assignment'); });
 
         it('should support array updates', () => { checkAction('a[0] = 200'); });
       });
 
       it('should error when using pipes',
-         () => { expectActionError('x|blah').toThrowError(/Cannot have a pipe/); });
+         () => { expectActionError('x|blah', 'Cannot have a pipe'); });
 
       it('should store the source in the result',
-         () => { expect(parseAction('someExpr').source).toBe('someExpr'); });
+         () => { expect(parseAction('someExpr', 'someExpr')); });
 
       it('should store the passed-in location',
          () => { expect(parseAction('someExpr', 'location').location).toBe('location'); });
 
-      it('should throw when encountering interpolation', () => {
-        expectActionError('{{a()}}').toThrowError(
-            /Got interpolation \(\{\{\}\}\) where expression was expected/);
+      it('should report when encountering interpolation', () => {
+        expectActionError('{{a()}}', 'Got interpolation ({{}}) where expression was expected');
       });
     });
 
     describe('general error handling', () => {
-      it('should throw on an unexpected token',
-         () => { expectActionError('[1,2] trac').toThrowError(/Unexpected token \'trac\'/); });
+      it('should report an unexpected token',
+         () => { expectActionError('[1,2] trac', 'Unexpected token \'trac\''); });
 
-      it('should throw a reasonable error for unconsumed tokens', () => {
-        expectActionError(')').toThrowError(/Unexpected token \) at column 1 in \[\)\]/);
-      });
+      it('should report reasonable error for unconsumed tokens',
+         () => { expectActionError(')', 'Unexpected token ) at column 1 in [)]'); });
 
-      it('should throw on missing expected token', () => {
-        expectActionError('a(b').toThrowError(
-            /Missing expected \) at the end of the expression \[a\(b\]/);
+      it('should report a missing expected token', () => {
+        expectActionError('a(b', 'Missing expected ) at the end of the expression [a(b]');
       });
     });
 
@@ -246,9 +256,9 @@ export function main() {
         });
 
         it('should only allow identifier or keyword as formatter names', () => {
-          expectBindingError('"Foo"|(').toThrowError(/identifier or keyword/);
-          expectBindingError('"Foo"|1234').toThrowError(/identifier or keyword/);
-          expectBindingError('"Foo"|"uppercase"').toThrowError(/identifier or keyword/);
+          expectBindingError('"Foo"|(', 'identifier or keyword');
+          expectBindingError('"Foo"|1234', 'identifier or keyword');
+          expectBindingError('"Foo"|"uppercase"', 'identifier or keyword');
         });
 
         it('should parse quoted expressions', () => { checkBinding('a:b', 'a:b'); });
@@ -259,8 +269,8 @@ export function main() {
         it('should ignore whitespace around quote prefix', () => { checkBinding(' a :b', 'a:b'); });
 
         it('should refuse prefixes that are not single identifiers', () => {
-          expectBindingError('a + b:c').toThrowError();
-          expectBindingError('1:c').toThrowError();
+          expectBindingError('a + b:c', '');
+          expectBindingError('1:c', '');
         });
       });
 
@@ -270,15 +280,14 @@ export function main() {
       it('should store the passed-in location',
          () => { expect(parseBinding('someExpr', 'location').location).toBe('location'); });
 
-      it('should throw on chain expressions',
-         () => { expect(() => parseBinding('1;2')).toThrowError(/contain chained expression/); });
+      it('should report chain expressions',
+         () => { expectError(parseBinding('1;2'), 'contain chained expression'); });
 
-      it('should throw on assignment',
-         () => { expect(() => parseBinding('a=2')).toThrowError(/contain assignments/); });
+      it('should report assignment',
+         () => { expectError(parseBinding('a=2'), 'contain assignments'); });
 
-      it('should throw when encountering interpolation', () => {
-        expectBindingError('{{a.b}}').toThrowError(
-            /Got interpolation \(\{\{\}\}\) where expression was expected/);
+      it('should report when encountering interpolation', () => {
+        expectBindingError('{{a.b}}', 'Got interpolation ({{}}) where expression was expected');
       });
 
       it('should parse conditional expression', () => { checkBinding('a < b ? a : b'); });
@@ -331,13 +340,10 @@ export function main() {
         bindings = parseTemplateBindings('a-b:\'c\'');
         expect(keys(bindings)).toEqual(['a-b']);
 
-        expect(() => {
-          parseTemplateBindings('(:0');
-        }).toThrowError(/expected identifier, keyword, or string/);
+        expectError(parseTemplateBindingsResult('(:0'), 'expected identifier, keyword, or string');
 
-        expect(() => {
-          parseTemplateBindings('1234:0');
-        }).toThrowError(/expected identifier, keyword, or string/);
+        expectError(
+            parseTemplateBindingsResult('1234:0'), 'expected identifier, keyword, or string');
       });
 
       it('should detect expressions as value', () => {
@@ -436,7 +442,7 @@ export function main() {
          () => { expect(parseInterpolation('nothing')).toBe(null); });
 
       it('should parse no prefix/suffix interpolation', () => {
-        var ast = parseInterpolation('{{a}}').ast;
+        var ast = parseInterpolation('{{a}}').ast as Interpolation;
         expect(ast.strings).toEqual(['', '']);
         expect(ast.expressions.length).toEqual(1);
         expect(ast.expressions[0].name).toEqual('a');
@@ -445,17 +451,18 @@ export function main() {
       it('should parse prefix/suffix with multiple interpolation', () => {
         var originalExp = 'before {{ a }} middle {{ b }} after';
         var ast = parseInterpolation(originalExp).ast;
-        expect(new Unparser().unparse(ast)).toEqual(originalExp);
+        expect(unparse(ast)).toEqual(originalExp);
+        validate(ast);
       });
 
-      it('should throw on empty interpolation expressions', () => {
-        expect(() => parseInterpolation('{{}}'))
-            .toThrowError(
-                /Parser Error: Blank expressions are not allowed in interpolated strings/);
+      it('should report empty interpolation expressions', () => {
+        expectError(
+            parseInterpolation('{{}}'),
+            'Blank expressions are not allowed in interpolated strings');
 
-        expect(() => parseInterpolation('foo {{  }}'))
-            .toThrowError(
-                /Parser Error: Blank expressions are not allowed in interpolated strings/);
+        expectError(
+            parseInterpolation('foo {{  }}'),
+            'Parser Error: Blank expressions are not allowed in interpolated strings');
       });
 
       it('should parse conditional expression',
@@ -503,28 +510,47 @@ export function main() {
       it('should parse a field access', () => {
         var p = parseSimpleBinding('name');
         expect(unparse(p)).toEqual('name');
+        validate(p);
       });
 
       it('should parse a constant', () => {
         var p = parseSimpleBinding('[1, 2]');
         expect(unparse(p)).toEqual('[1, 2]');
+        validate(p);
       });
 
-      it('should throw when the given expression is not just a field name', () => {
-        expect(() => parseSimpleBinding('name + 1'))
-            .toThrowError(/Host binding expression can only contain field access and constants/);
+      it('should report when the given expression is not just a field name', () => {
+        expectError(
+            validate(parseSimpleBinding('name + 1')),
+            'Host binding expression can only contain field access and constants');
       });
 
-      it('should throw when encountering interpolation', () => {
-        expect(() => parseSimpleBinding('{{exp}}'))
-            .toThrowError(/Got interpolation \(\{\{\}\}\) where expression was expected/);
+      it('should report when encountering interpolation', () => {
+        expectError(
+            validate(parseSimpleBinding('{{exp}}')),
+            'Got interpolation ({{}}) where expression was expected');
       });
     });
 
     describe('wrapLiteralPrimitive', () => {
       it('should wrap a literal primitive', () => {
-        expect(unparse(createParser().wrapLiteralPrimitive('foo', null))).toEqual('"foo"');
+        expect(unparse(validate(createParser().wrapLiteralPrimitive('foo', null))))
+            .toEqual('"foo"');
       });
+    });
+
+    describe('error recovery', () => {
+      function recover(text: string, expected?: string) {
+        let expr = validate(parseAction(text));
+        expect(unparse(expr)).toEqual(expected || text);
+      }
+      it('should be able to recover from an extra paren', () => recover('((a)))', 'a'));
+      it('should be able to recover from an extra bracket', () => recover('[[a]]]', '[[a]]'));
+      it('should be able to recover from a missing )', () => recover('(a;b', 'a; b;'));
+      it('should be able to recover from a missing ]', () => recover('[a,b', '[a, b]'));
+      it('should be able to recover from a missing selector', () => recover('a.'));
+      it('should be able to recover from a missing selector in a array literal',
+         () => recover('[[a.], b, c]'))
     });
   });
 }

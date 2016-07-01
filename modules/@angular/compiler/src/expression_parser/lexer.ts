@@ -18,7 +18,8 @@ export enum TokenType {
   Keyword,
   String,
   Operator,
-  Number
+  Number,
+  Error
 }
 
 const KEYWORDS = ['var', 'let', 'null', 'undefined', 'true', 'false', 'if', 'else'];
@@ -74,6 +75,8 @@ export class Token {
 
   isKeywordFalse(): boolean { return (this.type == TokenType.Keyword && this.strValue == 'false'); }
 
+  isError(): boolean { return this.type == TokenType.Error; }
+
   toNumber(): number {
     // -1 instead of NULL ok?
     return (this.type == TokenType.Number) ? this.numValue : -1;
@@ -86,6 +89,7 @@ export class Token {
       case TokenType.Keyword:
       case TokenType.Operator:
       case TokenType.String:
+      case TokenType.Error:
         return this.strValue;
       case TokenType.Number:
         return this.numValue.toString();
@@ -119,13 +123,11 @@ function newNumberToken(index: number, n: number): Token {
   return new Token(index, TokenType.Number, n, '');
 }
 
-export var EOF: Token = new Token(-1, TokenType.Character, 0, '');
-
-export class ScannerError extends BaseException {
-  constructor(public message: string) { super(); }
-
-  toString(): string { return this.message; }
+function newErrorToken(index: number, message: string): Token {
+  return new Token(index, TokenType.Error, 0, message);
 }
+
+export var EOF: Token = new Token(-1, TokenType.Character, 0, '');
 
 class _Scanner {
   length: number;
@@ -211,8 +213,8 @@ class _Scanner {
         return this.scanToken();
     }
 
-    this.error(`Unexpected character [${StringWrapper.fromCharCode(peek)}]`, 0);
-    return null;
+    this.advance();
+    return this.error(`Unexpected character [${StringWrapper.fromCharCode(peek)}]`, 0);
   }
 
   scanCharacter(start: number, code: number): Token {
@@ -273,7 +275,7 @@ class _Scanner {
       } else if (isExponentStart(this.peek)) {
         this.advance();
         if (isExponentSign(this.peek)) this.advance();
-        if (!chars.isDigit(this.peek)) this.error('Invalid exponent', -1);
+        if (!chars.isDigit(this.peek)) return this.error('Invalid exponent', -1);
         simple = false;
       } else {
         break;
@@ -307,7 +309,7 @@ class _Scanner {
           try {
             unescapedCode = NumberWrapper.parseInt(hex, 16);
           } catch (e) {
-            this.error(`Invalid unicode escape [\\u${hex}]`, 0);
+            return this.error(`Invalid unicode escape [\\u${hex}]`, 0);
           }
           for (var i: number = 0; i < 5; i++) {
             this.advance();
@@ -319,7 +321,7 @@ class _Scanner {
         buffer.add(StringWrapper.fromCharCode(unescapedCode));
         marker = this.index;
       } else if (this.peek == chars.$EOF) {
-        this.error('Unterminated quote', 0);
+        return this.error('Unterminated quote', 0);
       } else {
         this.advance();
       }
@@ -337,10 +339,10 @@ class _Scanner {
     return newStringToken(start, unescaped);
   }
 
-  error(message: string, offset: number) {
-    var position: number = this.index + offset;
-    throw new ScannerError(
-        `Lexer Error: ${message} at column ${position} in expression [${this.input}]`);
+  error(message: string, offset: number): Token {
+    const position: number = this.index + offset;
+    return newErrorToken(
+        position, `Lexer Error: ${message} at column ${position} in expression [${this.input}]`);
   }
 }
 

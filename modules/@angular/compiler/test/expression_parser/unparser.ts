@@ -10,12 +10,12 @@ import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, Fun
 import {StringWrapper, isPresent, isString} from '../../src/facade/lang';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/interpolation_config';
 
-export class Unparser implements AstVisitor {
+class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;
   private _expression: string;
   private _interpolationConfig: InterpolationConfig;
 
-  unparse(ast: AST, interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {
+  unparse(ast: AST, interpolationConfig: InterpolationConfig) {
     this._expression = '';
     this._interpolationConfig = interpolationConfig;
     this._visit(ast);
@@ -179,4 +179,11 @@ export class Unparser implements AstVisitor {
   }
 
   private _visit(ast: AST) { ast.visit(this); }
+}
+
+const sharedUnparser = new Unparser();
+
+export function unparse(
+    ast: AST, interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): string {
+  return sharedUnparser.unparse(ast, interpolationConfig);
 }
