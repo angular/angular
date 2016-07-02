@@ -205,10 +205,10 @@ export class CssScanner {
     }
 
     if (!isPresent(next)) {
-      next = new CssToken(this.index, this.column, this.line, CssTokenType.EOF, 'end of file');
+      next = new CssToken(0, 0, 0, CssTokenType.EOF, 'end of file');
     }
 
-    var isMatchingType: boolean = false;
+    var isMatchingType: boolean;
     if (type == CssTokenType.IdentifierOrNumber) {
       // TODO (matsko): implement array traversal for lookup here
       isMatchingType = next.type == CssTokenType.Number || next.type == CssTokenType.Identifier;

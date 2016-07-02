@@ -7,8 +7,7 @@
  */
 
 import * as chars from './chars';
-import {CssAst, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssUnknownRuleAst, CssUnknownTokenListAst} from './css_ast';
-import {CssLexer, CssLexerMode, CssScanner, CssToken, CssTokenType, generateErrorMessage, isNewline} from './css_lexer';
+import {CssLexerMode, CssScanner, CssToken, CssTokenType, generateErrorMessage, isNewline} from './css_lexer';
 import {isPresent} from './facade/lang';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
 
@@ -63,7 +62,7 @@ function isSelectorOperatorCharacter(code: number): boolean {
   }
 }
 
-export function mergeTokens(tokens: CssToken[], separator: string = ''): CssToken {
+function mergeTokens(tokens: CssToken[], separator: string = ''): CssToken {
   var mainToken = tokens[0];
   var str = mainToken.strValue;
   for (var i = 1; i < tokens.length; i++) {
@@ -105,6 +104,30 @@ function characterContainsDelimiter(code: number, delimiters: number): boolean {
   return (getDelimFromCharacter(code) & delimiters) > 0;
 }
 
+export abstract class CssAst {
+  constructor(public start: number, public end: number) {}
+  abstract visit(visitor: CssAstVisitor, context?: any): any;
+}
+
+export interface CssAstVisitor {
+  visitCssValue(ast: CssStyleValueAst, context?: any): any;
+  visitCssInlineRule(ast: CssInlineRuleAst, context?: any): any;
+  visitCssAtRulePredicate(ast: CssAtRulePredicateAst, context?: any): any;
+  visitCssKeyframeRule(ast: CssKeyframeRuleAst, context?: any): any;
+  visitCssKeyframeDefinition(ast: CssKeyframeDefinitionAst, context?: any): any;
+  visitCssMediaQueryRule(ast: CssMediaQueryRuleAst, context?: any): any;
+  visitCssSelectorRule(ast: CssSelectorRuleAst, context?: any): any;
+  visitCssSelector(ast: CssSelectorAst, context?: any): any;
+  visitCssSimpleSelector(ast: CssSimpleSelectorAst, context?: any): any;
+  visitCssPseudoSelector(ast: CssPseudoSelectorAst, context?: any): any;
+  visitCssDefinition(ast: CssDefinitionAst, context?: any): any;
+  visitCssBlock(ast: CssBlockAst, context?: any): any;
+  visitCssStylesBlock(ast: CssStylesBlockAst, context?: any): any;
+  visitCssStyleSheet(ast: CssStyleSheetAst, context?: any): any;
+  visitCssUnknownRule(ast: CssUnknownRuleAst, context?: any): any;
+  visitCssUnknownTokenList(ast: CssUnknownTokenListAst, context?: any): any;
+}
+
 export class ParsedCssResult {
   constructor(public errors: CssParseError[], public ast: CssStyleSheetAst) {}
 }
@@ -112,89 +135,9 @@ export class ParsedCssResult {
 export class CssParser {
   private _errors: CssParseError[] = [];
   private _file: ParseSourceFile;
-  private _scanner: CssScanner;
-  private _lastToken: CssToken;
 
-  /**
-   * @param css the CSS code that will be parsed
-   * @param url the name of the CSS file containing the CSS source code
-   */
-  parse(css: string, url: string): ParsedCssResult {
-    var lexer = new CssLexer();
-    this._file = new ParseSourceFile(css, url);
-    this._scanner = lexer.scan(css, false);
-
-    var ast = this._parseStyleSheet(EOF_DELIM_FLAG);
-
-    var errors = this._errors;
-    this._errors = [];
-
-    var result = new ParsedCssResult(errors, ast);
-    this._file = null;
-    this._scanner = null;
-    return result;
-  }
-
-  /** @internal */
-  _parseStyleSheet(delimiters: number): CssStyleSheetAst {
-    var results: CssRuleAst[] = [];
-    this._scanner.consumeEmptyStatements();
-    while (this._scanner.peek != chars.$EOF) {
-      this._scanner.setMode(CssLexerMode.BLOCK);
-      results.push(this._parseRule(delimiters));
-    }
-    var span: ParseSourceSpan = null;
-    if (results.length > 0) {
-      var firstRule = results[0];
-      // we collect the last token like so incase there was an
-      // EOF token that was emitted sometime during the lexing
-      span = this._generateSourceSpan(firstRule, this._lastToken);
-    }
-    return new CssStyleSheetAst(span, results);
-  }
-
-  /** @internal */
-  _getSourceContent(): string { return isPresent(this._scanner) ? this._scanner.input : ''; }
-
-  /** @internal */
-  _extractSourceContent(start: number, end: number): string {
-    return this._getSourceContent().substring(start, end + 1);
-  }
-
-  /** @internal */
-  _generateSourceSpan(start: CssToken|CssAst, end: CssToken|CssAst = null): ParseSourceSpan {
-    var startLoc: ParseLocation;
-    if (start instanceof CssAst) {
-      startLoc = start.location.start;
-    } else {
-      var token = start;
-      if (!isPresent(token)) {
-        // the data here is invalid, however, if and when this does
-        // occur, any other errors associated with this will be collected
-        token = this._lastToken;
-      }
-      startLoc = new ParseLocation(this._file, token.index, token.line, token.column);
-    }
-
-    if (!isPresent(end)) {
-      end = this._lastToken;
-    }
-
-    var endLine: number;
-    var endColumn: number;
-    var endIndex: number;
-    if (end instanceof CssAst) {
-      endLine = end.location.end.line;
-      endColumn = end.location.end.col;
-      endIndex = end.location.end.offset;
-    } else if (end instanceof CssToken) {
-      endLine = end.line;
-      endColumn = end.column;
-      endIndex = end.index;
-    }
-
-    var endLoc = new ParseLocation(this._file, endIndex, endLine, endColumn);
-    return new ParseSourceSpan(startLoc, endLoc);
+  constructor(private _scanner: CssScanner, private _fileName: string) {
+    this._file = new ParseSourceFile(this._scanner.input, _fileName);
   }
 
   /** @internal */
@@ -238,6 +181,29 @@ export class CssParser {
     }
   }
 
+  parse(): ParsedCssResult {
+    var delimiters: number = EOF_DELIM_FLAG;
+    var ast = this._parseStyleSheet(delimiters);
+
+    var errors = this._errors;
+    this._errors = [];
+
+    return new ParsedCssResult(errors, ast);
+  }
+
+  /** @internal */
+  _parseStyleSheet(delimiters: number): CssStyleSheetAst {
+    const start = this._getScannerIndex();
+    var results: CssAst[] = [];
+    this._scanner.consumeEmptyStatements();
+    while (this._scanner.peek != chars.$EOF) {
+      this._scanner.setMode(CssLexerMode.BLOCK);
+      results.push(this._parseRule(delimiters));
+    }
+    const end = this._getScannerIndex() - 1;
+    return new CssStyleSheetAst(start, end, results);
+  }
+
   /** @internal */
   _parseRule(delimiters: number): CssRuleAst {
     if (this._scanner.peek == chars.$AT) {
@@ -249,10 +215,10 @@ export class CssParser {
   /** @internal */
   _parseAtRule(delimiters: number): CssRuleAst {
     const start = this._getScannerIndex();
+    var end: number;
 
     this._scanner.setMode(CssLexerMode.BLOCK);
     var token = this._scan();
-    var startToken = token;
 
     this._assertCondition(
         token.type == CssTokenType.AtKeyword,
@@ -266,55 +232,46 @@ export class CssParser {
       case BlockType.Import:
         var value = this._parseValue(delimiters);
         this._scanner.setMode(CssLexerMode.BLOCK);
+        end = value.end;
         this._scanner.consumeEmptyStatements();
-        var span = this._generateSourceSpan(startToken, value);
-        return new CssInlineRuleAst(span, type, value);
+        return new CssInlineRuleAst(start, end, type, value);
 
       case BlockType.Viewport:
       case BlockType.FontFace:
         block = this._parseStyleBlock(delimiters);
-        var span = this._generateSourceSpan(startToken, block);
-        return new CssBlockRuleAst(span, type, block);
+        end = this._getScannerIndex() - 1;
+        return new CssBlockRuleAst(start, end, type, block);
 
       case BlockType.Keyframes:
         var tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
         // keyframes only have one identifier name
         var name = tokens[0];
-        var block = this._parseKeyframeBlock(delimiters);
-        var span = this._generateSourceSpan(startToken, block);
-        return new CssKeyframeRuleAst(span, name, block);
+        end = this._getScannerIndex() - 1;
+        return new CssKeyframeRuleAst(start, end, name, this._parseKeyframeBlock(delimiters));
 
       case BlockType.MediaQuery:
         this._scanner.setMode(CssLexerMode.MEDIA_QUERY);
         var tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
-        var endToken = tokens[tokens.length - 1];
-        // we do not track the whitespace after the mediaQuery predicate ends
-        // so we have to calculate the end string value on our own
-        var end = endToken.index + endToken.strValue.length - 1;
-        var strValue = this._extractSourceContent(start, end);
-        var span = this._generateSourceSpan(startToken, endToken);
-        var query = new CssAtRulePredicateAst(span, strValue, tokens);
+        end = this._getScannerIndex() - 1;
+        var strValue = this._scanner.input.substring(start, end);
+        var query = new CssAtRulePredicateAst(start, end, strValue, tokens);
         block = this._parseBlock(delimiters);
-        strValue = this._extractSourceContent(start, this._getScannerIndex() - 1);
-        span = this._generateSourceSpan(startToken, block);
-        return new CssMediaQueryRuleAst(span, strValue, query, block);
+        end = this._getScannerIndex() - 1;
+        strValue = this._scanner.input.substring(start, end);
+        return new CssMediaQueryRuleAst(start, end, strValue, query, block);
 
       case BlockType.Document:
       case BlockType.Supports:
       case BlockType.Page:
         this._scanner.setMode(CssLexerMode.AT_RULE_QUERY);
         var tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
-        var endToken = tokens[tokens.length - 1];
-        // we do not track the whitespace after this block rule predicate ends
-        // so we have to calculate the end string value on our own
-        var end = endToken.index + endToken.strValue.length - 1;
-        var strValue = this._extractSourceContent(start, end);
-        var span = this._generateSourceSpan(startToken, tokens[tokens.length - 1]);
-        var query = new CssAtRulePredicateAst(span, strValue, tokens);
+        end = this._getScannerIndex() - 1;
+        var strValue = this._scanner.input.substring(start, end);
+        var query = new CssAtRulePredicateAst(start, end, strValue, tokens);
         block = this._parseBlock(delimiters);
-        strValue = this._extractSourceContent(start, block.end.offset);
-        span = this._generateSourceSpan(startToken, block);
-        return new CssBlockDefinitionRuleAst(span, strValue, type, query, block);
+        end = this._getScannerIndex() - 1;
+        strValue = this._scanner.input.substring(start, end);
+        return new CssBlockDefinitionRuleAst(start, end, strValue, type, query, block);
 
       // if a custom @rule { ... } is used it should still tokenize the insides
       default:
@@ -323,9 +280,8 @@ export class CssParser {
         this._scanner.setMode(CssLexerMode.ALL);
         this._error(
             generateErrorMessage(
-                this._getSourceContent(),
-                `The CSS "at" rule "${tokenName}" is not allowed to used here`, token.strValue,
-                token.index, token.line, token.column),
+                this._scanner.input, `The CSS "at" rule "${tokenName}" is not allowed to used here`,
+                token.strValue, token.index, token.line, token.column),
             token);
 
         this._collectUntilDelim(delimiters | LBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG)
@@ -336,9 +292,8 @@ export class CssParser {
               .forEach((token) => { listOfTokens.push(token); });
           listOfTokens.push(this._consume(CssTokenType.Character, '}'));
         }
-        var endToken = listOfTokens[listOfTokens.length - 1];
-        var span = this._generateSourceSpan(startToken, endToken);
-        return new CssUnknownRuleAst(span, tokenName, listOfTokens);
+        end = this._getScannerIndex() - 1;
+        return new CssUnknownRuleAst(start, end, tokenName, listOfTokens);
     }
   }
 
@@ -347,27 +302,23 @@ export class CssParser {
     const start = this._getScannerIndex();
     var selectors = this._parseSelectors(delimiters);
     var block = this._parseStyleBlock(delimiters);
-    var ruleAst: CssRuleAst;
-    var span: ParseSourceSpan;
-    var startSelector = selectors[0];
+    const end = this._getScannerIndex() - 1;
+    var token: CssRuleAst;
     if (isPresent(block)) {
-      var span = this._generateSourceSpan(startSelector, block);
-      ruleAst = new CssSelectorRuleAst(span, selectors, block);
+      token = new CssSelectorRuleAst(start, end, selectors, block);
     } else {
-      var name = this._extractSourceContent(start, this._getScannerIndex() - 1);
+      var name = this._scanner.input.substring(start, end);
       var innerTokens: CssToken[] = [];
       selectors.forEach((selector: CssSelectorAst) => {
         selector.selectorParts.forEach((part: CssSimpleSelectorAst) => {
           part.tokens.forEach((token: CssToken) => { innerTokens.push(token); });
         });
       });
-      var endToken = innerTokens[innerTokens.length - 1];
-      span = this._generateSourceSpan(startSelector, endToken);
-      ruleAst = new CssUnknownTokenListAst(span, name, innerTokens);
+      token = new CssUnknownTokenListAst(start, end, name, innerTokens);
     }
     this._scanner.setMode(CssLexerMode.BLOCK);
     this._scanner.consumeEmptyStatements();
-    return ruleAst;
+    return token;
   }
 
   /** @internal */
@@ -401,7 +352,6 @@ export class CssParser {
     if (isPresent(error)) {
       this._error(error.rawMessage, token);
     }
-    this._lastToken = token;
     return token;
   }
 
@@ -416,26 +366,27 @@ export class CssParser {
     if (isPresent(error)) {
       this._error(error.rawMessage, token);
     }
-    this._lastToken = token;
     return token;
   }
 
   /** @internal */
   _parseKeyframeBlock(delimiters: number): CssBlockAst {
+    const start = this._getScannerIndex();
+
     delimiters |= RBRACE_DELIM_FLAG;
     this._scanner.setMode(CssLexerMode.KEYFRAME_BLOCK);
 
-    var startToken = this._consume(CssTokenType.Character, '{');
+    this._consume(CssTokenType.Character, '{');
 
     var definitions: CssKeyframeDefinitionAst[] = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       definitions.push(this._parseKeyframeDefinition(delimiters));
     }
 
-    var endToken = this._consume(CssTokenType.Character, '}');
+    this._consume(CssTokenType.Character, '}');
 
-    var span = this._generateSourceSpan(startToken, endToken);
-    return new CssBlockAst(span, definitions);
+    const end = this._getScannerIndex() - 1;
+    return new CssBlockAst(start, end, definitions);
   }
 
   /** @internal */
@@ -449,12 +400,10 @@ export class CssParser {
         this._consume(CssTokenType.Character, ',');
       }
     }
-    var stylesBlock = this._parseStyleBlock(delimiters | RBRACE_DELIM_FLAG);
-    var span = this._generateSourceSpan(stepTokens[0], stylesBlock);
-    var ast = new CssKeyframeDefinitionAst(span, stepTokens, stylesBlock);
-
+    var styles = this._parseStyleBlock(delimiters | RBRACE_DELIM_FLAG);
     this._scanner.setMode(CssLexerMode.BLOCK);
-    return ast;
+    const end = this._getScannerIndex() - 1;
+    return new CssKeyframeDefinitionAst(start, end, stepTokens, styles);
   }
 
   /** @internal */
@@ -476,7 +425,8 @@ export class CssParser {
     var tokens = [startToken];
 
     if (this._scanner.peek == chars.$COLON) {  // ::something
-      tokens.push(this._consume(CssTokenType.Character, ':'));
+      startToken = this._consume(CssTokenType.Character, ':');
+      tokens.push(startToken);
     }
 
     var innerSelectors: CssSelectorAst[] = [];
@@ -525,11 +475,9 @@ export class CssParser {
     }
 
     const end = this._getScannerIndex() - 1;
-    var strValue = this._extractSourceContent(start, end);
-
-    var endToken = tokens[tokens.length - 1];
-    var span = this._generateSourceSpan(startToken, endToken);
-    return new CssPseudoSelectorAst(span, strValue, pseudoSelectorName, tokens, innerSelectors);
+    var strValue = this._scanner.input.substring(start, end);
+    return new CssPseudoSelectorAst(
+        start, end, strValue, pseudoSelectorName, tokens, innerSelectors);
   }
 
   /** @internal */
@@ -599,11 +547,12 @@ export class CssParser {
           previousToken);
     }
 
-    var end = this._getScannerIndex() - 1;
-
-    // this happens if the selector is not directly followed by
-    // a comma or curly brace without a space in between
-    if (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
+    var end = this._getScannerIndex();
+    if (characterContainsDelimiter(this._scanner.peek, delimiters)) {
+      // this happens if the selector is followed by a comma or curly
+      // brace without a space in between
+      end--;
+    } else {
       var operator: CssToken = null;
       var operatorScanCount = 0;
       var lastOperatorToken: CssToken = null;
@@ -631,7 +580,7 @@ export class CssParser {
                 let text = SLASH_CHARACTER + deepToken.strValue + deepSlash.strValue;
                 this._error(
                     generateErrorMessage(
-                        this._getSourceContent(), `${text} is an invalid CSS operator`, text, index,
+                        this._scanner.input, `${text} is an invalid CSS operator`, text, index,
                         line, column),
                     lastOperatorToken);
                 token = new CssToken(index, column, line, CssTokenType.Invalid, text);
@@ -651,20 +600,12 @@ export class CssParser {
           }
 
           operator = token;
+          end = this._getScannerIndex() - 1;
         }
-      }
-
-      // so long as there is an operator then we can have an
-      // ending value that is beyond the selector value ...
-      // otherwise it's just a bunch of trailing whitespace
-      if (isPresent(operator)) {
-        end = operator.index;
       }
     }
 
     this._scanner.consumeWhitespace();
-
-    var strValue = this._extractSourceContent(start, end);
 
     // if we do come across one or more spaces inside of
     // the operators loop then an empty space is still a
@@ -673,42 +614,33 @@ export class CssParser {
       operator = lastOperatorToken;
     }
 
-    // please note that `endToken` is reassigned multiple times below
-    // so please do not optimize the if statements into if/elseif
-    var startTokenOrAst: CssToken|CssAst = null;
-    var endTokenOrAst: CssToken|CssAst = null;
-    if (selectorCssTokens.length > 0) {
-      startTokenOrAst = startTokenOrAst || selectorCssTokens[0];
-      endTokenOrAst = selectorCssTokens[selectorCssTokens.length - 1];
-    }
-    if (pseudoSelectors.length > 0) {
-      startTokenOrAst = startTokenOrAst || pseudoSelectors[0];
-      endTokenOrAst = pseudoSelectors[pseudoSelectors.length - 1];
-    }
-    if (isPresent(operator)) {
-      startTokenOrAst = startTokenOrAst || operator;
-      endTokenOrAst = operator;
-    }
-
-    var span = this._generateSourceSpan(startTokenOrAst, endTokenOrAst);
-    return new CssSimpleSelectorAst(span, selectorCssTokens, strValue, pseudoSelectors, operator);
+    var strValue = this._scanner.input.substring(start, end);
+    return new CssSimpleSelectorAst(
+        start, end, selectorCssTokens, strValue, pseudoSelectors, operator);
   }
 
   /** @internal */
   _parseSelector(delimiters: number): CssSelectorAst {
+    const start = this._getScannerIndex();
+
     delimiters |= COMMA_DELIM_FLAG;
     this._scanner.setMode(CssLexerMode.SELECTOR);
 
     var simpleSelectors: CssSimpleSelectorAst[] = [];
+    var end = this._getScannerIndex() - 1;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       simpleSelectors.push(this._parseSimpleSelector(delimiters));
       this._scanner.consumeWhitespace();
     }
 
-    var firstSelector = simpleSelectors[0];
-    var lastSelector = simpleSelectors[simpleSelectors.length - 1];
-    var span = this._generateSourceSpan(firstSelector, lastSelector);
-    return new CssSelectorAst(span, simpleSelectors);
+    // we do this to avoid any trailing whitespace that is processed
+    // in order to determine the final operator value
+    var limit = simpleSelectors.length - 1;
+    if (limit >= 0) {
+      end = simpleSelectors[limit].end;
+    }
+
+    return new CssSelectorAst(start, end, simpleSelectors);
   }
 
   /** @internal */
@@ -758,16 +690,13 @@ export class CssParser {
     } else if (code != chars.$RBRACE) {
       this._error(
           generateErrorMessage(
-              this._getSourceContent(), `The CSS key/value definition did not end with a semicolon`,
+              this._scanner.input, `The CSS key/value definition did not end with a semicolon`,
               previous.strValue, previous.index, previous.line, previous.column),
           previous);
     }
 
-    var strValue = this._extractSourceContent(start, end);
-    var startToken = tokens[0];
-    var endToken = tokens[tokens.length - 1];
-    var span = this._generateSourceSpan(startToken, endToken);
-    return new CssStyleValueAst(span, tokens, strValue);
+    var strValue = this._scanner.input.substring(start, end);
+    return new CssStyleValueAst(start, end, tokens, strValue);
   }
 
   /** @internal */
@@ -782,35 +711,39 @@ export class CssParser {
 
   /** @internal */
   _parseBlock(delimiters: number): CssBlockAst {
+    const start = this._getScannerIndex();
+
     delimiters |= RBRACE_DELIM_FLAG;
 
     this._scanner.setMode(CssLexerMode.BLOCK);
 
-    var startToken = this._consume(CssTokenType.Character, '{');
+    this._consume(CssTokenType.Character, '{');
     this._scanner.consumeEmptyStatements();
 
-    var results: CssRuleAst[] = [];
+    var results: CssAst[] = [];
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       results.push(this._parseRule(delimiters));
     }
 
-    var endToken = this._consume(CssTokenType.Character, '}');
+    this._consume(CssTokenType.Character, '}');
 
     this._scanner.setMode(CssLexerMode.BLOCK);
     this._scanner.consumeEmptyStatements();
 
-    var span = this._generateSourceSpan(startToken, endToken);
-    return new CssBlockAst(span, results);
+    const end = this._getScannerIndex() - 1;
+    return new CssBlockAst(start, end, results);
   }
 
   /** @internal */
   _parseStyleBlock(delimiters: number): CssStylesBlockAst {
+    const start = this._getScannerIndex();
+
     delimiters |= RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG;
 
     this._scanner.setMode(CssLexerMode.STYLE_BLOCK);
 
-    var startToken = this._consume(CssTokenType.Character, '{');
-    if (startToken.numValue != chars.$LBRACE) {
+    var result = this._consume(CssTokenType.Character, '{');
+    if (result.numValue != chars.$LBRACE) {
       return null;
     }
 
@@ -822,28 +755,32 @@ export class CssParser {
       this._scanner.consumeEmptyStatements();
     }
 
-    var endToken = this._consume(CssTokenType.Character, '}');
+    this._consume(CssTokenType.Character, '}');
 
     this._scanner.setMode(CssLexerMode.STYLE_BLOCK);
     this._scanner.consumeEmptyStatements();
 
-    var span = this._generateSourceSpan(startToken, endToken);
-    return new CssStylesBlockAst(span, definitions);
+    const end = this._getScannerIndex() - 1;
+    return new CssStylesBlockAst(start, end, definitions);
   }
 
   /** @internal */
   _parseDefinition(delimiters: number): CssDefinitionAst {
+    const start = this._getScannerIndex();
     this._scanner.setMode(CssLexerMode.STYLE_BLOCK);
 
     var prop = this._consume(CssTokenType.Identifier);
-    var parseValue: boolean = false;
-    var value: CssStyleValueAst = null;
-    var endToken: CssToken|CssStyleValueAst = prop;
+    var parseValue: boolean, value: CssStyleValueAst = null;
 
     // the colon value separates the prop from the style.
     // there are a few cases as to what could happen if it
     // is missing
     switch (this._scanner.peek) {
+      case chars.$COLON:
+        this._consume(CssTokenType.Character, ':');
+        parseValue = true;
+        break;
+
       case chars.$SEMICOLON:
       case chars.$RBRACE:
       case chars.$EOF:
@@ -863,31 +800,31 @@ export class CssParser {
             remainingTokens.forEach((token) => { propStr.push(token.strValue); });
           }
 
-          endToken = prop =
-              new CssToken(prop.index, prop.column, prop.line, prop.type, propStr.join(' '));
+          prop = new CssToken(prop.index, prop.column, prop.line, prop.type, propStr.join(' '));
         }
 
         // this means we've reached the end of the definition and/or block
         if (this._scanner.peek == chars.$COLON) {
           this._consume(CssTokenType.Character, ':');
           parseValue = true;
+        } else {
+          parseValue = false;
         }
         break;
     }
 
     if (parseValue) {
       value = this._parseValue(delimiters);
-      endToken = value;
     } else {
       this._error(
           generateErrorMessage(
-              this._getSourceContent(), `The CSS property was not paired with a style value`,
+              this._scanner.input, `The CSS property was not paired with a style value`,
               prop.strValue, prop.index, prop.line, prop.column),
           prop);
     }
 
-    var span = this._generateSourceSpan(prop, endToken);
-    return new CssDefinitionAst(span, prop, value);
+    const end = this._getScannerIndex() - 1;
+    return new CssDefinitionAst(start, end, prop, value);
   }
 
   /** @internal */
@@ -908,15 +845,203 @@ export class CssParser {
   }
 }
 
+export class CssStyleValueAst extends CssAst {
+  constructor(start: number, end: number, public tokens: CssToken[], public strValue: string) {
+    super(start, end);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any { return visitor.visitCssValue(this); }
+}
+
+export abstract class CssRuleAst extends CssAst {
+  constructor(start: number, end: number) { super(start, end); }
+}
+
+export class CssBlockRuleAst extends CssRuleAst {
+  constructor(
+      start: number, end: number, public type: BlockType, public block: CssBlockAst,
+      public name: CssToken = null) {
+    super(start, end);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssBlock(this.block, context);
+  }
+}
+
+export class CssKeyframeRuleAst extends CssBlockRuleAst {
+  constructor(start: number, end: number, name: CssToken, block: CssBlockAst) {
+    super(start, end, BlockType.Keyframes, block, name);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssKeyframeRule(this, context);
+  }
+}
+
+export class CssKeyframeDefinitionAst extends CssBlockRuleAst {
+  public steps: CssToken[];
+  constructor(start: number, end: number, _steps: CssToken[], block: CssBlockAst) {
+    super(start, end, BlockType.Keyframes, block, mergeTokens(_steps, ','));
+    this.steps = _steps;
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssKeyframeDefinition(this, context);
+  }
+}
+
+export class CssBlockDefinitionRuleAst extends CssBlockRuleAst {
+  constructor(
+      start: number, end: number, public strValue: string, type: BlockType,
+      public query: CssAtRulePredicateAst, block: CssBlockAst) {
+    super(start, end, type, block);
+    var firstCssToken: CssToken = query.tokens[0];
+    this.name = new CssToken(
+        firstCssToken.index, firstCssToken.column, firstCssToken.line, CssTokenType.Identifier,
+        this.strValue);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssBlock(this.block, context);
+  }
+}
+
+export class CssMediaQueryRuleAst extends CssBlockDefinitionRuleAst {
+  constructor(
+      start: number, end: number, strValue: string, query: CssAtRulePredicateAst,
+      block: CssBlockAst) {
+    super(start, end, strValue, BlockType.MediaQuery, query, block);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssMediaQueryRule(this, context);
+  }
+}
+
+export class CssAtRulePredicateAst extends CssAst {
+  constructor(start: number, end: number, public strValue: string, public tokens: CssToken[]) {
+    super(start, end);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssAtRulePredicate(this, context);
+  }
+}
+
+export class CssInlineRuleAst extends CssRuleAst {
+  constructor(start: number, end: number, public type: BlockType, public value: CssStyleValueAst) {
+    super(start, end);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssInlineRule(this, context);
+  }
+}
+
+export class CssSelectorRuleAst extends CssBlockRuleAst {
+  public strValue: string;
+
+  constructor(start: number, end: number, public selectors: CssSelectorAst[], block: CssBlockAst) {
+    super(start, end, BlockType.Selector, block);
+    this.strValue = selectors.map(selector => selector.strValue).join(',');
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssSelectorRule(this, context);
+  }
+}
+
+export class CssDefinitionAst extends CssAst {
+  constructor(
+      start: number, end: number, public property: CssToken, public value: CssStyleValueAst) {
+    super(start, end);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssDefinition(this, context);
+  }
+}
+
+export abstract class CssSelectorPartAst extends CssAst {
+  constructor(start: number, end: number) { super(start, end); }
+}
+
+export class CssSelectorAst extends CssSelectorPartAst {
+  public strValue: string;
+  constructor(start: number, end: number, public selectorParts: CssSimpleSelectorAst[]) {
+    super(start, end);
+    this.strValue = selectorParts.map(part => part.strValue).join('');
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssSelector(this, context);
+  }
+}
+
+export class CssSimpleSelectorAst extends CssSelectorPartAst {
+  constructor(
+      start: number, end: number, public tokens: CssToken[], public strValue: string,
+      public pseudoSelectors: CssPseudoSelectorAst[], public operator: CssToken) {
+    super(start, end);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssSimpleSelector(this, context);
+  }
+}
+
+export class CssPseudoSelectorAst extends CssSelectorPartAst {
+  constructor(
+      start: number, end: number, public strValue: string, public name: string,
+      public tokens: CssToken[], public innerSelectors: CssSelectorAst[]) {
+    super(start, end);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssPseudoSelector(this, context);
+  }
+}
+
+export class CssBlockAst extends CssAst {
+  constructor(start: number, end: number, public entries: CssAst[]) { super(start, end); }
+  visit(visitor: CssAstVisitor, context?: any): any { return visitor.visitCssBlock(this, context); }
+}
+
+/*
+  a style block is different from a standard block because it contains
+  css prop:value definitions. A regular block can contain a list of Ast entries.
+ */
+export class CssStylesBlockAst extends CssBlockAst {
+  constructor(start: number, end: number, public definitions: CssDefinitionAst[]) {
+    super(start, end, definitions);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssStylesBlock(this, context);
+  }
+}
+
+export class CssStyleSheetAst extends CssAst {
+  constructor(start: number, end: number, public rules: CssAst[]) { super(start, end); }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssStyleSheet(this, context);
+  }
+}
+
 export class CssParseError extends ParseError {
   static create(
       file: ParseSourceFile, offset: number, line: number, col: number, length: number,
       errMsg: string): CssParseError {
     var start = new ParseLocation(file, offset, line, col);
-    var end = new ParseLocation(file, offset, line, col + length);
+    const end = new ParseLocation(file, offset, line, col + length);
     var span = new ParseSourceSpan(start, end);
     return new CssParseError(span, 'CSS Parse Error: ' + errMsg);
   }
 
   constructor(span: ParseSourceSpan, message: string) { super(span, message); }
+}
+
+export class CssUnknownRuleAst extends CssRuleAst {
+  constructor(start: number, end: number, public ruleName: string, public tokens: CssToken[]) {
+    super(start, end);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssUnknownRule(this, context);
+  }
+}
+
+export class CssUnknownTokenListAst extends CssRuleAst {
+  constructor(start: number, end: number, public name: string, public tokens: CssToken[]) {
+    super(start, end);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssUnknownTokenList(this, context);
+  }
 }

@@ -7,10 +7,10 @@
  */
 
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../core/testing/testing_internal';
-import {CssAst, CssAstVisitor, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssUnknownRuleAst, CssUnknownTokenListAst} from '../src/css_ast';
-import {BlockType, CssParseError, CssParser, CssToken} from '../src/css_parser';
+import {CssLexer} from '../src/css_lexer';
+import {BlockType, CssAst, CssAstVisitor, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssParseError, CssParser, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssToken, CssUnknownRuleAst, CssUnknownTokenListAst} from '../src/css_parser';
 import {BaseException} from '../src/facade/exceptions';
-import {isPresent} from '../src/facade/lang';
+import {NumberWrapper, StringWrapper, isPresent} from '../src/facade/lang';
 
 function _assertTokens(tokens: CssToken[], valuesArr: string[]): void {
   expect(tokens.length).toEqual(valuesArr.length);
@@ -115,7 +115,10 @@ function _getCaptureAst(capture: any[], index = 0): CssAst {
 
 export function main() {
   function parse(cssCode: string, ignoreErrors: boolean = false) {
-    var output = new CssParser().parse(cssCode, 'some-fake-css-file.css');
+    var lexer = new CssLexer();
+    var scanner = lexer.scan(cssCode);
+    var parser = new CssParser(scanner, 'some-fake-file-name.css');
+    var output = parser.parse();
     var errors = output.errors;
     if (errors.length > 0 && !ignoreErrors) {
       throw new BaseException(errors.map((error: CssParseError) => error.msg).join(', '));
@@ -124,7 +127,7 @@ export function main() {
   }
 
   describe('CSS parsing and visiting', () => {
-    var ast: CssStyleSheetAst;
+    var ast: any /** TODO #9100 */;
     var context = {};
 
     beforeEach(() => {
