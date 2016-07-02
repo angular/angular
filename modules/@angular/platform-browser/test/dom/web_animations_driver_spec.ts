@@ -12,6 +12,7 @@ import {el} from '@angular/platform-browser/testing/browser_util';
 import {AnimationKeyframe, AnimationStyles} from '../../core_private';
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
 import {WebAnimationsDriver} from '../../src/dom/web_animations_driver';
+import {StringMapWrapper} from '../../src/facade/collection';
 import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
 
 class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
@@ -101,6 +102,17 @@ export function main() {
       var details = driver.log.pop();
       var options = details['options'];
       expect(options['easing']).toEqual('ease-out');
+    });
+
+    it('should only apply the provided easing if present', () => {
+      var startingStyles = _makeStyles({});
+      var styles = [_makeKeyframe(0, {'color': 'green'}), _makeKeyframe(1, {'color': 'red'})];
+
+      driver.animate(elm, startingStyles, styles, 1000, 1000, null);
+      var details = driver.log.pop();
+      var options = details['options'];
+      var keys = StringMapWrapper.keys(options);
+      expect(keys.indexOf('easing')).toEqual(-1);
     });
   });
 }
