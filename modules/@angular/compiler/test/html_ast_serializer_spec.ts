@@ -3,7 +3,7 @@ import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {beforeEach, ddescribe, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
-  ddescribe('HtmlAst serilaizer', () => {
+  describe('HtmlAst serilaizer', () => {
     var parser: HtmlParser;
 
     beforeEach(() => { parser = new HtmlParser(); });
@@ -54,10 +54,10 @@ export function main() {
 
 class _SerializerVisitor implements HtmlAstVisitor {
   visitElement(ast: HtmlElementAst, context: any): any {
-    return `<${ast.name}${this._visitAll(ast.attrs)}>${this._visitAll(ast.children)}</${ast.name}>`;
+    return `<${ast.name}${this._visitAll(ast.attrs, ' ')}>${this._visitAll(ast.children)}</${ast.name}>`;
   }
 
-  visitAttr(ast: HtmlAttrAst, context: any): any { return ` ${ast.name}="${ast.value}"`; }
+  visitAttr(ast: HtmlAttrAst, context: any): any { return `${ast.name}="${ast.value}"`; }
 
   visitText(ast: HtmlTextAst, context: any): any { return ast.value; }
 
@@ -71,11 +71,16 @@ class _SerializerVisitor implements HtmlAstVisitor {
     return ` ${ast.value} {${this._visitAll(ast.expression)}}`;
   }
 
-  private _visitAll(ast: HtmlAst[]) { return ast.map(a => a.visit(this, null)).join(''); }
+  private _visitAll(ast: HtmlAst[], join: string = ''): string {
+    if (ast.length == 0) {
+      return '';
+    }
+    return join + ast.map(a => a.visit(this, null)).join(join);
+  }
 }
 
 const serializerVisitor = new _SerializerVisitor();
 
-export function serializeHtmlAst(ast: HtmlAst[]) {
+export function serializeHtmlAst(ast: HtmlAst[]): string[] {
   return ast.map(a => a.visit(serializerVisitor, null));
 }

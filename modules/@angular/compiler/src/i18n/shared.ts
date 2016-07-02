@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {normalizeBlank} from '../../../router-deprecated/src/facade/lang';
 import {Parser as ExpressionParser} from '../expression_parser/parser';
 import {StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../html_ast';
 import {InterpolationConfig} from '../interpolation_config';
 import {ParseError, ParseSourceSpan} from '../parse_util';
+
 import {Message} from './message';
 
 export const I18N_ATTR = 'i18n';
@@ -31,10 +33,10 @@ export function partition(nodes: HtmlAst[], errors: ParseError[], implicitTags: 
     let node = nodes[i];
     let msgNodes: HtmlAst[] = [];
     // Nodes between `<!-- i18n -->` and `<!-- /i18n -->`
-    if (_isOpeningComment(node)) {
+    if (isOpeningComment(node)) {
       let i18n = (<HtmlCommentAst>node).value.replace(/^i18n:?/, '').trim();
 
-      while (++i < nodes.length && !_isClosingComment(nodes[i])) {
+      while (++i < nodes.length && !isClosingComment(nodes[i])) {
         msgNodes.push(nodes[i]);
       }
 
@@ -46,7 +48,7 @@ export function partition(nodes: HtmlAst[], errors: ParseError[], implicitTags: 
       parts.push(new Part(null, null, msgNodes, i18n, true));
     } else if (node instanceof HtmlElementAst) {
       // Node with an `i18n` attribute
-      let i18n = _findI18nAttr(node);
+      let i18n = getI18nAttr(node);
       let hasI18n: boolean = isPresent(i18n) || implicitTags.indexOf(node.name) > -1;
       parts.push(new Part(node, null, node.children, isPresent(i18n) ? i18n.value : null, hasI18n));
     } else if (node instanceof HtmlTextAst) {
@@ -83,33 +85,27 @@ export class Part {
   }
 }
 
-function _isOpeningComment(n: HtmlAst): boolean {
+export function isOpeningComment(n: HtmlAst): boolean {
   return n instanceof HtmlCommentAst && isPresent(n.value) && n.value.startsWith('i18n');
 }
 
-function _isClosingComment(n: HtmlAst): boolean {
+export function isClosingComment(n: HtmlAst): boolean {
   return n instanceof HtmlCommentAst && isPresent(n.value) && n.value === '/i18n';
 }
 
-function _findI18nAttr(p: HtmlElementAst): HtmlAttrAst {
-  let attrs = p.attrs;
-  for (let i = 0; i < attrs.length; i++) {
-    if (attrs[i].name === I18N_ATTR) {
-      return attrs[i];
-    }
-  }
-  return null;
+export function getI18nAttr(p: HtmlElementAst): HtmlAttrAst {
+  return normalizeBlank(p.attrs.find(attr => attr.name === I18N_ATTR));
 }
 
 export function meaning(i18n: string): string {
-  if (isBlank(i18n) || i18n == '') return null;
+  if (isBlank(i18n) || i18n == '') return '';
   return i18n.split('|')[0];
 }
 
 export function description(i18n: string): string {
-  if (isBlank(i18n) || i18n == '') return null;
+  if (isBlank(i18n) || i18n == '') return '';
   let parts = i18n.split('|', 2);
-  return parts.length > 1 ? parts[1] : null;
+  return parts.length > 1 ? parts[1] : '';
 }
 
 /**
