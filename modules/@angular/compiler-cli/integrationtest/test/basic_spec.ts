@@ -20,6 +20,7 @@ import {MyComp} from '../src/a/multiple_components';
 import {ReflectiveInjector, DebugElement, getDebugNode, lockRunMode} from '@angular/core';
 import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 import {serverPlatform} from '@angular/platform-server';
+import {reportAndCalculateFileSizeDifference} from './shared';
 
 // Need to lock the mode explicitely as this test is not using Angular's testing framework.
 lockRunMode();
@@ -80,5 +81,15 @@ describe('template codegen output', () => {
     expect(debugElement.children.length).toBe(4);
     expect(debugElement.children[2].attributes['value']).toBe('1');
     expect(debugElement.children[3].attributes['value']).toBe('2');
+  });
+
+  it('should contain a bundle file that is of comparable size', () => {
+    var MAX_PERCENTAGE = 0.10;
+    var LAST_VALID_FILE_SIZE = 4157;
+    var BUNDLE_FILE = 'dist-es5/basic.umd.js';
+
+    var percentage = reportAndCalculateFileSizeDifference(
+        'basic.ngfactory.ts', BUNDLE_FILE, LAST_VALID_FILE_SIZE);
+    expect(percentage).toBeLessThan(MAX_PERCENTAGE);
   });
 });

@@ -10,6 +10,7 @@ PKGS=(
   reflect-metadata
   typescript@next
   zone.js
+  rollup
   rxjs
   @types/{node,jasmine}
   jasmine
@@ -35,6 +36,14 @@ cp -v package.json $TMP
   # Compile the compiler-cli integration tests
   ./node_modules/.bin/ngc
   ./node_modules/.bin/ng-xi18n
+
+  # Run rollup so that we can test the file size within
+  # our Jasmine spec code
+  ./node_modules/.bin/tsc --target es6 --outDir ./dist-es6
+  ./node_modules/.bin/rollup -f umd dist-es6/src/basic.js --output ./dist-umd/basic.umd.js --name basic.ngfactory
+  ./node_modules/.bin/rollup -f umd dist-es6/src/animate.js --output ./dist-umd/animate.umd.js --name animate.ngfactory
+  ./node_modules/.bin/tsc --target es5 --outDir ./dist-es5 --allowJs --lib es5,es2015.promise,es2015.collection,dom ./dist-umd/basic.umd.js
+  ./node_modules/.bin/tsc --target es5 --outDir ./dist-es5 --allowJs --lib es5,es2015.promise,es2015.collection,dom ./dist-umd/animate.umd.js
 
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node

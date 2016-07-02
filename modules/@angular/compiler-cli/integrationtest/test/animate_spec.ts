@@ -14,7 +14,7 @@ import {AnimateCmpNgFactory} from '../src/animate.ngfactory';
 import {ReflectiveInjector, DebugElement, getDebugNode, lockRunMode} from '@angular/core';
 import {serverPlatform} from '@angular/platform-server';
 import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
-
+import {reportAndCalculateFileSizeDifference} from './shared';
 
 // Need to lock the mode explicitely as this test is not using Angular's testing framework.
 lockRunMode();
@@ -80,5 +80,15 @@ describe('template codegen output', () => {
         done();
       }, 0);
     }, 0);
+  });
+
+  it('should contain a bundle file that is of comparable size', () => {
+    var MAX_PERCENTAGE = 0.10;
+    var LAST_VALID_FILE_SIZE = 2880;
+    var BUNDLE_FILE = 'dist-es5/animate.umd.js';
+
+    var percentage = reportAndCalculateFileSizeDifference(
+        'animate.ngfactory.ts', BUNDLE_FILE, LAST_VALID_FILE_SIZE);
+    expect(percentage).toBeLessThan(MAX_PERCENTAGE);
   });
 });
