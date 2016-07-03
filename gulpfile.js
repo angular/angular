@@ -49,7 +49,7 @@ const entrypoints = [
   'dist/packages-dist/forms/index.d.ts',
   'dist/packages-dist/router/index.d.ts'
 ];
-const publicApiDir = 'tools/public_api_guard';
+const publicApiDir = path.normalize('tools/public_api_guard');
 const publicApiArgs = [
   '--rootDir', 'dist/packages-dist',
   '--stripExportPattern', '^__',
@@ -64,7 +64,7 @@ gulp.task('public-api:enforce', (done) => {
   const child_process = require('child_process');
   child_process
       .spawn(
-          `${__dirname}/node_modules/.bin/ts-api-guardian`,
+          path.join(__dirname, `/node_modules/.bin/ts-api-guardian${/^win/.test(os.platform()) ? '.cmd' : ''}`),
           ['--verifyDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
       .on('close', (errorCode) => {
         if (errorCode !== 0) {
@@ -80,7 +80,7 @@ gulp.task('public-api:update', (done) => {
   const child_process = require('child_process');
   child_process
       .spawn(
-          `${__dirname}/node_modules/.bin/ts-api-guardian`,
+          path.join(__dirname, `/node_modules/.bin/ts-api-guardian${/^win/.test(os.platform()) ? '.cmd' : ''}`),
           ['--outDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
       .on('close', (errorCode) => done(errorCode));
 });
