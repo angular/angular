@@ -130,7 +130,7 @@ export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink
 export declare type RouterConfig = Route[];
 
 /** @stable */
-export declare class RouterLink {
+export declare class RouterLink implements OnChanges, OnDestroy {
     fragment: string;
     queryParams: {
         [k: string]: any;
@@ -138,6 +138,8 @@ export declare class RouterLink {
     routerLink: any[] | string;
     urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
+    ngOnChanges(changes: {}): any;
+    ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
 }
 

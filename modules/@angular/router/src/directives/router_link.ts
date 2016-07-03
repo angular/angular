@@ -57,16 +57,23 @@ import {UrlTree} from '../url_tree';
  * @stable
  */
 @Directive({selector: ':not(a)[routerLink]'})
-export class RouterLink {
+export class RouterLink implements OnChanges, OnDestroy {
   private commands: any[] = [];
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
+  private subscription: Subscription;
 
   urlTree: UrlTree;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy) {}
+      private locationStrategy: LocationStrategy) {
+    this.subscription = router.events.subscribe(s => {
+      if (s instanceof NavigationEnd) {
+        this.updateTargetUrl();
+      }
+    });
+  }
 
   @Input()
   set routerLink(data: any[]|string) {
@@ -77,19 +84,23 @@ export class RouterLink {
     }
   }
 
+  ngOnChanges(changes: {}): any { this.updateTargetUrl(); }
+  ngOnDestroy(): any { this.subscription.unsubscribe(); }
+
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
     if (button !== 0 || ctrlKey || metaKey) {
       return true;
     }
 
+    this.router.navigateByUrl(this.urlTree);
+    return false;
+  }
+
+  private updateTargetUrl() {
     this.urlTree = this.router.createUrlTreeUsingFutureUrl(
         this.commands,
         {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
-
-    this.router.navigateByUrl(this.urlTree);
-
-    return false;
   }
 }
 
