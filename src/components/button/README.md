@@ -80,12 +80,13 @@ Output:
 ### Disabling
 
 You can disable any button type through the native `disabled` property.  You can add it directly, or bind it to a property on your
-component class.
+component class by adding `[disabled]="isDisabled"` given that the `isDisabled`
+property exists.
 
 ```html
-<button md-button disabled>off</button>
-<button md-raised-button [disabled]="isDisabled">off</button>
-<button md-mini-fab [disabled]="isDisabled">check circle</button>
+<button md-button disabled>OFF</button>
+<button md-raised-button [disabled]="isDisabled">OFF</button>
+<button md-mini-fab [disabled]="isDisabled"><md-icon>check</md-icon></button>
 ```
 
 Output:
