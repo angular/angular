@@ -123,10 +123,52 @@ if (_global.beforeEach) {
 export function addProviders(providers: Array<any>): void {
   if (!providers) return;
   try {
-    testInjector.addProviders(providers);
+    testInjector.configureModule({providers: providers});
   } catch (e) {
     throw new Error(
         'addProviders can\'t be called after the injector has been already created for this test. ' +
+        'This is most likely because you\'ve already used the injector to inject a beforeEach or the ' +
+        'current `it` function.');
+  }
+}
+
+/**
+ * Allows overriding default providers, directives, pipes, modules of the test injector,
+ * which are defined in test_injector.js
+ *
+ * @stable
+ */
+export function configureModule(moduleDef: {
+  providers?: any[],
+  directives?: any[],
+  pipes?: any[],
+  precompile?: any[],
+  modules?: any[]
+}): void {
+  if (!moduleDef) return;
+  try {
+    testInjector.configureModule(moduleDef);
+  } catch (e) {
+    throw new Error(
+        'configureModule can\'t be called after the injector has been already created for this test. ' +
+        'This is most likely because you\'ve already used the injector to inject a beforeEach or the ' +
+        'current `it` function.');
+  }
+}
+
+/**
+ * Allows overriding default compiler providers and settings
+ * which are defined in test_injector.js
+ *
+ * @stable
+ */
+export function configureCompiler(config: {providers?: any[], useJit?: boolean}): void {
+  if (!config) return;
+  try {
+    testInjector.configureCompiler(config);
+  } catch (e) {
+    throw new Error(
+        'configureCompiler can\'t be called after the injector has been already created for this test. ' +
         'This is most likely because you\'ve already used the injector to inject a beforeEach or the ' +
         'current `it` function.');
   }

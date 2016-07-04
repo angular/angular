@@ -7,7 +7,7 @@
  */
 
 import {TestComponentBuilder} from '@angular/compiler/testing';
-import {ComponentFixture, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {ComponentFixture, configureCompiler, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 import {isBlank, NumberWrapper, ConcreteType,} from '../../src/facade/lang';
@@ -23,14 +23,14 @@ import {IS_DART, Type} from '../../src/facade/lang';
 import {EventEmitter, ObservableWrapper} from '../../src/facade/async';
 
 
-import {Component, DebugElement, Directive, TemplateRef, ChangeDetectorRef, ViewContainerRef, Input, Output, forwardRef, ViewMetadata, Pipe, RootRenderer, Renderer, RenderComponentType, Injectable, provide, OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked} from '@angular/core';
+import {Component, DebugElement, Directive, TemplateRef, ChangeDetectorRef, ViewContainerRef, Input, Output, forwardRef, ViewMetadata, Pipe, RootRenderer, Renderer, RenderComponentType, Injectable, provide, OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, Injector} from '@angular/core';
 import {NgFor, NgIf} from '@angular/common';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {AsyncPipe} from '@angular/common';
 
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
-import {TEST_PROVIDERS} from '@angular/compiler/test/test_bindings';
+import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/test/test_bindings';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
 import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 
@@ -88,11 +88,13 @@ export function main() {
     // On CJS fakeAsync is not supported...
     if (!getDOM().supportsDOMEvents()) return;
 
-    beforeEachProviders(
-        () =>
-            [RenderLog, DirectiveLog, {provide: RootRenderer, useClass: LoggingRootRenderer},
-             TEST_PROVIDERS,
-    ]);
+    beforeEach(() => {
+      configureCompiler({providers: TEST_COMPILER_PROVIDERS});
+      configureModule({
+        providers:
+            [RenderLog, DirectiveLog, {provide: RootRenderer, useClass: LoggingRootRenderer}]
+      });
+    });
 
     beforeEach(inject(
         [TestComponentBuilder, ElementSchemaRegistry, RenderLog, DirectiveLog],

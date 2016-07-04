@@ -37,6 +37,21 @@ export declare var ComponentFixtureAutoDetect: OpaqueToken;
 /** @experimental */
 export declare var ComponentFixtureNoNgZone: OpaqueToken;
 
+/** @stable */
+export declare function configureCompiler(config: {
+    providers?: any[];
+    useJit?: boolean;
+}): void;
+
+/** @stable */
+export declare function configureModule(moduleDef: {
+    providers?: any[];
+    directives?: any[];
+    pipes?: any[];
+    precompile?: any[];
+    modules?: any[];
+}): void;
+
 /** @deprecated */
 export declare var ddescribe: any;
 
@@ -67,12 +82,21 @@ export declare function getTestInjector(): TestInjector;
 /** @deprecated */
 export declare var iit: any;
 
+/** @experimental */
+export declare function initTestEnvironment(compilerFactory: TestCompilerFactory, platform: PlatformRef, appModule: Type): void;
+
 /** @stable */
 export declare function inject(tokens: any[], fn: Function): () => any;
 
 /** @experimental */
 export declare class InjectSetupWrapper {
-    constructor(_providers: () => any);
+    constructor(_moduleDef: () => {
+        providers?: any[];
+        directives?: any[];
+        pipes?: any[];
+        precompile?: any[];
+        modules?: any[];
+    });
     inject(tokens: any[], fn: Function): () => any;
 }
 
@@ -80,10 +104,13 @@ export declare class InjectSetupWrapper {
 export declare var it: any;
 
 /** @experimental */
-export declare function resetBaseTestProviders(): void;
+export declare function resetTestEnvironment(): void;
 
 /** @experimental */
-export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
+export declare type TestCompilerFactory = (config: {
+    providers?: Array<Type | Provider | any[]>;
+    useJit?: boolean;
+}) => Compiler;
 
 /** @stable */
 export declare class TestComponentBuilder {
@@ -107,18 +134,39 @@ export declare class TestComponentRenderer {
 }
 
 /** @experimental */
-export declare class TestInjector {
-    applicationProviders: Array<Type | Provider | any[] | any>;
-    platformProviders: Array<Type | Provider | any[] | any>;
-    addProviders(providers: Array<Type | Provider | any[] | any>): void;
-    createInjector(): ReflectiveInjector;
+export declare class TestInjector implements Injector {
+    appModule: Type;
+    compilerFactory: TestCompilerFactory;
+    platform: PlatformRef;
+    configureCompiler(config: {
+        providers?: any[];
+        useJit?: boolean;
+    }): void;
+    configureModule(moduleDef: {
+        providers?: any[];
+        directives?: any[];
+        pipes?: any[];
+        precompile?: any[];
+        modules?: any[];
+    }): void;
+    createInjectorAsync(): Promise<Injector>;
+    createInjectorSync(): Injector;
     execute(tokens: any[], fn: Function): any;
-    get(token: any): any;
+    get(token: any, notFoundValue?: any): any;
     reset(): void;
 }
 
 /** @experimental */
 export declare function tick(millis?: number): void;
+
+/** @experimental */
+export declare function withModule(moduleDef: () => {
+    providers?: any[];
+    directives?: any[];
+    pipes?: any[];
+    precompile?: any[];
+    modules?: any[];
+}): InjectSetupWrapper;
 
 /** @experimental */
 export declare function withProviders(providers: () => any): InjectSetupWrapper;

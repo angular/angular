@@ -11,7 +11,7 @@ import {createUrlResolverWithoutPackagePrefix} from '@angular/compiler/src/url_r
 import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {MockXHR} from '@angular/compiler/testing/xhr_mock';
 
-export var TEST_PROVIDERS: any[] = [
+export var TEST_COMPILER_PROVIDERS: any[] = [
   {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {})},
   {provide: XHR, useClass: MockXHR},
   {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix}

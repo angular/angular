@@ -14,13 +14,14 @@ import {TEMPLATE_TRANSFORMS, TemplateParser, splitClasses} from '@angular/compil
 import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {SecurityContext} from '@angular/core';
 import {Console} from '@angular/core/src/console';
+import {configureCompiler} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 import {Identifiers, identifierToken} from '../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../src/interpolation_config';
 
 import {unparse} from './expression_parser/unparser';
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
 var someModuleUrl = 'package:someModule';
 
@@ -39,9 +40,9 @@ export function main() {
   var console: ArrayConsole;
 
   function commonBeforeEach() {
-    beforeEachProviders(() => {
+    beforeEach(() => {
       console = new ArrayConsole();
-      return [{provide: Console, useValue: console}];
+      configureCompiler({providers: [{provide: Console, useValue: console}]});
     });
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
       var component = CompileDirectiveMetadata.create({
@@ -67,10 +68,14 @@ export function main() {
   }
 
   describe('TemplateParser template transform', () => {
-    beforeEachProviders(() => [TEST_PROVIDERS, MOCK_SCHEMA_REGISTRY]);
+    beforeEach(() => { configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 
-    beforeEachProviders(
-        () => [{provide: TEMPLATE_TRANSFORMS, useValue: new FooAstTransformer(), multi: true}]);
+    beforeEach(() => {
+      configureCompiler({
+        providers:
+            [{provide: TEMPLATE_TRANSFORMS, useValue: new FooAstTransformer(), multi: true}]
+      });
+    });
 
     describe('single', () => {
       commonBeforeEach();
@@ -80,8 +85,12 @@ export function main() {
     });
 
     describe('multiple', () => {
-      beforeEachProviders(
-          () => [{provide: TEMPLATE_TRANSFORMS, useValue: new BarAstTransformer(), multi: true}]);
+      beforeEach(() => {
+        configureCompiler({
+          providers:
+              [{provide: TEMPLATE_TRANSFORMS, useValue: new BarAstTransformer(), multi: true}]
+        });
+      });
 
       commonBeforeEach();
       it('should compose transformers', () => {
@@ -93,9 +102,14 @@ export function main() {
   describe('TemplateParser Security', () => {
     // Semi-integration test to make sure TemplateParser properly sets the security context.
     // Uses the actual DomElementSchemaRegistry.
-    beforeEachProviders(
-        () =>
-            [TEST_PROVIDERS, {provide: ElementSchemaRegistry, useClass: DomElementSchemaRegistry}]);
+    beforeEach(() => {
+      configureCompiler({
+        providers: [
+          TEST_COMPILER_PROVIDERS,
+          {provide: ElementSchemaRegistry, useClass: DomElementSchemaRegistry}
+        ]
+      });
+    });
 
     commonBeforeEach();
 
@@ -125,7 +139,9 @@ export function main() {
   });
 
   describe('TemplateParser', () => {
-    beforeEachProviders(() => [TEST_PROVIDERS, MOCK_SCHEMA_REGISTRY]);
+    beforeEach(() => {
+      configureCompiler({providers: [TEST_COMPILER_PROVIDERS, MOCK_SCHEMA_REGISTRY]});
+    });
 
     commonBeforeEach();
 

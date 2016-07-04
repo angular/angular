@@ -13,7 +13,7 @@ import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
 import {Component, Directive} from '@angular/core/src/metadata';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Console} from '@angular/core/src/console';
-import {provide} from '@angular/core';
+import {provide, disposePlatform} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ROUTER_PROVIDERS, Router, RouteConfig, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
@@ -38,6 +38,7 @@ export function main() {
     var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */,
         testBindings: any /** TODO #9100 */;
     beforeEach(() => {
+      disposePlatform();
       fakeDoc = getDOM().createHtmlDocument();
       el = getDOM().createElement('app-cmp', fakeDoc);
       getDOM().appendChild(fakeDoc.body, el);
@@ -50,6 +51,8 @@ export function main() {
         {provide: Console, useClass: DummyConsole}
       ];
     });
+
+    afterEach(() => disposePlatform());
 
     it('should bootstrap an app with a hierarchy',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {

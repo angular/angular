@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injector} from '../di';
 import {BaseException} from '../facade/exceptions';
 import {ConcreteType, Type, stringify} from '../facade/lang';
 import {AppModuleMetadata} from '../metadata/app_module';
@@ -13,6 +14,17 @@ import {AppModuleMetadata} from '../metadata/app_module';
 import {AppModuleFactory} from './app_module_factory';
 import {ComponentFactory} from './component_factory';
 
+
+/**
+ * Indicates that a component is still being loaded in a synchronous compile.
+ *
+ * @stable
+ */
+export class ComponentStillLoadingError extends BaseException {
+  constructor(public compType: Type) {
+    super(`Can't compile synchronously as ${stringify(compType)} is still being loaded!`);
+  }
+}
 
 /**
  * Low-level service for running the angular compiler duirng runtime
@@ -26,6 +38,13 @@ import {ComponentFactory} from './component_factory';
  */
 export class Compiler {
   /**
+   * Returns the injector with which the compiler has been created.
+   */
+  get injector(): Injector {
+    throw new BaseException(`Runtime compiler is not loaded. Tried to read the injector.`);
+  }
+
+  /**
    * Loads the template and styles of a component and returns the associated `ComponentFactory`.
    */
   compileComponentAsync<T>(component: ConcreteType<T>): Promise<ComponentFactory<T>> {
@@ -34,7 +53,8 @@ export class Compiler {
   }
   /**
    * Compiles the given component. All templates have to be either inline or compiled via
-   * `compileComponentAsync` before.
+   * `compileComponentAsync` before. Otherwise throws a {@link
+   * CompileSyncComponentStillLoadingError}.
    */
   compileComponentSync<T>(component: ConcreteType<T>): ComponentFactory<T> {
     throw new BaseException(
@@ -43,7 +63,7 @@ export class Compiler {
   /**
    * Compiles the given App Module. All templates of the components listed in `precompile`
    * have to be either inline or compiled before via `compileComponentAsync` /
-   * `compileAppModuleAsync`.
+   * `compileAppModuleAsync`. Otherwise throws a {@link CompileSyncComponentStillLoadingError}.
    */
   compileAppModuleSync<T>(moduleType: ConcreteType<T>, metadata: AppModuleMetadata = null):
       AppModuleFactory<T> {

@@ -1,5 +1,9 @@
-/** @experimental */
-export declare const TEST_SERVER_APPLICATION_PROVIDERS: Array<any>;
+/** @stable */
+export declare const serverTestCompiler: typeof browserTestCompiler;
+
+/** @stable */
+export declare class ServerTestModule {
+}
 
 /** @experimental */
-export declare const TEST_SERVER_PLATFORM_PROVIDERS: Array<any>;
+export declare function serverTestPlatform(): PlatformRef;

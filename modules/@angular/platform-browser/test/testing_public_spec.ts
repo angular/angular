@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {addProviders, inject, fakeAsync, async, withProviders, tick,} from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {Injectable, provide, Component, ViewMetadata} from '@angular/core';
 import {NgIf} from '@angular/common';
+import {CompilerConfig, XHR} from '@angular/compiler';
+import {TestComponentBuilder} from '@angular/compiler/testing';
+import {AppModule, Component, ComponentFactoryResolver, Directive, Injectable, Input, Pipe, ViewMetadata, provide} from '@angular/core';
+import {addProviders, async, configureCompiler, configureModule, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {stringify} from '../../http/src/facade/lang';
 import {PromiseWrapper} from '../../http/src/facade/promise';
 
 // Services, and components for the tests.
@@ -96,6 +99,29 @@ class TestProvidersComp {
 })
 class TestViewProvidersComp {
   constructor(private fancyService: FancyService) {}
+}
+
+@Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
+class SomeDirective {
+  @Input()
+  someDir: string;
+}
+
+@Pipe({name: 'somePipe'})
+class SomePipe {
+  transform(value: string): any { return `transformed ${value}`; }
+}
+
+@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
+class CompUsingModuleDirectiveAndPipe {
+}
+
+@AppModule({})
+class SomeNestedModule {
+}
+
+@Component({selector: 'comp', templateUrl: 'someTemplate.html'})
+class CompWithUrlTemplate {
 }
 
 export function main() {
@@ -203,6 +229,133 @@ export function main() {
     });
   });
 
+  describe('using the test injector with modules', () => {
+    let moduleConfig: any;
+    beforeEach(() => {
+      moduleConfig = {
+        providers: [FancyService],
+        directives: [SomeDirective],
+        pipes: [SomePipe],
+        precompile: [CompUsingModuleDirectiveAndPipe],
+        modules: [SomeNestedModule]
+      };
+    });
+
+    describe('setting up a module', () => {
+      beforeEach(() => configureModule(moduleConfig));
+
+      it('should use set up providers', inject([FancyService], (service: FancyService) => {
+           expect(service.value).toEqual('real value');
+         }));
+
+      it('should use set up directives and pipes',
+         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           let compFixture = tcb.createSync(CompUsingModuleDirectiveAndPipe);
+           let el = compFixture.debugElement;
+
+           compFixture.detectChanges();
+           expect(el.children[0].properties['title']).toBe('transformed someValue');
+         }));
+
+      it('should use set up nested modules',
+         inject([SomeNestedModule], (nestedModule: SomeNestedModule) => {
+           expect(nestedModule).toBeAnInstanceOf(SomeNestedModule);
+         }));
+
+      it('should use set up precompile components',
+         inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
+           expect(resolver.resolveComponentFactory(CompUsingModuleDirectiveAndPipe).componentType)
+               .toBe(CompUsingModuleDirectiveAndPipe);
+         }));
+    });
+
+    describe('per test modules', () => {
+      it('should use set up providers',
+         withModule(() => moduleConfig).inject([FancyService], (service: FancyService) => {
+           expect(service.value).toEqual('real value');
+         }));
+
+      it('should use set up directives and pipes',
+         withModule(() => moduleConfig)
+             .inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+               let compFixture = tcb.createSync(CompUsingModuleDirectiveAndPipe);
+               let el = compFixture.debugElement;
+
+               compFixture.detectChanges();
+               expect(el.children[0].properties['title']).toBe('transformed someValue');
+             }));
+
+      it('should use set up nested modules',
+         withModule(() => moduleConfig)
+             .inject([SomeNestedModule], (nestedModule: SomeNestedModule) => {
+               expect(nestedModule).toBeAnInstanceOf(SomeNestedModule);
+             }));
+
+      it('should use set up precompile components',
+         withModule(() => moduleConfig)
+             .inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
+               expect(
+                   resolver.resolveComponentFactory(CompUsingModuleDirectiveAndPipe).componentType)
+                   .toBe(CompUsingModuleDirectiveAndPipe);
+             }));
+    });
+
+    describe('precompile components with template url', () => {
+      let xhrGet: jasmine.Spy;
+      beforeEach(() => {
+        xhrGet = jasmine.createSpy('xhrGet').and.returnValue(Promise.resolve('Hello world!'));
+        configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
+      });
+
+      it('should allow to precompile components with templateUrl using the async helper',
+         async(withModule(() => {
+                 return {precompile: [CompWithUrlTemplate]};
+               }).inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
+           expect(resolver.resolveComponentFactory(CompWithUrlTemplate).componentType)
+               .toBe(CompWithUrlTemplate);
+         })));
+
+      it('should allow to precompile components with templateUrl using the fakeAsync helper',
+         fakeAsync(withModule(() => {
+                     return {precompile: [CompWithUrlTemplate]};
+                   }).inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
+           expect(resolver.resolveComponentFactory(CompWithUrlTemplate).componentType)
+               .toBe(CompWithUrlTemplate);
+         })));
+    });
+
+    describe('setting up the compiler', () => {
+
+      describe('providers', () => {
+        beforeEach(() => {
+          let xhrGet = jasmine.createSpy('xhrGet').and.returnValue(Promise.resolve('Hello world!'));
+          configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
+        });
+
+        it('should use set up providers',
+           fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+             let compFixture = tcb.createFakeAsync(CompWithUrlTemplate);
+             expect(compFixture.nativeElement).toHaveText('Hello world!');
+           })));
+      });
+
+      describe('useJit true', () => {
+        beforeEach(() => { configureCompiler({useJit: true}); });
+        it('should set the value into CompilerConfig',
+           inject([CompilerConfig], (config: CompilerConfig) => {
+             expect(config.useJit).toBe(true);
+           }));
+      });
+      describe('useJit false', () => {
+        beforeEach(() => { configureCompiler({useJit: false}); });
+        it('should set the value into CompilerConfig',
+           inject([CompilerConfig], (config: CompilerConfig) => {
+             expect(config.useJit).toBe(false);
+           }));
+      });
+    });
+  });
+
   describe('errors', () => {
     var originalJasmineIt: any;
     var originalJasmineBeforeEach: any;
@@ -293,6 +446,36 @@ export function main() {
           restoreJasmineBeforeEach();
         });
       });
+    });
+
+    describe('precompile', () => {
+      let xhrGet: jasmine.Spy;
+      beforeEach(() => {
+        xhrGet = jasmine.createSpy('xhrGet').and.returnValue(Promise.resolve('Hello world!'));
+        configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
+      });
+
+      it('should report an error for precompile components with templateUrl and sync tests', () => {
+        var itPromise = patchJasmineIt();
+
+        expect(
+            () => it(
+                'should fail',
+                withModule(() => { return {precompile: [CompWithUrlTemplate]}; })
+                    .inject(
+                        [ComponentFactoryResolver],
+                        (resolver: ComponentFactoryResolver) => {
+                          expect(
+                              resolver.resolveComponentFactory(CompWithUrlTemplate).componentType)
+                              .toBe(CompWithUrlTemplate);
+                        })))
+            .toThrowError(
+                `This test module precompiles the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but the test is synchronous. ` +
+                'Please use the "async(...)" or "fakeAsync(...)" helper functions to make the test asynchronous.');
+
+        restoreJasmineIt();
+      });
+
     });
   });
 
