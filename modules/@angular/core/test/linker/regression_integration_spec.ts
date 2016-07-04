@@ -7,6 +7,7 @@
  */
 
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
+import {configureCompiler, configureModule} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
@@ -31,12 +32,10 @@ function declareTests({useJit}: {useJit: boolean}) {
   describe('regressions', () => {
 
     describe('platform pipes', () => {
-      beforeEachProviders(
-          () => [{
-            provide: CompilerConfig,
-            useValue: new CompilerConfig(
-                {genDebugInfo: true, useJit: useJit, platformPipes: [PlatformPipe]})
-          }]);
+      beforeEach(() => {
+        configureCompiler({useJit: useJit});
+        configureModule({pipes: [PlatformPipe]});
+      });
 
       it('should overwrite them by custom pipes',
          inject(

@@ -9,17 +9,18 @@
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation} from '@angular/core';
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
+import {configureCompiler} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {IS_DART, stringify} from '../src/facade/lang';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('CompileMetadataResolver', () => {
-    beforeEachProviders(() => TEST_PROVIDERS);
+    beforeEach(() => { configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 
     describe('getMetadata', () => {
       it('should read metadata',
@@ -110,11 +111,15 @@ export function main() {
          }));
 
       describe('platform directives', () => {
-        beforeEachProviders(() => [{
-                              provide: CompilerConfig,
-                              useValue: new CompilerConfig(
-                                  {genDebugInfo: true, platformDirectives: [ADirective]})
-                            }]);
+        beforeEach(() => {
+          configureCompiler({
+            providers: [{
+              provide: CompilerConfig,
+              useValue:
+                  new CompilerConfig({genDebugInfo: true, platformDirectives: [ADirective]})
+            }]
+          });
+        });
 
         it('should include platform directives when available',
            inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {

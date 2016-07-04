@@ -290,6 +290,7 @@ export declare class CollectionChangeRecord {
 
 /** @stable */
 export declare class Compiler {
+    injector: Injector;
     clearCache(): void;
     clearCacheFor(type: Type): void;
     compileAppModuleAsync<T>(moduleType: ConcreteType<T>, metadata?: AppModuleMetadata): Promise<AppModuleFactory<T>>;
@@ -449,6 +450,12 @@ export declare abstract class ComponentRef<C> {
 export declare abstract class ComponentResolver {
     abstract clearCache(): void;
     abstract resolveComponent(component: Type | string): Promise<ComponentFactory<any>>;
+}
+
+/** @stable */
+export declare class ComponentStillLoadingError extends BaseException {
+    compType: Type;
+    constructor(compType: Type);
 }
 
 /** @stable */

@@ -1,5 +1,6 @@
 /** @stable */
-export declare const TEST_BROWSER_APPLICATION_PROVIDERS: Array<any>;
+export declare class BrowserTestModule {
+}
 
-/** @stable */
-export declare const TEST_BROWSER_PLATFORM_PROVIDERS: Array<any>;
+/** @experimental */
+export declare function browserTestPlatform(): PlatformRef;

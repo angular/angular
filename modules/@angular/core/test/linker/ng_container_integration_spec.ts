@@ -9,13 +9,12 @@
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {configureCompiler} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {OpaqueToken, ViewMetadata, Component, Directive, AfterContentInit, AfterViewInit, QueryList, ContentChildren, ViewChildren, Input} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
 import {el} from '@angular/platform-browser/testing/browser_util';
-
-const ANCHOR_ELEMENT = new OpaqueToken('AnchorElement');
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });
@@ -25,14 +24,7 @@ export function main() {
 function declareTests({useJit}: {useJit: boolean}) {
   describe('<ng-container>', function() {
 
-    beforeEachProviders(
-        () =>
-            [{
-              provide: CompilerConfig,
-              useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
-            },
-             {provide: ANCHOR_ELEMENT, useValue: el('<div></div>')},
-    ]);
+    beforeEach(() => { configureCompiler({useJit: useJit}); });
 
     it('should be rendered as comment with children as siblings',
        inject(

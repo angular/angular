@@ -1,7 +1,7 @@
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
-import {AppModule, AppModuleMetadata, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Host, Inject, Injectable, Injector, OpaqueToken, Optional, Provider, SelfMetadata, SkipSelf, SkipSelfMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
-import {ComponentFixture} from '@angular/core/testing';
+import {AppModule, AppModuleMetadata, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Host, Inject, Injectable, Injector, OpaqueToken, Optional, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
+import {ComponentFixture, configureCompiler} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {BaseException} from '../../src/facade/exceptions';
@@ -119,15 +119,12 @@ function declareTests({useJit}: {useJit: boolean}) {
     var compiler: Compiler;
     var injector: Injector;
 
+    beforeEach(() => { configureCompiler({useJit: useJit}); });
+
     beforeEach(inject([Compiler, Injector], (_compiler: Compiler, _injector: Injector) => {
       compiler = _compiler;
       injector = _injector;
     }));
-
-    beforeEachProviders(() => [{
-                          provide: CompilerConfig,
-                          useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
-                        }]);
 
     describe('precompile', function() {
       it('should resolve ComponentFactories', () => {
@@ -206,6 +203,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should provide a ComponentResolver instance that uses the directives/pipes of the module',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+
            let appModule = compiler.compileAppModuleSync(ModuleWithDirectivesAndPipes).create();
            let boundCompiler: ComponentResolver = appModule.injector.get(ComponentResolver);
            boundCompiler.resolveComponent(CompUsingModuleDirectiveAndPipe).then((cf) => {
@@ -215,6 +213,22 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
          }));
 
+      it('should provide a ComponentResolver instance that delegates to the parent ComponentResolver for strings',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           let parentResolver: any =
+               jasmine.createSpyObj('resolver', ['resolveComponent', 'clearCache']);
+           let appModule = compiler.compileAppModuleSync(ModuleWithDirectivesAndPipes)
+                               .create(ReflectiveInjector.resolveAndCreate(
+                                   [{provide: ComponentResolver, useValue: parentResolver}]));
+           parentResolver.resolveComponent.and.returnValue(
+               Promise.resolve('someFactoryFromParent'));
+           let boundCompiler: ComponentResolver = appModule.injector.get(ComponentResolver);
+           boundCompiler.resolveComponent('someString').then((result) => {
+             expect(parentResolver.resolveComponent).toHaveBeenCalledWith('someString');
+             expect(result).toBe('someFactoryFromParent');
+             async.done();
+           });
+         }));
     });
 
     describe('providers', function() {

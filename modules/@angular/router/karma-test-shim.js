@@ -72,8 +72,10 @@ Promise.all([
   var testing = providers[0];
   var testingBrowser = providers[1];
 
-  testing.setBaseTestProviders(testingBrowser.TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
-    testingBrowser.TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS);
+  testing.initTestEnvironment(
+    testingBrowser.browserTestCompiler,
+    testingBrowser.browserDynamicTestPlatform(),
+    testingBrowser.BrowserDynamicTestModule);
 
 }).then(function() {
   // Finally, load all spec files.

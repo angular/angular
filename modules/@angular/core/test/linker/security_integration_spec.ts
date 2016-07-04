@@ -9,6 +9,7 @@
 import {ddescribe, describe, expect, inject, beforeEachProviders, beforeEach, afterEach, it,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {configureCompiler} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {provide, Injectable, OpaqueToken} from '@angular/core';
 import {CompilerConfig} from '@angular/compiler';
@@ -17,8 +18,6 @@ import {IS_DART} from '../../src/facade/lang';
 import {el} from '@angular/platform-browser/testing/browser_util';
 import {DomSanitizationService} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
-
-const ANCHOR_ELEMENT = /*@ts2dart_const*/ new OpaqueToken('AnchorElement');
 
 export function main() {
   if (IS_DART) {
@@ -53,13 +52,7 @@ function itAsync(
 function declareTests({useJit}: {useJit: boolean}) {
   describe('security integration tests', function() {
 
-    beforeEachProviders(
-        () =>
-            [{
-              provide: CompilerConfig,
-              useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
-            },
-             {provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]);
+    beforeEach(() => { configureCompiler({useJit: useJit}); });
 
     let originalLog: (msg: any) => any;
     beforeEach(() => {

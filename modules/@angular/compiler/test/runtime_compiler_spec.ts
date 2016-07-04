@@ -1,7 +1,7 @@
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {Injectable, Component, Input, ViewMetadata, Compiler, ComponentFactory, Injector, AppModule, AppModuleMetadata, AppModuleFactory} from '@angular/core';
 import {ConcreteType, stringify} from '../src/facade/lang';
-import {fakeAsync, tick, TestComponentBuilder, ComponentFixture} from '@angular/core/testing';
+import {fakeAsync, tick, TestComponentBuilder, ComponentFixture, configureCompiler} from '@angular/core/testing';
 import {XHR, ViewResolver} from '@angular/compiler';
 import {MockViewResolver} from '@angular/compiler/testing';
 
@@ -31,7 +31,7 @@ export function main() {
     let viewResolver: MockViewResolver;
     let injector: Injector;
 
-    beforeEachProviders(() => [{provide: XHR, useValue: new SpyXHR()}]);
+    beforeEach(() => { configureCompiler({providers: [{provide: XHR, useClass: SpyXHR}]}); });
 
     beforeEach(inject(
         [Compiler, TestComponentBuilder, XHR, ViewResolver, Injector],

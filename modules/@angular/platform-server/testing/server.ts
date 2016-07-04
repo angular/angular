@@ -6,76 +6,48 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_PROVIDERS, DirectiveResolver, ViewResolver, XHR} from '@angular/compiler';
-import {MockDirectiveResolver, MockViewResolver, OverridingTestComponentBuilder} from '@angular/compiler/testing';
-import {APPLICATION_COMMON_PROVIDERS, APP_ID, NgZone, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, RootRenderer} from '@angular/core';
-import {TestComponentBuilder, TestComponentRenderer} from '@angular/core/testing';
-import {AnimationDriver, BROWSER_SANITIZATION_PROVIDERS, DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager} from '@angular/platform-browser';
+import {AppModule, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, createPlatform, getPlatform} from '@angular/core';
+import {BrowserDynamicTestModule, browserTestCompiler} from '@angular/platform-browser-dynamic/testing';
 
-import {DOMTestComponentRenderer} from '../platform_browser_dynamic_testing_private';
-import {DomEventsPlugin, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, ELEMENT_PROBE_PROVIDERS, SharedStylesHost, getDOM} from '../platform_browser_private';
 import {Parse5DomAdapter} from '../src/parse5_adapter';
+
+const SERVER_TEST_PLATFORM_MARKER = new OpaqueToken('ServerTestPlatformMarker');
 
 function initServerTests() {
   Parse5DomAdapter.makeCurrent();
 }
 
 /**
- * Default platform providers for testing.
+ * Creates a compiler for testing
  *
- * @experimental
+ * @stable
  */
-export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+export const serverTestCompiler = browserTestCompiler;
+
+const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     /*@ts2dart_const*/[
       PLATFORM_COMMON_PROVIDERS,
-      /*@ts2dart_Provider*/ {
-        provide: PLATFORM_INITIALIZER,
-        useValue: initServerTests,
-        multi: true
-      }
+      /*@ts2dart_Provider*/ {provide: PLATFORM_INITIALIZER, useValue: initServerTests, multi: true},
+      {provide: SERVER_TEST_PLATFORM_MARKER, useValue: true}
     ];
-
-function appDoc() {
-  try {
-    return getDOM().defaultDoc();
-  } catch (e) {
-    return null;
-  }
-}
-
-
-function createNgZone(): NgZone {
-  return new NgZone({enableLongStackTrace: true});
-}
-
 
 /**
- * Default application providers for testing.
+ * Platform for testing
  *
- * @experimental
+ * @experimental API related to bootstrapping are still under review.
  */
-export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    /*@ts2dart_const*/[
-      // TODO(julie: when angular2/platform/server is available, use that instead of making our own
-      // list here.
-      APPLICATION_COMMON_PROVIDERS, COMPILER_PROVIDERS, BROWSER_SANITIZATION_PROVIDERS,
-      /* @ts2dart_Provider */ {provide: DOCUMENT, useFactory: appDoc},
-      /* @ts2dart_Provider */ {provide: DomRootRenderer, useClass: DomRootRenderer_},
-      /* @ts2dart_Provider */ {provide: RootRenderer, useExisting: DomRootRenderer},
-      /* @ts2dart_Provider */ {provide: AnimationDriver, useValue: AnimationDriver.NOOP},
-      EventManager,
-      /* @ts2dart_Provider */ {
-        provide: EVENT_MANAGER_PLUGINS,
-        useClass: DomEventsPlugin,
-        multi: true
-      },
-      /* @ts2dart_Provider */ {provide: XHR, useClass: XHR},
-      /* @ts2dart_Provider */ {provide: APP_ID, useValue: 'a'},
-      /* @ts2dart_Provider */ {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
-      DomSharedStylesHost, ELEMENT_PROBE_PROVIDERS,
-      {provide: TestComponentBuilder, useClass: OverridingTestComponentBuilder},
-      /* @ts2dart_Provider */ {provide: DirectiveResolver, useClass: MockDirectiveResolver},
-      /* @ts2dart_Provider */ {provide: ViewResolver, useClass: MockViewResolver},
-      /* @ts2dart_Provider */ {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
-      /* @ts2dart_Provider */ {provide: NgZone, useFactory: createNgZone}
-    ];
+export function serverTestPlatform(): PlatformRef {
+  if (!getPlatform()) {
+    createPlatform(ReflectiveInjector.resolveAndCreate(TEST_SERVER_PLATFORM_PROVIDERS));
+  }
+  return assertPlatform(SERVER_TEST_PLATFORM_MARKER);
+}
+
+/**
+ * AppModule for testing.
+ *
+ * @stable
+ */
+@AppModule({modules: [BrowserDynamicTestModule]})
+export class ServerTestModule {
+}
