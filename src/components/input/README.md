@@ -64,7 +64,7 @@ A simple character counter can be made like the following:
 
 ## Divider Color
 
-The divider (line under the <md-input> content) color can be changed by using the `dividerColor` attribute. A value of `primary` is the default and will correspond to your theme primary color. Alternatively, you can specify `accent` or `warn`.
+The divider (line under the `<md-input>` content) color can be changed by using the `dividerColor` attribute. A value of `primary` is the default and will correspond to your theme primary color. Alternatively, you can specify `accent` or `warn`.
 
 #### Example
 
