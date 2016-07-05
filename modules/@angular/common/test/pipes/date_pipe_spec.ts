@@ -64,6 +64,7 @@ export function main() {
           expect(pipe.transform(date, 's')).toEqual('1');
           expect(pipe.transform(date, 'mm')).toEqual('03');
           expect(pipe.transform(date, 'ss')).toEqual('01');
+          expect(pipe.transform(date, 'Z')).toEqual('GMT');
         });
 
         it('should format common multi component patterns', () => {
