@@ -33,7 +33,7 @@ var __make_dart_analyzer_happy: Promise<any> = null;
  * instantiate and activate child components.
  *
  * ### Example
- * {@example router/ts/on_activate/on_activate_example.ts region='routerOnActivate'}
+ * {@example router_deprecated/ts/on_activate/on_activate_example.ts region='routerOnActivate'}
  */
 export interface OnActivate {
   routerOnActivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction):
@@ -53,7 +53,7 @@ export interface OnActivate {
  * previous route or `null`.
  *
  * ### Example
- * {@example router/ts/reuse/reuse_example.ts region='reuseCmp'}
+ * {@example router_deprecated/ts/reuse/reuse_example.ts region='reuseCmp'}
  */
 export interface OnReuse {
   routerOnReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any
@@ -73,7 +73,8 @@ export interface OnReuse {
  * If `routerOnDeactivate` returns a promise, the route change will wait until the promise settles.
  *
  * ### Example
- * {@example router/ts/on_deactivate/on_deactivate_example.ts region='routerOnDeactivate'}
+ * {@example router_deprecated/ts/on_deactivate/on_deactivate_example.ts
+ * region='routerOnDeactivate'}
  */
 export interface OnDeactivate {
   routerOnDeactivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction):
@@ -98,7 +99,7 @@ export interface OnDeactivate {
  * If `routerCanReuse` throws or rejects, the navigation will be cancelled.
  *
  * ### Example
- * {@example router/ts/reuse/reuse_example.ts region='reuseCmp'}
+ * {@example router_deprecated/ts/reuse/reuse_example.ts region='reuseCmp'}
  */
 export interface CanReuse {
   routerCanReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction):
@@ -122,7 +123,8 @@ export interface CanReuse {
  * If `routerCanDeactivate` throws or rejects, the navigation is also cancelled.
  *
  * ### Example
- * {@example router/ts/can_deactivate/can_deactivate_example.ts region='routerCanDeactivate'}
+ * {@example router_deprecated/ts/can_deactivate/can_deactivate_example.ts
+ * region='routerCanDeactivate'}
  */
 export interface CanDeactivate {
   routerCanDeactivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction):
