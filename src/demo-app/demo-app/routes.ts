@@ -20,6 +20,7 @@ import {SlideToggleDemo} from '../slide-toggle/slide-toggle-demo';
 import {SidenavDemo} from '../sidenav/sidenav-demo';
 import {RadioDemo} from '../radio/radio-demo';
 import {CardDemo} from '../card/card-demo';
+import {MenuDemo} from '../menu/menu-demo';
 
 
 
@@ -39,6 +40,7 @@ export const routes: RouterConfig = [
   {path: 'toolbar', component: ToolbarDemo},
   {path: 'icon', component: IconDemo},
   {path: 'list', component: ListDemo},
+  {path: 'menu', component: MenuDemo},
   {path: 'live-announcer', component: LiveAnnouncerDemo},
   {path: 'gestures', component: GesturesDemo},
   {path: 'grid-list', component: GridListDemo},
