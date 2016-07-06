@@ -89,19 +89,6 @@ export class DbService {
   }
 }
 
-@Component(
-    {selector: 'inbox-detail', directives: ROUTER_DIRECTIVES, templateUrl: 'app/inbox-detail.html'})
-export class InboxDetailCmp {
-  private record: InboxRecord = new InboxRecord();
-  private ready: boolean = false;
-
-  constructor(db: DbService, route: ActivatedRoute) {
-    route.params.forEach(p => {
-      PromiseWrapper.then(db.email(p['id']), (data) => { this.record.setData(data); });
-    });
-  }
-}
-
 @Component({selector: 'inbox', templateUrl: 'app/inbox.html', directives: ROUTER_DIRECTIVES})
 export class InboxCmp {
   private items: InboxRecord[] = [];
@@ -146,13 +133,14 @@ export const ROUTER_CONFIG = [
   {path: '', terminal: true, redirectTo: 'inbox'},
   {path: 'inbox', component: InboxCmp},
   {path: 'drafts', component: DraftsCmp},
-  {path: 'detail/:id', component: InboxDetailCmp}
+  {path: 'detail', mountChildren: 'app/inbox-detail.js' }
 ];
 
 @Component({
   selector: 'inbox-app',
   viewProviders: [DbService],
   templateUrl: 'app/inbox-app.html',
-  directives: ROUTER_DIRECTIVES
+  directives: ROUTER_DIRECTIVES,
+  precompile: [InboxCmp, DraftsCmp]
 })
 export class InboxApp {}

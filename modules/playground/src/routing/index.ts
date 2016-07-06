@@ -12,5 +12,8 @@ import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {provideRouter} from '@angular/router';
 
 export function main() {
-  bootstrap(InboxApp, [provideRouter(ROUTER_CONFIG), {provide: LocationStrategy, useClass: HashLocationStrategy}]);
+  bootstrap(InboxApp, [
+    provideRouter(ROUTER_CONFIG),
+    {provide: LocationStrategy, useClass: HashLocationStrategy}
+  ]);
 }
