@@ -14,7 +14,6 @@ import {NgZoneError, NgZoneImpl} from './ng_zone_impl';
 export {NgZoneError} from './ng_zone_impl';
 
 
-
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
  *
