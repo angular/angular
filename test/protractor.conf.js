@@ -13,8 +13,11 @@ const config = {
   useAllAngular2AppRoots: true,
   specs: [ path.join(__dirname, '../e2e/**/*.e2e.ts') ],
   baseUrl: E2E_BASE_URL,
-  allScriptsTimeout: 22000,
-  getPageTimeout: 20000,
+  allScriptsTimeout: 30000,
+  getPageTimeout: 30000,
+  jasmineNodeOpts: {
+    defaultTimeoutInterval: 60000,
+  }
 };
 
 
