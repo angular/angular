@@ -7,7 +7,7 @@
  */
 
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {APP_INITIALIZER, ApplicationRef, ComponentResolver, Injector, OpaqueToken} from '@angular/core';
+import {APP_INITIALIZER, AppModuleFactoryLoader, ApplicationRef, ComponentResolver, Injector, OpaqueToken, SystemJsAppModuleLoader} from '@angular/core';
 
 import {RouterConfig} from './config';
 import {Router} from './router';
@@ -25,14 +25,14 @@ export interface ExtraOptions { enableTracing?: boolean; }
 
 export function setupRouter(
     ref: ApplicationRef, resolver: ComponentResolver, urlSerializer: UrlSerializer,
-    outletMap: RouterOutletMap, location: Location, injector: Injector, config: RouterConfig,
-    opts: ExtraOptions) {
+    outletMap: RouterOutletMap, location: Location, injector: Injector,
+    loader: AppModuleFactoryLoader, config: RouterConfig, opts: ExtraOptions) {
   if (ref.componentTypes.length == 0) {
     throw new Error('Bootstrap at least one component before injecting Router.');
   }
   const componentType = ref.componentTypes[0];
-  const r =
-      new Router(componentType, resolver, urlSerializer, outletMap, location, injector, config);
+  const r = new Router(
+      componentType, resolver, urlSerializer, outletMap, location, injector, loader, config);
   ref.registerDisposeListener(() => r.dispose());
 
   if (opts.enableTracing) {
@@ -93,7 +93,7 @@ export function provideRouter(_config: RouterConfig, _opts: ExtraOptions): any[]
       useFactory: setupRouter,
       deps: [
         ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
-        ROUTER_CONFIG, ROUTER_OPTIONS
+        AppModuleFactoryLoader, ROUTER_CONFIG, ROUTER_OPTIONS
       ]
     },
 
@@ -101,6 +101,27 @@ export function provideRouter(_config: RouterConfig, _opts: ExtraOptions): any[]
     {provide: ActivatedRoute, useFactory: (r: Router) => r.routerState.root, deps: [Router]},
 
     // Trigger initial navigation
-    {provide: APP_INITIALIZER, multi: true, useFactory: setupRouterInitializer, deps: [Injector]}
+    {provide: APP_INITIALIZER, multi: true, useFactory: setupRouterInitializer, deps: [Injector]},
+    {provide: AppModuleFactoryLoader, useClass: SystemJsAppModuleLoader}
   ];
+}
+
+/**
+ * Router configuration.
+ *
+ * ### Example
+ *
+ * ```
+ * @AppModule({providers: [
+ *   provideRoutes([{path: 'home', component: Home}])
+ * ]})
+ * class LazyLoadedModule {
+ *   // ...
+ * }
+ * ```
+ *
+ * @experimental
+ */
+export function provideRoutes(config: RouterConfig): any {
+  return {provide: ROUTER_CONFIG, useValue: config};
 }

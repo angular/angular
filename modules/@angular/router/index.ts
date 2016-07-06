@@ -10,7 +10,7 @@ import {RouterLink, RouterLinkWithHref} from './src/directives/router_link';
 import {RouterLinkActive} from './src/directives/router_link_active';
 import {RouterOutlet} from './src/directives/router_outlet';
 
-export {ExtraOptions} from './src/common_router_providers';
+export {ExtraOptions, provideRoutes} from './src/common_router_providers';
 export {Data, ResolveData, Route, RouterConfig} from './src/config';
 export {RouterLink, RouterLinkWithHref} from './src/directives/router_link';
 export {RouterLinkActive} from './src/directives/router_link_active';

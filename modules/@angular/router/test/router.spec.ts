@@ -4,14 +4,14 @@ import {Location, LocationStrategy} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
 import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
-import {Component, Injector} from '@angular/core';
+import {AppModule, AppModuleFactory, AppModuleFactoryLoader, Compiler, Component, Injectable, Injector, Type} from '@angular/core';
 import {ComponentResolver} from '@angular/core';
 import {beforeEach, beforeEachProviders, ddescribe, describe, fakeAsync, iit, inject, it, tick, xdescribe, xit} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DefaultUrlSerializer, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterConfig, RouterOutletMap, RouterStateSnapshot, RoutesRecognized, UrlSerializer} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DefaultUrlSerializer, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterConfig, RouterOutletMap, RouterStateSnapshot, RoutesRecognized, UrlSerializer, provideRoutes} from '../index';
 
 describe('Integration', () => {
 
@@ -26,13 +26,18 @@ describe('Integration', () => {
       {provide: LocationStrategy, useClass: MockLocationStrategy},
       {
         provide: Router,
-        useFactory: (resolver: ComponentResolver, urlSerializer: UrlSerializer,
-                     outletMap: RouterOutletMap, location: Location, injector: Injector) => {
-          return new Router(
-              RootCmp, resolver, urlSerializer, outletMap, location, injector, config);
-        },
-        deps: [ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector]
+        useFactory:
+            (resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap,
+             location: Location, loader: AppModuleFactoryLoader, injector: Injector) => {
+              return new Router(
+                  RootCmp, resolver, urlSerializer, outletMap, location, injector, loader, config);
+            },
+        deps: [
+          ComponentResolver, UrlSerializer, RouterOutletMap, Location, AppModuleFactoryLoader,
+          Injector
+        ]
       },
+      {provide: AppModuleFactoryLoader, useClass: SpyAppModuleFactoryLoader},
       {provide: ActivatedRoute, useFactory: (r: Router) => r.routerState.root, deps: [Router]},
     ];
   });
@@ -713,6 +718,8 @@ describe('Integration', () => {
       describe('should not activate a route when CanActivate returns false', () => {
         beforeEachProviders(() => [{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]);
 
+        // handle errors
+
         it('works',
            fakeAsync(inject(
                [Router, TestComponentBuilder, Location],
@@ -1084,7 +1091,89 @@ describe('Integration', () => {
            })));
 
   });
+
+  describe('lazy loading', () => {
+    it('works', fakeAsync(inject(
+                    [Router, TestComponentBuilder, Location, AppModuleFactoryLoader],
+                    (router: Router, tcb: TestComponentBuilder, location: Location,
+                     loader: AppModuleFactoryLoader) => {
+                      @Component({
+                        selector: 'lazy',
+                        template: 'lazy-loaded-parent {<router-outlet></router-outlet>}',
+                        directives: ROUTER_DIRECTIVES
+                      })
+                      class ParentLazyLoadedComponent {
+                      }
+
+                      @Component({selector: 'lazy', template: 'lazy-loaded-child'})
+                      class ChildLazyLoadedComponent {
+                      }
+
+                      @AppModule({
+                        providers: [provideRoutes([{
+                          path: 'loaded',
+                          component: ParentLazyLoadedComponent,
+                          children: [{path: 'child', component: ChildLazyLoadedComponent}]
+                        }])],
+                        precompile: [ParentLazyLoadedComponent, ChildLazyLoadedComponent]
+                      })
+                      class LoadedModule {
+                      }
+                      (<any>loader).expectedPath = 'expected';
+                      (<any>loader).expected = LoadedModule;
+
+                      const fixture = createRoot(tcb, router, RootCmp);
+
+                      router.resetConfig([{path: 'lazy', mountChildren: 'expected'}]);
+
+                      router.navigateByUrl('/lazy/loaded/child');
+                      advance(fixture);
+
+                      expect(location.path()).toEqual('/lazy/loaded/child');
+                      expect(fixture.debugElement.nativeElement)
+                          .toHaveText('lazy-loaded-parent {lazy-loaded-child}');
+                    })));
+
+    it('error emit an error when cannot load a config',
+       fakeAsync(inject(
+           [Router, TestComponentBuilder, Location, AppModuleFactoryLoader],
+           (router: Router, tcb: TestComponentBuilder, location: Location,
+            loader: AppModuleFactoryLoader) => {
+             (<any>loader).expectedPath = 'expected';
+             const fixture = createRoot(tcb, router, RootCmp);
+
+             router.resetConfig([{path: 'lazy', mountChildren: 'invalid'}]);
+
+             const recordedEvents: any = [];
+             router.events.forEach(e => recordedEvents.push(e));
+
+             router.navigateByUrl('/lazy/loaded').catch(s => {})
+             advance(fixture);
+
+             expect(location.path()).toEqual('/');
+
+             expectEvents(
+                 recordedEvents,
+                 [[NavigationStart, '/lazy/loaded'], [NavigationError, '/lazy/loaded']]);
+           })));
+  });
 });
+
+@Injectable()
+class SpyAppModuleFactoryLoader implements AppModuleFactoryLoader {
+  public expected: any;
+  public expectedPath: string;
+
+  constructor(private compiler: Compiler) {}
+
+  load(path: string): Promise<AppModuleFactory<any>> {
+    if (path === this.expectedPath) {
+      return this.compiler.compileAppModuleAsync(this.expected);
+    } else {
+      return <any>Promise.reject(new Error('boom'));
+    }
+  }
+}
 
 function expectEvents(events: Event[], pairs: any[]) {
   for (let i = 0; i < events.length; ++i) {

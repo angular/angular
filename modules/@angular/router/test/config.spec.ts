@@ -15,6 +15,18 @@ describe('config', () => {
               `Invalid configuration of route 'a': redirectTo and children cannot be used together`);
     });
 
+    it('should throw when redirectTo and mountChildren are used together', () => {
+      expect(() => { validateConfig([{path: 'a', redirectTo: 'b', mountChildren: 'value'}]); })
+          .toThrowError(
+              `Invalid configuration of route 'a': redirectTo and mountChildren cannot be used together`);
+    });
+
+    it('should throw when children and mountChildren are used together', () => {
+      expect(() => { validateConfig([{path: 'a', children: [], mountChildren: 'value'}]); })
+          .toThrowError(
+              `Invalid configuration of route 'a': children and mountChildren cannot be used together`);
+    });
+
     it('should throw when component and redirectTo are used together', () => {
       expect(() => { validateConfig([{path: 'a', component: ComponentA, redirectTo: 'b'}]); })
           .toThrowError(
@@ -30,7 +42,7 @@ describe('config', () => {
     it('should throw when none of component and children or direct are missing', () => {
       expect(() => { validateConfig([{path: 'a'}]); })
           .toThrowError(
-              `Invalid configuration of route 'a': component, redirectTo, children must be provided`);
+              `Invalid configuration of route 'a': component, redirectTo, children, mountChildren must be provided`);
     });
 
     it('should throw when path starts with a slash', () => {

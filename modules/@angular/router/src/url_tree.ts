@@ -135,22 +135,6 @@ export function equalPath(a: UrlPathWithParams[], b: UrlPathWithParams[]): boole
   return true;
 }
 
-export function mapChildren(segment: UrlSegment, fn: (v: UrlSegment, k: string) => UrlSegment):
-    {[name: string]: UrlSegment} {
-  const newChildren: {[name: string]: UrlSegment} = {};
-  forEach(segment.children, (child: UrlSegment, childOutlet: string) => {
-    if (childOutlet === PRIMARY_OUTLET) {
-      newChildren[childOutlet] = fn(child, childOutlet);
-    }
-  });
-  forEach(segment.children, (child: UrlSegment, childOutlet: string) => {
-    if (childOutlet !== PRIMARY_OUTLET) {
-      newChildren[childOutlet] = fn(child, childOutlet);
-    }
-  });
-  return newChildren;
-}
-
 export function mapChildrenIntoArray<T>(
     segment: UrlSegment, fn: (v: UrlSegment, k: string) => T[]): T[] {
   let res: T[] = [];

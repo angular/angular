@@ -1,7 +1,10 @@
+import {Observable} from 'rxjs/Observable';
+import {of } from 'rxjs/observable/of';
+
 import {applyRedirects} from '../src/apply_redirects';
 import {RouterConfig} from '../src/config';
+import {LoadedRouterConfig} from '../src/router_config_loader';
 import {DefaultUrlSerializer, UrlSegment, UrlTree, equalPathsWithParams} from '../src/url_tree';
-import {TreeNode} from '../src/utils/tree';
 
 describe('applyRedirects', () => {
   it('should return the same url tree when no redirects', () => {
@@ -26,7 +29,7 @@ describe('applyRedirects', () => {
   });
 
   it('should throw when cannot handle a positional parameter', () => {
-    applyRedirects(tree('/a/1'), [
+    applyRedirects(null, tree('/a/1'), [
       {path: 'a/:id', redirectTo: 'a/:other'}
     ]).subscribe(() => {}, (e) => {
       expect(e.message).toEqual('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
@@ -128,6 +131,31 @@ describe('applyRedirects', () => {
         '/a/b/1', (t: UrlTree) => { compareTrees(t, tree('/absolute/1')); });
   });
 
+  describe('lazy loading', () => {
+    it('should load config on demand', () => {
+      const loadedConfig =
+          new LoadedRouterConfig([{path: 'b', component: ComponentB}], <any>'stubFactoryResolver');
+      const loader = {load: (p: any) => of (loadedConfig)};
+      const config = [{path: 'a', component: ComponentA, mountChildren: 'children'}];
+
+      applyRedirects(<any>loader, tree('a/b'), config).forEach(r => {
+        compareTrees(r, tree('/a/b'));
+        expect((<any>config[0])._loadedConfig).toBe(loadedConfig);
+      });
+    });
+
+    it('should handle the case when the loader errors', () => {
+      const loader = {
+        load: (p: any) => new Observable<any>((obs: any) => obs.error(new Error('Loading Error')))
+      };
+      const config = [{path: 'a', component: ComponentA, mountChildren: 'children'}];
+
+      applyRedirects(<any>loader, tree('a/b'), config).subscribe(() => {}, (e) => {
+        expect(e.message).toEqual('Loading Error');
+      });
+    });
+  });
+
   describe('empty paths', () => {
     it('redirect from an empty path should work (local redirect)', () => {
       checkRedirect(
@@ -171,7 +199,7 @@ describe('applyRedirects', () => {
         {path: '', redirectTo: 'a', pathMatch: 'full'}
       ];
 
-      applyRedirects(tree('b'), config)
+      applyRedirects(null, tree('b'), config)
           .subscribe(
               (_) => { throw 'Should not be reached'; },
               e => { expect(e.message).toEqual('Cannot match any routes: \'b\''); });
@@ -301,7 +329,7 @@ describe('applyRedirects', () => {
           ]
         }];
 
-        applyRedirects(tree('a/(d//aux:e)'), config)
+        applyRedirects(null, tree('a/(d//aux:e)'), config)
             .subscribe(
                 (_) => { throw 'Should not be reached'; },
                 e => { expect(e.message).toEqual('Cannot match any routes: \'a\''); });
@@ -311,7 +339,7 @@ describe('applyRedirects', () => {
 });
 
 function checkRedirect(config: RouterConfig, url: string, callback: any): void {
-  applyRedirects(tree(url), config).subscribe(callback, e => { throw e; });
+  applyRedirects(null, tree(url), config).subscribe(callback, e => { throw e; });
 }
 
 function tree(url: string): UrlTree {

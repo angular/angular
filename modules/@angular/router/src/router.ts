@@ -15,24 +15,25 @@ import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/forkJoin';
 
 import {Location} from '@angular/common';
-import {ComponentResolver, Injector, ReflectiveInjector, Type} from '@angular/core';
+import {AppModuleFactoryLoader, ComponentFactoryResolver, ComponentResolver, Injector, ReflectiveInjector, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {of } from 'rxjs/observable/of';
 
 import {applyRedirects} from './apply_redirects';
-import {Data, ResolveData, RouterConfig, validateConfig} from './config';
+import {ResolveData, RouterConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
 import {recognize} from './recognize';
 import {resolve} from './resolve';
+import {RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
-import {ActivatedRoute, ActivatedRouteSnapshot, InheritedResolve, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
 import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlSerializer, UrlTree, createEmptyUrlTree} from './url_tree';
-import {forEach, merge, shallowEqual} from './utils/collection';
+import {forEach, merge, shallowEqual, waitForMap} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 export interface NavigationExtras {
@@ -124,6 +125,7 @@ export class Router {
   private navigationId: number = 0;
   private config: RouterConfig;
   private futureUrlTree: UrlTree;
+  private configLoader: RouterConfigLoader;
 
   /**
    * Creates the router service.
@@ -131,11 +133,13 @@ export class Router {
   constructor(
       private rootComponentType: Type, private resolver: ComponentResolver,
       private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
-      private location: Location, private injector: Injector, config: RouterConfig) {
+      private location: Location, private injector: Injector, loader: AppModuleFactoryLoader,
+      config: RouterConfig) {
     this.resetConfig(config);
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
     this.futureUrlTree = this.currentUrlTree;
+    this.configLoader = new RouterConfigLoader(loader);
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
   }
 
@@ -310,7 +314,7 @@ export class Router {
       let state: RouterState;
       let navigationIsSuccessful: boolean;
       let preActivation: PreActivation;
-      applyRedirects(url, this.config)
+      applyRedirects(this.configLoader, url, this.config)
           .mergeMap(u => {
             this.futureUrlTree = u;
             return recognize(
@@ -555,20 +559,11 @@ class PreActivation {
   }
 
   private resolveNode(resolve: ResolveData, future: ActivatedRouteSnapshot): Observable<any> {
-    const resolvingObs: Observable<any>[] = [];
-    const resolvedData: {[k: string]: any} = {};
-    forEach(resolve, (v: any, k: string) => {
+    return waitForMap(resolve, (k, v) => {
       const resolver = this.injector.get(v);
-      const obs = resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
-                                     wrapIntoObservable(resolver(future, this.future));
-      resolvingObs.push(obs.map((_: any) => { resolvedData[k] = _; }));
+      return resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
+                                wrapIntoObservable(resolver(future, this.future));
     });
-
-    if (resolvingObs.length > 0) {
-      return Observable.forkJoin(resolvingObs).map(r => resolvedData);
-    } else {
-      return of (resolvedData);
-    }
   }
 }
 
@@ -656,11 +651,22 @@ class ActivateRoutes {
 
   private placeComponentIntoOutlet(
       outletMap: RouterOutletMap, future: ActivatedRoute, outlet: RouterOutlet): void {
-    const resolved = ReflectiveInjector.resolve([
-      {provide: ActivatedRoute, useValue: future},
-      {provide: RouterOutletMap, useValue: outletMap}
-    ]);
-    outlet.activate(future, resolved, outletMap);
+    const resolved = <any[]>[{provide: ActivatedRoute, useValue: future}, {
+      provide: RouterOutletMap,
+      useValue: outletMap
+    }];
+
+    const parentFuture = this.futureState.parent(future);  // find the closest parent?
+    const config = parentFuture ? parentFuture.snapshot._routeConfig : null;
+    let loadedFactoryResolver: ComponentFactoryResolver = null;
+
+    if (config && (<any>config)._loadedConfig) {
+      const loadedResolver = (<any>config)._loadedConfig.factoryResolver;
+      loadedFactoryResolver = loadedResolver;
+      resolved.push({provide: ComponentFactoryResolver, useValue: loadedResolver});
+    };
+
+    outlet.activate(future, loadedFactoryResolver, ReflectiveInjector.resolve(resolved), outletMap);
   }
 
   private deactivateOutletAndItChildren(outlet: RouterOutlet): void {
