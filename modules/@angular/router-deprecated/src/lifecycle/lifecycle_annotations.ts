@@ -43,7 +43,7 @@ export {routerCanDeactivate, routerCanReuse, routerOnActivate, routerOnDeactivat
  *
  * ### Example
  *
- * {@example router/ts/can_activate/can_activate_example.ts region='canActivate' }
+ * {@example router_deprecated/ts/can_activate/can_activate_example.ts region='canActivate' }
  * @Annotation
  */
 export var CanActivate:

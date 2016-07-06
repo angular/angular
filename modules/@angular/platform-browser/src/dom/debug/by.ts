@@ -25,7 +25,7 @@ export class By {
    *
    * ## Example
    *
-   * {@example platform/dom/debug/ts/by/by.ts region='by_all'}
+   * {@example platform-browser/dom/debug/ts/by/by.ts region='by_all'}
    */
   static all(): Predicate<DebugElement> { return (debugElement) => true; }
 
@@ -34,7 +34,7 @@ export class By {
    *
    * ## Example
    *
-   * {@example platform/dom/debug/ts/by/by.ts region='by_css'}
+   * {@example platform-browser/dom/debug/ts/by/by.ts region='by_css'}
    */
   static css(selector: string): Predicate<DebugElement> {
     return (debugElement) => {
@@ -49,7 +49,7 @@ export class By {
    *
    * ## Example
    *
-   * {@example platform/dom/debug/ts/by/by.ts region='by_directive'}
+   * {@example platform-browser/dom/debug/ts/by/by.ts region='by_directive'}
    */
   static directive(type: Type): Predicate<DebugElement> {
     return (debugElement) => { return debugElement.providerTokens.indexOf(type) !== -1; };

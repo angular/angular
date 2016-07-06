@@ -332,8 +332,9 @@ import {ViewEncapsulation} from './view';
  *
  * ## Lifecycle hooks
  *
- * When the directive class implements some {@link ../../guide/lifecycle-hooks.html} the callbacks
- * are called by the change detection at defined points in time during the life of the directive.
+ * When the directive class implements some {@link ../../../guide/lifecycle-hooks.html} the
+ * callbacks are called by the change detection at defined points in time during the life of the
+ * directive.
  *
  * ### Example
  *
@@ -790,8 +791,9 @@ export class DirectiveMetadata extends InjectableMetadata {
  *
  * ## Lifecycle hooks
  *
- * When the component class implements some {@link ../../guide/lifecycle-hooks.html} the callbacks
- * are called by the change detection at defined points in time during the life of the component.
+ * When the component class implements some {@link ../../../guide/lifecycle-hooks.html} the
+ * callbacks are called by the change detection at defined points in time during the life of the
+ * component.
  *
  * ### Example
  *
