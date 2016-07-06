@@ -11,11 +11,11 @@ import {APP_INITIALIZER, AppModuleFactoryLoader, ApplicationRef, ComponentResolv
 
 import {RouterConfig} from './config';
 import {Router} from './router';
+import {ROUTER_CONFIG} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 
-export const ROUTER_CONFIG = new OpaqueToken('ROUTER_CONFIG');
 export const ROUTER_OPTIONS = new OpaqueToken('ROUTER_OPTIONS');
 
 /**

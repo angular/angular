@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModuleFactoryLoader, AppModuleRef, ComponentFactoryResolver} from '@angular/core';
+import {AppModuleFactoryLoader, AppModuleRef, ComponentFactoryResolver, OpaqueToken} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 
-import {ROUTER_CONFIG} from './common_router_providers';
 import {Route} from './config';
+
+export const ROUTER_CONFIG = new OpaqueToken('ROUTER_CONFIG');
 
 export class LoadedRouterConfig {
   constructor(public routes: Route[], public factoryResolver: ComponentFactoryResolver) {}
