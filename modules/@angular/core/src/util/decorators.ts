@@ -299,7 +299,6 @@ export function makeParamDecorator(annotationCls: any /** TODO #9100 */): any {
       return ParamDecorator;
     }
 
-
     function ParamDecorator(
         cls: any /** TODO #9100 */, unusedKey: any /** TODO #9100 */,
         index: any /** TODO #9100 */): any {
