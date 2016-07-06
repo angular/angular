@@ -80,7 +80,7 @@ export function setupRouterInitializer(injector: Injector) {
  * bootstrap(AppCmp, [provideRouter(config)]);
  * ```
  *
- * @stable
+ * @deprecated use RouterAppModule instead
  */
 export function provideRouter(_config: RouterConfig, _opts: ExtraOptions): any[] {
   return [
@@ -124,4 +124,24 @@ export function provideRouter(_config: RouterConfig, _opts: ExtraOptions): any[]
  */
 export function provideRoutes(config: RouterConfig): any {
   return {provide: ROUTER_CONFIG, useValue: config};
+}
+
+/**
+ * Router configuration.
+ *
+ * ### Example
+ *
+ * ```
+ * @AppModule({providers: [
+ *   provideRouterOptions({enableTracing: true})
+ * ]})
+ * class LazyLoadedModule {
+ *   // ...
+ * }
+ * ```
+ *
+ * @experimental
+ */
+export function provideRouterConfig(options: ExtraOptions): any {
+  return {provide: ROUTER_OPTIONS, useValue: options};
 }
