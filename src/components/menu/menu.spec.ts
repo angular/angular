@@ -9,7 +9,7 @@ import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 
-import {MD_MENU_DIRECTIVES} from './MENU';
+import {MD_MENU_DIRECTIVES} from './menu';
 
 describe('MdMenu', () => {
   let builder: TestComponentBuilder;
