@@ -176,7 +176,17 @@ bootstrap(MyAppComponent, [
     directives: [MD_CARD_DIRECTIVES, MD_BUTTON_DIRECTIVES, MdIcon],
     providers: [MdIconRegistry]
  ```
-    
+
+- Add the icon package to the list of Material components in your `system-config.ts`:
+
+**src/system-config.ts**
+```ts
+// put the names of any of your Material components here
+const materialPkgs:string[] = [
+  ...
+  'icon'
+];
+```
     
     
     
