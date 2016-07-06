@@ -94,6 +94,9 @@ export declare const PRIMARY_OUTLET: string;
 export declare function provideRouter(config: RouterConfig, opts?: ExtraOptions): any[];
 
 /** @experimental */
+export declare function provideRoutes(config: RouterConfig): any;
+
+/** @experimental */
 export interface Resolve<T> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | any;
 }
@@ -114,7 +117,7 @@ export declare class Router {
     events: Observable<Event>;
     routerState: RouterState;
     url: string;
-    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, config: RouterConfig);
+    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: AppModuleFactoryLoader, config: RouterConfig);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment}?: NavigationExtras): UrlTree;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree): Promise<boolean>;
@@ -173,8 +176,8 @@ export declare class RouterOutlet {
     component: Object;
     isActivated: boolean;
     outletMap: RouterOutletMap;
-    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver, name: string);
-    activate(activatedRoute: ActivatedRoute, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
+    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string);
+    activate(activatedRoute: ActivatedRoute, loadedResolver: ComponentFactoryResolver, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
     deactivate(): void;
 }
 

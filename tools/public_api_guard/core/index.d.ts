@@ -154,6 +154,11 @@ export declare class AppModuleFactory<T> {
     create(parentInjector?: Injector): AppModuleRef<T>;
 }
 
+/** @experimental */
+export declare abstract class AppModuleFactoryLoader {
+    abstract load(path: string): Promise<AppModuleFactory<any>>;
+}
+
 /** @stable */
 export declare class AppModuleMetadata extends InjectableMetadata {
     directives: Array<Type | any[]>;
@@ -1286,6 +1291,17 @@ export declare function style(tokens: string | {
 } | Array<string | {
     [key: string]: string | number;
 }>): AnimationStyleMetadata;
+
+/** @experimental */
+export declare class SystemJsAppModuleFactoryLoader implements AppModuleFactoryLoader {
+    load(path: string): Promise<AppModuleFactory<any>>;
+}
+
+/** @experimental */
+export declare class SystemJsAppModuleLoader implements AppModuleFactoryLoader {
+    constructor(_compiler: Compiler);
+    load(path: string): Promise<AppModuleFactory<any>>;
+}
 
 /** @experimental */
 export declare class SystemJsCmpFactoryResolver implements ComponentResolver {
