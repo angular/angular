@@ -62,7 +62,10 @@ export declare var fit: any;
 export declare function flushMicrotasks(): void;
 
 /** @experimental */
-export declare function getTestInjector(): TestInjector;
+export declare function getTestBed(): TestBed;
+
+/** @deprecated */
+export declare function getTestInjector(): TestBed;
 
 /** @deprecated */
 export declare var iit: any;
@@ -85,6 +88,17 @@ export declare function resetBaseTestProviders(): void;
 /** @experimental */
 export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
 
+/** @experimental */
+export declare class TestBed {
+    applicationProviders: Array<Type | Provider | any[] | any>;
+    platformProviders: Array<Type | Provider | any[] | any>;
+    addProviders(providers: Array<Type | Provider | any[] | any>): void;
+    createInjector(): ReflectiveInjector;
+    execute(tokens: any[], fn: Function): any;
+    get(token: any): any;
+    reset(): void;
+}
+
 /** @stable */
 export declare class TestComponentBuilder {
     protected _injector: Injector;
@@ -104,17 +118,6 @@ export declare class TestComponentBuilder {
 /** @experimental */
 export declare class TestComponentRenderer {
     insertRootElement(rootElementId: string): void;
-}
-
-/** @experimental */
-export declare class TestInjector {
-    applicationProviders: Array<Type | Provider | any[] | any>;
-    platformProviders: Array<Type | Provider | any[] | any>;
-    addProviders(providers: Array<Type | Provider | any[] | any>): void;
-    createInjector(): ReflectiveInjector;
-    execute(tokens: any[], fn: Function): any;
-    get(token: any): any;
-    reset(): void;
 }
 
 /** @experimental */

@@ -8,7 +8,7 @@
 
 import {inject, ddescribe, describe, it, iit, expect, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestInjector} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {provide, Injector, ViewMetadata, Component, Injectable, ComponentRef} from '@angular/core';
@@ -65,15 +65,15 @@ export function main() {
 
     beforeEachProviders(() => {
       uiRenderStore = new RenderStore();
-      var testUiInjector = new TestInjector();
-      testUiInjector.platformProviders = TEST_BROWSER_PLATFORM_PROVIDERS;
-      testUiInjector.applicationProviders = TEST_BROWSER_APPLICATION_PROVIDERS;
-      testUiInjector.addProviders([
+      var uiTestBed = new TestBed();
+      uiTestBed.platformProviders = TEST_BROWSER_PLATFORM_PROVIDERS;
+      uiTestBed.applicationProviders = TEST_BROWSER_APPLICATION_PROVIDERS;
+      uiTestBed.addProviders([
         Serializer, {provide: RenderStore, useValue: uiRenderStore},
         {provide: DomRootRenderer, useClass: DomRootRenderer_},
         {provide: RootRenderer, useExisting: DomRootRenderer}
       ]);
-      uiInjector = testUiInjector.createInjector();
+      uiInjector = uiTestBed.createInjector();
       var uiSerializer = uiInjector.get(Serializer);
       var domRootRenderer = uiInjector.get(DomRootRenderer);
       workerRenderStore = new RenderStore();

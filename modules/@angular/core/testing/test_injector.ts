@@ -16,7 +16,7 @@ import {AsyncTestCompleter} from './async_test_completer';
 /**
  * @experimental
  */
-export class TestInjector {
+export class TestBed {
   private _instantiated: boolean = false;
 
   private _injector: ReflectiveInjector = null;
@@ -65,16 +65,23 @@ export class TestInjector {
   }
 }
 
-var _testInjector: TestInjector = null;
+var _testBed: TestBed = null;
 
 /**
  * @experimental
  */
-export function getTestInjector() {
-  if (_testInjector == null) {
-    _testInjector = new TestInjector();
+export function getTestBed() {
+  if (_testBed == null) {
+    _testBed = new TestBed();
   }
-  return _testInjector;
+  return _testBed;
+}
+
+/**
+ * @deprecated Use getTestBed().
+ */
+export function getTestInjector() {
+  return getTestBed();
 }
 
 /**
@@ -93,7 +100,7 @@ export function getTestInjector() {
 export function setBaseTestProviders(
     platformProviders: Array<Type|Provider|any[]>,
     applicationProviders: Array<Type|Provider|any[]>) {
-  var testInjector = getTestInjector();
+  var testInjector = getTestBed();
   if (testInjector.platformProviders.length > 0 || testInjector.applicationProviders.length > 0) {
     throw new BaseException('Cannot set base providers because it has already been called');
   }
@@ -113,7 +120,7 @@ export function setBaseTestProviders(
  * @experimental
  */
 export function resetBaseTestProviders() {
-  var testInjector = getTestInjector();
+  var testInjector = getTestBed();
   testInjector.platformProviders = [];
   testInjector.applicationProviders = [];
   testInjector.reset();
@@ -144,7 +151,7 @@ export function resetBaseTestProviders() {
  * @stable
  */
 export function inject(tokens: any[], fn: Function): () => any {
-  let testInjector = getTestInjector();
+  let testInjector = getTestBed();
   if (tokens.indexOf(AsyncTestCompleter) >= 0) {
     // Return an async test method that returns a Promise if AsyncTestCompleter is one of the
     // injected tokens.
@@ -155,7 +162,7 @@ export function inject(tokens: any[], fn: Function): () => any {
     };
   } else {
     // Return a synchronous test method with the injected tokens.
-    return () => { return getTestInjector().execute(tokens, fn); };
+    return () => { return getTestBed().execute(tokens, fn); };
   }
 }
 
@@ -168,7 +175,7 @@ export class InjectSetupWrapper {
   private _addProviders() {
     var additionalProviders = this._providers();
     if (additionalProviders.length > 0) {
-      getTestInjector().addProviders(additionalProviders);
+      getTestBed().addProviders(additionalProviders);
     }
   }
 
