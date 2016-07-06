@@ -79,7 +79,7 @@ export class RouterOutlet {
       // const componentName = component ? component.name : null;
       // console.warn(
       //     `'${componentName}' not found in precompile array.  To ensure all components referred
-      //     to by the RouterConfig are compiled, you must add '${componentName}' to the
+      //     to by the Routes are compiled, you must add '${componentName}' to the
       //     'precompile' array of your application component. This will be required in a future
       //     release of the router.`);
 

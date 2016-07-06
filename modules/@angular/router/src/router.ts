@@ -22,7 +22,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {of } from 'rxjs/observable/of';
 
 import {applyRedirects} from './apply_redirects';
-import {ResolveData, RouterConfig, validateConfig} from './config';
+import {ResolveData, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -113,7 +113,7 @@ export type Event = NavigationStart | NavigationEnd | NavigationCancel | Navigat
 /**
  * The `Router` is responsible for mapping URLs to components.
  *
- * See {@link RouterConfig) for more details and examples.
+ * See {@link Routes) for more details and examples.
  *
  * @stable
  */
@@ -123,7 +123,7 @@ export class Router {
   private locationSubscription: Subscription;
   private routerEvents: Subject<Event>;
   private navigationId: number = 0;
-  private config: RouterConfig;
+  private config: Routes;
   private futureUrlTree: UrlTree;
   private configLoader: RouterConfigLoader;
 
@@ -134,7 +134,7 @@ export class Router {
       private rootComponentType: Type, private resolver: ComponentResolver,
       private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
       private location: Location, private injector: Injector, loader: AppModuleFactoryLoader,
-      config: RouterConfig) {
+      config: Routes) {
     this.resetConfig(config);
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
@@ -180,7 +180,7 @@ export class Router {
    * ]);
    * ```
    */
-  resetConfig(config: RouterConfig): void {
+  resetConfig(config: Routes): void {
     validateConfig(config);
     this.config = config;
   }

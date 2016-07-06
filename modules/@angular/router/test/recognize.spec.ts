@@ -1,4 +1,4 @@
-import {RouterConfig} from '../src/config';
+import {Routes} from '../src/config';
 import {recognize} from '../src/recognize';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
@@ -529,7 +529,7 @@ describe('recognize', () => {
   });
 });
 
-function checkRecognize(config: RouterConfig, url: string, callback: any): void {
+function checkRecognize(config: Routes, url: string, callback: any): void {
   recognize(RootComponent, config, tree(url), url).subscribe(callback, e => { throw e; });
 }
 

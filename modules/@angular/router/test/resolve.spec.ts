@@ -1,4 +1,4 @@
-import {RouterConfig} from '../src/config';
+import {Routes} from '../src/config';
 import {recognize} from '../src/recognize';
 import {resolve} from '../src/resolve';
 import {RouterStateSnapshot} from '../src/router_state';
@@ -22,7 +22,7 @@ describe('resolve', () => {
 });
 
 function checkResolve(
-    config: RouterConfig, url: string, resolved: {[k: string]: string}, callback: any): void {
+    config: Routes, url: string, resolved: {[k: string]: string}, callback: any): void {
   const resolver = {
     resolveComponent: (component: string): Promise<any> => {
       if (resolved[component]) {

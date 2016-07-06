@@ -15,7 +15,7 @@ import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 import {EmptyError} from 'rxjs/util/EmptyError';
 
-import {Route, RouterConfig} from './config';
+import {Route, Routes} from './config';
 import {RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlPathWithParams, UrlSegment, UrlTree} from './url_tree';
@@ -38,7 +38,7 @@ function absoluteRedirect(newPaths: UrlPathWithParams[]): Observable<UrlSegment>
 }
 
 export function applyRedirects(
-    configLoader: RouterConfigLoader, urlTree: UrlTree, config: RouterConfig): Observable<UrlTree> {
+    configLoader: RouterConfigLoader, urlTree: UrlTree, config: Routes): Observable<UrlTree> {
   return expandSegment(configLoader, config, urlTree.root, PRIMARY_OUTLET)
       .map(rootSegment => createUrlTree(urlTree, rootSegment))
       .catch(e => {
@@ -190,8 +190,8 @@ function matchPathsWithParamsAgainstRoute(
 function getChildConfig(configLoader: RouterConfigLoader, route: Route): Observable<Route[]> {
   if (route.children) {
     return of (route.children);
-  } else if (route.mountChildren) {
-    return configLoader.load(route.mountChildren).map(r => {
+  } else if (route.loadChildren) {
+    return configLoader.load(route.loadChildren).map(r => {
       (<any>route)._loadedConfig = r;
       return r.routes;
     });

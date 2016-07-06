@@ -12,7 +12,11 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 
 import {Route} from './config';
 
+/**
+ * @deprecated use Routes
+ */
 export const ROUTER_CONFIG = new OpaqueToken('ROUTER_CONFIG');
+export const ROUTES = new OpaqueToken('ROUTES');
 
 export class LoadedRouterConfig {
   constructor(public routes: Route[], public factoryResolver: ComponentFactoryResolver) {}
@@ -24,7 +28,7 @@ export class RouterConfigLoader {
   load(path: string): Observable<LoadedRouterConfig> {
     return fromPromise(this.loader.load(path).then(r => {
       const ref = r.create();
-      return new LoadedRouterConfig(ref.injector.get(ROUTER_CONFIG), ref.componentFactoryResolver);
+      return new LoadedRouterConfig(ref.injector.get(ROUTES), ref.componentFactoryResolver);
     }));
   }
 }

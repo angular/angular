@@ -11,13 +11,12 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DefaultUrlSerializer, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterConfig, RouterOutletMap, RouterStateSnapshot, RoutesRecognized, UrlSerializer, provideRoutes} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DefaultUrlSerializer, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterOutletMap, RouterStateSnapshot, Routes, RoutesRecognized, UrlSerializer, provideRoutes} from '../index';
 
 describe('Integration', () => {
 
   beforeEachProviders(() => {
-    let config: RouterConfig =
-        [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}];
+    let config: Routes = [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}];
 
     return [
       RouterOutletMap,
@@ -1124,7 +1123,7 @@ describe('Integration', () => {
 
                       const fixture = createRoot(tcb, router, RootCmp);
 
-                      router.resetConfig([{path: 'lazy', mountChildren: 'expected'}]);
+                      router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
                       router.navigateByUrl('/lazy/loaded/child');
                       advance(fixture);
@@ -1142,7 +1141,7 @@ describe('Integration', () => {
              (<any>loader).expectedPath = 'expected';
              const fixture = createRoot(tcb, router, RootCmp);
 
-             router.resetConfig([{path: 'lazy', mountChildren: 'invalid'}]);
+             router.resetConfig([{path: 'lazy', loadChildren: 'invalid'}]);
 
              const recordedEvents: any = [];
              router.events.forEach(e => recordedEvents.push(e));

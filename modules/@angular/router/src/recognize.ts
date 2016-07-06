@@ -11,7 +11,7 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
-import {Data, ResolveData, Route, RouterConfig} from './config';
+import {Data, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, InheritedResolve, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlPathWithParams, UrlSegment, UrlTree, mapChildrenIntoArray} from './url_tree';
@@ -38,9 +38,8 @@ class InheritedFromParent {
   }
 }
 
-export function recognize(
-    rootComponentType: Type, config: RouterConfig, urlTree: UrlTree,
-    url: string): Observable<RouterStateSnapshot> {
+export function recognize(rootComponentType: Type, config: Routes, urlTree: UrlTree, url: string):
+    Observable<RouterStateSnapshot> {
   try {
     const children =
         processSegment(config, urlTree.root, InheritedFromParent.empty, PRIMARY_OUTLET);
@@ -152,7 +151,7 @@ function processPathsWithParamsAgainstRoute(
 function getChildConfig(route: Route): Route[] {
   if (route.children) {
     return route.children;
-  } else if (route.mountChildren) {
+  } else if (route.loadChildren) {
     return (<any>route)._loadedConfig.routes;
   } else {
     return [];

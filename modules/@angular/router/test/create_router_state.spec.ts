@@ -1,4 +1,4 @@
-import {RouterConfig} from '../src/config';
+import {Routes} from '../src/config';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
 import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from '../src/router_state';
@@ -84,7 +84,7 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
   node.children.forEach(advanceNode);
 }
 
-function createState(config: RouterConfig, url: string): RouterStateSnapshot {
+function createState(config: Routes, url: string): RouterStateSnapshot {
   let res: RouterStateSnapshot;
   recognize(RootComponent, config, tree(url), url).forEach(s => res = s);
   return res;

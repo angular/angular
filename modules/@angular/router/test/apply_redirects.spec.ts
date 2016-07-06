@@ -2,7 +2,7 @@ import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
 import {applyRedirects} from '../src/apply_redirects';
-import {RouterConfig} from '../src/config';
+import {Routes} from '../src/config';
 import {LoadedRouterConfig} from '../src/router_config_loader';
 import {DefaultUrlSerializer, UrlSegment, UrlTree, equalPathsWithParams} from '../src/url_tree';
 
@@ -136,7 +136,7 @@ describe('applyRedirects', () => {
       const loadedConfig =
           new LoadedRouterConfig([{path: 'b', component: ComponentB}], <any>'stubFactoryResolver');
       const loader = {load: (p: any) => of (loadedConfig)};
-      const config = [{path: 'a', component: ComponentA, mountChildren: 'children'}];
+      const config = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
 
       applyRedirects(<any>loader, tree('a/b'), config).forEach(r => {
         compareTrees(r, tree('/a/b'));
@@ -148,7 +148,7 @@ describe('applyRedirects', () => {
       const loader = {
         load: (p: any) => new Observable<any>((obs: any) => obs.error(new Error('Loading Error')))
       };
-      const config = [{path: 'a', component: ComponentA, mountChildren: 'children'}];
+      const config = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
 
       applyRedirects(<any>loader, tree('a/b'), config).subscribe(() => {}, (e) => {
         expect(e.message).toEqual('Loading Error');
@@ -188,7 +188,7 @@ describe('applyRedirects', () => {
     });
 
     it('should redirect empty path route only when terminal', () => {
-      const config: RouterConfig = [
+      const config: Routes = [
         {
           path: 'a',
           component: ComponentA,
@@ -315,7 +315,7 @@ describe('applyRedirects', () => {
       });
 
       it('should not create a new child (terminal)', () => {
-        const config: RouterConfig = [{
+        const config: Routes = [{
           path: 'a',
           children: [
             {path: 'b', component: ComponentB, children: [{path: 'd', component: ComponentB}]},
@@ -338,7 +338,7 @@ describe('applyRedirects', () => {
   });
 });
 
-function checkRedirect(config: RouterConfig, url: string, callback: any): void {
+function checkRedirect(config: Routes, url: string, callback: any): void {
   applyRedirects(null, tree(url), config).subscribe(callback, e => { throw e; });
 }
 

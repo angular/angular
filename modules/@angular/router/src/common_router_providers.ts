@@ -9,14 +9,14 @@
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
 import {APP_INITIALIZER, AppModuleFactoryLoader, ApplicationRef, ComponentResolver, Injector, OpaqueToken, SystemJsAppModuleLoader} from '@angular/core';
 
-import {RouterConfig} from './config';
+import {Routes} from './config';
 import {Router} from './router';
-import {ROUTER_CONFIG} from './router_config_loader';
+import {ROUTER_CONFIG, ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 
-export const ROUTER_OPTIONS = new OpaqueToken('ROUTER_OPTIONS');
+export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
 
 /**
  * @experimental
@@ -26,7 +26,7 @@ export interface ExtraOptions { enableTracing?: boolean; }
 export function setupRouter(
     ref: ApplicationRef, resolver: ComponentResolver, urlSerializer: UrlSerializer,
     outletMap: RouterOutletMap, location: Location, injector: Injector,
-    loader: AppModuleFactoryLoader, config: RouterConfig, opts: ExtraOptions) {
+    loader: AppModuleFactoryLoader, config: Routes, opts: ExtraOptions) {
   if (ref.componentTypes.length == 0) {
     throw new Error('Bootstrap at least one component before injecting Router.');
   }
@@ -82,10 +82,12 @@ export function setupRouterInitializer(injector: Injector) {
  *
  * @deprecated use RouterAppModule instead
  */
-export function provideRouter(_config: RouterConfig, _opts: ExtraOptions): any[] {
+export function provideRouter(routes: Routes, config: ExtraOptions): any[] {
   return [
-    {provide: ROUTER_CONFIG, useValue: _config}, {provide: ROUTER_OPTIONS, useValue: _opts},
-    Location, {provide: LocationStrategy, useClass: PathLocationStrategy},
+    {provide: ROUTES, useExisting: ROUTER_CONFIG}, {provide: ROUTER_CONFIG, useValue: routes},
+
+    {provide: ROUTER_CONFIGURATION, useValue: config}, Location,
+    {provide: LocationStrategy, useClass: PathLocationStrategy},
     {provide: UrlSerializer, useClass: DefaultUrlSerializer},
 
     {
@@ -93,7 +95,7 @@ export function provideRouter(_config: RouterConfig, _opts: ExtraOptions): any[]
       useFactory: setupRouter,
       deps: [
         ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
-        AppModuleFactoryLoader, ROUTER_CONFIG, ROUTER_OPTIONS
+        AppModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
       ]
     },
 
@@ -122,8 +124,8 @@ export function provideRouter(_config: RouterConfig, _opts: ExtraOptions): any[]
  *
  * @experimental
  */
-export function provideRoutes(config: RouterConfig): any {
-  return {provide: ROUTER_CONFIG, useValue: config};
+export function provideRoutes(routes: Routes): any {
+  return {provide: ROUTES, useValue: routes};
 }
 
 /**
@@ -142,6 +144,6 @@ export function provideRoutes(config: RouterConfig): any {
  *
  * @experimental
  */
-export function provideRouterConfig(options: ExtraOptions): any {
-  return {provide: ROUTER_OPTIONS, useValue: options};
+export function provideRouterConfig(config: ExtraOptions): any {
+  return {provide: ROUTER_CONFIGURATION, useValue: config};
 }
