@@ -15,50 +15,50 @@ function lex(text: string): any[] {
   return new Lexer().tokenize(text);
 }
 
-function expectToken(token: any /** TODO #9100 */, index: any /** TODO #9100 */) {
+function expectToken(token: any, index: any) {
   expect(token instanceof Token).toBe(true);
   expect(token.index).toEqual(index);
 }
 
-function expectCharacterToken(
-    token: any /** TODO #9100 */, index: any /** TODO #9100 */, character: any /** TODO #9100 */) {
+function expectCharacterToken(token: any, index: any, character: any) {
   expect(character.length).toBe(1);
   expectToken(token, index);
   expect(token.isCharacter(StringWrapper.charCodeAt(character, 0))).toBe(true);
 }
 
-function expectOperatorToken(
-    token: any /** TODO #9100 */, index: any /** TODO #9100 */, operator: any /** TODO #9100 */) {
+function expectOperatorToken(token: any, index: any, operator: any) {
   expectToken(token, index);
   expect(token.isOperator(operator)).toBe(true);
 }
 
-function expectNumberToken(
-    token: any /** TODO #9100 */, index: any /** TODO #9100 */, n: any /** TODO #9100 */) {
+function expectNumberToken(token: any, index: any, n: any) {
   expectToken(token, index);
   expect(token.isNumber()).toBe(true);
   expect(token.toNumber()).toEqual(n);
 }
 
-function expectStringToken(
-    token: any /** TODO #9100 */, index: any /** TODO #9100 */, str: any /** TODO #9100 */) {
+function expectStringToken(token: any, index: any, str: any) {
   expectToken(token, index);
   expect(token.isString()).toBe(true);
   expect(token.toString()).toEqual(str);
 }
 
-function expectIdentifierToken(
-    token: any /** TODO #9100 */, index: any /** TODO #9100 */, identifier: any /** TODO #9100 */) {
+function expectIdentifierToken(token: any, index: any, identifier: any) {
   expectToken(token, index);
   expect(token.isIdentifier()).toBe(true);
   expect(token.toString()).toEqual(identifier);
 }
 
-function expectKeywordToken(
-    token: any /** TODO #9100 */, index: any /** TODO #9100 */, keyword: any /** TODO #9100 */) {
+function expectKeywordToken(token: any, index: any, keyword: any) {
   expectToken(token, index);
   expect(token.isKeyword()).toBe(true);
   expect(token.toString()).toEqual(keyword);
+}
+
+function expectErrorToken(token: Token, index: any, message: string) {
+  expectToken(token, index);
+  expect(token.isError()).toBe(true);
+  expect(token.toString()).toEqual(message);
 }
 
 export function main() {
@@ -228,14 +228,13 @@ export function main() {
         expectNumberToken(tokens[0], 0, 0.5E+10);
       });
 
-      it('should throws exception for invalid exponent', function() {
-        expect(() => {
-          lex('0.5E-');
-        }).toThrowError('Lexer Error: Invalid exponent at column 4 in expression [0.5E-]');
+      it('should return exception for invalid exponent', function() {
+        expectErrorToken(
+            lex('0.5E-')[0], 4, 'Lexer Error: Invalid exponent at column 4 in expression [0.5E-]');
 
-        expect(() => {
-          lex('0.5E-A');
-        }).toThrowError('Lexer Error: Invalid exponent at column 4 in expression [0.5E-A]');
+        expectErrorToken(
+            lex('0.5E-A')[0], 4,
+            'Lexer Error: Invalid exponent at column 4 in expression [0.5E-A]');
       });
 
       it('should tokenize number starting with a dot', function() {
@@ -244,9 +243,9 @@ export function main() {
       });
 
       it('should throw error on invalid unicode', function() {
-        expect(() => { lex('\'\\u1\'\'bla\''); })
-            .toThrowError(
-                'Lexer Error: Invalid unicode escape [\\u1\'\'b] at column 2 in expression [\'\\u1\'\'bla\']');
+        expectErrorToken(
+            lex('\'\\u1\'\'bla\'')[0], 2,
+            'Lexer Error: Invalid unicode escape [\\u1\'\'b] at column 2 in expression [\'\\u1\'\'bla\']');
       });
 
       it('should tokenize hash as operator', function() {
