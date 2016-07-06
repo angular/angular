@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {NgIf, NgFor} from '@angular/common';
 import {MD_MENU_DIRECTIVES} from '@angular2-material/menu/menu';
 
 @Component({

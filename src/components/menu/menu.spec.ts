@@ -7,7 +7,6 @@ import {
 } from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component} from '@angular/core';
-import {By} from '@angular/platform-browser';
 
 import {MD_MENU_DIRECTIVES} from './menu';
 
@@ -22,7 +21,7 @@ describe('MdMenu', () => {
     var template = ``;
     return builder.overrideTemplate(TestList, template)
         .createAsync(TestList).then((fixture) => {
-          // expect(true).toBe(true);
+           expect(true).toBe(true);
         });
   });
 
