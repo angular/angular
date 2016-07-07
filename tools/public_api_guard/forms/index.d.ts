@@ -102,9 +102,6 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
 }
 
 /** @experimental */
-export declare function disableDeprecatedForms(): any[];
-
-/** @experimental */
 export interface Form {
     addControl(dir: NgControl): void;
     addFormGroup(dir: AbstractFormGroupDirective): void;
@@ -116,7 +113,7 @@ export interface Form {
 }
 
 /** @experimental */
-export declare const FORM_DIRECTIVES: Type[];
+export declare const FORM_DIRECTIVES: Type[][];
 
 /** @experimental */
 export declare const FORM_PROVIDERS: Type[];
@@ -247,6 +244,10 @@ export declare class FormGroupName extends AbstractFormGroupDirective implements
 }
 
 /** @experimental */
+export declare class FormsModule {
+}
+
+/** @experimental */
 export declare class MaxLengthValidator implements Validator {
     constructor(maxLength: string);
     validate(c: AbstractControl): {
@@ -358,10 +359,14 @@ export declare class PatternValidator implements Validator {
 }
 
 /** @experimental */
-export declare function provideForms(): any[];
+export declare const REACTIVE_FORM_DIRECTIVES: Type[][];
 
 /** @experimental */
-export declare const REACTIVE_FORM_DIRECTIVES: Type[];
+export declare const REACTIVE_FORM_PROVIDERS: Type[];
+
+/** @experimental */
+export declare class ReactiveFormsModule {
+}
 
 /** @experimental */
 export declare class RequiredValidator {

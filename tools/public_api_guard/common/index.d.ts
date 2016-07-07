@@ -162,6 +162,10 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
+/** @deprecated */
+export declare class DeprecatedFormsModule {
+}
+
 /** @experimental */
 export interface Form {
     addControl(dir: NgControl): void;
