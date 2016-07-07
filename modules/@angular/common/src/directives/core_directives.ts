@@ -16,8 +16,6 @@ import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
 import {NgTemplateOutlet} from './ng_template_outlet';
 
-
-
 /**
  * A collection of Angular core directives that are likely to be used in each and every Angular
  * application.

@@ -7,10 +7,7 @@
  */
 
 import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '@angular/core';
-
 import {isPresent} from '../facade/lang';
-
-
 
 /**
  * Creates and inserts an embedded view based on a prepared `TemplateRef`.
@@ -21,8 +18,12 @@ import {isPresent} from '../facade/lang';
  * Note: using the key `$implicit` in the context object will set it's value as default.
  *
  * ### Syntax
- * - `<template [ngTemplateOutlet]="templateRefExpression"
- * [ngOutletContext]="objectExpression"></template>`
+ *
+ * ```
+ * <template [ngTemplateOutlet]="templateRefExpression"
+ *           [ngOutletContext]="objectExpression">
+ * </template>
+ * ```
  *
  * @experimental
  */

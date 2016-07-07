@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
+import {Directive, DoCheck, ElementRef, Input, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
 
 import {isBlank, isPresent} from '../facade/lang';
+
 
 
 /**
@@ -74,7 +75,8 @@ export class NgStyle implements DoCheck {
   constructor(
       private _differs: KeyValueDiffers, private _ngEl: ElementRef, private _renderer: Renderer) {}
 
-  set rawStyle(v: {[key: string]: string}) {
+  @Input()
+  set ngStyle(v: {[key: string]: string}) {
     this._rawStyle = v;
     if (isBlank(this._differ) && isPresent(v)) {
       this._differ = this._differs.find(this._rawStyle).create(null);

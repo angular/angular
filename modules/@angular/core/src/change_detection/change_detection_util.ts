@@ -11,7 +11,7 @@ import {isPrimitive, looseIdentical} from '../facade/lang';
 
 export {looseIdentical} from '../facade/lang';
 
-export var uninitialized: Object = /*@ts2dart_const*/ new Object();
+export const UNINITIALIZED = new Object();
 
 export function devModeEqual(a: any, b: any): boolean {
   if (isListLikeIterable(a) && isListLikeIterable(b)) {
@@ -78,5 +78,5 @@ export class SimpleChange {
   /**
    * Check whether the new value is the first value assigned.
    */
-  isFirstChange(): boolean { return this.previousValue === uninitialized; }
+  isFirstChange(): boolean { return this.previousValue === UNINITIALIZED; }
 }

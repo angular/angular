@@ -6,39 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {AsyncPipe, NgFor} from '@angular/common';
+import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
+import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/test/test_bindings';
+import {MockSchemaRegistry, TestComponentBuilder} from '@angular/compiler/testing';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef, ViewMetadata, WrappedValue, forwardRef} from '@angular/core';
+import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
 import {ComponentFixture, configureCompiler, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-
-import {isBlank, NumberWrapper, ConcreteType,} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
-import {StringMapWrapper} from '../../src/facade/collection';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-
-import {PipeTransform, ChangeDetectionStrategy, WrappedValue,} from '@angular/core/src/change_detection/change_detection';
-
-import {OnDestroy} from '@angular/core/src/metadata/lifecycle_hooks';
-
-import {IS_DART, Type} from '../../src/facade/lang';
-import {EventEmitter, ObservableWrapper} from '../../src/facade/async';
-
-
-import {Component, DebugElement, Directive, TemplateRef, ChangeDetectorRef, ViewContainerRef, Input, Output, forwardRef, ViewMetadata, Pipe, RootRenderer, Renderer, RenderComponentType, Injectable, provide, OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, Injector} from '@angular/core';
-import {NgFor, NgIf} from '@angular/common';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {AsyncPipe} from '@angular/common';
-
-import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
-import {MockSchemaRegistry} from '@angular/compiler/testing';
-import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/test/test_bindings';
-import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 
+import {EventEmitter} from '../../src/facade/async';
+import {StringMapWrapper} from '../../src/facade/collection';
+import {BaseException} from '../../src/facade/exceptions';
+import {ConcreteType, IS_DART, NumberWrapper, Type, isBlank} from '../../src/facade/lang';
+
 export function main() {
-  var tcb: TestComponentBuilder;
-  var elSchema: MockSchemaRegistry;
-  var renderLog: RenderLog;
-  var directiveLog: DirectiveLog;
+  let tcb: TestComponentBuilder;
+  let elSchema: MockSchemaRegistry;
+  let renderLog: RenderLog;
+  let directiveLog: DirectiveLog;
 
   function createCompFixture<T>(template: string): ComponentFixture<TestComponent>;
   function createCompFixture<T>(template: string, compType: ConcreteType<T>): ComponentFixture<T>;
@@ -79,7 +68,7 @@ export function main() {
 
   function _bindAndCheckSimpleValue(
       expression: any, compType: ConcreteType<any> = TestComponent): string[] {
-    var ctx = _bindSimpleValue(expression, compType);
+    const ctx = _bindSimpleValue(expression, compType);
     ctx.detectChanges(false);
     return renderLog.log;
   }
@@ -298,7 +287,7 @@ export function main() {
 
       it('should support function calls', fakeAsync(() => {
            var ctx = _bindSimpleValue('a()(99)', TestData);
-           ctx.componentInstance.a = () => (a: any /** TODO #9100 */) => a;
+           ctx.componentInstance.a = () => (a: any) => a;
            ctx.detectChanges(false);
            expect(renderLog.log).toEqual(['someProp=99']);
          }));
@@ -1182,13 +1171,13 @@ class DirectiveLog {
 @Pipe({name: 'countingPipe'})
 class CountingPipe implements PipeTransform {
   state: number = 0;
-  transform(value: any /** TODO #9100 */) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state ++}`; }
 }
 
 @Pipe({name: 'countingImpurePipe', pure: false})
 class CountingImpurePipe implements PipeTransform {
   state: number = 0;
-  transform(value: any /** TODO #9100 */) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state ++}`; }
 }
 
 @Pipe({name: 'pipeWithOnDestroy'})
@@ -1197,24 +1186,22 @@ class PipeWithOnDestroy implements PipeTransform, OnDestroy {
 
   ngOnDestroy() { this.directiveLog.add('pipeWithOnDestroy', 'ngOnDestroy'); }
 
-  transform(value: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
+  transform(value: any): any { return null; }
 }
 
 @Pipe({name: 'identityPipe'})
 class IdentityPipe implements PipeTransform {
-  transform(value: any /** TODO #9100 */) { return value; }
+  transform(value: any) { return value; }
 }
 
 @Pipe({name: 'wrappedPipe'})
 class WrappedPipe implements PipeTransform {
-  transform(value: any /** TODO #9100 */) { return WrappedValue.wrap(value); }
+  transform(value: any) { return WrappedValue.wrap(value); }
 }
 
 @Pipe({name: 'multiArgPipe'})
 class MultiArgPipe implements PipeTransform {
-  transform(
-      value: any /** TODO #9100 */, arg1: any /** TODO #9100 */, arg2: any /** TODO #9100 */,
-      arg3 = 'default') {
+  transform(value: any, arg1: any, arg2: any, arg3 = 'default') {
     return `${value} ${arg1} ${arg2} ${arg3}`;
   }
 }
@@ -1272,13 +1259,21 @@ class EmitterDirective {
   @Output('event') emitter = new EventEmitter<string>();
 }
 
+@Directive({selector: '[gh-9882]'})
+class Gh9882 implements AfterContentInit {
+  constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<Object>) {
+  }
+
+  ngAfterContentInit(): any { this._viewContainer.createEmbeddedView(this._templateRef); }
+}
+
 @Directive({selector: '[testDirective]', exportAs: 'testDirective'})
 class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked,
     AfterViewInit, AfterViewChecked, OnDestroy {
-  @Input() a: any /** TODO #9100 */;
-  @Input() b: any /** TODO #9100 */;
-  changes: any /** TODO #9100 */;
-  event: any /** TODO #9100 */;
+  @Input() a: any;
+  @Input() b: any;
+  changes: any;
+  event: any;
   eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
   @Input('testDirective') name: string;
@@ -1287,7 +1282,7 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
 
   constructor(public log: DirectiveLog) {}
 
-  onEvent(event: any /** TODO #9100 */) { this.event = event; }
+  onEvent(event: any) { this.event = event; }
 
   ngDoCheck() { this.log.add(this.name, 'ngDoCheck'); }
 
@@ -1298,12 +1293,10 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
     }
   }
 
-  ngOnChanges(changes: any /** TODO #9100 */) {
+  ngOnChanges(changes: SimpleChanges) {
     this.log.add(this.name, 'ngOnChanges');
-    var r = {};
-    StringMapWrapper.forEach(
-        changes, (c: any /** TODO #9100 */, key: any /** TODO #9100 */) =>
-                     (r as any /** TODO #9100 */)[key] = c.currentValue);
+    const r: {[k: string]: string} = {};
+    StringMapWrapper.forEach(changes, (c: SimpleChange, key: string) => r[key] = c.currentValue);
     this.changes = r;
     if (this.throwOn == 'ngOnChanges') {
       throw new BaseException('Boom!');
@@ -1407,9 +1400,9 @@ class Person {
     this.address = address;
   }
 
-  sayHi(m: any /** TODO #9100 */) { return `Hi, ${m}`; }
+  sayHi(m: any): string { return `Hi, ${m}`; }
 
-  passThrough(val: any /** TODO #9100 */) { return val; }
+  passThrough(val: any): any { return val; }
 
   toString(): string {
     var address = this.address == null ? '' : ' address=' + this.address.toString();
@@ -1422,7 +1415,7 @@ class Address {
   cityGetterCalls: number = 0;
   zipCodeGetterCalls: number = 0;
 
-  constructor(public _city: string, public _zipcode: any /** TODO #9100 */ = null) {}
+  constructor(public _city: string, public _zipcode: any = null) {}
 
   get city() {
     this.cityGetterCalls++;
@@ -1441,21 +1434,6 @@ class Address {
   toString(): string { return isBlank(this.city) ? '-' : this.city }
 }
 
-class Logical {
-  trueCalls: number = 0;
-  falseCalls: number = 0;
-
-  getTrue() {
-    this.trueCalls++;
-    return true;
-  }
-
-  getFalse() {
-    this.falseCalls++;
-    return false;
-  }
-}
-
 @Component({selector: 'root'})
 class Uninitialized {
   value: any = null;
@@ -1464,11 +1442,4 @@ class Uninitialized {
 @Component({selector: 'root'})
 class TestData {
   public a: any;
-}
-
-@Component({selector: 'root'})
-class TestDataWithGetter {
-  public fn: Function;
-
-  get a() { return this.fn(); }
 }

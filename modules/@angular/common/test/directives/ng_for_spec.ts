@@ -9,12 +9,10 @@
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/compiler/testing';
-
 import {ListWrapper} from '../../src/facade/collection';
 import {IS_DART} from '../../src/facade/lang';
 import {Component, TemplateRef, ContentChild} from '@angular/core';
-import {NgFor} from '@angular/common';
-import {NgIf} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 
@@ -475,19 +473,18 @@ export function main() {
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var template =
+               const template =
                    `<template ngFor let-item [ngForOf]="items" [ngForTrackBy]="trackById" let-i="index">
                <p>{{items[i]}}</p>
               </template>`;
                tcb.overrideTemplate(TestComponent, template)
                    .createAsync(TestComponent)
                    .then((fixture) => {
-                     var buildItemList =
-                         () => {
-                           fixture.debugElement.componentInstance.items = [{'id': 'a'}];
-                           fixture.detectChanges();
-                           return fixture.debugElement.queryAll(By.css('p'))[0];
-                         }
+                     var buildItemList = () => {
+                       fixture.debugElement.componentInstance.items = [{'id': 'a'}];
+                       fixture.detectChanges();
+                       return fixture.debugElement.queryAll(By.css('p'))[0];
+                     };
 
                      var firstP = buildItemList();
                      var finalP = buildItemList();
@@ -495,6 +492,7 @@ export function main() {
                      async.done();
                    });
              }));
+
       it('should update implicit local variable on view',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],

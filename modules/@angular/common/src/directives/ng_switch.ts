@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Host, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {ListWrapper, Map} from '../facade/collection';
+import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent, normalizeBlank} from '../facade/lang';
 
-const _CASE_DEFAULT = /*@ts2dart_const*/ new Object();
+const _CASE_DEFAULT = new Object();
 
 // TODO: remove when fully deprecated
 let _warned: boolean = false;
@@ -83,13 +83,14 @@ export class SwitchView {
  *
  * @experimental
  */
-@Directive({selector: '[ngSwitch]', inputs: ['ngSwitch']})
+@Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
   private _switchValue: any;
   private _useDefault: boolean = false;
   private _valueViews = new Map<any, SwitchView[]>();
   private _activeViews: SwitchView[] = [];
 
+  @Input()
   set ngSwitch(value: any) {
     // Empty the currently active ViewContainers
     this._emptyAllActiveViews();
@@ -183,7 +184,7 @@ export class NgSwitch {
  *
  * @experimental
  */
-@Directive({selector: '[ngSwitchCase],[ngSwitchWhen]', inputs: ['ngSwitchCase', 'ngSwitchWhen']})
+@Directive({selector: '[ngSwitchCase],[ngSwitchWhen]'})
 export class NgSwitchCase {
   // `_CASE_DEFAULT` is used as a marker for a not yet initialized value
   /** @internal */
@@ -199,11 +200,13 @@ export class NgSwitchCase {
     this._view = new SwitchView(viewContainer, templateRef);
   }
 
+  @Input()
   set ngSwitchCase(value: any) {
     this._switch._onCaseValueChanged(this._value, value, this._view);
     this._value = value;
   }
 
+  @Input()
   set ngSwitchWhen(value: any) {
     if (!_warned) {
       _warned = true;

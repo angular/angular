@@ -289,7 +289,7 @@ export declare const NG_VALUE_ACCESSOR: OpaqueToken;
 /** @stable */
 export declare class NgClass implements DoCheck, OnDestroy {
     initialClasses: string;
-    rawClass: string | string[] | Set<string> | {
+    ngClass: string | string[] | Set<string> | {
         [key: string]: any;
     };
     constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer);
@@ -460,7 +460,7 @@ export declare class NgSelectOption implements OnDestroy {
 
 /** @stable */
 export declare class NgStyle implements DoCheck {
-    rawStyle: {
+    ngStyle: {
         [key: string]: string;
     };
     constructor(_differs: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer);

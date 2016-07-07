@@ -50,7 +50,7 @@ function bind(
   // private is fine here as no child view will reference the cached value...
   view.fields.push(new o.ClassField(fieldExpr.name, null, [o.StmtModifier.Private]));
   view.createMethod.addStmt(
-      o.THIS_EXPR.prop(fieldExpr.name).set(o.importExpr(Identifiers.uninitialized)).toStmt());
+      o.THIS_EXPR.prop(fieldExpr.name).set(o.importExpr(Identifiers.UNINITIALIZED)).toStmt());
 
   if (checkExpression.needsValueUnwrapper) {
     var initValueUnwrapperStmt = DetectChangesVars.valUnwrapper.callMethod('reset', []).toStmt();
@@ -153,14 +153,14 @@ function bindAndWriteToRenderer(
         var oldRenderVar = o.variable('oldRenderVar');
         updateStmts.push(oldRenderVar.set(oldRenderValue).toDeclStmt());
         updateStmts.push(new o.IfStmt(
-            oldRenderVar.equals(o.importExpr(Identifiers.uninitialized)),
+            oldRenderVar.equals(o.importExpr(Identifiers.UNINITIALIZED)),
             [oldRenderVar.set(emptyStateValue).toStmt()]));
 
         // ... => void
         var newRenderVar = o.variable('newRenderVar');
         updateStmts.push(newRenderVar.set(renderValue).toDeclStmt());
         updateStmts.push(new o.IfStmt(
-            newRenderVar.equals(o.importExpr(Identifiers.uninitialized)),
+            newRenderVar.equals(o.importExpr(Identifiers.UNINITIALIZED)),
             [newRenderVar.set(emptyStateValue).toStmt()]));
 
         updateStmts.push(

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CollectionChangeRecord, Directive, DoCheck, ElementRef, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, OnDestroy, Renderer} from '@angular/core';
+import {CollectionChangeRecord, Directive, DoCheck, ElementRef, Input, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, OnDestroy, Renderer} from '@angular/core';
 
 import {StringMapWrapper, isListLikeIterable} from '../facade/collection';
 import {isArray, isPresent, isString} from '../facade/lang';
+
 
 
 /**
@@ -73,7 +74,7 @@ import {isArray, isPresent, isString} from '../facade/lang';
  *
  * @stable
  */
-@Directive({selector: '[ngClass]', inputs: ['rawClass: ngClass', 'initialClasses: class']})
+@Directive({selector: '[ngClass]'})
 export class NgClass implements DoCheck, OnDestroy {
   private _iterableDiffer: IterableDiffer;
   private _keyValueDiffer: KeyValueDiffer;
@@ -84,6 +85,8 @@ export class NgClass implements DoCheck, OnDestroy {
       private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
       private _ngEl: ElementRef, private _renderer: Renderer) {}
 
+
+  @Input('class')
   set initialClasses(v: string) {
     this._applyInitialClasses(true);
     this._initialClasses = isPresent(v) && isString(v) ? v.split(' ') : [];
@@ -91,7 +94,8 @@ export class NgClass implements DoCheck, OnDestroy {
     this._applyClasses(this._rawClass, false);
   }
 
-  set rawClass(v: string|string[]|Set<string>|{[key: string]: any}) {
+  @Input()
+  set ngClass(v: string|string[]|Set<string>|{[key: string]: any}) {
     this._cleanupClasses(this._rawClass);
 
     if (isString(v)) {
