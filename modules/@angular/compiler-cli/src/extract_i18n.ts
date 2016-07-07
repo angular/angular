@@ -19,7 +19,7 @@ import * as ts from 'typescript';
 import * as tsc from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as compiler from '@angular/compiler';
-import {ViewEncapsulation, lockRunMode} from '@angular/core';
+import {ViewEncapsulation} from '@angular/core';
 
 import {StaticReflector} from './static_reflector';
 import {CompileMetadataResolver, HtmlParser, DirectiveNormalizer, Lexer, Parser, DomElementSchemaRegistry, TypeScriptEmitter, MessageExtractor, removeDuplicates, ExtractionResult, Message, ParseError, serializeXmb,} from './compiler_private';
@@ -41,9 +41,7 @@ class Extractor {
       private _options: tsc.AngularCompilerOptions, private _program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: StaticReflector,
       private _resolver: CompileMetadataResolver, private _normalizer: DirectiveNormalizer,
-      private _reflectorHost: ReflectorHost, private _extractor: MessageExtractor) {
-    lockRunMode();
-  }
+      private _reflectorHost: ReflectorHost, private _extractor: MessageExtractor) {}
 
   private _extractCmpMessages(components: compiler.CompileDirectiveMetadata[]): ExtractionResult {
     if (!components || !components.length) {

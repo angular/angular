@@ -895,7 +895,7 @@ export declare class KeyValueDiffers {
     static extend(factories: KeyValueDifferFactory[]): Provider;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare function lockRunMode(): void;
 
 /** @experimental */
