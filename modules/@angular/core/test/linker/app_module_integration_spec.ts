@@ -1,6 +1,6 @@
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
-import {AppModule, AppModuleMetadata, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Host, Inject, Injectable, Injector, OpaqueToken, Optional, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
+import {ANALYZE_FOR_PRECOMPILE, AppModule, AppModuleMetadata, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Host, Inject, Injectable, Injector, OpaqueToken, Optional, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
 import {ComponentFixture, configureCompiler} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
@@ -87,6 +87,14 @@ class SomeComp {
 class ModuleWithPrecompile {
 }
 
+@AppModule({
+  providers:
+      [{provide: ANALYZE_FOR_PRECOMPILE, multi: true, useValue: [{a: 'b', component: SomeComp}]}]
+})
+class ModuleWithAnalyzePrecompileProvider {
+}
+
+
 @Component({
   selector: 'comp',
   template: `<div  [title]="'HELLO' | lowercase"></div><div *ngIf="true"></div>`
@@ -129,6 +137,16 @@ function declareTests({useJit}: {useJit: boolean}) {
     describe('precompile', function() {
       it('should resolve ComponentFactories', () => {
         let appModule = compiler.compileAppModuleSync(ModuleWithPrecompile).create();
+        expect(appModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
+            .toBe(SomeComp);
+        expect(appModule.injector.get(ComponentFactoryResolver)
+                   .resolveComponentFactory(SomeComp)
+                   .componentType)
+            .toBe(SomeComp);
+      });
+
+      it('should resolve ComponentFactories via ANALYZE_FOR_PRECOMPILE', () => {
+        let appModule = compiler.compileAppModuleSync(ModuleWithAnalyzePrecompileProvider).create();
         expect(appModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
             .toBe(SomeComp);
         expect(appModule.injector.get(ComponentFactoryResolver)

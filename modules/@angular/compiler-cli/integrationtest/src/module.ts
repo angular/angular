@@ -11,13 +11,16 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
-import {CompWithPrecompile} from './precompile';
+import {CompWithAnalyzePrecompileProvider, CompWithPrecompile} from './precompile';
 import {ProjectingComp} from './projection';
 import {CompWithChildQuery} from './queries';
 
 @AppModule({
   modules: [BrowserModule],
-  precompile: [AnimateCmp, BasicComp, CompWithPrecompile, ProjectingComp, CompWithChildQuery]
+  precompile: [
+    AnimateCmp, BasicComp, CompWithPrecompile, CompWithAnalyzePrecompileProvider, ProjectingComp,
+    CompWithChildQuery
+  ]
 })
 export class MainModule {
   constructor(public appRef: ApplicationRef) {}

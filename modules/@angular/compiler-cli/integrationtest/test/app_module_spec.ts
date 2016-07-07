@@ -7,7 +7,7 @@
  */
 import './init';
 import {NestedModule, NestedService, ParentComp, SomeComp, SomeModule, SomeService} from '../src/module_fixtures';
-import {SomeModuleNgFactory, SomeModuleUsingParentCompNgFactory} from '../src/module_fixtures.ngfactory';
+import {SomeModuleNgFactory, SomeModuleUsingParentCompNgFactory, SomeModuleWithAnalyzePrecompileProviderNgFactory} from '../src/module_fixtures.ngfactory';
 import {createComponent, createModule} from './util';
 
 describe('AppModule', () => {
@@ -25,6 +25,15 @@ describe('AppModule', () => {
     var compRef = cf.create(moduleRef.injector);
     expect(compRef.instance instanceof SomeComp).toBe(true);
   });
+
+  it('should support precompile via the ANALYZE_FOR_PRECOMPILE provider and function providers in components',
+     () => {
+       const moduleRef = createModule(SomeModuleWithAnalyzePrecompileProviderNgFactory);
+       const cf = moduleRef.componentFactoryResolver.resolveComponentFactory(SomeComp);
+       expect(cf.componentType).toBe(SomeComp);
+       // check that the function call that created the provider for ANALYZE_FOR_PRECOMPILE worked.
+       expect(moduleRef.instance.providedValue).toEqual([{a: 'b', component: SomeComp}]);
+     });
 
   it('should support module directives and pipes', () => {
     var compFixture = createComponent(SomeComp, SomeModuleNgFactory);
