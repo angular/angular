@@ -8,7 +8,7 @@
 
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {XHR} from '@angular/compiler';
-import {APP_INITIALIZER, Component, Directive, ExceptionHandler, Inject, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, ReflectiveInjector, coreLoadAndBootstrap, createPlatform, provide} from '@angular/core';
+import {APP_INITIALIZER, Component, Directive, ExceptionHandler, Inject, Input, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, coreLoadAndBootstrap, createPlatform, provide} from '@angular/core';
 import {ApplicationRef, disposePlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -77,10 +77,18 @@ class HelloUrlCmp {
   greeting = 'hello';
 }
 
-@Component({
-  selector: 'hello-app',
-  template: `<div  [title]="'HELLO' | lowercase"></div><div *ngIf="show"></div>`
-})
+@Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
+class SomeDirective {
+  @Input()
+  someDir: string;
+}
+
+@Pipe({name: 'somePipe'})
+class SomePipe {
+  transform(value: string): any { return `transformed ${value}`; }
+}
+
+@Component({selector: 'hello-app', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
 class HelloCmpUsingPlatformDirectiveAndPipe {
   show: boolean = false;
 }
@@ -95,8 +103,10 @@ class _ArrayLogger {
 
 
 class DummyConsole implements Console {
-  log(message: any /** TODO #9100 */) {}
-  warn(message: any /** TODO #9100 */) {}
+  public warnings: string[] = [];
+
+  log(message: string) {}
+  warn(message: string) { this.warnings.push(message); }
 }
 
 export function main() {
@@ -104,6 +114,8 @@ export function main() {
       testProviders: any /** TODO #9100 */, lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
+    let compilerConsole: DummyConsole;
+
     beforeEachProviders(() => { return [Log]; });
 
     beforeEach(() => {
@@ -117,8 +129,9 @@ export function main() {
       getDOM().appendChild(fakeDoc.body, el2);
       getDOM().appendChild(el, lightDom);
       getDOM().setText(lightDom, 'loading');
+      compilerConsole = new DummyConsole();
       testProviders =
-          [{provide: DOCUMENT, useValue: fakeDoc}, {provide: Console, useClass: DummyConsole}];
+          [{provide: DOCUMENT, useValue: fakeDoc}, {provide: Console, useValue: compilerConsole}];
     });
 
     afterEach(disposePlatform);
@@ -286,31 +299,34 @@ export function main() {
     it('should still allow to provide a custom xhr via the regular providers',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          let spyXhr: XHR = {get: (url: string) => Promise.resolve('{{greeting}} world!')};
-         bootstrap(HelloUrlCmp, testProviders.concat([{provide: XHR, useValue: spyXhr}]))
-             .then((compRef) => {
-               expect(el).toHaveText('hello world!');
-               async.done();
-             });
+         bootstrap(HelloUrlCmp, testProviders.concat([
+           {provide: XHR, useValue: spyXhr}
+         ])).then((compRef) => {
+           expect(el).toHaveText('hello world!');
+           expect(compilerConsole.warnings).toEqual([
+             'Passing an instance of XHR to "bootstrap()" as provider is deprecated. Pass the provider to "createCompiler()" and call "bootstrap()" with the created compiler instead.'
+           ]);
+           async.done();
+         });
        }));
 
     // Note: This will soon be deprecated as bootstrap creates a separate injector for the compiler,
     // i.e. such providers needs to go into that injecotr (when calling `browserCompiler`);
     it('should still allow to provide platform directives/pipes via the regular providers',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+       inject([Console, AsyncTestCompleter], (console: DummyConsole, async: AsyncTestCompleter) => {
          bootstrap(HelloCmpUsingPlatformDirectiveAndPipe, testProviders.concat([
-           {provide: PLATFORM_DIRECTIVES, useValue: [NgIf]},
-           {provide: PLATFORM_PIPES, useValue: [LowerCasePipe]}
+           {provide: PLATFORM_DIRECTIVES, useValue: [SomeDirective]},
+           {provide: PLATFORM_PIPES, useValue: [SomePipe]}
          ])).then((compRef) => {
            let compFixture = new ComponentFixture(compRef, null, null);
-           let el = compFixture.debugElement;
-           // Test that ngIf works
-           expect(el.children.length).toBe(1);
-           compFixture.componentInstance.show = true;
            compFixture.detectChanges();
-           expect(el.children.length).toBe(2);
+           expect(compFixture.debugElement.children[0].properties['title'])
+               .toBe('transformed someValue');
 
-           // Test that lowercase pipe works
-           expect(el.children[0].properties['title']).toBe('hello');
+           expect(compilerConsole.warnings).toEqual([
+             'Passing PLATFORM_DIRECTIVES to "bootstrap()" as provider is deprecated. Use the new parameter "directives" of "bootstrap()" instead.',
+             'Passing PLATFORM_PIPES to "bootstrap()" as provider is deprecated. Use the new parameter "pipes" of "bootstrap()" instead.'
+           ]);
            async.done();
          });
        }));
