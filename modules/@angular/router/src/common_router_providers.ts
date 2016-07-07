@@ -53,7 +53,7 @@ export function setupRouterInitializer(injector: Injector) {
   // APP_INITIALIZER -> Router)
   setTimeout(() => {
     const appRef = injector.get(ApplicationRef);
-    if (appRef.componentTypes.length == 0) {
+    if (appRef.componentTypes.length === 0) {
       appRef.registerBootstrapListener(() => { injector.get(Router).initialNavigation(); });
     } else {
       injector.get(Router).initialNavigation();
