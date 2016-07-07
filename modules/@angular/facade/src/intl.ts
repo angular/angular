@@ -37,7 +37,7 @@ export class NumberFormatter {
   }
 }
 var DATE_FORMATS_SPLIT =
-    /((?:[^yMLdHhmsaZEwGjJ']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|J+|j+|m+|s+|a|Z|G+|w+))(.*)/;
+    /((?:[^yMLdHhmsazZEwGjJ']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|J+|j+|m+|s+|a|z|Z|G+|w+))(.*)/;
 
 var PATTERN_ALIASES = {
   yMMMdjms: datePartGetterFactory(combine([
@@ -99,8 +99,8 @@ var DATE_FORMATS = {
   EE: datePartGetterFactory(nameCondition('weekday', 2)),
   E: datePartGetterFactory(nameCondition('weekday', 1)),
   a: hourClockExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), true))),
-  Z: datePartGetterFactory({timeZoneName: 'long'}),
-  z: datePartGetterFactory({timeZoneName: 'short'}),
+  Z: timeZoneGetter('short'),
+  z: timeZoneGetter('long'),
   ww: datePartGetterFactory({}),  // Week of year, padded (00-53). Week 01 is the week with the
                                   // first Thursday of the year. not support ?
   w: datePartGetterFactory({}),   // Week of year (0-53). Week 1 is the week with the first Thursday
@@ -136,6 +136,16 @@ function hourExtracter(inner: (date: Date, locale: string) => string): (
     var result = inner(date, locale);
 
     return result.split(' ')[0];
+  };
+}
+
+function timeZoneGetter(timezone: string): (date: Date, locale: string) => string {
+  // To workaround `Intl` API restriction for single timezone let format with 24 hours
+  const format = {hour: '2-digit', hour12: false, timeZoneName: timezone};
+  return function(date: Date, locale: string): string {
+    const result = new Intl.DateTimeFormat(locale, format).format(date);
+    // Then extract first 3 letters that related to hours
+    return result ? result.substring(3) : '';
   };
 }
 
