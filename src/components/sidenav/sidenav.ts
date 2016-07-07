@@ -37,7 +37,7 @@ export class MdDuplicatedSidenavError extends MdError {
   selector: 'md-sidenav',
   template: '<ng-content></ng-content>',
   host: {
-    '(transitionend)': 'onTransitionEnd($event)',
+    '(transitionend)': '_onTransitionEnd($event)',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -142,9 +142,8 @@ export class MdSidenav {
    * When transition has finished, set the internal state for classes and emit the proper event.
    * The event passed is actually of type TransitionEvent, but that type is not available in
    * Android so we use any.
-   * @internal
    */
-  onTransitionEnd(transitionEvent: TransitionEvent) {
+  _onTransitionEnd(transitionEvent: TransitionEvent) {
     if (transitionEvent.target == this._elementRef.nativeElement
         // Simpler version to check for prefixes.
         && transitionEvent.propertyName.endsWith('transform')) {
@@ -174,37 +173,33 @@ export class MdSidenav {
     }
   }
 
-  @HostBinding('class.md-sidenav-closing') private get _isClosing() {
+  @HostBinding('class.md-sidenav-closing') get _isClosing() {
     return !this._opened && this._transition;
   }
-  @HostBinding('class.md-sidenav-opening') private get _isOpening() {
+  @HostBinding('class.md-sidenav-opening') get _isOpening() {
     return this._opened && this._transition;
   }
-  @HostBinding('class.md-sidenav-closed') private get _isClosed() {
+  @HostBinding('class.md-sidenav-closed') get _isClosed() {
     return !this._opened && !this._transition;
   }
-  @HostBinding('class.md-sidenav-opened') private get _isOpened() {
+  @HostBinding('class.md-sidenav-opened') get _isOpened() {
     return this._opened && !this._transition;
   }
-  @HostBinding('class.md-sidenav-end') private get _isEnd() {
+  @HostBinding('class.md-sidenav-end') get _isEnd() {
     return this.align == 'end';
   }
-  @HostBinding('class.md-sidenav-side') private get _modeSide() {
+  @HostBinding('class.md-sidenav-side') get _modeSide() {
     return this.mode == 'side';
   }
-  @HostBinding('class.md-sidenav-over') private get _modeOver() {
+  @HostBinding('class.md-sidenav-over') get _modeOver() {
     return this.mode == 'over';
   }
-  @HostBinding('class.md-sidenav-push') private get _modePush() {
+  @HostBinding('class.md-sidenav-push') get _modePush() {
     return this.mode == 'push';
   }
 
-  /**
-   * This is public because we need it from MdSidenavLayout, but it's undocumented and should
-   * not be used outside.
-   * @internal
-   */
-  get width() {
+  /** TODO: internal (needed by MdSidenavLayout). */
+  get _width() {
     if (this._elementRef.nativeElement) {
       return this._elementRef.nativeElement.offsetWidth;
     }
@@ -240,7 +235,7 @@ export class MdSidenav {
   ],
 })
 export class MdSidenavLayout implements AfterContentInit {
-  @ContentChildren(MdSidenav) private _sidenavs: QueryList<MdSidenav>;
+  @ContentChildren(MdSidenav) _sidenavs: QueryList<MdSidenav>;
 
   get start() { return this._start; }
   get end() { return this._end; }
@@ -279,7 +274,6 @@ export class MdSidenavLayout implements AfterContentInit {
   * Subscribes to sidenav events in order to set a class on the main layout element when the sidenav
   * is open and the backdrop is visible. This ensures any overflow on the layout element is properly
   * hidden.
-  * @internal
   */
   private _watchSidenavToggle(sidenav: MdSidenav): void {
     if (!sidenav || sidenav.mode === 'side') { return; }
@@ -323,8 +317,7 @@ export class MdSidenavLayout implements AfterContentInit {
     }
   }
 
-  /** @internal */
-  closeModalSidenav() {
+  _closeModalSidenav() {
     if (this._start != null && this._start.mode != 'side') {
       this._start.close();
     }
@@ -333,8 +326,7 @@ export class MdSidenavLayout implements AfterContentInit {
     }
   }
 
-  /** @internal */
-  isShowingBackdrop(): boolean {
+  _isShowingBackdrop(): boolean {
     return (this._isSidenavOpen(this._start) && this._start.mode != 'side')
         || (this._isSidenavOpen(this._end) && this._end.mode != 'side');
   }
@@ -350,26 +342,22 @@ export class MdSidenavLayout implements AfterContentInit {
    * @param mode
    */
   private _getSidenavEffectiveWidth(sidenav: MdSidenav, mode: string): number {
-    return (this._isSidenavOpen(sidenav) && sidenav.mode == mode) ? sidenav.width : 0;
+    return (this._isSidenavOpen(sidenav) && sidenav.mode == mode) ? sidenav._width : 0;
   }
 
-  /** @internal */
-  getMarginLeft() {
+  _getMarginLeft() {
     return this._getSidenavEffectiveWidth(this._left, 'side');
   }
 
-  /** @internal */
-  getMarginRight() {
+  _getMarginRight() {
     return this._getSidenavEffectiveWidth(this._right, 'side');
   }
 
-  /** @internal */
-  getPositionLeft() {
+  _getPositionLeft() {
     return this._getSidenavEffectiveWidth(this._left, 'push');
   }
 
-  /** @internal */
-  getPositionRight() {
+  _getPositionRight() {
     return this._getSidenavEffectiveWidth(this._right, 'push');
   }
 
@@ -377,22 +365,20 @@ export class MdSidenavLayout implements AfterContentInit {
    * Returns the horizontal offset for the content area.  There should never be a value for both
    * left and right, so by subtracting the right value from the left value, we should always get
    * the appropriate offset.
-   * @internal
    */
-  getPositionOffset() {
-    return this.getPositionLeft() - this.getPositionRight();
+  _getPositionOffset() {
+    return this._getPositionLeft() - this._getPositionRight();
   }
 
   /**
    * This is using [ngStyle] rather than separate [style...] properties because [style.transform]
    * doesn't seem to work right now.
-   * @internal
    */
-  getStyles() {
+  _getStyles() {
     return {
-      marginLeft: `${this.getMarginLeft()}px`,
-      marginRight: `${this.getMarginRight()}px`,
-      transform: `translate3d(${this.getPositionOffset()}px, 0, 0)`
+      marginLeft: `${this._getMarginLeft()}px`,
+      marginRight: `${this._getMarginRight()}px`,
+      transform: `translate3d(${this._getPositionOffset()}px, 0, 0)`
     };
   }
 }

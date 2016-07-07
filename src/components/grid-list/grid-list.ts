@@ -55,7 +55,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
   private _tileStyler: TileStyler;
 
   /** Query list of tiles that are being rendered. */
-  @ContentChildren(MdGridTile) private _tiles: QueryList<MdGridTile>;
+  @ContentChildren(MdGridTile) _tiles: QueryList<MdGridTile>;
 
   constructor(
       private _renderer: Renderer,
@@ -139,14 +139,11 @@ export class MdGridList implements OnInit, AfterContentChecked {
       let tile = tiles[i];
       this._tileStyler.setStyle(tile, pos.row, pos.col);
     }
-    this.setListStyle(this._tileStyler.getComputedHeight());
+    this._setListStyle(this._tileStyler.getComputedHeight());
   }
 
-  /**
-   * Sets style on the main grid-list element, given the style name and value.
-   * @internal
-   */
-  setListStyle(style: [string, string]): void {
+  /** Sets style on the main grid-list element, given the style name and value. */
+  _setListStyle(style: [string, string]): void {
     if (style) {
       this._renderer.setElementStyle(this._element.nativeElement, style[0], style[1]);
     }

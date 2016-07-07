@@ -49,7 +49,7 @@ function createFixture(appType: Type, builder: TestComponentBuilder,
 
 function endSidenavTransition(fixture: ComponentFixture<any>) {
   let sidenav: any = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
-  sidenav.onTransitionEnd({
+  sidenav._onTransitionEnd({
     target: (<any>sidenav)._elementRef.nativeElement,
     propertyName: 'transform'
   });

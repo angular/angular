@@ -237,19 +237,13 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
     this.change.emit(event);
   }
 
-  /**
-   * Informs the component when the input has focus so that we can style accordingly
-   * @internal
-   */
-  onInputFocus() {
+  /** Informs the component when the input has focus so that we can style accordingly */
+  _onInputFocus() {
     this.hasFocus = true;
   }
 
-  /**
-   * Informs the component when we lose focus in order to style accordingly
-   * @internal
-   */
-  onInputBlur() {
+  /** Informs the component when we lose focus in order to style accordingly */
+  _onInputBlur() {
     this.hasFocus = false;
     this.onTouched();
   }
@@ -265,9 +259,8 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
    * Event handler for checkbox input element.
    * Toggles checked state if element is not disabled.
    * @param event
-   * @internal
    */
-  onInteractionEvent(event: Event) {
+  _onInteractionEvent(event: Event) {
     // We always have to stop propagation on the change event.
     // Otherwise the change event, from the input element, will bubble up and
     // emit its event object to the `change` output.
@@ -278,8 +271,7 @@ export class MdCheckbox implements AfterContentInit, ControlValueAccessor {
     }
   }
 
-  /** @internal */
-  onInputClick(event: Event) {
+  _onInputClick(event: Event) {
     // We have to stop propagation for click events on the visual hidden input element.
     // By default, when a user clicks on a label element, a generated click event will be
     // dispatched on the associated input element. Since we are using a label element as our

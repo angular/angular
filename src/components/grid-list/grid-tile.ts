@@ -43,11 +43,11 @@ export class MdGridTile {
     this._colspan = coerceToNumber(value);
   }
 
-  /** Sets the style of the grid-tile element.  Needs to be set manually to avoid
+  /**
+   * Sets the style of the grid-tile element.  Needs to be set manually to avoid
    * "Changed after checked" errors that would occur with HostBinding.
-   * @internal
    */
-  setStyle(property: string, value: string): void {
+  _setStyle(property: string, value: string): void {
     this._renderer.setElementStyle(this._element.nativeElement, property, value);
   }
 

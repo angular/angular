@@ -81,7 +81,7 @@ export class MdButtonToggleGroup implements ControlValueAccessor {
 
   /** Child button toggle buttons. */
   @ContentChildren(forwardRef(() => MdButtonToggle))
-  private _buttonToggles: QueryList<MdButtonToggle> = null;
+  _buttonToggles: QueryList<MdButtonToggle> = null;
 
   @Input()
   get name(): string {
@@ -219,11 +219,8 @@ export class MdButtonToggle implements OnInit {
   /** Whether or not this button toggle is checked. */
   private _checked: boolean = false;
 
-  /**
-   * Type of the button toggle. Either 'radio' or 'checkbox'.
-   * @internal
-   */
-  type: ToggleType;
+  /** Type of the button toggle. Either 'radio' or 'checkbox'. */
+  _type: ToggleType;
 
   /** The unique ID for this button toggle. */
   @HostBinding()
@@ -269,18 +266,17 @@ export class MdButtonToggle implements OnInit {
         }
       });
 
-      this.type = 'radio';
+      this._type = 'radio';
       this.name = this.buttonToggleGroup.name;
       this._isSingleSelector = true;
     } else {
       // Even if there is no group at all, treat the button toggle as a checkbox so it can be
       // toggled on or off.
-      this.type = 'checkbox';
+      this._type = 'checkbox';
       this._isSingleSelector = false;
     }
   }
 
-  /** @internal */
   ngOnInit() {
     if (this.id == null) {
       this.id = `md-button-toggle-${_uniqueIdCounter++}`;
@@ -359,11 +355,8 @@ export class MdButtonToggle implements OnInit {
     this.checked = !this.checked;
   }
 
-  /**
-   * Checks the button toggle due to an interaction with the underlying native input.
-   * @internal
-   */
-  onInputChange(event: Event) {
+  /** Checks the button toggle due to an interaction with the underlying native input. */
+  _onInputChange(event: Event) {
     event.stopPropagation();
 
     if (this._isSingleSelector) {

@@ -134,9 +134,7 @@ export class TileCoordinator {
   }
 }
 
-/** Simple data structure for tile position (row, col).
- * @internal
- */
+/** Simple data structure for tile position (row, col). */
 export class TilePosition {
   constructor(public row: number, public col: number) {}
 }

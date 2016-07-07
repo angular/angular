@@ -96,7 +96,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   /** Child radio buttons. */
   @ContentChildren(forwardRef(() => MdRadioButton))
-  private _radios: QueryList<MdRadioButton> = null;
+  _radios: QueryList<MdRadioButton> = null;
 
   @Input()
   get name(): string {
@@ -168,9 +168,8 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   /**
    * Mark this group as being "touched" (for ngModel). Meant to be called by the contained
    * radio buttons upon their blur.
-   * @internal
    */
-  touch() {
+  _touch() {
     if (this.onTouched) {
       this.onTouched();
     }
@@ -241,12 +240,12 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   styleUrls: ['radio.css'],
   encapsulation: ViewEncapsulation.None,
   host: {
-    '(click)': 'onClick($event)'
+    '(click)': '_onClick($event)'
   }
 })
 export class MdRadioButton implements OnInit {
   @HostBinding('class.md-radio-focused')
-  private _isFocused: boolean;
+  _isFocused: boolean;
 
   /** Whether this radio is checked. */
   private _checked: boolean = false;
@@ -375,8 +374,7 @@ export class MdRadioButton implements OnInit {
     this.change.emit(event);
   }
 
-  /** @internal */
-  onClick(event: Event) {
+  _onClick(event: Event) {
     if (this.disabled) {
       event.preventDefault();
       event.stopPropagation();
@@ -387,7 +385,7 @@ export class MdRadioButton implements OnInit {
       // Propagate the change one-way via the group, which will in turn mark this
       // button as checked.
       this.radioGroup.selected = this;
-      this.radioGroup.touch();
+      this.radioGroup._touch();
     } else {
       this.checked = true;
     }
@@ -397,25 +395,22 @@ export class MdRadioButton implements OnInit {
    * We use a hidden native input field to handle changes to focus state via keyboard navigation,
    * with visual rendering done separately. The native element is kept in sync with the overall
    * state of the component.
-   * @internal
    */
-  onInputFocus() {
+  _onInputFocus() {
     this._isFocused = true;
   }
 
-  /** @internal */
-  onInputBlur() {
+  _onInputBlur() {
     this._isFocused = false;
     if (this.radioGroup) {
-      this.radioGroup.touch();
+      this.radioGroup._touch();
     }
   }
 
   /**
    * Checks the radio due to an interaction with the underlying native <input type="radio">
-   * @internal
    */
-  onInputChange(event: Event) {
+  _onInputChange(event: Event) {
     // We always have to stop propagation on the change event.
     // Otherwise the change event, from the input element, will bubble up and
     // emit its event object to the `change` output.
@@ -423,7 +418,7 @@ export class MdRadioButton implements OnInit {
 
     this.checked = true;
     if (this.radioGroup) {
-      this.radioGroup.touch();
+      this.radioGroup._touch();
     }
   }
 }

@@ -35,8 +35,8 @@ type EasingFn = (currentTime: number, startValue: number,
   selector: 'md-progress-circle',
   host: {
     'role': 'progressbar',
-    '[attr.aria-valuemin]': 'ariaValueMin',
-    '[attr.aria-valuemax]': 'ariaValueMax',
+    '[attr.aria-valuemin]': '_ariaValueMin',
+    '[attr.aria-valuemax]': '_ariaValueMax',
   },
   templateUrl: 'progress-circle.html',
   styleUrls: ['progress-circle.css'],
@@ -53,23 +53,20 @@ export class MdProgressCircle implements OnDestroy {
    * Values for aria max and min are only defined as numbers when in a determinate mode.  We do this
    * because voiceover does not report the progress indicator as indeterminate if the aria min
    * and/or max value are number values.
-   *
-   * @internal
    */
-  get ariaValueMin() {
+  get _ariaValueMin() {
     return this.mode == 'determinate' ? 0 : null;
   }
 
-  /** @internal */
-  get ariaValueMax() {
+  get _ariaValueMax() {
     return this.mode == 'determinate' ? 100 : null;
   }
 
-  /** @internal */
+  /** TODO: internal */
   get interdeterminateInterval() {
     return this._interdeterminateInterval;
   }
-  /** @internal */
+  /** TODO: internal */
   set interdeterminateInterval(interval: number) {
     clearInterval(this._interdeterminateInterval);
     this._interdeterminateInterval = interval;
@@ -77,6 +74,8 @@ export class MdProgressCircle implements OnDestroy {
 
   /** The current path value, representing the progres circle. */
   private _currentPath: string;
+
+  /** TODO: internal */
   get currentPath() {
     return this._currentPath;
   }

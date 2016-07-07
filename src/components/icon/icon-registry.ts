@@ -29,14 +29,10 @@ export class MdIconSvgTagNotFoundError extends MdError {
   }
 }
 
-/**
-  * Configuration for an icon, including the URL and possibly the cached SVG element.
-  * @internal
-  */
+/** Configuration for an icon, including the URL and possibly the cached SVG element. */
 class SvgIconConfig {
   svgElement: SVGElement = null;
-  constructor(public url: string) {
-  }
+  constructor(public url: string) { }
 }
 
 /** Returns the cache key to use for an icon namespace and name. */

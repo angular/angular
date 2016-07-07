@@ -2,8 +2,11 @@ import {MdGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {MdGridListBadRatioError} from './grid-list-errors';
 
-/* Sets the style properties for an individual tile, given the position calculated by the
-* Tile Coordinator. */
+/**
+ * Sets the style properties for an individual tile, given the position calculated by the
+ * Tile Coordinator.
+ * TODO: internal
+ */
 export class TileStyler {
   _gutterSize: string;
   _rows: number = 0;
@@ -11,10 +14,10 @@ export class TileStyler {
   _cols: number;
   _direction: string;
 
-  /** Adds grid-list layout info once it is available. Cannot be processed in the constructor
+  /**
+   * Adds grid-list layout info once it is available. Cannot be processed in the constructor
    * because these properties haven't been calculated by that point.
-   * @internal
-   * */
+   */
   init(_gutterSize: string, tracker: TileCoordinator, cols: number, direction: string): void {
     this._gutterSize = normalizeUnits(_gutterSize);
     this._rows = tracker.rowCount;
@@ -26,7 +29,6 @@ export class TileStyler {
   /**
    * Computes the amount of space a single 1x1 tile would take up (width or height).
    * Used as a basis for other calculations.
-   * @internal
    * @param sizePercent Percent of the total grid-list space that one 1x1 tile would take up.
    * @param gutterFraction Fraction of the gutter size taken up by one 1x1 tile.
    * @return The size of a 1x1 tile as an expression that can be evaluated via CSS calc().
@@ -43,7 +45,6 @@ export class TileStyler {
 
   /**
    * Gets The horizontal or vertical position of a tile, e.g., the 'top' or 'left' property value.
-   * @internal
    * @param offset Number of tiles that have already been rendered in the row/column.
    * @param baseSize Base size of a 1x1 tile (as computed in getBaseTileSize).
    * @return Position of the tile as a CSS calc() expression.
@@ -57,7 +58,6 @@ export class TileStyler {
 
   /**
    * Gets the actual size of a tile, e.g., width or height, taking rowspan or colspan into account.
-   * @internal
    * @param baseSize Base size of a 1x1 tile (as computed in getBaseTileSize).
    * @param span The tile's rowspan or colspan.
    * @return Size of the tile as a CSS calc() expression.
@@ -67,9 +67,7 @@ export class TileStyler {
   }
 
 
-  /** Gets the style properties to be applied to a tile for the given row and column index.
-   * @internal
-   */
+  /** Gets the style properties to be applied to a tile for the given row and column index. */
   setStyle(tile: MdGridTile, rowIndex: number, colIndex: number): void {
     // Percent of the available horizontal space that one column takes up.
     let percentWidthPerTile = 100 / this._cols;
@@ -82,9 +80,7 @@ export class TileStyler {
     this.setRowStyles(tile, rowIndex, percentWidthPerTile, gutterWidthFractionPerTile);
   }
 
-  /** Sets the horizontal placement of the tile in the list.
-   * @internal
-   */
+  /** Sets the horizontal placement of the tile in the list. */
   setColStyles(tile: MdGridTile, colIndex: number, percentWidth: number,
                gutterWidth: number) {
     // Base horizontal size of a column.
@@ -93,58 +89,54 @@ export class TileStyler {
     // The width and horizontal position of each tile is always calculated the same way, but the
     // height and vertical position depends on the rowMode.
     let side = this._direction === 'ltr' ? 'left' : 'right';
-    tile.setStyle(side, this.getTilePosition(baseTileWidth, colIndex));
-    tile.setStyle('width', calc(this.getTileSize(baseTileWidth, tile.colspan)));
+    tile._setStyle(side, this.getTilePosition(baseTileWidth, colIndex));
+    tile._setStyle('width', calc(this.getTileSize(baseTileWidth, tile.colspan)));
   }
 
-  /** Calculates the total size taken up by gutters across one axis of a list.
-   * @internal
-   */
+  /** Calculates the total size taken up by gutters across one axis of a list. */
   getGutterSpan(): string {
     return `${this._gutterSize} * (${this._rowspan} - 1)`;
   }
 
-  /** Calculates the total size taken up by tiles across one axis of a list.
-   * @internal
-   */
+  /** Calculates the total size taken up by tiles across one axis of a list. */
   getTileSpan(tileHeight: string): string {
     return `${this._rowspan} * ${this.getTileSize(tileHeight, 1)}`;
   }
 
-  /** Sets the vertical placement of the tile in the list.
-  * This method will be implemented by each type of TileStyler.
-* @internal
-*/
+  /**
+   * Sets the vertical placement of the tile in the list.
+   * This method will be implemented by each type of TileStyler.
+   */
   setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number, gutterWidth: number) {}
 
-  /** Calculates the computed height and returns the correct style property to set.
-  * This method will be implemented by each type of TileStyler.
-* @internal
-*/
+  /**
+   * Calculates the computed height and returns the correct style property to set.
+   * This method will be implemented by each type of TileStyler.
+   */
   getComputedHeight(): [string, string] { return null; }
 }
 
 
-/*  This type of styler is instantiated when the user passes in a fixed row height
-*   Example <md-grid-list cols="3" rowHeight="100px"> */
+/**
+ * This type of styler is instantiated when the user passes in a fixed row height.
+ * Example <md-grid-list cols="3" rowHeight="100px">
+ * TODO: internal
+ */
 export class FixedTileStyler extends TileStyler {
 
   constructor(public fixedRowHeight: string) { super(); }
 
-  /** @internal */
   init(gutterSize: string, tracker: TileCoordinator, cols: number, direction: string) {
     super.init(gutterSize, tracker, cols, direction);
     this.fixedRowHeight = normalizeUnits(this.fixedRowHeight);
   }
 
-  /** @internal */
   setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number,
                gutterWidth: number): void {
-    tile.setStyle('top', this.getTilePosition(this.fixedRowHeight, rowIndex));
-    tile.setStyle('height', calc(this.getTileSize(this.fixedRowHeight, tile.rowspan)));
+    tile._setStyle('top', this.getTilePosition(this.fixedRowHeight, rowIndex));
+    tile._setStyle('height', calc(this.getTileSize(this.fixedRowHeight, tile.rowspan)));
   }
 
-  /** @internal */
   getComputedHeight(): [string, string] {
     return [
       'height', calc(`${this.getTileSpan(this.fixedRowHeight)} + ${this.getGutterSpan()}`)
@@ -152,8 +144,12 @@ export class FixedTileStyler extends TileStyler {
   }
 }
 
-/*  This type of styler is instantiated when the user passes in a width:height ratio
- *  for the row height.  Example <md-grid-list cols="3" rowHeight="3:1"> */
+
+/**
+ * This type of styler is instantiated when the user passes in a width:height ratio
+ * for the row height.  Example <md-grid-list cols="3" rowHeight="3:1">
+ * TODO: internal
+ */
 export class RatioTileStyler extends TileStyler {
 
   /** Ratio width:height given by user to determine row height.*/
@@ -165,7 +161,6 @@ export class RatioTileStyler extends TileStyler {
     this._parseRatio(value);
   }
 
-  /** @internal */
   setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number,
                gutterWidth: number): void {
     let percentHeightPerTile = percentWidth / this.rowHeightRatio;
@@ -174,18 +169,16 @@ export class RatioTileStyler extends TileStyler {
     // Use paddingTop and marginTop to maintain the given aspect ratio, as
     // a percentage-based value for these properties is applied versus the *width* of the
     // containing block. See http://www.w3.org/TR/CSS2/box.html#margin-properties
-    tile.setStyle('marginTop', this.getTilePosition(this.baseTileHeight, rowIndex));
-    tile.setStyle('paddingTop', calc(this.getTileSize(this.baseTileHeight, tile.rowspan)));
+    tile._setStyle('marginTop', this.getTilePosition(this.baseTileHeight, rowIndex));
+    tile._setStyle('paddingTop', calc(this.getTileSize(this.baseTileHeight, tile.rowspan)));
   }
 
-  /** @internal */
   getComputedHeight(): [string, string] {
     return [
       'paddingBottom', calc(`${this.getTileSpan(this.baseTileHeight)} + ${this.getGutterSpan()}`)
     ];
   }
 
-  /** @internal */
   private _parseRatio(value: string): void {
     let ratioParts = value.split(':');
 
@@ -202,7 +195,6 @@ export class RatioTileStyler extends TileStyler {
  *  by the number of rows.  Example <md-grid-list cols="3" rowHeight="fit"> */
 export class FitTileStyler extends TileStyler {
 
-  /** @internal */
   setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number,
                gutterWidth: number): void {
     // Percent of the available vertical space that one row takes up.
@@ -214,19 +206,17 @@ export class FitTileStyler extends TileStyler {
     // Base vertical size of a column.
     let baseTileHeight = this.getBaseTileSize(percentHeightPerTile, gutterHeightPerTile);
 
-    tile.setStyle('top', this.getTilePosition(baseTileHeight, rowIndex));
-    tile.setStyle('height', calc(this.getTileSize(baseTileHeight, tile.rowspan)));
+    tile._setStyle('top', this.getTilePosition(baseTileHeight, rowIndex));
+    tile._setStyle('height', calc(this.getTileSize(baseTileHeight, tile.rowspan)));
   }
 }
 
-/** Wraps a CSS string in a calc function
- * @internal
- */
+
+/** Wraps a CSS string in a calc function */
 function calc(exp: string): string { return `calc(${exp})`; }
 
-/** Appends pixels to a CSS string if no units are given.
- * @internal
- */
+
+/** Appends pixels to a CSS string if no units are given. */
 function normalizeUnits(value: string): string {
   return (value.match(/px|em|rem/)) ? value : value + 'px';
 }

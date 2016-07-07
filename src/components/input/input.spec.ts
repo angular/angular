@@ -278,12 +278,12 @@ describe('MdInput', function () {
         expect(testComponent.onFocus).not.toHaveBeenCalled();
         expect(testComponent.onBlur).not.toHaveBeenCalled();
 
-        inputComponent.handleFocus(fakeEvent);
+        inputComponent._handleFocus(fakeEvent);
         tick();
         expect(testComponent.onFocus).toHaveBeenCalledWith(fakeEvent);
 
 
-        inputComponent.handleBlur(fakeEvent);
+        inputComponent._handleBlur(fakeEvent);
         tick();
         expect(testComponent.onBlur).toHaveBeenCalledWith(fakeEvent);
       })();

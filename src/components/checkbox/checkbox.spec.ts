@@ -122,12 +122,12 @@ describe('MdCheckbox', () => {
       expect(checkboxInstance.checked).toBe(false);
       expect(checkboxInstance.indeterminate).toBe(true);
 
-      checkboxInstance.onInteractionEvent(<Event>{stopPropagation: () => {}});
+      checkboxInstance._onInteractionEvent(<Event>{stopPropagation: () => {}});
 
       expect(checkboxInstance.checked).toBe(true);
       expect(checkboxInstance.indeterminate).toBe(false);
 
-      checkboxInstance.onInteractionEvent(<Event>{stopPropagation: () => {}});
+      checkboxInstance._onInteractionEvent(<Event>{stopPropagation: () => {}});
       fixture.detectChanges();
 
       expect(checkboxInstance.checked).toBe(false);

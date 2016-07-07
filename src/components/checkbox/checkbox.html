@@ -9,10 +9,10 @@
            [indeterminate]="indeterminate"
            [attr.aria-label]="ariaLabel"
            [attr.aria-labelledby]="ariaLabelledby"
-           (focus)="onInputFocus()"
-           (blur)="onInputBlur()"
-           (change)="onInteractionEvent($event)"
-           (click)="onInputClick($event)">
+           (focus)="_onInputFocus()"
+           (blur)="_onInputBlur()"
+           (change)="_onInteractionEvent($event)"
+           (click)="_onInputClick($event)">
     <div class="md-ink-ripple"></div>
     <div class="md-checkbox-frame"></div>
     <div class="md-checkbox-background">

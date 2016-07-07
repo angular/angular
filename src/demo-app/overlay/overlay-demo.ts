@@ -34,7 +34,7 @@ export class OverlayDemo {
   isMenuOpen: boolean = false;
 
   @ViewChildren(TemplatePortalDirective) templatePortals: QueryList<Portal<any>>;
-  @ViewChild(OverlayOrigin) private _overlayOrigin: OverlayOrigin;
+  @ViewChild(OverlayOrigin) _overlayOrigin: OverlayOrigin;
 
   constructor(public overlay: Overlay, public viewContainerRef: ViewContainerRef) { }
 

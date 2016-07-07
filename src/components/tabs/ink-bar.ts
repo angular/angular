@@ -1,9 +1,7 @@
 import {Directive, Renderer, ElementRef} from '@angular/core';
 
-/**
- * The ink-bar is used to display and animate the line underneath the current active tab label.
- * @internal
- */
+
+/** The ink-bar is used to display and animate the line underneath the current active tab label. */
 @Directive({
   selector: 'md-ink-bar',
 })

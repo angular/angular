@@ -88,9 +88,8 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
    * The onChangeEvent method will be also called on click.
    * This is because everything for the slide-toggle is wrapped inside of a label,
    * which triggers a onChange event on click.
-   * @internal
    */
-  onChangeEvent(event: Event) {
+  _onChangeEvent(event: Event) {
     // We always have to stop propagation on the change event.
     // Otherwise the change event, from the input element, will bubble up and
     // emit its event object to the component's `change` output.
@@ -101,8 +100,7 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
     }
   }
 
-  /** @internal */
-  onInputClick(event: Event) {
+  _onInputClick(event: Event) {
     this.onTouched();
 
     // We have to stop propagation for click events on the visual hidden input element.
@@ -115,8 +113,7 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
     event.stopPropagation();
   }
 
-  /** @internal */
-  setMousedown() {
+  _setMousedown() {
     // We only *show* the focus style when focus has come to the button via the keyboard.
     // The Material Design spec is silent on this topic, and without doing this, the
     // button continues to look :active after clicking.
@@ -125,8 +122,7 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
     setTimeout(() => this._isMousedown = false, 100);
   }
 
-  /** @internal */
-  onInputFocus() {
+  _onInputFocus() {
     // Only show the focus / ripple indicator when the focus was not triggered by a mouse
     // interaction on the component.
     if (!this._isMousedown) {
@@ -134,8 +130,7 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
     }
   }
 
-  /** @internal */
-  onInputBlur() {
+  _onInputBlur() {
     this._hasFocus = false;
     this.onTouched();
   }

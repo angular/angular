@@ -88,27 +88,27 @@ describe('MdProgressBar', () => {
         let progressElement = fixture.debugElement.query(By.css('md-progress-bar'));
         let progressComponent = progressElement.componentInstance;
 
-        expect(progressComponent.primaryTransform()).toEqual({ transform: 'scaleX(0)' });
-        expect(progressComponent.bufferTransform()).toBe(undefined);
+        expect(progressComponent._primaryTransform()).toEqual({ transform: 'scaleX(0)' });
+        expect(progressComponent._bufferTransform()).toBe(undefined);
 
         progressComponent.value = 40;
-        expect(progressComponent.primaryTransform()).toEqual({ transform: 'scaleX(0.4)' });
-        expect(progressComponent.bufferTransform()).toBe(undefined);
+        expect(progressComponent._primaryTransform()).toEqual({ transform: 'scaleX(0.4)' });
+        expect(progressComponent._bufferTransform()).toBe(undefined);
 
         progressComponent.value = 35;
         progressComponent.bufferValue = 55;
-        expect(progressComponent.primaryTransform()).toEqual({ transform: 'scaleX(0.35)' });
-        expect(progressComponent.bufferTransform()).toBe(undefined);
+        expect(progressComponent._primaryTransform()).toEqual({ transform: 'scaleX(0.35)' });
+        expect(progressComponent._bufferTransform()).toBe(undefined);
 
         progressComponent.mode = 'buffer';
-        expect(progressComponent.primaryTransform()).toEqual({ transform: 'scaleX(0.35)' });
-        expect(progressComponent.bufferTransform()).toEqual({ transform: 'scaleX(0.55)' });
+        expect(progressComponent._primaryTransform()).toEqual({ transform: 'scaleX(0.35)' });
+        expect(progressComponent._bufferTransform()).toEqual({ transform: 'scaleX(0.55)' });
 
 
         progressComponent.value = 60;
         progressComponent.bufferValue = 60;
-        expect(progressComponent.primaryTransform()).toEqual({ transform: 'scaleX(0.6)' });
-        expect(progressComponent.bufferTransform()).toEqual({ transform: 'scaleX(0.6)' });
+        expect(progressComponent._primaryTransform()).toEqual({ transform: 'scaleX(0.6)' });
+        expect(progressComponent._bufferTransform()).toEqual({ transform: 'scaleX(0.6)' });
         done();
       });
   });

@@ -15,10 +15,10 @@
            [attr.name]="name"
            [attr.aria-label]="ariaLabel"
            [attr.aria-labelledby]="ariaLabelledby"
-           (blur)="onInputBlur()"
-           (focus)="onInputFocus()"
-           (change)="onChangeEvent($event)"
-           (click)="onInputClick($event)">
+           (blur)="_onInputBlur()"
+           (focus)="_onInputFocus()"
+           (change)="_onChangeEvent($event)"
+           (click)="_onInputClick($event)">
   </div>
   <span class="md-slide-toggle-content">
     <ng-content></ng-content>

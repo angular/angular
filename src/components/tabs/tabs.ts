@@ -49,11 +49,10 @@ export class MdTab {
   directives: [PortalHostDirective, MdTabLabelWrapper, MdInkBar, NgIf, NgFor],
 })
 export class MdTabGroup {
-  /** @internal */
-  @ContentChildren(MdTab) tabs: QueryList<MdTab>;
+  @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
 
-  @ViewChildren(MdTabLabelWrapper) private _labelWrappers: QueryList<MdTabLabelWrapper>;
-  @ViewChildren(MdInkBar) private _inkBar: QueryList<MdInkBar>;
+  @ViewChildren(MdTabLabelWrapper) _labelWrappers: QueryList<MdTabLabelWrapper>;
+  @ViewChildren(MdInkBar) _inkBar: QueryList<MdInkBar>;
 
   private _isInitialized: boolean = false;
 
@@ -144,25 +143,19 @@ export class MdTabGroup {
   private _createChangeEvent(index: number): MdTabChangeEvent {
     const event = new MdTabChangeEvent;
     event.index = index;
-    if (this.tabs && this.tabs.length) {
-      event.tab = this.tabs.toArray()[index];
+    if (this._tabs && this._tabs.length) {
+      event.tab = this._tabs.toArray()[index];
     }
     return event;
   }
 
-  /**
-   * Returns a unique id for each tab label element
-   * @internal
-   */
-  getTabLabelId(i: number): string {
+  /** Returns a unique id for each tab label element */
+  _getTabLabelId(i: number): string {
     return `md-tab-label-${this._groupId}-${i}`;
   }
 
-  /**
-   * Returns a unique id for each tab content element
-   * @internal
-   */
-  getTabContentId(i: number): string {
+  /** Returns a unique id for each tab content element */
+  _getTabContentId(i: number): string {
     return `md-tab-content-${this._groupId}-${i}`;
   }
 

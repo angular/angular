@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {FORM_DIRECTIVES, NgFor} from '@angular/common';
 import {MD_BUTTON_TOGGLE_DIRECTIVES} from '@angular2-material/button-toggle/button-toggle';
 import {
   MdUniqueSelectionDispatcher
@@ -10,7 +11,7 @@ import {MdIcon} from '@angular2-material/icon/icon';
   selector: 'button-toggle-demo',
   templateUrl: 'button-toggle-demo.html',
   providers: [MdUniqueSelectionDispatcher],
-  directives: [MD_BUTTON_TOGGLE_DIRECTIVES, MdIcon]
+  directives: [MD_BUTTON_TOGGLE_DIRECTIVES, FORM_DIRECTIVES, MdIcon, NgFor]
 })
 export class ButtonToggleDemo {
   favoritePie = 'Apple';

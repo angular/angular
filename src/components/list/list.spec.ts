@@ -33,11 +33,11 @@ describe('MdList', () => {
           fixture.detectChanges();
           expect(listItemDiv.nativeElement.classList).not.toContain('md-list-item-focus');
 
-          listItem.componentInstance.handleFocus();
+          listItem.componentInstance._handleFocus();
           fixture.detectChanges();
           expect(listItemDiv.nativeElement.classList).toContain('md-list-item-focus');
 
-          listItem.componentInstance.handleBlur();
+          listItem.componentInstance._handleBlur();
           fixture.detectChanges();
           expect(listItemDiv.nativeElement.classList).not.toContain('md-list-item-focus');
         });

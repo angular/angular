@@ -1,9 +1,7 @@
 import {Directive, ElementRef} from '@angular/core';
 
-/**
- * Used in the `md-tab-group` view to display tab labels
- * @internal
- */
+
+/** Used in the `md-tab-group` view to display tab labels */
 @Directive({
   selector: '[md-tab-label-wrapper]'
 })

@@ -21,9 +21,9 @@ import {
   inputs: ['color'],
   host: {
     '[class.md-button-focus]': 'isKeyboardFocused',
-    '(mousedown)': 'setMousedown()',
-    '(focus)': 'setKeyboardFocus()',
-    '(blur)': 'removeKeyboardFocus()',
+    '(mousedown)': '_setMousedown()',
+    '(focus)': '_setKeyboardFocus()',
+    '(blur)': '_removeKeyboardFocus()',
   },
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
@@ -34,12 +34,12 @@ export class MdButton {
   private _color: string;
 
   /** Whether the button has focus from the keyboard (not the mouse). Used for class binding. */
-  isKeyboardFocused: boolean = false;
+  _isKeyboardFocused: boolean = false;
 
   /** Whether a mousedown has occurred on this element in the last 100ms. */
-  isMouseDown: boolean = false;
+  _isMouseDown: boolean = false;
 
-  constructor(private elementRef: ElementRef, private renderer: Renderer) { }
+  constructor(private _elementRef: ElementRef, private _renderer: Renderer) { }
 
   get color(): string {
     return this._color;
@@ -49,14 +49,13 @@ export class MdButton {
     this._updateColor(value);
   }
 
-  /** @internal */
-  setMousedown() {
+  _setMousedown() {
     // We only *show* the focus style when focus has come to the button via the keyboard.
     // The Material Design spec is silent on this topic, and without doing this, the
     // button continues to look :active after clicking.
     // @see http://marcysutton.com/button-focus-hell/
-    this.isMouseDown = true;
-    setTimeout(() => { this.isMouseDown = false; }, 100);
+    this._isMouseDown = true;
+    setTimeout(() => { this._isMouseDown = false; }, 100);
   }
 
   _updateColor(newColor: string) {
@@ -67,23 +66,21 @@ export class MdButton {
 
   _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
-      this.renderer.setElementClass(this.elementRef.nativeElement, `md-${color}`, isAdd);
+      this._renderer.setElementClass(this._elementRef.nativeElement, `md-${color}`, isAdd);
     }
   }
 
-  /** @internal */
-  setKeyboardFocus() {
-    this.isKeyboardFocused = !this.isMouseDown;
+  _setKeyboardFocus() {
+    this._isKeyboardFocused = !this._isMouseDown;
   }
 
-  /** @internal */
-  removeKeyboardFocus() {
-    this.isKeyboardFocused = false;
+  _removeKeyboardFocus() {
+    this._isKeyboardFocused = false;
   }
 
   /** TODO(hansl): e2e test this function. */
   focus() {
-    this.elementRef.nativeElement.focus();
+    this._elementRef.nativeElement.focus();
   }
 }
 
@@ -92,11 +89,11 @@ export class MdButton {
   selector: 'a[md-button], a[md-raised-button], a[md-icon-button], a[md-fab], a[md-mini-fab]',
   inputs: ['color'],
   host: {
-    '[class.md-button-focus]': 'isKeyboardFocused',
-    '(mousedown)': 'setMousedown()',
-    '(focus)': 'setKeyboardFocus()',
-    '(blur)': 'removeKeyboardFocus()',
-    '(click)': 'haltDisabledEvents($event)',
+    '[class.md-button-focus]': '_isKeyboardFocused',
+    '(mousedown)': '_setMousedown()',
+    '(focus)': '_setKeyboardFocus()',
+    '(blur)': '_removeKeyboardFocus()',
+    '(click)': '_haltDisabledEvents($event)',
   },
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
@@ -129,8 +126,7 @@ export class MdAnchor extends MdButton {
     this._disabled = (value != null && value != false) ? true : null;
   }
 
-  /** @internal */
-  haltDisabledEvents(event: Event) {
+  _haltDisabledEvents(event: Event) {
     // A disabled button shouldn't apply any actions
     if (this.disabled) {
       event.preventDefault();

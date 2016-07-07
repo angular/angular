@@ -30,22 +30,21 @@ export class MdListAvatar {}
   selector: 'md-list-item, a[md-list-item]',
   host: {
     'role': 'listitem',
-    '(focus)': 'handleFocus()',
-    '(blur)': 'handleBlur()',
+    '(focus)': '_handleFocus()',
+    '(blur)': '_handleBlur()',
   },
   templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None
 })
 export class MdListItem implements AfterContentInit {
-  /** @internal */
-  hasFocus: boolean = false;
+  _hasFocus: boolean = false;
 
-  _lineSetter: MdLineSetter;
+  private _lineSetter: MdLineSetter;
 
   @ContentChildren(MdLine) _lines: QueryList<MdLine>;
 
   @ContentChild(MdListAvatar)
-  private set _hasAvatar(avatar: MdListAvatar) {
+  set _hasAvatar(avatar: MdListAvatar) {
     this._renderer.setElementClass(this._element.nativeElement, 'md-list-avatar', avatar != null);
   }
 
@@ -56,14 +55,12 @@ export class MdListItem implements AfterContentInit {
     this._lineSetter = new MdLineSetter(this._lines, this._renderer, this._element);
   }
 
-  /** @internal */
-  handleFocus() {
-    this.hasFocus = true;
+  _handleFocus() {
+    this._hasFocus = true;
   }
 
-  /** @internal */
-  handleBlur() {
-    this.hasFocus = false;
+  _handleBlur() {
+    this._hasFocus = false;
   }
 }
 

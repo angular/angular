@@ -1,8 +1,8 @@
-<div class="md-sidenav-backdrop" (click)="closeModalSidenav()"
-     [class.md-sidenav-shown]="isShowingBackdrop()"></div>
+<div class="md-sidenav-backdrop" (click)="_closeModalSidenav()"
+     [class.md-sidenav-shown]="_isShowingBackdrop()"></div>
 
 <ng-content select="md-sidenav"></ng-content>
 
-<md-content [ngStyle]="getStyles()">
+<md-content [ngStyle]="_getStyles()">
   <ng-content></ng-content>
 </md-content>
