@@ -62,8 +62,6 @@ export class RouterLink {
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
 
-  urlTree: UrlTree;
-
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {}
@@ -82,14 +80,14 @@ export class RouterLink {
     if (button !== 0 || ctrlKey || metaKey) {
       return true;
     }
+    this.router.navigateByUrl(this.urlTree);
+    return false;
+  }
 
-    this.urlTree = this.router.createUrlTreeUsingFutureUrl(
+  get urlTree(): UrlTree {
+    return this.router.createUrlTreeUsingFutureUrl(
         this.commands,
         {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
-
-    this.router.navigateByUrl(this.urlTree);
-
-    return false;
   }
 }
 
