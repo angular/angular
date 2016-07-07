@@ -12,18 +12,19 @@ import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {XHR} from '@angular/compiler/src/xhr';
 import {MockXHR} from '@angular/compiler/testing/xhr_mock';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
+import {configureCompiler} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {SpyXHR} from './spies';
-import {TEST_PROVIDERS} from './test_bindings';
+import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('DirectiveNormalizer', () => {
     var dirType: CompileTypeMetadata;
     var dirTypeWithHttpUrl: CompileTypeMetadata;
 
-    beforeEachProviders(() => TEST_PROVIDERS);
+    beforeEach(() => { configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 
     beforeEach(() => {
       dirType = new CompileTypeMetadata({moduleUrl: 'package:some/module/a.js', name: 'SomeComp'});
@@ -179,7 +180,7 @@ export function main() {
 
     describe('normalizeExternalStylesheets', () => {
 
-      beforeEachProviders(() => [{provide: XHR, useClass: SpyXHR}]);
+      beforeEach(() => { configureCompiler({providers: [{provide: XHR, useClass: SpyXHR}]}); });
 
       it('should load an external stylesheet',
          inject(

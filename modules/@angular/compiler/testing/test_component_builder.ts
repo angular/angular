@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, Compiler, ComponentFactory, Injectable, Injector, NgZone, ViewMetadata} from '@angular/core';
-import {ComponentFixture, ComponentFixtureNoNgZone, TestComponentBuilder} from '@angular/core/testing';
+import {AnimationEntryMetadata, Compiler, ComponentFactory, Inject, Injectable, Injector, NgZone, ViewMetadata} from '@angular/core';
+import {ComponentFixture, ComponentFixtureNoNgZone, TestComponentBuilder, TestInjector} from '@angular/core/testing';
 
 import {DirectiveResolver, ViewResolver} from '../index';
 import {MapWrapper} from '../src/facade/collection';
@@ -54,9 +54,7 @@ export class OverridingTestComponentBuilder extends TestComponentBuilder {
   /** @internal */
   _viewOverrides = new Map<Type, ViewMetadata>();
 
-
-
-  constructor(injector: Injector) { super(injector); }
+  constructor(@Inject(TestInjector) injector: Injector) { super(injector); }
 
   /** @internal */
   _clone(): OverridingTestComponentBuilder {

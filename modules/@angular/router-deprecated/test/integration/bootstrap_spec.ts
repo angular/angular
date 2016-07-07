@@ -9,6 +9,7 @@
 import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
 import {TestComponentBuilder} from '@angular/compiler/testing';
+import {disposePlatform} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {Component} from '@angular/core/src/metadata';
@@ -38,6 +39,9 @@ export function main() {
           provide: ApplicationRef,
           useClass: MockApplicationRef
         }]);
+
+    beforeEach(() => disposePlatform());
+    afterEach(() => disposePlatform());
 
     // do not refactor out the `bootstrap` functionality. We still want to
     // keep this test around so we can ensure that bootstrap a router works

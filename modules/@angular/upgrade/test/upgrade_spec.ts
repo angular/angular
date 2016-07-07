@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Class, Component, EventEmitter, Testability, provide} from '@angular/core';
-import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {Class, Component, EventEmitter, Testability, disposePlatform, provide} from '@angular/core';
+import {AsyncTestCompleter, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {UpgradeAdapter} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {
+    beforeEach(() => disposePlatform());
+    afterEach(() => disposePlatform());
+
     it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
 
     it('should instantiate ng2 in ng1 template and project content',

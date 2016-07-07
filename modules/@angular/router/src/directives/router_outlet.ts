@@ -33,7 +33,7 @@ export class RouterOutlet {
 
   constructor(
       parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
-      private componentFactoryResolver: ComponentFactoryResolver, @Attribute('name') name: string) {
+      private resolver: ComponentFactoryResolver, @Attribute('name') name: string) {
     parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
   }
 
@@ -55,8 +55,8 @@ export class RouterOutlet {
   }
 
   activate(
-      activatedRoute: ActivatedRoute, providers: ResolvedReflectiveProvider[],
-      outletMap: RouterOutletMap): void {
+      activatedRoute: ActivatedRoute, loadedResolver: ComponentFactoryResolver,
+      providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void {
     this.outletMap = outletMap;
     this._activatedRoute = activatedRoute;
 
@@ -65,9 +65,13 @@ export class RouterOutlet {
 
     let factory: ComponentFactory<any>;
     try {
-      factory = typeof component === 'string' ?
-          snapshot._resolvedComponentFactory :
-          this.componentFactoryResolver.resolveComponentFactory(component);
+      if (typeof component === 'string') {
+        factory = snapshot._resolvedComponentFactory;
+      } else if (loadedResolver) {
+        factory = loadedResolver.resolveComponentFactory(component);
+      } else {
+        factory = this.resolver.resolveComponentFactory(component);
+      }
     } catch (e) {
       if (!(e instanceof NoComponentFactoryError)) throw e;
 
@@ -75,7 +79,7 @@ export class RouterOutlet {
       // const componentName = component ? component.name : null;
       // console.warn(
       //     `'${componentName}' not found in precompile array.  To ensure all components referred
-      //     to by the RouterConfig are compiled, you must add '${componentName}' to the
+      //     to by the Routes are compiled, you must add '${componentName}' to the
       //     'precompile' array of your application component. This will be required in a future
       //     release of the router.`);
 

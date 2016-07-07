@@ -10,7 +10,7 @@ import {PlatformLocation} from '@angular/common';
 import {BrowserPlatformLocation} from '@angular/platform-browser';
 
 import {ExtraOptions, provideRouter as provideRouter_} from './common_router_providers';
-import {RouterConfig} from './config';
+import {Routes} from './config';
 
 
 /**
@@ -33,7 +33,7 @@ import {RouterConfig} from './config';
  *
  * @experimental
  */
-export function provideRouter(config: RouterConfig, opts: ExtraOptions = {}): any[] {
+export function provideRouter(config: Routes, opts: ExtraOptions = {}): any[] {
   return [
     {provide: PlatformLocation, useClass: BrowserPlatformLocation}, ...provideRouter_(config, opts)
   ];

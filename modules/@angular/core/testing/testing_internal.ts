@@ -110,7 +110,7 @@ export function beforeEachProviders(fn: any /** TODO #9100 */): void {
   jsmBeforeEach(() => {
     var providers = fn();
     if (!providers) return;
-    testInjector.addProviders(providers);
+    testInjector.configureModule({providers: providers});
   });
 }
 
@@ -135,11 +135,10 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
       provide: AsyncTestCompleter,
       useFactory: () => {
         // Mark the test as async when an AsyncTestCompleter is injected in an it()
-        if (!inIt) throw new Error('AsyncTestCompleter can only be injected in an "it()"');
         return new AsyncTestCompleter();
       }
     };
-    testInjector.addProviders([completerProvider]);
+    testInjector.configureModule({providers: [completerProvider]});
     runner.run();
 
     inIt = true;

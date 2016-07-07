@@ -26,6 +26,7 @@ export function main() {
 
   describe('platform-server integration', () => {
 
+    beforeEach(() => disposePlatform());
     afterEach(() => disposePlatform());
 
     it('should bootstrap', async(() => {

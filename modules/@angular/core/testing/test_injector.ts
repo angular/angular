@@ -6,61 +6,157 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PLATFORM_INITIALIZER, Provider, ReflectiveInjector, Type} from '../index';
-import {lockRunMode} from '../src/application_ref';
+import {AppModule, AppModuleFactory, AppModuleMetadata, AppModuleRef, Compiler, ComponentStillLoadingError, Injector, PlatformRef, Provider, Type} from '../index';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
-import {FunctionWrapper, isPresent} from '../src/facade/lang';
+import {FunctionWrapper, isPresent, stringify} from '../src/facade/lang';
+
 import {AsyncTestCompleter} from './async_test_completer';
+
+const UNDEFINED = new Object();
+
+/**
+ * Signature of the compiler factory passed to `initTestEnvironment`.
+ *
+ * @experimental
+ */
+export type TestCompilerFactory =
+    (config: {providers?: Array<Type|Provider|any[]>, useJit?: boolean}) => Compiler;
 
 /**
  * @experimental
  */
-export class TestInjector {
+export class TestInjector implements Injector {
   private _instantiated: boolean = false;
 
-  private _injector: ReflectiveInjector = null;
+  private _compiler: Compiler = null;
+  private _moduleRef: AppModuleRef<any> = null;
+
+  private _compilerProviders: Array<Type|Provider|any[]|any> = [];
+  private _compilerUseJit: boolean = true;
 
   private _providers: Array<Type|Provider|any[]|any> = [];
+  private _directives: Array<Type|any[]|any> = [];
+  private _pipes: Array<Type|any[]|any> = [];
+  private _modules: Array<Type|any[]|any> = [];
+  private _precompile: Array<Type|any[]|any> = [];
 
   reset() {
-    this._injector = null;
+    this._compiler = null;
+    this._moduleRef = null;
+    this._compilerProviders = [];
+    this._compilerUseJit = true;
     this._providers = [];
+    this._directives = [];
+    this._pipes = [];
+    this._modules = [];
+    this._precompile = [];
     this._instantiated = false;
   }
 
-  platformProviders: Array<Type|Provider|any[]|any> = [];
+  compilerFactory: TestCompilerFactory = null;
 
-  applicationProviders: Array<Type|Provider|any[]|any> = [];
+  platform: PlatformRef = null;
 
-  addProviders(providers: Array<Type|Provider|any[]|any>) {
+  appModule: Type = null;
+
+  configureCompiler(config: {providers?: any[], useJit?: boolean}) {
     if (this._instantiated) {
-      throw new BaseException('Cannot add providers after test injector is instantiated');
+      throw new BaseException('Cannot add configuration after test injector is instantiated');
     }
-    this._providers = ListWrapper.concat(this._providers, providers);
+    if (config.providers) {
+      this._compilerProviders = ListWrapper.concat(this._compilerProviders, config.providers);
+    }
+    if (config.useJit !== undefined) {
+      this._compilerUseJit = config.useJit;
+    }
   }
 
-  createInjector() {
-    lockRunMode();
-    var rootInjector = ReflectiveInjector.resolveAndCreate(this.platformProviders);
-    this._injector = rootInjector.resolveAndCreateChild(
-        ListWrapper.concat(this.applicationProviders, this._providers));
+  configureModule(moduleDef: {
+    providers?: any[],
+    directives?: any[],
+    pipes?: any[],
+    precompile?: any[],
+    modules?: any[]
+  }) {
+    if (this._instantiated) {
+      throw new BaseException('Cannot add configuration after test injector is instantiated');
+    }
+    if (moduleDef.providers) {
+      this._providers = ListWrapper.concat(this._providers, moduleDef.providers);
+    }
+    if (moduleDef.directives) {
+      this._directives = ListWrapper.concat(this._directives, moduleDef.directives);
+    }
+    if (moduleDef.pipes) {
+      this._pipes = ListWrapper.concat(this._pipes, moduleDef.pipes);
+    }
+    if (moduleDef.precompile) {
+      this._precompile = ListWrapper.concat(this._precompile, moduleDef.precompile);
+    }
+    if (moduleDef.modules) {
+      this._modules = ListWrapper.concat(this._modules, moduleDef.modules);
+    }
+  }
+
+  createInjectorSync(): Injector {
+    if (this._instantiated) {
+      return this;
+    }
+    let moduleMeta = this._createCompilerAndModuleMeta();
+    return this._createFromModuleFactory(
+        this._compiler.compileAppModuleSync(_NoopModule, moduleMeta));
+  }
+
+  createInjectorAsync(): Promise<Injector> {
+    if (this._instantiated) {
+      return Promise.resolve(this);
+    }
+    let moduleMeta = this._createCompilerAndModuleMeta();
+    return this._compiler.compileAppModuleAsync(_NoopModule, moduleMeta)
+        .then((appModuleFactory) => this._createFromModuleFactory(appModuleFactory));
+  }
+
+  private _createCompilerAndModuleMeta(): AppModuleMetadata {
+    this._compiler =
+        this.compilerFactory({providers: this._compilerProviders, useJit: this._compilerUseJit});
+    const moduleMeta = new AppModuleMetadata({
+      providers: this._providers.concat([{provide: TestInjector, useValue: this}]),
+      modules: this._modules.concat([this.appModule]),
+      directives: this._directives,
+      pipes: this._pipes,
+      precompile: this._precompile
+    });
+
+    return moduleMeta;
+  }
+
+  private _createFromModuleFactory(appModuleFactory: AppModuleFactory<any>): Injector {
+    this._moduleRef = appModuleFactory.create(this.platform.injector);
     this._instantiated = true;
-    return this._injector;
+    return this;
   }
 
-  get(token: any) {
+  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
     if (!this._instantiated) {
-      this.createInjector();
+      throw new BaseException(
+          'Illegal state: The TestInjector has not yet been created. Call createInjectorSync/Async first!');
     }
-    return this._injector.get(token);
+    if (token === TestInjector) {
+      return this;
+    }
+    // Tests can inject things from the app module and from the compiler,
+    // but the app module can't inject things from the compiler and vice versa.
+    let result = this._moduleRef.injector.get(token, UNDEFINED);
+    return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue) : result;
   }
 
   execute(tokens: any[], fn: Function): any {
     if (!this._instantiated) {
-      this.createInjector();
+      throw new BaseException(
+          'Illegal state: The TestInjector has not yet been created. Call createInjectorSync/Async first!');
     }
-    var params = tokens.map(t => this._injector.get(t));
+    var params = tokens.map(t => this.get(t));
     return FunctionWrapper.apply(fn, params);
   }
 }
@@ -83,28 +179,22 @@ export function getTestInjector() {
  *
  * This may only be called once, to set up the common providers for the current test
  * suite on the current platform. If you absolutely need to change the providers,
- * first use `resetBaseTestProviders`.
+ * first use `resetTestEnvironment`.
  *
  * Test Providers for individual platforms are available from
  * 'angular2/platform/testing/<platform_name>'.
  *
  * @experimental
  */
-export function setBaseTestProviders(
-    platformProviders: Array<Type|Provider|any[]>,
-    applicationProviders: Array<Type|Provider|any[]>) {
+export function initTestEnvironment(
+    compilerFactory: TestCompilerFactory, platform: PlatformRef, appModule: Type) {
   var testInjector = getTestInjector();
-  if (testInjector.platformProviders.length > 0 || testInjector.applicationProviders.length > 0) {
+  if (testInjector.compilerFactory || testInjector.platform || testInjector.appModule) {
     throw new BaseException('Cannot set base providers because it has already been called');
   }
-  testInjector.platformProviders = platformProviders;
-  testInjector.applicationProviders = applicationProviders;
-  var injector = testInjector.createInjector();
-  let inits: Function[] = injector.get(PLATFORM_INITIALIZER, null);
-  if (isPresent(inits)) {
-    inits.forEach(init => init());
-  }
-  testInjector.reset();
+  testInjector.compilerFactory = compilerFactory;
+  testInjector.platform = platform;
+  testInjector.appModule = appModule;
 }
 
 /**
@@ -112,10 +202,11 @@ export function setBaseTestProviders(
  *
  * @experimental
  */
-export function resetBaseTestProviders() {
+export function resetTestEnvironment() {
   var testInjector = getTestInjector();
-  testInjector.platformProviders = [];
-  testInjector.applicationProviders = [];
+  testInjector.compilerFactory = null;
+  testInjector.platform = null;
+  testInjector.appModule = null;
   testInjector.reset();
 }
 
@@ -146,16 +237,38 @@ export function resetBaseTestProviders() {
 export function inject(tokens: any[], fn: Function): () => any {
   let testInjector = getTestInjector();
   if (tokens.indexOf(AsyncTestCompleter) >= 0) {
-    // Return an async test method that returns a Promise if AsyncTestCompleter is one of the
-    // injected tokens.
     return () => {
-      let completer: AsyncTestCompleter = testInjector.get(AsyncTestCompleter);
-      testInjector.execute(tokens, fn);
-      return completer.promise;
+      // Return an async test method that returns a Promise if AsyncTestCompleter is one of the
+      // injected tokens.
+      return testInjector.createInjectorAsync().then(() => {
+        let completer: AsyncTestCompleter = testInjector.get(AsyncTestCompleter);
+        testInjector.execute(tokens, fn);
+        return completer.promise;
+      });
     };
   } else {
-    // Return a synchronous test method with the injected tokens.
-    return () => { return getTestInjector().execute(tokens, fn); };
+    return () => {
+      // Return a asynchronous test method with the injected tokens.
+      // TODO(tbosch): Right now, we can only detect the AsyncTestZoneSpec via its name.
+      // (see https://github.com/angular/zone.js/issues/370)
+      if (Zone.current.name.toLowerCase().indexOf('asynctestzone') >= 0) {
+        return testInjector.createInjectorAsync().then(() => testInjector.execute(tokens, fn));
+      } else {
+        // Return a synchronous test method with the injected tokens.
+        try {
+          testInjector.createInjectorSync();
+        } catch (e) {
+          if (e instanceof ComponentStillLoadingError) {
+            throw new Error(
+                `This test module precompiles the component ${stringify(e.compType)} which is using a "templateUrl", but the test is synchronous. ` +
+                `Please use the "async(...)" or "fakeAsync(...)" helper functions to make the test asynchronous.`);
+          } else {
+            throw e;
+          }
+        }
+        return testInjector.execute(tokens, fn);
+      }
+    };
   }
 }
 
@@ -163,18 +276,24 @@ export function inject(tokens: any[], fn: Function): () => any {
  * @experimental
  */
 export class InjectSetupWrapper {
-  constructor(private _providers: () => any) {}
+  constructor(private _moduleDef: () => {
+    providers?: any[],
+    directives?: any[],
+    pipes?: any[],
+    precompile?: any[],
+    modules?: any[]
+  }) {}
 
-  private _addProviders() {
-    var additionalProviders = this._providers();
-    if (additionalProviders.length > 0) {
-      getTestInjector().addProviders(additionalProviders);
+  private _addModule() {
+    var moduleDef = this._moduleDef();
+    if (moduleDef) {
+      getTestInjector().configureModule(moduleDef);
     }
   }
 
   inject(tokens: any[], fn: Function): () => any {
     return () => {
-      this._addProviders();
+      this._addModule();
       return inject_impl(tokens, fn)();
     };
   }
@@ -184,9 +303,25 @@ export class InjectSetupWrapper {
  * @experimental
  */
 export function withProviders(providers: () => any) {
-  return new InjectSetupWrapper(providers);
+  return new InjectSetupWrapper(() => {{return {providers: providers()};}});
 }
+
+/**
+ * @experimental
+ */
+export function withModule(moduleDef: () => {
+  providers?: any[],
+  directives?: any[],
+  pipes?: any[],
+  precompile?: any[],
+  modules?: any[]
+}) {
+  return new InjectSetupWrapper(moduleDef);
+}
+
 
 // This is to ensure inject(Async) within InjectSetupWrapper doesn't call itself
 // when transpiled to Dart.
 var inject_impl = inject;
+
+class _NoopModule {}

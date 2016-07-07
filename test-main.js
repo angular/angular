@@ -74,11 +74,11 @@ System.config({
 System.import('@angular/core/testing')
   .then(function(coreTesting){
     return System.import('@angular/platform-browser-dynamic/testing')
-      .then(function(browserTesting){
-         coreTesting.setBaseTestProviders(
-          browserTesting.TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
-          browserTesting.TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS
-        );
+      .then(function(browserTesting) {
+         coreTesting.initTestEnvironment(
+           browserTesting.browserTestCompiler,
+           browserTesting.browserDynamicTestPlatform(),
+           browserTesting.BrowserDynamicTestModule);
       });
   })
 .then(function() {

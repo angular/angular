@@ -7,7 +7,7 @@
  */
 
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {fakeAsync, tick, ComponentFixture} from '@angular/core/testing';
+import {fakeAsync, tick, ComponentFixture, configureCompiler, configureModule} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -53,13 +53,10 @@ export function main() {
 function declareTests({useJit}: {useJit: boolean}) {
   describe('integration tests', function() {
 
-    beforeEachProviders(
-        () =>
-            [{
-              provide: CompilerConfig,
-              useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
-            },
-             {provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]);
+    beforeEach(() => {
+      configureCompiler({useJit: useJit});
+      configureModule({providers: [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]});
+    });
 
     describe('react to record changes', function() {
       it('should consume text node changes',
@@ -1802,10 +1799,16 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
 
     describe('logging property updates', () => {
-      beforeEachProviders(() => [{
-                            provide: CompilerConfig,
-                            useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
-                          }]);
+      beforeEach(() => {
+        configureCompiler({
+          providers: [{
+            provide: CompilerConfig,
+            // Note: we are testing the `genDebugInfo` flag here, so we
+            // need to set it explicitely!
+            useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
+          }]
+        });
+      });
 
       it('should reflect property values as attributes',
          inject(

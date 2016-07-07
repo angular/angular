@@ -154,6 +154,11 @@ export declare class AppModuleFactory<T> {
     create(parentInjector?: Injector): AppModuleRef<T>;
 }
 
+/** @experimental */
+export declare abstract class AppModuleFactoryLoader {
+    abstract load(path: string): Promise<AppModuleFactory<any>>;
+}
+
 /** @stable */
 export declare class AppModuleMetadata extends InjectableMetadata {
     directives: Array<Type | any[]>;
@@ -285,6 +290,7 @@ export declare class CollectionChangeRecord {
 
 /** @stable */
 export declare class Compiler {
+    injector: Injector;
     clearCache(): void;
     clearCacheFor(type: Type): void;
     compileAppModuleAsync<T>(moduleType: ConcreteType<T>, metadata?: AppModuleMetadata): Promise<AppModuleFactory<T>>;
@@ -444,6 +450,12 @@ export declare abstract class ComponentRef<C> {
 export declare abstract class ComponentResolver {
     abstract clearCache(): void;
     abstract resolveComponent(component: Type | string): Promise<ComponentFactory<any>>;
+}
+
+/** @stable */
+export declare class ComponentStillLoadingError extends BaseException {
+    compType: Type;
+    constructor(compType: Type);
 }
 
 /** @stable */
@@ -1286,6 +1298,17 @@ export declare function style(tokens: string | {
 } | Array<string | {
     [key: string]: string | number;
 }>): AnimationStyleMetadata;
+
+/** @experimental */
+export declare class SystemJsAppModuleFactoryLoader implements AppModuleFactoryLoader {
+    load(path: string): Promise<AppModuleFactory<any>>;
+}
+
+/** @experimental */
+export declare class SystemJsAppModuleLoader implements AppModuleFactoryLoader {
+    constructor(_compiler: Compiler);
+    load(path: string): Promise<AppModuleFactory<any>>;
+}
 
 /** @experimental */
 export declare class SystemJsCmpFactoryResolver implements ComponentResolver {

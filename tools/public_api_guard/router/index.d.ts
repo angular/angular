@@ -91,7 +91,13 @@ export declare type Params = {
 export declare const PRIMARY_OUTLET: string;
 
 /** @experimental */
-export declare function provideRouter(config: RouterConfig, opts?: ExtraOptions): any[];
+export declare function provideRouter(config: Routes, opts?: ExtraOptions): any[];
+
+/** @experimental */
+export declare function provideRouterConfig(config: ExtraOptions): any;
+
+/** @experimental */
+export declare function provideRoutes(routes: Routes): any;
 
 /** @experimental */
 export interface Resolve<T> {
@@ -114,19 +120,24 @@ export declare class Router {
     events: Observable<Event>;
     routerState: RouterState;
     url: string;
-    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, config: RouterConfig);
+    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: AppModuleFactoryLoader, config: Routes);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment}?: NavigationExtras): UrlTree;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree): Promise<boolean>;
     parseUrl(url: string): UrlTree;
-    resetConfig(config: RouterConfig): void;
+    resetConfig(config: Routes): void;
     serializeUrl(url: UrlTree): string;
 }
 
 /** @stable */
 export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkWithHref | typeof RouterLinkActive)[];
 
-/** @stable */
+/** @experimental */
+export declare class RouterAppModule {
+    constructor(injector: Injector);
+}
+
+/** @deprecated */
 export declare type RouterConfig = Route[];
 
 /** @stable */
@@ -173,8 +184,8 @@ export declare class RouterOutlet {
     component: Object;
     isActivated: boolean;
     outletMap: RouterOutletMap;
-    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver, name: string);
-    activate(activatedRoute: ActivatedRoute, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
+    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string);
+    activate(activatedRoute: ActivatedRoute, loadedResolver: ComponentFactoryResolver, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
     deactivate(): void;
 }
 
@@ -198,6 +209,9 @@ export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
     url: string;
     toString(): string;
 }
+
+/** @stable */
+export declare type Routes = Route[];
 
 /** @stable */
 export declare class RoutesRecognized {
