@@ -1,6 +1,6 @@
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
-import {ANALYZE_FOR_PRECOMPILE, AppModule, AppModuleMetadata, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Host, Inject, Injectable, Injector, OpaqueToken, Optional, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
+import {ANALYZE_FOR_PRECOMPILE, AppModule, AppModuleMetadata, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, Inject, Injectable, Injector, Input, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
 import {ComponentFixture, configureCompiler} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
@@ -94,11 +94,18 @@ class ModuleWithPrecompile {
 class ModuleWithAnalyzePrecompileProvider {
 }
 
+@Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
+class SomeDirective {
+  @Input()
+  someDir: string;
+}
 
-@Component({
-  selector: 'comp',
-  template: `<div  [title]="'HELLO' | lowercase"></div><div *ngIf="true"></div>`
-})
+@Pipe({name: 'somePipe'})
+class SomePipe {
+  transform(value: string): any { return `transformed ${value}`; }
+}
+
+@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
 class CompUsingModuleDirectiveAndPipe {
 }
 
@@ -108,7 +115,7 @@ class ParentCompUsingModuleDirectiveAndPipe {
 }
 
 @AppModule(
-    {directives: [NgIf], pipes: [LowerCasePipe], precompile: [CompUsingModuleDirectiveAndPipe]})
+    {directives: [SomeDirective], pipes: [SomePipe], precompile: [CompUsingModuleDirectiveAndPipe]})
 class ModuleWithDirectivesAndPipes {
 }
 
@@ -179,36 +186,32 @@ function declareTests({useJit}: {useJit: boolean}) {
         return new ComponentFixture(cf.create(injector), null, false);
       }
 
-      function checkNgIfAndLowerCasePipe(compFixture: ComponentFixture<any>, el: DebugElement) {
-        // Test that ngIf works
-        expect(el.children.length).toBe(1);
-        compFixture.detectChanges();
-        expect(el.children.length).toBe(2);
-
-        // Test that lowercase pipe works
-        expect(el.children[0].properties['title']).toBe('hello');
-      }
-
       it('should support module directives and pipes', () => {
         let compFixture = createComp(CompUsingModuleDirectiveAndPipe, ModuleWithDirectivesAndPipes);
-        checkNgIfAndLowerCasePipe(compFixture, compFixture.debugElement);
+        compFixture.detectChanges();
+        expect(compFixture.debugElement.children[0].properties['title'])
+            .toBe('transformed someValue');
       });
 
       it('should support module directives and pipes for nested modules', () => {
         let compFixture = createComp(
             CompUsingModuleDirectiveAndPipe, SomeModule,
             new AppModuleMetadata({modules: [ModuleWithDirectivesAndPipes]}));
-        checkNgIfAndLowerCasePipe(compFixture, compFixture.debugElement);
+        compFixture.detectChanges();
+        expect(compFixture.debugElement.children[0].properties['title'])
+            .toBe('transformed someValue');
       });
 
       it('should support module directives and pipes in nested components', () => {
         let compFixture =
             createComp(ParentCompUsingModuleDirectiveAndPipe, SomeModule, new AppModuleMetadata({
-                         directives: [NgIf],
-                         pipes: [LowerCasePipe],
+                         directives: [SomeDirective],
+                         pipes: [SomePipe],
                          precompile: [ParentCompUsingModuleDirectiveAndPipe]
                        }));
-        checkNgIfAndLowerCasePipe(compFixture, compFixture.debugElement.children[0]);
+        compFixture.detectChanges();
+        expect(compFixture.debugElement.children[0].children[0].properties['title'])
+            .toBe('transformed someValue');
       });
 
       it('should provide a Compiler instance that uses the directives/pipes of the module', () => {
@@ -216,7 +219,9 @@ function declareTests({useJit}: {useJit: boolean}) {
         let boundCompiler: Compiler = appModule.injector.get(Compiler);
         var cf = boundCompiler.compileComponentSync(CompUsingModuleDirectiveAndPipe);
         let compFixture = new ComponentFixture(cf.create(injector), null, false);
-        checkNgIfAndLowerCasePipe(compFixture, compFixture.debugElement);
+        compFixture.detectChanges();
+        expect(compFixture.debugElement.children[0].properties['title'])
+            .toBe('transformed someValue');
       });
 
       it('should provide a ComponentResolver instance that uses the directives/pipes of the module',
@@ -226,7 +231,9 @@ function declareTests({useJit}: {useJit: boolean}) {
            let boundCompiler: ComponentResolver = appModule.injector.get(ComponentResolver);
            boundCompiler.resolveComponent(CompUsingModuleDirectiveAndPipe).then((cf) => {
              let compFixture = new ComponentFixture(cf.create(injector), null, false);
-             checkNgIfAndLowerCasePipe(compFixture, compFixture.debugElement);
+             compFixture.detectChanges();
+             expect(compFixture.debugElement.children[0].properties['title'])
+                 .toBe('transformed someValue');
              async.done();
            });
          }));

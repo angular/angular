@@ -37,25 +37,19 @@ describe('AppModule', () => {
 
   it('should support module directives and pipes', () => {
     var compFixture = createComponent(SomeComp, SomeModuleNgFactory);
-    var debugElement = compFixture.debugElement;
-
-    // NgIf should work, is being used as module directive
-    expect(debugElement.children.length).toBe(1);
     compFixture.detectChanges();
-    expect(debugElement.children.length).toBe(2);
-    expect(debugElement.children[0].properties['title']).toBe('hello');
+
+    var debugElement = compFixture.debugElement;
+    expect(debugElement.children[0].properties['title']).toBe('transformed someValue');
   });
 
   it('should support module directives and pipes on nested components', () => {
     var compFixture = createComponent(ParentComp, SomeModuleUsingParentCompNgFactory);
-    var debugElement = compFixture.debugElement;
-
-    debugElement = debugElement.children[0];
-    // NgIf should work, is being used as module directive
-    expect(debugElement.children.length).toBe(1);
     compFixture.detectChanges();
-    expect(debugElement.children.length).toBe(2);
-    expect(debugElement.children[0].properties['title']).toBe('hello');
+
+    var debugElement = compFixture.debugElement;
+    debugElement = debugElement.children[0];
+    expect(debugElement.children[0].properties['title']).toBe('transformed someValue');
   });
 
   it('should support child moduless', () => {

@@ -7,7 +7,7 @@
  */
 
 import {LowerCasePipe, NgIf} from '@angular/common';
-import {ANALYZE_FOR_PRECOMPILE, AppModule, Component, ComponentFactoryResolver, Inject, Injectable, OpaqueToken} from '@angular/core';
+import {ANALYZE_FOR_PRECOMPILE, AppModule, Component, ComponentFactoryResolver, Directive, Inject, Injectable, Input, OpaqueToken, Pipe} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 @Injectable()
@@ -19,10 +19,18 @@ export class SomeService {
 export class NestedService {
 }
 
-@Component({
-  selector: 'cmp',
-  template: `<div  [title]="'HELLO' | lowercase"></div><div *ngIf="true"></div>`
-})
+@Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
+export class SomeDirective {
+  @Input()
+  someDir: string;
+}
+
+@Pipe({name: 'somePipe'})
+export class SomePipe {
+  transform(value: string): any { return `transformed ${value}`; }
+}
+
+@Component({selector: 'cmp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
 export class SomeComp {
   constructor() {}
 }
@@ -36,8 +44,8 @@ export class NestedModule {
 }
 
 @AppModule({
-  directives: [NgIf],
-  pipes: [LowerCasePipe],
+  directives: [SomeDirective],
+  pipes: [SomePipe],
   providers: [SomeService],
   precompile: [SomeComp],
   modules: [NestedModule, BrowserModule]
@@ -46,8 +54,8 @@ export class SomeModule {
 }
 
 @AppModule({
-  directives: [NgIf],
-  pipes: [LowerCasePipe],
+  directives: [SomeDirective],
+  pipes: [SomePipe],
   precompile: [ParentComp],
   modules: [BrowserModule]
 })
