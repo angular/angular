@@ -282,6 +282,34 @@ export function main() {
             [BoundElementPropertyAst, PropertyBindingType.Animation, 'something', 'value2', null]
           ]);
         });
+
+        it('should parse bound properties via @ and not report them as attributes and also report a deprecation warning',
+           () => {
+             expect(humanizeTplAst(parse('<div @something="value2">', []))).toEqual([
+               [ElementAst, 'div'],
+               [
+                 BoundElementPropertyAst, PropertyBindingType.Animation, 'something', 'value2', null
+               ]
+             ]);
+
+             expect(console.warnings).toEqual([[
+               'Template parse warnings:',
+               `Assigning animation triggers via @prop="exp" attributes with an expression is deprecated. Use [@prop]="exp" instead! ("<div [ERROR ->]@something="value2">"): TestComp@0:5`
+             ].join('\n')]);
+           });
+
+        it('should not issue a warning when an animation property is bound without an expression',
+           () => {
+             humanizeTplAst(parse('<div @something>', []));
+             expect(console.warnings.length).toEqual(0);
+           });
+
+        it('should parse bound properties via [@] and not report them as attributes', () => {
+          expect(humanizeTplAst(parse('<div [@something]="value2">', []))).toEqual([
+            [ElementAst, 'div'],
+            [BoundElementPropertyAst, PropertyBindingType.Animation, 'something', 'value2', null]
+          ]);
+        });
       });
 
       describe('events', () => {

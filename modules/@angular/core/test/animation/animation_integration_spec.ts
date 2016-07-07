@@ -56,7 +56,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div *ngIf="exp" @myAnimation="exp"></div>',
+                   tcb, '<div *ngIf="exp" [@myAnimation]="exp"></div>',
                    trigger(
                        'myAnimation',
                        [transition(
@@ -82,7 +82,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div *ngIf="exp" @myAnimation="exp"></div>',
+                   tcb, '<div *ngIf="exp" [@myAnimation]="exp"></div>',
                    trigger(
                        'myAnimation',
                        [transition(
@@ -152,7 +152,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                tcb = tcb.overrideTemplate(DummyIfCmp, `
-              <div @myAnimation *ngIf="exp"></div>
+              <div [@myAnimation] *ngIf="exp"></div>
             `);
                tcb.overrideAnimations(DummyIfCmp, [trigger(
                                                       'myAnimation',
@@ -565,8 +565,8 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                tcb = tcb.overrideTemplate(DummyIfCmp, `
-                      <div @rotate="exp"></div>
-                      <div @rotate="exp2"></div>
+                      <div [@rotate]="exp"></div>
+                      <div [@rotate]="exp2"></div>
                     `);
                tcb.overrideAnimations(
                       DummyIfCmp,
@@ -629,7 +629,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div class="my-if" *ngIf="exp" @myAnimation></div>',
+                   tcb, '<div class="my-if" *ngIf="exp" [@myAnimation]></div>',
                    trigger(
                        'myAnimation',
                        [transition('* => void', [animate(1000, style({'opacity': 0}))])]),
@@ -661,7 +661,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div @myAnimation="exp"></div>',
+                   tcb, '<div [@myAnimation]="exp"></div>',
                    trigger('myAnimation', [transition(
                                               '* => *',
                                               [
@@ -693,7 +693,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div @one="exp" @two="exp2"></div>',
+                   tcb, '<div [@one]="exp" [@two]="exp2"></div>',
                    [
                      trigger(
                          'one',
@@ -754,7 +754,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div class="target" @status="exp"></div>',
+                   tcb, '<div class="target" [@status]="exp"></div>',
                    [trigger(
                        'status',
                        [
@@ -784,7 +784,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div class="target" @status="exp"></div>',
+                   tcb, '<div class="target" [@status]="exp"></div>',
                    [trigger(
                        'status',
                        [
@@ -841,7 +841,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div class="target" @status="exp"></div>',
+                   tcb, '<div class="target" [@status]="exp"></div>',
                    [trigger(
                        'status',
                        [
@@ -868,7 +868,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div class="target" @status="exp"></div>',
+                   tcb, '<div class="target" [@status]="exp"></div>',
                    [trigger(
                        'status',
                        [
@@ -897,7 +897,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div class="target" @status="exp"></div>',
+                   tcb, '<div class="target" [@status]="exp"></div>',
                    [trigger(
                        'status',
                        [
@@ -958,7 +958,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div class="target" @status="exp"></div>',
+                   tcb, '<div class="target" [@status]="exp"></div>',
                    [trigger(
                        'status',
                        [
@@ -1003,7 +1003,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              [TestComponentBuilder, AnimationDriver],
              fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
                makeAnimationCmp(
-                   tcb, '<div class="target" @status="exp"></div>',
+                   tcb, '<div class="target" [@status]="exp"></div>',
                    [trigger(
                        'status',
                        [
@@ -1042,7 +1042,7 @@ function declareTests({useJit}: {useJit: boolean}) {
   selector: 'if-cmp',
   directives: [NgIf],
   template: `
-    <div *ngIf="exp" @myAnimation="exp"></div>
+    <div *ngIf="exp" [@myAnimation]="exp"></div>
   `
 })
 class DummyIfCmp {
