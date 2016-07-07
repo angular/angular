@@ -1,7 +1,5 @@
 <div class="md-tab-header" role="tablist"
-     (keydown.arrowRight)="focusNextTab()"
-     (keydown.arrowLeft)="focusPreviousTab()"
-     (keydown.enter)="selectedIndex = focusIndex">
+     (keydown)="handleKeydown($event)">
   <div class="md-tab-label" role="tab" md-tab-label-wrapper
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
@@ -16,10 +14,13 @@
 </div>
 <div class="md-tab-body-wrapper">
   <div class="md-tab-body"
-       *ngFor="let tab of tabs; let i = index"
-       [id]="getTabContentId(i)"
+       role="tabpanel"
+       *ngFor="let tab of _tabs; let i = index"
+       [id]="_getTabContentId(i)"
        [class.md-active]="selectedIndex == i"
-       [attr.aria-labelledby]="getTabLabelId(i)">
-    <template role="tabpanel" [portalHost]="tab.content" [ngIf]="selectedIndex == i"></template>
+       [attr.aria-labelledby]="_getTabLabelId(i)">
+    <template [ngIf]="selectedIndex == i">
+      <template [portalHost]="tab.content"></template>
+    </template>
   </div>
 </div>

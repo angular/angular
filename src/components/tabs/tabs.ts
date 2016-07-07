@@ -19,6 +19,14 @@ import {MdInkBar} from './ink-bar';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
+// Due to a bug in the ChromeDriver, Angular 2 keyboard events are not triggered by `sendKeys`
+// during E2E tests when using dot notation such as `(keydown.rightArrow)`. To get around this,
+// we are temporarily using a single (keydown) handler.
+// See: https://github.com/angular/angular/issues/9419
+const RIGHT_ARROW = 39;
+const LEFT_ARROW = 37;
+const ENTER = 13;
+
 /** Used to generate unique ID's for each tab component */
 let nextId = 0;
 
@@ -157,6 +165,20 @@ export class MdTabGroup {
   /** Returns a unique id for each tab content element */
   _getTabContentId(i: number): string {
     return `md-tab-content-${this._groupId}-${i}`;
+  }
+
+  handleKeydown(event: KeyboardEvent) {
+    switch (event.keyCode) {
+      case RIGHT_ARROW:
+        this.focusNextTab();
+        break;
+      case LEFT_ARROW:
+        this.focusPreviousTab();
+        break;
+      case ENTER:
+        this.selectedIndex = this.focusIndex;
+        break;
+    }
   }
 
   /** Increment the focus index by 1; prevent going over the number of tabs */
