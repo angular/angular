@@ -26,9 +26,23 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *  ## Example
  *
  *  ```
- *  <div>
- *    {{ messages.length | i18nPlural: messageMapping }}
- *  </div>
+ *  class MyLocalization extends NgLocalization {
+ *    getPluralCategory(value: any) {
+ *      if(value > 1) {
+ *        return 'other';
+ *      }
+ *    }
+ *  }
+ *
+ *  @Component({
+ *    selector: 'app',
+ *    template: `
+ *      <div>
+ *        {{ messages.length | i18nPlural: messageMapping }}
+ *      </div>
+ *    `,
+ *    providers: [{provide: NgLocalization, useClass: MyLocalization}]
+ *  })
  *
  *  class MyApp {
  *    messages: any[];
