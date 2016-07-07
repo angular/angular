@@ -42,6 +42,27 @@ export function main() {
                  });
            }));
 
+    // https://github.com/angular/angular/issues/9868
+    // https://github.com/angular/angular/issues/9882
+    it('should not throw when ngPluralCase contains expressions',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             var template = '<div>' +
+                 '<ul [ngPlural]="switchValue">' +
+                 '<template ngPluralCase="=0"><li>{{ switchValue }}</li></template>' +
+                 '</ul></div>';
+
+             tcb.overrideTemplate(TestComponent, template)
+                 .createAsync(TestComponent)
+                 .then((fixture) => {
+                   fixture.debugElement.componentInstance.switchValue = 0;
+                   expect(() => fixture.detectChanges()).not.toThrow();
+                   async.done();
+                 });
+           }));
+
+
     it('should be applicable to <ng-container> elements',
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
