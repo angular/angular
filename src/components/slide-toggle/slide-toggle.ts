@@ -39,7 +39,7 @@ let nextId = 0;
     '[class.md-disabled]': 'disabled',
     // This md-slide-toggle prefix will change, once the temporary ripple is removed.
     '[class.md-slide-toggle-focused]': '_hasFocus',
-    '(mousedown)': 'setMousedown()'
+    '(mousedown)': '_setMousedown()'
   },
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
