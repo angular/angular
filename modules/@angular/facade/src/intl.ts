@@ -79,16 +79,17 @@ var DATE_FORMATS = {
   dd: datePartGetterFactory(digitCondition('day', 2)),
   d: datePartGetterFactory(digitCondition('day', 1)),
   HH: digitModifier(
-      hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), false)))),
-  H: hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), false))),
+      hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), false))), 2),
+  H: digitModifier(
+      hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), false))), 1),
   hh: digitModifier(
-      hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), true)))),
+      hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), true))), 2),
   h: hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), true))),
   jj: datePartGetterFactory(digitCondition('hour', 2)),
   j: datePartGetterFactory(digitCondition('hour', 1)),
-  mm: digitModifier(datePartGetterFactory(digitCondition('minute', 2))),
+  mm: digitModifier(datePartGetterFactory(digitCondition('minute', 2)), 2),
   m: datePartGetterFactory(digitCondition('minute', 1)),
-  ss: digitModifier(datePartGetterFactory(digitCondition('second', 2))),
+  ss: digitModifier(datePartGetterFactory(digitCondition('second', 2)), 2),
   s: datePartGetterFactory(digitCondition('second', 1)),
   // while ISO 8601 requires fractions to be prefixed with `.` or `,`
   // we can be just safely rely on using `sss` since we currently don't support single or two digit
@@ -101,23 +102,47 @@ var DATE_FORMATS = {
   a: hourClockExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), true))),
   Z: datePartGetterFactory({timeZoneName: 'long'}),
   z: datePartGetterFactory({timeZoneName: 'short'}),
-  ww: datePartGetterFactory({}),  // Week of year, padded (00-53). Week 01 is the week with the
-                                  // first Thursday of the year. not support ?
-  w: datePartGetterFactory({}),   // Week of year (0-53). Week 1 is the week with the first Thursday
-                                  // of the year not support ?
+  ww: digitModifier(weekGetter, 2),
+  w: digitModifier(weekGetter, 1),
   G: datePartGetterFactory(nameCondition('era', 1)),
   GG: datePartGetterFactory(nameCondition('era', 2)),
   GGG: datePartGetterFactory(nameCondition('era', 3)),
   GGGG: datePartGetterFactory(nameCondition('era', 4))
 };
 
+function getFirstThursdayOfYear(year: number) {
+  // 0 = index of January
+  var dayOfWeekOnFirst = (new Date(year, 0, 1)).getDay();
+  // 4 = index of Thursday (+1 to account for 1st = 5)
+  // 11 = index of *next* Thursday (+1 account for 1st = 12)
+  return new Date(year, 0, ((dayOfWeekOnFirst <= 4) ? 5 : 12) - dayOfWeekOnFirst);
+}
 
-function digitModifier(inner: (date: Date, locale: string) => string): (
+function getThursdayThisWeek(datetime: Date) {
+  return new Date(
+      datetime.getFullYear(), datetime.getMonth(),
+      // 4 = index of Thursday
+      datetime.getDate() + (4 - datetime.getDay()));
+}
+
+function weekGetter(date: Date, locale: string): string {
+  let firstThurs = getFirstThursdayOfYear(date.getFullYear()),
+      thisThurs = getThursdayThisWeek(date);
+  let diff = +thisThurs - +firstThurs,
+      result = 1 + Math.round(diff / 6.048e8);  // 6.048e8 ms per week
+
+  return result.toString();
+}
+
+function digitModifier(inner: (date: Date, locale: string) => string, len: number): (
     date: Date, locale: string) => string {
   return function(date: Date, locale: string): string {
     var result = inner(date, locale);
+    if (len > 1) {
+      return result.length == 1 ? '0' + result : result;
+    }
 
-    return result.length == 1 ? '0' + result : result;
+    return result == '00' ? '0' : result.replace('0', '');
   };
 }
 

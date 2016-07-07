@@ -39,6 +39,7 @@ var defaultLocale: string = 'en-US';
  *  | era       |   G    | G (AD)       | GGGG (Anno Domini)| -         | -         |
  *  | year      |   y    | -            | -                 | y (2015)  | yy (15)   |
  *  | month     |   M    | MMM (Sep)    | MMMM (September)  | M (9)     | MM (09)   |
+ *  | week      |   w    | -            | -                 | w (3)     | ww (03)   |
  *  | day       |   d    | -            | -                 | d (3)     | dd (03)   |
  *  | weekday   |   E    | EEE (Sun)    | EEEE (Sunday)     | -         | -         |
  *  | hour      |   j    | -            | -                 | j (13)    | jj (13)   |
