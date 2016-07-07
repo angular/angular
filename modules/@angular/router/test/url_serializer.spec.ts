@@ -134,6 +134,36 @@ describe('url serializer', () => {
     expect(tree.fragment).toEqual('');
     expect(url.serialize(tree)).toEqual('/one#');
   });
+
+  describe('encoding/decoding', () => {
+    it('should encode/decode path segments and parameters', () => {
+      const u =
+          `/${encodeURIComponent("one two")};${encodeURIComponent("p 1")}=${encodeURIComponent("v 1")};${encodeURIComponent("p 2")}=${encodeURIComponent("v 2")}`;
+      const tree = url.parse(u);
+
+      expect(tree.root.children[PRIMARY_OUTLET].pathsWithParams[0].path).toEqual('one two');
+      expect(tree.root.children[PRIMARY_OUTLET].pathsWithParams[0].parameters)
+          .toEqual({['p 1']: 'v 1', ['p 2']: 'v 2'});
+      expect(url.serialize(tree)).toEqual(u);
+    });
+
+    it('should encode/decode query params', () => {
+      const u =
+          `/one?${encodeURIComponent("p 1")}=${encodeURIComponent("v 1")}&${encodeURIComponent("p 2")}=${encodeURIComponent("v 2")}`;
+      const tree = url.parse(u);
+
+      expect(tree.queryParams).toEqual({['p 1']: 'v 1', ['p 2']: 'v 2'});
+      expect(url.serialize(tree)).toEqual(u);
+    });
+
+    it('should encode/decode fragment', () => {
+      const u = `/one#${encodeURIComponent("one two")}`;
+      const tree = url.parse(u);
+
+      expect(tree.fragment).toEqual('one two');
+      expect(url.serialize(tree)).toEqual(u);
+    });
+  });
 });
 
 function expectSegment(segment: UrlSegment, expected: string, hasChildren: boolean = false): void {
