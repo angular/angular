@@ -43,7 +43,7 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *    `,
  *    providers: [{provide: NgLocalization, useClass: MyLocalization}]
  *  })
- * 
+ *
  *  class MyApp {
  *    messages: any[];
  *    messageMapping: {[k:string]: string} = {
