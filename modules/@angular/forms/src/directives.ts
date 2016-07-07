@@ -44,7 +44,18 @@ export {NgSelectOption, SelectControlValueAccessor} from './directives/select_co
 export {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator} from './directives/validators';
 
+const SHARED_FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
+  NgSelectOption, NgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor,
+  CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor,
+  RadioControlValueAccessor, NgControlStatus, RequiredValidator, MinLengthValidator,
+  MaxLengthValidator, PatternValidator
+];
 
+const TEMPLATE_DRIVEN_DIRECTIVES: Type[] = /*@ts2dart_const*/[NgModel, NgModelGroup, NgForm];
+
+const REACTIVE_DRIVEN_DIRECTIVES: Type[] = /*@ts2dart_const*/[
+  FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName
+];
 
 /**
  *
@@ -63,20 +74,12 @@ export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValida
  * ```
  * @experimental
  */
-export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
-  NgModel, NgModelGroup, NgForm,
-
-  NgSelectOption, NgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor,
-  CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor,
-  RadioControlValueAccessor, NgControlStatus,
-
-  RequiredValidator, MinLengthValidator, MaxLengthValidator, PatternValidator
-];
+export const FORM_DIRECTIVES: Type[][] =
+    /*@ts2dart_const*/[TEMPLATE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
 
 /**
  * @experimental
  */
-export const REACTIVE_FORM_DIRECTIVES: Type[] =
-    /*@ts2dart_const*/[
-      FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName
-    ];
+
+export const REACTIVE_FORM_DIRECTIVES: Type[][] =
+    /*@ts2dart_const*/[REACTIVE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];

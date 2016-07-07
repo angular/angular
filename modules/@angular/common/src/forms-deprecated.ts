@@ -18,8 +18,9 @@
  * Forms providers are not included in default providers; you must import these providers
  * explicitly.
  */
-import {Type} from '@angular/core';
+import {AppModule, Type} from '@angular/core';
 
+import {FORM_DIRECTIVES} from './forms-deprecated/directives';
 import {RadioControlRegistry} from './forms-deprecated/directives/radio_control_value_accessor';
 import {FormBuilder} from './forms-deprecated/form_builder';
 
@@ -57,3 +58,18 @@ export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './forms-deprecated
  * @experimental
  */
 export const FORM_PROVIDERS: Type[] = /*@ts2dart_const*/[FormBuilder, RadioControlRegistry];
+
+
+/**
+ * The app module for the deprecated forms API.
+ * @deprecated
+ */
+@AppModule({
+  providers: [
+    FORM_PROVIDERS,
+  ],
+  directives: FORM_DIRECTIVES,
+  pipes: []
+})
+export class DeprecatedFormsModule {
+}

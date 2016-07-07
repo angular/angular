@@ -7,11 +7,11 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {Control, ControlGroup, ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, RadioButtonState, Validator, Validators} from '@angular/common/src/forms-deprecated';
+import {Control, ControlGroup, ControlValueAccessor, DeprecatedFormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, RadioButtonState, Validator, Validators} from '@angular/common/src/forms-deprecated';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component, Directive, EventEmitter, Output} from '@angular/core';
 import {Input, Provider, forwardRef} from '@angular/core';
-import {ComponentFixture, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {ComponentFixture, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -24,6 +24,8 @@ import {PromiseWrapper} from '../../src/facade/promise';
 
 export function main() {
   describe('integration tests', () => {
+
+    beforeEach(() => {configureModule({modules: [DeprecatedFormsModule]})});
 
     it('should initialize DOM elements with the given form object',
        inject(
@@ -1548,10 +1550,7 @@ class UniqLoginValidator implements Validator {
 @Component({
   selector: 'my-comp',
   template: '',
-  directives: [
-    FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator, UniqLoginValidator
-  ],
-  providers: [FORM_PROVIDERS]
+  directives: [WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator, UniqLoginValidator]
 })
 class MyComp8 {
   form: any;
