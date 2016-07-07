@@ -8,8 +8,44 @@
 
 import {resolveForwardRef} from '../di/forward_ref';
 import {DependencyMetadata} from '../di/metadata';
+import {OpaqueToken} from '../di/opaque_token';
 import {StringWrapper, Type, isString, stringify} from '../facade/lang';
 
+/**
+ * This token can be used to create a virtual provider that will populate the
+ * `precompile` fields of components and app modules based on its `useValue`.
+ * All components that are referenced in the `useValue` value (either directly
+ * or in a nested array or map) will be added to the `precompile` property.
+ *
+ * ### Example
+ * The following example shows how the router can populate the `precompile`
+ * field of an AppModule based on the router configuration which refers
+ * to components.
+ *
+ * ```typescript
+ * // helper function inside the router
+ * function provideRoutes(routes) {
+ *   return [
+ *     {provide: ROUTES, useValue: routes},
+ *     {provide: ANALYZE_FOR_PRECOMPILE, useValue: routes, multi: true}
+ *   ];
+ * }
+ *
+ * // user code
+ * let routes = [
+ *   {path: '/root', component: RootComp},
+ *   {path: /teams', component: TeamsComp}
+ * ];
+ *
+ * @AppModule({
+ *   providers: [provideRoutes(routes)]
+ * })
+ * class ModuleWithRoutes {}
+ * ```
+ *
+ * @experimental
+ */
+export const ANALYZE_FOR_PRECOMPILE = new OpaqueToken('AnalyzeForPrecompile');
 
 /**
  * Specifies that a constant attribute value should be injected.

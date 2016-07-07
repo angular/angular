@@ -26,6 +26,9 @@ export declare abstract class AfterViewInit {
 }
 
 /** @experimental */
+export declare const ANALYZE_FOR_PRECOMPILE: OpaqueToken;
+
+/** @experimental */
 export declare function animate(timing: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
 
 /** @experimental */

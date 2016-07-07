@@ -10,7 +10,7 @@ import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeE
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {Component, ViewChild, ViewContainerRef, ComponentFactoryResolver, NoComponentFactoryError, ComponentRef, forwardRef} from '@angular/core';
+import {Component, ViewChild, ViewContainerRef, ComponentFactoryResolver, NoComponentFactoryError, ComponentRef, forwardRef, ANALYZE_FOR_PRECOMPILE} from '@angular/core';
 import {CompilerConfig} from '@angular/compiler';
 
 export function main() {
@@ -33,6 +33,17 @@ function declareTests({useJit}: {useJit: boolean}) {
                async.done();
              });
            }));
+
+
+    it('should resolve ComponentFactories via ANALYZE_FOR_PRECOMPILE',
+       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         let compFixture = tcb.createSync(CompWithAnalyzePrecompileProvider);
+         let mainComp: CompWithAnalyzePrecompileProvider = compFixture.componentInstance;
+         let cfr: ComponentFactoryResolver =
+             compFixture.debugElement.injector.get(ComponentFactoryResolver);
+         expect(cfr.resolveComponentFactory(ChildComp).componentType).toBe(ChildComp);
+         expect(cfr.resolveComponentFactory(NestedChildComp).componentType).toBe(NestedChildComp);
+       }));
 
     it('should be able to get a component form a parent component (view hiearchy)',
        inject(
@@ -70,6 +81,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    async.done();
                  });
            }));
+
   });
 }
 
@@ -97,4 +109,19 @@ class ChildComp {
 })
 class MainComp {
   constructor(public cfr: ComponentFactoryResolver) {}
+}
+
+@Component({
+  selector: 'comp-with-analyze',
+  template: '',
+  providers: [{
+    provide: ANALYZE_FOR_PRECOMPILE,
+    multi: true,
+    useValue: [
+      {a: 'b', component: ChildComp},
+      {b: 'c', anotherComponent: NestedChildComp},
+    ]
+  }]
+})
+class CompWithAnalyzePrecompileProvider {
 }

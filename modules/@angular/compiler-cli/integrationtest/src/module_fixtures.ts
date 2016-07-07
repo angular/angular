@@ -7,7 +7,7 @@
  */
 
 import {LowerCasePipe, NgIf} from '@angular/common';
-import {AppModule, Component, ComponentFactoryResolver, Injectable} from '@angular/core';
+import {ANALYZE_FOR_PRECOMPILE, AppModule, Component, ComponentFactoryResolver, Inject, Injectable, OpaqueToken} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 @Injectable()
@@ -52,4 +52,18 @@ export class SomeModule {
   modules: [BrowserModule]
 })
 export class SomeModuleUsingParentComp {
+}
+
+export const SOME_TOKEN = new OpaqueToken('someToken');
+
+export function provideValueWithPrecompile(value: any) {
+  return [
+    {provide: SOME_TOKEN, useValue: value},
+    {provide: ANALYZE_FOR_PRECOMPILE, useValue: value, multi: true},
+  ];
+}
+
+@AppModule({providers: [provideValueWithPrecompile([{a: 'b', component: SomeComp}])]})
+export class SomeModuleWithAnalyzePrecompileProvider {
+  constructor(@Inject(SOME_TOKEN) public providedValue: any) {}
 }
