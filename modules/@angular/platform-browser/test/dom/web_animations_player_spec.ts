@@ -7,32 +7,16 @@
  */
 
 import {AsyncTestCompleter, MockAnimationPlayer, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {el} from '@angular/platform-browser/testing/browser_util';
 
-import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
 import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
 import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
 
-class ExtendedWebAnimationsPlayer extends WebAnimationsPlayer {
-  public domPlayer = new MockDomAnimatePlayer();
-
-  constructor(
-      public element: HTMLElement, public keyframes: {[key: string]: string | number}[],
-      public options: {[key: string]: string | number}) {
-    super(element, keyframes, options);
-  }
-
-  _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {
-    return this.domPlayer;
-  }
-}
-
 export function main() {
   function makePlayer(): {[key: string]: any} {
-    var someElm = el('<div></div>');
-    var player = new ExtendedWebAnimationsPlayer(someElm, [], {});
-    player.init();
-    return {'captures': player.domPlayer.captures, 'player': player};
+    var mockPlayer = new MockDomAnimatePlayer();
+    var c = mockPlayer.captures;
+    var p = new WebAnimationsPlayer(mockPlayer, 0);
+    return {'captures': c, 'player': p};
   }
 
   describe('WebAnimationsPlayer', () => {

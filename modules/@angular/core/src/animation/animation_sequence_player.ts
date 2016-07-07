@@ -15,7 +15,6 @@ export class AnimationSequencePlayer implements AnimationPlayer {
   private _activePlayer: AnimationPlayer;
   private _subscriptions: Function[] = [];
   private _finished = false;
-  private _started: boolean = false;
 
   public parentPlayer: AnimationPlayer = null;
 
@@ -55,19 +54,9 @@ export class AnimationSequencePlayer implements AnimationPlayer {
     }
   }
 
-  init(): void { this._players.forEach(player => player.init()); }
-
   onDone(fn: Function): void { this._subscriptions.push(fn); }
 
-  hasStarted() { return this._started; }
-
-  play(): void {
-    if (!isPresent(this.parentPlayer)) {
-      this.init();
-    }
-    this._started = true;
-    this._activePlayer.play();
-  }
+  play(): void { this._activePlayer.play(); }
 
   pause(): void { this._activePlayer.pause(); }
 

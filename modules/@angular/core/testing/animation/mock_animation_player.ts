@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer} from '../../core/src/animation/animation_player';
-import {isPresent} from '../../core/src/facade/lang';
+import {AnimationPlayer} from '../../src/animation/animation_player';
+import {isPresent} from '../../src/facade/lang';
 
 export class MockAnimationPlayer implements AnimationPlayer {
   private _subscriptions: any[] /** TODO #9100 */ = [];
   private _finished = false;
   private _destroyed = false;
-  private _started: boolean = false;
-
   public parentPlayer: AnimationPlayer = null;
 
   public log: any[] /** TODO #9100 */ = [];
@@ -32,16 +30,9 @@ export class MockAnimationPlayer implements AnimationPlayer {
     }
   }
 
-  init(): void { this.log.push('init'); }
-
   onDone(fn: Function): void { this._subscriptions.push(fn); }
 
-  hasStarted() { return this._started; }
-
-  play(): void {
-    this._started = true;
-    this.log.push('play');
-  }
+  play(): void { this.log.push('play'); }
 
   pause(): void { this.log.push('pause'); }
 

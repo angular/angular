@@ -271,7 +271,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
     statements.push(_ANIMATION_FACTORY_VIEW_VAR
                         .callMethod(
-                            'queueAnimation',
+                            'registerAndStartAnimation',
                             [
                               _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
                               _ANIMATION_PLAYER_VAR

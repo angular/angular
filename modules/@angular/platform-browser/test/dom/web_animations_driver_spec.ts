@@ -12,7 +12,6 @@ import {el} from '@angular/platform-browser/testing/browser_util';
 import {AnimationKeyframe, AnimationStyles} from '../../core_private';
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
 import {WebAnimationsDriver} from '../../src/dom/web_animations_driver';
-import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
 import {StringMapWrapper} from '../../src/facade/collection';
 import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
 
@@ -52,8 +51,8 @@ export function main() {
         _makeKeyframe(1, {'font-size': '555px'})
       ];
 
-      var player = driver.animate(elm, startingStyles, styles, 0, 0, 'linear');
-      var details = _formatOptions(player);
+      driver.animate(elm, startingStyles, styles, 0, 0, 'linear');
+      var details = driver.log.pop();
       var startKeyframe = details['keyframes'][0];
       var firstKeyframe = details['keyframes'][1];
       var lastKeyframe = details['keyframes'][2];
@@ -72,8 +71,8 @@ export function main() {
       var startingStyles = _makeStyles({'borderTopWidth': 40});
       var styles = [_makeKeyframe(0, {'font-size': 100}), _makeKeyframe(1, {'height': '555em'})];
 
-      var player = driver.animate(elm, startingStyles, styles, 0, 0, 'linear');
-      var details = _formatOptions(player);
+      driver.animate(elm, startingStyles, styles, 0, 0, 'linear');
+      var details = driver.log.pop();
       var startKeyframe = details['keyframes'][0];
       var firstKeyframe = details['keyframes'][1];
       var lastKeyframe = details['keyframes'][2];
@@ -89,8 +88,8 @@ export function main() {
       var startingStyles = _makeStyles({});
       var styles = [_makeKeyframe(0, {'color': 'green'}), _makeKeyframe(1, {'color': 'red'})];
 
-      var player = driver.animate(elm, startingStyles, styles, 1000, 1000, 'linear');
-      var details = _formatOptions(player);
+      driver.animate(elm, startingStyles, styles, 1000, 1000, 'linear');
+      var details = driver.log.pop();
       var options = details['options'];
       expect(options['fill']).toEqual('both');
     });
@@ -99,8 +98,8 @@ export function main() {
       var startingStyles = _makeStyles({});
       var styles = [_makeKeyframe(0, {'color': 'green'}), _makeKeyframe(1, {'color': 'red'})];
 
-      var player = driver.animate(elm, startingStyles, styles, 1000, 1000, 'ease-out');
-      var details = _formatOptions(player);
+      driver.animate(elm, startingStyles, styles, 1000, 1000, 'ease-out');
+      var details = driver.log.pop();
       var options = details['options'];
       expect(options['easing']).toEqual('ease-out');
     });
@@ -109,15 +108,11 @@ export function main() {
       var startingStyles = _makeStyles({});
       var styles = [_makeKeyframe(0, {'color': 'green'}), _makeKeyframe(1, {'color': 'red'})];
 
-      var player = driver.animate(elm, startingStyles, styles, 1000, 1000, null);
-      var details = _formatOptions(player);
+      driver.animate(elm, startingStyles, styles, 1000, 1000, null);
+      var details = driver.log.pop();
       var options = details['options'];
       var keys = StringMapWrapper.keys(options);
       expect(keys.indexOf('easing')).toEqual(-1);
     });
   });
-}
-
-function _formatOptions(player: WebAnimationsPlayer): {[key: string]: any} {
-  return {'element': player.element, 'keyframes': player.keyframes, 'options': player.options};
 }

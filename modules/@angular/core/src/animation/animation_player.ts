@@ -15,8 +15,6 @@ import {scheduleMicroTask} from '../facade/lang';
  */
 export abstract class AnimationPlayer {
   abstract onDone(fn: Function): void;
-  abstract init(): void;
-  abstract hasStarted(): boolean;
   abstract play(): void;
   abstract pause(): void;
   abstract restart(): void;
@@ -33,7 +31,6 @@ export abstract class AnimationPlayer {
 
 export class NoOpAnimationPlayer implements AnimationPlayer {
   private _subscriptions: any[] /** TODO #9100 */ = [];
-  private _started = false;
   public parentPlayer: AnimationPlayer = null;
   constructor() { scheduleMicroTask(() => this._onFinish()); }
   /** @internal */
@@ -42,9 +39,7 @@ export class NoOpAnimationPlayer implements AnimationPlayer {
     this._subscriptions = [];
   }
   onDone(fn: Function): void { this._subscriptions.push(fn); }
-  hasStarted(): boolean { return this._started; }
-  init(): void {}
-  play(): void { this._started = true; }
+  play(): void {}
   pause(): void {}
   restart(): void {}
   finish(): void { this._onFinish(); }

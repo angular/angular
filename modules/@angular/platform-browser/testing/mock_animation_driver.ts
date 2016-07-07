@@ -14,7 +14,7 @@ import {AnimationDriver} from '../src/dom/animation_driver';
 import {StringMapWrapper} from '../src/facade/collection';
 
 export class MockAnimationDriver extends AnimationDriver {
-  public log: {[key: string]: any}[] = [];
+  log: any[] /** TODO #9100 */ = [];
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string): AnimationPlayer {
@@ -38,9 +38,11 @@ function _serializeKeyframes(keyframes: AnimationKeyframe[]): any[] {
 }
 
 function _serializeStyles(styles: AnimationStyles): {[key: string]: any} {
-  var flatStyles: {[key: string]: any} = {};
-  styles.styles.forEach(entry => StringMapWrapper.forEach(entry, (val: any, prop: string) => {
-    flatStyles[prop] = val;
-  }));
+  var flatStyles = {};
+  styles.styles.forEach(
+      entry => StringMapWrapper.forEach(
+          entry, (val: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
+            (flatStyles as any /** TODO #9100 */)[prop] = val;
+          }));
   return flatStyles;
 }

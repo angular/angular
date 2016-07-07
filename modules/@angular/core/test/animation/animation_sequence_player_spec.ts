@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockAnimationPlayer} from '../../../platform-browser/testing/mock_animation_player';
 import {AnimationSequencePlayer} from '../../src/animation/animation_sequence_player';
 import {isPresent} from '../../src/facade/lang';
 import {fakeAsync, flushMicrotasks} from '../../testing';
+import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {

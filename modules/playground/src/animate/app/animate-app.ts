@@ -32,9 +32,6 @@ import {
       <hr />
       <div *ngFor="let item of items" class="box" @boxAnimation="state">
         {{ item }}
-        <div *ngIf="true">
-          something inside 
-        </div>
       </div>
     </div>
   `,
