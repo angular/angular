@@ -466,8 +466,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     if (isPresent(bindParts)) {
       hasBinding = true;
       if (isPresent(bindParts[1])) {  // match: bind-prop
-        this._parseProperty(
-            bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps);
+        this._parsePropertyOrAnimation(
+            bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps,
+            targetAnimationProps);
 
       } else if (isPresent(bindParts[2])) {  // match: var-name / var-name="iden"
         var identifier = bindParts[8];
@@ -500,23 +501,31 @@ class TemplateParseVisitor implements HtmlAstVisitor {
             bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs, targetEvents);
 
       } else if (isPresent(bindParts[6])) {  // match: bindon-prop
-        this._parseProperty(
-            bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps);
+        this._parsePropertyOrAnimation(
+            bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps,
+            targetAnimationProps);
         this._parseAssignmentEvent(
             bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs, targetEvents);
 
       } else if (isPresent(bindParts[7])) {  // match: animate-name
+        if (attrName[0] == '@' && isPresent(attrValue) && attrValue.length > 0) {
+          this._reportError(
+              `Assigning animation triggers via @prop="exp" attributes with an expression is deprecated. Use [@prop]="exp" instead!`,
+              attr.sourceSpan, ParseErrorLevel.WARNING);
+        }
         this._parseAnimation(
             bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs, targetAnimationProps);
       } else if (isPresent(bindParts[9])) {  // match: [(expr)]
-        this._parseProperty(
-            bindParts[9], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps);
+        this._parsePropertyOrAnimation(
+            bindParts[9], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps,
+            targetAnimationProps);
         this._parseAssignmentEvent(
             bindParts[9], attrValue, attr.sourceSpan, targetMatchableAttrs, targetEvents);
 
       } else if (isPresent(bindParts[10])) {  // match: [expr]
-        this._parseProperty(
-            bindParts[10], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps);
+        this._parsePropertyOrAnimation(
+            bindParts[10], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps,
+            targetAnimationProps);
 
       } else if (isPresent(bindParts[11])) {  // match: (event)
         this._parseEvent(
@@ -555,12 +564,18 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     targetRefs.push(new ElementOrDirectiveRef(identifier, value, sourceSpan));
   }
 
-  private _parseProperty(
+  private _parsePropertyOrAnimation(
       name: string, expression: string, sourceSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetProps: BoundElementOrDirectiveProperty[]) {
-    this._parsePropertyAst(
-        name, this._parseBinding(expression, sourceSpan), sourceSpan, targetMatchableAttrs,
-        targetProps);
+      targetMatchableAttrs: string[][], targetProps: BoundElementOrDirectiveProperty[],
+      targetAnimationProps: BoundElementPropertyAst[]) {
+    if (name[0] == '@') {
+      this._parseAnimation(
+          name.substr(1), expression, sourceSpan, targetMatchableAttrs, targetAnimationProps);
+    } else {
+      this._parsePropertyAst(
+          name, this._parseBinding(expression, sourceSpan), sourceSpan, targetMatchableAttrs,
+          targetProps);
+    }
   }
 
   private _parseAnimation(

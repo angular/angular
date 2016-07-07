@@ -22,7 +22,7 @@ import {
   selector: 'animate-app',
   styleUrls: ['css/animate-app.css'],
   template: `
-    <div @backgroundAnimation="bgStatus">
+    <div [@backgroundAnimation]="bgStatus">
       <button (click)="state='start'">Start State</button>
       <button (click)="state='active'">Active State</button>
       |
@@ -30,7 +30,7 @@ import {
       <button (click)="state='default'">Unhandled (default) State</button>
       <button style="float:right" (click)="bgStatus='blur'">Blur Page</button>
       <hr />
-      <div *ngFor="let item of items" class="box" @boxAnimation="state">
+      <div *ngFor="let item of items" class="box" [@boxAnimation]="state">
         {{ item }}
       </div>
     </div>

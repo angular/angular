@@ -35,7 +35,7 @@ import {Component, animate, state, style, transition, trigger} from '@angular/co
     <button (click)="expand()">Open</button>
     <button (click)="collapse()">Closed</button>
     <hr />
-    <div class="toggle-container" @openClose="stateExpression">
+    <div class="toggle-container" [@openClose]="stateExpression">
       Look at this box
     </div>
   `
