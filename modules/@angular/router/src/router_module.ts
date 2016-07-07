@@ -25,6 +25,21 @@ import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
  */
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
 
+export const ROUTER_PROVIDERS: any[] = [
+  Location, {provide: LocationStrategy, useClass: PathLocationStrategy},
+  {provide: UrlSerializer, useClass: DefaultUrlSerializer}, {
+    provide: Router,
+    useFactory: setupRouter,
+    deps: [
+      ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
+      AppModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
+    ]
+  },
+  RouterOutletMap,
+  {provide: ActivatedRoute, useFactory: (r: Router) => r.routerState.root, deps: [Router]},
+  {provide: AppModuleFactoryLoader, useClass: SystemJsAppModuleLoader},
+  {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}}
+];
 
 /**
  * Router module.
@@ -37,24 +52,7 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, 
  *
  * @experimental
  */
-@AppModule({
-  directives: ROUTER_DIRECTIVES,
-  providers: [
-    Location, {provide: LocationStrategy, useClass: PathLocationStrategy},
-    {provide: UrlSerializer, useClass: DefaultUrlSerializer}, {
-      provide: Router,
-      useFactory: setupRouter,
-      deps: [
-        ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
-        AppModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
-      ]
-    },
-    RouterOutletMap,
-    {provide: ActivatedRoute, useFactory: (r: Router) => r.routerState.root, deps: [Router]},
-    {provide: AppModuleFactoryLoader, useClass: SystemJsAppModuleLoader},
-    {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}}
-  ]
-})
+@AppModule({directives: ROUTER_DIRECTIVES, providers: ROUTER_PROVIDERS})
 export class RouterModule {
   constructor(private injector: Injector) {
     setTimeout(() => {

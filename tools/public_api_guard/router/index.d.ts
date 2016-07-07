@@ -132,11 +132,6 @@ export declare class Router {
 /** @stable */
 export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkWithHref | typeof RouterLinkActive)[];
 
-/** @experimental */
-export declare class RouterAppModule {
-    constructor(injector: Injector);
-}
-
 /** @deprecated */
 export declare type RouterConfig = Route[];
 
@@ -176,6 +171,11 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     ngOnChanges(changes: {}): any;
     ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
+}
+
+/** @experimental */
+export declare class RouterModule {
+    constructor(injector: Injector);
 }
 
 /** @stable */
