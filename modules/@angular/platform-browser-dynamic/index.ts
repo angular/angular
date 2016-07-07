@@ -8,7 +8,7 @@
 
 import {COMMON_DIRECTIVES, COMMON_PIPES} from '@angular/common';
 import {COMPILER_PROVIDERS, CompilerConfig, XHR} from '@angular/compiler';
-import {AppModule, AppModuleRef, ApplicationRef, Compiler, ComponentRef, ComponentResolver, ExceptionHandler, PLATFORM_DIRECTIVES, PLATFORM_PIPES, ReflectiveInjector, Type, coreLoadAndBootstrap, isDevMode, lockRunMode} from '@angular/core';
+import {AppModule, AppModuleRef, ApplicationRef, Compiler, ComponentRef, ComponentResolver, ExceptionHandler, PLATFORM_DIRECTIVES, PLATFORM_PIPES, ReflectiveInjector, Type, coreLoadAndBootstrap, isDevMode} from '@angular/core';
 import {BROWSER_APP_PROVIDERS, BrowserModule, WORKER_APP_APPLICATION_PROVIDERS, WORKER_SCRIPT, WORKER_UI_APPLICATION_PROVIDERS, bootstrapModuleFactory, browserPlatform, workerAppPlatform, workerUiPlatform} from '@angular/platform-browser';
 
 import {Console, ReflectionCapabilities, reflector} from './core_private';
@@ -44,7 +44,6 @@ export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
     [{provide: XHR, useClass: CachedXHR}];
 
 function _initGlobals() {
-  lockRunMode();
   initDomAdapter();
   reflector.reflectionCapabilities = new ReflectionCapabilities();
 }
@@ -212,13 +211,13 @@ export function bootstrap<C>(
     precompile = normalizeArray(customProvidersOrDynamicModule.precompile);
     compiler = customProvidersOrDynamicModule.compiler;
   }
-  let deprecationMessages: string[] = [];
+  const deprecationMessages: string[] = [];
   if (providers && providers.length > 0) {
     // Note: This is a hack to still support the old way
     // of configuring platform directives / pipes and the compiler xhr.
     // This will soon be deprecated!
-    let inj = ReflectiveInjector.resolveAndCreate(providers);
-    let compilerConfig: CompilerConfig = inj.get(CompilerConfig, null);
+    const inj = ReflectiveInjector.resolveAndCreate(providers);
+    const compilerConfig: CompilerConfig = inj.get(CompilerConfig, null);
     if (compilerConfig) {
       // Note: forms read the platform directives / pipes, modify them
       // and provide a CompilerConfig out of it
@@ -229,20 +228,20 @@ export function bootstrap<C>(
     } else {
       // If nobody provided a CompilerConfig, use the
       // PLATFORM_DIRECTIVES / PLATFORM_PIPES values directly.
-      let platformDirectives = inj.get(PLATFORM_DIRECTIVES, []);
+      const platformDirectives = inj.get(PLATFORM_DIRECTIVES, []);
       if (platformDirectives.length > 0) {
         deprecationMessages.push(
             `Passing PLATFORM_DIRECTIVES to "bootstrap()" as provider is deprecated. Use the new parameter "directives" of "bootstrap()" instead.`);
       }
       directives = directives.concat(platformDirectives);
-      let platformPipes = inj.get(PLATFORM_PIPES, []);
+      const platformPipes = inj.get(PLATFORM_PIPES, []);
       if (platformPipes.length > 0) {
         deprecationMessages.push(
             `Passing PLATFORM_PIPES to "bootstrap()" as provider is deprecated. Use the new parameter "pipes" of "bootstrap()" instead.`);
       }
       pipes = pipes.concat(platformPipes);
     }
-    let xhr = inj.get(XHR, null);
+    const xhr = inj.get(XHR, null);
     if (xhr) {
       compilerProviders.push([{provide: XHR, useValue: xhr}]);
       deprecationMessages.push(
@@ -250,7 +249,7 @@ export function bootstrap<C>(
     }
     // Need to copy console from providers to compiler
     // as well so that we can test the above deprecation messages!
-    let console = inj.get(Console, null);
+    const console = inj.get(Console, null);
     if (console) {
       compilerProviders.push([{provide: Console, useValue: console}]);
     }
@@ -258,10 +257,8 @@ export function bootstrap<C>(
   if (!compiler) {
     compiler = browserCompiler({providers: compilerProviders});
   }
-  deprecationMessages.forEach((msg) => {
-    let console: Console = compiler.injector.get(Console);
-    console.warn(msg);
-  });
+  const console: Console = compiler.injector.get(Console);
+  deprecationMessages.forEach((msg) => { console.warn(msg); });
 
   @AppModule({
     providers: providers,
