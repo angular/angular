@@ -32,7 +32,7 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, 
  * ### Example
  *
  * ```
- * bootstrap(AppCmp, {modules: [RouterAppModule]});
+ * bootstrap(AppCmp, {modules: [RouterModule]});
  * ```
  *
  * @experimental
@@ -55,7 +55,7 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, 
     {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}}
   ]
 })
-export class RouterAppModule {
+export class RouterModule {
   constructor(private injector: Injector) {
     setTimeout(() => {
       const appRef = injector.get(ApplicationRef);

@@ -9,7 +9,7 @@
 import {InboxApp, ROUTER_CONFIG} from './app/inbox-app';
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
-import {provideRoutes, RouterAppModule} from '@angular/router';
+import {provideRoutes, RouterModule} from '@angular/router';
 
 export function main() {
   bootstrap(InboxApp, {
@@ -17,6 +17,6 @@ export function main() {
       provideRoutes(ROUTER_CONFIG),
       {provide: LocationStrategy, useClass: HashLocationStrategy}
     ],
-    modules: [RouterAppModule]
+    modules: [RouterModule]
   });
 }
