@@ -19,7 +19,7 @@ import {AppModuleFactoryLoader, ComponentFactoryResolver, ComponentResolver, Inj
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {of } from 'rxjs/observable/of';
+import {of} from 'rxjs/observable/of';
 
 import {applyRedirects} from './apply_redirects';
 import {ResolveData, Routes, validateConfig} from './config';
