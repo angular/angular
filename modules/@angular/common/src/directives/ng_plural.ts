@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, Attribute, ContentChildren, Directive, Input, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Attribute, Directive, Host, Input, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
+
 import {isPresent} from '../facade/lang';
 import {NgLocalization, getPluralCategory} from '../localization';
+
 import {SwitchView} from './ng_switch';
+
 
 /**
  * `ngPlural` is an i18n directive that displays DOM sub-trees that match the switch expression
@@ -64,27 +67,11 @@ import {SwitchView} from './ng_switch';
  * ```
  * @experimental
  */
-
-@Directive({selector: '[ngPluralCase]'})
-export class NgPluralCase {
-  /** @internal */
-  _view: SwitchView;
-  constructor(
-      @Attribute('ngPluralCase') public value: string, template: TemplateRef<Object>,
-      viewContainer: ViewContainerRef) {
-    this._view = new SwitchView(viewContainer, template);
-  }
-}
-
-/**
- * @experimental
- */
 @Directive({selector: '[ngPlural]'})
-export class NgPlural implements AfterContentInit {
+export class NgPlural {
   private _switchValue: number;
   private _activeView: SwitchView;
   private _caseViews: {[k: string]: SwitchView} = {};
-  @ContentChildren(NgPluralCase) cases: QueryList<NgPluralCase> = null;
 
   constructor(private _localization: NgLocalization) {}
 
@@ -94,12 +81,7 @@ export class NgPlural implements AfterContentInit {
     this._updateView();
   }
 
-  ngAfterContentInit() {
-    this.cases.forEach((pluralCase: NgPluralCase): void => {
-      this._caseViews[pluralCase.value] = pluralCase._view;
-    });
-    this._updateView();
-  }
+  addCase(value: string, switchView: SwitchView): void { this._caseViews[value] = switchView; }
 
   /** @internal */
   _updateView(): void {
@@ -120,5 +102,17 @@ export class NgPlural implements AfterContentInit {
     if (!isPresent(view)) return;
     this._activeView = view;
     this._activeView.create();
+  }
+}
+
+/**
+ * @experimental
+ */
+@Directive({selector: '[ngPluralCase]'})
+export class NgPluralCase {
+  constructor(
+      @Attribute('ngPluralCase') public value: string, template: TemplateRef<Object>,
+      viewContainer: ViewContainerRef, @Host() ngPlural: NgPlural) {
+    ngPlural.addCase(value, new SwitchView(viewContainer, template));
   }
 }

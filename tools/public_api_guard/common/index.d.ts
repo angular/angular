@@ -437,17 +437,16 @@ export declare class NgModel extends NgControl implements OnChanges {
 }
 
 /** @experimental */
-export declare class NgPlural implements AfterContentInit {
-    cases: QueryList<NgPluralCase>;
+export declare class NgPlural {
     ngPlural: number;
     constructor(_localization: NgLocalization);
-    ngAfterContentInit(): void;
+    addCase(value: string, switchView: SwitchView): void;
 }
 
 /** @experimental */
 export declare class NgPluralCase {
     value: string;
-    constructor(value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef);
+    constructor(value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef, ngPlural: NgPlural);
 }
 
 /** @experimental */
