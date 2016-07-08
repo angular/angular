@@ -443,11 +443,8 @@ var _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 var _shadowDOMSelectorsRe = [
   /::shadow/g, /::content/g,
   // Deprecated selectors
-  // TODO(vicb): see https://github.com/angular/clang-format/issues/16
-  // clang-format off
   /\/shadow-deep\//g,  // former /deep/
   /\/shadow\//g,       // former ::shadow
-  // clanf-format on
 ];
 var _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)/g;
 var _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
