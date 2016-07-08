@@ -9,7 +9,7 @@
 // Public API for compiler
 export {AppModuleFactory, AppModuleRef} from './linker/app_module_factory';
 export {AppModuleFactoryLoader} from './linker/app_module_factory_loader';
-export {Compiler, ComponentStillLoadingError} from './linker/compiler';
+export {Compiler, CompilerFactory, CompilerOptions, ComponentStillLoadingError} from './linker/compiler';
 export {ComponentFactory, ComponentRef} from './linker/component_factory';
 export {ComponentFactoryResolver, NoComponentFactoryError} from './linker/component_factory_resolver';
 export {ComponentResolver} from './linker/component_resolver';

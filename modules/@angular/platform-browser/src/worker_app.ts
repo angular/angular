@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FORM_PROVIDERS} from '@angular/common';
-import {APPLICATION_COMMON_PROVIDERS, APP_INITIALIZER, ExceptionHandler, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PlatformRef, ReflectiveInjector, RootRenderer, assertPlatform, createPlatform, getPlatform} from '@angular/core';
+import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from '@angular/common';
+import {APPLICATION_COMMON_PROVIDERS, APP_INITIALIZER, AppModule, ExceptionHandler, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PlatformRef, ReflectiveInjector, RootRenderer, assertPlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
 
 import {BROWSER_SANITIZATION_PROVIDERS} from './browser';
 import {isBlank, print} from './facade/lang';
@@ -28,13 +28,11 @@ class PrintLogger {
   logGroupEnd() {}
 }
 
-const WORKER_APP_PLATFORM_MARKER = new OpaqueToken('WorkerAppPlatformMarker');
-
 /**
  * @experimental
  */
 export const WORKER_APP_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    [PLATFORM_COMMON_PROVIDERS, {provide: WORKER_APP_PLATFORM_MARKER, useValue: true}];
+    PLATFORM_COMMON_PROVIDERS;
 
 /**
  * @experimental
@@ -53,12 +51,7 @@ export const WORKER_APP_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any
 /**
  * @experimental
  */
-export function workerAppPlatform(): PlatformRef {
-  if (isBlank(getPlatform())) {
-    createPlatform(ReflectiveInjector.resolveAndCreate(WORKER_APP_PLATFORM_PROVIDERS));
-  }
-  return assertPlatform(WORKER_APP_PLATFORM_MARKER);
-}
+export const workerAppPlatform = createPlatformFactory('workerApp', WORKER_APP_PLATFORM_PROVIDERS);
 
 function _exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(new PrintLogger());
@@ -81,4 +74,17 @@ function createMessageBus(zone: NgZone): MessageBus {
 
 function setupWebWorker(): void {
   WorkerDomAdapter.makeCurrent();
+}
+
+/**
+ * The app module for the worker app side.
+ *
+ * @experimental
+ */
+@AppModule({
+  providers: WORKER_APP_APPLICATION_PROVIDERS,
+  directives: COMMON_DIRECTIVES,
+  pipes: COMMON_PIPES
+})
+export class WorkerAppModule {
 }

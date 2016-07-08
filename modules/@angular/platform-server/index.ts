@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {SERVER_PLATFORM_PROVIDERS, serverBootstrap, serverPlatform} from './src/server';
+export {SERVER_PLATFORM_PROVIDERS, serverBootstrap, serverDynamicPlatform, serverPlatform} from './src/server';

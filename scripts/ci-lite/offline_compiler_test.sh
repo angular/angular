@@ -3,7 +3,7 @@ set -ex -o pipefail
 
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,core,compiler,compiler-cli,platform-{browser,server}}
+  $(pwd)/dist/packages-dist/{common,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic}
   $(pwd)/dist/tools/@angular/tsc-wrapped
 )
 PKGS=(

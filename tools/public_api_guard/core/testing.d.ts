@@ -83,7 +83,7 @@ export declare function getTestInjector(): TestInjector;
 export declare var iit: any;
 
 /** @experimental */
-export declare function initTestEnvironment(compilerFactory: TestCompilerFactory, platform: PlatformRef, appModule: Type): void;
+export declare function initTestEnvironment(appModule: Type, platform: PlatformRef): void;
 
 /** @stable */
 export declare function inject(tokens: any[], fn: Function): () => any;
@@ -105,12 +105,6 @@ export declare var it: any;
 
 /** @experimental */
 export declare function resetTestEnvironment(): void;
-
-/** @experimental */
-export declare type TestCompilerFactory = (config: {
-    providers?: Array<Type | Provider | any[]>;
-    useJit?: boolean;
-}) => Compiler;
 
 /** @stable */
 export declare class TestComponentBuilder {
@@ -136,7 +130,6 @@ export declare class TestComponentRenderer {
 /** @experimental */
 export declare class TestInjector implements Injector {
     appModule: Type;
-    compilerFactory: TestCompilerFactory;
     platform: PlatformRef;
     configureCompiler(config: {
         providers?: any[];
