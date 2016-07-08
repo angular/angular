@@ -12,6 +12,12 @@ import {ComponentResolver, ReflectorComponentResolver} from '@angular/core/src/l
 import {ReflectionInfo, reflector} from '@angular/core/src/reflection/reflection';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {Console} from '../../src/console';
+
+class DummyConsole implements Console {
+  log(message: string) {}
+  warn(message: string) {}
+}
 
 export function main() {
   describe('Compiler', () => {
@@ -21,7 +27,7 @@ export function main() {
     beforeEach(() => {
       someCompFactory = new ComponentFactory(null, null, null);
       reflector.registerType(SomeComponent, new ReflectionInfo([someCompFactory]));
-      compiler = new ReflectorComponentResolver();
+      compiler = new ReflectorComponentResolver(new DummyConsole());
     });
 
     it('should read the template from an annotation',

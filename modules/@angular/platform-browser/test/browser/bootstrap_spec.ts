@@ -325,7 +325,9 @@ export function main() {
 
            expect(compilerConsole.warnings).toEqual([
              'Passing PLATFORM_DIRECTIVES to "bootstrap()" as provider is deprecated. Use the new parameter "directives" of "bootstrap()" instead.',
-             'Passing PLATFORM_PIPES to "bootstrap()" as provider is deprecated. Use the new parameter "pipes" of "bootstrap()" instead.'
+             'Passing PLATFORM_PIPES to "bootstrap()" as provider is deprecated. Use the new parameter "pipes" of "bootstrap()" instead.',
+             `Providing platform directives via the PLATFORM_DIRECTIVES provider or the "CompilerConfig" is deprecated. Provide platform directives via an @AppModule instead. Directives: ${stringify(SomeDirective)}`,
+             `Providing platform pipes via the PLATFORM_PIPES provider or the "CompilerConfig" is deprecated. Provide platform pipes via an @AppModule instead. Pipes: ${stringify(SomePipe)}`
            ]);
            async.done();
          });

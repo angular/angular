@@ -142,9 +142,7 @@ class Extractor {
       genDebugInfo: true,
       defaultEncapsulation: ViewEncapsulation.Emulated,
       logBindingUpdate: false,
-      useJit: false,
-      platformDirectives: [],
-      platformPipes: []
+      useJit: false
     });
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const parser = new Parser(new Lexer());

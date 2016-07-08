@@ -115,8 +115,8 @@ export function main() {
           configureCompiler({
             providers: [{
               provide: CompilerConfig,
-              useValue:
-                  new CompilerConfig({genDebugInfo: true, platformDirectives: [ADirective]})
+              useValue: new CompilerConfig(
+                  {genDebugInfo: true, deprecatedPlatformDirectives: [ADirective]})
             }]
           });
         });

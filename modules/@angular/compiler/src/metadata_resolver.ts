@@ -301,7 +301,7 @@ export class CompileMetadataResolver {
 
   getViewDirectivesMetadata(component: Type): cpl.CompileDirectiveMetadata[] {
     var view = this._viewResolver.resolve(component);
-    var directives = flattenDirectives(view, this._config.platformDirectives);
+    var directives = flattenDirectives(view, this._config.deprecatedPlatformDirectives);
     for (var i = 0; i < directives.length; i++) {
       if (!isValidType(directives[i])) {
         throw new BaseException(
@@ -313,7 +313,7 @@ export class CompileMetadataResolver {
 
   getViewPipesMetadata(component: Type): cpl.CompilePipeMetadata[] {
     var view = this._viewResolver.resolve(component);
-    var pipes = flattenPipes(view, this._config.platformPipes);
+    var pipes = flattenPipes(view, this._config.deprecatedPlatformPipes);
     for (var i = 0; i < pipes.length; i++) {
       if (!isValidType(pipes[i])) {
         throw new BaseException(
