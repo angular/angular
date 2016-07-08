@@ -127,5 +127,27 @@ export function main() {
       expect(mapA.getAll('c')).toEqual(['8']);
       expect(mapA.toString()).toEqual('a=4&a=5&a=6&c=8&b=7');
     });
+
+    it('should support a clone operation via clone()', () => {
+      var fooQueryEncoder = {
+        encodeKey(k: string) { return encodeURIComponent(k); },
+        encodeValue(v: string) { return encodeURIComponent(v); }
+      };
+      var paramsA = new URLSearchParams('', fooQueryEncoder);
+      paramsA.set('a', '2');
+      paramsA.set('q', '4+');
+      paramsA.set('c', '8');
+      var paramsB = new URLSearchParams();
+      paramsB.set('a', '2');
+      paramsB.set('q', '4+');
+      paramsB.set('c', '8');
+      expect(paramsB.toString()).toEqual('a=2&q=4+&c=8');
+      var paramsC = paramsA.clone();
+      expect(paramsC.has('a')).toBe(true);
+      expect(paramsC.has('b')).toBe(false);
+      expect(paramsC.has('c')).toBe(true);
+      expect(paramsC.toString()).toEqual('a=2&q=4%2B&c=8');
+    });
+
   });
 }
