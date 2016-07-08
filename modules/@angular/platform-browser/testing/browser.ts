@@ -36,6 +36,15 @@ export const TEST_BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[
 ];
 
 /**
+ * @deprecated Use initTestEnvironment with BrowserTestModule instead.
+ */
+export const TEST_BROWSER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
+  BROWSER_APP_PROVIDERS, {provide: APP_ID, useValue: 'a'}, ELEMENT_PROBE_PROVIDERS,
+  {provide: NgZone, useFactory: createNgZone},
+  {provide: AnimationDriver, useValue: AnimationDriver.NOOP}
+];
+
+/**
  * Platform for testing
  *
  * @experimental API related to bootstrapping are still under review.
