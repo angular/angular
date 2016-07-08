@@ -304,7 +304,7 @@ export function main() {
          ])).then((compRef) => {
            expect(el).toHaveText('hello world!');
            expect(compilerConsole.warnings).toEqual([
-             'Passing an instance of XHR to "bootstrap()" as provider is deprecated. Pass the provider to "createCompiler()" and call "bootstrap()" with the created compiler instead.'
+             'Passing an instance of XHR to "bootstrap()" as provider is deprecated. Pass the provider via the new parameter "compilerOptions" of "bootstrap()" instead.'
            ]);
            async.done();
          });

@@ -257,6 +257,12 @@ export declare class Binding extends Provider {
 }
 
 /** @stable */
+export declare function bootstrapModule<M>(moduleType: ConcreteType<M>, platform: PlatformRef, compilerOptions?: CompilerOptions): Promise<AppModuleRef<M>>;
+
+/** @experimental */
+export declare function bootstrapModuleFactory<M>(moduleFactory: AppModuleFactory<M>, platform: PlatformRef): AppModuleRef<M>;
+
+/** @stable */
 export declare enum ChangeDetectionStrategy {
     OnPush = 0,
     Default = 1,
@@ -301,6 +307,22 @@ export declare class Compiler {
     compileComponentAsync<T>(component: ConcreteType<T>): Promise<ComponentFactory<T>>;
     compileComponentSync<T>(component: ConcreteType<T>): ComponentFactory<T>;
 }
+
+/** @experimental */
+export declare abstract class CompilerFactory {
+    abstract createCompiler(options?: CompilerOptions): Compiler;
+    withDefaults(options?: CompilerOptions): CompilerFactory;
+    static mergeOptions(defaultOptions?: CompilerOptions, newOptions?: CompilerOptions): CompilerOptions;
+}
+
+/** @experimental */
+export declare type CompilerOptions = {
+    useDebug?: boolean;
+    useJit?: boolean;
+    defaultEncapsulation?: ViewEncapsulation;
+    providers?: any[];
+    deprecatedAppProviders?: any[];
+};
 
 /** @stable */
 export declare var Component: ComponentMetadataFactory;
@@ -512,6 +534,9 @@ export declare function coreLoadAndBootstrap(componentType: Type, injector: Inje
 
 /** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
+
+/** @experimental */
+export declare function createPlatformFactory(name: string, providers: any[]): () => PlatformRef;
 
 /** @stable */
 export declare class CyclicDependencyError extends AbstractProviderError {

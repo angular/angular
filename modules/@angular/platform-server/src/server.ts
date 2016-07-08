@@ -7,13 +7,12 @@
  */
 
 import {PlatformLocation} from '@angular/common';
-import {ComponentRef, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, Type, assertPlatform, coreLoadAndBootstrap, createPlatform, getPlatform} from '@angular/core';
+import {CompilerFactory, ComponentRef, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, Type, assertPlatform, coreLoadAndBootstrap, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
+import {BROWSER_DYNAMIC_TEST_COMPILER_FACTORY} from '@angular/platform-browser-dynamic/testing';
 
 import {ReflectionCapabilities, reflector, wtfInit} from '../core_private';
 
 import {Parse5DomAdapter} from './parse5_adapter';
-
-const SERVER_PLATFORM_MARKER = new OpaqueToken('ServerPlatformMarker');
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
@@ -39,9 +38,14 @@ class ServerPlatformLocation extends PlatformLocation {
  * @experimental
  */
 export const SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  {provide: SERVER_PLATFORM_MARKER, useValue: true}, PLATFORM_COMMON_PROVIDERS,
+  PLATFORM_COMMON_PROVIDERS,
   {provide: PLATFORM_INITIALIZER, useValue: initParse5Adapter, multi: true},
-  {provide: PlatformLocation, useClass: ServerPlatformLocation}
+  {provide: PlatformLocation, useClass: ServerPlatformLocation},
+];
+
+const SERVER_DYNAMIC_PROVIDERS: any[] = [
+  SERVER_PLATFORM_PROVIDERS,
+  {provide: CompilerFactory, useValue: BROWSER_DYNAMIC_TEST_COMPILER_FACTORY},
 ];
 
 
@@ -53,12 +57,15 @@ function initParse5Adapter() {
 /**
  * @experimental
  */
-export function serverPlatform(): PlatformRef {
-  if (!getPlatform()) {
-    createPlatform(ReflectiveInjector.resolveAndCreate(SERVER_PLATFORM_PROVIDERS));
-  }
-  return assertPlatform(SERVER_PLATFORM_MARKER);
-}
+export const serverPlatform = createPlatformFactory('server', SERVER_PLATFORM_PROVIDERS);
+
+/**
+ * The server platform that supports the runtime compiler.
+ *
+ * @experimental
+ */
+export const serverDynamicPlatform =
+    createPlatformFactory('serverDynamic', SERVER_DYNAMIC_PROVIDERS);
 
 /**
  * Used to bootstrap Angular in server environment (such as node).

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModule, AppModuleFactory, AppModuleMetadata, AppModuleRef, Compiler, ComponentStillLoadingError, Injector, PlatformRef, Provider, Type} from '../index';
+import {AppModule, AppModuleFactory, AppModuleMetadata, AppModuleRef, Compiler, CompilerFactory, ComponentStillLoadingError, Injector, PlatformRef, Provider, Type} from '../index';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {FunctionWrapper, isPresent, stringify} from '../src/facade/lang';
@@ -14,14 +14,6 @@ import {FunctionWrapper, isPresent, stringify} from '../src/facade/lang';
 import {AsyncTestCompleter} from './async_test_completer';
 
 const UNDEFINED = new Object();
-
-/**
- * Signature of the compiler factory passed to `initTestEnvironment`.
- *
- * @experimental
- */
-export type TestCompilerFactory =
-    (config: {providers?: Array<Type|Provider|any[]>, useJit?: boolean}) => Compiler;
 
 /**
  * @experimental
@@ -53,8 +45,6 @@ export class TestInjector implements Injector {
     this._precompile = [];
     this._instantiated = false;
   }
-
-  compilerFactory: TestCompilerFactory = null;
 
   platform: PlatformRef = null;
 
@@ -118,8 +108,12 @@ export class TestInjector implements Injector {
   }
 
   private _createCompilerAndModuleMeta(): AppModuleMetadata {
-    this._compiler =
-        this.compilerFactory({providers: this._compilerProviders, useJit: this._compilerUseJit});
+    const compilerFactory: CompilerFactory = this.platform.injector.get(CompilerFactory);
+    this._compiler = compilerFactory.createCompiler({
+      providers: this._compilerProviders,
+      useJit: this._compilerUseJit,
+      deprecatedAppProviders: this._providers
+    });
     const moduleMeta = new AppModuleMetadata({
       providers: this._providers.concat([{provide: TestInjector, useValue: this}]),
       modules: this._modules.concat([this.appModule]),
@@ -181,18 +175,16 @@ export function getTestInjector() {
  * suite on the current platform. If you absolutely need to change the providers,
  * first use `resetTestEnvironment`.
  *
- * Test Providers for individual platforms are available from
+ * Test modules and platforms for individual platforms are available from
  * 'angular2/platform/testing/<platform_name>'.
  *
  * @experimental
  */
-export function initTestEnvironment(
-    compilerFactory: TestCompilerFactory, platform: PlatformRef, appModule: Type) {
+export function initTestEnvironment(appModule: Type, platform: PlatformRef) {
   var testInjector = getTestInjector();
-  if (testInjector.compilerFactory || testInjector.platform || testInjector.appModule) {
+  if (testInjector.platform || testInjector.appModule) {
     throw new BaseException('Cannot set base providers because it has already been called');
   }
-  testInjector.compilerFactory = compilerFactory;
   testInjector.platform = platform;
   testInjector.appModule = appModule;
 }
@@ -204,7 +196,6 @@ export function initTestEnvironment(
  */
 export function resetTestEnvironment() {
   var testInjector = getTestInjector();
-  testInjector.compilerFactory = null;
   testInjector.platform = null;
   testInjector.appModule = null;
   testInjector.reset();

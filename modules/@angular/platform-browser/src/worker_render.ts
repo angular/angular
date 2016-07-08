@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APPLICATION_COMMON_PROVIDERS, APP_INITIALIZER, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, createPlatform, getPlatform} from '@angular/core';
+import {APPLICATION_COMMON_PROVIDERS, APP_INITIALIZER, AppModule, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
 
 import {wtfInit} from '../core_private';
 
@@ -33,7 +33,6 @@ import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
 import {MessageBasedRenderer} from './web_workers/ui/renderer';
 
-const WORKER_RENDER_PLATFORM_MARKER = new OpaqueToken('WorkerRenderPlatformMarker');
 
 /**
  * Wrapper class that exposes the Worker
@@ -72,7 +71,7 @@ export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
  * @experimental WebWorker support is currently experimental.
  */
 export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  PLATFORM_COMMON_PROVIDERS, {provide: WORKER_RENDER_PLATFORM_MARKER, useValue: true},
+  PLATFORM_COMMON_PROVIDERS,
   {provide: PLATFORM_INITIALIZER, useValue: initWebWorkerRenderPlatform, multi: true}
 ];
 
@@ -132,12 +131,7 @@ function initWebWorkerRenderPlatform(): void {
 /**
  * @experimental WebWorker support is currently experimental.
  */
-export function workerUiPlatform(): PlatformRef {
-  if (isBlank(getPlatform())) {
-    createPlatform(ReflectiveInjector.resolveAndCreate(WORKER_UI_PLATFORM_PROVIDERS));
-  }
-  return assertPlatform(WORKER_RENDER_PLATFORM_MARKER);
-}
+export const workerUiPlatform = createPlatformFactory('workerUi', WORKER_UI_PLATFORM_PROVIDERS);
 
 function _exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(getDOM());
@@ -180,4 +174,15 @@ function _resolveDefaultAnimationDriver(): AnimationDriver {
   // web workers have not been tested or configured to
   // work with animations just yet...
   return AnimationDriver.NOOP;
+}
+
+/**
+ * The app module for the worker ui side.
+ * To use this, you need to create an own module that includes this module
+ * and provides the `WORKER_SCRIPT` token.
+ *
+ * @experimental
+ */
+@AppModule({providers: WORKER_UI_APPLICATION_PROVIDERS})
+export class WorkerUiModule {
 }

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModuleFactory, AppModuleRef} from '@angular/core';
+import {AppModuleFactory, AppModuleRef, bootstrapModuleFactory} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {serverPlatform} from '@angular/platform-server';
 
 import {MainModuleNgFactory} from '../src/module.ngfactory';
 
 export function createModule<M>(factory: AppModuleFactory<M>): AppModuleRef<M> {
-  return factory.create(serverPlatform().injector);
+  return bootstrapModuleFactory(factory, serverPlatform());
 }
 
 export function createComponent<C>(

@@ -1,12 +1,9 @@
+/** @experimental */
+export declare const BROWSER_DYNAMIC_TEST_COMPILER_FACTORY: CompilerFactory;
+
 /** @stable */
 export declare class BrowserDynamicTestModule {
 }
 
 /** @experimental */
-export declare const browserDynamicTestPlatform: typeof browserTestPlatform;
-
-/** @stable */
-export declare function browserTestCompiler({providers, useJit}?: {
-    providers?: Array<Type | Provider | any[]>;
-    useJit?: boolean;
-}): Compiler;
+export declare const browserDynamicTestPlatform: () => PlatformRef;

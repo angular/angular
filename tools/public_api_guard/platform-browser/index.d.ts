@@ -4,9 +4,6 @@ export declare abstract class AnimationDriver {
     static NOOP: AnimationDriver;
 }
 
-/** @stable */
-export declare function bootstrapModuleFactory<M>(moduleFactory: AppModuleFactory<M>): AppModuleRef<M>;
-
 /** @experimental */
 export declare const BROWSER_APP_PROVIDERS: Array<any>;
 
@@ -16,12 +13,12 @@ export declare const BROWSER_PLATFORM_PROVIDERS: Array<any>;
 /** @experimental */
 export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
 
-/** @stable */
+/** @experimental */
 export declare class BrowserModule {
 }
 
 /** @experimental */
-export declare function browserPlatform(): PlatformRef;
+export declare const browserPlatform: () => PlatformRef;
 
 /** @stable */
 export declare class BrowserPlatformLocation extends PlatformLocation {
@@ -227,7 +224,15 @@ export declare const WORKER_UI_PLATFORM_PROVIDERS: Array<any>;
 export declare const WORKER_UI_STARTABLE_MESSAGING_SERVICE: OpaqueToken;
 
 /** @experimental */
-export declare function workerAppPlatform(): PlatformRef;
+export declare class WorkerAppModule {
+}
 
 /** @experimental */
-export declare function workerUiPlatform(): PlatformRef;
+export declare const workerAppPlatform: () => PlatformRef;
+
+/** @experimental */
+export declare class WorkerUiModule {
+}
+
+/** @experimental */
+export declare const workerUiPlatform: () => PlatformRef;

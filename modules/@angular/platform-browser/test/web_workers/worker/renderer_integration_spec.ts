@@ -26,7 +26,7 @@ import {ServiceMessageBrokerFactory_} from '@angular/platform-browser/src/web_wo
 import {CompilerConfig} from '@angular/compiler';
 import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
 import {BrowserTestModule} from '@angular/platform-browser/testing';
-import {browserTestCompiler, browserDynamicTestPlatform} from '@angular/platform-browser-dynamic/testing'
+import {browserDynamicTestPlatform} from '@angular/platform-browser-dynamic/testing'
 
 export function main() {
   function createWebWorkerBrokerFactory(
@@ -70,7 +70,6 @@ export function main() {
           uiRenderStore = new RenderStore();
           var testUiInjector = new TestInjector();
           testUiInjector.platform = browserDynamicTestPlatform();
-          testUiInjector.compilerFactory = browserTestCompiler;
           testUiInjector.appModule = BrowserTestModule;
           testUiInjector.configureModule({
             providers: [
