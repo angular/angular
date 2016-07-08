@@ -7,9 +7,8 @@
  */
 
 import {UrlResolver, XHR} from '@angular/compiler';
-import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component, provide} from '@angular/core';
-import {configureCompiler, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {TestComponentBuilder, configureCompiler, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';

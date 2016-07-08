@@ -8,7 +8,6 @@
 
 import {ViewResolver} from '@angular/compiler/src/view_resolver';
 import {Component, ViewMetadata} from '@angular/core/src/metadata';
-import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing';
 
 class SomeDir {}
 class SomePipe {}

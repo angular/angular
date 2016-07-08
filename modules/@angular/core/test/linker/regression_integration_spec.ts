@@ -7,8 +7,7 @@
  */
 
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {configureCompiler, configureModule} from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {configureCompiler, configureModule, TestComponentBuilder} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {IS_DART} from '../../src/facade/lang';

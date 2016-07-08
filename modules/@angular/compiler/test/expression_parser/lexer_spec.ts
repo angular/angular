@@ -7,7 +7,6 @@
  */
 
 import {Lexer, Token} from '@angular/compiler/src/expression_parser/lexer';
-import {ddescribe, describe, expect, it} from '@angular/core/testing';
 
 import {StringWrapper} from '../../src/facade/lang';
 

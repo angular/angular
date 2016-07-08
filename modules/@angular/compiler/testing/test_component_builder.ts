@@ -14,29 +14,6 @@ import {MapWrapper} from '../src/facade/collection';
 import {ConcreteType, IS_DART, Type, isPresent} from '../src/facade/lang';
 
 /**
- * @deprecated Import TestComponentRenderer from @angular/core/testing
- */
-export {TestComponentRenderer} from '@angular/core/testing';
-/**
- * @deprecated Import TestComponentBuilder from @angular/core/testing
- */
-export {TestComponentBuilder} from '@angular/core/testing';
-/**
- * @deprecated Import ComponentFixture from @angular/core/testing
- */
-export {ComponentFixture} from '@angular/core/testing';
-/**
- * @deprecated Import ComponentFixtureNoNgZone from @angular/core/testing
- */
-export {ComponentFixtureNoNgZone} from '@angular/core/testing';
-/**
- * @deprecated Import ComponentFixtureAutoDetect from @angular/core/testing
- */
-export {ComponentFixtureAutoDetect} from '@angular/core/testing';
-
-
-
-/**
  * A TestComponentBuilder that allows overriding based on the compiler.
  */
 @Injectable()

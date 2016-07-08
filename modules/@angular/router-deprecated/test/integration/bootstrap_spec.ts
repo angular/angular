@@ -8,11 +8,11 @@
 
 import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
-import {TestComponentBuilder} from '@angular/compiler/testing';
 import {disposePlatform} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {Component} from '@angular/core/src/metadata';
+import {TestComponentBuilder} from '@angular/core/testing';
 import {MockApplicationRef, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {bootstrap} from '@angular/platform-browser-dynamic';

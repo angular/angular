@@ -8,8 +8,7 @@
 
 import {inject, ddescribe, describe, it, iit, expect, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestInjector, configureModule} from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {TestInjector, TestComponentBuilder, configureModule} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {provide, Injector, ViewMetadata, Component, Injectable, ComponentRef, ReflectiveInjector, getPlatform} from '@angular/core';
 import {NgIf} from '@angular/common';

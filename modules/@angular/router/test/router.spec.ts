@@ -1,11 +1,13 @@
 import 'rxjs/add/operator/map';
+
 import {Location} from '@angular/common';
-import {ComponentFixture, TestComponentBuilder} from '@angular/compiler/testing';
 import {AppModule, AppModuleFactory, AppModuleFactoryLoader, Compiler, Component, Injectable} from '@angular/core';
-import {beforeEach, beforeEachProviders, configureModule, describe, fakeAsync, inject, it, tick} from '@angular/core/testing';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
+import {addProviders, configureModule, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
+
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterStateSnapshot, RoutesRecognized, provideRoutes} from '../index';
 import {RouterTestModule, SpyAppModuleFactoryLoader} from '../testing';
 
@@ -462,11 +464,13 @@ describe('Integration', () => {
       resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number { return 6; }
     }
 
-    beforeEachProviders(
-        () =>
-            [{provide: 'resolveTwo', useValue: (a: any, b: any) => 2},
-             {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
-             {provide: 'resolveSix', useClass: ResolveSix}]);
+    beforeEach(() => {
+      addProviders([
+        {provide: 'resolveTwo', useValue: (a: any, b: any) => 2},
+        {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
+        {provide: 'resolveSix', useClass: ResolveSix}
+      ]);
+    });
 
     it('should provide resolved data',
        fakeAsync(inject(
@@ -725,7 +729,9 @@ describe('Integration', () => {
   describe('guards', () => {
     describe('CanActivate', () => {
       describe('should not activate a route when CanActivate returns false', () => {
-        beforeEachProviders(() => [{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]);
+        beforeEach(() => {
+          addProviders([{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]);
+        });
 
         // handle errors
 
@@ -748,8 +754,9 @@ describe('Integration', () => {
       describe(
           'should not activate a route when CanActivate returns false (componentless route)',
           () => {
-            beforeEachProviders(
-                () => [{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]);
+            beforeEach(() => {
+              addProviders([{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]);
+            });
 
             it('works', fakeAsync(inject(
                             [Router, TestComponentBuilder, Location],
@@ -770,10 +777,12 @@ describe('Integration', () => {
           });
 
       describe('should activate a route when CanActivate returns true', () => {
-        beforeEachProviders(() => [{
-                              provide: 'alwaysTrue',
-                              useValue: (a: ActivatedRouteSnapshot, s: RouterStateSnapshot) => true
-                            }]);
+        beforeEach(() => {
+          addProviders([{
+            provide: 'alwaysTrue',
+            useValue: (a: ActivatedRouteSnapshot, s: RouterStateSnapshot) => true
+          }]);
+        });
 
         it('works',
            fakeAsync(inject(
@@ -798,7 +807,7 @@ describe('Integration', () => {
           }
         }
 
-        beforeEachProviders(() => [AlwaysTrue]);
+        beforeEach(() => { addProviders([AlwaysTrue]); });
 
         it('works', fakeAsync(inject(
                         [Router, TestComponentBuilder, Location],
@@ -816,12 +825,13 @@ describe('Integration', () => {
       });
 
       describe('should work when returns an observable', () => {
-        beforeEachProviders(() => [{
-                              provide: 'CanActivate',
-                              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                                return of (false);
-                              }
-                            }]);
+        beforeEach(() => {
+          addProviders([{
+            provide: 'CanActivate',
+            useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return of (false); }
+          }]);
+        });
+
 
         it('works',
            fakeAsync(inject(
@@ -841,26 +851,28 @@ describe('Integration', () => {
 
     describe('CanDeactivate', () => {
       describe('should not deactivate a route when CanDeactivate returns false', () => {
-        beforeEachProviders(
-            () =>
-                [{
-                  provide: 'CanDeactivateParent',
-                  useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                    return a.params['id'] === '22';
-                  }
-                },
-                 {
-                   provide: 'CanDeactivateTeam',
-                   useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                     return c.route.snapshot.params['id'] === '22';
-                   }
-                 },
-                 {
-                   provide: 'CanDeactivateUser',
-                   useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                     return a.params['name'] === 'victor';
-                   }
-                 }]);
+        beforeEach(() => {
+          addProviders([
+            {
+              provide: 'CanDeactivateParent',
+              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return a.params['id'] === '22';
+              }
+            },
+            {
+              provide: 'CanDeactivateTeam',
+              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return c.route.snapshot.params['id'] === '22';
+              }
+            },
+            {
+              provide: 'CanDeactivateUser',
+              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return a.params['name'] === 'victor';
+              }
+            }
+          ]);
+        });
 
         it('works',
            fakeAsync(inject(
@@ -959,7 +971,7 @@ describe('Integration', () => {
           }
         }
 
-        beforeEachProviders(() => [AlwaysTrue]);
+        beforeEach(() => { addProviders([AlwaysTrue]); });
 
         it('works',
            fakeAsync(inject(
@@ -982,11 +994,14 @@ describe('Integration', () => {
     });
 
     describe('should work when returns an observable', () => {
-      beforeEachProviders(() => [{
-                            provide: 'CanDeactivate',
-                            useValue: (c: TeamCmp, a: ActivatedRouteSnapshot,
-                                       b: RouterStateSnapshot) => { return of (false); }
-                          }]);
+      beforeEach(() => {
+        addProviders([{
+          provide: 'CanDeactivate',
+          useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+            return of (false);
+          }
+        }]);
+      });
 
       it('works',
          fakeAsync(inject(

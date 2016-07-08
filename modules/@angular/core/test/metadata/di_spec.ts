@@ -7,7 +7,7 @@
  */
 
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/core/testing';
 
 import {Component, ViewMetadata, Input, Directive, ViewChild, ViewChildren, QueryList, ElementRef} from '@angular/core';
 

@@ -7,8 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {RouteData, RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';

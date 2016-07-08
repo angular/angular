@@ -7,7 +7,7 @@
  */
 
 import {Component, disposePlatform} from '@angular/core';
-import {afterEach, async, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 import {BROWSER_APP_COMPILER_PROVIDERS} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';

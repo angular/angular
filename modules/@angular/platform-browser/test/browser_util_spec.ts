@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, expect, iit, it} from '@angular/core/testing';
-
 import {StringMapWrapper} from '../src/facade/collection';
 import {BrowserDetection} from '../testing/browser_util';
 

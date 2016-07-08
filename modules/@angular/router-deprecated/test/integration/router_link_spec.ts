@@ -8,8 +8,7 @@
 
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {Location} from '@angular/common';
 import {NumberWrapper, escapeRegExp} from '../../src/facade/lang';
 import {PromiseWrapper} from '../../src/facade/async';

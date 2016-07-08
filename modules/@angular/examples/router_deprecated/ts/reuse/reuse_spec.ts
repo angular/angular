@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {expect} from '@angular/core/testing';
 import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
 
 function waitForElement(selector: string) {

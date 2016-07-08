@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, discardPeriodicTasks, expect, fakeAsync, it, tick} from '@angular/core/testing';
+import {discardPeriodicTasks, fakeAsync, tick} from '@angular/core/testing';
 
 
 // #docregion basic

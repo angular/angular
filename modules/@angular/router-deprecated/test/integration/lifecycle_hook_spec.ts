@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component, Inject, Injector, provide} from '@angular/core';
-import {ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';

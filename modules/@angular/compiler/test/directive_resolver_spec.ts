@@ -8,7 +8,6 @@
 
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
 import {ContentChild, ContentChildMetadata, ContentChildren, ContentChildrenMetadata, Directive, DirectiveMetadata, HostBinding, HostListener, Input, Output, ViewChild, ViewChildMetadata, ViewChildren, ViewChildrenMetadata} from '@angular/core/src/metadata';
-import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {

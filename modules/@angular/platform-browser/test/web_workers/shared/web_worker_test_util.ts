@@ -7,7 +7,6 @@
  */
 
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {expect} from '@angular/core/testing';
 import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {ClientMessageBroker, ClientMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-browser/src/web_workers/shared/message_bus';

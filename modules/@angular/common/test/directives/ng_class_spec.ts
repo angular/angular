@@ -7,9 +7,8 @@
  */
 
 import {NgClass, NgFor} from '@angular/common';
-import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component, provide} from '@angular/core';
-import {ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
@@ -30,7 +29,7 @@ export function main() {
              var template = '<div *ngFor="let item of items" [ngClass]="item"></div>';
              tcb.overrideTemplate(TestComponent, template)
                  .createAsync(TestComponent)
-                 .then((fixture) => {
+                 .then((fixture: ComponentFixture<TestComponent>) => {
                    fixture.debugElement.componentInstance.items = [['0']];
                    fixture.detectChanges();
                    fixture.debugElement.componentInstance.items = [['1']];

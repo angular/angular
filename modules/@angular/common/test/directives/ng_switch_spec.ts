@@ -9,7 +9,7 @@
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {Component} from '@angular/core';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/core/testing';
 
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 
