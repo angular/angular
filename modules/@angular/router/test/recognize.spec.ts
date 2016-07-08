@@ -262,6 +262,23 @@ describe('recognize', () => {
               expect(c2._lastPathIndex).toBe(-1);
             });
       });
+
+      it('should inherit params', () => {
+        checkRecognize(
+            [{
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}
+              ]
+            }],
+            '/a;p=1', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), 'a', {p: '1'}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.firstChild(s.root)), '', {p: '1'}, ComponentB);
+              checkActivatedRoute(
+                  s.firstChild(s.firstChild(s.firstChild(s.root))), '', {p: '1'}, ComponentC);
+            });
+      });
     });
 
     describe('aux split is in the middle', () => {
