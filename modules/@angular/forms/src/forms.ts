@@ -23,6 +23,7 @@
 
 export {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES} from './directives';
 export {AbstractControlDirective} from './directives/abstract_control_directive';
+export {AbstractFormGroupDirective} from './directives/abstract_form_group_directive';
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 export {ControlContainer} from './directives/control_container';
 export {ControlValueAccessor, NG_VALUE_ACCESSOR} from './directives/control_value_accessor';
