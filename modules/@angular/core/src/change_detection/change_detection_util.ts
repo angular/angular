@@ -11,7 +11,9 @@ import {isPrimitive, looseIdentical} from '../facade/lang';
 
 export {looseIdentical} from '../facade/lang';
 
-export const UNINITIALIZED = new Object();
+export const UNINITIALIZED = {
+  toString: () => 'CD_INIT_VALUE'
+};
 
 export function devModeEqual(a: any, b: any): boolean {
   if (isListLikeIterable(a) && isListLikeIterable(b)) {

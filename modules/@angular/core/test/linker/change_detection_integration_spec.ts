@@ -1002,15 +1002,22 @@ export function main() {
 
     describe('enforce no new changes', () => {
       it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
-           var ctx = createCompFixture('<div [someProp]="a"></div>', TestData);
-
+           const ctx = createCompFixture('<div [someProp]="a"></div>', TestData);
            ctx.componentInstance.a = 1;
            expect(() => ctx.checkNoChanges())
                .toThrowError(/:0:5[\s\S]*Expression has changed after it was checked./g);
          }));
 
+      it('should warn when the view has been created in a cd hook', fakeAsync(() => {
+           const ctx = createCompFixture('<div *gh9882>{{ a }}</div>', TestData);
+           ctx.componentInstance.a = 1;
+           expect(() => ctx.detectChanges())
+               .toThrowError(
+                   /It seems like the view has been created after its parent and its children have been dirty checked/);
+         }));
+
       it('should not throw when two arrays are structurally the same', fakeAsync(() => {
-           var ctx = _bindSimpleValue('a', TestData);
+           const ctx = _bindSimpleValue('a', TestData);
            ctx.componentInstance.a = ['value'];
            ctx.detectChanges(false);
            ctx.componentInstance.a = ['value'];
@@ -1018,9 +1025,8 @@ export function main() {
          }));
 
       it('should not break the next run', fakeAsync(() => {
-           var ctx = _bindSimpleValue('a', TestData);
+           const ctx = _bindSimpleValue('a', TestData);
            ctx.componentInstance.a = 'value';
-
            expect(() => ctx.checkNoChanges()).toThrow();
 
            ctx.detectChanges();
@@ -1093,17 +1099,28 @@ export function main() {
 }
 
 const ALL_DIRECTIVES = /*@ts2dart_const*/[
-  forwardRef(() => TestDirective), forwardRef(() => TestComponent),
-  forwardRef(() => AnotherComponent), forwardRef(() => TestLocals), forwardRef(() => CompWithRef),
-  forwardRef(() => EmitterDirective), forwardRef(() => PushComp),
-  forwardRef(() => OrderCheckDirective2), forwardRef(() => OrderCheckDirective0),
-  forwardRef(() => OrderCheckDirective1), NgFor
+  forwardRef(() => TestDirective),
+  forwardRef(() => TestComponent),
+  forwardRef(() => AnotherComponent),
+  forwardRef(() => TestLocals),
+  forwardRef(() => CompWithRef),
+  forwardRef(() => EmitterDirective),
+  forwardRef(() => PushComp),
+  forwardRef(() => OrderCheckDirective2),
+  forwardRef(() => OrderCheckDirective0),
+  forwardRef(() => OrderCheckDirective1),
+  forwardRef(() => Gh9882),
+  NgFor,
 ];
 
 const ALL_PIPES = /*@ts2dart_const*/[
-  forwardRef(() => CountingPipe), forwardRef(() => CountingImpurePipe),
-  forwardRef(() => MultiArgPipe), forwardRef(() => PipeWithOnDestroy),
-  forwardRef(() => IdentityPipe), forwardRef(() => WrappedPipe), AsyncPipe
+  forwardRef(() => CountingPipe),
+  forwardRef(() => CountingImpurePipe),
+  forwardRef(() => MultiArgPipe),
+  forwardRef(() => PipeWithOnDestroy),
+  forwardRef(() => IdentityPipe),
+  forwardRef(() => WrappedPipe),
+  AsyncPipe,
 ];
 
 @Injectable()
@@ -1259,7 +1276,7 @@ class EmitterDirective {
   @Output('event') emitter = new EventEmitter<string>();
 }
 
-@Directive({selector: '[gh-9882]'})
+@Directive({selector: '[gh9882]'})
 class Gh9882 implements AfterContentInit {
   constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<Object>) {
   }
