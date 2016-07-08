@@ -431,7 +431,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       attr: HtmlAttrAst, targetMatchableAttrs: string[][],
       targetProps: BoundElementOrDirectiveProperty[], targetVars: VariableAst[]): boolean {
     let templateBindingsSource: string = null;
-    if (attr.name == TEMPLATE_ATTR) {
+    if (this._normalizeAttributeName(attr.name) == TEMPLATE_ATTR) {
       templateBindingsSource = attr.value;
     } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
       const key = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);  // remove the star

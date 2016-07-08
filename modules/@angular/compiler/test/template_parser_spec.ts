@@ -949,6 +949,12 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           ]))).toEqual([[EmbeddedTemplateAst], [ElementAst, 'div']]);
         });
 
+        it('should wrap the element with data-template attribute into an EmbeddedTemplateAST ',
+           () => {
+             expect(humanizeTplAst(parse('<div data-template>', [
+             ]))).toEqual([[EmbeddedTemplateAst], [ElementAst, 'div']]);
+           });
+
         it('should parse bound properties', () => {
           expect(humanizeTplAst(parse('<div template="ngIf test">', [ngIf]))).toEqual([
             [EmbeddedTemplateAst], [DirectiveAst, ngIf],
