@@ -1,13 +1,13 @@
 /** @experimental */
 export declare function bootstrap<C>(appComponentType: ConcreteType<C>, customProviders?: Array<any>): Promise<ComponentRef<C>>;
 
-/** @experimental */
+/** @deprecated */
 export declare function bootstrapWorkerApp(appComponentType: Type, customProviders?: Array<any>): Promise<ComponentRef<any>>;
 
-/** @experimental */
+/** @deprecated */
 export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Array<any>): Promise<ApplicationRef>;
 
-/** @experimental */
+/** @deprecated */
 export declare const BROWSER_APP_COMPILER_PROVIDERS: Array<any>;
 
 /** @experimental */

@@ -7,6 +7,7 @@
  */
 
 import {AppModuleFactory, AppModuleMetadata, Compiler, ComponentFactory, ComponentResolver, ComponentStillLoadingError, Injectable, Injector, OptionalMetadata, Provider, SkipSelfMetadata} from '@angular/core';
+import {Console} from '../core_private';
 
 import {BaseException} from '../src/facade/exceptions';
 import {ConcreteType, IS_DART, Type, isBlank, isString, stringify} from '../src/facade/lang';
@@ -42,11 +43,28 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
   private _compiledHostTemplateCache = new Map<Type, CompiledTemplate>();
   private _compiledAppModuleCache = new Map<Type, AppModuleFactory<any>>();
 
+  private _warnOnComponentResolver = true;
+
   constructor(
       private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
       private _templateNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _appModuleCompiler: AppModuleCompiler, private _genConfig: CompilerConfig) {}
+      private _appModuleCompiler: AppModuleCompiler, private _genConfig: CompilerConfig,
+      private _console: Console) {
+    const flatDeprecatedPlatformDirectives =
+        ListWrapper.flatten(_genConfig.deprecatedPlatformDirectives);
+    if (flatDeprecatedPlatformDirectives.length > 0) {
+      this._console.warn(
+          `Providing platform directives via the PLATFORM_DIRECTIVES provider or the "CompilerConfig" is deprecated. Provide platform directives via an @AppModule instead. Directives: ` +
+          flatDeprecatedPlatformDirectives.map(stringify));
+    }
+    const flatDeprecatedPlatformPipes = ListWrapper.flatten(_genConfig.deprecatedPlatformPipes);
+    if (flatDeprecatedPlatformPipes.length > 0) {
+      this._console.warn(
+          `Providing platform pipes via the PLATFORM_PIPES provider or the "CompilerConfig" is deprecated. Provide platform pipes via an @AppModule instead. Pipes: ` +
+          flatDeprecatedPlatformPipes.map(stringify));
+    }
+  }
 
   get injector(): Injector { return this._injector; }
 
@@ -54,6 +72,10 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
     if (isString(component)) {
       return PromiseWrapper.reject(
           new BaseException(`Cannot resolve component using '${component}'.`), null);
+    }
+    if (this._warnOnComponentResolver) {
+      this._console.warn(ComponentResolver.DynamicCompilationDeprecationMsg);
+      this._warnOnComponentResolver = false;
     }
     return this.compileComponentAsync(<ConcreteType<any>>component);
   }

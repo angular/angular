@@ -471,10 +471,12 @@ export declare abstract class ComponentRef<C> {
     abstract onDestroy(callback: Function): void;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare abstract class ComponentResolver {
     abstract clearCache(): void;
     abstract resolveComponent(component: Type | string): Promise<ComponentFactory<any>>;
+    static DynamicCompilationDeprecationMsg: string;
+    static LazyLoadingDeprecationMsg: string;
 }
 
 /** @stable */
@@ -526,10 +528,10 @@ export interface ContentChildrenMetadataFactory {
     }): ContentChildrenMetadata;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare function coreBootstrap<C>(componentFactory: ComponentFactory<C>, injector: Injector): ComponentRef<C>;
 
-/** @experimental */
+/** @deprecated */
 export declare function coreLoadAndBootstrap(componentType: Type, injector: Injector): Promise<ComponentRef<any>>;
 
 /** @experimental */
@@ -1057,13 +1059,13 @@ export interface PipeTransform {
 /** @experimental */
 export declare const PLATFORM_COMMON_PROVIDERS: Array<any | Type | Provider | any[]>;
 
-/** @stable */
+/** @deprecated */
 export declare const PLATFORM_DIRECTIVES: OpaqueToken;
 
 /** @experimental */
 export declare const PLATFORM_INITIALIZER: any;
 
-/** @stable */
+/** @deprecated */
 export declare const PLATFORM_PIPES: OpaqueToken;
 
 /** @experimental */
@@ -1338,15 +1340,16 @@ export declare class SystemJsAppModuleLoader implements AppModuleFactoryLoader {
     load(path: string): Promise<AppModuleFactory<any>>;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class SystemJsCmpFactoryResolver implements ComponentResolver {
+    constructor(_console: Console);
     clearCache(): void;
     resolveComponent(componentType: string | Type): Promise<ComponentFactory<any>>;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class SystemJsComponentResolver implements ComponentResolver {
-    constructor(_resolver: ComponentResolver);
+    constructor(_resolver: ComponentResolver, _console: Console);
     clearCache(): void;
     resolveComponent(componentType: string | Type): Promise<ComponentFactory<any>>;
 }

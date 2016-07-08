@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ComponentFactory, ComponentResolver, Injector, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, provide} from '@angular/core';
-import {BROWSER_APP_PROVIDERS, browserPlatform} from '@angular/platform-browser';
-import {BROWSER_APP_COMPILER_PROVIDERS} from '@angular/platform-browser-dynamic';
+import {AppModule, ApplicationRef, Compiler, CompilerFactory, ComponentFactory, ComponentResolver, Injector, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, bootstrapModuleFactory, provide} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {browserDynamicPlatform} from '@angular/platform-browser-dynamic';
 
 import * as angular from './angular_js';
 import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, NG2_COMPILER, NG2_COMPONENT_FACTORY_REF_MAP, NG2_INJECTOR, NG2_ZONE, REQUIRE_INJECTOR} from './constants';
@@ -278,21 +278,22 @@ export class UpgradeAdapter {
       UpgradeAdapterRef {
     var upgrade = new UpgradeAdapterRef();
     var ng1Injector: angular.IInjectorService = null;
-    var platformRef: PlatformRef = browserPlatform();
-    var applicationRef: ApplicationRef =
-        ReflectiveInjector
-            .resolveAndCreate(
-                [
-                  BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS,
-                  {provide: NG1_INJECTOR, useFactory: () => ng1Injector},
-                  {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)},
-                  this.providers
-                ],
-                platformRef.injector)
-            .get(ApplicationRef);
+    var platformRef: PlatformRef = browserDynamicPlatform();
+    var compiler: Compiler = platformRef.injector.get(CompilerFactory).createCompiler();
+    var providers = [
+      {provide: NG1_INJECTOR, useFactory: () => ng1Injector},
+      {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)}, this.providers
+    ];
+
+    @AppModule({providers: providers, modules: [BrowserModule]})
+    class DynamicModule {
+    }
+
+    var moduleRef =
+        bootstrapModuleFactory(compiler.compileAppModuleSync(DynamicModule), platformRef);
+    var applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
     var injector: Injector = applicationRef.injector;
     var ngZone: NgZone = injector.get(NgZone);
-    var compiler: ComponentResolver = injector.get(ComponentResolver);
     var delayApplyExps: Function[] = [];
     var original$applyFn: Function;
     var rootScopePrototype: any;
@@ -510,13 +511,12 @@ export class UpgradeAdapter {
   }
 
   /* @internal */
-  private compileNg2Components(
-      compiler: ComponentResolver,
-      componentFactoryRefMap: ComponentFactoryRefMap): Promise<ComponentFactoryRefMap> {
+  private compileNg2Components(compiler: Compiler, componentFactoryRefMap: ComponentFactoryRefMap):
+      Promise<ComponentFactoryRefMap> {
     var promises: Array<Promise<ComponentFactory<any>>> = [];
     var types = this.upgradedComponents;
     for (var i = 0; i < types.length; i++) {
-      promises.push(compiler.resolveComponent(types[i]));
+      promises.push(compiler.compileComponentAsync(<any>types[i]));
     }
     return Promise.all(promises).then((componentFactories: Array<ComponentFactory<any>>) => {
       var types = this.upgradedComponents;

@@ -7,7 +7,7 @@
  */
 
 import {Class, Component, EventEmitter, Testability, disposePlatform, provide} from '@angular/core';
-import {AsyncTestCompleter, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {UpgradeAdapter} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
 

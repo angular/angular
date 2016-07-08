@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Console} from '../console';
+import {Injectable} from '../di';
 import {Type, global, isString} from '../facade/lang';
 
 import {ComponentFactory} from './component_factory';
@@ -15,13 +17,18 @@ const _SEPARATOR = '#';
 
 /**
  * Component resolver that can load components lazily
- * @experimental
+ *
+ * @deprecated Lazy loading of components is deprecated. Use {@link SystemJsAppModuleLoader} to lazy
+ * load
+ * {@link AppModuleFactory}s instead.
  */
+@Injectable()
 export class SystemJsComponentResolver implements ComponentResolver {
-  constructor(private _resolver: ComponentResolver) {}
+  constructor(private _resolver: ComponentResolver, private _console: Console) {}
 
   resolveComponent(componentType: string|Type): Promise<ComponentFactory<any>> {
     if (isString(componentType)) {
+      this._console.warn(ComponentResolver.LazyLoadingDeprecationMsg);
       let [module, component] = componentType.split(_SEPARATOR);
 
       if (component === void(0)) {
@@ -45,11 +52,17 @@ const FACTORY_CLASS_SUFFIX = 'NgFactory';
 
 /**
  * Component resolver that can load component factories lazily
- * @experimental
+ *
+ * @deprecated Lazy loading of components is deprecated. Use {@link SystemJsAppModuleFactoryLoader}
+ * to lazy
+ * load {@link AppModuleFactory}s instead.
  */
+@Injectable()
 export class SystemJsCmpFactoryResolver implements ComponentResolver {
+  constructor(private _console: Console) {}
   resolveComponent(componentType: string|Type): Promise<ComponentFactory<any>> {
     if (isString(componentType)) {
+      this._console.warn(ComponentResolver.LazyLoadingDeprecationMsg);
       let [module, factory] = componentType.split(_SEPARATOR);
       return (<any>global)
           .System.import(module + FACTORY_MODULE_SUFFIX)

@@ -19,28 +19,38 @@ export class CompilerConfig {
   private _genDebugInfo: boolean;
   private _logBindingUpdate: boolean;
   public useJit: boolean;
-  public platformDirectives: any[];
-  public platformPipes: any[];
+  /**
+   * @deprecated Providing platform directives via the {@link CompilerConfig} deprecated. Provide
+   * platform
+   * directives via an {@link AppModule} instead.
+   */
+  public deprecatedPlatformDirectives: any[];
+  /**
+   * @deprecated Providing platform pipes via the {@link CompilerConfig} deprecated. Provide
+   * platform pipes
+   * via an {@link AppModule} instead.
+   */
+  public deprecatedPlatformPipes: any[];
 
   constructor(
       {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
-       genDebugInfo, logBindingUpdate, useJit = true, platformDirectives = [],
-       platformPipes = []}: {
+       genDebugInfo, logBindingUpdate, useJit = true, deprecatedPlatformDirectives = [],
+       deprecatedPlatformPipes = []}: {
         renderTypes?: RenderTypes,
         defaultEncapsulation?: ViewEncapsulation,
         genDebugInfo?: boolean,
         logBindingUpdate?: boolean,
         useJit?: boolean,
-        platformDirectives?: any[],
-        platformPipes?: any[]
+        deprecatedPlatformDirectives?: any[],
+        deprecatedPlatformPipes?: any[]
       } = {}) {
     this.renderTypes = renderTypes;
     this.defaultEncapsulation = defaultEncapsulation;
     this._genDebugInfo = genDebugInfo;
     this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
-    this.platformDirectives = platformDirectives;
-    this.platformPipes = platformPipes;
+    this.deprecatedPlatformDirectives = deprecatedPlatformDirectives;
+    this.deprecatedPlatformPipes = deprecatedPlatformPipes;
   }
 
   get genDebugInfo(): boolean {
