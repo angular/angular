@@ -14,7 +14,7 @@
 import {makeDecorator} from '../../core_private';
 import {ComponentInstruction} from '../instruction';
 
-import {CanActivate as CanActivateAnnotation} from './lifecycle_annotations_impl';
+import {CanActivateAnnotation} from './lifecycle_annotations_impl';
 
 export {routerCanDeactivate, routerCanReuse, routerOnActivate, routerOnDeactivate, routerOnReuse} from './lifecycle_annotations_impl';
 
