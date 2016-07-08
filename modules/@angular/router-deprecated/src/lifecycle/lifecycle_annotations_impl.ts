@@ -13,7 +13,7 @@ export class RouteLifecycleHook {
 }
 
 /* @ts2dart_const */
-export class CanActivate {
+export class CanActivateAnnotation {
   constructor(public fn: Function) {}
 }
 
