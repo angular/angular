@@ -32,8 +32,8 @@ import {RouterLink} from './src/directives/router_link';
 
 /**
  * A list of directives. To use the router directives like {@link RouterOutlet} and
- * {@link RouterLink}, add this to your `directives` array in the {@link View} decorator of your
- * component.
+ * {@link RouterLink}, add this to your `directives` array in the {@link Component} decorator
+ * of your component.
  *
  * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
  *

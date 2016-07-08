@@ -159,12 +159,12 @@ export function mapChildrenIntoArray<T>(
  */
 export abstract class UrlSerializer {
   /**
-   * Parse a url into a {@Link UrlTree}
+   * Parse a url into a {@link UrlTree}
    */
   abstract parse(url: string): UrlTree;
 
   /**
-   * Converts a {@Link UrlTree} into a url
+   * Converts a {@link UrlTree} into a url
    */
   abstract serialize(tree: UrlTree): string;
 }

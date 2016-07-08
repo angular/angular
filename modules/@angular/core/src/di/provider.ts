@@ -259,7 +259,7 @@ export class Binding extends Provider {
  * to an existing `token`.
  * See {@link ProviderBuilder} for more details.
  *
- * The `token` is most commonly a class or {@link OpaqueToken-class.html}.
+ * The `token` is most commonly a class or {@link OpaqueToken}.
  *
  * @deprecated
  */
