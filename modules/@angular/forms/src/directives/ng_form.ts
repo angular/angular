@@ -30,7 +30,7 @@ export const formDirectiveProvider: any =
  *
  * ### Typical Use
  *
- * Include `FORM_DIRECTIVES` in the `directives` section of a {@link View} annotation
+ * Include `FORM_DIRECTIVES` in the `directives` section of a {@link Component} annotation
  * to use `NgForm` and its associated controls.
  *
  * ### Structure

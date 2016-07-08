@@ -68,7 +68,7 @@ export interface ResolvedReflectiveProvider {
 }
 
 /**
- * See {@link ResolvedProvider} instead.
+ * See {@link ResolvedReflectiveProvider} instead.
  *
  * @deprecated
  */

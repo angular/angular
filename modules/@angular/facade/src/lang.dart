@@ -49,7 +49,7 @@ int serializeEnum(val) {
 
 /**
  * Deserializes an enum
- * val should be the indexed value of the enum (sa returned from @Link{serializeEnum})
+ * val should be the indexed value of the enum (sa returned from @link{serializeEnum})
  * values should be a map from indexes to values for the enum that you want to deserialize.
  */
 dynamic deserializeEnum(num val, Map<num, dynamic> values) {

@@ -31,7 +31,7 @@ import {Type} from '../src/facade/lang';
 /**
  * Interface for the {@link DirectiveMetadata} decorator function.
  *
- * See {@link DirectiveFactory}.
+ * See {@link DirectiveMetadataFactory}.
  *
  * @stable
  */
@@ -64,7 +64,7 @@ export interface ComponentDecorator extends TypeDecorator {
 /**
  * Interface for the {@link ViewMetadata} decorator function.
  *
- * See {@link ViewFactory}.
+ * See {@link ViewMetadataFactory}.
  *
  * @experimental
  */
@@ -528,7 +528,7 @@ export interface AppModuleMetadataFactory {
  *
  * ## Lifecycle hooks
  *
- * When the component class implements some {@link ../../../guide/lifecycle-hooks.html} the
+ * When the component class implements some {@linkDocs guide/lifecycle-hooks} the
  * callbacks are called by the change detection at defined points in time during the life of the
  * component.
  *
@@ -860,7 +860,7 @@ export var Component: ComponentMetadataFactory =
  *
  * ## Lifecycle hooks
  *
- * When the directive class implements some {@link ../../../guide/lifecycle-hooks.html} the
+ * When the directive class implements some {@linkDocs guide/lifecycle-hooks} the
  * callbacks are called by the change detection at defined points in time during the life of the
  * directive.
  *
