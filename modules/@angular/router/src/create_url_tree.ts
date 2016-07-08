@@ -19,6 +19,8 @@ export function createUrlTree(
   }
 
   const normalizedCommands = normalizeCommands(commands);
+  validateCommands(normalizedCommands);
+
   if (navigateToRoot(normalizedCommands)) {
     return tree(urlTree.root, new UrlSegment([], {}), urlTree, queryParams, fragment);
   }
@@ -29,6 +31,12 @@ export function createUrlTree(
           startingPosition.segment, startingPosition.index, normalizedCommands.commands) :
       updateSegment(startingPosition.segment, startingPosition.index, normalizedCommands.commands);
   return tree(startingPosition.segment, segment, urlTree, queryParams, fragment);
+}
+
+function validateCommands(n: NormalizedNavigationCommands): void {
+  if (n.isAbsolute && n.commands.length > 0 && (typeof n.commands[0] === 'object')) {
+    throw new Error('Root segment cannot have matrix parameters');
+  }
 }
 
 function tree(

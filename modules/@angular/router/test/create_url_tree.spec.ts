@@ -14,12 +14,17 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual('/');
   });
 
+  it('should error when navigating to the root segment with params', () => {
+    const p = serializer.parse('/');
+    expect(() => createRoot(p, ['/', {p: 11}]))
+        .toThrowError(/Root segment cannot have matrix parameters/);
+  });
+
   it('should support nested segments', () => {
     const p = serializer.parse('/a/b');
     const t = createRoot(p, ['/one', 11, 'two', 22]);
     expect(serializer.serialize(t)).toEqual('/one/11/two/22');
   });
-
 
   it('should stringify positional parameters', () => {
     const p = serializer.parse('/a/b');
