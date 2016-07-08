@@ -164,6 +164,8 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
+  updateValue(value: {[key: string]: any}): void { this.control.updateValue(value); }
+
   onSubmit(): boolean {
     this._submitted = true;
     ObservableWrapper.callEmit(this.ngSubmit, null);

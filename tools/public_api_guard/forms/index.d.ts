@@ -39,6 +39,7 @@ export declare abstract class AbstractControl {
     }): void;
     setParent(parent: FormGroup | FormArray): void;
     setValidators(newValidator: ValidatorFn | ValidatorFn[]): void;
+    abstract updateValue(value: any, options?: Object): void;
     updateValueAndValidity({onlySelf, emitEvent}?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -127,6 +128,9 @@ export declare class FormArray extends AbstractControl {
     insert(index: number, control: AbstractControl): void;
     push(control: AbstractControl): void;
     removeAt(index: number): void;
+    updateValue(value: any[], {onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
 }
 
 /** @experimental */
@@ -211,6 +215,11 @@ export declare class FormGroup extends AbstractControl {
     include(controlName: string): void;
     registerControl(name: string, control: AbstractControl): AbstractControl;
     removeControl(name: string): void;
+    updateValue(value: {
+        [key: string]: any;
+    }, {onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
 }
 
 /** @experimental */
@@ -312,6 +321,9 @@ export declare class NgForm extends ControlContainer implements Form {
     removeControl(dir: NgModel): void;
     removeFormGroup(dir: NgModelGroup): void;
     updateModel(dir: NgControl, value: any): void;
+    updateValue(value: {
+        [key: string]: any;
+    }): void;
 }
 
 /** @experimental */

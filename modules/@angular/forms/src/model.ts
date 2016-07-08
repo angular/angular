@@ -10,7 +10,9 @@ import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable, ObservableWrapper} from './facade/async';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
+import {BaseException} from './facade/exceptions';
 import {isBlank, isPresent, isPromise, normalizeBool} from './facade/lang';
+
 
 /**
  * Indicates that a FormControl is valid, i.e. that no errors exist in the input value.
@@ -148,6 +150,8 @@ export abstract class AbstractControl {
   }
 
   setParent(parent: FormGroup|FormArray): void { this._parent = parent; }
+
+  abstract updateValue(value: any, options?: Object): void;
 
   updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
       void {
@@ -433,6 +437,21 @@ export class FormGroup extends AbstractControl {
     return c && this._included(controlName);
   }
 
+  updateValue(value: {[key: string]: any}, {onlySelf}: {onlySelf?: boolean} = {}): void {
+    StringMapWrapper.forEach(value, (newValue: any, name: string) => {
+      this._throwIfControlMissing(name);
+      this.controls[name].updateValue(newValue, {onlySelf: true});
+    });
+    this.updateValueAndValidity({onlySelf: onlySelf});
+  }
+
+  /** @internal */
+  _throwIfControlMissing(name: string): void {
+    if (!this.controls[name]) {
+      throw new BaseException(`Cannot find form control with name: ${name}.`);
+    }
+  }
+
   /** @internal */
   _setParentForControls() {
     StringMapWrapper.forEach(
@@ -547,6 +566,21 @@ export class FormArray extends AbstractControl {
    * Length of the control array.
    */
   get length(): number { return this.controls.length; }
+
+  updateValue(value: any[], {onlySelf}: {onlySelf?: boolean} = {}): void {
+    value.forEach((newValue: any, index: number) => {
+      this._throwIfControlMissing(index);
+      this.at(index).updateValue(newValue, {onlySelf: true});
+    });
+    this.updateValueAndValidity({onlySelf: onlySelf});
+  }
+
+  /** @internal */
+  _throwIfControlMissing(index: number): void {
+    if (!this.at(index)) {
+      throw new BaseException(`Cannot find form control at index ${index}`);
+    }
+  }
 
   /** @internal */
   _updateValue(): void { this._value = this.controls.map((control) => control.value); }
