@@ -129,8 +129,8 @@ function _fetchSylesFromState(stateName: string, stateStyles: {[key: string]: An
   return null;
 }
 
-function _normalizeAnimationEntry(entry: CompileAnimationMetadata | CompileAnimationMetadata[]):
-    CompileAnimationMetadata {
+function _normalizeAnimationEntry(entry: CompileAnimationMetadata|
+                                  CompileAnimationMetadata[]): CompileAnimationMetadata {
   return isArray(entry) ? new CompileAnimationSequenceMetadata(<CompileAnimationMetadata[]>entry) :
                           <CompileAnimationMetadata>entry;
 }
@@ -158,7 +158,7 @@ function _normalizeStyleSteps(
 }
 
 function _mergeAnimationStyles(
-    stylesList: any[], newItem: {[key: string]: string | number} | string) {
+    stylesList: any[], newItem: {[key: string]: string | number}|string) {
   if (isStringMap(newItem) && stylesList.length > 0) {
     var lastIndex = stylesList.length - 1;
     var lastItem = stylesList[lastIndex];
@@ -464,7 +464,7 @@ function _fillAnimationAstStartingKeyframes(
 }
 
 function _parseTimeExpression(
-    exp: string | number, errors: AnimationParseError[]): _AnimationTimings {
+    exp: string|number, errors: AnimationParseError[]): _AnimationTimings {
   var regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/gi;
   var duration: number;
   var delay: number = 0;

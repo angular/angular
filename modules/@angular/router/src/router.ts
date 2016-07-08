@@ -651,10 +651,9 @@ class ActivateRoutes {
 
   private placeComponentIntoOutlet(
       outletMap: RouterOutletMap, future: ActivatedRoute, outlet: RouterOutlet): void {
-    const resolved = <any[]>[{provide: ActivatedRoute, useValue: future}, {
-      provide: RouterOutletMap,
-      useValue: outletMap
-    }];
+    const resolved = <any[]>[
+      {provide: ActivatedRoute, useValue: future}, {provide: RouterOutletMap, useValue: outletMap}
+    ];
 
     const parentFuture = this.futureState.parent(future);  // find the closest parent?
     const config = parentFuture ? parentFuture.snapshot._routeConfig : null;

@@ -11,7 +11,7 @@ import {isString} from '../src/facade/lang';
 
 import {RequestMethod} from './enums';
 
-export function normalizeMethodName(method: string | RequestMethod): RequestMethod {
+export function normalizeMethodName(method: string|RequestMethod): RequestMethod {
   if (isString(method)) {
     var originalMethod = method;
     method = (<string>method)

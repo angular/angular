@@ -108,8 +108,7 @@ export const formDirectiveProvider: any =
   host: {'(submit)': 'onSubmit()'},
   exportAs: 'ngForm'
 })
-export class FormGroupDirective extends ControlContainer implements Form,
-    OnChanges {
+export class FormGroupDirective extends ControlContainer implements Form, OnChanges {
   private _submitted: boolean = false;
   directives: NgControl[] = [];
 

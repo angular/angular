@@ -60,8 +60,8 @@ class LifecycleDir implements DoCheck {
   template: `<div lifecycle-dir></div>`,
   directives: [LifecycleDir]
 })
-class LifecycleCmp implements OnChanges,
-    OnInit, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked {
+class LifecycleCmp implements OnChanges, OnInit, DoCheck, AfterContentInit, AfterContentChecked,
+                              AfterViewInit, AfterViewChecked {
   field: any /** TODO #9100 */;
   constructor(private _log: Log) {}
 

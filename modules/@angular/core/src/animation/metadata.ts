@@ -182,8 +182,8 @@ export class AnimationGroupMetadata extends AnimationWithStepsMetadata {
  * @experimental Animation support is experimental.
  */
 export function animate(
-    timing: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata =
-                                 null): AnimationAnimateMetadata {
+    timing: string|number, styles: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata =
+                               null): AnimationAnimateMetadata {
   var stylesEntry = styles;
   if (!isPresent(stylesEntry)) {
     var EMPTY_STYLE: {[key: string]: string | number} = {};
@@ -324,9 +324,8 @@ export function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata 
  *
  * @experimental Animation support is experimental.
  */
-export function style(
-    tokens: string | {[key: string]: string | number} |
-    Array<string|{[key: string]: string | number}>): AnimationStyleMetadata {
+export function style(tokens: string|{[key: string]: string | number}|
+                      Array<string|{[key: string]: string | number}>): AnimationStyleMetadata {
   var input: Array<{[key: string]: string | number}|string>;
   var offset: number = null;
   if (isString(tokens)) {
@@ -547,7 +546,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *
  * @experimental Animation support is experimental.
  */
-export function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]):
+export function transition(stateChangeExpr: string, steps: AnimationMetadata|AnimationMetadata[]):
     AnimationStateTransitionMetadata {
   var animationData = isArray(steps) ? new AnimationSequenceMetadata(<AnimationMetadata[]>steps) :
                                        <AnimationMetadata>steps;

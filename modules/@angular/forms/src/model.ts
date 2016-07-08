@@ -32,7 +32,7 @@ export function isControl(control: Object): boolean {
   return control instanceof AbstractControl;
 }
 
-function _find(control: AbstractControl, path: Array<string|number>| string) {
+function _find(control: AbstractControl, path: Array<string|number>|string) {
   if (isBlank(path)) return null;
 
   if (!(path instanceof Array)) {
@@ -56,12 +56,12 @@ function toObservable(r: any): Observable<any> {
   return isPromise(r) ? ObservableWrapper.fromPromise(r) : r;
 }
 
-function coerceToValidator(validator: ValidatorFn | ValidatorFn[]): ValidatorFn {
+function coerceToValidator(validator: ValidatorFn|ValidatorFn[]): ValidatorFn {
   return Array.isArray(validator) ? composeValidators(validator) : validator;
 }
 
-function coerceToAsyncValidator(asyncValidator: AsyncValidatorFn | AsyncValidatorFn[]):
-    AsyncValidatorFn {
+function coerceToAsyncValidator(asyncValidator: AsyncValidatorFn|
+                                AsyncValidatorFn[]): AsyncValidatorFn {
   return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) : asyncValidator;
 }
 

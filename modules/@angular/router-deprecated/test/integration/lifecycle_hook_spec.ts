@@ -427,8 +427,7 @@ class ParentDeactivateCmp implements OnDeactivate {
   directives: [RouterOutlet]
 })
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
-class ReuseCmp implements OnReuse,
-    CanReuse {
+class ReuseCmp implements OnReuse, CanReuse {
   constructor() { cmpInstanceCount += 1; }
   routerCanReuse(next: ComponentInstruction, prev: ComponentInstruction) { return true; }
   routerOnReuse(next: ComponentInstruction, prev: ComponentInstruction) {
@@ -442,8 +441,7 @@ class ReuseCmp implements OnReuse,
   directives: [RouterOutlet]
 })
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
-class NeverReuseCmp implements OnReuse,
-    CanReuse {
+class NeverReuseCmp implements OnReuse, CanReuse {
   constructor() { cmpInstanceCount += 1; }
   routerCanReuse(next: ComponentInstruction, prev: ComponentInstruction) { return false; }
   routerOnReuse(next: ComponentInstruction, prev: ComponentInstruction) {
@@ -510,8 +508,7 @@ class AllHooksChildCmp implements CanDeactivate, OnDeactivate, OnActivate {
 })
 @RouteConfig([new Route({path: '/child', component: AllHooksChildCmp})])
 @CanActivate(AllHooksParentCmp.routerCanActivate)
-class AllHooksParentCmp implements CanDeactivate,
-    OnDeactivate, OnActivate {
+class AllHooksParentCmp implements CanDeactivate, OnDeactivate, OnActivate {
   routerCanDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
     logHook('routerCanDeactivate parent', next, prev);
     return true;

@@ -237,7 +237,7 @@ export class MetadataCollector {
 function namesOf(parameters: ts.NodeArray<ts.ParameterDeclaration>): string[] {
   let result: string[] = [];
 
-  function addNamesOf(name: ts.Identifier | ts.BindingPattern) {
+  function addNamesOf(name: ts.Identifier|ts.BindingPattern) {
     if (name.kind == ts.SyntaxKind.Identifier) {
       const identifier = <ts.Identifier>name;
       result.push(identifier.text);

@@ -21,8 +21,7 @@ import {CanReuse, ComponentInstruction, OnReuse, ROUTER_DIRECTIVES, RouteConfig,
     <div>message: <input id="message"></div>
   `
 })
-class MyCmp implements CanReuse,
-    OnReuse {
+class MyCmp implements CanReuse, OnReuse {
   name: string;
   constructor(params: RouteParams) { this.name = params.get('name') || 'NOBODY'; }
 

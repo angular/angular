@@ -443,11 +443,8 @@ var _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 var _shadowDOMSelectorsRe = [
   /::shadow/g, /::content/g,
   // Deprecated selectors
-  // TODO(vicb): see https://github.com/angular/clang-format/issues/16
-  // clang-format off
   /\/shadow-deep\//g,  // former /deep/
   /\/shadow\//g,       // former ::shadow
-  // clanf-format on
 ];
 var _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)/g;
 var _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
@@ -457,7 +454,7 @@ var _colonHostContextRe = /:host-context/gim;
 
 var _commentRe = /\/\*[\s\S]*?\*\//g;
 
-function stripComments(input:string):string {
+function stripComments(input: string): string {
   return StringWrapper.replaceAllMapped(input, _commentRe, (_: any /** TODO #9100 */) => '');
 }
 
@@ -468,38 +465,39 @@ const CLOSE_CURLY = '}';
 const BLOCK_PLACEHOLDER = '%BLOCK%';
 
 export class CssRule {
-  constructor(public selector:string, public content:string) {}
+  constructor(public selector: string, public content: string) {}
 }
 
-export function processRules(input:string, ruleCallback:Function):string {
+export function processRules(input: string, ruleCallback: Function): string {
   var inputWithEscapedBlocks = escapeBlocks(input);
   var nextBlockIndex = 0;
-  return StringWrapper.replaceAllMapped(inputWithEscapedBlocks.escapedString, _ruleRe, function(m: any /** TODO #9100 */) {
-    var selector = m[2];
-    var content = '';
-    var suffix = m[4];
-    var contentPrefix = '';
-    if (isPresent(m[4]) && m[4].startsWith('{'+BLOCK_PLACEHOLDER)) {
-      content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
-      suffix = m[4].substring(BLOCK_PLACEHOLDER.length+1);
-      contentPrefix = '{';
-    }
-    var rule = ruleCallback(new CssRule(selector, content));
-    return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
-  });
+  return StringWrapper.replaceAllMapped(
+      inputWithEscapedBlocks.escapedString, _ruleRe, function(m: any /** TODO #9100 */) {
+        var selector = m[2];
+        var content = '';
+        var suffix = m[4];
+        var contentPrefix = '';
+        if (isPresent(m[4]) && m[4].startsWith('{' + BLOCK_PLACEHOLDER)) {
+          content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
+          suffix = m[4].substring(BLOCK_PLACEHOLDER.length + 1);
+          contentPrefix = '{';
+        }
+        var rule = ruleCallback(new CssRule(selector, content));
+        return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
+      });
 }
 
 class StringWithEscapedBlocks {
-  constructor(public escapedString:string, public blocks:string[]) {}
+  constructor(public escapedString: string, public blocks: string[]) {}
 }
 
-function escapeBlocks(input:string):StringWithEscapedBlocks {
+function escapeBlocks(input: string): StringWithEscapedBlocks {
   var inputParts = StringWrapper.split(input, _curlyRe);
   var resultParts: any[] /** TODO #9100 */ = [];
   var escapedBlocks: any[] /** TODO #9100 */ = [];
   var bracketCount = 0;
   var currentBlockParts: any[] /** TODO #9100 */ = [];
-  for (var partIndex = 0; partIndex<inputParts.length; partIndex++) {
+  for (var partIndex = 0; partIndex < inputParts.length; partIndex++) {
     var part = inputParts[partIndex];
     if (part == CLOSE_CURLY) {
       bracketCount--;

@@ -74,8 +74,7 @@ export const controlGroupProvider: any =
   inputs: ['name: ngControlGroup'],
   exportAs: 'ngForm'
 })
-export class NgControlGroup extends ControlContainer implements OnInit,
-    OnDestroy {
+export class NgControlGroup extends ControlContainer implements OnInit, OnDestroy {
   /** @internal */
   _parent: ControlContainer;
 

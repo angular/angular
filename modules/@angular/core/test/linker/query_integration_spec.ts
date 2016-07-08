@@ -858,8 +858,7 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   `,
   directives: [NgIf, TextDirective]
 })
-class NeedsViewChild implements AfterViewInit,
-    AfterViewChecked {
+class NeedsViewChild implements AfterViewInit, AfterViewChecked {
   shouldShow: boolean = true;
   shouldShow2: boolean = false;
   _child: TextDirective;

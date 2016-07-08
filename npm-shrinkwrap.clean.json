@@ -1650,13 +1650,16 @@
       "version": "1.0.2"
     },
     "clang-format": {
-      "version": "1.0.41",
+      "version": "1.0.42",
       "dependencies": {
         "async": {
           "version": "1.5.2"
         },
         "glob": {
-          "version": "7.0.3"
+          "version": "7.0.5"
+        },
+        "minimatch": {
+          "version": "3.0.2"
         }
       }
     },
@@ -2331,6 +2334,9 @@
     },
     "fs-tree-diff": {
       "version": "0.3.1"
+    },
+    "fs.realpath": {
+      "version": "1.0.0"
     },
     "fsevents": {
       "version": "1.0.6",
@@ -5748,5 +5754,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-rc.3"
+  "version": "2.0.0-rc.4"
 }

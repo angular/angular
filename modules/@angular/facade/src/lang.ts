@@ -385,11 +385,11 @@ export function isJsObject(o: any): boolean {
   return o !== null && (typeof o === 'function' || typeof o === 'object');
 }
 
-export function print(obj: Error | Object) {
+export function print(obj: Error|Object) {
   console.log(obj);
 }
 
-export function warn(obj: Error | Object) {
+export function warn(obj: Error|Object) {
   console.warn(obj);
 }
 

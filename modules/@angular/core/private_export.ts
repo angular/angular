@@ -34,7 +34,7 @@ import * as metadata_view from './src/metadata/view';
 import * as wtf_init from './src/profile/wtf_init';
 import * as reflection from './src/reflection/reflection';
 // We need to import this name separately from the above wildcard, because this symbol is exposed.
-import {Reflector} from './src/reflection/reflection'; // tslint:disable-line
+import {Reflector} from './src/reflection/reflection';  // tslint:disable-line
 import * as reflection_capabilities from './src/reflection/reflection_capabilities';
 import * as reflector_reader from './src/reflection/reflector_reader';
 import * as api from './src/render/api';

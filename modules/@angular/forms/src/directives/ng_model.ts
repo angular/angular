@@ -52,8 +52,7 @@ export const formControlBinding: any =
   providers: [formControlBinding],
   exportAs: 'ngModel'
 })
-export class NgModel extends NgControl implements OnChanges,
-    OnDestroy {
+export class NgModel extends NgControl implements OnChanges, OnDestroy {
   /** @internal */
   _control = new FormControl();
   /** @internal */

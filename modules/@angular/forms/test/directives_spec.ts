@@ -93,16 +93,17 @@ export function main() {
         it('should return custom accessor when provided', () => {
           var customAccessor = new SpyValueAccessor();
           var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
-          expect(selectValueAccessor(dir, <any>[defaultAccessor, customAccessor, checkboxAccessor]))
-              .toEqual(customAccessor);
+          expect(selectValueAccessor(dir, <any>[
+            defaultAccessor, customAccessor, checkboxAccessor
+          ])).toEqual(customAccessor);
         });
 
         it('should return custom accessor when provided with select multiple', () => {
           const customAccessor = new SpyValueAccessor();
           const selectMultipleAccessor = new SelectMultipleControlValueAccessor();
-          expect(selectValueAccessor(
-                     dir, <any>[defaultAccessor, customAccessor, selectMultipleAccessor]))
-              .toEqual(customAccessor);
+          expect(selectValueAccessor(dir, <any>[
+            defaultAccessor, customAccessor, selectMultipleAccessor
+          ])).toEqual(customAccessor);
         });
 
         it('should throw when more than one custom accessor is provided', () => {
