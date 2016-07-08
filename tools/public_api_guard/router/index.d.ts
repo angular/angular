@@ -180,8 +180,10 @@ export declare class RouterModule {
 
 /** @stable */
 export declare class RouterOutlet {
+    activateEvents: EventEmitter<any>;
     activatedRoute: ActivatedRoute;
     component: Object;
+    deactivateEvents: EventEmitter<any>;
     isActivated: boolean;
     outletMap: RouterOutletMap;
     constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string);

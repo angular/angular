@@ -6,21 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, NoComponentFactoryError, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
+import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, NoComponentFactoryError, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
 
 import {RouterOutletMap} from '../router_outlet_map';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
+
 /**
  * A router outlet is a placeholder that Angular dynamically fills based on the application's route.
  *
- * ## Use
+ * ## Example
  *
  * ```
  * <router-outlet></router-outlet>
  * <router-outlet name="left"></router-outlet>
  * <router-outlet name="right"></router-outlet>
+ * ```
+ *
+ * A router outlet will emit an activate event any time a new component is being instantiated,
+ * and a deactivate event when it is being destroyed.
+ *
+ * ## Example
+ *
+ * ```
+ * <router-outlet (activate)="onActivate($event)"
+ * (deactivate)="onDeactivate($event)"></router-outlet>
  * ```
  *
  * @stable
@@ -30,6 +41,9 @@ export class RouterOutlet {
   private activated: ComponentRef<any>;
   private _activatedRoute: ActivatedRoute;
   public outletMap: RouterOutletMap;
+
+  @Output('activate') activateEvents = new EventEmitter<any>();
+  @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
   constructor(
       parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
@@ -49,8 +63,10 @@ export class RouterOutlet {
 
   deactivate(): void {
     if (this.activated) {
+      const c = this.component;
       this.activated.destroy();
       this.activated = null;
+      this.deactivateEvents.emit(c);
     }
   }
 
@@ -86,5 +102,7 @@ export class RouterOutlet {
     const inj = ReflectiveInjector.fromResolvedProviders(providers, this.location.parentInjector);
     this.activated = this.location.createComponent(factory, this.location.length, inj, []);
     this.activated.changeDetectorRef.detectChanges();
+
+    this.activateEvents.emit(this.activated.instance);
   }
 }

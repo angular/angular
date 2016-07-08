@@ -415,6 +415,48 @@ describe('Integration', () => {
                .toHaveText('primary {simple} right {user victor}');
          })));
 
+  it('should emit an event when an outlet gets activated',
+     fakeAsync(inject(
+         [Router, TestComponentBuilder, Location],
+         (router: Router, tcb: TestComponentBuilder, location: Location) => {
+           @Component({
+             selector: 'container',
+             template:
+                 `<router-outlet (activate)="recordActivate($event)" (deactivate)="recordDeactivate($event)"></router-outlet>`
+           })
+           class Container {
+             activations: any[] = [];
+             deactivations: any[] = [];
+
+             recordActivate(component: any): void { this.activations.push(component); }
+
+             recordDeactivate(component: any): void { this.deactivations.push(component); }
+           }
+
+           const fixture = createRoot(tcb, router, Container);
+           const cmp = fixture.debugElement.componentInstance;
+
+           router.resetConfig(
+               [{path: 'blank', component: BlankCmp}, {path: 'simple', component: SimpleCmp}]);
+
+           cmp.activations = [];
+           cmp.deactivations = [];
+
+           router.navigateByUrl('/blank');
+           advance(fixture);
+
+           expect(cmp.activations.length).toEqual(1);
+           expect(cmp.activations[0] instanceof BlankCmp).toBe(true);
+
+           router.navigateByUrl('/simple');
+           advance(fixture);
+
+           expect(cmp.activations.length).toEqual(2);
+           expect(cmp.activations[1] instanceof SimpleCmp).toBe(true);
+           expect(cmp.deactivations.length).toEqual(2);
+           expect(cmp.deactivations[1] instanceof BlankCmp).toBe(true);
+         })));
+
   describe('data', () => {
     class ResolveSix implements Resolve<TeamCmp> {
       resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number { return 6; }
