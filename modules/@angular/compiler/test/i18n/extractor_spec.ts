@@ -10,44 +10,12 @@ import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {ExtractionResult, extractAstMessages} from '@angular/compiler/src/i18n/extractor';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {serializeHtmlAst} from '../html_ast_serializer_spec'
+import {serializeAst} from '../html_ast_serializer_spec'
 
 export function main() {
   ddescribe(
       'MessageExtractor',
       () => {
-        function getExtractionResult(
-            html: string, implicitTags: string[],
-            implicitAttrs: {[k: string]: string[]}): ExtractionResult {
-          const htmlParser = new HtmlParser();
-          const parseResult = htmlParser.parse(html, 'extractor spec', true);
-          if (parseResult.errors.length > 1) {
-            throw Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
-          }
-
-          return extractAstMessages(parseResult.rootNodes, implicitTags, implicitAttrs);
-        }
-
-        function extract(
-            html: string, implicitTags: string[] = [],
-            implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
-          const messages = getExtractionResult(html, implicitTags, implicitAttrs).messages;
-
-          // clang-format off
-          // https://github.com/angular/clang-format/issues/35
-          return messages.map(
-              message => [serializeHtmlAst(message.ast), message.meaning, message.description, ]) as [string[], string, string][];
-          // clang-format on
-        }
-
-        function extractErrors(
-            html: string, implicitTags: string[] = [],
-            implicitAttrs: {[k: string]: string[]} = {}): any[] {
-          const errors = getExtractionResult(html, implicitTags, implicitAttrs).errors;
-
-          return errors.map((e): [string, string] => [e.msg, e.span.toString()]);
-        }
-
         describe('elements', () => {
           it('should extract from elements', () => {
             expect(extract('<div i18n="m|d">text<span>nested</span></div>')).toEqual([
@@ -71,7 +39,7 @@ export function main() {
                 ]);
           });
 
-          it('should extract all siblings', () => {
+          it('should extract siblings', () => {
             expect(
                 extract(
                     `<!-- i18n -->text<p>html<b>nested</b></p>{count, plural, =0 {<span>html</span>}}{{interp}}<!-- /i18n -->`))
@@ -181,8 +149,8 @@ export function main() {
              () => { expect(extract('<div i18n-title="m|d" title></div>')).toEqual([]); });
         });
 
-        describe('implicit tags', () => {
-          it('should extract from implicit tags', () => {
+        describe('implicit elements', () => {
+          it('should extract from implicit elements', () => {
             expect(extract('<b>bold</b><i>italic</i>', ['b'])).toEqual([
               [['bold'], '', ''],
             ]);
@@ -292,4 +260,36 @@ export function main() {
           });
         });
       });
+}
+
+function getExtractionResult(
+  html: string, implicitTags: string[],
+  implicitAttrs: {[k: string]: string[]}): ExtractionResult {
+  const htmlParser = new HtmlParser();
+  const parseResult = htmlParser.parse(html, 'extractor spec', true);
+  if (parseResult.errors.length > 1) {
+    throw Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
+  }
+
+  return extractAstMessages(parseResult.rootNodes, implicitTags, implicitAttrs);
+}
+
+function extract(
+  html: string, implicitTags: string[] = [],
+  implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
+  const messages = getExtractionResult(html, implicitTags, implicitAttrs).messages;
+
+  // clang-format off
+  // https://github.com/angular/clang-format/issues/35
+  return messages.map(
+    message => [serializeAst(message.nodes), message.meaning, message.description, ]) as [string[], string, string][];
+  // clang-format on
+}
+
+function extractErrors(
+  html: string, implicitTags: string[] = [],
+  implicitAttrs: {[k: string]: string[]} = {}): any[] {
+  const errors = getExtractionResult(html, implicitTags, implicitAttrs).errors;
+
+  return errors.map((e): [string, string] => [e.msg, e.span.toString()]);
 }

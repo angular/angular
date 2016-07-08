@@ -243,7 +243,7 @@ class _ExtractVisitor implements HtmlAstVisitor {
 
     if (significantChildren == 1) {
       for (let i = startIndex; i < messages.length; i++) {
-        let ast = messages[i].ast;
+        let ast = messages[i].nodes;
         if (!(ast.length == 1 && ast[0] instanceof HtmlAttrAst)) {
           messages.splice(i, 1);
           break;
@@ -260,5 +260,5 @@ class _ExtractVisitor implements HtmlAstVisitor {
 }
 
 export class AstMessage {
-  constructor(public ast: HtmlAst[], public meaning: string, public description: string) {}
+  constructor(public nodes: HtmlAst[], public meaning: string, public description: string) {}
 }

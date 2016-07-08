@@ -174,6 +174,12 @@ export function extractPhNameFromInterpolation(input: string, index: number): st
   return customPhMatch.length > 1 ? customPhMatch[1] : `INTERPOLATION_${index}`;
 }
 
+export function extractPlaceholderName(input: string): string {
+  const matches = StringWrapper.split(input, _CUSTOM_PH_EXP);
+  return matches[1] || `interpolation`;
+}
+
+
 /**
  * Return a unique placeholder name based on the given name
  */

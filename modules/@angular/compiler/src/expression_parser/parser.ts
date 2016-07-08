@@ -128,10 +128,10 @@ export class Parser {
     if (parts.length <= 1) {
       return null;
     }
-    var strings: string[] = [];
-    var expressions: string[] = [];
+    const strings: string[] = [];
+    const expressions: string[] = [];
 
-    for (var i = 0; i < parts.length; i++) {
+    for (let i = 0; i < parts.length; i++) {
       var part: string = parts[i];
       if (i % 2 === 0) {
         // fixed string

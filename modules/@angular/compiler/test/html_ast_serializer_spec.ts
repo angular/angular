@@ -11,31 +11,31 @@ export function main() {
     it('should support element', () => {
       const html = '<p></p>';
       const ast = parser.parse(html, 'url');
-      expect(serializeHtmlAst(ast.rootNodes)).toEqual([html]);
+      expect(serializeAst(ast.rootNodes)).toEqual([html]);
     });
 
     it('should support attributes', () => {
       const html = '<p k="value"></p>';
       const ast = parser.parse(html, 'url');
-      expect(serializeHtmlAst(ast.rootNodes)).toEqual([html]);
+      expect(serializeAst(ast.rootNodes)).toEqual([html]);
     });
 
     it('should support text', () => {
       const html = 'some text';
       const ast = parser.parse(html, 'url');
-      expect(serializeHtmlAst(ast.rootNodes)).toEqual([html]);
+      expect(serializeAst(ast.rootNodes)).toEqual([html]);
     });
 
     it('should support expansion', () => {
       const html = '{number, plural, =0 {none} =1 {one} other {many}}';
       const ast = parser.parse(html, 'url', true);
-      expect(serializeHtmlAst(ast.rootNodes)).toEqual([html]);
+      expect(serializeAst(ast.rootNodes)).toEqual([html]);
     });
 
     it('should support comment', () => {
       const html = '<!--comment-->';
       const ast = parser.parse(html, 'url', true);
-      expect(serializeHtmlAst(ast.rootNodes)).toEqual([html]);
+      expect(serializeAst(ast.rootNodes)).toEqual([html]);
     });
 
     it('should support nesting', () => {
@@ -47,7 +47,7 @@ export function main() {
         </p>                            
       </div>`;
       const ast = parser.parse(html, 'url', true);
-      expect(serializeHtmlAst(ast.rootNodes)).toEqual([html]);
+      expect(serializeAst(ast.rootNodes)).toEqual([html]);
     });
   });
 }
@@ -81,6 +81,6 @@ class _SerializerVisitor implements HtmlAstVisitor {
 
 const serializerVisitor = new _SerializerVisitor();
 
-export function serializeHtmlAst(ast: HtmlAst[]): string[] {
+export function serializeAst(ast: HtmlAst[]): string[] {
   return ast.map(a => a.visit(serializerVisitor, null));
 }

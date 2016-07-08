@@ -125,7 +125,7 @@ class TreeBuilder {
     // read the final }
     if (this.peek.type !== HtmlTokenType.EXPANSION_FORM_END) {
       this.errors.push(
-          HtmlTreeError.create(null, this.peek.sourceSpan, `Invalid expansion form. Missing '}'.`));
+          HtmlTreeError.create(null, this.peek.sourceSpan, `Invalid ICU message. Missing '}'.`));
       return;
     }
     this._advance();
@@ -141,7 +141,7 @@ class TreeBuilder {
     // read {
     if (this.peek.type !== HtmlTokenType.EXPANSION_CASE_EXP_START) {
       this.errors.push(HtmlTreeError.create(
-          null, this.peek.sourceSpan, `Invalid expansion form. Missing '{'.,`));
+          null, this.peek.sourceSpan, `Invalid ICU message. Missing '{'.`));
       return null;
     }
 
@@ -184,7 +184,7 @@ class TreeBuilder {
 
         } else {
           this.errors.push(
-              HtmlTreeError.create(null, start.sourceSpan, `Invalid expansion form. Missing '}'.`));
+              HtmlTreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`));
           return null;
         }
       }
@@ -194,14 +194,14 @@ class TreeBuilder {
           expansionFormStack.pop();
         } else {
           this.errors.push(
-              HtmlTreeError.create(null, start.sourceSpan, `Invalid expansion form. Missing '}'.`));
+              HtmlTreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`));
           return null;
         }
       }
 
       if (this.peek.type === HtmlTokenType.EOF) {
         this.errors.push(
-            HtmlTreeError.create(null, start.sourceSpan, `Invalid expansion form. Missing '}'.`));
+            HtmlTreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`));
         return null;
       }
 
