@@ -7,7 +7,7 @@
  */
 
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {APP_INITIALIZER, AppModuleFactoryLoader, ApplicationRef, ComponentResolver, Injector, OpaqueToken, SystemJsAppModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_PRECOMPILE, APP_INITIALIZER, AppModuleFactoryLoader, ApplicationRef, ComponentResolver, Injector, OpaqueToken, SystemJsAppModuleLoader} from '@angular/core';
 
 import {Routes} from './config';
 import {Router} from './router';
@@ -84,6 +84,7 @@ export function setupRouterInitializer(injector: Injector) {
  */
 export function provideRouter(routes: Routes, config: ExtraOptions): any[] {
   return [
+    {provide: ANALYZE_FOR_PRECOMPILE, multi: true, useValue: routes},
     {provide: ROUTES, useExisting: ROUTER_CONFIG}, {provide: ROUTER_CONFIG, useValue: routes},
 
     {provide: ROUTER_CONFIGURATION, useValue: config}, Location,
@@ -125,7 +126,10 @@ export function provideRouter(routes: Routes, config: ExtraOptions): any[] {
  * @experimental
  */
 export function provideRoutes(routes: Routes): any {
-  return {provide: ROUTES, useValue: routes};
+  return [
+    {provide: ANALYZE_FOR_PRECOMPILE, multi: true, useValue: routes},
+    {provide: ROUTES, useValue: routes}
+  ];
 }
 
 /**

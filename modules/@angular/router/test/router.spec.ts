@@ -36,15 +36,6 @@ describe('Integration', () => {
          (router: Router, tcb: TestComponentBuilder, location: Location) => {
            const fixture = createRoot(tcb, router, RootCmp);
 
-           @Component({
-             selector: 'child',
-             template: '<div *ngIf="alwaysTrue"><router-outlet></router-outlet></div>',
-             directives: ROUTER_DIRECTIVES
-           })
-           class LinkInNgIf {
-             alwaysTrue = true;
-           }
-
            router.resetConfig([{
              path: 'child',
              component: LinkInNgIf,
@@ -1304,13 +1295,22 @@ class RelativeLinkInIfCmp {
 }
 
 @Component({
+  selector: 'child',
+  template: '<div *ngIf="alwaysTrue"><router-outlet></router-outlet></div>',
+  directives: ROUTER_DIRECTIVES
+})
+class LinkInNgIf {
+  alwaysTrue = true;
+}
+
+@Component({
   selector: 'root-cmp',
   template: `<router-outlet></router-outlet>`,
   directives: [ROUTER_DIRECTIVES],
   precompile: [
     BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
     RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
-    QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp
+    QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp, LinkInNgIf
   ]
 })
 class RootCmp {

@@ -140,7 +140,6 @@ export const ROUTER_CONFIG = [
   selector: 'inbox-app',
   viewProviders: [DbService],
   templateUrl: 'app/inbox-app.html',
-  directives: ROUTER_DIRECTIVES,
-  precompile: [InboxCmp, DraftsCmp]
+  directives: ROUTER_DIRECTIVES
 })
 export class InboxApp {}

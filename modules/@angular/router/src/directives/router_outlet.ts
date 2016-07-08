@@ -74,15 +74,12 @@ export class RouterOutlet {
       }
     } catch (e) {
       if (!(e instanceof NoComponentFactoryError)) throw e;
-
-      // TODO: vsavkin uncomment this once ComponentResolver is deprecated
-      // const componentName = component ? component.name : null;
-      // console.warn(
-      //     `'${componentName}' not found in precompile array.  To ensure all components referred
-      //     to by the Routes are compiled, you must add '${componentName}' to the
-      //     'precompile' array of your application component. This will be required in a future
-      //     release of the router.`);
-
+      const componentName = component ? component.name : null;
+      console.warn(
+          `'${componentName}' not found in precompile array.  To ensure all components referred
+          to by the Routes are compiled, you must add '${componentName}' to the
+          'precompile' array of your application component. This will be required in a future
+          release of the router.`);
       factory = snapshot._resolvedComponentFactory;
     }
 

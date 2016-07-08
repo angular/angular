@@ -25,7 +25,6 @@ export class InboxDetailCmp {
 }
 
 @AppModule({
-  providers: [provideRoutes([{path: ':id', component: InboxDetailCmp}])],
-  precompile: [InboxDetailCmp]
+  providers: [provideRoutes([{path: ':id', component: InboxDetailCmp}])]
 })
 export default class InboxDetailModule {}
