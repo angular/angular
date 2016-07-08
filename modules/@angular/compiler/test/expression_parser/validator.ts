@@ -98,7 +98,7 @@ class ASTValidator extends RecursiveAstVisitor {
   }
 }
 
-function inSpan(span: ParseSpan, parentSpan: ParseSpan | undefined): parentSpan is ParseSpan {
+function inSpan(span: ParseSpan, parentSpan: ParseSpan|undefined): parentSpan is ParseSpan {
   return !parentSpan || (span.start >= parentSpan.start && span.end <= parentSpan.end);
 }
 

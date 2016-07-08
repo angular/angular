@@ -112,8 +112,7 @@ let _formModelWarningDisplayed: boolean = false;
   outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
-export class NgFormModel extends ControlContainer implements Form,
-    OnChanges {
+export class NgFormModel extends ControlContainer implements Form, OnChanges {
   private _submitted: boolean = false;
 
   form: ControlGroup = null;

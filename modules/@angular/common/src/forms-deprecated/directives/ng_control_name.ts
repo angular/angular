@@ -89,8 +89,7 @@ export const controlNameBinding: any =
   outputs: ['update: ngModelChange'],
   exportAs: 'ngForm'
 })
-export class NgControlName extends NgControl implements OnChanges,
-    OnDestroy {
+export class NgControlName extends NgControl implements OnChanges, OnDestroy {
   /** @internal */
   update = new EventEmitter();
   model: any;

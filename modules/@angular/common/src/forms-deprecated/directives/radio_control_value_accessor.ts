@@ -90,8 +90,7 @@ export class RadioButtonState {
   host: {'(change)': 'onChange()', '(blur)': 'onTouched()'},
   providers: [RADIO_VALUE_ACCESSOR]
 })
-export class RadioControlValueAccessor implements ControlValueAccessor,
-    OnDestroy, OnInit {
+export class RadioControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
   /** @internal */
   _state: RadioButtonState;
   /** @internal */

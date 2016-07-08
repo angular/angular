@@ -57,7 +57,7 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
 }
 
 export function setUpFormContainer(
-    control: FormGroup | FormArray, dir: AbstractFormGroupDirective | FormArrayName) {
+    control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
   if (isBlank(control)) _throwError(dir, 'Cannot find control');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);

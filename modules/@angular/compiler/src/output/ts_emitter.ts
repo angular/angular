@@ -16,8 +16,7 @@ import {ImportGenerator} from './path_util';
 
 var _debugModuleUrl = 'asset://debug/lib';
 
-export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type | any[]):
-    string {
+export function debugOutputAstAsTypeScript(ast: o.Statement|o.Expression|o.Type|any[]): string {
   var converter = new _TsEmitterVisitor(_debugModuleUrl);
   var ctx = EmitterVisitorContext.createRoot([]);
   var asts: any[];

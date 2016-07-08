@@ -92,7 +92,7 @@ function _populateStyles(
 }
 
 function _resolveStyleUnit(
-    val: string | number, userProvidedProp: string, formattedProp: string): string {
+    val: string|number, userProvidedProp: string, formattedProp: string): string {
   var unit = '';
   if (_isPixelDimensionStyle(formattedProp) && val != 0 && val != '0') {
     if (isNumber(val)) {

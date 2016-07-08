@@ -166,9 +166,8 @@ class ComponentWithoutModuleId {
   directives: [SomeDirective],
   interpolation: ['{{', '}}']
 })
-class ComponentWithEverything implements OnChanges,
-    OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit,
-    AfterViewChecked {
+class ComponentWithEverything implements OnChanges, OnInit, DoCheck, OnDestroy, AfterContentInit,
+                                         AfterContentChecked, AfterViewInit, AfterViewChecked {
   ngOnChanges(changes: SimpleChanges): void {}
   ngOnInit(): void {}
   ngDoCheck(): void {}

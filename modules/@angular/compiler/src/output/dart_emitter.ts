@@ -17,7 +17,7 @@ import {ImportGenerator} from './path_util';
 
 var _debugModuleUrl = 'asset://debug/lib';
 
-export function debugOutputAstAsDart(ast: o.Statement | o.Expression | o.Type | any[]): string {
+export function debugOutputAstAsDart(ast: o.Statement|o.Expression|o.Type|any[]): string {
   var converter = new _DartEmitterVisitor(_debugModuleUrl);
   var ctx = EmitterVisitorContext.createRoot([]);
   var asts: any[];

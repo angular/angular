@@ -62,8 +62,7 @@ export class AppModuleFactory<T> {
 const _UNDEFINED = new Object();
 
 export abstract class AppModuleInjector<T> extends CodegenComponentFactoryResolver implements
-    Injector,
-    AppModuleRef<T> {
+    Injector, AppModuleRef<T> {
   public instance: T;
 
   constructor(public parent: Injector, factories: ComponentFactory<any>[]) {

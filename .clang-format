@@ -1,4 +1,4 @@
 Language:              JavaScript
 BasedOnStyle:          Google
 ColumnLimit:           100
-JavaScriptWrapImports: true
+JavaScriptWrapImports: false

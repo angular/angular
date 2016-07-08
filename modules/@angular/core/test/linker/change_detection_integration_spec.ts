@@ -1274,7 +1274,7 @@ class EmitterDirective {
 
 @Directive({selector: '[testDirective]', exportAs: 'testDirective'})
 class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked,
-    AfterViewInit, AfterViewChecked, OnDestroy {
+                               AfterViewInit, AfterViewChecked, OnDestroy {
   @Input() a: any /** TODO #9100 */;
   @Input() b: any /** TODO #9100 */;
   changes: any /** TODO #9100 */;

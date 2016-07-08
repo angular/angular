@@ -39,7 +39,7 @@ function itAsync(msg: string, injections: Function[], f: Function): void;
 function itAsync(
     msg: string, f: (tcb: TestComponentBuilder, atc: AsyncTestCompleter) => void): void;
 function itAsync(
-    msg: string, f: Function[] | ((tcb: TestComponentBuilder, atc: AsyncTestCompleter) => void),
+    msg: string, f: Function[]|((tcb: TestComponentBuilder, atc: AsyncTestCompleter) => void),
     fn?: Function): void {
   if (f instanceof Function) {
     it(msg, inject([TestComponentBuilder, AsyncTestCompleter], <Function>f));

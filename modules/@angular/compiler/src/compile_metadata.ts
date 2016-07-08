@@ -348,7 +348,7 @@ export class CompileProviderMetadata {
 }
 
 export class CompileFactoryMetadata implements CompileIdentifierMetadata,
-    CompileMetadataWithIdentifier {
+                                               CompileMetadataWithIdentifier {
   runtime: Function;
   name: string;
   prefix: string;

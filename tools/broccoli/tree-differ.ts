@@ -160,7 +160,7 @@ class DirtyCheckingDiffResult extends DiffResult {
 }
 
 
-function pad(v: string | number, length: number) {
+function pad(v: string|number, length: number) {
   let value = '' + v;
   let whitespaceLength = (value.length < length) ? length - value.length : 0;
   whitespaceLength = whitespaceLength + 1;
