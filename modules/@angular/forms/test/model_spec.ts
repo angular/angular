@@ -551,6 +551,89 @@ export function main() {
         });
       });
 
+      describe('updateValue', () => {
+        let c: FormControl, c2: FormControl, g: FormGroup;
+
+        beforeEach(() => {
+          c = new FormControl('');
+          c2 = new FormControl('');
+          g = new FormGroup({'one': c, 'two': c2});
+        });
+
+        it('should update its own value', () => {
+          g.updateValue({'one': 'one', 'two': 'two'});
+          expect(g.value).toEqual({'one': 'one', 'two': 'two'});
+        });
+
+        it('should update child values', () => {
+          g.updateValue({'one': 'one', 'two': 'two'});
+          expect(c.value).toEqual('one');
+          expect(c2.value).toEqual('two');
+        });
+
+        it('should update parent values', () => {
+          const form = new FormGroup({'parent': g});
+          g.updateValue({'one': 'one', 'two': 'two'});
+          expect(form.value).toEqual({'parent': {'one': 'one', 'two': 'two'}});
+        });
+
+        it('should ignore fields that are missing from supplied value', () => {
+          g.updateValue({'one': 'one'});
+          expect(g.value).toEqual({'one': 'one', 'two': ''});
+        });
+
+        it('should not ignore fields that are null', () => {
+          g.updateValue({'one': null});
+          expect(g.value).toEqual({'one': null, 'two': ''});
+        });
+
+        it('should throw if a value is provided for a missing control', () => {
+          expect(() => g.updateValue({
+            'three': 'three'
+          })).toThrowError(new RegExp(`Cannot find form control with name: three`));
+        });
+
+        describe('updateValue() events', () => {
+          let form: FormGroup;
+          let logger: any[];
+
+          beforeEach(() => {
+            form = new FormGroup({'parent': g});
+            logger = [];
+          });
+
+          it('should emit one valueChange event per control', () => {
+            form.valueChanges.subscribe(() => logger.push('form'));
+            g.valueChanges.subscribe(() => logger.push('group'));
+            c.valueChanges.subscribe(() => logger.push('control1'));
+            c2.valueChanges.subscribe(() => logger.push('control2'));
+
+            g.updateValue({'one': 'one', 'two': 'two'});
+            expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
+          });
+
+          it('should not emit valueChange events for skipped controls', () => {
+            form.valueChanges.subscribe(() => logger.push('form'));
+            g.valueChanges.subscribe(() => logger.push('group'));
+            c.valueChanges.subscribe(() => logger.push('control1'));
+            c2.valueChanges.subscribe(() => logger.push('control2'));
+
+            g.updateValue({'one': 'one'});
+            expect(logger).toEqual(['control1', 'group', 'form']);
+          });
+
+          it('should emit one statusChange event per control', () => {
+            form.statusChanges.subscribe(() => logger.push('form'));
+            g.statusChanges.subscribe(() => logger.push('group'));
+            c.statusChanges.subscribe(() => logger.push('control1'));
+            c2.statusChanges.subscribe(() => logger.push('control2'));
+
+            g.updateValue({'one': 'one', 'two': 'two'});
+            expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
+          });
+        });
+      });
+
       describe('optional components', () => {
         describe('contains', () => {
           var group: any /** TODO #9100 */;
@@ -813,6 +896,89 @@ export function main() {
         it('should be an empty array when there are no child controls', () => {
           var a = new FormArray([]);
           expect(a.value).toEqual([]);
+        });
+      });
+
+      describe('updateValue', () => {
+        let c: FormControl, c2: FormControl, a: FormArray;
+
+        beforeEach(() => {
+          c = new FormControl('');
+          c2 = new FormControl('');
+          a = new FormArray([c, c2]);
+        });
+
+        it('should update its own value', () => {
+          a.updateValue(['one', 'two']);
+          expect(a.value).toEqual(['one', 'two']);
+        });
+
+        it('should update child values', () => {
+          a.updateValue(['one', 'two']);
+          expect(c.value).toEqual('one');
+          expect(c2.value).toEqual('two');
+        });
+
+        it('should update parent values', () => {
+          const form = new FormGroup({'parent': a});
+          a.updateValue(['one', 'two']);
+          expect(form.value).toEqual({'parent': ['one', 'two']});
+        });
+
+        it('should ignore fields that are missing from supplied value', () => {
+          a.updateValue([, 'two']);
+          expect(a.value).toEqual(['', 'two']);
+        });
+
+        it('should not ignore fields that are null', () => {
+          a.updateValue([null]);
+          expect(a.value).toEqual([null, '']);
+        });
+
+        it('should throw if a value is provided for a missing control', () => {
+          expect(() => a.updateValue([
+            , , 'three'
+          ])).toThrowError(new RegExp(`Cannot find form control at index 2`));
+        });
+
+        describe('updateValue() events', () => {
+          let form: FormGroup;
+          let logger: any[];
+
+          beforeEach(() => {
+            form = new FormGroup({'parent': a});
+            logger = [];
+          });
+
+          it('should emit one valueChange event per control', () => {
+            form.valueChanges.subscribe(() => logger.push('form'));
+            a.valueChanges.subscribe(() => logger.push('array'));
+            c.valueChanges.subscribe(() => logger.push('control1'));
+            c2.valueChanges.subscribe(() => logger.push('control2'));
+
+            a.updateValue(['one', 'two']);
+            expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
+          });
+
+          it('should not emit valueChange events for skipped controls', () => {
+            form.valueChanges.subscribe(() => logger.push('form'));
+            a.valueChanges.subscribe(() => logger.push('array'));
+            c.valueChanges.subscribe(() => logger.push('control1'));
+            c2.valueChanges.subscribe(() => logger.push('control2'));
+
+            a.updateValue(['one']);
+            expect(logger).toEqual(['control1', 'array', 'form']);
+          });
+
+          it('should emit one statusChange event per control', () => {
+            form.statusChanges.subscribe(() => logger.push('form'));
+            a.statusChanges.subscribe(() => logger.push('array'));
+            c.statusChanges.subscribe(() => logger.push('control1'));
+            c2.statusChanges.subscribe(() => logger.push('control2'));
+
+            a.updateValue(['one', 'two']);
+            expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
+          });
         });
       });
 
