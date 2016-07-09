@@ -36,7 +36,7 @@ export class ViewCompiler {
       component: CompileDirectiveMetadata, template: TemplateAst[], styles: o.Expression,
       pipes: CompilePipeMetadata[]): ViewCompileResult {
     var dependencies: Array<ViewFactoryDependency|ComponentFactoryDependency> = [];
-    var compiledAnimations = this._animationCompiler.compileComponent(component);
+    var compiledAnimations = this._animationCompiler.compileComponent(component, template);
     var statements: o.Statement[] = [];
     compiledAnimations.map(entry => {
       statements.push(entry.statesMapStatement);

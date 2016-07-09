@@ -22,7 +22,7 @@ export function main() {
     var compiler = new AnimationCompiler();
 
     var compileAnimations = (component: CompileDirectiveMetadata): CompiledAnimation => {
-      return compiler.compileComponent(component)[0];
+      return compiler.compileComponent(component, [])[0];
     };
 
     var compile = (seq: AnimationMetadata) => {
