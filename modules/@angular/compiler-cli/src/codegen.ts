@@ -35,8 +35,7 @@ export class CodeGenerator {
   constructor(
       private options: AngularCompilerOptions, private program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: StaticReflector,
-      private resolver: CompileMetadataResolver, private compiler: compiler.OfflineCompiler,
-      private reflectorHost: ReflectorHost) {}
+      private compiler: compiler.OfflineCompiler, private reflectorHost: ReflectorHost) {}
 
   private readFileMetadata(absSourcePath: string): FileMetadata {
     const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
@@ -147,7 +146,7 @@ export class CodeGenerator {
         new AppModuleCompiler(), new TypeScriptEmitter(reflectorHost));
 
     return new CodeGenerator(
-        options, program, compilerHost, staticReflector, resolver, offlineCompiler, reflectorHost);
+        options, program, compilerHost, staticReflector, offlineCompiler, reflectorHost);
   }
 }
 
