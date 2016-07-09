@@ -66,21 +66,12 @@ export function main() {
     });
 
     it('should throw an error when two or more animation triggers contain the same name', () => {
-      var doCompile = () => {
-        var t1Data: any[] = [];
-        var t2Data: any[] = [];
+      var t1Data: any[] = [];
+      var t2Data: any[] = [];
+
+      expect(() => {
         compileTriggers([['myTrigger', t1Data], ['myTrigger', t2Data]]);
-      };
-
-      var capturedErrorMessage: string;
-      try {
-        doCompile();
-      } catch (e) {
-        capturedErrorMessage = e.message;
-      }
-
-      expect(capturedErrorMessage)
-          .toMatch(/The animation trigger "myTrigger" has already been registered on "myCmp"/);
+      }).toThrowError(/The animation trigger "myTrigger" has already been registered on "myCmp"/);
     });
   });
 }

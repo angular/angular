@@ -1200,12 +1200,17 @@ export declare class ReflectiveKey {
 
 /** @experimental */
 export declare class RenderComponentType {
+    animations: {
+        [key: string]: Function;
+    };
     encapsulation: ViewEncapsulation;
     id: string;
     slotCount: number;
     styles: Array<string | any[]>;
     templateUrl: string;
-    constructor(id: string, templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation, styles: Array<string | any[]>);
+    constructor(id: string, templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation, styles: Array<string | any[]>, animations: {
+        [key: string]: Function;
+    });
 }
 
 /** @experimental */

@@ -45,7 +45,7 @@ function declareTests({useJit}: {useJit: boolean}) {
     var makeAnimationCmp =
         (tcb: TestComponentBuilder, tpl: string,
          animationEntry: AnimationEntryMetadata | AnimationEntryMetadata[],
-         callback: Function = null, failure: Function = null) => {
+         callback: (fixture: any) => void = null, failure: (fixture: any) => void = null) => {
           var entries = isArray(animationEntry) ? <AnimationEntryMetadata[]>animationEntry :
                                                   [<AnimationEntryMetadata>animationEntry];
           tcb = tcb.overrideTemplate(DummyIfCmp, tpl);
@@ -893,11 +893,32 @@ function declareTests({useJit}: {useJit: boolean}) {
                          'Error: expected animations for DummyIfCmp to throw an error within this spec');
                    },
                    (e: any) => {
-                     var message = e.message;
+                     const message = e.message;
                      expect(message).toMatch(
                          /Animation parsing for DummyIfCmp has failed due to the following errors:/);
                      expect(message).toMatch(/- couldn't find an animation entry for status/);
                    });
+             })));
+
+      it('should be permitted to be registered on the host element',
+         inject(
+             [TestComponentBuilder, AnimationDriver],
+             fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
+               tcb = tcb.overrideAnimations(DummyLoadingCmp, [trigger('loading', [
+                                              state('final', style({'background': 'grey'})),
+                                              transition('* => final', [animate(1000)])
+                                            ])]);
+               tcb.createAsync(DummyLoadingCmp).then(fixture => {
+                 var cmp = fixture.debugElement.componentInstance;
+                 cmp.exp = 'final';
+                 fixture.detectChanges();
+                 flushMicrotasks();
+
+                 var animation = driver.log.pop();
+                 var keyframes = animation['keyframeLookup'];
+                 expect(keyframes[1]).toEqual([1, {'background': 'grey'}]);
+               });
+               tick();
              })));
 
       it('should retain the destination animation state styles once the animation is complete',
@@ -1189,18 +1210,6 @@ function declareTests({useJit}: {useJit: boolean}) {
   });
 }
 
-@Component({
-  selector: 'if-cmp',
-  directives: [NgIf],
-  template: `
-    <div *ngIf="exp" [@myAnimation]="exp"></div>
-  `
-})
-class DummyIfCmp {
-  exp = false;
-  exp2 = false;
-}
-
 class InnerContentTrackingAnimationDriver extends MockAnimationDriver {
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
@@ -1214,12 +1223,39 @@ class InnerContentTrackingAnimationDriver extends MockAnimationDriver {
 
 class InnerContentTrackingAnimationPlayer extends MockAnimationPlayer {
   constructor(public element: any) { super(); }
+
   public computedHeight: number;
   public capturedInnerText: string;
   public playAttempts = 0;
+
   init() { this.computedHeight = getDOM().getComputedStyle(this.element)['height']; }
+
   play() {
     this.playAttempts++;
     this.capturedInnerText = this.element.querySelector('.inner').innerText;
   }
+}
+
+@Component({
+  selector: 'if-cmp',
+  directives: [NgIf],
+  template: `
+    <div *ngIf="exp" [@myAnimation]="exp"></div>
+  `
+})
+class DummyIfCmp {
+  exp = false;
+  exp2 = false;
+}
+
+@Component({
+  selector: 'if-cmp',
+  host: {'[@loading]': 'exp'},
+  directives: [NgIf],
+  template: `
+    <div>loading...</div>
+  `
+})
+class DummyLoadingCmp {
+  exp = false;
 }

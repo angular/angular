@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, SecurityContext} from '@angular/core';
-
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
 import * as cdAst from '../expression_parser/ast';
 import {isBlank, isPresent} from '../facade/lang';
@@ -21,8 +19,7 @@ import {CompileMethod} from './compile_method';
 import {camelCaseToDashCase} from '../util';
 import {convertCdExpressionToIr} from './expression_converter';
 import {CompileBinding} from './compile_binding';
-import {BaseException, SecurityContext} from '@angular/core';
-
+import {SecurityContext} from '@angular/core';
 
 function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
   return o.THIS_EXPR.prop(`_expr_${exprIndex}`);
@@ -85,7 +82,8 @@ export function bindRenderText(
 }
 
 function bindAndWriteToRenderer(
-    boundProps: BoundElementPropertyAst[], context: o.Expression, compileElement: CompileElement) {
+    boundProps: BoundElementPropertyAst[], context: o.Expression, compileElement: CompileElement,
+    isHostProp: boolean) {
   var view = compileElement.view;
   var renderNode = compileElement.renderNode;
   boundProps.forEach((boundProp) => {
@@ -129,6 +127,7 @@ function bindAndWriteToRenderer(
         if (isPresent(boundProp.unit)) {
           strValue = strValue.plus(o.literal(boundProp.unit));
         }
+
         renderValue = renderValue.isBlank().conditional(o.NULL_EXPR, strValue);
         updateStmts.push(
             o.THIS_EXPR.prop('renderer')
@@ -137,7 +136,13 @@ function bindAndWriteToRenderer(
         break;
       case PropertyBindingType.Animation:
         var animationName = boundProp.name;
-        var animation = view.componentView.animations.get(animationName);
+        var targetViewExpr: o.Expression = o.THIS_EXPR;
+        if (isHostProp) {
+          targetViewExpr = compileElement.appElement.prop('componentView');
+        }
+
+        var animationFnExpr =
+            targetViewExpr.prop('componentType').prop('animations').key(o.literal(animationName));
 
         // it's important to normalize the void value as `void` explicitly
         // so that the styles data can be obtained from the stringmap
@@ -158,11 +163,10 @@ function bindAndWriteToRenderer(
             [newRenderVar.set(emptyStateValue).toStmt()]));
 
         updateStmts.push(
-            animation.fnVariable.callFn([o.THIS_EXPR, renderNode, oldRenderVar, newRenderVar])
-                .toStmt());
+            animationFnExpr.callFn([o.THIS_EXPR, renderNode, oldRenderVar, newRenderVar]).toStmt());
 
         view.detachMethod.addStmt(
-            animation.fnVariable.callFn([o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue])
+            animationFnExpr.callFn([o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue])
                 .toStmt());
 
         if (!_animationViewCheckedFlagMap.get(view)) {
@@ -212,13 +216,13 @@ function sanitizedValue(
 
 export function bindRenderInputs(
     boundProps: BoundElementPropertyAst[], compileElement: CompileElement): void {
-  bindAndWriteToRenderer(boundProps, compileElement.view.componentContext, compileElement);
+  bindAndWriteToRenderer(boundProps, compileElement.view.componentContext, compileElement, false);
 }
 
 export function bindDirectiveHostProps(
     directiveAst: DirectiveAst, directiveInstance: o.Expression,
     compileElement: CompileElement): void {
-  bindAndWriteToRenderer(directiveAst.hostProperties, directiveInstance, compileElement);
+  bindAndWriteToRenderer(directiveAst.hostProperties, directiveInstance, compileElement, true);
 }
 
 export function bindDirectiveInputs(

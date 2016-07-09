@@ -15,7 +15,7 @@ import {BaseException} from '../facade/exceptions';
 import {isArray, isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
-import {PropertyBindingType, TemplateAst, TemplateAstVisitor, NgContentAst, EmbeddedTemplateAst, ElementAst, ReferenceAst, VariableAst, BoundEventAst, BoundElementPropertyAst, AttrAst, BoundTextAst, TextAst, DirectiveAst, BoundDirectivePropertyAst, templateVisitAll,} from '../template_ast';
+import * as t from '../template_ast';
 
 import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from './animation_ast';
 import {AnimationParseError, ParsedAnimationResult, parseAnimationEntry} from './animation_parser';
@@ -28,10 +28,9 @@ export class CompiledAnimation {
 }
 
 export class AnimationCompiler {
-  compileComponent(component: CompileDirectiveMetadata, template: TemplateAst[]):
+  compileComponent(component: CompileDirectiveMetadata, template: t.TemplateAst[]):
       CompiledAnimation[] {
     var compiledAnimations: CompiledAnimation[] = [];
-    var index = 0;
     var groupedErrors: string[] = [];
     var triggerLookup: {[key: string]: CompiledAnimation} = {};
     var componentName = component.type.name;
@@ -44,7 +43,6 @@ export class AnimationCompiler {
             `Unable to parse the animation sequence for "${triggerName}" due to the following errors:`;
         result.errors.forEach(
             (error: AnimationParseError) => { errorMessage += '\n-- ' + error.msg; });
-        // todo (matsko): include the component name when throwing
         groupedErrors.push(errorMessage);
       }
 
@@ -52,11 +50,9 @@ export class AnimationCompiler {
         groupedErrors.push(
             `The animation trigger "${triggerName}" has already been registered on "${componentName}"`);
       } else {
-        var factoryName = `${component.type.name}_${entry.name}_${index}`;
-        index++;
-
+        var factoryName = `${componentName}_${entry.name}`;
         var visitor = new _AnimationBuilder(triggerName, factoryName);
-        var compileResult = visitor.build(result.ast)
+        var compileResult = visitor.build(result.ast);
         compiledAnimations.push(compileResult);
         triggerLookup[entry.name] = compileResult;
       }
@@ -387,14 +383,13 @@ function _getStylesArray(obj: any): {[key: string]: any}[] {
 }
 
 function _validateAnimationProperties(
-    compiledAnimations: CompiledAnimation[], template: TemplateAst[]): AnimationParseError[] {
+    compiledAnimations: CompiledAnimation[], template: t.TemplateAst[]): AnimationParseError[] {
   var visitor = new _AnimationTemplatePropertyVisitor(compiledAnimations);
-  templateVisitAll(visitor, template);
+  t.templateVisitAll(visitor, template);
   return visitor.errors;
 }
 
-class _AnimationTemplatePropertyVisitor implements TemplateAstVisitor {
-  private _nodeIndex: number = 0;
+class _AnimationTemplatePropertyVisitor implements t.TemplateAstVisitor {
   private _animationRegistry: {[key: string]: boolean} = {};
 
   public errors: AnimationParseError[] = [];
@@ -403,9 +398,9 @@ class _AnimationTemplatePropertyVisitor implements TemplateAstVisitor {
     animations.forEach(entry => { this._animationRegistry[entry.name] = true; });
   }
 
-  visitElement(ast: ElementAst, ctx: any): any {
+  visitElement(ast: t.ElementAst, ctx: any): any {
     ast.inputs.forEach(input => {
-      if (input.type == PropertyBindingType.Animation) {
+      if (input.type == t.PropertyBindingType.Animation) {
         var animationName = input.name;
         if (!isPresent(this._animationRegistry[animationName])) {
           this.errors.push(
@@ -413,21 +408,18 @@ class _AnimationTemplatePropertyVisitor implements TemplateAstVisitor {
         }
       }
     });
-    templateVisitAll(this, ast.children);
+    t.templateVisitAll(this, ast.children);
   }
 
-  visitBoundText(ast: BoundTextAst, ctx: any): any { this._nodeIndex++; }
-
-  visitText(ast: TextAst, ctx: any): any { this._nodeIndex++; }
-
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, ctx: any): any { this._nodeIndex++; }
-
-  visitNgContent(ast: NgContentAst, ctx: any): any {}
-  visitAttr(ast: AttrAst, ctx: any): any {}
-  visitDirective(ast: DirectiveAst, ctx: any): any {}
-  visitEvent(ast: BoundEventAst, ctx: any): any {}
-  visitReference(ast: ReferenceAst, ctx: any): any {}
-  visitVariable(ast: VariableAst, ctx: any): any {}
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, ctx: any): any {}
-  visitElementProperty(ast: BoundElementPropertyAst, ctx: any): any {}
+  visitBoundText(ast: t.BoundTextAst, ctx: any): any {}
+  visitText(ast: t.TextAst, ctx: any): any {}
+  visitEmbeddedTemplate(ast: t.EmbeddedTemplateAst, ctx: any): any {}
+  visitNgContent(ast: t.NgContentAst, ctx: any): any {}
+  visitAttr(ast: t.AttrAst, ctx: any): any {}
+  visitDirective(ast: t.DirectiveAst, ctx: any): any {}
+  visitEvent(ast: t.BoundEventAst, ctx: any): any {}
+  visitReference(ast: t.ReferenceAst, ctx: any): any {}
+  visitVariable(ast: t.VariableAst, ctx: any): any {}
+  visitDirectiveProperty(ast: t.BoundDirectivePropertyAst, ctx: any): any {}
+  visitElementProperty(ast: t.BoundElementPropertyAst, ctx: any): any {}
 }

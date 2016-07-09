@@ -298,6 +298,22 @@ export function main() {
              ].join('\n')]);
            });
 
+        it('should issue a warning when host attributes contain a non property-bound animation trigger',
+           () => {
+             var dirA = CompileDirectiveMetadata.create({
+               selector: 'div',
+               type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+               host: {'@prop': 'expr'}
+             });
+
+             humanizeTplAst(parse('<div></div>', [dirA]));
+
+             expect(console.warnings).toEqual([[
+               'Template parse warnings:',
+               `Assigning animation triggers within host data as attributes such as "@prop": "exp" is deprecated. Use "[@prop]": "exp" instead! ("[ERROR ->]<div></div>"): TestComp@0:0`
+             ].join('\n')]);
+           });
+
         it('should not issue a warning when an animation property is bound without an expression',
            () => {
              humanizeTplAst(parse('<div @something>', []));

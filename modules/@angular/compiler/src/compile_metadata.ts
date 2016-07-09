@@ -18,9 +18,11 @@ import {getUrlScheme} from './url_resolver';
 import {sanitizeIdentifier, splitAtColon} from './util';
 
 
-
+// group 0: "[prop] or (event) or @trigger"
+// group 1: "prop" from "[prop]"
 // group 2: "event" from "(event)"
-var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
+// group 3: "@trigger" from "@trigger"
+var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/g;
 
 export abstract class CompileMetadataWithIdentifier {
   abstract toJson(): {[key: string]: any};
@@ -741,6 +743,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithType {
           hostProperties[matches[1]] = value;
         } else if (isPresent(matches[2])) {
           hostListeners[matches[2]] = value;
+        } else if (isPresent(matches[3])) {
+          hostProperties[matches[3]] = value;
         }
       });
     }

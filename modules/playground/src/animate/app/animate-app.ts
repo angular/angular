@@ -19,22 +19,23 @@ import {
 } from '@angular/core';
 
 @Component({
+  host: {
+    '[@backgroundAnimation]': "bgStatus"
+  },
   selector: 'animate-app',
   styleUrls: ['css/animate-app.css'],
   template: `
-    <div [@backgroundAnimation]="bgStatus">
-      <button (click)="state='start'">Start State</button>
-      <button (click)="state='active'">Active State</button>
-      |
-      <button (click)="state='void'">Void State</button>
-      <button (click)="state='default'">Unhandled (default) State</button>
-      <button style="float:right" (click)="bgStatus='blur'">Blur Page</button>
-      <hr />
-      <div *ngFor="let item of items" class="box" [@boxAnimation]="state">
-        {{ item }}
-        <div *ngIf="true">
-          something inside 
-        </div>
+    <button (click)="state='start'">Start State</button>
+    <button (click)="state='active'">Active State</button>
+    |
+    <button (click)="state='void'">Void State</button>
+    <button (click)="state='default'">Unhandled (default) State</button>
+    <button style="float:right" (click)="bgStatus='blur'">Blur Page (Host)</button>
+    <hr />
+    <div *ngFor="let item of items" class="box" [@boxAnimation]="state">
+      {{ item }}
+      <div *ngIf="true">
+        something inside 
       </div>
     </div>
   `,
