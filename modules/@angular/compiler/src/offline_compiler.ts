@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModuleMetadata, ComponentMetadata} from '@angular/core';
-
 import {AppModuleCompiler} from './app_module_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
@@ -19,9 +17,7 @@ import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
 import {CompiledStylesheet, StyleCompiler} from './style_compiler';
 import {TemplateParser} from './template_parser';
-import {assetUrl} from './util';
 import {ComponentFactoryDependency, ViewCompileResult, ViewCompiler, ViewFactoryDependency} from './view_compiler/view_compiler';
-import {XHR} from './xhr';
 
 export class SourceModule {
   constructor(public moduleUrl: string, public source: string) {}

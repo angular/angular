@@ -119,18 +119,23 @@ At a high level, this program
 ```
 # Build angular2 and the compiler
 ./build.sh
+
 # Copy over the package so we can test the compiler tests
 $ cp tools/@angular/tsc-wrapped/package.json dist/tools/@angular/tsc-wrapped
+
 # Run the test once
 # (First edit the LINKABLE_PKGS to use npm link instead of npm install)
 $ ./scripts/ci-lite/offline_compiler_test.sh
+
 # Keep a package fresh in watch mode
 ./node_modules/.bin/tsc -p modules/@angular/compiler/tsconfig-es5.json -w
+
 # Recompile @angular/core module (needs to use tsc-ext to keep the metadata)
-export NODE_PATH=${NODE_PATH}:$(pwd)/dist/all:$(pwd)/dist/tools
-node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/core/tsconfig-es5.json
+$ export NODE_PATH=${NODE_PATH}:$(pwd)/dist/all:$(pwd)/dist/tools
+$ node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/core/tsconfig-es5.json
+
 # Iterate on the test
-cd /tmp/wherever/e2e_test.1464388257/
-./node_modules/.bin/ngc
-./node_modules/.bin/jasmine test/*_spec.js
+$ cd /tmp/wherever/e2e_test.1464388257/
+$ ./node_modules/.bin/ngc
+$ ./node_modules/.bin/jasmine test/*_spec.js
 ```

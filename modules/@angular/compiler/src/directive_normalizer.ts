@@ -99,26 +99,26 @@ export class DirectiveNormalizer {
   normalizeLoadedTemplate(
       directiveType: CompileTypeMetadata, templateMeta: CompileTemplateMetadata, template: string,
       templateAbsUrl: string): CompileTemplateMetadata {
-    var rootNodesAndErrors = this._htmlParser.parse(template, directiveType.name);
+    const rootNodesAndErrors = this._htmlParser.parse(template, directiveType.name);
     if (rootNodesAndErrors.errors.length > 0) {
-      var errorString = rootNodesAndErrors.errors.join('\n');
+      const errorString = rootNodesAndErrors.errors.join('\n');
       throw new BaseException(`Template parse errors:\n${errorString}`);
     }
-    var templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({
+    const templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({
       styles: templateMeta.styles,
       styleUrls: templateMeta.styleUrls,
       moduleUrl: directiveType.moduleUrl
     }));
 
-    var visitor = new TemplatePreparseVisitor();
+    const visitor = new TemplatePreparseVisitor();
     htmlVisitAll(visitor, rootNodesAndErrors.rootNodes);
-    var templateStyles = this.normalizeStylesheet(new CompileStylesheetMetadata(
+    const templateStyles = this.normalizeStylesheet(new CompileStylesheetMetadata(
         {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
 
-    var allStyles = templateMetadataStyles.styles.concat(templateStyles.styles);
-    var allStyleUrls = templateMetadataStyles.styleUrls.concat(templateStyles.styleUrls);
+    const allStyles = templateMetadataStyles.styles.concat(templateStyles.styles);
+    const allStyleUrls = templateMetadataStyles.styleUrls.concat(templateStyles.styleUrls);
 
-    var encapsulation = templateMeta.encapsulation;
+    let encapsulation = templateMeta.encapsulation;
     if (isBlank(encapsulation)) {
       encapsulation = this._config.defaultEncapsulation;
     }
