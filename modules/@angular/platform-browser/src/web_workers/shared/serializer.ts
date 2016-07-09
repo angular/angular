@@ -111,7 +111,7 @@ export class Serializer {
     return new RenderComponentType(
         map['id'], map['templateUrl'], map['slotCount'],
         this.deserialize(map['encapsulation'], ViewEncapsulation),
-        this.deserialize(map['styles'], PRIMITIVE));
+        this.deserialize(map['styles'], PRIMITIVE), {});
   }
 }
 

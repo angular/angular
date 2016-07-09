@@ -500,6 +500,7 @@ function createViewFactory(
     templateUrlInfo = view.component.template.templateUrl;
   }
   if (view.viewIndex === 0) {
+    var animationsExpr = o.literalMap(view.animations.map(entry => [entry.name, entry.fnVariable]));
     initRenderCompTypeStmts = [new o.IfStmt(renderCompTypeVar.identical(o.NULL_EXPR), [
       renderCompTypeVar
           .set(ViewConstructorVars.viewUtils.callMethod(
@@ -507,7 +508,8 @@ function createViewFactory(
               [
                 o.literal(templateUrlInfo),
                 o.literal(view.component.template.ngContentSelectors.length),
-                ViewEncapsulationEnum.fromValue(view.component.template.encapsulation), view.styles
+                ViewEncapsulationEnum.fromValue(view.component.template.encapsulation), view.styles,
+                animationsExpr
               ]))
           .toStmt()
     ])];

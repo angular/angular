@@ -34,11 +34,13 @@ export class ViewUtils {
   /**
    * Used by the generated code
    */
+  // TODO (matsko): add typing for the animation function
   createRenderComponentType(
       templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation,
-      styles: Array<string|any[]>): RenderComponentType {
+      styles: Array<string|any[]>, animations: {[key: string]: Function}): RenderComponentType {
     return new RenderComponentType(
-        `${this._appId}-${this._nextCompTypeId++}`, templateUrl, slotCount, encapsulation, styles);
+        `${this._appId}-${this._nextCompTypeId++}`, templateUrl, slotCount, encapsulation, styles,
+        animations);
   }
 
   /** @internal */

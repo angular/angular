@@ -13,14 +13,15 @@ import {Injector} from '../di/injector';
 import {unimplemented} from '../facade/exceptions';
 import {ViewEncapsulation} from '../metadata/view';
 
-
 /**
  * @experimental
  */
+// TODO (matsko): add typing for the animation function
 export class RenderComponentType {
   constructor(
       public id: string, public templateUrl: string, public slotCount: number,
-      public encapsulation: ViewEncapsulation, public styles: Array<string|any[]>) {}
+      public encapsulation: ViewEncapsulation, public styles: Array<string|any[]>,
+      public animations: {[key: string]: Function}) {}
 }
 
 export abstract class RenderDebugInfo {
