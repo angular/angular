@@ -15,6 +15,7 @@ import {BaseException} from '../facade/exceptions';
 import {isArray, isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
+import {PropertyBindingType, TemplateAst, TemplateAstVisitor, NgContentAst, EmbeddedTemplateAst, ElementAst, ReferenceAst, VariableAst, BoundEventAst, BoundElementPropertyAst, AttrAst, BoundTextAst, TextAst, DirectiveAst, BoundDirectivePropertyAst, templateVisitAll,} from '../template_ast';
 
 import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from './animation_ast';
 import {AnimationParseError, ParsedAnimationResult, parseAnimationEntry} from './animation_parser';
@@ -27,19 +28,21 @@ export class CompiledAnimation {
 }
 
 export class AnimationCompiler {
-  compileComponent(component: CompileDirectiveMetadata): CompiledAnimation[] {
+  compileComponent(component: CompileDirectiveMetadata, template: TemplateAst[]):
+      CompiledAnimation[] {
     var compiledAnimations: CompiledAnimation[] = [];
     var index = 0;
+    var groupedErrors: string[] = [];
+
     component.template.animations.forEach(entry => {
       var result = parseAnimationEntry(entry);
       if (result.errors.length > 0) {
-        var errorMessage = '';
+        var errorMessage =
+            `Unable to parse the animation sequence for "${entry.name}" due to the following errors:`;
         result.errors.forEach(
-            (error: AnimationParseError) => { errorMessage += '\n- ' + error.msg; });
+            (error: AnimationParseError) => { errorMessage += '\n-- ' + error.msg; });
         // todo (matsko): include the component name when throwing
-        throw new BaseException(
-            `Unable to parse the animation sequence for "${entry.name}" due to the following errors: ` +
-            errorMessage);
+        groupedErrors.push(errorMessage);
       }
 
       var factoryName = `${component.type.name}_${entry.name}_${index}`;
@@ -48,6 +51,18 @@ export class AnimationCompiler {
       var visitor = new _AnimationBuilder(entry.name, factoryName);
       compiledAnimations.push(visitor.build(result.ast));
     });
+
+    _validateAnimationProperties(compiledAnimations, template).forEach(entry => {
+      groupedErrors.push(entry.msg);
+    });
+
+    if (groupedErrors.length > 0) {
+      var errorMessageStr =
+          `Animation parsing for ${component.type.name} has failed due to the following errors:`;
+      groupedErrors.forEach(error => errorMessageStr += `\n- ${error}`);
+      throw new BaseException(errorMessageStr);
+    }
+
     return compiledAnimations;
   }
 }
@@ -359,4 +374,50 @@ function _isEndStateAnimateStep(step: AnimationAst): boolean {
 
 function _getStylesArray(obj: any): {[key: string]: any}[] {
   return obj.styles.styles;
+}
+
+function _validateAnimationProperties(
+    compiledAnimations: CompiledAnimation[], template: TemplateAst[]): AnimationParseError[] {
+  var visitor = new _AnimationTemplatePropertyVisitor(compiledAnimations);
+  templateVisitAll(visitor, template);
+  return visitor.errors;
+}
+
+class _AnimationTemplatePropertyVisitor implements TemplateAstVisitor {
+  private _nodeIndex: number = 0;
+  private _animationRegistry: {[key: string]: boolean} = {};
+
+  public errors: AnimationParseError[] = [];
+
+  constructor(animations: CompiledAnimation[]) {
+    animations.forEach(entry => { this._animationRegistry[entry.name] = true; });
+  }
+
+  visitElement(ast: ElementAst, ctx: any): any {
+    ast.inputs.forEach(input => {
+      if (input.type == PropertyBindingType.Animation) {
+        var animationName = input.name;
+        if (!isPresent(this._animationRegistry[animationName])) {
+          this.errors.push(
+              new AnimationParseError(`couldn't find an animation entry for ${animationName}`));
+        }
+      }
+    });
+    templateVisitAll(this, ast.children);
+  }
+
+  visitBoundText(ast: BoundTextAst, ctx: any): any { this._nodeIndex++; }
+
+  visitText(ast: TextAst, ctx: any): any { this._nodeIndex++; }
+
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, ctx: any): any { this._nodeIndex++; }
+
+  visitNgContent(ast: NgContentAst, ctx: any): any {}
+  visitAttr(ast: AttrAst, ctx: any): any {}
+  visitDirective(ast: DirectiveAst, ctx: any): any {}
+  visitEvent(ast: BoundEventAst, ctx: any): any {}
+  visitReference(ast: ReferenceAst, ctx: any): any {}
+  visitVariable(ast: VariableAst, ctx: any): any {}
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, ctx: any): any {}
+  visitElementProperty(ast: BoundElementPropertyAst, ctx: any): any {}
 }

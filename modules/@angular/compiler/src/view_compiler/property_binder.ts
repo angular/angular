@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException, SecurityContext} from '@angular/core';
+
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
 import * as cdAst from '../expression_parser/ast';
 import {isBlank, isPresent} from '../facade/lang';
@@ -136,10 +138,6 @@ function bindAndWriteToRenderer(
       case PropertyBindingType.Animation:
         var animationName = boundProp.name;
         var animation = view.componentView.animations.get(animationName);
-        if (!isPresent(animation)) {
-          throw new BaseException(
-              `Internal Error: couldn't find an animation entry for ${boundProp.name}`);
-        }
 
         // it's important to normalize the void value as `void` explicitly
         // so that the styles data can be obtained from the stringmap

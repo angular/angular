@@ -13,6 +13,7 @@ import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_drive
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
 
+import {BaseException} from '../../../compiler/src/facade/exceptions';
 import {Component} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
@@ -44,12 +45,15 @@ function declareTests({useJit}: {useJit: boolean}) {
     var makeAnimationCmp =
         (tcb: TestComponentBuilder, tpl: string,
          animationEntry: AnimationEntryMetadata | AnimationEntryMetadata[],
-         callback: any /** TODO #9100 */ = null) => {
+         callback: Function = null, failure: Function = null) => {
           var entries = isArray(animationEntry) ? <AnimationEntryMetadata[]>animationEntry :
                                                   [<AnimationEntryMetadata>animationEntry];
           tcb = tcb.overrideTemplate(DummyIfCmp, tpl);
           tcb = tcb.overrideAnimations(DummyIfCmp, entries);
-          tcb.createAsync(DummyIfCmp).then((root) => { callback(root); });
+          var promise = tcb.createAsync(DummyIfCmp).then((root) => { callback(root); });
+          if (isPresent(failure)) {
+            promise.catch(<any>failure);
+          }
           tick();
         };
 
@@ -878,6 +882,24 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
 
     describe('animation states', () => {
+      it('should throw an error when an animation is referenced that isn\'t defined within the component annotation',
+         inject(
+             [TestComponentBuilder, AnimationDriver],
+             fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
+               makeAnimationCmp(
+                   tcb, '<div class="target" [@status]="exp"></div>', [],
+                   () => {
+                     throw new BaseException(
+                         'Error: expected animations for DummyIfCmp to throw an error within this spec');
+                   },
+                   (e: any) => {
+                     var message = e.message;
+                     expect(message).toMatch(
+                         /Animation parsing for DummyIfCmp has failed due to the following errors:/);
+                     expect(message).toMatch(/- couldn't find an animation entry for status/);
+                   });
+             })));
+
       it('should retain the destination animation state styles once the animation is complete',
          inject(
              [TestComponentBuilder, AnimationDriver],

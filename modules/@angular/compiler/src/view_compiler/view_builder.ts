@@ -275,7 +275,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
         ast.hasViewContainer, true, ast.references);
     this.view.nodes.push(compileElement);
 
-    var compiledAnimations = this._animationCompiler.compileComponent(this.view.component);
+    var compiledAnimations = this._animationCompiler.compileComponent(this.view.component, [ast]);
 
     this.nestedViewCount++;
     var embeddedView = new CompileView(
