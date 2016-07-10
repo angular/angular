@@ -84,6 +84,7 @@ export function main() {
           CompWithRef,
           EmitterDirective,
           PushComp,
+          OnDestroyDirective,
           OrderCheckDirective2,
           OrderCheckDirective0,
           OrderCheckDirective1,
@@ -1040,7 +1041,16 @@ export function main() {
              ]);
            }));
 
-        it('should call ngOnDestory on pipes', fakeAsync(() => {
+        it('should deliver synchronous events to parent', fakeAsync(() => {
+             var ctx = createCompFixture('<div (destroy)="a=$event" onDestroyDirective></div>');
+
+             ctx.detectChanges(false);
+             ctx.destroy();
+
+             expect(ctx.componentInstance.a).toEqual('destroyed');
+           }));
+
+        it('should call ngOnDestroy on pipes', fakeAsync(() => {
              var ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
 
              ctx.detectChanges(false);
@@ -1440,6 +1450,13 @@ class InjectableWithLifecycle {
   constructor(public log: DirectiveLog) {}
 
   ngOnDestroy() { this.log.add(this.name, 'ngOnDestroy'); }
+}
+
+@Directive({selector: '[onDestroyDirective]'})
+class OnDestroyDirective implements OnDestroy {
+  @Output('destroy') emitter = new EventEmitter<string>(false);
+
+  ngOnDestroy() { this.emitter.emit('destroyed'); }
 }
 
 @Directive({selector: '[orderCheck0]'})
