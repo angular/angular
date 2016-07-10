@@ -3,6 +3,22 @@ Radio buttons allow the user to select one option from a set. Use radio buttons 
 
 ![Preview](https://material.angularjs.org/material2_assets/radio/radios.png)
 
+### Setup
+Importing the symbols:
+```typescript
+import { MdUniqueSelectionDispatcher } from '@angular2-material/core';
+import { MD_RADIO_DIRECTIVES } from '@angular2-material/radio';
+```
+
+Adding providers and directives:
+```typescript
+@Component({
+  ...
+  directives: [MD_RADIO_DIRECTIVES],
+  providers: [MdUniqueSelectionDispatcher]
+})
+```
+
 ### Examples
 A basic radio group would have the following markup.
 ```html
