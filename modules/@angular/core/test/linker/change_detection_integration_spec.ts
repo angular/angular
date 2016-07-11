@@ -277,6 +277,36 @@ export function main() {
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=MTV']);
            }));
+
+        it('should support short-circuting safe navigation', fakeAsync(() => {
+             const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
+             ctx.componentInstance.value = null;
+             ctx.detectChanges(false);
+             expect(renderLog.log).toEqual(['someProp=null']);
+           }));
+
+        it('should support nested short-circuting safe navigation', fakeAsync(() => {
+             const ctx = _bindSimpleValue('value.value?.address.city', PersonHolderHolder);
+             ctx.componentInstance.value = new PersonHolder();
+             ctx.detectChanges(false);
+             expect(renderLog.log).toEqual(['someProp=null']);
+           }));
+
+        it('should support chained short-circuting safe navigation', fakeAsync(() => {
+             const ctx = _bindSimpleValue('value?.value?.address.city', PersonHolderHolder);
+             ctx.detectChanges(false);
+             expect(renderLog.log).toEqual(['someProp=null']);
+           }));
+
+        it('should still throw if right-side would throw', fakeAsync(() => {
+             expect(() => {
+               const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
+               const person = new Person();
+               person.address = null;
+               ctx.componentInstance.value = person;
+               ctx.detectChanges(false);
+             }).toThrow();
+           }));
       });
 
       it('should support method calls', fakeAsync(() => {
@@ -1459,4 +1489,23 @@ class Uninitialized {
 @Component({selector: 'root'})
 class TestData {
   public a: any;
+}
+
+@Component({selector: 'root'})
+class TestDataWithGetter {
+  public fn: Function;
+
+  get a() { return this.fn(); }
+}
+
+class Holder<T> {
+  value: T;
+}
+
+@Component({selector: 'root'})
+class PersonHolder extends Holder<Person> {
+}
+
+@Component({selector: 'root'})
+class PersonHolderHolder extends Holder<Holder<Person>> {
 }
