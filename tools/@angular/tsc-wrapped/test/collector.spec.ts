@@ -15,7 +15,8 @@ describe('Collector', () => {
   beforeEach(() => {
     host = new Host(FILES, [
       '/app/app.component.ts', '/app/cases-data.ts', '/app/error-cases.ts', '/promise.ts',
-      '/unsupported-1.ts', '/unsupported-2.ts', 'import-star.ts', 'exported-functions.ts'
+      '/unsupported-1.ts', '/unsupported-2.ts', 'import-star.ts', 'exported-functions.ts',
+      'exported-enum.ts', 'exported-consts.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
@@ -316,6 +317,26 @@ describe('Collector', () => {
       {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
     ]);
   });
+
+  it('should be able to collect the value of an enum', () => {
+    let enumSource = program.getSourceFile('/exported-enum.ts');
+    let metadata = collector.getMetadata(enumSource);
+    let someEnum: any = metadata.metadata['SomeEnum'];
+    expect(someEnum).toEqual({A: 0, B: 1, C: 100, D: 101});
+  });
+
+  it('should be able to collect enums initialized from consts', () => {
+    let enumSource = program.getSourceFile('/exported-enum.ts');
+    let metadata = collector.getMetadata(enumSource);
+    let complexEnum: any = metadata.metadata['ComplexEnum'];
+    expect(complexEnum).toEqual({
+      A: 0,
+      B: 1,
+      C: 30,
+      D: 40,
+      E: {__symbolic: 'reference', module: './exported-consts', name: 'constValue'}
+    });
+  });
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -547,6 +568,16 @@ const FILES: Directory = {
     export function supportsState(): boolean {
      return !!window.history.pushState;
     }
+  `,
+  'exported-enum.ts': `
+    import {constValue} from './exported-consts';
+
+    export const someValue = 30;
+    export enum SomeEnum { A, B, C = 100, D };
+    export enum ComplexEnum { A, B, C = someValue, D = someValue + 10, E = constValue };
+  `,
+  'exported-consts.ts': `
+    export const constValue = 100;
   `,
   'node_modules': {
     'angular2': {
