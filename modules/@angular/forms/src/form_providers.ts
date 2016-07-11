@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModule, Type} from '@angular/core';
+import {AppModule, PLATFORM_DIRECTIVES, Type} from '@angular/core';
+
 import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES} from './directives';
 import {RadioControlRegistry} from './directives/radio_control_value_accessor';
 import {FormBuilder} from './form_builder';
+
 
 
 /**
@@ -39,4 +41,20 @@ export class FormsModule {
  */
 @AppModule({providers: [REACTIVE_FORM_PROVIDERS], directives: REACTIVE_FORM_DIRECTIVES, pipes: []})
 export class ReactiveFormsModule {
+}
+
+/**
+ * @deprecated
+ */
+export function disableDeprecatedForms(): any[] {
+  return [];
+}
+
+/**
+ * @deprecated
+ */
+export function provideForms(): any[] {
+  return [
+    {provide: PLATFORM_DIRECTIVES, useValue: FORM_DIRECTIVES, multi: true}, REACTIVE_FORM_PROVIDERS
+  ];
 }
