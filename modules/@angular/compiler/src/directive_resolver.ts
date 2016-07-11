@@ -7,11 +7,13 @@
  */
 
 import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, resolveForwardRef} from '@angular/core';
-import {ReflectorReader, reflector} from '../core_private';
-import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
-import {Type, isPresent, stringify} from '../src/facade/lang';
 
+import {ReflectorReader, reflector} from '../core_private';
+
+import {StringMapWrapper} from './facade/collection';
+import {BaseException} from './facade/exceptions';
+import {Type, isPresent, stringify} from './facade/lang';
+import {splitAtColon} from './util';
 
 function _isDirectiveMetadata(type: any): type is DirectiveMetadata {
   return type instanceof DirectiveMetadata;
@@ -91,20 +93,42 @@ export class DirectiveResolver {
     return this._merge(dm, inputs, outputs, host, queries, directiveType);
   }
 
+  private _extractPublicName(def: string) { return splitAtColon(def, [null, def])[1].trim(); }
+
   private _merge(
       dm: DirectiveMetadata, inputs: string[], outputs: string[], host: {[key: string]: string},
       queries: {[key: string]: any}, directiveType: Type): DirectiveMetadata {
-    var mergedInputs = isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
+    let mergedInputs: string[];
 
-    var mergedOutputs: string[];
-    if (isPresent(dm.outputs)) {
-      dm.outputs.forEach((propName: string) => {
-        if (ListWrapper.contains(outputs, propName)) {
+    if (isPresent(dm.inputs)) {
+      const inputNames: string[] =
+          dm.inputs.map((def: string): string => this._extractPublicName(def));
+      inputs.forEach((inputDef: string) => {
+        const publicName = this._extractPublicName(inputDef);
+        if (inputNames.indexOf(publicName) > -1) {
           throw new BaseException(
-              `Output event '${propName}' defined multiple times in '${stringify(directiveType)}'`);
+              `Input '${publicName}' defined multiple times in '${stringify(directiveType)}'`);
         }
       });
-      mergedOutputs = ListWrapper.concat(dm.outputs, outputs);
+      mergedInputs = dm.inputs.concat(inputs);
+    } else {
+      mergedInputs = inputs;
+    }
+
+    let mergedOutputs: string[];
+
+    if (isPresent(dm.outputs)) {
+      const outputNames: string[] =
+          dm.outputs.map((def: string): string => this._extractPublicName(def));
+
+      outputs.forEach((outputDef: string) => {
+        const publicName = this._extractPublicName(outputDef);
+        if (outputNames.indexOf(publicName) > -1) {
+          throw new BaseException(
+              `Output event '${publicName}' defined multiple times in '${stringify(directiveType)}'`);
+        }
+      });
+      mergedOutputs = dm.outputs.concat(outputs);
     } else {
       mergedOutputs = outputs;
     }

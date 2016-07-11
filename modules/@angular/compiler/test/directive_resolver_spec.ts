@@ -31,7 +31,6 @@ class SomeDirectiveWithOutputs {
   c: any;
 }
 
-
 @Directive({selector: 'someDirective', outputs: ['a']})
 class SomeDirectiveWithDuplicateOutputs {
   @Output() a: any;
@@ -40,6 +39,17 @@ class SomeDirectiveWithDuplicateOutputs {
 @Directive({selector: 'someDirective', outputs: ['localA: a']})
 class SomeDirectiveWithDuplicateRenamedOutputs {
   @Output() a: any;
+  localA: any;
+}
+
+@Directive({selector: 'someDirective', inputs: ['a']})
+class SomeDirectiveWithDuplicateInputs {
+  @Input() a: any;
+}
+
+@Directive({selector: 'someDirective', inputs: ['localA: a']})
+class SomeDirectiveWithDuplicateRenamedInputs {
+  @Input() a: any;
   localA: any;
 }
 
@@ -133,6 +143,17 @@ export function main() {
         expect(directiveMetadata.inputs).toEqual(['a: renamed']);
       });
 
+      it('should throw if duplicate inputs', () => {
+        expect(() => {
+          resolver.resolve(SomeDirectiveWithDuplicateInputs);
+        }).toThrowError(`Input 'a' defined multiple times in 'SomeDirectiveWithDuplicateInputs'`);
+      });
+
+      it('should throw if duplicate inputs (with rename)', () => {
+        expect(() => { resolver.resolve(SomeDirectiveWithDuplicateRenamedInputs); })
+            .toThrowError(
+                `Input 'a' defined multiple times in 'SomeDirectiveWithDuplicateRenamedInputs'`);
+      });
     });
 
     describe('outputs', () => {
@@ -150,6 +171,12 @@ export function main() {
         expect(() => { resolver.resolve(SomeDirectiveWithDuplicateOutputs); })
             .toThrowError(
                 `Output event 'a' defined multiple times in 'SomeDirectiveWithDuplicateOutputs'`);
+      });
+
+      it('should throw if duplicate outputs (with rename)', () => {
+        expect(() => { resolver.resolve(SomeDirectiveWithDuplicateRenamedOutputs); })
+            .toThrowError(
+                `Output event 'a' defined multiple times in 'SomeDirectiveWithDuplicateRenamedOutputs'`);
       });
     });
 
