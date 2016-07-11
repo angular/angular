@@ -7,7 +7,7 @@
  */
 
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
-import {ContentChild, ContentChildMetadata, ContentChildren, ContentChildrenMetadata, Directive, DirectiveMetadata, HostBinding, HostListener, Input, Output, ViewChild, ViewChildMetadata, ViewChildren, ViewChildrenMetadata} from '@angular/core/src/metadata';
+import {ContentChild, ContentChildren, Directive, DirectiveMetadata, HostBinding, HostListener, Input, Output, ViewChild, ViewChildren} from '@angular/core/src/metadata';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {
@@ -19,49 +19,47 @@ class SomeChildDirective extends SomeDirective {
 
 @Directive({selector: 'someDirective', inputs: ['c']})
 class SomeDirectiveWithInputs {
-  @Input() a: any /** TODO #9100 */;
-  @Input('renamed') b: any /** TODO #9100 */;
-  c: any /** TODO #9100 */;
+  @Input() a: any;
+  @Input('renamed') b: any;
+  c: any;
 }
 
 @Directive({selector: 'someDirective', outputs: ['c']})
 class SomeDirectiveWithOutputs {
-  @Output() a: any /** TODO #9100 */;
-  @Output('renamed') b: any /** TODO #9100 */;
-  c: any /** TODO #9100 */;
+  @Output() a: any;
+  @Output('renamed') b: any;
+  c: any;
 }
 
 
 @Directive({selector: 'someDirective', outputs: ['a']})
 class SomeDirectiveWithDuplicateOutputs {
-  @Output() a: any /** TODO #9100 */;
+  @Output() a: any;
 }
 
-@Directive({selector: 'someDirective', properties: ['a']})
-class SomeDirectiveWithProperties {
-}
-
-@Directive({selector: 'someDirective', events: ['a']})
-class SomeDirectiveWithEvents {
+@Directive({selector: 'someDirective', outputs: ['localA: a']})
+class SomeDirectiveWithDuplicateRenamedOutputs {
+  @Output() a: any;
+  localA: any;
 }
 
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithSetterProps {
   @Input('renamed')
-  set a(value: any /** TODO #9100 */) {}
+  set a(value: any) {}
 }
 
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithGetterOutputs {
   @Output('renamed')
-  get a(): any /** TODO #9100 */ { return null; }
+  get a(): any { return null; }
 }
 
 @Directive({selector: 'someDirective', host: {'[c]': 'c'}})
 class SomeDirectiveWithHostBindings {
-  @HostBinding() a: any /** TODO #9100 */;
-  @HostBinding('renamed') b: any /** TODO #9100 */;
-  c: any /** TODO #9100 */;
+  @HostBinding() a: any;
+  @HostBinding('renamed') b: any;
+  c: any;
 }
 
 @Directive({selector: 'someDirective', host: {'(c)': 'onC()'}})
@@ -69,31 +67,31 @@ class SomeDirectiveWithHostListeners {
   @HostListener('a')
   onA() {}
   @HostListener('b', ['$event.value'])
-  onB(value: any /** TODO #9100 */) {}
+  onB(value: any) {}
 }
 
 @Directive({selector: 'someDirective', queries: {'cs': new ContentChildren('c')}})
 class SomeDirectiveWithContentChildren {
   @ContentChildren('a') as: any;
-  c: any /** TODO #9100 */;
+  c: any;
 }
 
 @Directive({selector: 'someDirective', queries: {'cs': new ViewChildren('c')}})
 class SomeDirectiveWithViewChildren {
   @ViewChildren('a') as: any;
-  c: any /** TODO #9100 */;
+  c: any;
 }
 
 @Directive({selector: 'someDirective', queries: {'c': new ContentChild('c')}})
 class SomeDirectiveWithContentChild {
   @ContentChild('a') a: any;
-  c: any /** TODO #9100 */;
+  c: any;
 }
 
 @Directive({selector: 'someDirective', queries: {'c': new ViewChild('c')}})
 class SomeDirectiveWithViewChild {
   @ViewChild('a') a: any;
-  c: any /** TODO #9100 */;
+  c: any;
 }
 
 class SomeDirectiveWithoutMetadata {}

@@ -7,12 +7,13 @@
  */
 
 import {Injectable, ViewMetadata, ComponentMetadata,} from '@angular/core';
-
 import {ReflectorReader, reflector} from '../core_private';
-
 import {Type, stringify, isBlank, isPresent} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
-import {Map} from '../src/facade/collection';
+
+function _isComponentMetadata(obj: any): obj is ComponentMetadata {
+  return obj instanceof ComponentMetadata;
+}
 
 /**
  * Resolves types to {@link ViewMetadata}.
@@ -22,13 +23,8 @@ export class ViewResolver {
   constructor(private _reflector: ReflectorReader = reflector) {}
 
   resolve(component: Type): ViewMetadata {
-    var compMeta: ComponentMetadata;
-
-    this._reflector.annotations(component).forEach(m => {
-      if (m instanceof ComponentMetadata) {
-        compMeta = m;
-      }
-    });
+    const compMeta: ComponentMetadata =
+        this._reflector.annotations(component).find(_isComponentMetadata);
 
     if (isPresent(compMeta)) {
       if (isBlank(compMeta.template) && isBlank(compMeta.templateUrl)) {

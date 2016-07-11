@@ -21,12 +21,8 @@ export function camelCaseToDashCase(input: string): string {
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
-  var parts = StringWrapper.split(input.trim(), /\s*:\s*/g);
-  if (parts.length > 1) {
-    return parts;
-  } else {
-    return defaultValues;
-  }
+  var parts = input.split(':', 2).map((s: string) => s.trim());
+  return parts.length > 1 ? parts : defaultValues;
 }
 
 export function sanitizeIdentifier(name: string): string {

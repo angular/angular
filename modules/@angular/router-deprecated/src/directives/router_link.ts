@@ -45,7 +45,7 @@ import {Router} from '../router';
  */
 @Directive({
   selector: '[routerLink]',
-  inputs: ['routeParams: routerLink', 'target: target'],
+  inputs: ['routeParams: routerLink', 'target'],
   host: {
     '(click)': 'onClick()',
     '[attr.href]': 'visibleHref',

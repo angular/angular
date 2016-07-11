@@ -7,14 +7,13 @@
  */
 
 import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, resolveForwardRef} from '@angular/core';
-
 import {ReflectorReader, reflector} from '../core_private';
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {Type, isPresent, stringify} from '../src/facade/lang';
 
 
-function _isDirectiveMetadata(type: any): boolean {
+function _isDirectiveMetadata(type: any): type is DirectiveMetadata {
   return type instanceof DirectiveMetadata;
 }
 
@@ -142,5 +141,3 @@ export class DirectiveResolver {
     }
   }
 }
-
-export var CODEGEN_DIRECTIVE_RESOLVER = new DirectiveResolver(reflector);
