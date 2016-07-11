@@ -16,8 +16,6 @@ import {getTestInjector, inject} from './test_injector';
 export {AsyncTestCompleter} from './async_test_completer';
 export {MockAnimationPlayer} from './mock_animation_player';
 export {inject} from './test_injector';
-export {expect} from './testing';
-
 export * from './logger';
 export * from './ng_zone_mock';
 export * from './mock_application_ref';
@@ -27,6 +25,7 @@ export var proxy: ClassDecorator = (t: any /** TODO #9100 */) => t;
 var _global = <any>(typeof window === 'undefined' ? global : window);
 
 export var afterEach: Function = _global.afterEach;
+export var expect: Function = _global.expect;
 
 var jsmBeforeEach = _global.beforeEach;
 var jsmDescribe = _global.describe;

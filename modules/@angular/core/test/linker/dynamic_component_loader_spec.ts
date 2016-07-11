@@ -8,8 +8,7 @@
 
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {ComponentFixture} from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {Predicate} from '../../src/facade/collection';
 import {Injector, OnDestroy, DebugElement, Type, ViewContainerRef, ViewChild} from '@angular/core';
 import {Component, ViewMetadata} from '@angular/core/src/metadata';

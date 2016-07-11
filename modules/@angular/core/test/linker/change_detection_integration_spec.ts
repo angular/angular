@@ -9,9 +9,10 @@
 import {AsyncPipe, NgFor} from '@angular/common';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/test/test_bindings';
-import {MockSchemaRegistry, TestComponentBuilder} from '@angular/compiler/testing';
+import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef, ViewMetadata, WrappedValue, forwardRef} from '@angular/core';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
+import {TestComponentBuilder} from '@angular/core/testing';
 import {ComponentFixture, configureCompiler, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';

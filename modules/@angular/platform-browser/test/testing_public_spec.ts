@@ -8,9 +8,8 @@
 
 import {NgIf} from '@angular/common';
 import {CompilerConfig, XHR} from '@angular/compiler';
-import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AppModule, Component, ComponentFactoryResolver, Directive, Injectable, Input, Pipe, ViewMetadata, provide} from '@angular/core';
-import {addProviders, async, configureCompiler, configureModule, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
+import {TestComponentBuilder, addProviders, async, configureCompiler, configureModule, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../../http/src/facade/lang';

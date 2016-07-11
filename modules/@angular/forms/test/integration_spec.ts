@@ -7,10 +7,9 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component, Directive, EventEmitter, Output} from '@angular/core';
 import {Input, Provider, forwardRef} from '@angular/core';
-import {ComponentFixture, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {ComponentFixture, TestComponentBuilder, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ControlValueAccessor, FORM_DIRECTIVES, FORM_PROVIDERS, FormArray, FormControl, FormGroup, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, NgModel, REACTIVE_FORM_DIRECTIVES, ReactiveFormsModule, Validator, Validators} from '@angular/forms';

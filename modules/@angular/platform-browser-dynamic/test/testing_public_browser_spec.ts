@@ -6,17 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {it, iit, xit, describe, ddescribe, xdescribe, expect, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing';
-import {async, fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
-
+import {XHR} from '@angular/compiler';
+import {Component, bind} from '@angular/core';
+import {TestComponentBuilder, addProviders, async, fakeAsync, flushMicrotasks, inject, tick} from '@angular/core/testing';
 import {ROUTER_DIRECTIVES, Route} from '@angular/router-deprecated';
 
-
-import {Component, bind} from '@angular/core';
 import {PromiseWrapper} from '../src/facade/promise';
-import {XHR} from '@angular/compiler';
 import {XHRImpl} from '../src/xhr/xhr_impl';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+
+
 
 // Components for the tests.
 class FancyService {
@@ -51,45 +49,6 @@ class TestRouterComponent {
 // For general tests, see test/testing/testing_public_spec.ts.
 export function main() {
   describe('test APIs for the browser', () => {
-    describe('angular2 jasmine matchers', () => {
-      describe('toHaveCssClass', () => {
-        it('should assert that the CSS class is present', () => {
-          var el = document.createElement('div');
-          el.classList.add('matias');
-          expect(el).toHaveCssClass('matias');
-        });
-
-        it('should assert that the CSS class is not present', () => {
-          var el = document.createElement('div');
-          el.classList.add('matias');
-          expect(el).not.toHaveCssClass('fatias');
-        });
-      });
-
-      describe('toHaveCssStyle', () => {
-        it('should assert that the CSS style is present', () => {
-          var el = document.createElement('div');
-          expect(el).not.toHaveCssStyle('width');
-
-          el.style.setProperty('width', '100px');
-          expect(el).toHaveCssStyle('width');
-        });
-
-        it('should assert that the styles are matched against the element', () => {
-          var el = document.createElement('div');
-          expect(el).not.toHaveCssStyle({width: '100px', height: '555px'});
-
-          el.style.setProperty('width', '100px');
-          expect(el).toHaveCssStyle({width: '100px'});
-          expect(el).not.toHaveCssStyle({width: '100px', height: '555px'});
-
-          el.style.setProperty('height', '555px');
-          expect(el).toHaveCssStyle({height: '555px'});
-          expect(el).toHaveCssStyle({width: '100px', height: '555px'});
-        });
-      });
-    });
-
     describe('using the async helper', () => {
       var actuallyDone: boolean;
 
@@ -107,10 +66,10 @@ export function main() {
 
     describe('using the test injector with the inject helper', () => {
       describe('setting up Providers', () => {
-        beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
+        beforeEach(() => addProviders([{provide: FancyService, useValue: new FancyService()}]));
 
         it('provides a real XHR instance',
-           inject([XHR], (xhr: XHR) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
+           inject([XHR], (xhr: XHR) => { expect(xhr instanceof XHRImpl).toBeTruthy(); }));
 
         it('should allow the use of fakeAsync',
            fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
@@ -166,8 +125,8 @@ export function main() {
 
                tcb.createAsync(ExternalTemplateComp).then((componentFixture) => {
                  componentFixture.detectChanges();
-                 expect(componentFixture.debugElement.nativeElement)
-                     .toHaveText('from external template\n');
+                 expect(componentFixture.debugElement.nativeElement.textContent)
+                     .toEqual('from external template\n');
                });
              })),
          10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.

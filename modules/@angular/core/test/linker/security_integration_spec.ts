@@ -7,9 +7,8 @@
  */
 
 import {ddescribe, describe, expect, inject, beforeEachProviders, beforeEach, afterEach, it,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {configureCompiler} from '@angular/core/testing';
+import {configureCompiler, TestComponentBuilder} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {provide, Injectable, OpaqueToken} from '@angular/core';
 import {CompilerConfig} from '@angular/compiler';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing';
+import {expect} from '@angular/core/testing/testing_internal';
 
 import {BaseException} from '../../src/facade/exceptions';
 import {isBlank, isPresent, stringify} from '../../src/facade/lang';

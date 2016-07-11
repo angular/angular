@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing';
 import {NumberWrapper, RegExpMatcherWrapper, RegExpWrapper, StringWrapper, escapeRegExp, hasConstructor, isPresent, resolveEnumToken} from '../src/lang';
 
 enum UsefulEnum {

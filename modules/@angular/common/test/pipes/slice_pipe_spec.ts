@@ -7,7 +7,7 @@
  */
 
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnInit} from '@angular/core';
 import {Component, Directive, ViewMetadata} from '@angular/core/src/metadata';
+import {TestComponentBuilder} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {Log, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 

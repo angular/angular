@@ -8,7 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {TestComponentBuilder} from '@angular/core/testing';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
