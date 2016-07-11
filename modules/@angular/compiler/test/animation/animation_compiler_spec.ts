@@ -9,8 +9,9 @@
 import {AnimationMetadata, animate, group, sequence, style, transition, trigger} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
+import {StringMapWrapper} from '../../../platform-browser-dynamic/src/facade/collection';
 import {AnimationCompiler, CompiledAnimation} from '../../src/animation/animation_compiler';
-import {CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';
+import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
 
 export function main() {
@@ -25,16 +26,22 @@ export function main() {
       return compiler.compileComponent(component, [])[0];
     };
 
-    var compile = (seq: AnimationMetadata) => {
-      var entry = trigger('myAnimation', [transition('state1 => state2', seq)]);
+    var compileTriggers = (input: any[]) => {
+      var entries: CompileAnimationEntryMetadata[] = input.map(entry => {
+        var animationTriggerData = trigger(entry[0], entry[1]);
+        return resolver.getAnimationEntryMetadata(animationTriggerData);
+      });
 
-      var compiledAnimationEntry = resolver.getAnimationEntryMetadata(entry);
       var component = CompileDirectiveMetadata.create({
-        type: new CompileTypeMetadata({name: 'something'}),
-        template: new CompileTemplateMetadata({animations: [compiledAnimationEntry]})
+        type: new CompileTypeMetadata({name: 'myCmp'}),
+        template: new CompileTemplateMetadata({animations: entries})
       });
 
       return compileAnimations(component);
+    };
+
+    var compileSequence = (seq: AnimationMetadata) => {
+      return compileTriggers([['myAnimation', [transition('state1 => state2', seq)]]]);
     };
 
     it('should throw an exception containing all the inner animation parser errors', () => {
@@ -46,7 +53,7 @@ export function main() {
 
       var capturedErrorMessage: string;
       try {
-        compile(animation);
+        compileSequence(animation);
       } catch (e) {
         capturedErrorMessage = e.message;
       }
@@ -56,6 +63,24 @@ export function main() {
 
       expect(capturedErrorMessage)
           .toMatch(/Animation states via styles must be prefixed with a ":"/);
+    });
+
+    it('should throw an error when two or more animation triggers contain the same name', () => {
+      var doCompile = () => {
+        var t1Data: any[] = [];
+        var t2Data: any[] = [];
+        compileTriggers([['myTrigger', t1Data], ['myTrigger', t2Data]]);
+      };
+
+      var capturedErrorMessage: string;
+      try {
+        doCompile();
+      } catch (e) {
+        capturedErrorMessage = e.message;
+      }
+
+      expect(capturedErrorMessage)
+          .toMatch(/The animation trigger "myTrigger" has already been registered on "myCmp"/);
     });
   });
 }
