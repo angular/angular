@@ -89,8 +89,9 @@ if (platform == 'node') {
     start: 'File change detected. Starting incremental compilation...',
     error: 'error',
     complete: 'Compilation complete. Watching for file changes.',
-    onChangeCmds:
-        [['node', 'dist/tools/cjs-jasmine/index-tools', '--', 'tsc-wrapped/**/*{_,.}spec.js']]
+    onChangeCmds: [[
+      'node', 'dist/tools/cjs-jasmine/index-tools', '--', '@angular/tsc-wrapped/**/*{_,.}spec.js'
+    ]]
   });
 }
 

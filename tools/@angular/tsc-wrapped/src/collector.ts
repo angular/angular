@@ -175,6 +175,46 @@ export class MetadataCollector {
           }
           // Otherwise don't record the function.
           break;
+        case ts.SyntaxKind.EnumDeclaration:
+          const enumDeclaration = <ts.EnumDeclaration>node;
+          let enumValueHolder: {[name: string]: MetadataValue} = {};
+          const enumName = enumDeclaration.name.text;
+          let nextDefaultValue: MetadataValue = 0;
+          let writtenMembers = 0;
+          for (const member of enumDeclaration.members) {
+            let enumValue: MetadataValue;
+            if (!member.initializer) {
+              enumValue = nextDefaultValue;
+            } else {
+              enumValue = evaluator.evaluateNode(member.initializer);
+            }
+            let name: string = undefined;
+            if (member.name.kind == ts.SyntaxKind.Identifier) {
+              const identifier = <ts.Identifier>member.name;
+              name = identifier.text;
+              enumValueHolder[name] = enumValue;
+              writtenMembers++;
+            }
+            if (typeof enumValue === 'number') {
+              nextDefaultValue = enumValue + 1;
+            } else if (name) {
+              nextDefaultValue = {
+                __symbolic: 'binary',
+                operator: '+',
+                left: {
+                  __symbolic: 'select',
+                  expression: {__symbolic: 'reference', name: enumName}, name
+                }
+              }
+            } else {
+              nextDefaultValue = errorSym('Unsuppported enum member name', member.name);
+            };
+          }
+          if (writtenMembers) {
+            if (!metadata) metadata = {};
+            metadata[enumName] = enumValueHolder;
+          }
+          break;
         case ts.SyntaxKind.VariableStatement:
           const variableStatement = <ts.VariableStatement>node;
           for (let variableDeclaration of variableStatement.declarationList.declarations) {
