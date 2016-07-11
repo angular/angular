@@ -143,11 +143,11 @@ export function main() {
     });
 
     it('should support function expressions', () => {
-      expect(emitStmt(o.fn([], []).toStmt())).toEqual(['():void => {', '};'].join('\n'));
+      expect(emitStmt(o.fn([], []).toStmt())).toEqual(['():any => {', '};'].join('\n'));
       expect(emitStmt(o.fn([], [new o.ReturnStatement(o.literal(1))], o.INT_TYPE).toStmt()))
           .toEqual(['():number => {', '  return 1;\n};'].join('\n'));
       expect(emitStmt(o.fn([new o.FnParam('param1', o.INT_TYPE)], []).toStmt())).toEqual([
-        '(param1:number):void => {', '};'
+        '(param1:number):any => {', '};'
       ].join('\n'));
     });
 
