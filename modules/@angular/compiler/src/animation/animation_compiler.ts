@@ -33,23 +33,33 @@ export class AnimationCompiler {
     var compiledAnimations: CompiledAnimation[] = [];
     var index = 0;
     var groupedErrors: string[] = [];
+    var triggerLookup: {[key: string]: CompiledAnimation} = {};
+    var componentName = component.type.name;
 
     component.template.animations.forEach(entry => {
       var result = parseAnimationEntry(entry);
+      var triggerName = entry.name;
       if (result.errors.length > 0) {
         var errorMessage =
-            `Unable to parse the animation sequence for "${entry.name}" due to the following errors:`;
+            `Unable to parse the animation sequence for "${triggerName}" due to the following errors:`;
         result.errors.forEach(
             (error: AnimationParseError) => { errorMessage += '\n-- ' + error.msg; });
         // todo (matsko): include the component name when throwing
         groupedErrors.push(errorMessage);
       }
 
-      var factoryName = `${component.type.name}_${entry.name}_${index}`;
-      index++;
+      if (triggerLookup[triggerName]) {
+        groupedErrors.push(
+            `The animation trigger "${triggerName}" has already been registered on "${componentName}"`);
+      } else {
+        var factoryName = `${component.type.name}_${entry.name}_${index}`;
+        index++;
 
-      var visitor = new _AnimationBuilder(entry.name, factoryName);
-      compiledAnimations.push(visitor.build(result.ast));
+        var visitor = new _AnimationBuilder(triggerName, factoryName);
+        var compileResult = visitor.build(result.ast)
+        compiledAnimations.push(compileResult);
+        triggerLookup[entry.name] = compileResult;
+      }
     });
 
     _validateAnimationProperties(compiledAnimations, template).forEach(entry => {
