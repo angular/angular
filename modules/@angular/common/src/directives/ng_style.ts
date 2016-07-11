@@ -65,10 +65,10 @@ import {isBlank, isPresent} from '../facade/lang';
  *
  * @stable
  */
-@Directive({selector: '[ngStyle]', inputs: ['rawStyle: ngStyle']})
+@Directive({selector: '[ngStyle]'})
 export class NgStyle implements DoCheck {
   /** @internal */
-  _rawStyle: {[key: string]: string};
+  _ngStyle: {[key: string]: string};
   /** @internal */
   _differ: KeyValueDiffer;
 
@@ -77,15 +77,15 @@ export class NgStyle implements DoCheck {
 
   @Input()
   set ngStyle(v: {[key: string]: string}) {
-    this._rawStyle = v;
+    this._ngStyle = v;
     if (isBlank(this._differ) && isPresent(v)) {
-      this._differ = this._differs.find(this._rawStyle).create(null);
+      this._differ = this._differs.find(this._ngStyle).create(null);
     }
   }
 
   ngDoCheck() {
     if (isPresent(this._differ)) {
-      var changes = this._differ.diff(this._rawStyle);
+      var changes = this._differ.diff(this._ngStyle);
       if (isPresent(changes)) {
         this._applyChanges(changes);
       }
