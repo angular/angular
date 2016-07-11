@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer} from '../../core/src/animation/animation_player';
-import {isPresent} from '../../core/src/facade/lang';
+import {AnimationPlayer} from '../src/animation/animation_player';
+import {isPresent} from '../src/facade/lang';
 
 export class MockAnimationPlayer implements AnimationPlayer {
   private _subscriptions: any[] /** TODO #9100 */ = [];

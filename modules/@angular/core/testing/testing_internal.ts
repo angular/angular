@@ -13,10 +13,11 @@ import {Math, global, isFunction, isPromise} from '../src/facade/lang';
 import {AsyncTestCompleter} from './async_test_completer';
 import {getTestInjector, inject} from './test_injector';
 
-export {MockAnimationPlayer} from '@angular/platform-browser/testing/mock_animation_player';
 export {AsyncTestCompleter} from './async_test_completer';
+export {MockAnimationPlayer} from './mock_animation_player';
 export {inject} from './test_injector';
 export {expect} from './testing';
+
 export * from './logger';
 export * from './ng_zone_mock';
 export * from './mock_application_ref';
