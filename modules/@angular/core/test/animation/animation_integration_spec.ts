@@ -12,7 +12,6 @@ import {TestComponentBuilder} from '@angular/compiler/testing';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
-import {MockAnimationPlayer} from '@angular/platform-browser/testing/mock_animation_player';
 
 import {Component} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
@@ -23,6 +22,7 @@ import {AnimationEntryMetadata, animate, group, keyframes, sequence, state, styl
 import {AUTO_STYLE} from '../../src/animation/metadata';
 import {IS_DART, isArray, isPresent} from '../../src/facade/lang';
 import {configureCompiler, configureModule, fakeAsync, flushMicrotasks, tick} from '../../testing';
+import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {

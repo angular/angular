@@ -9,10 +9,10 @@
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
-import {MockAnimationPlayer} from '../../../platform-browser/testing/mock_animation_player';
 import {ViewAnimationMap} from '../../src/animation/view_animation_map';
 import {isPresent} from '../../src/facade/lang';
 import {fakeAsync, flushMicrotasks} from '../../testing';
+import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {
