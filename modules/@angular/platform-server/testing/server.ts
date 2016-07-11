@@ -7,7 +7,7 @@
  */
 
 import {AppModule, CompilerFactory, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
-import {BROWSER_DYNAMIC_TEST_COMPILER_FACTORY, BrowserDynamicTestModule} from '@angular/platform-browser-dynamic/testing';
+import {BROWSER_DYNAMIC_TEST_COMPILER_FACTORY, BrowserDynamicTestModule, TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS} from '@angular/platform-browser-dynamic/testing';
 
 import {Parse5DomAdapter} from '../src/parse5_adapter';
 
@@ -15,7 +15,10 @@ function initServerTests() {
   Parse5DomAdapter.makeCurrent();
 }
 
-const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+/**
+ * @deprecated Use initTestEnvironment with serverTestPlatform instead.
+ */
+export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     /*@ts2dart_const*/[
       PLATFORM_COMMON_PROVIDERS,
       /*@ts2dart_Provider*/ {provide: PLATFORM_INITIALIZER, useValue: initServerTests, multi: true},
@@ -38,3 +41,9 @@ export const serverTestPlatform =
 @AppModule({modules: [BrowserDynamicTestModule]})
 export class ServerTestModule {
 }
+
+/**
+ * @deprecated Use initTestEnvironment with ServerTestModule instead.
+ */
+export const TEST_SERVER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+    TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS;

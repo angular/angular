@@ -103,8 +103,14 @@ export declare class InjectSetupWrapper {
 /** @deprecated */
 export declare var it: any;
 
+/** @deprecated */
+export declare function resetBaseTestProviders(): void;
+
 /** @experimental */
 export declare function resetTestEnvironment(): void;
+
+/** @deprecated */
+export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
 
 /** @stable */
 export declare class TestComponentBuilder {
