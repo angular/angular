@@ -48,6 +48,7 @@
     "chokidar": "^1.1.0",
     "clang-format": "^1.0.32",
     "cldr": "^3.5.2",
+    "commitplease": "2.7.1-0",
     "conventional-changelog": "^1.1.0",
     "cors": "^2.7.1",
     "firefox-profile": "^0.3.4",
@@ -116,5 +117,8 @@
     "webpack": "^1.12.6",
     "which": "~1",
     "yargs": "^3.31.0"
+  },
+  "commitplease": {
+    "style": "angular"
   }
 }
