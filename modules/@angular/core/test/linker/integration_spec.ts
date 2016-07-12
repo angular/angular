@@ -1846,6 +1846,21 @@ function declareTests({useJit}: {useJit: boolean}) {
                      async.done();
                    });
              }));
+
+      it('should indicate when toString() throws',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               var tpl = '<div my-dir [elprop]="toStringThrow"></div>';
+               tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [MyDir]}))
+                   .createAsync(MyComp)
+                   .then((fixture) => {
+                     fixture.detectChanges();
+                     expect(getDOM().getInnerHTML(fixture.debugElement.nativeElement))
+                         .toContain('[ERROR]');
+                     async.done();
+                   });
+             }));
     });
 
     describe('property decorators', () => {
@@ -2227,6 +2242,8 @@ class MyComp {
   ctxProp: string;
   ctxNumProp: number;
   ctxBoolProp: boolean;
+  toStringThrow = {toString: function() { throw 'boom'; }};
+
   constructor() {
     this.ctxProp = 'initial value';
     this.ctxNumProp = 0;

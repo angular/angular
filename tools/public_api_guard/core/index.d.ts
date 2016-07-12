@@ -1218,17 +1218,17 @@ export declare abstract class Renderer {
     abstract createViewRoot(hostElement: any): any;
     abstract destroyView(hostElement: any, viewAllNodes: any[]): void;
     abstract detachView(viewRootNodes: any[]): void;
-    abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): any;
+    abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): void;
     abstract listen(renderElement: any, name: string, callback: Function): Function;
     abstract listenGlobal(target: string, name: string, callback: Function): Function;
     abstract projectNodes(parentElement: any, nodes: any[]): void;
     abstract selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugInfo): any;
     abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string): void;
     abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void;
-    abstract setElementClass(renderElement: any, className: string, isAdd: boolean): any;
+    abstract setElementClass(renderElement: any, className: string, isAdd: boolean): void;
     abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
-    abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): any;
-    abstract setText(renderNode: any, text: string): any;
+    abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): void;
+    abstract setText(renderNode: any, text: string): void;
 }
 
 /** @deprecated */

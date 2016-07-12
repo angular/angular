@@ -193,13 +193,13 @@ export enum BuiltinVar {
 }
 
 export class ReadVarExpr extends Expression {
-  public name: any /** TODO #9100 */;
+  public name: string;
   public builtin: BuiltinVar;
 
   constructor(name: string|BuiltinVar, type: Type = null) {
     super(type);
     if (isString(name)) {
-      this.name = <string>name;
+      this.name = name;
       this.builtin = null;
     } else {
       this.name = null;
@@ -270,7 +270,7 @@ export class InvokeMethodExpr extends Expression {
       type: Type = null) {
     super(type);
     if (isString(method)) {
-      this.name = <string>method;
+      this.name = method;
       this.builtin = null;
     } else {
       this.name = null;

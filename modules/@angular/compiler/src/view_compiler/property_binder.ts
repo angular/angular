@@ -11,19 +11,13 @@ import * as cdAst from '../expression_parser/ast';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
-
 import {DetectChangesVars, ViewProperties} from './constants';
-
 import {BoundTextAst, BoundElementPropertyAst, DirectiveAst, PropertyBindingType,} from '../template_ast';
-
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
-
 import {camelCaseToDashCase} from '../util';
-
 import {convertCdExpressionToIr} from './expression_converter';
-
 import {CompileBinding} from './compile_binding';
 import {BaseException, SecurityContext} from '@angular/core';
 
@@ -287,12 +281,24 @@ export function bindDirectiveInputs(
 
 function logBindingUpdateStmt(
     renderNode: o.Expression, propName: string, value: o.Expression): o.Statement {
-  return o.THIS_EXPR.prop('renderer')
-      .callMethod(
-          'setBindingDebugInfo',
-          [
-            renderNode, o.literal(`ng-reflect-${camelCaseToDashCase(propName)}`),
-            value.isBlank().conditional(o.NULL_EXPR, value.callMethod('toString', []))
-          ])
-      .toStmt();
+  const tryStmt =
+      o.THIS_EXPR.prop('renderer')
+          .callMethod(
+              'setBindingDebugInfo',
+              [
+                renderNode, o.literal(`ng-reflect-${camelCaseToDashCase(propName)}`),
+                value.isBlank().conditional(o.NULL_EXPR, value.callMethod('toString', []))
+              ])
+          .toStmt();
+
+  const catchStmt = o.THIS_EXPR.prop('renderer')
+                        .callMethod(
+                            'setBindingDebugInfo',
+                            [
+                              renderNode, o.literal(`ng-reflect-${camelCaseToDashCase(propName)}`),
+                              o.literal('[ERROR] Exception while trying to serialize the value')
+                            ])
+                        .toStmt();
+
+  return new o.TryCatchStmt([tryStmt], [catchStmt]);
 }
