@@ -87,6 +87,20 @@ function normalizeCommands(commands: any[]): NormalizedNavigationCommands {
   for (let i = 0; i < commands.length; ++i) {
     const c = commands[i];
 
+    if (typeof c === 'object' && c.outlets !== undefined) {
+      const r: {[k: string]: any} = {};
+      forEach(c.outlets, (commands: any, name: string) => {
+        const n = name === '' ? PRIMARY_OUTLET : name;
+        if (typeof commands === 'string') {
+          r[n] = commands.split('/');
+        } else {
+          r[n] = commands;
+        }
+      });
+      res.push({outlets: r});
+      continue;
+    }
+
     if (!(typeof c === 'string')) {
       res.push(c);
       continue;
@@ -140,15 +154,13 @@ function findStartingPosition(
 }
 
 function getPath(command: any): any {
-  if (!(typeof command === 'string')) return command.toString();
-  const parts = command.toString().split(':');
-  return parts.length > 1 ? parts[1] : command;
+  return `${command}`;
 }
 
-function getOutlet(commands: any[]): string {
-  if (!(typeof commands[0] === 'string')) return PRIMARY_OUTLET;
-  const parts = commands[0].toString().split(':');
-  return parts.length > 1 ? parts[0] : PRIMARY_OUTLET;
+function getOutlets(commands: any[]): {[k: string]: any[]} {
+  if (!(typeof commands[0] === 'object')) return {[PRIMARY_OUTLET]: commands};
+  if (commands[0].outlets === undefined) return {[PRIMARY_OUTLET]: commands};
+  return commands[0].outlets;
 }
 
 function updateSegment(segment: UrlSegment, startIndex: number, commands: any[]): UrlSegment {
@@ -177,11 +189,17 @@ function updateSegmentChildren(
   if (commands.length === 0) {
     return new UrlSegment(segment.pathsWithParams, {});
   } else {
-    const outlet = getOutlet(commands);
+    const outlets = getOutlets(commands);
     const children: {[key: string]: UrlSegment} = {};
-    children[outlet] = updateSegment(segment.children[outlet], startIndex, commands);
+
+    forEach(outlets, (commands: any, outlet: string) => {
+      if (commands !== null) {
+        children[outlet] = updateSegment(segment.children[outlet], startIndex, commands);
+      }
+    });
+
     forEach(segment.children, (child: UrlSegment, childOutlet: string) => {
-      if (childOutlet !== outlet) {
+      if (outlets[childOutlet] === undefined) {
         children[childOutlet] = child;
       }
     });
@@ -201,7 +219,7 @@ function prefixedWith(segment: UrlSegment, startIndex: number, commands: any[]) 
     const next =
         currentCommandIndex < commands.length - 1 ? commands[currentCommandIndex + 1] : null;
 
-    if (curr && next && (typeof next === 'object')) {
+    if (curr && next && (typeof next === 'object') && next.outlets === undefined) {
       if (!compare(curr, next, path)) return noMatch;
       currentCommandIndex += 2;
     } else {

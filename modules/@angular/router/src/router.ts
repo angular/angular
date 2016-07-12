@@ -209,6 +209,9 @@ export class Router {
    * // you can collapse static fragments like this
    * router.createUrlTree(['/team/33/user', userId]);
    *
+   * // create /team/33/(user/11//aux:chat)
+   * router.createUrlTree(['/team', 33, {outlets: {"": 'user/11', right: 'chat'}}]);
+   *
    * // assuming the current url is `/team/33/user/11` and the route points to `user/11`
    *
    * // navigate to /team/33/user/11/details

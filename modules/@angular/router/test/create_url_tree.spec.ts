@@ -8,6 +8,7 @@ import {DefaultUrlSerializer, UrlPathWithParams, UrlSegment, UrlTree} from '../s
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
 
+
   it('should navigate to the root', () => {
     const p = serializer.parse('/');
     const t = createRoot(p, ['/']);
@@ -42,14 +43,38 @@ describe('createUrlTree', () => {
 
   it('should support updating secondary segments', () => {
     const p = serializer.parse('/a(right:b)');
-    const t = createRoot(p, ['right:c', 11, 'd']);
+    const t = createRoot(p, [{outlets: {right: ['c', 11, 'd']}}]);
     expect(serializer.serialize(t)).toEqual('/a(right:c/11/d)');
   });
 
   it('should support updating secondary segments (nested case)', () => {
     const p = serializer.parse('/a/(b//right:c)');
-    const t = createRoot(p, ['a', 'right:d', 11, 'e']);
+    const t = createRoot(p, ['a', {outlets: {right: ['d', 11, 'e']}}]);
     expect(serializer.serialize(t)).toEqual('/a/(b//right:d/11/e)');
+  });
+
+  it('should support updating using a string', () => {
+    const p = serializer.parse('/a(right:b)');
+    const t = createRoot(p, [{outlets: {right: 'c/11/d'}}]);
+    expect(serializer.serialize(t)).toEqual('/a(right:c/11/d)');
+  });
+
+  it('should support updating primary and secondary segments at once', () => {
+    const p = serializer.parse('/a(right:b)');
+    const t = createRoot(p, [{outlets: {'': 'y/z', right: 'c/11/d'}}]);
+    expect(serializer.serialize(t)).toEqual('/y/z(right:c/11/d)');
+  });
+
+  it('should support removing primary segment', () => {
+    const p = serializer.parse('/a/(b//right:c)');
+    const t = createRoot(p, ['a', {outlets: {'': null, right: 'd'}}]);
+    expect(serializer.serialize(t)).toEqual('/a/(right:d)');
+  });
+
+  it('should support removing secondary segments', () => {
+    const p = serializer.parse('/a(right:b)');
+    const t = createRoot(p, [{outlets: {right: null}}]);
+    expect(serializer.serialize(t)).toEqual('/a');
   });
 
   it('should update matrix parameters', () => {
