@@ -145,6 +145,6 @@ function _firstDefined<T>(...args: T[]): T {
 
 function _mergeArrays(...parts: any[][]): any[] {
   let result: any[] = [];
-  parts.forEach((part) => result.push(...part));
+  parts.forEach((part) => result.push.apply(result, part));
   return result;
 }
