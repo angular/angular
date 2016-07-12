@@ -82,10 +82,15 @@ describe('reflector_host', () => {
         .toBeDefined();
   });
 
+
   it('should be produce the same symbol if asked twice', () => {
     let foo1 = reflectorHost.getStaticSymbol('main.ts', 'foo');
     let foo2 = reflectorHost.getStaticSymbol('main.ts', 'foo');
     expect(foo1).toBe(foo2);
+  });
+
+  it('should be able to produce a symbol for a module with no file', () => {
+    expect(reflectorHost.getStaticSymbol('angularjs', 'SomeAngularSymbol')).toBeDefined();
   });
 
   it('should be able to read a metadata file',
@@ -95,6 +100,10 @@ describe('reflector_host', () => {
 
   it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
     expect(reflectorHost.getMetadataFor('node_modules/@angular/unused.d.ts')).toBeUndefined();
+  });
+
+  it('should return undefined for missing modules', () => {
+    expect(reflectorHost.getMetadataFor('node_modules/@angular/missing.d.ts')).toBeUndefined();
   });
 });
 

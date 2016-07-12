@@ -123,7 +123,10 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       const filePath = this.resolve(module, containingFile);
 
       if (!filePath) {
-        throw new Error(`Could not resolve module ${module} relative to ${containingFile}`);
+        // If the file cannot be found the module is probably referencing a declared module
+        // for which there is no disambiguating file and we also don't need to track
+        // re-exports. Just use the module name.
+        return this.getStaticSymbol(module, symbolName);
       }
 
       const tc = this.program.getTypeChecker();
@@ -174,10 +177,12 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     return result;
   }
 
-  // TODO(alexeagle): take a statictype
   getMetadataFor(filePath: string): ModuleMetadata {
     if (!this.context.exists(filePath)) {
-      throw new Error(`No such file '${filePath}'`);
+      // If the file doesn't exists then we cannot return metadata for the file.
+      // This will occur if the user refernced a declared module for which no file
+      // exists for the module (i.e. jQuery or angularjs).
+      return;
     }
     if (DTS.test(filePath)) {
       const metadataPath = filePath.replace(DTS, '.metadata.json');

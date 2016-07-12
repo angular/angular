@@ -1,8 +1,9 @@
 import * as ts from 'typescript';
 
 import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isMetadataError, isMetadataSymbolicReferenceExpression} from './schema';
+import {ClassMetadata, ConstructorMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isMetadataError, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression} from './schema';
 import {Symbols} from './symbols';
+
 
 
 /**
@@ -38,9 +39,11 @@ export class MetadataCollector {
         return undefined;
       }
 
-      function referenceFrom(node: ts.Node): MetadataSymbolicReferenceExpression|MetadataError {
+      function referenceFrom(node: ts.Node): MetadataSymbolicReferenceExpression|MetadataError|
+          MetadataSymbolicSelectExpression {
         const result = evaluator.evaluateNode(node);
-        if (isMetadataError(result) || isMetadataSymbolicReferenceExpression(result)) {
+        if (isMetadataError(result) || isMetadataSymbolicReferenceExpression(result) ||
+            isMetadataSymbolicSelectExpression(result)) {
           return result;
         } else {
           return errorSym('Symbol reference expected', node);
@@ -70,8 +73,9 @@ export class MetadataCollector {
             const methodDecorators = getDecorators(method.decorators);
             const parameters = method.parameters;
             const parameterDecoratorData: (MetadataSymbolicExpression | MetadataError)[][] = [];
-            const parametersData: (MetadataSymbolicReferenceExpression | MetadataError | null)[] =
-                [];
+            const parametersData:
+                (MetadataSymbolicReferenceExpression | MetadataError |
+                 MetadataSymbolicSelectExpression | null)[] = [];
             let hasDecoratorData: boolean = false;
             let hasParameterData: boolean = false;
             for (const parameter of parameters) {
