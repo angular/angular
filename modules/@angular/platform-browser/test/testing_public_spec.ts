@@ -9,7 +9,7 @@
 import {NgIf} from '@angular/common';
 import {CompilerConfig, XHR} from '@angular/compiler';
 import {AppModule, Component, ComponentFactoryResolver, Directive, Injectable, Input, Pipe, ViewMetadata, provide} from '@angular/core';
-import {TestComponentBuilder, addProviders, async, configureCompiler, configureModule, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
+import {TestComponentBuilder, addProviders, async, configureCompiler, configureModule, doAsyncPrecompilation, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../../http/src/facade/lang';
@@ -115,7 +115,10 @@ class CompUsingModuleDirectiveAndPipe {
 class SomeNestedModule {
 }
 
-@Component({selector: 'comp', templateUrl: 'someTemplate.html'})
+@Component({
+  selector: 'comp',
+  templateUrl: '/base/modules/@angular/platform-browser/test/static_assets/test.html'
+})
 class CompWithUrlTemplate {
 }
 
@@ -296,27 +299,16 @@ export function main() {
     });
 
     describe('precompile components with template url', () => {
-      let xhrGet: jasmine.Spy;
-      beforeEach(() => {
-        xhrGet = jasmine.createSpy('xhrGet').and.returnValue(Promise.resolve('Hello world!'));
-        configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
-      });
+      beforeEach(async(() => {
+        configureModule({precompile: [CompWithUrlTemplate]});
+        doAsyncPrecompilation();
+      }));
 
-      it('should allow to precompile components with templateUrl using the async helper',
-         async(withModule(() => {
-                 return {precompile: [CompWithUrlTemplate]};
-               }).inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
-           expect(resolver.resolveComponentFactory(CompWithUrlTemplate).componentType)
-               .toBe(CompWithUrlTemplate);
-         })));
-
-      it('should allow to precompile components with templateUrl using the fakeAsync helper',
-         fakeAsync(withModule(() => {
-                     return {precompile: [CompWithUrlTemplate]};
-                   }).inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
-           expect(resolver.resolveComponentFactory(CompWithUrlTemplate).componentType)
-               .toBe(CompWithUrlTemplate);
-         })));
+      it('should allow to createSync components with templateUrl after async precompilation',
+         inject([TestComponentBuilder], (builder: TestComponentBuilder) => {
+           let fixture = builder.createSync(CompWithUrlTemplate);
+           expect(fixture.nativeElement).toHaveText('from external template\n');
+         }));
     });
 
     describe('setting up the compiler', () => {
@@ -450,26 +442,27 @@ export function main() {
         configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
       });
 
-      it('should report an error for precompile components with templateUrl and sync tests', () => {
-        var itPromise = patchJasmineIt();
+      it('should report an error for precompile components with templateUrl which never call doAsyncPrecompile',
+         () => {
+           var itPromise = patchJasmineIt();
 
-        expect(
-            () => it(
-                'should fail',
-                withModule(() => { return {precompile: [CompWithUrlTemplate]}; })
-                    .inject(
-                        [ComponentFactoryResolver],
-                        (resolver: ComponentFactoryResolver) => {
-                          expect(
-                              resolver.resolveComponentFactory(CompWithUrlTemplate).componentType)
-                              .toBe(CompWithUrlTemplate);
-                        })))
-            .toThrowError(
-                `This test module precompiles the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but the test is synchronous. ` +
-                'Please use the "async(...)" or "fakeAsync(...)" helper functions to make the test asynchronous.');
+           expect(
+               () =>
+                   it('should fail',
+                      withModule(() => { return {precompile: [CompWithUrlTemplate]}; })
+                          .inject(
+                              [ComponentFactoryResolver],
+                              (resolver: ComponentFactoryResolver) => {
+                                expect(resolver.resolveComponentFactory(CompWithUrlTemplate)
+                                           .componentType)
+                                    .toBe(CompWithUrlTemplate);
+                              })))
+               .toThrowError(
+                   `This test module precompiles the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but precompilation was never done. ` +
+                   'Please call "doAsyncPrecompilation" before "inject".');
 
-        restoreJasmineIt();
-      });
+           restoreJasmineIt();
+         });
 
     });
   });

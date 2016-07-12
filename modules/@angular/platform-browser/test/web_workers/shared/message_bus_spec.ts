@@ -7,7 +7,7 @@
  */
 
 import {NgZone, provide} from '@angular/core';
-import {withProviders} from '@angular/core/testing/test_injector';
+import {withProviders} from '@angular/core/testing/test_bed';
 import {MockNgZone, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';

@@ -47,13 +47,19 @@ export declare function configureModule(moduleDef: {
 export declare function discardPeriodicTasks(): void;
 
 /** @experimental */
+export declare function doAsyncPrecompilation(): Promise<any>;
+
+/** @experimental */
 export declare function fakeAsync(fn: Function): (...args: any[]) => any;
 
 /** @experimental */
 export declare function flushMicrotasks(): void;
 
 /** @experimental */
-export declare function getTestInjector(): TestInjector;
+export declare function getTestBed(): TestBed;
+
+/** @deprecated */
+export declare function getTestInjector(): TestBed;
 
 /** @experimental */
 export declare function initTestEnvironment(appModule: Type, platform: PlatformRef): void;
@@ -82,6 +88,28 @@ export declare function resetTestEnvironment(): void;
 /** @deprecated */
 export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
 
+/** @experimental */
+export declare class TestBed implements Injector {
+    appModule: Type;
+    platform: PlatformRef;
+    configureCompiler(config: {
+        providers?: any[];
+        useJit?: boolean;
+    }): void;
+    configureModule(moduleDef: {
+        providers?: any[];
+        directives?: any[];
+        pipes?: any[];
+        precompile?: any[];
+        modules?: any[];
+    }): void;
+    createAppModuleFactory(): Promise<AppModuleFactory<any>>;
+    execute(tokens: any[], fn: Function): any;
+    get(token: any, notFoundValue?: any): any;
+    initTestAppModule(): void;
+    reset(): void;
+}
+
 /** @stable */
 export declare class TestComponentBuilder {
     protected _injector: Injector;
@@ -101,28 +129,6 @@ export declare class TestComponentBuilder {
 /** @experimental */
 export declare class TestComponentRenderer {
     insertRootElement(rootElementId: string): void;
-}
-
-/** @experimental */
-export declare class TestInjector implements Injector {
-    appModule: Type;
-    platform: PlatformRef;
-    configureCompiler(config: {
-        providers?: any[];
-        useJit?: boolean;
-    }): void;
-    configureModule(moduleDef: {
-        providers?: any[];
-        directives?: any[];
-        pipes?: any[];
-        precompile?: any[];
-        modules?: any[];
-    }): void;
-    createInjectorAsync(): Promise<Injector>;
-    createInjectorSync(): Injector;
-    execute(tokens: any[], fn: Function): any;
-    get(token: any, notFoundValue?: any): any;
-    reset(): void;
 }
 
 /** @experimental */
