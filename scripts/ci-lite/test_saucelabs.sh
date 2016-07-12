@@ -2,7 +2,7 @@
 
 set -ex -o pipefail
 
-if [[ ${TRAVIS} && ${CI_MODE} != "saucelabs_required" && ${CI_MODE} != "saucelabs_optional" ]]; then
+if [[ ${CI_MODE} != "saucelabs_required" && ${CI_MODE} != "saucelabs_optional" ]]; then
   exit 0;
 fi
 
