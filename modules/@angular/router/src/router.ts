@@ -288,7 +288,14 @@ export class Router {
 
   private setUpLocationChangeListener(): void {
     this.locationSubscription = <any>this.location.subscribe((change) => {
-      return this.scheduleNavigation(this.urlSerializer.parse(change['url']), change['pop']);
+      const tree = this.urlSerializer.parse(change['url']);
+      // we fire multiple events for a single URL change
+      // we should navigate only once
+      if (this.currentUrlTree.toString() !== tree.toString()) {
+        return this.scheduleNavigation(tree, change['pop']);
+      } else {
+        return null;
+      }
     });
   }
 

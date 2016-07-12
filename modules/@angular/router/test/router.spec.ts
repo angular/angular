@@ -111,13 +111,27 @@ describe('Integration', () => {
              children: [{path: 'user/:name', component: UserCmp}]
            }]);
 
+           const recordedEvents: any = [];
+           router.events.forEach(e => recordedEvents.push(e));
+
            router.navigateByUrl('/team/22/user/victor');
            advance(fixture);
 
            (<any>location).simulateHashChange('/team/22/user/fedor');
            advance(fixture);
 
-           expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ user fedor, right:  ]');
+           (<any>location).simulateUrlPop('/team/22/user/fedor');
+           advance(fixture);
+
+           expect(fixture.debugElement.nativeElement).toHaveText('team 22 { user fedor, right:  }');
+
+           expectEvents(recordedEvents, [
+             [NavigationStart, '/team/22/user/victor'], [RoutesRecognized, '/team/22/user/victor'],
+             [NavigationEnd, '/team/22/user/victor'],
+
+             [NavigationStart, '/team/22/user/fedor'], [RoutesRecognized, '/team/22/user/fedor'],
+             [NavigationEnd, '/team/22/user/fedor']
+           ]);
          })));
 
   it('should update the location when the matched route does not change',
