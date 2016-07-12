@@ -93,7 +93,7 @@ export function createDiTokenExpression(token: CompileTokenMetadata): o.Expressi
 export class SyncAsyncResult<T> {
   constructor(public syncResult: T, public asyncResult: Promise<T> = null) {
     if (!asyncResult) {
-      asyncResult = Promise.resolve(syncResult);
+      this.asyncResult = Promise.resolve(syncResult);
     }
   }
 }
