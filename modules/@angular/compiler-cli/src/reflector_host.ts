@@ -18,9 +18,10 @@ const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
 
 export interface ReflectorHostContext {
-  exists(fileName: string): boolean;
-  read(fileName: string): string;
-  write(fileName: string, data: string): void;
+  fileExists(fileName: string): boolean;
+  directoryExists(directoryName: string): boolean;
+  readFile(fileName: string): string;
+  assumeFileExists(fileName: string): void;
 }
 
 export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
@@ -44,7 +45,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   }
   private resolve(m: string, containingFile: string) {
     const resolved =
-        ts.resolveModuleName(m, containingFile, this.options, this.compilerHost).resolvedModule;
+        ts.resolveModuleName(m, containingFile, this.options, this.context).resolvedModule;
     return resolved ? resolved.resolvedFileName : null;
   };
 
@@ -77,8 +78,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       if (this.options.trace) {
         console.log(`Generating empty file ${importedFile} to allow resolution of import`);
       }
-      this.compilerHost.writeFile(importedFile, '', false);
-      this.context.write(importedFile, '');
+      this.context.assumeFileExists(importedFile);
     }
 
     const importModuleName = importedFile.replace(EXT, '');
@@ -178,7 +178,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   }
 
   getMetadataFor(filePath: string): ModuleMetadata {
-    if (!this.context.exists(filePath)) {
+    if (!this.context.fileExists(filePath)) {
       // If the file doesn't exists then we cannot return metadata for the file.
       // This will occur if the user refernced a declared module for which no file
       // exists for the module (i.e. jQuery or angularjs).
@@ -186,7 +186,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     }
     if (DTS.test(filePath)) {
       const metadataPath = filePath.replace(DTS, '.metadata.json');
-      if (this.context.exists(metadataPath)) {
+      if (this.context.fileExists(metadataPath)) {
         return this.readMetadata(metadataPath);
       }
     } else {
@@ -200,7 +200,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
 
   readMetadata(filePath: string) {
     try {
-      const result = JSON.parse(this.context.read(filePath));
+      const result = JSON.parse(this.context.readFile(filePath));
       return result;
     } catch (e) {
       console.error(`Failed to read JSON file ${filePath}`);
@@ -210,9 +210,21 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
 }
 
 export class NodeReflectorHostContext implements ReflectorHostContext {
-  exists(fileName: string): boolean { return fs.existsSync(fileName); }
+  private assumedExists: {[fileName: string]: boolean} = {};
 
-  read(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
+  fileExists(fileName: string): boolean {
+    return this.assumedExists[fileName] || fs.existsSync(fileName);
+  }
 
-  write(fileName: string, data: string): void { fs.writeFileSync(fileName, data, 'utf8'); }
+  directoryExists(directoryName: string): boolean {
+    try {
+      return fs.statSync(directoryName).isDirectory();
+    } catch (e) {
+      return false;
+    }
+  }
+
+  readFile(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
+
+  assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
 }
