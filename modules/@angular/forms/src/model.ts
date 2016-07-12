@@ -83,6 +83,7 @@ export abstract class AbstractControl {
   private _parent: FormGroup|FormArray;
   private _asyncValidationSubscription: any;
 
+
   constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn) {}
 
   get value(): any { return this._value; }
@@ -140,6 +141,27 @@ export abstract class AbstractControl {
     }
   }
 
+  markAsPristine({onlySelf}: {onlySelf?: boolean} = {}): void {
+    this._pristine = true;
+
+    this._forEachChild((control: AbstractControl) => { control.markAsPristine({onlySelf: true}); });
+
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent._updatePristine({onlySelf: onlySelf});
+    }
+  }
+
+  markAsUntouched({onlySelf}: {onlySelf?: boolean} = {}): void {
+    this._touched = false;
+
+    this._forEachChild(
+        (control: AbstractControl) => { control.markAsUntouched({onlySelf: true}); });
+
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent._updateTouched({onlySelf: onlySelf});
+    }
+  }
+
   markAsPending({onlySelf}: {onlySelf?: boolean} = {}): void {
     onlySelf = normalizeBool(onlySelf);
     this._status = PENDING;
@@ -152,6 +174,8 @@ export abstract class AbstractControl {
   setParent(parent: FormGroup|FormArray): void { this._parent = parent; }
 
   abstract updateValue(value: any, options?: Object): void;
+
+  abstract reset(value?: any, options?: Object): void;
 
   updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
       void {
@@ -283,7 +307,43 @@ export abstract class AbstractControl {
   abstract _updateValue(): void;
 
   /** @internal */
-  abstract _anyControlsHaveStatus(status: string): boolean;
+  abstract _forEachChild(cb: Function): void;
+
+  /** @internal */
+  abstract _anyControls(condition: Function): boolean;
+
+  /** @internal */
+  _anyControlsHaveStatus(status: string): boolean {
+    return this._anyControls((control: AbstractControl) => control.status == status);
+  }
+
+  /** @internal */
+  _anyControlsDirty(): boolean {
+    return this._anyControls((control: AbstractControl) => control.dirty);
+  }
+
+  /** @internal */
+  _anyControlsTouched(): boolean {
+    return this._anyControls((control: AbstractControl) => control.touched);
+  }
+
+  /** @internal */
+  _updatePristine({onlySelf}: {onlySelf?: boolean} = {}): void {
+    this._pristine = !this._anyControlsDirty();
+
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent._updatePristine({onlySelf: onlySelf});
+    }
+  }
+
+  /** @internal */
+  _updateTouched({onlySelf}: {onlySelf?: boolean} = {}): void {
+    this._touched = this._anyControlsTouched();
+
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent._updateTouched({onlySelf: onlySelf});
+    }
+  }
 }
 
 /**
@@ -328,18 +388,30 @@ export class FormControl extends AbstractControl {
    * If `emitModelToViewChange` is `true`, the view will be notified about the new value
    * via an `onChange` event. This is the default behavior if `emitModelToViewChange` is not
    * specified.
+   *
+   * If `emitViewToModelChange` is `true`, an ngModelChange event will be fired to update the
+   * model.  This is the default behavior if `emitViewToModelChange` is not specified.
    */
-  updateValue(value: any, {onlySelf, emitEvent, emitModelToViewChange}: {
+  updateValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange}: {
     onlySelf?: boolean,
     emitEvent?: boolean,
-    emitModelToViewChange?: boolean
+    emitModelToViewChange?: boolean,
+    emitViewToModelChange?: boolean
   } = {}): void {
     emitModelToViewChange = isPresent(emitModelToViewChange) ? emitModelToViewChange : true;
+    emitViewToModelChange = isPresent(emitViewToModelChange) ? emitViewToModelChange : true;
+
     this._value = value;
     if (this._onChange.length && emitModelToViewChange) {
-      this._onChange.forEach((changeFn) => changeFn(this._value));
+      this._onChange.forEach((changeFn) => changeFn(this._value, emitViewToModelChange));
     }
     this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
+  }
+
+  reset(value: any = null, {onlySelf}: {onlySelf?: boolean} = {}): void {
+    this.updateValue(value, {onlySelf: onlySelf});
+    this.markAsPristine({onlySelf: onlySelf});
+    this.markAsUntouched({onlySelf: onlySelf});
   }
 
   /**
@@ -350,12 +422,17 @@ export class FormControl extends AbstractControl {
   /**
    * @internal
    */
-  _anyControlsHaveStatus(status: string): boolean { return false; }
+  _anyControls(condition: Function): boolean { return false; }
 
   /**
    * Register a listener for change events.
    */
   registerOnChange(fn: Function): void { this._onChange.push(fn); }
+
+  /**
+   * @internal
+   */
+  _forEachChild(cb: Function): void {}
 }
 
 /**
@@ -445,6 +522,15 @@ export class FormGroup extends AbstractControl {
     this.updateValueAndValidity({onlySelf: onlySelf});
   }
 
+  reset(value: any = {}, {onlySelf}: {onlySelf?: boolean} = {}): void {
+    this._forEachChild((control: AbstractControl, name: string) => {
+      control.reset(value[name], {onlySelf: true});
+    });
+    this.updateValueAndValidity({onlySelf: onlySelf});
+    this._updatePristine({onlySelf: onlySelf});
+    this._updateTouched({onlySelf: onlySelf});
+  }
+
   /** @internal */
   _throwIfControlMissing(name: string): void {
     if (!this.controls[name]) {
@@ -453,19 +539,21 @@ export class FormGroup extends AbstractControl {
   }
 
   /** @internal */
+  _forEachChild(cb: Function): void { StringMapWrapper.forEach(this.controls, cb); }
+
+  /** @internal */
   _setParentForControls() {
-    StringMapWrapper.forEach(
-        this.controls, (control: AbstractControl, name: string) => { control.setParent(this); });
+    this._forEachChild((control: AbstractControl, name: string) => { control.setParent(this); });
   }
 
   /** @internal */
   _updateValue() { this._value = this._reduceValue(); }
 
   /** @internal */
-  _anyControlsHaveStatus(status: string): boolean {
+  _anyControls(condition: Function): boolean {
     var res = false;
-    StringMapWrapper.forEach(this.controls, (control: AbstractControl, name: string) => {
-      res = res || (this.contains(name) && control.status == status);
+    this._forEachChild((control: AbstractControl, name: string) => {
+      res = res || (this.contains(name) && condition(control));
     });
     return res;
   }
@@ -482,7 +570,7 @@ export class FormGroup extends AbstractControl {
   /** @internal */
   _reduceChildren(initValue: any, fn: Function) {
     var res = initValue;
-    StringMapWrapper.forEach(this.controls, (control: AbstractControl, name: string) => {
+    this._forEachChild((control: AbstractControl, name: string) => {
       if (this._included(name)) {
         res = fn(res, control, name);
       }
@@ -575,6 +663,15 @@ export class FormArray extends AbstractControl {
     this.updateValueAndValidity({onlySelf: onlySelf});
   }
 
+  reset(value: any = [], {onlySelf}: {onlySelf?: boolean} = {}): void {
+    this._forEachChild((control: AbstractControl, index: number) => {
+      control.reset(value[index], {onlySelf: true});
+    });
+    this.updateValueAndValidity({onlySelf: onlySelf});
+    this._updatePristine({onlySelf: onlySelf});
+    this._updateTouched({onlySelf: onlySelf});
+  }
+
   /** @internal */
   _throwIfControlMissing(index: number): void {
     if (!this.at(index)) {
@@ -583,16 +680,20 @@ export class FormArray extends AbstractControl {
   }
 
   /** @internal */
+  _forEachChild(cb: Function): void {
+    this.controls.forEach((control: AbstractControl, index: number) => { cb(control, index); });
+  }
+
+  /** @internal */
   _updateValue(): void { this._value = this.controls.map((control) => control.value); }
 
   /** @internal */
-  _anyControlsHaveStatus(status: string): boolean {
-    return this.controls.some(c => c.status == status);
+  _anyControls(condition: Function): boolean {
+    return this.controls.some((control: AbstractControl) => condition(control));
   }
-
 
   /** @internal */
   _setParentForControls(): void {
-    this.controls.forEach((control) => { control.setParent(this); });
+    this._forEachChild((control: AbstractControl) => { control.setParent(this); });
   }
 }

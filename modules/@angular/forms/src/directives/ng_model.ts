@@ -135,6 +135,7 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _updateValue(value: any): void {
-                PromiseWrapper.scheduleMicrotask(() => { this.control.updateValue(value); });
+                PromiseWrapper.scheduleMicrotask(
+                    () => { this.control.updateValue(value, {emitViewToModelChange: false}); });
               }
 }

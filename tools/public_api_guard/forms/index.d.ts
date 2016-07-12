@@ -28,9 +28,16 @@ export declare abstract class AbstractControl {
     markAsPending({onlySelf}?: {
         onlySelf?: boolean;
     }): void;
+    markAsPristine({onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
     markAsTouched({onlySelf}?: {
         onlySelf?: boolean;
     }): void;
+    markAsUntouched({onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
+    abstract reset(value?: any, options?: Object): void;
     setAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[]): void;
     setErrors(errors: {
         [key: string]: any;
@@ -61,6 +68,7 @@ export declare abstract class AbstractControlDirective {
     valid: boolean;
     value: any;
     valueChanges: Observable<any>;
+    reset(value?: any): void;
 }
 
 /** @experimental */
@@ -131,6 +139,9 @@ export declare class FormArray extends AbstractControl {
     insert(index: number, control: AbstractControl): void;
     push(control: AbstractControl): void;
     removeAt(index: number): void;
+    reset(value?: any, {onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
     updateValue(value: any[], {onlySelf}?: {
         onlySelf?: boolean;
     }): void;
@@ -164,10 +175,14 @@ export declare class FormBuilder {
 export declare class FormControl extends AbstractControl {
     constructor(value?: any, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]);
     registerOnChange(fn: Function): void;
-    updateValue(value: any, {onlySelf, emitEvent, emitModelToViewChange}?: {
+    reset(value?: any, {onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
+    updateValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange}?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
         emitModelToViewChange?: boolean;
+        emitViewToModelChange?: boolean;
     }): void;
 }
 
@@ -218,6 +233,9 @@ export declare class FormGroup extends AbstractControl {
     include(controlName: string): void;
     registerControl(name: string, control: AbstractControl): AbstractControl;
     removeControl(name: string): void;
+    reset(value?: any, {onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
     updateValue(value: {
         [key: string]: any;
     }, {onlySelf}?: {
@@ -242,6 +260,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     getFormArray(dir: FormArrayName): FormArray;
     getFormGroup(dir: FormGroupName): FormGroup;
     ngOnChanges(changes: SimpleChanges): void;
+    onReset(): void;
     onSubmit(): boolean;
     removeControl(dir: NgControl): void;
     removeFormArray(dir: FormArrayName): void;
@@ -320,6 +339,7 @@ export declare class NgForm extends ControlContainer implements Form {
     addFormGroup(dir: NgModelGroup): void;
     getControl(dir: NgModel): FormControl;
     getFormGroup(dir: NgModelGroup): FormGroup;
+    onReset(): void;
     onSubmit(): boolean;
     removeControl(dir: NgModel): void;
     removeFormGroup(dir: NgModelGroup): void;

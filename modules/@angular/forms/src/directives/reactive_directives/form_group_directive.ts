@@ -105,7 +105,7 @@ export const formDirectiveProvider: any =
 @Directive({
   selector: '[formGroup]',
   providers: [formDirectiveProvider],
-  host: {'(submit)': 'onSubmit()'},
+  host: {'(submit)': 'onSubmit()', '(reset)': 'onReset()'},
   exportAs: 'ngForm'
 })
 export class FormGroupDirective extends ControlContainer implements Form,
@@ -186,6 +186,8 @@ export class FormGroupDirective extends ControlContainer implements Form,
     ObservableWrapper.callEmit(this.ngSubmit, null);
     return false;
   }
+
+  onReset(): void { this.form.reset(); }
 
   /** @internal */
   _updateDomValue() {

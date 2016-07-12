@@ -48,4 +48,8 @@ export abstract class AbstractControlDirective {
   }
 
   get path(): string[] { return null; }
+
+  reset(value: any = undefined): void {
+    if (isPresent(this.control)) this.control.reset(value);
+  }
 }
