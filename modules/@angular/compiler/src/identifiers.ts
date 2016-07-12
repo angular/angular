@@ -8,7 +8,7 @@
 
 import {ANALYZE_FOR_PRECOMPILE, AppModuleFactory, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ElementRef, Injector, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 
-import {AnimationGroupPlayer as AnimationGroupPlayer_, AnimationKeyframe as AnimationKeyframe_, AnimationSequencePlayer as AnimationSequencePlayer_, AnimationStyles as AnimationStyles_, AppElement, AppModuleInjector, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, DebugAppView, DebugContext, EMPTY_ARRAY, EMPTY_MAP, NoOpAnimationPlayer as NoOpAnimationPlayer_, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewType, ViewUtils, balanceAnimationKeyframes as impBalanceAnimationKeyframes, castByValue, checkBinding, clearStyles as impClearStyles, collectAndResolveStyles as impCollectAndResolveStyles, devModeEqual, flattenNestedViewRenderNodes, interpolate, prepareFinalAnimationStyles as impBalanceAnimationStyles, pureProxy1, pureProxy10, pureProxy2, pureProxy3, pureProxy4, pureProxy5, pureProxy6, pureProxy7, pureProxy8, pureProxy9, renderStyles as impRenderStyles} from '../core_private';
+import {AnimationGroupPlayer as AnimationGroupPlayer_, AnimationKeyframe as AnimationKeyframe_, AnimationSequencePlayer as AnimationSequencePlayer_, AnimationStyles as AnimationStyles_, AppElement, AppModuleInjector, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, DebugAppView, DebugContext, EMPTY_ARRAY, EMPTY_MAP, NoOpAnimationPlayer as NoOpAnimationPlayer_, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewType, ViewUtils, assertValidAnimationState as impAssertValidAnimationState, balanceAnimationKeyframes as impBalanceAnimationKeyframes, castByValue, checkBinding, clearStyles as impClearStyles, collectAndResolveStyles as impCollectAndResolveStyles, devModeEqual, flattenNestedViewRenderNodes, interpolate, prepareFinalAnimationStyles as impBalanceAnimationStyles, pureProxy1, pureProxy10, pureProxy2, pureProxy3, pureProxy4, pureProxy5, pureProxy6, pureProxy7, pureProxy8, pureProxy9, renderStyles as impRenderStyles} from '../core_private';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 import {assetUrl} from './util';
@@ -242,6 +242,11 @@ export class Identifiers {
     name: 'balanceAnimationKeyframes',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
     runtime: impBalanceAnimationKeyframes
+  });
+  static assertValidAnimationState = new CompileIdentifierMetadata({
+    name: 'assertValidAnimationState',
+    moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
+    runtime: impAssertValidAnimationState
   });
   static clearStyles = new CompileIdentifierMetadata(
       {name: 'clearStyles', moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL, runtime: impClearStyles});

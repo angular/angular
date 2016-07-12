@@ -101,7 +101,7 @@ function _parseAnimationStateTransition(
 function _parseAnimationTransitionExpr(
     eventStr: string, errors: AnimationParseError[]): AnimationStateTransitionExpression[] {
   var expressions: any[] /** TODO #9100 */ = [];
-  var match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
+  var match = eventStr.match(/^(\*|:?[-\w]+)\s*(<?[=-]>)\s*(\*|:?[-\w]+)$/);
   if (!isPresent(match) || match.length < 4) {
     errors.push(new AnimationParseError(`the provided ${eventStr} is not of a supported format`));
     return expressions;

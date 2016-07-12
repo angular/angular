@@ -116,6 +116,7 @@ export declare namespace __core_private_types__ {
   export var AnimationKeyframe: typeof AnimationKeyframe_;
   export var prepareFinalAnimationStyles: typeof animationUtils.prepareFinalAnimationStyles;
   export var balanceAnimationKeyframes: typeof animationUtils.balanceAnimationKeyframes;
+  export var assertValidAnimationState: typeof animationUtils.assertValidAnimationState;
   export var flattenStyles: typeof animationUtils.flattenStyles;
   export var clearStyles: typeof animationUtils.clearStyles;
   export var renderStyles: typeof animationUtils.renderStyles;
@@ -185,6 +186,7 @@ export var __core_private__ = {
   AnimationKeyframe: AnimationKeyframe_,
   prepareFinalAnimationStyles: animationUtils.prepareFinalAnimationStyles,
   balanceAnimationKeyframes: animationUtils.balanceAnimationKeyframes,
+  assertValidAnimationState: animationUtils.assertValidAnimationState,
   flattenStyles: animationUtils.flattenStyles,
   clearStyles: animationUtils.clearStyles,
   renderStyles: animationUtils.renderStyles,

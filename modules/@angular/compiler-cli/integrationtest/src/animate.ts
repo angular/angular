@@ -14,7 +14,7 @@ import {AUTO_STYLE, Component, animate, state, style, transition, trigger} from 
       'openClose',
       [
         state('*', style({height: AUTO_STYLE, color: 'black', borderColor: 'black'})),
-        state('closed, void', style({height: '0px', color: 'maroon', borderColor: 'maroon'})),
+        state('closed, :void', style({height: '0px', color: 'maroon', borderColor: 'maroon'})),
         state('open', style({height: AUTO_STYLE, borderColor: 'green', color: 'green'})),
         transition('* => *', animate(500))
       ])],

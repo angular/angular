@@ -7,6 +7,7 @@
  */
 
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {BaseException} from '../facade/exceptions';
 import {isArray, isPresent} from '../facade/lang';
 
 import {FILL_STYLE_FLAG} from './animation_constants';
@@ -122,4 +123,11 @@ export function flattenStyles(styles: {[key: string]: string | number}[]): {[key
         entry, (value: string, prop: string) => { finalStyles[prop] = value; });
   });
   return finalStyles;
+}
+
+export function assertValidAnimationState(stateValue: string, triggerName: string): void {
+  if (isPresent(stateValue) && stateValue[0] == ':') {
+    throw new BaseException(
+        `The provided value "${stateValue}" for the animation trigger "${triggerName}" is invalid because it is prefixed with a colon`);
+  }
 }
