@@ -85,7 +85,7 @@ export class RouterLink {
   }
 
   get urlTree(): UrlTree {
-    return this.router.createUrlTreeUsingFutureUrl(
+    return this.router.createUrlTree(
         this.commands,
         {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
   }
@@ -148,7 +148,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   private updateTargetUrlAndHref(): void {
-    this.urlTree = this.router.createUrlTreeUsingFutureUrl(
+    this.urlTree = this.router.createUrlTree(
         this.commands,
         {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
 

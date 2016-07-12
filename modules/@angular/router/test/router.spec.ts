@@ -50,7 +50,6 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/child/simple');
          })));
 
-
   it('should update location when navigating',
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],
@@ -459,6 +458,39 @@ describe('Integration', () => {
            expect(cmp.deactivations[1] instanceof BlankCmp).toBe(true);
          })));
 
+  it('should update url and router state before activating components',
+     fakeAsync(inject(
+         [Router, TestComponentBuilder, Location],
+         (router: Router, tcb: TestComponentBuilder, location: Location) => {
+           @Component({selector: 'cmp', template: ''})
+           class Cmp {
+             private path: any;
+             private url: any;
+
+             constructor(router: Router, route: ActivatedRoute) {
+               this.path = router.routerState.pathFromRoot(route);
+               this.url = router.url.toString();
+             }
+           }
+
+           @Component(
+               {selector: 'root', template: '<router-outlet></router-outlet>', precompile: [Cmp]})
+           class Root {
+           }
+
+           const fixture = createRoot(tcb, router, Root);
+
+           router.resetConfig([{path: 'cmp', component: Cmp}]);
+
+           router.navigateByUrl('/cmp');
+           advance(fixture);
+
+           const cmp = fixture.debugElement.children[1].componentInstance;
+
+           expect(cmp.url).toBe('/cmp');
+           expect(cmp.path.length).toEqual(2);
+         })));
+
   describe('data', () => {
     class ResolveSix implements Resolve<TeamCmp> {
       resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number { return 6; }
@@ -732,8 +764,6 @@ describe('Integration', () => {
         beforeEach(() => {
           addProviders([{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]);
         });
-
-        // handle errors
 
         it('works',
            fakeAsync(inject(
