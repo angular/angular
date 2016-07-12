@@ -1,16 +1,12 @@
 import {
-    it,
-    describe,
-    expect,
-    beforeEach,
     inject,
     async,
     fakeAsync,
     flushMicrotasks,
-    beforeEachProviders
+    addProviders,
 } from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
-import {Component, provide, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {ConnectedOverlayDirective, OverlayOrigin} from './overlay-directives';
 import {OVERLAY_CONTAINER_TOKEN, Overlay} from './overlay';
 import {ViewportRuler} from './position/viewport-ruler';
@@ -23,15 +19,17 @@ describe('Overlay directives', () => {
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ConnectedOverlayDirectiveTest>;
 
-  beforeEachProviders(() => [
-    Overlay,
-    OverlayPositionBuilder,
-    ViewportRuler,
-    provide(OVERLAY_CONTAINER_TOKEN, {useFactory: () => {
-      overlayContainerElement = document.createElement('div');
-      return overlayContainerElement;
-    }})
-  ]);
+  beforeEach(() => {
+    addProviders([
+      Overlay,
+      OverlayPositionBuilder,
+      ViewportRuler,
+      {provide: OVERLAY_CONTAINER_TOKEN, useFactory: () => {
+        overlayContainerElement = document.createElement('div');
+        return overlayContainerElement;
+      }},
+    ]);
+  });
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;

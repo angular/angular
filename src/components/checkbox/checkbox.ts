@@ -5,7 +5,6 @@ import {
     EventEmitter,
     Input,
     Output,
-    Provider,
     Renderer,
     ViewEncapsulation,
     forwardRef,
@@ -22,11 +21,11 @@ let nextId = 0;
  * Provider Expression that allows md-checkbox to register as a ControlValueAccessor. This allows it
  * to support [(ngModel)].
  */
-export const MD_CHECKBOX_CONTROL_VALUE_ACCESSOR = new Provider(
-    NG_VALUE_ACCESSOR, {
-      useExisting: forwardRef(() => MdCheckbox),
-      multi: true
-    });
+export const MD_CHECKBOX_CONTROL_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MdCheckbox),
+  multi: true
+};
 
 /**
  * Represents the different states that require custom transitions between them.

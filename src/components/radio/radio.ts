@@ -9,10 +9,9 @@ import {
   OnInit,
   Optional,
   Output,
-  Provider,
   QueryList,
   ViewEncapsulation,
-  forwardRef
+  forwardRef,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -34,11 +33,11 @@ export {
  * Provider Expression that allows md-radio-group to register as a ControlValueAccessor. This
  * allows it to support [(ngModel)] and ngControl.
  */
-export const MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR = new Provider(
-    NG_VALUE_ACCESSOR, {
-      useExisting: forwardRef(() => MdRadioGroup),
-      multi: true
-    });
+export const MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MdRadioGroup),
+  multi: true
+};
 
 // TODO(mtlin):
 // Ink ripple is currently placeholder.

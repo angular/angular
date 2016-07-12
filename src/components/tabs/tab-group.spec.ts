@@ -1,9 +1,5 @@
 import {
-    it,
-    expect,
-    beforeEach,
     inject,
-    describe,
     async,
     fakeAsync,
     tick
@@ -16,13 +12,14 @@ import {Observable} from 'rxjs/Observable';
 
 describe('MdTabGroup', () => {
   let builder: TestComponentBuilder;
-  let fixture: ComponentFixture<SimpleTabsTestApp>;
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
   }));
 
   describe('basic behavior', () => {
+    let fixture: ComponentFixture<SimpleTabsTestApp>;
+
     beforeEach(async(() => {
       builder.createAsync(SimpleTabsTestApp).then(f => {
         fixture = f;
@@ -30,23 +27,23 @@ describe('MdTabGroup', () => {
     }));
 
     it('should default to the first tab', () => {
-      checkSelectedIndex(1);
+      checkSelectedIndex(1, fixture);
     });
 
     it('should change selected index on click', () => {
       let component = fixture.debugElement.componentInstance;
       component.selectedIndex = 0;
-      checkSelectedIndex(0);
+      checkSelectedIndex(0, fixture);
 
       // select the second tab
       let tabLabel = fixture.debugElement.queryAll(By.css('.md-tab-label'))[1];
       tabLabel.nativeElement.click();
-      checkSelectedIndex(1);
+      checkSelectedIndex(1, fixture);
 
       // select the third tab
       tabLabel = fixture.debugElement.queryAll(By.css('.md-tab-label'))[2];
       tabLabel.nativeElement.click();
-      checkSelectedIndex(2);
+      checkSelectedIndex(2, fixture);
     });
 
     it('should support two-way binding for selectedIndex', async(() => {
@@ -128,11 +125,11 @@ describe('MdTabGroup', () => {
 
       spyOn(component, 'handleSelection').and.callThrough();
 
-      checkSelectedIndex(1);
+      checkSelectedIndex(1, fixture);
 
       tabComponent.selectedIndex = 2;
 
-      checkSelectedIndex(2);
+      checkSelectedIndex(2, fixture);
       tick();
 
       expect(component.handleSelection).toHaveBeenCalledTimes(1);
@@ -141,6 +138,8 @@ describe('MdTabGroup', () => {
   });
 
   describe('async tabs', () => {
+    let fixture: ComponentFixture<AsyncTabsTestApp>;
+
     beforeEach(async(() => {
       builder.createAsync(AsyncTabsTestApp).then(f => fixture = f);
     }));
@@ -164,7 +163,7 @@ describe('MdTabGroup', () => {
    * Checks that the `selectedIndex` has been updated; checks that the label and body have the
    * `md-active` class
    */
-  function checkSelectedIndex(index: number) {
+  function checkSelectedIndex(index: number, fixture: ComponentFixture<any>) {
     fixture.detectChanges();
 
     let tabComponent: MdTabGroup = fixture.debugElement

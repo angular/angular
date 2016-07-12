@@ -1,17 +1,13 @@
 import {
-  it,
-  describe,
-  expect,
-  beforeEach,
   inject,
   fakeAsync,
   flushMicrotasks,
   tick,
-  beforeEachProviders,
+  addProviders,
   getTestInjector
 } from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
-import {Component, provide} from '@angular/core';
+import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdLiveAnnouncer, LIVE_ANNOUNCER_ELEMENT_TOKEN} from './live-announcer';
 
@@ -20,7 +16,11 @@ describe('MdLiveAnnouncer', () => {
   let builder: TestComponentBuilder;
   let liveEl: Element;
 
-  beforeEachProviders(() => [MdLiveAnnouncer]);
+  beforeEach(() => {
+    addProviders([
+      MdLiveAnnouncer,
+    ]);
+  });
 
   beforeEach(inject([TestComponentBuilder, MdLiveAnnouncer],
     (tcb: TestComponentBuilder, _live: MdLiveAnnouncer) => {
@@ -98,7 +98,7 @@ describe('MdLiveAnnouncer', () => {
     getTestInjector().reset();
 
     getTestInjector().addProviders([
-      provide(LIVE_ANNOUNCER_ELEMENT_TOKEN, {useValue: customLiveEl}),
+      {provide: LIVE_ANNOUNCER_ELEMENT_TOKEN, useValue: customLiveEl},
       MdLiveAnnouncer
     ]);
 

@@ -3,7 +3,6 @@ import {
   Component,
   HostBinding,
   Input,
-  Provider,
   Directive,
   AfterContentInit,
   ContentChild,
@@ -29,10 +28,11 @@ import {Observable} from 'rxjs/Observable';
 
 const noop = () => {};
 
-export const MD_INPUT_CONTROL_VALUE_ACCESSOR = new Provider(NG_VALUE_ACCESSOR, {
+export const MD_INPUT_CONTROL_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MdInput),
   multi: true
-});
+};
 
 // Invalid input type. Using one of these will throw an MdInputUnsupportedTypeError.
 const MD_INPUT_INVALID_INPUT_TYPE = [

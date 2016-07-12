@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
 echo "=======  Starting build-and-test.sh  ========================================"
 
@@ -22,8 +22,20 @@ if is_lint; then
 elif is_circular_deps_check; then
   npm run check-circular-deps
 elif is_e2e; then
+  # Start up the e2e app. This will take some time.
+  echo "Starting e2e app"
   MD_APP=e2e ng serve &
-  sleep 20
+  sleep 1
+
+  # Wait until the dist/ directory is created, indicating that the e2e app is ready.
+  # Use the presence of `button.js` to determine whether the compiled output is ready to be served.
+  echo "Waiting for e2e app to start"
+  while [ ! -f ./dist/components/button/button.js ]; do
+    sleep 2
+  done
+
+  # Run the e2e tests on the served e2e app.
+  echo "Starting e2e tests"
   ng e2e
 else
   karma start test/karma.conf.js --single-run --no-auto-watch --reporters='dots'

@@ -1,12 +1,7 @@
 import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  beforeEachProviders,
-  fakeAsync,
+  addProviders,
+  async,
   inject,
-  tick,
 } from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component} from '@angular/core';
@@ -21,67 +16,63 @@ import {
 describe('MdInput', function () {
   var builder: TestComponentBuilder;
 
-  beforeEachProviders(() => [
-    disableDeprecatedForms(),
-    provideForms(),
-  ]);
+  beforeEach(() => {
+    addProviders([
+      disableDeprecatedForms(),
+      provideForms(),
+    ]);
+  });
 
   beforeEach(inject([TestComponentBuilder], function (tcb: TestComponentBuilder) {
     builder = tcb;
   }));
 
-  it('creates a native <input> element', () => {
-    return builder.createAsync(MdInputBaseTestController)
+  it('creates a native <input> element', async(() => {
+    builder.createAsync(MdInputBaseTestController)
       .then(fixture => {
         fixture.detectChanges();
         expect(fixture.debugElement.query(By.css('input'))).toBeTruthy();
       });
-  });
+  }));
 
-  it('support ngModel', () => {
-    return builder.createAsync(MdInputBaseTestController)
+  it('support ngModel', async(() => {
+    builder.createAsync(MdInputBaseTestController)
       .then(fixture => {
         fixture.detectChanges();
-        fakeAsync(() => {
-          let instance = fixture.componentInstance;
-          let component = fixture.debugElement.query(By.directive(MdInput)).componentInstance;
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let instance = fixture.componentInstance;
+        let component = fixture.debugElement.query(By.directive(MdInput)).componentInstance;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          instance.model = 'hello';
-          fixture.detectChanges();
-          tick();
-          expect(el.value).toEqual('hello');
+        instance.model = 'hello';
+        fixture.detectChanges();
+        expect(el.value).toEqual('hello');
 
-          component.value = 'world';
-          fixture.detectChanges();
-          tick();
-          expect(el.value).toEqual('world');
-        })();
+        component.value = 'world';
+        fixture.detectChanges();
+        expect(el.value).toEqual('world');
       });
-  });
+  }));
 
-  it('should have a different ID for outer element and internal input', () => {
-    return builder
+  it('should have a different ID for outer element and internal input', async(() => {
+    builder
         .overrideTemplate(MdInputBaseTestController, `
           <md-input id="test-id"></md-input>
         `)
         .createAsync(MdInputBaseTestController)
         .then(fixture => {
           fixture.detectChanges();
-          fakeAsync(() => {
-            const componentElement: HTMLElement = fixture.debugElement
-                .query(By.directive(MdInput)).nativeElement;
-            const inputElement: HTMLInputElement = fixture.debugElement.query(By.css('input'))
-                .nativeElement;
-            expect(componentElement.id).toBe('test-id');
-            expect(inputElement.id).toBeTruthy();
-            expect(inputElement.id).not.toBe(componentElement.id);
-          })();
+          const componentElement: HTMLElement = fixture.debugElement
+              .query(By.directive(MdInput)).nativeElement;
+          const inputElement: HTMLInputElement = fixture.debugElement.query(By.css('input'))
+              .nativeElement;
+          expect(componentElement.id).toBe('test-id');
+          expect(inputElement.id).toBeTruthy();
+          expect(inputElement.id).not.toBe(componentElement.id);
         });
-  });
+  }));
 
-  it('counts characters', () => {
-    return builder.createAsync(MdInputBaseTestController).then(fixture => {
+  it('counts characters', async(() => {
+    builder.createAsync(MdInputBaseTestController).then(fixture => {
       let instance = fixture.componentInstance;
       fixture.detectChanges();
       let inputInstance = fixture.debugElement.query(By.directive(MdInput)).componentInstance;
@@ -91,10 +82,10 @@ describe('MdInput', function () {
       fixture.detectChanges();
       expect(inputInstance.characterCount).toEqual(5);
     });
-  });
+  }));
 
-  it('copies aria attributes to the inner input', () => {
-    return builder.createAsync(MdInputAriaTestController)
+  it('copies aria attributes to the inner input', async(() => {
+    builder.createAsync(MdInputAriaTestController)
       .then(fixture => {
         let instance = fixture.componentInstance;
         fixture.detectChanges();
@@ -106,561 +97,497 @@ describe('MdInput', function () {
 
         expect(el.getAttribute('aria-disabled')).toBeTruthy();
       });
-  });
+  }));
 
-  it('validates there\'s only one hint label per side', () => {
+  it('validates there\'s only one hint label per side', async(() => {
 
-    return builder.createAsync(MdInputInvalidHintTestController)
+    builder.createAsync(MdInputInvalidHintTestController)
       .then(fixture => {
           expect(() => fixture.detectChanges())
             .toThrow();
             // TODO(jelbourn): .toThrow(new MdInputDuplicatedHintError('start'));
             // See https://github.com/angular/angular/issues/8348
       });
-  });
+  }));
 
-  it(`validates there's only one hint label per side (attribute)`, () => {
-    return builder.createAsync(MdInputInvalidHint2TestController)
+  it(`validates there's only one hint label per side (attribute)`, async(() => {
+    builder.createAsync(MdInputInvalidHint2TestController)
       .then(fixture => {
         expect(() => fixture.detectChanges())
           .toThrow();
           // TODO(jelbourn): .toThrow(new MdInputDuplicatedHintError('start'));
           // See https://github.com/angular/angular/issues/8348
       });
-  });
+  }));
 
-  it('validates there\'s only one placeholder', () => {
-    return builder.createAsync(MdInputInvalidPlaceholderTestController)
+  it('validates there\'s only one placeholder', async(() => {
+    builder.createAsync(MdInputInvalidPlaceholderTestController)
       .then(fixture => {
         expect(() => fixture.detectChanges())
           .toThrow();
           // TODO(jelbourn): .toThrow(new MdInputPlaceholderConflictError());
           // See https://github.com/angular/angular/issues/8348
       });
-  });
+  }));
 
-  it('validates the type', () => {
-    return builder.createAsync(MdInputInvalidTypeTestController)
-      .then(fixture => {
-        fakeAsync(() => {
-          // Technically this throws during the OnChanges detection phase,
-          // so the error is really a ChangeDetectionError and it becomes
-          // hard to build a full exception to compare with.
-          // We just check for any exception in this case.
-          expect(() => fixture.detectChanges())
-            .toThrow(/* new MdInputUnsupportedTypeError('file') */);
-        })();
-      });
-  });
+  it('validates the type', async(() => {
+    builder.createAsync(MdInputInvalidTypeTestController).then(fixture => {
+      // Technically this throws during the OnChanges detection phase,
+      // so the error is really a ChangeDetectionError and it becomes
+      // hard to build a full exception to compare with.
+      // We just check for any exception in this case.
+      expect(() => fixture.detectChanges())
+        .toThrow(/* new MdInputUnsupportedTypeError('file') */);
+    });
+  }));
 
-  it('supports hint labels attribute', () => {
-    return builder.createAsync(MdInputHintLabelTestController)
-      .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
-
-          // If the hint label is empty, expect no label.
-          expect(fixture.debugElement.query(By.css('.md-hint'))).toBeNull();
-
-          fixture.componentInstance.label = 'label';
-          fixture.detectChanges();
-          expect(fixture.debugElement.query(By.css('.md-hint'))).not.toBeNull();
-        })();
-      });
-  });
-
-  it('supports hint labels elements', () => {
-    return builder.createAsync(MdInputHintLabel2TestController)
-      .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
-
-          // In this case, we should have an empty <md-hint>.
-          let el = fixture.debugElement.query(By.css('md-hint')).nativeElement;
-          expect(el.textContent).toBeFalsy();
-
-          fixture.componentInstance.label = 'label';
-          fixture.detectChanges();
-          el = fixture.debugElement.query(By.css('md-hint')).nativeElement;
-          expect(el.textContent).toBe('label');
-        })();
-      });
-  });
-
-  it('supports placeholder attribute', () => {
-    return builder.createAsync(MdInputPlaceholderAttrTestComponent)
-      .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
-
-          let el = fixture.debugElement.query(By.css('label'));
-          expect(el).toBeNull();
-
-          fixture.componentInstance.placeholder = 'Other placeholder';
-          fixture.detectChanges();
-          el = fixture.debugElement.query(By.css('label'));
-          expect(el).not.toBeNull();
-          expect(el.nativeElement.textContent).toMatch('Other placeholder');
-          expect(el.nativeElement.textContent).not.toMatch(/\*/g);
-        })();
-      });
-  });
-
-  it('supports placeholder element', () => {
-    return builder.createAsync(MdInputPlaceholderElementTestComponent)
-      .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
-
-          let el = fixture.debugElement.query(By.css('label'));
-          expect(el).not.toBeNull();
-          expect(el.nativeElement.textContent).toMatch('Default Placeholder');
-
-          fixture.componentInstance.placeholder = 'Other placeholder';
-          fixture.detectChanges();
-          el = fixture.debugElement.query(By.css('label'));
-          expect(el).not.toBeNull();
-          expect(el.nativeElement.textContent).toMatch('Other placeholder');
-          expect(el.nativeElement.textContent).not.toMatch(/\*/g);
-        })();
-      });
-  });
-
-  it('supports placeholder required star', () => {
-    return builder.createAsync(MdInputPlaceholderRequiredTestComponent)
-      .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
-
-          let el = fixture.debugElement.query(By.css('label'));
-          expect(el).not.toBeNull();
-          expect(el.nativeElement.textContent).toMatch(/hello\s+\*/g);
-        })();
-      });
-  });
-
-  it('supports number types and conserved its value type from Angular', () => {
-    return builder.createAsync(MdInputNumberTypeConservedTestComponent)
+  it('supports hint labels attribute', async(() => {
+    builder.createAsync(MdInputHintLabelTestController)
       .then(fixture => {
         fixture.detectChanges();
 
-        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
-        inputEl.value = '3';
+        // If the hint label is empty, expect no label.
+        expect(fixture.debugElement.query(By.css('.md-hint'))).toBeNull();
 
-        // Manually trigger an onchange event.
-        var evt = document.createEvent('HTMLEvents');
-        evt.initEvent('change', true, true);
-        inputEl.dispatchEvent(evt);
-
+        fixture.componentInstance.label = 'label';
         fixture.detectChanges();
+        expect(fixture.debugElement.query(By.css('.md-hint'))).not.toBeNull();
+      });
+  }));
 
-        // Something along the chain of events is asynchronous but does not use Zones, therefore
-        // we need to wait for that something to propagate. Using fakeAsync fails, just returning
-        // Promise.resolve(fixture) fails as well, but this passes.
-        return new Promise(resolve => {
-          setTimeout(() => resolve(fixture), 0);
-        });
-      }).then((fixture: any) => {
+  it('supports hint labels elements', async(() => {
+    builder.createAsync(MdInputHintLabel2TestController).then(fixture => {
+      fixture.detectChanges();
+
+      // In this case, we should have an empty <md-hint>.
+      let el = fixture.debugElement.query(By.css('md-hint')).nativeElement;
+      expect(el.textContent).toBeFalsy();
+
+      fixture.componentInstance.label = 'label';
+      fixture.detectChanges();
+      el = fixture.debugElement.query(By.css('md-hint')).nativeElement;
+      expect(el.textContent).toBe('label');
+      });
+  }));
+
+  it('supports placeholder attribute', async(() => {
+    builder.createAsync(MdInputPlaceholderAttrTestComponent).then(fixture => {
+      fixture.detectChanges();
+
+      let el = fixture.debugElement.query(By.css('label'));
+      expect(el).toBeNull();
+
+      fixture.componentInstance.placeholder = 'Other placeholder';
+      fixture.detectChanges();
+      el = fixture.debugElement.query(By.css('label'));
+      expect(el).not.toBeNull();
+      expect(el.nativeElement.textContent).toMatch('Other placeholder');
+      expect(el.nativeElement.textContent).not.toMatch(/\*/g);
+    });
+  }));
+
+  it('supports placeholder element', async(() => {
+    builder.createAsync(MdInputPlaceholderElementTestComponent).then(fixture => {
+      fixture.detectChanges();
+
+      let el = fixture.debugElement.query(By.css('label'));
+      expect(el).not.toBeNull();
+      expect(el.nativeElement.textContent).toMatch('Default Placeholder');
+
+      fixture.componentInstance.placeholder = 'Other placeholder';
+      fixture.detectChanges();
+      el = fixture.debugElement.query(By.css('label'));
+      expect(el).not.toBeNull();
+      expect(el.nativeElement.textContent).toMatch('Other placeholder');
+      expect(el.nativeElement.textContent).not.toMatch(/\*/g);
+    });
+  }));
+
+  it('supports placeholder required star', async(() => {
+    builder.createAsync(MdInputPlaceholderRequiredTestComponent).then(fixture => {
+      fixture.detectChanges();
+
+      let el = fixture.debugElement.query(By.css('label'));
+      expect(el).not.toBeNull();
+      expect(el.nativeElement.textContent).toMatch(/hello\s+\*/g);
+    });
+  }));
+
+  it('supports number types and conserved its value type from Angular', async(() => {
+    builder.createAsync(MdInputNumberTypeConservedTestComponent).then(fixture => {
+      fixture.detectChanges();
+
+      const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+      inputEl.value = '3';
+
+      // Manually trigger an onchange event.
+      var evt = document.createEvent('HTMLEvents');
+      evt.initEvent('change', true, true);
+      inputEl.dispatchEvent(evt);
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
         expect(fixture.componentInstance.value).toBe(3);
         expect(typeof fixture.componentInstance.value).toBe('number');
       });
-  });
+    });
+  }));
 
-  it('supports blur and focus events', () => {
-    return builder.createAsync(MdInputWithBlurAndFocusEvents).then(fixture => {
+  it('supports blur and focus events', async(() => {
+    builder.createAsync(MdInputWithBlurAndFocusEvents).then(fixture => {
       const testComponent = fixture.componentInstance;
       const inputComponent = fixture.debugElement.query(By.directive(MdInput)).componentInstance;
       const fakeEvent = <FocusEvent>{};
-      fakeAsync(() => {
-        spyOn(testComponent, 'onFocus');
-        spyOn(testComponent, 'onBlur');
 
-        expect(testComponent.onFocus).not.toHaveBeenCalled();
-        expect(testComponent.onBlur).not.toHaveBeenCalled();
+      spyOn(testComponent, 'onFocus');
+      spyOn(testComponent, 'onBlur');
 
-        inputComponent._handleFocus(fakeEvent);
-        tick();
-        expect(testComponent.onFocus).toHaveBeenCalledWith(fakeEvent);
+      expect(testComponent.onFocus).not.toHaveBeenCalled();
+      expect(testComponent.onBlur).not.toHaveBeenCalled();
 
+      inputComponent._handleFocus(fakeEvent);
+      expect(testComponent.onFocus).toHaveBeenCalledWith(fakeEvent);
 
-        inputComponent._handleBlur(fakeEvent);
-        tick();
-        expect(testComponent.onBlur).toHaveBeenCalledWith(fakeEvent);
-      })();
+      inputComponent._handleBlur(fakeEvent);
+      expect(testComponent.onBlur).toHaveBeenCalledWith(fakeEvent);
     });
-  });
+  }));
 
-  it('supports the autoComplete attribute', () => {
+  it('supports the autoComplete attribute', async(() => {
     var template = '<md-input [autoComplete]="autoComplete"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('autocomplete')).toBeNull();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('autocomplete')).toBeNull();
 
-          fixture.componentInstance.autoComplete = 'on';
-          fixture.detectChanges();
-          expect(el.getAttribute('autocomplete')).toEqual('on');
-        })();
+        fixture.componentInstance.autoComplete = 'on';
+        fixture.detectChanges();
+        expect(el.getAttribute('autocomplete')).toEqual('on');
       });
-  });
+  }));
 
-  it('supports the autoComplete attribute as an unbound attribute', () => {
+  it('supports the autoComplete attribute as an unbound attribute', async(() => {
     var template = '<md-input autoComplete></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('autocomplete')).toEqual('');
-        })();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('autocomplete')).toEqual('');
       });
-  });
+  }));
 
-  it('supports the autoComplete attribute as an unbound value attribute', () => {
+  it('supports the autoComplete attribute as an unbound value attribute', async(() => {
     var template = '<md-input autoComplete="name"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('autocomplete')).toEqual('name');
-        })();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('autocomplete')).toEqual('name');
       });
-  });
+  }));
 
-  it('supports the autoFocus attribute', () => {
+  it('supports the autoFocus attribute', async(() => {
     var template = '<md-input [autoFocus]="autoFocus"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('autofocus')).toBeNull();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('autofocus')).toBeNull();
 
-          fixture.componentInstance.autoFocus = true;
-          fixture.detectChanges();
-          expect(el.getAttribute('autofocus')).toEqual('');
-        })();
+        fixture.componentInstance.autoFocus = true;
+        fixture.detectChanges();
+        expect(el.getAttribute('autofocus')).toEqual('');
       });
-  });
+  }));
 
-  it('supports the autoFocus attribute as an unbound attribute', () => {
+  it('supports the autoFocus attribute as an unbound attribute', async(() => {
     var template = '<md-input autoFocus></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('autofocus')).toEqual('');
-        })();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('autofocus')).toEqual('');
       });
-  });
+  }));
 
-  it('supports the disabled attribute', () => {
+  it('supports the disabled attribute', async(() => {
     var template = '<md-input [disabled]="disabled"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.componentInstance.disabled = false;
-          fixture.detectChanges();
+        fixture.componentInstance.disabled = false;
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('disabled')).toEqual(null);
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('disabled')).toEqual(null);
 
-          fixture.componentInstance.disabled = true;
-          fixture.detectChanges();
-          expect(el.getAttribute('disabled')).toEqual('');
-        })();
+        fixture.componentInstance.disabled = true;
+        fixture.detectChanges();
+        expect(el.getAttribute('disabled')).toEqual('');
       });
-  });
+  }));
 
-  it('supports the disabled attribute as an unbound attribute', () => {
+  it('supports the disabled attribute as an unbound attribute', async(() => {
     var template = '<md-input disabled></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('disabled')).toEqual('');
-        })();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('disabled')).toEqual('');
       });
-  });
+  }));
 
-  it('supports the list attribute', () => {
+  it('supports the list attribute', async(() => {
     var template = '<md-input [list]="list"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.componentInstance.disabled = false;
-          fixture.detectChanges();
+        fixture.componentInstance.disabled = false;
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('list')).toEqual(null);
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('list')).toEqual(null);
 
-          fixture.componentInstance.list = 'datalist-id';
-          fixture.detectChanges();
-          expect(el.getAttribute('list')).toEqual('datalist-id');
-        })();
+        fixture.componentInstance.list = 'datalist-id';
+        fixture.detectChanges();
+        expect(el.getAttribute('list')).toEqual('datalist-id');
       });
-  });
+  }));
 
-  it('supports the max attribute', () => {
+  it('supports the max attribute', async(() => {
     var template = '<md-input [max]="max"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.componentInstance.disabled = false;
-          fixture.detectChanges();
+        fixture.componentInstance.disabled = false;
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('max')).toEqual(null);
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('max')).toEqual(null);
 
-          fixture.componentInstance.max = 10;
-          fixture.detectChanges();
-          expect(el.getAttribute('max')).toEqual('10');
+        fixture.componentInstance.max = 10;
+        fixture.detectChanges();
+        expect(el.getAttribute('max')).toEqual('10');
 
-          fixture.componentInstance.max = '2000-01-02';
-          fixture.detectChanges();
-          expect(el.getAttribute('max')).toEqual('2000-01-02');
-        })();
+        fixture.componentInstance.max = '2000-01-02';
+        fixture.detectChanges();
+        expect(el.getAttribute('max')).toEqual('2000-01-02');
       });
-  });
+  }));
 
-  it('supports the min attribute', () => {
+  it('supports the min attribute', async(() => {
     var template = '<md-input [min]="min"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.componentInstance.disabled = false;
-          fixture.detectChanges();
+        fixture.componentInstance.disabled = false;
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('min')).toEqual(null);
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('min')).toEqual(null);
 
-          fixture.componentInstance.min = 10;
-          fixture.detectChanges();
-          expect(el.getAttribute('min')).toEqual('10');
+        fixture.componentInstance.min = 10;
+        fixture.detectChanges();
+        expect(el.getAttribute('min')).toEqual('10');
 
-          fixture.componentInstance.min = '2000-01-02';
-          fixture.detectChanges();
-          expect(el.getAttribute('min')).toEqual('2000-01-02');
-        })();
+        fixture.componentInstance.min = '2000-01-02';
+        fixture.detectChanges();
+        expect(el.getAttribute('min')).toEqual('2000-01-02');
       });
-  });
+  }));
 
-  it('supports the readOnly attribute', () => {
+  it('supports the readOnly attribute', async(() => {
     var template = '<md-input [readOnly]="readOnly"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('readonly')).toBeNull();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('readonly')).toBeNull();
 
-          fixture.componentInstance.readOnly = true;
-          fixture.detectChanges();
-          expect(el.getAttribute('readonly')).toEqual('');
-        })();
+        fixture.componentInstance.readOnly = true;
+        fixture.detectChanges();
+        expect(el.getAttribute('readonly')).toEqual('');
       });
-  });
+  }));
 
-  it('supports the readOnly attribute as an unbound attribute', () => {
+  it('supports the readOnly attribute as an unbound attribute', async(() => {
     var template = '<md-input readOnly></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('readonly')).toEqual('');
-        })();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('readonly')).toEqual('');
       });
-  });
+  }));
 
-  it('supports the required attribute', () => {
+  it('supports the required attribute', async(() => {
     var template = '<md-input [required]="required"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('required')).toBeNull();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('required')).toBeNull();
 
-          fixture.componentInstance.required = true;
-          fixture.detectChanges();
-          expect(el.getAttribute('required')).toEqual('');
-        })();
+        fixture.componentInstance.required = true;
+        fixture.detectChanges();
+        expect(el.getAttribute('required')).toEqual('');
       });
-  });
+  }));
 
-  it('supports the required attribute as an unbound attribute', () => {
+  it('supports the required attribute as an unbound attribute', async(() => {
     var template = '<md-input required></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('required')).toEqual('');
-        })();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('required')).toEqual('');
       });
-  });
+  }));
 
-  it('supports the spellCheck attribute', () => {
+  it('supports the spellCheck attribute', async(() => {
     var template = '<md-input [spellCheck]="spellCheck"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('spellcheck')).toEqual('false');
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('spellcheck')).toEqual('false');
 
-          fixture.componentInstance.spellCheck = true;
-          fixture.detectChanges();
-          expect(el.getAttribute('spellcheck')).toEqual('true');
-        })();
+        fixture.componentInstance.spellCheck = true;
+        fixture.detectChanges();
+        expect(el.getAttribute('spellcheck')).toEqual('true');
       });
-  });
+  }));
 
-  it('supports the spellCheck attribute as an unbound attribute', () => {
+  it('supports the spellCheck attribute as an unbound attribute', async(() => {
     var template = '<md-input spellCheck></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('spellcheck')).toEqual('true');
-        })();
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('spellcheck')).toEqual('true');
       });
-  });
+  }));
 
-  it('supports the step attribute', () => {
+  it('supports the step attribute', async(() => {
     var template = '<md-input [step]="step"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('step')).toEqual(null);
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('step')).toEqual(null);
 
-          fixture.componentInstance.step = 0.5;
-          fixture.detectChanges();
-          expect(el.getAttribute('step')).toEqual('0.5');
-        })();
+        fixture.componentInstance.step = 0.5;
+        fixture.detectChanges();
+        expect(el.getAttribute('step')).toEqual('0.5');
       });
-  });
+  }));
 
-  it('supports the tabIndex attribute', () => {
+  it('supports the tabIndex attribute', async(() => {
     var template = '<md-input [tabIndex]="tabIndex"></md-input>';
 
-    return builder.overrideTemplate(MdInputOptionalAttributeController, template)
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
       .createAsync(MdInputOptionalAttributeController)
       .then(fixture => {
-        fakeAsync(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
-          expect(el).not.toBeNull();
-          expect(el.getAttribute('tabindex')).toEqual(null);
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('tabindex')).toEqual(null);
 
-          fixture.componentInstance.tabIndex = 1;
-          fixture.detectChanges();
-          expect(el.getAttribute('tabindex')).toEqual('1');
-        })();
+        fixture.componentInstance.tabIndex = 1;
+        fixture.detectChanges();
+        expect(el.getAttribute('tabindex')).toEqual('1');
       });
-  });
+  }));
 
-  it('supports a name attribute', () => {
-    return builder.createAsync(MdInputWithNameTestController).then(fixture => {
+  it('supports a name attribute', async(() => {
+    builder.createAsync(MdInputWithNameTestController).then(fixture => {
       const inputElement: HTMLInputElement = fixture.debugElement.query(By.css('input'))
           .nativeElement;
       fixture.detectChanges();
 
       expect(inputElement.name).toBe('some-name');
     });
-  });
+  }));
 });
 
 @Component({

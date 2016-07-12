@@ -1,15 +1,8 @@
-import {
-    it,
-    describe,
-    expect,
-    beforeEach,
-    beforeEachProviders,
-    inject,
-} from '@angular/core/testing';
+import {addProviders, inject, async} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {HTTP_PROVIDERS, XHRBackend} from '@angular/http';
 import {MockBackend} from '@angular/http/testing';
-import {provide, Component} from '@angular/core';
+import {Component} from '@angular/core';
 import {MdIcon} from './icon';
 import {MdIconRegistry} from './icon-registry';
 import {getFakeSvgHttpResponse} from './fake-svgs';
@@ -42,12 +35,15 @@ const verifyPathChildElement = (element: Element, attributeValue: string) => {
 
 describe('MdIcon', () => {
 
-  beforeEachProviders(() => [
-    MdIconRegistry,
-    HTTP_PROVIDERS,
-    MockBackend,
-    provide(XHRBackend, {useExisting: MockBackend}),
-  ]);
+  beforeEach(() => {
+    addProviders([
+      MdIconRegistry,
+      HTTP_PROVIDERS,
+      MockBackend,
+      {provide: XHRBackend, useExisting: MockBackend},
+    ]);
+  });
+
 
   let builder: TestComponentBuilder;
   let mdIconRegistry: MdIconRegistry;
@@ -69,33 +65,31 @@ describe('MdIcon', () => {
   }));
 
   describe('Ligature icons', () => {
-    it('should add material-icons class by default', (done: () => void) => {
-      return builder.createAsync(MdIconLigatureTestApp).then(fixture => {
+    it('should add material-icons class by default', async(() => {
+      builder.createAsync(MdIconLigatureTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         testComponent.iconName = 'home';
         fixture.detectChanges();
         expect(sortedClassNames(mdIconElement)).toEqual(['material-icons']);
-        done();
       });
-    });
+    }));
 
-    it('should use alternate icon font if set', (done: () => void) => {
+    it('should use alternate icon font if set', async(() => {
       mdIconRegistry.setDefaultFontSetClass('myfont');
-      return builder.createAsync(MdIconLigatureTestApp).then(fixture => {
+      builder.createAsync(MdIconLigatureTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         testComponent.iconName = 'home';
         fixture.detectChanges();
         expect(sortedClassNames(mdIconElement)).toEqual(['myfont']);
-        done();
       });
-    });
+    }));
   });
 
   describe('Icons from URLs', () => {
-    it('should fetch SVG icon from URL and inline the content', (done: () => void) => {
-      return builder.createAsync(MdIconFromSvgUrlTestApp).then(fixture => {
+    it('should fetch SVG icon from URL and inline the content', async(() => {
+      builder.createAsync(MdIconFromSvgUrlTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         let svgElement: any;
@@ -123,15 +117,13 @@ describe('MdIcon', () => {
         svgElement = verifyAndGetSingleSvgChild(mdIconElement);
         verifyPathChildElement(svgElement, 'meow');
         expect(httpRequestUrls).toEqual(['cat.svg', 'dog.svg']);
-
-        done();
       });
-    });
+    }));
 
-    it('should register icon URLs by name', (done: () => void) => {
+    it('should register icon URLs by name', async(() => {
       mdIconRegistry.addSvgIcon('fluffy', 'cat.svg');
       mdIconRegistry.addSvgIcon('fido', 'dog.svg');
-      return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
+      builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         let svgElement: SVGElement;
@@ -157,14 +149,12 @@ describe('MdIcon', () => {
         svgElement = verifyAndGetSingleSvgChild(mdIconElement);
         verifyPathChildElement(svgElement, 'woof');
         expect(httpRequestUrls).toEqual(['dog.svg', 'cat.svg']);
-
-        done();
       });
-    });
+    }));
 
-    it('should extract icon from SVG icon set', (done: () => void) => {
+    it('should extract icon from SVG icon set', async(() => {
       mdIconRegistry.addSvgIconSetInNamespace('farm', 'farm-set-1.svg');
-      return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
+      builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         let svgElement: any;
@@ -194,16 +184,14 @@ describe('MdIcon', () => {
         expect(svgChild.getAttribute('id')).toBe('cow');
         verifyPathChildElement(svgChild, 'moo');
         expect(mdIconElement.getAttribute('aria-label')).toBe('cow');
-
-        done();
       });
-    });
+    }));
 
-    it('should allow multiple icon sets in a namespace', (done: () => void) => {
+    it('should allow multiple icon sets in a namespace', async(() => {
       mdIconRegistry.addSvgIconSetInNamespace('farm', 'farm-set-1.svg');
       mdIconRegistry.addSvgIconSetInNamespace('farm', 'farm-set-2.svg');
       mdIconRegistry.addSvgIconSetInNamespace('arrows', 'arrow-set.svg');
-      return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
+      builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         let svgElement: any;
@@ -239,14 +227,12 @@ describe('MdIcon', () => {
         verifyPathChildElement(svgChild, 'moo moo');
         expect(mdIconElement.getAttribute('aria-label')).toBe('cow');
         expect(httpRequestUrls.sort()).toEqual(['farm-set-1.svg', 'farm-set-2.svg']);
-
-        done();
       });
-    });
+    }));
 
-    it('should not wrap <svg> elements in icon sets in another svg tag', (done: () => void) => {
+    it('should not wrap <svg> elements in icon sets in another svg tag', async(() => {
       mdIconRegistry.addSvgIconSet('arrow-set.svg');
-      return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
+      builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         let svgElement: any;
@@ -258,13 +244,11 @@ describe('MdIcon', () => {
         svgElement = verifyAndGetSingleSvgChild(mdIconElement);
         verifyPathChildElement(svgElement, 'left');
         expect(mdIconElement.getAttribute('aria-label')).toBe('left-arrow');
-
-        done();
       });
-    });
+    }));
 
-    it('should return unmodified copies of icons from URLs', (done: () => void) => {
-      return builder.createAsync(MdIconFromSvgUrlTestApp).then(fixture => {
+    it('should return unmodified copies of icons from URLs', async(() => {
+      builder.createAsync(MdIconFromSvgUrlTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         let svgElement: any;
@@ -288,14 +272,12 @@ describe('MdIcon', () => {
         svgElement = verifyAndGetSingleSvgChild(mdIconElement);
         verifyPathChildElement(svgElement, 'meow');
         expect(svgElement.getAttribute('viewBox')).toBeFalsy();
-
-        done();
       });
-    });
+    }));
 
-    it('should return unmodified copies of icons from icon sets', (done: () => void) => {
+    it('should return unmodified copies of icons from icon sets', async(() => {
       mdIconRegistry.addSvgIconSet('arrow-set.svg');
-      return builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
+      builder.createAsync(MdIconFromSvgNameTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         let svgElement: any;
@@ -319,17 +301,15 @@ describe('MdIcon', () => {
         svgElement = verifyAndGetSingleSvgChild(mdIconElement);
         verifyPathChildElement(svgElement, 'left');
         expect(svgElement.getAttribute('viewBox')).toBeFalsy();
-
-        done();
       });
-    });
+    }));
   });
 
   describe('custom fonts', () => {
-    it('should apply CSS classes for custom font and icon', (done: () => void) => {
+    it('should apply CSS classes for custom font and icon', async(() => {
       mdIconRegistry.registerFontClassAlias('f1', 'font1');
       mdIconRegistry.registerFontClassAlias('f2');
-      return builder.createAsync(MdIconCustomFontCssTestApp).then(fixture => {
+      builder.createAsync(MdIconCustomFontCssTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         testComponent.fontSet = 'f1';
@@ -349,15 +329,13 @@ describe('MdIcon', () => {
         fixture.detectChanges();
         expect(sortedClassNames(mdIconElement)).toEqual(['f3', 'tent']);
         expect(mdIconElement.getAttribute('aria-label')).toBe('tent');
-
-        done();
       });
-    });
+    }));
   });
 
   describe('aria label', () => {
-    it('should set aria label from text content if not specified', (done: () => void) => {
-      return builder.createAsync(MdIconLigatureTestApp).then(fixture => {
+    it('should set aria label from text content if not specified', async(() => {
+      builder.createAsync(MdIconLigatureTestApp).then(fixture => {
 
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
@@ -369,13 +347,11 @@ describe('MdIcon', () => {
         testComponent.iconName = 'hand';
         fixture.detectChanges();
         expect(mdIconElement.getAttribute('aria-label')).toBe('hand');
-
-        done();
       });
-    });
+    }));
 
-    it('should use alt tag if aria label is not specified', (done: () => void) => {
-      return builder.createAsync(MdIconLigatureWithAriaBindingTestApp).then(fixture => {
+    it('should use alt tag if aria label is not specified', async(() => {
+      builder.createAsync(MdIconLigatureWithAriaBindingTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         testComponent.iconName = 'home';
@@ -386,25 +362,22 @@ describe('MdIcon', () => {
         testComponent.ariaLabel = 'house';
         fixture.detectChanges();
         expect(mdIconElement.getAttribute('aria-label')).toBe('house');
-
-        done();
       });
-    });
+    }));
 
-    it('should use provided aria label rather than icon name', (done: () => void) => {
-      return builder.createAsync(MdIconLigatureWithAriaBindingTestApp).then(fixture => {
+    it('should use provided aria label rather than icon name', async(() => {
+      builder.createAsync(MdIconLigatureWithAriaBindingTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         testComponent.iconName = 'home';
         testComponent.ariaLabel = 'house';
         fixture.detectChanges();
         expect(mdIconElement.getAttribute('aria-label')).toBe('house');
-        done();
       });
-    });
+    }));
 
-    it('should use provided aria label rather than font icon', (done: () => void) => {
-      return builder.createAsync(MdIconCustomFontCssTestApp).then(fixture => {
+    it('should use provided aria label rather than font icon', async(() => {
+      builder.createAsync(MdIconCustomFontCssTestApp).then(fixture => {
         const testComponent = fixture.debugElement.componentInstance;
         const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
         testComponent.fontSet = 'f1';
@@ -412,9 +385,8 @@ describe('MdIcon', () => {
         testComponent.ariaLabel = 'home';
         fixture.detectChanges();
         expect(mdIconElement.getAttribute('aria-label')).toBe('home');
-        done();
       });
-    });
+    }));
   });
 });
 

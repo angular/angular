@@ -1,10 +1,4 @@
-import {
-  it,
-  describe,
-  expect,
-  beforeEach,
-  inject,
-} from '@angular/core/testing';
+import {inject, async} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -18,49 +12,46 @@ describe('MdList', () => {
     builder = tcb;
   }));
 
-  it('should add and remove focus class on focus/blur', () => {
+  it('should add and remove focus class on focus/blur', async(() => {
     var template = `
         <md-list>
           <a md-list-item>
             Paprika
           </a>
-        </md-list>
-      `;
-    return builder.overrideTemplate(TestList, template)
-        .createAsync(TestList).then((fixture) => {
-          let listItem = fixture.debugElement.query(By.directive(MdListItem));
-          let listItemDiv = fixture.debugElement.query(By.css('.md-list-item'));
-          fixture.detectChanges();
-          expect(listItemDiv.nativeElement.classList).not.toContain('md-list-item-focus');
+        </md-list>`;
 
-          listItem.componentInstance._handleFocus();
-          fixture.detectChanges();
-          expect(listItemDiv.nativeElement.classList).toContain('md-list-item-focus');
+    builder.overrideTemplate(TestList, template).createAsync(TestList).then(fixture => {
+      let listItem = fixture.debugElement.query(By.directive(MdListItem));
+      let listItemDiv = fixture.debugElement.query(By.css('.md-list-item'));
+      fixture.detectChanges();
+      expect(listItemDiv.nativeElement.classList).not.toContain('md-list-item-focus');
 
-          listItem.componentInstance._handleBlur();
-          fixture.detectChanges();
-          expect(listItemDiv.nativeElement.classList).not.toContain('md-list-item-focus');
-        });
-  });
+      listItem.componentInstance._handleFocus();
+      fixture.detectChanges();
+      expect(listItemDiv.nativeElement.classList).toContain('md-list-item-focus');
 
-  it('should not apply any class to a list without lines', (done: () => void) => {
+      listItem.componentInstance._handleBlur();
+      fixture.detectChanges();
+      expect(listItemDiv.nativeElement.classList).not.toContain('md-list-item-focus');
+    });
+  }));
+
+  it('should not apply any class to a list without lines', async(() => {
     var template = `
         <md-list>
           <md-list-item>
             Paprika
           </md-list-item>
-        </md-list>
-      `;
-    return builder.overrideTemplate(TestList, template)
-      .createAsync(TestList).then((fixture) => {
-        let listItem = fixture.debugElement.query(By.css('md-list-item'));
-        fixture.detectChanges();
-        expect(listItem.nativeElement.className).toBe('');
-        done();
-      });
-  });
+        </md-list>`;
 
-  it('should apply md-2-line class to lists with two lines', (done: () => void) => {
+    builder.overrideTemplate(TestList, template).createAsync(TestList).then(fixture => {
+      let listItem = fixture.debugElement.query(By.css('md-list-item'));
+      fixture.detectChanges();
+      expect(listItem.nativeElement.className).toBe('');
+    });
+  }));
+
+  it('should apply md-2-line class to lists with two lines', async(() => {
     var template = `
         <md-list>
           <md-list-item *ngFor="let item of items">
@@ -68,19 +59,17 @@ describe('MdList', () => {
             <h3 md-line>{{item.name}}</h3>
             <p md-line>{{item.description}}</p>
           </md-list-item>
-        </md-list>
-      `;
-    return builder.overrideTemplate(TestList, template)
-      .createAsync(TestList).then((fixture) => {
-        fixture.detectChanges();
-        let listItems = fixture.debugElement.children[0].queryAll(By.css('md-list-item'));
-        expect(listItems[0].nativeElement.className).toBe('md-2-line');
-        expect(listItems[1].nativeElement.className).toBe('md-2-line');
-        done();
-      });
-  });
+        </md-list>`;
 
-  it('should apply md-3-line class to lists with three lines', (done: () => void) => {
+    return builder.overrideTemplate(TestList, template).createAsync(TestList).then(fixture => {
+      fixture.detectChanges();
+      let listItems = fixture.debugElement.children[0].queryAll(By.css('md-list-item'));
+      expect(listItems[0].nativeElement.className).toBe('md-2-line');
+      expect(listItems[1].nativeElement.className).toBe('md-2-line');
+    });
+  }));
+
+  it('should apply md-3-line class to lists with three lines', async(() => {
     var template = `
         <md-list>
           <md-list-item *ngFor="let item of items">
@@ -88,19 +77,17 @@ describe('MdList', () => {
             <p md-line>{{item.description}}</p>
             <p md-line>Some other text</p>
           </md-list-item>
-        </md-list>
-      `;
-    return builder.overrideTemplate(TestList, template)
-      .createAsync(TestList).then((fixture) => {
+        </md-list>`;
+
+    return builder.overrideTemplate(TestList, template).createAsync(TestList).then(fixture => {
         fixture.detectChanges();
         let listItems = fixture.debugElement.children[0].queryAll(By.css('md-list-item'));
         expect(listItems[0].nativeElement.className).toBe('md-3-line');
         expect(listItems[1].nativeElement.className).toBe('md-3-line');
-        done();
       });
-  });
+  }));
 
-  it('should apply md-list-avatar class to list items with avatars', (done: () => void) => {
+  it('should apply md-list-avatar class to list items with avatars', async(() => {
     var template = `
         <md-list>
           <md-list-item>
@@ -110,37 +97,33 @@ describe('MdList', () => {
          <md-list-item>
             Pepper
           </md-list-item>
-        </md-list>
-      `;
-    return builder.overrideTemplate(TestList, template)
-      .createAsync(TestList).then((fixture) => {
-        fixture.detectChanges();
-        let listItems = fixture.debugElement.children[0].queryAll(By.css('md-list-item'));
-        expect(listItems[0].nativeElement.className).toBe('md-list-avatar');
-        expect(listItems[1].nativeElement.className).toBe('');
-        done();
-      });
-  });
+        </md-list>`;
 
-  it('should not clear custom classes provided by user', (done: () => void) => {
+    return builder.overrideTemplate(TestList, template).createAsync(TestList).then(fixture => {
+      fixture.detectChanges();
+      let listItems = fixture.debugElement.children[0].queryAll(By.css('md-list-item'));
+      expect(listItems[0].nativeElement.className).toBe('md-list-avatar');
+      expect(listItems[1].nativeElement.className).toBe('');
+    });
+  }));
+
+  it('should not clear custom classes provided by user', async(() => {
     var template = `
         <md-list>
           <md-list-item class="test-class" *ngFor="let item of items">
             <h3 md-line>{{item.name}}</h3>
             <p md-line>{{item.description}}</p>
           </md-list-item>
-        </md-list>
-      `;
-    return builder.overrideTemplate(TestList, template)
-      .createAsync(TestList).then((fixture) => {
-        fixture.detectChanges();
-        let listItems = fixture.debugElement.children[0].queryAll(By.css('md-list-item'));
-        expect(listItems[0].nativeElement.classList.contains('test-class')).toBe(true);
-        done();
-      });
-  });
+        </md-list>`;
 
-  it('should update classes if number of lines change', (done: () => void) => {
+    return builder.overrideTemplate(TestList, template).createAsync(TestList).then(fixture => {
+      fixture.detectChanges();
+      let listItems = fixture.debugElement.children[0].queryAll(By.css('md-list-item'));
+      expect(listItems[0].nativeElement.classList.contains('test-class')).toBe(true);
+    });
+  }));
+
+  it('should update classes if number of lines change', async(() => {
     var template = `
         <md-list>
           <md-list-item *ngFor="let item of items">
@@ -148,42 +131,38 @@ describe('MdList', () => {
             <p md-line>{{item.description}}</p>
             <p md-line *ngIf="showThirdLine">Some other text</p>
           </md-list-item>
-        </md-list>
-      `;
-    return builder.overrideTemplate(TestList, template)
-      .createAsync(TestList).then((fixture) => {
-        fixture.debugElement.componentInstance.showThirdLine = false;
-        fixture.detectChanges();
-        let listItem = fixture.debugElement.children[0].query(By.css('md-list-item'));
-        expect(listItem.nativeElement.className).toBe('md-2-line');
+        </md-list>`;
 
-        fixture.debugElement.componentInstance.showThirdLine = true;
-        fixture.detectChanges();
-        setTimeout(() => {
-          expect(listItem.nativeElement.className).toBe('md-3-line');
-          done();
-        });
+    return builder.overrideTemplate(TestList, template).createAsync(TestList).then(fixture => {
+      fixture.debugElement.componentInstance.showThirdLine = false;
+      fixture.detectChanges();
+      let listItem = fixture.debugElement.children[0].query(By.css('md-list-item'));
+      expect(listItem.nativeElement.className).toBe('md-2-line');
+
+      fixture.debugElement.componentInstance.showThirdLine = true;
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(listItem.nativeElement.className).toBe('md-3-line');
       });
-  });
+    });
+  }));
 
-  it('should add aria roles properly', (done: () => void) => {
+  it('should add aria roles properly', async(() => {
     var template = `
         <md-list>
           <md-list-item *ngFor="let item of items">
             {{item.name}}
           </md-list-item>
-        </md-list>
-      `;
-    return builder.overrideTemplate(TestList, template)
-      .createAsync(TestList).then((fixture) => {
-        fixture.detectChanges();
-        let list = fixture.debugElement.children[0];
-        let listItem = fixture.debugElement.children[0].query(By.css('md-list-item'));
-        expect(list.nativeElement.getAttribute('role')).toBe('list');
-        expect(listItem.nativeElement.getAttribute('role')).toBe('listitem');
-        done();
-      });
-  });
+        </md-list>`;
+
+    return builder.overrideTemplate(TestList, template).createAsync(TestList).then(fixture => {
+      fixture.detectChanges();
+      let list = fixture.debugElement.children[0];
+      let listItem = fixture.debugElement.children[0].query(By.css('md-list-item'));
+      expect(list.nativeElement.getAttribute('role')).toBe('list');
+      expect(listItem.nativeElement.getAttribute('role')).toBe('listitem');
+    });
+  }));
 
 });
 

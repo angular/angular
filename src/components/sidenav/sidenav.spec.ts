@@ -1,18 +1,13 @@
 import {
-  it,
-  describe,
-  expect,
-  beforeEach,
   fakeAsync,
+  async,
   inject,
-  injectAsync,
   tick
 } from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {XHR} from '@angular/compiler';
 import {
   Component,
-  Type,
   ViewMetadata
 } from '@angular/core';
 
@@ -20,22 +15,17 @@ import {By} from '@angular/platform-browser';
 import {MdSidenav, MdSidenavLayout, MD_SIDENAV_DIRECTIVES} from './sidenav';
 
 
-function fakeAsyncAdaptor(fn: () => void) {
-  return inject([], fakeAsync(fn));
-}
-
-
 /**
  * Create a ComponentFixture from the builder. This takes a template and a style for sidenav.
  */
-function createFixture(appType: Type, builder: TestComponentBuilder,
+function createFixture(appType: any, builder: TestComponentBuilder,
                        template: string, style: string): ComponentFixture<any> {
   let fixture: ComponentFixture<any> = null;
   // Remove the styles (which remove the animations/transitions).
   builder
     .overrideView(MdSidenavLayout, new ViewMetadata({
       template: template,
-      styles: [style],
+      styles: [style || ''],
       directives: [MdSidenav],
     }))
     .createAsync(appType).then((f: ComponentFixture<any>) => {
@@ -61,6 +51,12 @@ describe('MdSidenav', () => {
   let template: string;
   let style: string;
   let builder: TestComponentBuilder;
+  let xhr: XHR;
+
+  beforeEach(inject([TestComponentBuilder, XHR], (tcb: TestComponentBuilder, x: XHR) => {
+    builder = tcb;
+    xhr = x;
+  }));
 
   /**
    * We need to get the template and styles for the sidenav in an Async test.
@@ -69,23 +65,17 @@ describe('MdSidenav', () => {
    * We do some style verification so styles have to match.
    * But we remove the transitions so we only set the regular `sidenav.css` styling.
    */
-  beforeEach(injectAsync([TestComponentBuilder, XHR], (tcb: TestComponentBuilder, xhr: XHR) => {
-    builder = tcb;
-
-    return Promise.all([
-      xhr.get('./components/sidenav/sidenav.html').then((t) => {
-        template = t;
-      }),
-      xhr.get('./components/sidenav/sidenav.css').then((css) => {
-        style = css;
-      })
-    ]).catch((err: any) => {
-      console.error(err);
+  beforeEach(async(() => {
+    xhr.get('./components/sidenav/sidenav.html').then(t => {
+      template = t;
+    });
+    xhr.get('./components/sidenav/sidenav.css').then(css => {
+      style = css;
     });
   }));
 
   describe('methods', () => {
-    it('should be able to open and close', fakeAsyncAdaptor(() => {
+    it('should be able to open and close', fakeAsync(() => {
       let fixture = createFixture(BasicTestApp, builder, template, style);
 
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
@@ -134,7 +124,7 @@ describe('MdSidenav', () => {
       expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toEqual('hidden');
     }));
 
-    it('open/close() return a promise that resolves after animation end', fakeAsyncAdaptor(() => {
+    it('open/close() return a promise that resolves after animation end', fakeAsync(() => {
       let fixture = createFixture(BasicTestApp, builder, template, style);
       let sidenav: MdSidenav = fixture.debugElement
         .query(By.directive(MdSidenav)).componentInstance;
@@ -161,7 +151,7 @@ describe('MdSidenav', () => {
 
     }));
 
-    it('open/close() twice returns the same promise', fakeAsyncAdaptor(() => {
+    it('open/close() twice returns the same promise', fakeAsync(() => {
       let fixture = createFixture(BasicTestApp, builder, template, style);
       let sidenav: MdSidenav = fixture.debugElement
         .query(By.directive(MdSidenav)).componentInstance;
@@ -176,7 +166,7 @@ describe('MdSidenav', () => {
       tick();
     }));
 
-    it('open() then close() cancel animations when called too fast', fakeAsyncAdaptor(() => {
+    it('open() then close() cancel animations when called too fast', fakeAsync(() => {
       let fixture = createFixture(BasicTestApp, builder, template, style);
       let sidenav: MdSidenav = fixture.debugElement
         .query(By.directive(MdSidenav)).componentInstance;
@@ -205,7 +195,7 @@ describe('MdSidenav', () => {
       tick();
     }));
 
-    it('close() then open() cancel animations when called too fast', fakeAsyncAdaptor(() => {
+    it('close() then open() cancel animations when called too fast', fakeAsync(() => {
       let fixture = createFixture(BasicTestApp, builder, template, style);
       let sidenav: MdSidenav = fixture.debugElement
         .query(By.directive(MdSidenav)).componentInstance;
@@ -239,7 +229,7 @@ describe('MdSidenav', () => {
       tick();
     }));
 
-    it('does not throw when created without a sidenav', fakeAsyncAdaptor(() => {
+    it('does not throw when created without a sidenav', fakeAsync(() => {
       expect(() => {
         let fixture = createFixture(SidenavLayoutNoSidenavTestApp, builder, template, style);
         fixture.detectChanges();
@@ -247,7 +237,7 @@ describe('MdSidenav', () => {
       }).not.toThrow();
     }));
 
-    it('does throw when created with two sidenav on the same side', fakeAsyncAdaptor(() => {
+    it('does throw when created with two sidenav on the same side', fakeAsync(() => {
       expect(() => {
         let fixture = createFixture(SidenavLayoutTwoSidenavTestApp, builder, template, style);
         fixture.detectChanges();
@@ -258,7 +248,7 @@ describe('MdSidenav', () => {
 
   describe('attributes', () => {
 
-    it('should correctly parse opened="false"', fakeAsyncAdaptor(() => {
+    it('should correctly parse opened="false"', fakeAsync(() => {
       let newBuilder = builder.overrideTemplate(BasicTestApp, `
           <md-sidenav-layout>
             <md-sidenav #sidenav mode="side" opened="false">
@@ -275,7 +265,7 @@ describe('MdSidenav', () => {
       expect(sidenavEl.classList).not.toContain('md-sidenav-opened');
     }));
 
-    it('should correctly parse opened="true"', fakeAsyncAdaptor(() => {
+    it('should correctly parse opened="true"', fakeAsync(() => {
       let newBuilder = builder.overrideTemplate(BasicTestApp, `
           <md-sidenav-layout>
             <md-sidenav #sidenav mode="side" opened="true">

@@ -1,4 +1,3 @@
-import {it, describe, expect, beforeEach} from '@angular/core/testing';
 import {ViewportRuler} from './viewport-ruler';
 
 

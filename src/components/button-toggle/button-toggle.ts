@@ -8,12 +8,10 @@ import {
     OnInit,
     Optional,
     Output,
-    Provider,
     QueryList,
     ViewEncapsulation,
     forwardRef
 } from '@angular/core';
-// TODO(iveysaur): Update to @angular/forms when we have rc.2
 import {
     NG_VALUE_ACCESSOR,
     ControlValueAccessor,
@@ -32,11 +30,11 @@ export type ToggleType = 'checkbox' | 'radio';
  * Provider Expression that allows md-button-toggle-group to register as a ControlValueAccessor.
  * This allows it to support [(ngModel)].
  */
-export const MD_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR = new Provider(
-    NG_VALUE_ACCESSOR, {
-      useExisting: forwardRef(() => MdButtonToggleGroup),
-      multi: true
-    });
+export const MD_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MdButtonToggleGroup),
+  multi: true
+};
 
 var _uniqueIdCounter = 0;
 

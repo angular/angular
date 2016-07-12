@@ -1,4 +1,4 @@
-import {beforeEach, describe, expect, inject, it} from '@angular/core/testing';
+import {inject} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';

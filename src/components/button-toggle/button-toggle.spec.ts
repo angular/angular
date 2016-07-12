@@ -1,8 +1,5 @@
 import {
-  it,
-  describe,
-  beforeEach,
-  beforeEachProviders,
+  addProviders,
   inject,
   async,
   fakeAsync,
@@ -10,7 +7,7 @@ import {
 } from '@angular/core/testing';
 import {NgControl, disableDeprecatedForms, provideForms} from '@angular/forms';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
-import {Component, DebugElement, provide} from '@angular/core';
+import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {
   MD_BUTTON_TOGGLE_DIRECTIVES,
@@ -28,14 +25,16 @@ describe('MdButtonToggle', () => {
   let builder: TestComponentBuilder;
   let dispatcher: MdUniqueSelectionDispatcher;
 
-  beforeEachProviders(() => [
-    disableDeprecatedForms(),
-    provideForms(),
-    provide(MdUniqueSelectionDispatcher, {useFactory: () => {
-      dispatcher = new MdUniqueSelectionDispatcher();
-      return dispatcher;
-    }})
-  ]);
+  beforeEach(() => {
+    addProviders([
+      disableDeprecatedForms(),
+      provideForms(),
+      {provide: MdUniqueSelectionDispatcher, useFactory: () => {
+        dispatcher = new MdUniqueSelectionDispatcher();
+        return dispatcher;
+      }}
+    ]);
+  });
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;

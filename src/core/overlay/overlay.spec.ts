@@ -1,18 +1,14 @@
 import {
-  it,
-  describe,
-  expect,
-  beforeEach,
   inject,
   fakeAsync,
   flushMicrotasks,
-  beforeEachProviders,
+  addProviders,
 } from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {
   Component,
   ViewChild,
-  provide, ViewContainerRef,
+  ViewContainerRef,
 } from '@angular/core';
 import {TemplatePortalDirective} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
@@ -31,17 +27,17 @@ describe('Overlay', () => {
   let templatePortal: TemplatePortal;
   let overlayContainerElement: HTMLElement;
 
-  beforeEachProviders(() => [
-    Overlay,
-    OverlayPositionBuilder,
-    ViewportRuler,
-    provide(OVERLAY_CONTAINER_TOKEN, {
-      useFactory: () => {
+  beforeEach(() => {
+    addProviders([
+      Overlay,
+      OverlayPositionBuilder,
+      ViewportRuler,
+      {provide: OVERLAY_CONTAINER_TOKEN, useFactory: () => {
         overlayContainerElement = document.createElement('div');
         return overlayContainerElement;
-      }
-    })
-  ]);
+      }}
+    ]);
+  });
 
   let deps = [TestComponentBuilder, Overlay];
   beforeEach(inject(deps, fakeAsync((tcb: TestComponentBuilder, o: Overlay) => {

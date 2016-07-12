@@ -1,8 +1,6 @@
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {HTTP_PROVIDERS} from '@angular/http';
-import {provide} from '@angular/core';
-import {Renderer} from '@angular/core';
 import {disableDeprecatedForms, provideForms} from '@angular/forms';
 
 import {OVERLAY_CONTAINER_TOKEN} from '@angular2-material/core/overlay/overlay';
@@ -19,9 +17,8 @@ bootstrap(DemoApp, [
   disableDeprecatedForms(),
   provideForms(),
   MdLiveAnnouncer,
-  provide(OVERLAY_CONTAINER_TOKEN, {useValue: createOverlayContainer()}),
+  {provide: OVERLAY_CONTAINER_TOKEN, useValue: createOverlayContainer()},
   HTTP_PROVIDERS,
   MdIconRegistry,
-  Renderer,
-  provide(HAMMER_GESTURE_CONFIG, {useClass: MdGestureConfig}),
+  {provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig},
 ]);
