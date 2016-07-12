@@ -312,6 +312,130 @@ export function main() {
            }));
       });
 
+      describe('reset()', () => {
+        let c: FormControl;
+
+        beforeEach(() => { c = new FormControl('initial value'); });
+
+        it('should restore the initial value of the control if passed', () => {
+          c.updateValue('new value');
+          expect(c.value).toBe('new value');
+
+          c.reset('initial value');
+          expect(c.value).toBe('initial value');
+        });
+
+        it('should clear the control value if no value is passed', () => {
+          c.updateValue('new value');
+          expect(c.value).toBe('new value');
+
+          c.reset();
+          expect(c.value).toBe(null);
+        });
+
+        it('should update the value of any parent controls with passed value', () => {
+          const g = new FormGroup({'one': c});
+          c.updateValue('new value');
+          expect(g.value).toEqual({'one': 'new value'});
+
+          c.reset('initial value');
+          expect(g.value).toEqual({'one': 'initial value'});
+        });
+
+        it('should update the value of any parent controls with null value', () => {
+          const g = new FormGroup({'one': c});
+          c.updateValue('new value');
+          expect(g.value).toEqual({'one': 'new value'});
+
+          c.reset();
+          expect(g.value).toEqual({'one': null});
+        });
+
+
+        it('should mark the control as pristine', () => {
+          c.markAsDirty();
+          expect(c.pristine).toBe(false);
+
+          c.reset();
+          expect(c.pristine).toBe(true);
+        });
+
+        it('should set the parent pristine state if all pristine', () => {
+          const g = new FormGroup({'one': c});
+          c.markAsDirty();
+          expect(g.pristine).toBe(false);
+
+          c.reset();
+          expect(g.pristine).toBe(true);
+        });
+
+        it('should not set the parent pristine state if it has other dirty controls', () => {
+          const c2 = new FormControl('two');
+          const g = new FormGroup({'one': c, 'two': c2});
+          c.markAsDirty();
+          c2.markAsDirty();
+
+          c.reset();
+          expect(g.pristine).toBe(false);
+        });
+
+        it('should mark the control as untouched', () => {
+          c.markAsTouched();
+          expect(c.untouched).toBe(false);
+
+          c.reset();
+          expect(c.untouched).toBe(true);
+        });
+
+        it('should set the parent untouched state if all untouched', () => {
+          const g = new FormGroup({'one': c});
+          c.markAsTouched();
+          expect(g.untouched).toBe(false);
+
+          c.reset();
+          expect(g.untouched).toBe(true);
+        });
+
+        it('should not set the parent untouched state if other touched controls', () => {
+          const c2 = new FormControl('two');
+          const g = new FormGroup({'one': c, 'two': c2});
+          c.markAsTouched();
+          c2.markAsTouched();
+
+          c.reset();
+          expect(g.untouched).toBe(false);
+        });
+
+        describe('reset() events', () => {
+          let g: FormGroup, c2: FormControl, logger: any[];
+
+          beforeEach(() => {
+            c2 = new FormControl('two');
+            g = new FormGroup({'one': c, 'two': c2});
+            logger = [];
+          });
+
+          it('should emit one valueChange event per reset control', () => {
+            g.valueChanges.subscribe(() => logger.push('group'));
+            c.valueChanges.subscribe(() => logger.push('control1'));
+            c2.valueChanges.subscribe(() => logger.push('control2'));
+
+            c.reset();
+            expect(logger).toEqual(['control1', 'group']);
+          });
+
+          it('should emit one statusChange event per reset control', () => {
+            g.statusChanges.subscribe(() => logger.push('group'));
+            c.statusChanges.subscribe(() => logger.push('control1'));
+            c2.statusChanges.subscribe(() => logger.push('control2'));
+
+            c.reset();
+            expect(logger).toEqual(['control1', 'group']);
+          });
+        });
+
+      });
+
       describe('valueChanges & statusChanges', () => {
         var c: any /** TODO #9100 */;
 
@@ -632,6 +756,179 @@ export function main() {
             expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
           });
         });
+      });
+
+      describe('reset()', () => {
+        let c: FormControl, c2: FormControl, g: FormGroup;
+
+        beforeEach(() => {
+          c = new FormControl('initial value');
+          c2 = new FormControl('');
+          g = new FormGroup({'one': c, 'two': c2});
+        });
+
+        it('should set its own value if value passed', () => {
+          g.updateValue({'one': 'new value', 'two': 'new value'});
+
+          g.reset({'one': 'initial value', 'two': ''});
+          expect(g.value).toEqual({'one': 'initial value', 'two': ''});
+        });
+
+        it('should clear its own value if no value passed', () => {
+          g.updateValue({'one': 'new value', 'two': 'new value'});
+
+          g.reset();
+          expect(g.value).toEqual({'one': null, 'two': null});
+        });
+
+        it('should set the value of each of its child controls if value passed', () => {
+          g.updateValue({'one': 'new value', 'two': 'new value'});
+
+          g.reset({'one': 'initial value', 'two': ''});
+          expect(c.value).toBe('initial value');
+          expect(c2.value).toBe('');
+        });
+
+        it('should clear the value of each of its child controls if no value passed', () => {
+          g.updateValue({'one': 'new value', 'two': 'new value'});
+
+          g.reset();
+          expect(c.value).toBe(null);
+          expect(c2.value).toBe(null);
+        });
+
+        it('should set the value of its parent if value passed', () => {
+          const form = new FormGroup({'g': g});
+          g.updateValue({'one': 'new value', 'two': 'new value'});
+
+          g.reset({'one': 'initial value', 'two': ''});
+          expect(form.value).toEqual({'g': {'one': 'initial value', 'two': ''}});
+        });
+
+        it('should clear the value of its parent if no value passed', () => {
+          const form = new FormGroup({'g': g});
+          g.updateValue({'one': 'new value', 'two': 'new value'});
+
+          g.reset();
+          expect(form.value).toEqual({'g': {'one': null, 'two': null}});
+        });
+
+        it('should mark itself as pristine', () => {
+          g.markAsDirty();
+          expect(g.pristine).toBe(false);
+
+          g.reset();
+          expect(g.pristine).toBe(true);
+        });
+
+        it('should mark all child controls as pristine', () => {
+          c.markAsDirty();
+          c2.markAsDirty();
+          expect(c.pristine).toBe(false);
+          expect(c2.pristine).toBe(false);
+
+          g.reset();
+          expect(c.pristine).toBe(true);
+          expect(c2.pristine).toBe(true);
+        });
+
+        it('should mark the parent as pristine if all siblings pristine', () => {
+          const c3 = new FormControl('');
+          const form = new FormGroup({'g': g, 'c3': c3});
+
+          g.markAsDirty();
+          expect(form.pristine).toBe(false);
+
+          g.reset();
+          expect(form.pristine).toBe(true);
+        });
+
+        it('should not mark the parent pristine if any dirty siblings', () => {
+          const c3 = new FormControl('');
+          const form = new FormGroup({'g': g, 'c3': c3});
+
+          g.markAsDirty();
+          c3.markAsDirty();
+          expect(form.pristine).toBe(false);
+
+          g.reset();
+          expect(form.pristine).toBe(false);
+        });
+
+        it('should mark itself as untouched', () => {
+          g.markAsTouched();
+          expect(g.untouched).toBe(false);
+
+          g.reset();
+          expect(g.untouched).toBe(true);
+        });
+
+        it('should mark all child controls as untouched', () => {
+          c.markAsTouched();
+          c2.markAsTouched();
+          expect(c.untouched).toBe(false);
+          expect(c2.untouched).toBe(false);
+
+          g.reset();
+          expect(c.untouched).toBe(true);
+          expect(c2.untouched).toBe(true);
+        });
+
+        it('should mark the parent untouched if all siblings untouched', () => {
+          const c3 = new FormControl('');
+          const form = new FormGroup({'g': g, 'c3': c3});
+
+          g.markAsTouched();
+          expect(form.untouched).toBe(false);
+
+          g.reset();
+          expect(form.untouched).toBe(true);
+        });
+
+        it('should not mark the parent untouched if any touched siblings', () => {
+          const c3 = new FormControl('');
+          const form = new FormGroup({'g': g, 'c3': c3});
+
+          g.markAsTouched();
+          c3.markAsTouched();
+          expect(form.untouched).toBe(false);
+
+          g.reset();
+          expect(form.untouched).toBe(false);
+        });
+
+        describe('reset() events', () => {
+          let form: FormGroup, c3: FormControl, logger: any[];
+
+          beforeEach(() => {
+            c3 = new FormControl('');
+            form = new FormGroup({'g': g, 'c3': c3});
+            logger = [];
+          });
+
+          it('should emit one valueChange event per reset control', () => {
+            form.valueChanges.subscribe(() => logger.push('form'));
+            g.valueChanges.subscribe(() => logger.push('group'));
+            c.valueChanges.subscribe(() => logger.push('control1'));
+            c2.valueChanges.subscribe(() => logger.push('control2'));
+            c3.valueChanges.subscribe(() => logger.push('control3'));
+
+            g.reset();
+            expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
+          });
+
+          it('should emit one statusChange event per reset control', () => {
+            form.statusChanges.subscribe(() => logger.push('form'));
+            g.statusChanges.subscribe(() => logger.push('group'));
+            c.statusChanges.subscribe(() => logger.push('control1'));
+            c2.statusChanges.subscribe(() => logger.push('control2'));
+            c3.statusChanges.subscribe(() => logger.push('control3'));
+
+            g.reset();
+            expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
+          });
+        });
+
       });
 
       describe('optional components', () => {
@@ -977,6 +1274,179 @@ export function main() {
             c2.statusChanges.subscribe(() => logger.push('control2'));
 
             a.updateValue(['one', 'two']);
+            expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
+          });
+        });
+      });
+
+      describe('reset()', () => {
+        let c: FormControl, c2: FormControl, a: FormArray;
+
+        beforeEach(() => {
+          c = new FormControl('initial value');
+          c2 = new FormControl('');
+          a = new FormArray([c, c2]);
+        });
+
+        it('should set its own value if value passed', () => {
+          a.updateValue(['new value', 'new value']);
+
+          a.reset(['initial value', '']);
+          expect(a.value).toEqual(['initial value', '']);
+        });
+
+
+        it('should clear its own value if no value passed', () => {
+          a.updateValue(['new value', 'new value']);
+
+          a.reset();
+          expect(a.value).toEqual([null, null]);
+        });
+
+        it('should set the value of each of its child controls if value passed', () => {
+          a.updateValue(['new value', 'new value']);
+
+          a.reset(['initial value', '']);
+          expect(c.value).toBe('initial value');
+          expect(c2.value).toBe('');
+        });
+
+        it('should clear the value of each of its child controls if no value', () => {
+          a.updateValue(['new value', 'new value']);
+
+          a.reset();
+          expect(c.value).toBe(null);
+          expect(c2.value).toBe(null);
+        });
+
+        it('should set the value of its parent if value passed', () => {
+          const form = new FormGroup({'a': a});
+          a.updateValue(['new value', 'new value']);
+
+          a.reset(['initial value', '']);
+          expect(form.value).toEqual({'a': ['initial value', '']});
+        });
+
+        it('should clear the value of its parent if no value passed', () => {
+          const form = new FormGroup({'a': a});
+          a.updateValue(['new value', 'new value']);
+
+          a.reset();
+          expect(form.value).toEqual({'a': [null, null]});
+        });
+
+        it('should mark itself as pristine', () => {
+          a.markAsDirty();
+          expect(a.pristine).toBe(false);
+
+          a.reset();
+          expect(a.pristine).toBe(true);
+        });
+
+        it('should mark all child controls as pristine', () => {
+          c.markAsDirty();
+          c2.markAsDirty();
+          expect(c.pristine).toBe(false);
+          expect(c2.pristine).toBe(false);
+
+          a.reset();
+          expect(c.pristine).toBe(true);
+          expect(c2.pristine).toBe(true);
+        });
+
+        it('should mark the parent as pristine if all siblings pristine', () => {
+          const c3 = new FormControl('');
+          const form = new FormGroup({'a': a, 'c3': c3});
+
+          a.markAsDirty();
+          expect(form.pristine).toBe(false);
+
+          a.reset();
+          expect(form.pristine).toBe(true);
+        });
+
+        it('should not mark the parent pristine if any dirty siblings', () => {
+          const c3 = new FormControl('');
+          const form = new FormGroup({'a': a, 'c3': c3});
+
+          a.markAsDirty();
+          c3.markAsDirty();
+          expect(form.pristine).toBe(false);
+
+          a.reset();
+          expect(form.pristine).toBe(false);
+        });
+
+        it('should mark itself as untouched', () => {
+          a.markAsTouched();
+          expect(a.untouched).toBe(false);
+
+          a.reset();
+          expect(a.untouched).toBe(true);
+        });
+
+        it('should mark all child controls as untouched', () => {
+          c.markAsTouched();
+          c2.markAsTouched();
+          expect(c.untouched).toBe(false);
+          expect(c2.untouched).toBe(false);
+
+          a.reset();
+          expect(c.untouched).toBe(true);
+          expect(c2.untouched).toBe(true);
+        });
+
+        it('should mark the parent untouched if all siblings untouched', () => {
+          const c3 = new FormControl('');
+          const form = new FormGroup({'a': a, 'c3': c3});
+
+          a.markAsTouched();
+          expect(form.untouched).toBe(false);
+
+          a.reset();
+          expect(form.untouched).toBe(true);
+        });
+
+        it('should not mark the parent untouched if any touched siblings', () => {
+          const c3 = new FormControl('');
+          const form = new FormGroup({'a': a, 'c3': c3});
+
+          a.markAsTouched();
+          c3.markAsTouched();
+          expect(form.untouched).toBe(false);
+
+          a.reset();
+          expect(form.untouched).toBe(false);
+        });
+
+        describe('reset() events', () => {
+          let form: FormGroup, c3: FormControl, logger: any[];
+
+          beforeEach(() => {
+            c3 = new FormControl('');
+            form = new FormGroup({'a': a, 'c3': c3});
+            logger = [];
+          });
+
+          it('should emit one valueChange event per reset control', () => {
+            form.valueChanges.subscribe(() => logger.push('form'));
+            a.valueChanges.subscribe(() => logger.push('array'));
+            c.valueChanges.subscribe(() => logger.push('control1'));
+            c2.valueChanges.subscribe(() => logger.push('control2'));
+            c3.valueChanges.subscribe(() => logger.push('control3'));
+
+            a.reset();
+            expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
+          });
+
+          it('should emit one statusChange event per reset control', () => {
+            form.statusChanges.subscribe(() => logger.push('form'));
+            a.statusChanges.subscribe(() => logger.push('array'));
+            c.statusChanges.subscribe(() => logger.push('control1'));
+            c2.statusChanges.subscribe(() => logger.push('control2'));
+            c3.statusChanges.subscribe(() => logger.push('control3'));
+
+            a.reset();
             expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
           });
         });

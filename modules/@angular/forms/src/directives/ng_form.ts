@@ -86,9 +86,7 @@ export const formDirectiveProvider: any =
 @Directive({
   selector: 'form:not([ngNoForm]):not([formGroup]),ngForm,[ngForm]',
   providers: [formDirectiveProvider],
-  host: {
-    '(submit)': 'onSubmit()',
-  },
+  host: {'(submit)': 'onSubmit()', '(reset)': 'onReset()'},
   outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
@@ -171,6 +169,8 @@ export class NgForm extends ControlContainer implements Form {
     ObservableWrapper.callEmit(this.ngSubmit, null);
     return false;
   }
+
+  onReset(): void { this.form.reset(); }
 
   /** @internal */
   _findContainer(path: string[]): FormGroup {
