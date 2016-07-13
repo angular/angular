@@ -22,7 +22,7 @@
     "deploy": "firebase deploy",
     "webdriver-manager": "webdriver-manager"
   },
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-alpha.6-2",
   "license": "MIT",
   "engines": {
     "node": ">= 4.2.1 < 5"
@@ -43,6 +43,7 @@
     "zone.js": "0.6.12"
   },
   "devDependencies": {
+    "@angular/compiler-cli": "^0.4.1",
     "add-stream": "^1.0.0",
     "angular-cli": "^1.0.0-beta.9",
     "broccoli-autoprefixer": "^4.1.0",
