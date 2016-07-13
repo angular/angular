@@ -242,7 +242,8 @@ export type RouterConfig = Route[];
  * - `outlet` is the name of the outlet the component should be placed into.
  * - `canActivate` is an array of DI tokens used to look up CanActivate handlers. See {@link
  * CanActivate} for more info.
- * - `canActivateChild` is an array of DI tokens used to look up CanActivateChild handlers. See {@link
+ * - `canActivateChild` is an array of DI tokens used to look up CanActivateChild handlers. See
+ * {@link
  * CanActivateChild} for more info.
  * - `canDeactivate` is an array of DI tokens used to look up CanDeactivate handlers. See {@link
  * CanDeactivate} for more info.

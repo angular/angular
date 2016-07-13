@@ -12,6 +12,7 @@ import 'rxjs/add/operator/mergeAll';
 import 'rxjs/add/operator/reduce';
 import 'rxjs/add/operator/every';
 import 'rxjs/add/observable/from';
+import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/observable/forkJoin';
 import 'rxjs/add/observable/of';
 
@@ -596,6 +597,8 @@ class PreActivation {
 function wrapIntoObservable<T>(value: T | Observable<T>): Observable<T> {
   if (value instanceof Observable) {
     return value;
+  } else if (value instanceof Promise) {
+    return Observable.fromPromise(value);
   } else {
     return Observable.of(value);
   }

@@ -66,7 +66,8 @@ export interface CanActivate {
  * class CanActivateTeam implements CanActivate {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
- *   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean> {
+ *   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean>
+ * {
  *     return this.permissions.canActivate(this.currentUser, this.route.params.id);
  *   }
  * }

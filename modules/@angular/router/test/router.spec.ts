@@ -891,6 +891,40 @@ describe('Integration', () => {
                  expect(location.path()).toEqual('/');
                })));
       });
+
+      describe('should work when returns a promise', () => {
+        beforeEach(() => {
+          addProviders([{
+            provide: 'CanActivate',
+            useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+              if (a.params['id'] == '22') {
+                return Promise.resolve(true);
+              } else {
+                return Promise.resolve(false);
+              }
+            }
+          }]);
+        });
+
+
+        fit('works',
+            fakeAsync(inject(
+                [Router, TestComponentBuilder, Location],
+                (router: Router, tcb: TestComponentBuilder, location: Location) => {
+                  const fixture = createRoot(tcb, router, RootCmp);
+
+                  router.resetConfig(
+                      [{path: 'team/:id', component: TeamCmp, canActivate: ['CanActivate']}]);
+
+                  router.navigateByUrl('/team/22');
+                  advance(fixture);
+                  expect(location.path()).toEqual('/team/22');
+
+                  router.navigateByUrl('/team/33');
+                  advance(fixture);
+                  expect(location.path()).toEqual('/team/22');
+                })));
+      });
     });
 
     describe('CanDeactivate', () => {
