@@ -236,40 +236,46 @@ export class CssParser {
 
     var block: CssBlockAst;
     var type = this._resolveBlockType(token);
+    var span: ParseSourceSpan;
+    var tokens: CssToken[];
+    var endToken: CssToken;
+    var end: number;
+    var strValue: string;
+    var query: CssAtRulePredicateAst;
     switch (type) {
       case BlockType.Charset:
       case BlockType.Namespace:
       case BlockType.Import:
-        var value = this._parseValue(delimiters);
+        let value = this._parseValue(delimiters);
         this._scanner.setMode(CssLexerMode.BLOCK);
         this._scanner.consumeEmptyStatements();
-        var span = this._generateSourceSpan(startToken, value);
+        span = this._generateSourceSpan(startToken, value);
         return new CssInlineRuleAst(span, type, value);
 
       case BlockType.Viewport:
       case BlockType.FontFace:
         block = this._parseStyleBlock(delimiters);
-        var span = this._generateSourceSpan(startToken, block);
+        span = this._generateSourceSpan(startToken, block);
         return new CssBlockRuleAst(span, type, block);
 
       case BlockType.Keyframes:
-        var tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
+        tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
         // keyframes only have one identifier name
-        var name = tokens[0];
-        var block = this._parseKeyframeBlock(delimiters);
-        var span = this._generateSourceSpan(startToken, block);
+        let name = tokens[0];
+        block = this._parseKeyframeBlock(delimiters);
+        span = this._generateSourceSpan(startToken, block);
         return new CssKeyframeRuleAst(span, name, block);
 
       case BlockType.MediaQuery:
         this._scanner.setMode(CssLexerMode.MEDIA_QUERY);
-        var tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
-        var endToken = tokens[tokens.length - 1];
+        tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
+        endToken = tokens[tokens.length - 1];
         // we do not track the whitespace after the mediaQuery predicate ends
         // so we have to calculate the end string value on our own
-        var end = endToken.index + endToken.strValue.length - 1;
-        var strValue = this._extractSourceContent(start, end);
-        var span = this._generateSourceSpan(startToken, endToken);
-        var query = new CssAtRulePredicateAst(span, strValue, tokens);
+        end = endToken.index + endToken.strValue.length - 1;
+        strValue = this._extractSourceContent(start, end);
+        span = this._generateSourceSpan(startToken, endToken);
+        query = new CssAtRulePredicateAst(span, strValue, tokens);
         block = this._parseBlock(delimiters);
         strValue = this._extractSourceContent(start, this._getScannerIndex() - 1);
         span = this._generateSourceSpan(startToken, block);
@@ -279,14 +285,14 @@ export class CssParser {
       case BlockType.Supports:
       case BlockType.Page:
         this._scanner.setMode(CssLexerMode.AT_RULE_QUERY);
-        var tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
-        var endToken = tokens[tokens.length - 1];
+        tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);
+        endToken = tokens[tokens.length - 1];
         // we do not track the whitespace after this block rule predicate ends
         // so we have to calculate the end string value on our own
-        var end = endToken.index + endToken.strValue.length - 1;
-        var strValue = this._extractSourceContent(start, end);
-        var span = this._generateSourceSpan(startToken, tokens[tokens.length - 1]);
-        var query = new CssAtRulePredicateAst(span, strValue, tokens);
+        end = endToken.index + endToken.strValue.length - 1;
+        strValue = this._extractSourceContent(start, end);
+        span = this._generateSourceSpan(startToken, tokens[tokens.length - 1]);
+        query = new CssAtRulePredicateAst(span, strValue, tokens);
         block = this._parseBlock(delimiters);
         strValue = this._extractSourceContent(start, block.end.offset);
         span = this._generateSourceSpan(startToken, block);
@@ -294,8 +300,8 @@ export class CssParser {
 
       // if a custom @rule { ... } is used it should still tokenize the insides
       default:
-        var listOfTokens: CssToken[] = [];
-        var tokenName = token.strValue;
+        let listOfTokens: CssToken[] = [];
+        let tokenName = token.strValue;
         this._scanner.setMode(CssLexerMode.ALL);
         this._error(
             generateErrorMessage(
@@ -312,8 +318,8 @@ export class CssParser {
               .forEach((token) => { listOfTokens.push(token); });
           listOfTokens.push(this._consume(CssTokenType.Character, '}'));
         }
-        var endToken = listOfTokens[listOfTokens.length - 1];
-        var span = this._generateSourceSpan(startToken, endToken);
+        endToken = listOfTokens[listOfTokens.length - 1];
+        span = this._generateSourceSpan(startToken, endToken);
         return new CssUnknownRuleAst(span, tokenName, listOfTokens);
     }
   }

@@ -37,7 +37,7 @@ export function getComponentInfo(type: Type): ComponentInfo {
   if (!selector.match(COMPONENT_SELECTOR)) {
     throw new Error('Only selectors matching element names are supported, got: ' + selector);
   }
-  var selector = selector.replace(
+  selector = selector.replace(
       SKEWER_CASE, (all: any /** TODO #9100 */, letter: string) => letter.toUpperCase());
   return {
     type: type,
