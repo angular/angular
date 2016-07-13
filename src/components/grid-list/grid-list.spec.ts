@@ -86,20 +86,20 @@ describe('MdGridList', () => {
 
   it('should divide row height evenly in "fit" mode', async(() => {
     var template = `
-      <md-grid-list cols="1" rowHeight="fit" [style.height.px]="height">
+      <md-grid-list cols="1" rowHeight="fit" [style.height]="height">
         <md-grid-tile></md-grid-tile>
         <md-grid-tile></md-grid-tile>
       </md-grid-list>`;
 
     builder.overrideTemplate(TestGridList, template).createAsync(TestGridList).then(fixture => {
-      fixture.componentInstance.height = 300;
+      fixture.componentInstance.height = '300px';
       fixture.detectChanges();
       let tile = fixture.debugElement.query(By.directive(MdGridTile));
 
       // 149.5 * 2 = 299px + 1px gutter = 300px
       expect(getProp(tile, 'height')).toBe('149.5px');
 
-      fixture.componentInstance.height = 200;
+      fixture.componentInstance.height = '200px';
       fixture.detectChanges();
 
       // 99.5 * 2 = 199px + 1px gutter = 200px
@@ -384,7 +384,7 @@ describe('MdGridList', () => {
 })
 class TestGridList {
   tiles: any[];
-  height: string;
+  height: string | number;
   colspan: number;
   rowspan: number;
 }

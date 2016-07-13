@@ -18,6 +18,7 @@ import {
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor,
+  DefaultValueAccessor,
   NgModel,
 } from '@angular/forms';
 import {NgIf} from '@angular/common';
@@ -99,7 +100,7 @@ export class MdHint {
   templateUrl: 'input.html',
   styleUrls: ['input.css'],
   providers: [MD_INPUT_CONTROL_VALUE_ACCESSOR],
-  directives: [NgIf, NgModel],
+  directives: [DefaultValueAccessor, NgIf, NgModel],
   host: {'(click)' : 'focus()'}
 })
 export class MdInput implements ControlValueAccessor, AfterContentInit, OnChanges {
@@ -147,9 +148,9 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   @Input() @BooleanFieldValue() disabled: boolean = false;
   @Input() id: string = `md-input-${nextUniqueId++}`;
   @Input() list: string = null;
-  @Input() max: string = null;
+  @Input() max: string | number = null;
   @Input() maxLength: number = null;
-  @Input() min: string = null;
+  @Input() min: string | number = null;
   @Input() minLength: number = null;
   @Input() placeholder: string = null;
   @Input() @BooleanFieldValue() readOnly: boolean = false;

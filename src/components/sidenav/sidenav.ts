@@ -33,7 +33,6 @@ export class MdDuplicatedSidenavError extends MdError {
  * Please refer to README.md for examples on how to use it.
  */
 @Component({
-  moduleId: module.id,
   selector: 'md-sidenav',
   template: '<ng-content></ng-content>',
   host: {

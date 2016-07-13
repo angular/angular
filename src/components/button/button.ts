@@ -20,7 +20,7 @@ import {
             'button[md-fab], button[md-mini-fab]',
   inputs: ['color'],
   host: {
-    '[class.md-button-focus]': 'isKeyboardFocused',
+    '[class.md-button-focus]': '_isKeyboardFocused',
     '(mousedown)': '_setMousedown()',
     '(focus)': '_setKeyboardFocus()',
     '(blur)': '_removeKeyboardFocus()',
