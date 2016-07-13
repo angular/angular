@@ -111,7 +111,7 @@ describe('Integration', () => {
              children: [{path: 'user/:name', component: UserCmp}]
            }]);
 
-           const recordedEvents: any = [];
+           const recordedEvents: any[] = [];
            router.events.forEach(e => recordedEvents.push(e));
 
            router.navigateByUrl('/team/22/user/victor');
@@ -123,7 +123,7 @@ describe('Integration', () => {
            (<any>location).simulateUrlPop('/team/22/user/fedor');
            advance(fixture);
 
-           expect(fixture.debugElement.nativeElement).toHaveText('team 22 { user fedor, right:  }');
+           expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ user fedor, right:  ]');
 
            expectEvents(recordedEvents, [
              [NavigationStart, '/team/22/user/victor'], [RoutesRecognized, '/team/22/user/victor'],
@@ -298,7 +298,7 @@ describe('Integration', () => {
 
            router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
-           const recordedEvents: any = [];
+           const recordedEvents: any[] = [];
            router.events.forEach(e => recordedEvents.push(e));
 
            router.navigateByUrl('/user/init');
@@ -335,7 +335,7 @@ describe('Integration', () => {
 
            router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
-           const recordedEvents: any = [];
+           const recordedEvents: any[] = [];
            router.events.forEach(e => recordedEvents.push(e));
 
            let e: any;
@@ -1217,7 +1217,7 @@ describe('Integration', () => {
 
              router.resetConfig([{path: 'lazy', loadChildren: 'invalid'}]);
 
-             const recordedEvents: any = [];
+             const recordedEvents: any[] = [];
              router.events.forEach(e => recordedEvents.push(e));
 
              router.navigateByUrl('/lazy/loaded').catch(s => {})

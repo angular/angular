@@ -1337,11 +1337,6 @@ export declare function style(tokens: string | {
 }>): AnimationStyleMetadata;
 
 /** @experimental */
-export declare class SystemJsAppModuleFactoryLoader implements AppModuleFactoryLoader {
-    load(path: string): Promise<AppModuleFactory<any>>;
-}
-
-/** @experimental */
 export declare class SystemJsAppModuleLoader implements AppModuleFactoryLoader {
     constructor(_compiler: Compiler);
     load(path: string): Promise<AppModuleFactory<any>>;

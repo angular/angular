@@ -53,7 +53,7 @@ const FACTORY_CLASS_SUFFIX = 'NgFactory';
 /**
  * Component resolver that can load component factories lazily
  *
- * @deprecated Lazy loading of components is deprecated. Use {@link SystemJsAppModuleFactoryLoader}
+ * @deprecated Lazy loading of components is deprecated. Use {@link SystemJsAppModuleLoader}
  * to lazy
  * load {@link AppModuleFactory}s instead.
  */

@@ -291,11 +291,9 @@ export class Router {
       const tree = this.urlSerializer.parse(change['url']);
       // we fire multiple events for a single URL change
       // we should navigate only once
-      if (this.currentUrlTree.toString() !== tree.toString()) {
-        return this.scheduleNavigation(tree, change['pop']);
-      } else {
-        return null;
-      }
+      return this.currentUrlTree.toString() !== tree.toString() ?
+          this.scheduleNavigation(tree, change['pop']) :
+          null;
     });
   }
 

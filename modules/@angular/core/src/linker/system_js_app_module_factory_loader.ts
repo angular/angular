@@ -7,7 +7,7 @@
  */
 
 
-import {Injectable} from '../di';
+import {Injectable, Optional} from '../di';
 import {global} from '../facade/lang';
 
 import {AppModuleFactory} from './app_module_factory';
@@ -16,15 +16,22 @@ import {Compiler} from './compiler';
 
 const _SEPARATOR = '#';
 
+const FACTORY_MODULE_SUFFIX = '.ngfactory';
+const FACTORY_CLASS_SUFFIX = 'NgFactory';
+
 /**
- * AppModuleFactoryLoader that uses SystemJS to load AppModule type and then compiles them.
+ * AppModuleFactoryLoader that uses SystemJS to load AppModuleFactory
  * @experimental
  */
 @Injectable()
 export class SystemJsAppModuleLoader implements AppModuleFactoryLoader {
-  constructor(private _compiler: Compiler) {}
+  constructor(@Optional() private _compiler: Compiler) {}
 
   load(path: string): Promise<AppModuleFactory<any>> {
+    return this._compiler ? this.loadAndCompile(path) : this.loadFactory(path);
+  }
+
+  private loadAndCompile(path: string): Promise<AppModuleFactory<any>> {
     let [module, exportName] = path.split(_SEPARATOR);
     if (exportName === undefined) exportName = 'default';
 
@@ -34,17 +41,8 @@ export class SystemJsAppModuleLoader implements AppModuleFactoryLoader {
         .then((type: any) => checkNotEmpty(type, module, exportName))
         .then((type: any) => this._compiler.compileAppModuleAsync(type));
   }
-}
 
-const FACTORY_MODULE_SUFFIX = '.ngfactory';
-const FACTORY_CLASS_SUFFIX = 'NgFactory';
-
-/**
- * AppModuleFactoryLoader that uses SystemJS to load AppModuleFactories
- * @experimental
- */
-export class SystemJsAppModuleFactoryLoader implements AppModuleFactoryLoader {
-  load(path: string): Promise<AppModuleFactory<any>> {
+  private loadFactory(path: string): Promise<AppModuleFactory<any>> {
     let [module, exportName] = path.split(_SEPARATOR);
     if (exportName === undefined) exportName = 'default';
 
