@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as testUtil from '@angular/platform-browser/testing_e2e';
+import * as testUtil from 'e2e_util/e2e_util';
 
 var fs = require('fs');
 var sourceMap = require('source-map');

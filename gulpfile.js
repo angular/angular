@@ -39,7 +39,6 @@ const entrypoints = [
   'dist/packages-dist/upgrade/index.d.ts',
   'dist/packages-dist/platform-browser/index.d.ts',
   'dist/packages-dist/platform-browser/testing.d.ts',
-  'dist/packages-dist/platform-browser/testing_e2e.d.ts',
   'dist/packages-dist/platform-browser-dynamic/index.d.ts',
   'dist/packages-dist/platform-browser-dynamic/testing.d.ts',
   'dist/packages-dist/platform-server/index.d.ts',

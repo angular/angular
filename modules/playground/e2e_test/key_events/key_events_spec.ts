@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from '@angular/platform-browser/testing/e2e_util';
+import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 describe('key_events', function() {
 

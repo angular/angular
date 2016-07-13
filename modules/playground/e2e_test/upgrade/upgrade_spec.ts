@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from "@angular/platform-browser/testing_e2e";
+import {verifyNoBrowserErrors} from "e2e_util/e2e_util";
 
 // TODO(i): reenable once we fix issue with exposing testability to protractor when using ngUpgrade
 // https://github.com/angular/angular/issues/9407
