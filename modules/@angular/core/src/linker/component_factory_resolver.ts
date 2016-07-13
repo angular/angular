@@ -6,12 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, OpaqueToken, Optional, SkipSelf} from '../di';
 import {BaseException} from '../facade/exceptions';
 import {ConcreteType, stringify} from '../facade/lang';
-
 import {ComponentFactory} from './component_factory';
-
 
 /**
  * @stable

@@ -9,7 +9,6 @@
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {unimplemented} from '../facade/exceptions';
 import {ConcreteType} from '../facade/lang';
-
 import {ComponentFactory} from './component_factory';
 import {CodegenComponentFactoryResolver, ComponentFactoryResolver} from './component_factory_resolver';
 

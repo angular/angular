@@ -13,8 +13,8 @@ import {ShadowCss} from './shadow_css';
 import {UrlResolver} from './url_resolver';
 
 const COMPONENT_VARIABLE = '%COMP%';
-const HOST_ATTR = /*@ts2dart_const*/ `_nghost-${COMPONENT_VARIABLE}`;
-const CONTENT_ATTR = /*@ts2dart_const*/ `_ngcontent-${COMPONENT_VARIABLE}`;
+const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
+const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
 export class StylesCompileDependency {
   constructor(

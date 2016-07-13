@@ -12,9 +12,7 @@ import {PromiseWrapper} from '../facade/async';
 import {BaseException} from '../facade/exceptions';
 import {Type, isBlank, isString, stringify} from '../facade/lang';
 import {reflector} from '../reflection/reflection';
-
 import {ComponentFactory} from './component_factory';
-
 
 /**
  * Low-level service for loading {@link ComponentFactory}s, which

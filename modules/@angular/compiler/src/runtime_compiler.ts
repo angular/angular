@@ -163,7 +163,8 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
         }
       }
     });
-    let compile = () => { templates.forEach((template) => { this._compileTemplate(template); }); };
+    const compile =
+        () => { templates.forEach((template) => { this._compileTemplate(template); }); };
     if (isSync) {
       compile();
     }
@@ -212,12 +213,12 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
       modulePipes: ConcreteType<any>[]): CompiledTemplate {
     var compiledTemplate = this._compiledTemplateCache.get(type);
     if (isBlank(compiledTemplate)) {
-      var compMeta = this._metadataResolver.getDirectiveMetadata(type);
+      const compMeta = this._metadataResolver.getDirectiveMetadata(type);
       assertComponent(compMeta);
-      var viewDirectives: CompileDirectiveMetadata[] = [];
+      const viewDirectives: CompileDirectiveMetadata[] = [];
       moduleDirectives.forEach(
           (type) => viewDirectives.push(this._metadataResolver.getDirectiveMetadata(type)));
-      var viewComponentTypes: Type[] = [];
+      const viewComponentTypes: Type[] = [];
       this._metadataResolver.getViewDirectivesMetadata(type).forEach(dirOrComp => {
         if (dirOrComp.isComponent) {
           viewComponentTypes.push(dirOrComp.type.runtime);
@@ -225,8 +226,8 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
           viewDirectives.push(dirOrComp);
         }
       });
-      var precompileComponentTypes = compMeta.precompile.map((typeMeta) => typeMeta.runtime);
-      var pipes = [
+      const precompileComponentTypes = compMeta.precompile.map((typeMeta) => typeMeta.runtime);
+      const pipes = [
         ...modulePipes.map((type) => this._metadataResolver.getPipeMetadata(type)),
         ...this._metadataResolver.getViewPipesMetadata(type)
       ];
@@ -242,8 +243,8 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
       compType: Type, isHost: boolean, moduleDirectives: ConcreteType<any>[],
       modulePipes: ConcreteType<any>[],
       target: Set<CompiledTemplate> = new Set<CompiledTemplate>()): Set<CompiledTemplate> {
-    var template = isHost ? this._createCompiledHostTemplate(compType) :
-                            this._createCompiledTemplate(compType, moduleDirectives, modulePipes);
+    const template = isHost ? this._createCompiledHostTemplate(compType) :
+                              this._createCompiledTemplate(compType, moduleDirectives, modulePipes);
     if (!target.has(template)) {
       target.add(template);
       template.viewComponentTypes.forEach((compType) => {
@@ -261,22 +262,22 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
     if (template.isCompiled) {
       return;
     }
-    var compMeta = template.normalizedCompMeta;
-    var externalStylesheetsByModuleUrl = new Map<string, CompiledStylesheet>();
-    var stylesCompileResult = this._styleCompiler.compileComponent(compMeta);
+    const compMeta = template.normalizedCompMeta;
+    const externalStylesheetsByModuleUrl = new Map<string, CompiledStylesheet>();
+    const stylesCompileResult = this._styleCompiler.compileComponent(compMeta);
     stylesCompileResult.externalStylesheets.forEach(
         (r) => { externalStylesheetsByModuleUrl.set(r.meta.moduleUrl, r); });
     this._resolveStylesCompileResult(
         stylesCompileResult.componentStylesheet, externalStylesheetsByModuleUrl);
-    var viewCompMetas = template.viewComponentTypes.map(
+    const viewCompMetas = template.viewComponentTypes.map(
         (compType) => this._compiledTemplateCache.get(compType).normalizedCompMeta);
-    var parsedTemplate = this._templateParser.parse(
+    const parsedTemplate = this._templateParser.parse(
         compMeta, compMeta.template.template, template.viewDirectives.concat(viewCompMetas),
         template.viewPipes, compMeta.type.name);
-    var compileResult = this._viewCompiler.compileComponent(
+    const compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
         template.viewPipes);
-    var depTemplates = compileResult.dependencies.map((dep) => {
+    compileResult.dependencies.forEach((dep) => {
       let depTemplate: CompiledTemplate;
       if (dep instanceof ViewFactoryDependency) {
         let vfd = <ViewFactoryDependency>dep;
@@ -289,11 +290,10 @@ export class RuntimeCompiler implements ComponentResolver, Compiler {
         cfd.placeholder.runtime = depTemplate.proxyComponentFactory;
         cfd.placeholder.name = `compFactory_${cfd.comp.name}`;
       }
-      return depTemplate;
     });
-    var statements =
+    const statements =
         stylesCompileResult.componentStylesheet.statements.concat(compileResult.statements);
-    var factory: any;
+    let factory: any;
     if (IS_DART || !this._genConfig.useJit) {
       factory = interpretStatements(statements, compileResult.viewFactoryVar);
     } else {

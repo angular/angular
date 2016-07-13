@@ -7,11 +7,9 @@
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {ChangeDetectionStrategy, ChangeDetectorStatus} from '../change_detection/constants';
+import {ChangeDetectorStatus} from '../change_detection/constants';
 import {unimplemented} from '../facade/exceptions';
-
 import {AppView} from './view';
-
 
 /**
  * @stable
@@ -84,7 +82,7 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
   /**
    * Destroys the view and all of the data structures associated with it.
    */
-  abstract destroy(): any /** TODO #9100 */;
+  abstract destroy(): void;
 }
 
 export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {

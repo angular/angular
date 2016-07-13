@@ -7,27 +7,21 @@
  */
 
 import {ObservableWrapper} from '../facade/async';
-import {ListWrapper, Map, MapWrapper, StringMapWrapper} from '../facade/collection';
-import {Type, isArray, isBlank, isNumber, isPresent, isPrimitive, isString, stringify} from '../facade/lang';
-import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
-
+import {ListWrapper} from '../facade/collection';
+import {isPresent} from '../facade/lang';
+import {RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
 import {AppElement} from './element';
 import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
-import {ViewUtils, arrayLooseIdentical, ensureSlotCount, flattenNestedViewRenderNodes, mapLooseIdentical} from './view_utils';
-
-import {ChangeDetectorRef, ChangeDetectionStrategy, ChangeDetectorStatus,} from '../change_detection/change_detection';
+import {ViewUtils, ensureSlotCount, flattenNestedViewRenderNodes} from './view_utils';
+import {ChangeDetectorRef, ChangeDetectorStatus,} from '../change_detection/change_detection';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {ExpressionChangedAfterItHasBeenCheckedException, ViewDestroyedException, ViewWrappedException} from './exceptions';
 import {StaticNodeDebugInfo, DebugContext} from './debug_context';
 import {ElementInjector} from './element_injector';
 import {Injector} from '../di/injector';
-
-import {AUTO_STYLE} from '../animation/metadata';
 import {AnimationPlayer} from '../animation/animation_player';
 import {AnimationGroupPlayer} from '../animation/animation_group_player';
-import {AnimationKeyframe} from '../animation/animation_keyframe';
-import {AnimationStyles} from '../animation/animation_styles';
 import {ViewAnimationMap} from '../animation/view_animation_map';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
@@ -99,7 +93,7 @@ export abstract class AppView<T> {
   create(context: T, givenProjectableNodes: Array<any|any[]>, rootSelectorOrNode: string|any):
       AppElement {
     this.context = context;
-    var projectableNodes: any /** TODO #9100 */;
+    var projectableNodes: any[];
     switch (this.type) {
       case ViewType.COMPONENT:
         projectableNodes = ensureSlotCount(givenProjectableNodes, this.componentType.slotCount);
@@ -141,7 +135,7 @@ export abstract class AppView<T> {
 
   selectOrCreateHostElement(
       elementName: string, rootSelectorOrNode: string|any, debugInfo: RenderDebugInfo): any {
-    var hostElement: any /** TODO #9100 */;
+    var hostElement: any;
     if (isPresent(rootSelectorOrNode)) {
       hostElement = this.renderer.selectRootElement(rootSelectorOrNode, debugInfo);
     } else {
@@ -405,7 +399,7 @@ export class DebugAppView<T> extends AppView<T> {
 
   eventHandler(cb: Function): Function {
     var superHandler = super.eventHandler(cb);
-    return (event: any /** TODO #9100 */) => {
+    return (event: any) => {
       this._resetDebug();
       try {
         return superHandler(event);
@@ -418,7 +412,7 @@ export class DebugAppView<T> extends AppView<T> {
 }
 
 function _findLastRenderNode(node: any): any {
-  var lastNode: any /** TODO #9100 */;
+  var lastNode: any;
   if (node instanceof AppElement) {
     var appEl = <AppElement>node;
     lastNode = appEl.nativeElement;
