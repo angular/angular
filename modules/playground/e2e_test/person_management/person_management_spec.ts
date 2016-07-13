@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
+import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 describe('Person Management CRUD', function() {
   var URL = 'all/playground/src/person_management/index.html';
