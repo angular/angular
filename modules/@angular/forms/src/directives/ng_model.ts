@@ -89,7 +89,7 @@ export class NgModel extends NgControl implements OnChanges,
               get control(): FormControl { return this._control; }
 
               get path(): string[] {
-                return this._parent ? controlPath(this.name, this._parent) : [];
+                return this._parent ? controlPath(this.name, this._parent) : [this.name];
               }
 
               get formDirective(): any { return this._parent ? this._parent.formDirective : null; }

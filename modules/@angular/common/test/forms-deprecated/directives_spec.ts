@@ -149,14 +149,27 @@ export function main() {
           var dir = new NgControlName(form, null, null, [defaultAccessor]);
           dir.name = 'invalidName';
 
-          expect(() => form.addControl(dir)).toThrowError(/Cannot find control 'invalidName'/);
+          expect(() => form.addControl(dir))
+              .toThrowError(new RegExp(`Cannot find control with name: 'invalidName'`));
         });
 
         it('should throw when no value accessor', () => {
           var dir = new NgControlName(form, null, null, null);
           dir.name = 'login';
 
-          expect(() => form.addControl(dir)).toThrowError(/No value accessor for 'login'/);
+          expect(() => form.addControl(dir))
+              .toThrowError(new RegExp(`No value accessor for form control with name: 'login'`));
+        });
+
+        it('should throw when no value accessor with path', () => {
+          const group = new NgControlGroup(form, null, null);
+          const dir = new NgControlName(group, null, null, null);
+          group.name = 'passwords';
+          dir.name = 'password';
+
+          expect(() => form.addControl(dir))
+              .toThrowError(new RegExp(
+                  `No value accessor for form control with path: 'passwords -> password'`));
         });
 
         it('should set up validators', fakeAsync(() => {
@@ -431,6 +444,14 @@ export function main() {
         expect(ngModel.touched).toBe(control.touched);
         expect(ngModel.untouched).toBe(control.untouched);
       });
+
+      it('should throw when no value accessor with unnamed control', () => {
+        const unnamedDir = new NgModel(null, null, null);
+
+        expect(() => unnamedDir.ngOnChanges({}))
+            .toThrowError(new RegExp(`No value accessor for form control with unspecified name`));
+      });
+
 
       it('should set up validator', fakeAsync(() => {
            // this will add the required validator and recalculate the validity
