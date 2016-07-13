@@ -449,19 +449,20 @@ export class _ParseAST {
     if (this.next.type == TokenType.Operator) {
       const start = this.inputIndex;
       const operator = this.next.strValue;
+      let result: AST;
       switch (operator) {
         case '+':
           this.advance();
           return this.parsePrefix();
         case '-':
           this.advance();
-          var result = this.parsePrefix();
+          result = this.parsePrefix();
           return new Binary(
               this.span(start), operator, new LiteralPrimitive(new ParseSpan(start, start), 0),
               result);
         case '!':
           this.advance();
-          var result = this.parsePrefix();
+          result = this.parsePrefix();
           return new PrefixNot(this.span(start), result);
       }
     }

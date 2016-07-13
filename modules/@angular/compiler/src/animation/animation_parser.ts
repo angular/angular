@@ -317,7 +317,7 @@ function _parseAnimationKeyframes(
   }
 
   var firstKeyframeStyles = firstKeyframe[1];
-  var limit = rawKeyframes.length - 1;
+  limit = rawKeyframes.length - 1;
   var lastKeyframe = rawKeyframes[limit];
   if (lastKeyframe[0] != _TERMINAL_KEYFRAME) {
     rawKeyframes.push(lastKeyframe = [_TERMINAL_KEYFRAME, {}]);
