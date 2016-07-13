@@ -16,9 +16,9 @@ const DURATION_INDETERMINATE = 667;
 /** Duration of the indeterminate animation. */
 const DURATION_DETERMINATE = 225;
 /** Start animation value of the indeterminate animation */
-let startIndeterminate = 3;
+const startIndeterminate = 3;
 /** End animation value of the indeterminate animation */
-let endIndeterminate = 80;
+const endIndeterminate = 80;
 
 
 export type ProgressCircleMode = 'determinate' | 'indeterminate';
@@ -184,7 +184,7 @@ export class MdProgressCircle implements OnDestroy {
   private _startIndeterminateAnimation() {
     let rotationStartPoint = 0;
     let start = startIndeterminate;
-    let end =  endIndeterminate;
+    let end = endIndeterminate;
     let duration = DURATION_INDETERMINATE;
     let animate = () => {
       this._animateCircle(start, end, materialEase, duration, rotationStartPoint);
@@ -250,8 +250,8 @@ function clamp(v: number) {
  * Returns the current timestamp either based on the performance global or a date object.
  */
 function now() {
-  if (window.performance && window.performance.now) {
-    return window.performance.now();
+  if (typeof performance !== 'undefined' && performance.now) {
+    return performance.now();
   }
   return Date.now();
 }
