@@ -15,6 +15,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  * ### Example
  *
  * ```
+ * @Injectable()
  * class CanActivateTeam implements CanActivate {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
@@ -61,6 +62,7 @@ export interface CanActivate {
  * ### Example
  *
  * ```
+ * @Injectable()
  * class CanDeactivateTeam implements CanDeactivate {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
@@ -107,6 +109,7 @@ export interface CanDeactivate<T> {
  * ### Example
  *
  * ```
+ * @Injectable()
  * class TeamResolver implements Resolve {
  *   constructor(private backend: Backend) {}
  *
