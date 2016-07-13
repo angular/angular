@@ -57,6 +57,66 @@ export interface CanActivate {
 }
 
 /**
+ * An interface a class can implement to be a guard deciding if a child route can be activated.
+ *
+ * ### Example
+ *
+ * ```
+ * @Injectable()
+ * class CanActivateTeam implements CanActivate {
+ *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *
+ *   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean> {
+ *     return this.permissions.canActivate(this.currentUser, this.route.params.id);
+ *   }
+ * }
+ *
+ * bootstrap(AppComponent, [
+ *   CanActivateTeam,
+ *
+ *   provideRouter([
+ *     {
+ *       path: 'root',
+ *       canActivateChild: [CanActivateTeam],
+ *       children: [
+ *        {
+ *          path: 'team/:id',
+ *          component: Team
+ *        }
+ *      ]
+ *    }
+ * ]);
+ * ```
+ *
+ * You can also provide a function with the same signature instead of the class:
+ *
+ * ```
+ * bootstrap(AppComponent, [
+ *   {provide: 'canActivateTeam', useValue: (route: ActivatedRouteSnapshot, state:
+ * RouterStateSnapshot) => true},
+ *   provideRouter([
+ *     {
+ *       path: 'root',
+ *       canActivateChild: [CanActivateTeam],
+ *       children: [
+ *        {
+ *          path: 'team/:id',
+ *          component: Team
+ *        }
+ *      ]
+ *    }
+ * ]);
+ * ```
+ *
+ * @stable
+ */
+
+export interface CanActivateChild {
+  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot):
+      Observable<boolean>|boolean;
+}
+
+/**
  * An interface a class can implement to be a guard deciding if a route can be deactivated.
  *
  * ### Example

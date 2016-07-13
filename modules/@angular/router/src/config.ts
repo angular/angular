@@ -241,9 +241,11 @@ export type RouterConfig = Route[];
  * - `redirectTo` is the url fragment which will replace the current matched segment.
  * - `outlet` is the name of the outlet the component should be placed into.
  * - `canActivate` is an array of DI tokens used to look up CanActivate handlers. See {@link
-  * CanActivate} for more info.
+ * CanActivate} for more info.
+ * - `canActivateChild` is an array of DI tokens used to look up CanActivateChild handlers. See {@link
+ * CanActivateChild} for more info.
  * - `canDeactivate` is an array of DI tokens used to look up CanDeactivate handlers. See {@link
-  * CanDeactivate} for more info.
+ * CanDeactivate} for more info.
  * - `data` is additional data provided to the component via `ActivatedRoute`.
  * - `resolve` is a map of DI tokens used to look up data resolvers. See {@link Resolve} for more
  * info.
@@ -487,6 +489,7 @@ export interface Route {
   redirectTo?: string;
   outlet?: string;
   canActivate?: any[];
+  canActivateChild?: any[];
   canDeactivate?: any[];
   data?: Data;
   resolve?: ResolveData;

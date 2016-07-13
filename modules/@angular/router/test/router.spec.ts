@@ -1037,6 +1037,39 @@ describe('Integration', () => {
       });
     });
 
+    describe('CanActivateChild', () => {
+      describe('should be invoked when activating a child', () => {
+        beforeEach(() => {
+          addProviders([{
+            provide: 'alwaysFalse',
+            useValue: (a: any, b: any) => { return a.params.id === '22'; }
+          }]);
+        });
+
+        it('works', fakeAsync(inject(
+                        [Router, TestComponentBuilder, Location],
+                        (router: Router, tcb: TestComponentBuilder, location: Location) => {
+                          const fixture = createRoot(tcb, router, RootCmp);
+
+                          router.resetConfig([{
+                            path: '',
+                            canActivateChild: ['alwaysFalse'],
+                            children: [{path: 'team/:id', component: TeamCmp}]
+                          }]);
+
+                          router.navigateByUrl('/team/22');
+                          advance(fixture);
+
+                          expect(location.path()).toEqual('/team/22');
+
+                          router.navigateByUrl('/team/33').catch(() => {});
+                          advance(fixture);
+
+                          expect(location.path()).toEqual('/team/22');
+                        })));
+      });
+    });
+
     describe('should work when returns an observable', () => {
       beforeEach(() => {
         addProviders([{
