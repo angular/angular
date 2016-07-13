@@ -166,15 +166,26 @@ export function main() {
           dir.name = 'invalidName';
 
           expect(() => form.addControl(dir))
-              .toThrowError(new RegExp('Cannot find control \'invalidName\''));
+              .toThrowError(new RegExp(`Cannot find control with name: 'invalidName'`));
         });
 
-        it('should throw when no value accessor', () => {
-          var dir = new FormControlName(form, null, null, null);
+        it('should throw for a named control when no value accessor', () => {
+          const dir = new FormControlName(form, null, null, null);
           dir.name = 'login';
 
           expect(() => form.addControl(dir))
-              .toThrowError(new RegExp('No value accessor for \'login\''));
+              .toThrowError(new RegExp(`No value accessor for form control with name: 'login'`));
+        });
+
+        it('should throw when no value accessor with path', () => {
+          const group = new FormGroupName(form, null, null);
+          const dir = new FormControlName(group, null, null, null);
+          group.name = 'passwords';
+          dir.name = 'password';
+
+          expect(() => form.addControl(dir))
+              .toThrowError(new RegExp(
+                  `No value accessor for form control with path: 'passwords -> password'`));
         });
 
         it('should set up validators', fakeAsync(() => {
@@ -480,6 +491,22 @@ export function main() {
         expect(ngModel.untouched).toBe(control.untouched);
         expect(ngModel.statusChanges).toBe(control.statusChanges);
         expect(ngModel.valueChanges).toBe(control.valueChanges);
+      });
+
+      it('should throw when no value accessor with named control', () => {
+        const namedDir = new NgModel(null, null, null, null);
+        namedDir.name = 'one';
+
+        expect(() => namedDir.ngOnChanges({}))
+            .toThrowError(new RegExp(`No value accessor for form control with name: 'one'`));
+      });
+
+      it('should throw when no value accessor with unnamed control', () => {
+        const unnamedDir = new NgModel(null, null, null, null);
+
+        expect(() => unnamedDir.ngOnChanges({}))
+            .toThrowError(
+                new RegExp(`No value accessor for form control with unspecified name attribute`));
       });
 
       it('should set up validator', fakeAsync(() => {
