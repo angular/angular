@@ -7,7 +7,6 @@
  */
 
 import {isBlank} from '../facade/lang';
-
 import {AppElement} from './element';
 import {ElementRef} from './element_ref';
 import {AppView} from './view';

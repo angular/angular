@@ -9,11 +9,10 @@
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
 import {unimplemented} from '../facade/exceptions';
-import {Type, isBlank, isPresent} from '../facade/lang';
-
+import {Type, isBlank} from '../facade/lang';
 import {AppElement} from './element';
 import {ElementRef} from './element_ref';
-import {ViewRef, ViewRef_} from './view_ref';
+import {ViewRef} from './view_ref';
 import {ViewUtils} from './view_utils';
 
 
@@ -80,12 +79,11 @@ export class ComponentRef_<C> extends ComponentRef<C> {
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
-
 /**
  * @experimental
  * @ts2dart_const
  */
-const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
+const EMPTY_CONTEXT = new Object();
 
 /**
  * @stable

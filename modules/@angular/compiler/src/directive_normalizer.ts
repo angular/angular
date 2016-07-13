@@ -205,7 +205,7 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
         var textContent = '';
         ast.children.forEach(child => {
           if (child instanceof HtmlTextAst) {
-            textContent += (<HtmlTextAst>child).value;
+            textContent += child.value;
           }
         });
         this.styles.push(textContent);

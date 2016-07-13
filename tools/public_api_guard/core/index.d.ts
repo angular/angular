@@ -705,7 +705,7 @@ export declare class ElementRef {
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
     context: C;
     rootNodes: any[];
-    abstract destroy(): any;
+    abstract destroy(): void;
 }
 
 /** @experimental */

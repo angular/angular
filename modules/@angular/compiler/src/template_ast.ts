@@ -7,9 +7,7 @@
  */
 
 import {isPresent} from '../src/facade/lang';
-
 import {AST} from './expression_parser/ast';
-
 import {CompileDirectiveMetadata, CompileTokenMetadata, CompileProviderMetadata,} from './compile_metadata';
 import {ParseSourceSpan} from './parse_util';
 import {SecurityContext} from '@angular/core';

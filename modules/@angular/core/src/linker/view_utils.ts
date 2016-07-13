@@ -10,13 +10,12 @@ import {APP_ID} from '../application_tokens';
 import {devModeEqual} from '../change_detection/change_detection';
 import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {Inject, Injectable} from '../di/decorators';
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {ListWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
 import {isBlank, isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
 import {SanitizationService} from '../security';
-
 import {AppElement} from './element';
 import {ExpressionChangedAfterItHasBeenCheckedException} from './exceptions';
 
@@ -71,10 +70,10 @@ function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] 
   return renderNodes;
 }
 
-const EMPTY_ARR: any[] /** TODO #9100 */ = /*@ts2dart_const*/[];
+const EMPTY_ARR: any[] = /*@ts2dart_const*/[];
 
 export function ensureSlotCount(projectableNodes: any[][], expectedSlotCount: number): any[][] {
-  var res: any /** TODO #9100 */;
+  var res: any[][];
   if (isBlank(projectableNodes)) {
     res = EMPTY_ARR;
   } else if (projectableNodes.length < expectedSlotCount) {
@@ -144,41 +143,17 @@ export function checkBinding(throwOnChange: boolean, oldValue: any, newValue: an
   }
 }
 
-export function arrayLooseIdentical(a: any[], b: any[]): boolean {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; ++i) {
-    if (!looseIdentical(a[i], b[i])) return false;
-  }
-  return true;
-}
-
-export function mapLooseIdentical<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): boolean {
-  var k1 = StringMapWrapper.keys(m1);
-  var k2 = StringMapWrapper.keys(m2);
-  if (k1.length != k2.length) {
-    return false;
-  }
-  var key: any /** TODO #9100 */;
-  for (var i = 0; i < k1.length; i++) {
-    key = k1[i];
-    if (!looseIdentical(m1[key], m2[key])) {
-      return false;
-    }
-  }
-  return true;
-}
-
 export function castByValue<T>(input: any, value: T): T {
   return <T>input;
 }
 
-export const EMPTY_ARRAY: any[] /** TODO #9100 */ = /*@ts2dart_const*/[];
-export const EMPTY_MAP = /*@ts2dart_const*/ {};
+export const EMPTY_ARRAY: any[] = [];
+export const EMPTY_MAP = {};
 
 export function pureProxy1<P0, R>(fn: (p0: P0) => R): (p0: P0) => R {
-  var result: R;
-  var v0: any /** TODO #9100 */;
-  v0 = UNINITIALIZED;
+  let result: R;
+  let v0: any = UNINITIALIZED;
+
   return (p0) => {
     if (!looseIdentical(v0, p0)) {
       v0 = p0;
@@ -189,9 +164,10 @@ export function pureProxy1<P0, R>(fn: (p0: P0) => R): (p0: P0) => R {
 }
 
 export function pureProxy2<P0, P1, R>(fn: (p0: P0, p1: P1) => R): (p0: P0, p1: P1) => R {
-  var result: R;
-  var v0: any /** TODO #9100 */, v1: any /** TODO #9100 */;
-  v0 = v1 = UNINITIALIZED;
+  let result: R;
+  let v0: any = UNINITIALIZED;
+  let v1: any = UNINITIALIZED;
+
   return (p0, p1) => {
     if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1)) {
       v0 = p0;
@@ -204,9 +180,11 @@ export function pureProxy2<P0, P1, R>(fn: (p0: P0, p1: P1) => R): (p0: P0, p1: P
 
 export function pureProxy3<P0, P1, P2, R>(fn: (p0: P0, p1: P1, p2: P2) => R): (
     p0: P0, p1: P1, p2: P2) => R {
-  var result: R;
-  var v0: any /** TODO #9100 */, v1: any /** TODO #9100 */, v2: any /** TODO #9100 */;
-  v0 = v1 = v2 = UNINITIALIZED;
+  let result: R;
+  let v0: any = UNINITIALIZED;
+  let v1: any = UNINITIALIZED;
+  let v2: any = UNINITIALIZED;
+
   return (p0, p1, p2) => {
     if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2)) {
       v0 = p0;
@@ -220,9 +198,8 @@ export function pureProxy3<P0, P1, P2, R>(fn: (p0: P0, p1: P1, p2: P2) => R): (
 
 export function pureProxy4<P0, P1, P2, P3, R>(fn: (p0: P0, p1: P1, p2: P2, p3: P3) => R): (
     p0: P0, p1: P1, p2: P2, p3: P3) => R {
-  var result: R;
-  var v0: any /** TODO #9100 */, v1: any /** TODO #9100 */, v2: any /** TODO #9100 */,
-      v3: any /** TODO #9100 */;
+  let result: R;
+  let v0: any, v1: any, v2: any, v3: any;
   v0 = v1 = v2 = v3 = UNINITIALIZED;
   return (p0, p1, p2, p3) => {
     if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
@@ -240,9 +217,8 @@ export function pureProxy4<P0, P1, P2, P3, R>(fn: (p0: P0, p1: P1, p2: P2, p3: P
 export function pureProxy5<P0, P1, P2, P3, P4, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) => R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) =>
     R {
-  var result: R;
-  var v0: any /** TODO #9100 */, v1: any /** TODO #9100 */, v2: any /** TODO #9100 */,
-      v3: any /** TODO #9100 */, v4: any /** TODO #9100 */;
+  let result: R;
+  let v0: any, v1: any, v2: any, v3: any, v4: any;
   v0 = v1 = v2 = v3 = v4 = UNINITIALIZED;
   return (p0, p1, p2, p3, p4) => {
     if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
@@ -262,9 +238,8 @@ export function pureProxy5<P0, P1, P2, P3, P4, R>(
 export function pureProxy6<P0, P1, P2, P3, P4, P5, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) => R {
-  var result: R;
-  var v0: any /** TODO #9100 */, v1: any /** TODO #9100 */, v2: any /** TODO #9100 */,
-      v3: any /** TODO #9100 */, v4: any /** TODO #9100 */, v5: any /** TODO #9100 */;
+  let result: R;
+  let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any;
   v0 = v1 = v2 = v3 = v4 = v5 = UNINITIALIZED;
   return (p0, p1, p2, p3, p4, p5) => {
     if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
@@ -284,10 +259,8 @@ export function pureProxy6<P0, P1, P2, P3, P4, P5, R>(
 export function pureProxy7<P0, P1, P2, P3, P4, P5, P6, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) => R {
-  var result: R;
-  var v0: any /** TODO #9100 */, v1: any /** TODO #9100 */, v2: any /** TODO #9100 */,
-      v3: any /** TODO #9100 */, v4: any /** TODO #9100 */, v5: any /** TODO #9100 */,
-      v6: any /** TODO #9100 */;
+  let result: R;
+  let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any;
   v0 = v1 = v2 = v3 = v4 = v5 = v6 = UNINITIALIZED;
   return (p0, p1, p2, p3, p4, p5, p6) => {
     if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
@@ -309,10 +282,8 @@ export function pureProxy7<P0, P1, P2, P3, P4, P5, P6, R>(
 export function pureProxy8<P0, P1, P2, P3, P4, P5, P6, P7, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) => R {
-  var result: R;
-  var v0: any /** TODO #9100 */, v1: any /** TODO #9100 */, v2: any /** TODO #9100 */,
-      v3: any /** TODO #9100 */, v4: any /** TODO #9100 */, v5: any /** TODO #9100 */,
-      v6: any /** TODO #9100 */, v7: any /** TODO #9100 */;
+  let result: R;
+  let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any;
   v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = UNINITIALIZED;
   return (p0, p1, p2, p3, p4, p5, p6, p7) => {
     if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
@@ -335,10 +306,8 @@ export function pureProxy8<P0, P1, P2, P3, P4, P5, P6, P7, R>(
 export function pureProxy9<P0, P1, P2, P3, P4, P5, P6, P7, P8, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8) => R {
-  var result: R;
-  var v0: any /** TODO #9100 */, v1: any /** TODO #9100 */, v2: any /** TODO #9100 */,
-      v3: any /** TODO #9100 */, v4: any /** TODO #9100 */, v5: any /** TODO #9100 */,
-      v6: any /** TODO #9100 */, v7: any /** TODO #9100 */, v8: any /** TODO #9100 */;
+  let result: R;
+  let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any;
   v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8 = UNINITIALIZED;
   return (p0, p1, p2, p3, p4, p5, p6, p7, p8) => {
     if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
@@ -362,11 +331,8 @@ export function pureProxy9<P0, P1, P2, P3, P4, P5, P6, P7, P8, R>(
 export function pureProxy10<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8, p9: P9) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8, p9: P9) => R {
-  var result: R;
-  var v0: any /** TODO #9100 */, v1: any /** TODO #9100 */, v2: any /** TODO #9100 */,
-      v3: any /** TODO #9100 */, v4: any /** TODO #9100 */, v5: any /** TODO #9100 */,
-      v6: any /** TODO #9100 */, v7: any /** TODO #9100 */, v8: any /** TODO #9100 */,
-      v9: any /** TODO #9100 */;
+  let result: R;
+  let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any, v9: any;
   v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8 = v9 = UNINITIALIZED;
   return (p0, p1, p2, p3, p4, p5, p6, p7, p8, p9) => {
     if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||

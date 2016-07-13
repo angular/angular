@@ -6,12 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '../di/decorators';
-import {Injector} from '../di/injector';
-import {ReflectiveInjector} from '../di/reflective_injector';
-import {ResolvedReflectiveProvider} from '../di/reflective_provider';
+import {Injectable, Injector, ReflectiveInjector, ResolvedReflectiveProvider} from '../di';
 import {Type, isPresent} from '../facade/lang';
-
 import {ComponentRef} from './component_factory';
 import {ComponentResolver} from './component_resolver';
 import {ViewContainerRef} from './view_container_ref';

@@ -72,7 +72,7 @@ export class ProviderElementContext {
 
     // create the providers that we know are eager first
     this._allProviders.values().forEach((provider) => {
-      var eager = provider.eager || isPresent(queriedTokens.get(provider.token));
+      const eager = provider.eager || isPresent(queriedTokens.get(provider.token));
       if (eager) {
         this._getOrCreateLocalProvider(provider.providerType, provider.token, true);
       }
@@ -102,7 +102,7 @@ export class ProviderElementContext {
 
   private _addQueryReadsTo(token: CompileTokenMetadata, queryReadTokens: CompileTokenMap<boolean>) {
     this._getQueriesFor(token).forEach((query) => {
-      var queryReadToken = isPresent(query.read) ? query.read : token;
+      const queryReadToken = isPresent(query.read) ? query.read : token;
       if (isBlank(queryReadTokens.get(queryReadToken))) {
         queryReadTokens.add(queryReadToken, true);
       }
@@ -282,7 +282,7 @@ export class AppModuleProviderParser {
   constructor(appModule: CompileAppModuleMetadata, sourceSpan: ParseSourceSpan) {
     this._allProviders = new CompileTokenMap<ProviderAst>();
     [appModule.type].concat(appModule.modules).forEach((appModuleType: CompileTypeMetadata) => {
-      var appModuleProvider = new CompileProviderMetadata(
+      const appModuleProvider = new CompileProviderMetadata(
           {token: new CompileTokenMetadata({identifier: appModuleType}), useClass: appModuleType});
       _resolveProviders(
           [appModuleProvider], ProviderAstType.PublicService, true, sourceSpan, this._errors,
@@ -297,7 +297,7 @@ export class AppModuleProviderParser {
     this._allProviders.values().forEach(
         (provider) => { this._getOrCreateLocalProvider(provider.token, provider.eager); });
     if (this._errors.length > 0) {
-      var errorString = this._errors.join('\n');
+      const errorString = this._errors.join('\n');
       throw new BaseException(`Provider parse errors:\n${errorString}`);
     }
     return this._transformedProviders.values();
@@ -415,7 +415,7 @@ function _normalizeProviders(
       if (isArray(provider)) {
         _normalizeProviders(<any[]>provider, sourceSpan, targetErrors, targetProviders);
       } else {
-        var normalizeProvider: CompileProviderMetadata;
+        let normalizeProvider: CompileProviderMetadata;
         if (provider instanceof CompileProviderMetadata) {
           normalizeProvider = provider;
         } else if (provider instanceof CompileTypeMetadata) {
