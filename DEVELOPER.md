@@ -134,7 +134,39 @@ To build Angular run:
 To run tests:
 
 ```shell
-./test.sh node
-./test.sh browser
-./test.sh tools
+$ ./test.sh node
+
+$ ./test.sh browser
+
+$ ./test.sh tools
 ```
+
+You should execute the 3 test suites before submitting a PR to github.
+
+All the tests are executed on our Continuous Integration infrastructure and a PR could only be merged once the tests pass.
+
+- CircleCI fails if your code is not formatted properly,
+- Travis CI fails if any of the test suite describe above fails.
+
+## Update the public API tests
+
+If you happen to modify the public API of Angular, API golden files must be updated using:
+
+``` shell
+$ gulp public-api:update
+```
+
+Note: The command `./test.sh tools` fails when the API doesn't match the golden files.
+
+## Formatting your source code
+
+Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code. If the source code
+is not properly formatted, the CI will fail and the PR can not be merged.
+
+You can automatically format your code by running:
+
+``` shell
+$ gulp format
+```
+
+
