@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {BrowserJsonp} from '../../src/backends/browser_jsonp';
 import {JSONPConnection, JSONPConnection_, JSONPBackend, JSONPBackend_} from '../../src/backends/jsonp_backend';
 import {ReflectiveInjector} from '@angular/core';

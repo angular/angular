@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {MockConnection, MockBackend} from '../../testing/mock_backend';
 import {ReflectiveInjector} from '@angular/core';
 import {Request} from '../../src/static_request';

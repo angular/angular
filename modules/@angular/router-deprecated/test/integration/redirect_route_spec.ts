@@ -8,7 +8,8 @@
 
 import {Location} from '@angular/common';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {RouteData, RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';
 
 import {AsyncRoute, AuxRoute, Redirect, Route, RouteConfig} from '../../src/route_config/route_config_decorator';

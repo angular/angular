@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEachProviders, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEachProviders, beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {TestComponentBuilder} from '@angular/core/testing';
 
 import {Component, Injectable} from '@angular/core';

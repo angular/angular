@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
 

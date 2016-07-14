@@ -9,7 +9,7 @@
 import {AST, ASTWithSource, BindingPipe, Interpolation, LiteralPrimitive, ParserError, TemplateBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser, TemplateBindingParseResult} from '@angular/compiler/src/expression_parser/parser';
-import {expect} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {isBlank, isPresent} from '../../src/facade/lang';
 

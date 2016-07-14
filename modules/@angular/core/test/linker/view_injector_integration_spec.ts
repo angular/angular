@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing/testing_internal';
+import {describe, ddescribe, it, iit, xit, xdescribe, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {fakeAsync, flushMicrotasks, tick, ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {isBlank, ConcreteType} from '../../src/facade/lang';
 import {Type, ViewContainerRef, TemplateRef, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, Directive, Component, DebugElement, forwardRef, Input, PipeTransform, Attribute, ViewMetadata, provide, Optional, Inject, Self, InjectMetadata, Pipe, Host, SkipSelfMetadata} from '@angular/core';
