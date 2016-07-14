@@ -6,6 +6,15 @@ describe('config', () => {
       validateConfig([{path: 'a', redirectTo: 'b'}, {path: 'b', component: ComponentA}]);
     });
 
+    it('should throw when Array is passed', () => {
+      expect(() => {
+        validateConfig([
+          {path: 'a', component: ComponentA},
+          [{path: 'b', component: ComponentB}, {path: 'c', component: ComponentC}]
+        ]);
+      }).toThrowError(`Invalid route configuration: Array cannot be specified`);
+    });
+
     it('should throw when redirectTo and children are used together', () => {
       expect(() => {
         validateConfig(
