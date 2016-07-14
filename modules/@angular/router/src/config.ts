@@ -503,6 +503,9 @@ export function validateConfig(config: Routes): void {
 }
 
 function validateNode(route: Route): void {
+  if (Array.isArray(route)) {
+    throw new Error(`Invalid route configuration: Array cannot be specified`);
+  }
   if (!!route.redirectTo && !!route.children) {
     throw new Error(
         `Invalid configuration of route '${route.path}': redirectTo and children cannot be used together`);
