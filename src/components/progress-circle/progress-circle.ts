@@ -151,7 +151,7 @@ export class MdProgressCircle implements OnDestroy {
   private _animateCircle(animateFrom: number, animateTo: number, ease: EasingFn,
                         duration: number, rotation: number) {
     let id = ++this._lastAnimationId;
-    let startTime = now();
+    let startTime = Date.now();
     let changeInValue = animateTo - animateFrom;
 
     // No need to animate it if the values are the same
@@ -160,7 +160,7 @@ export class MdProgressCircle implements OnDestroy {
     } else {
       let animation = (currentTime: number) => {
         let elapsedTime = Math.max(
-          0, Math.min((currentTime || now()) - startTime, duration));
+          0, Math.min((currentTime || Date.now()) - startTime, duration));
 
         this.currentPath = getSvgArc(
           ease(elapsedTime, animateFrom, changeInValue, duration),
@@ -243,17 +243,6 @@ export class MdSpinner extends MdProgressCircle {
 /** Clamps a value to be between 0 and 100. */
 function clamp(v: number) {
   return Math.max(0, Math.min(100, v));
-}
-
-
-/**
- * Returns the current timestamp either based on the performance global or a date object.
- */
-function now() {
-  if (typeof performance !== 'undefined' && performance.now) {
-    return performance.now();
-  }
-  return Date.now();
 }
 
 
