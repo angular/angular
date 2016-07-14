@@ -17,14 +17,16 @@ export class DomPortalHost extends BasePortalHost {
   }
 
   /** Attach the given ComponentPortal to DOM element using the ComponentResolver. */
-  attachComponentPortal(portal: ComponentPortal): Promise<ComponentRef<any>> {
+  attachComponentPortal<T>(portal: ComponentPortal<T>): Promise<ComponentRef<T>> {
     if (portal.viewContainerRef == null) {
       throw new MdComponentPortalAttachedToDomWithoutOriginError();
     }
 
     return this._componentResolver.resolveComponent(portal.component).then(componentFactory => {
       let ref = portal.viewContainerRef.createComponent(
-          componentFactory, portal.viewContainerRef.length, portal.viewContainerRef.parentInjector);
+          componentFactory,
+          portal.viewContainerRef.length,
+          portal.injector || portal.viewContainerRef.parentInjector);
 
       let hostView = <EmbeddedViewRef<any>> ref.hostView;
       this._hostDomElement.appendChild(hostView.rootNodes[0]);

@@ -1,0 +1,8 @@
+@import 'elevation';
+
+:host {
+  // TODO(jelbourn): add real Material Design dialog styles.
+  display: block;
+  background: deeppink;
+  @include md-elevation(2);
+}

@@ -39,4 +39,4 @@ export class PortalDemo {
   selector: 'science-joke',
   template: `<p> 100 kilopascals go into a bar. </p>`
 })
-class ScienceJoke { }
+export class ScienceJoke { }

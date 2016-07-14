@@ -6,6 +6,7 @@ const components = [
   'button',
   'card',
   'checkbox',
+  'dialog',
   'grid-list',
   'icon',
   'input',

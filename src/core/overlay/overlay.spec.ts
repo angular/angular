@@ -23,7 +23,7 @@ import {ViewportRuler} from './position/viewport-ruler';
 describe('Overlay', () => {
   let builder: TestComponentBuilder;
   let overlay: Overlay;
-  let componentPortal: ComponentPortal;
+  let componentPortal: ComponentPortal<PizzaMsg>;
   let templatePortal: TemplatePortal;
   let overlayContainerElement: HTMLElement;
 

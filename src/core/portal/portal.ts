@@ -1,4 +1,10 @@
-import {TemplateRef, Type, ViewContainerRef, ElementRef, ComponentRef} from '@angular/core';
+import {
+    TemplateRef,
+    ViewContainerRef,
+    ElementRef,
+    ComponentRef,
+    Injector
+} from '@angular/core';
 import {
     MdNullPortalHostError,
     MdPortalAlreadyAttachedError,
@@ -7,6 +13,7 @@ import {
     MdPortalHostAlreadyDisposedError,
     MdUnknownPortalTypeError
 } from './portal-errors';
+import {ComponentType} from '../overlay/generic-component-type';
 
 
 
@@ -60,21 +67,28 @@ export abstract class Portal<T> {
 /**
  * A `ComponentPortal` is a portal that instantiates some Component upon attachment.
  */
-export class ComponentPortal extends Portal<ComponentRef<any>> {
+export class ComponentPortal<T> extends Portal<ComponentRef<T>> {
   /** The type of the component that will be instantiated for attachment. */
-  public component: Type;
+  component: ComponentType<T>;
 
   /**
    * [Optional] Where the attached component should live in Angular's *logical* component tree.
    * This is different from where the component *renders*, which is determined by the PortalHost.
    * The origin necessary when the host is outside of the Angular application context.
    */
-  public viewContainerRef: ViewContainerRef;
+  viewContainerRef: ViewContainerRef;
 
-  constructor(component: Type, viewContainerRef: ViewContainerRef = null) {
+  /** [Optional] Injector used for the instantiation of the component. */
+  injector: Injector;
+
+  constructor(
+      component: ComponentType<T>,
+      viewContainerRef: ViewContainerRef = null,
+      injector: Injector = null) {
     super();
     this.component = component;
     this.viewContainerRef = viewContainerRef;
+    this.injector = injector;
   }
 }
 
@@ -176,7 +190,7 @@ export abstract class BasePortalHost implements PortalHost {
     throw new MdUnknownPortalTypeError();
   }
 
-  abstract attachComponentPortal(portal: ComponentPortal): Promise<ComponentRef<any>>;
+  abstract attachComponentPortal<T>(portal: ComponentPortal<T>): Promise<ComponentRef<T>>;
 
   abstract attachTemplatePortal(portal: TemplatePortal): Promise<Map<string, any>>;
 

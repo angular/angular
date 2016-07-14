@@ -82,9 +82,7 @@ export class Overlay {
    * @returns A portal host for the given DOM element.
    */
   private _createPortalHost(pane: HTMLElement): DomPortalHost {
-    return new DomPortalHost(
-        pane,
-        this._componentResolver);
+    return new DomPortalHost(pane, this._componentResolver);
   }
 
   /**

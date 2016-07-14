@@ -12,9 +12,15 @@ export class OverlayRef implements PortalHost {
       private _state: OverlayState) { }
 
   attach(portal: Portal<any>): Promise<any> {
-    return this._portalHost.attach(portal).then(() => {
+    let attachPromise = this._portalHost.attach(portal);
+
+    // Don't chain the .then() call in the return because we want the result of portalHost.attach
+    // to be returned from this method.
+    attachPromise.then(() => {
       this._updatePosition();
     });
+
+    return attachPromise;
   }
 
   detach(): Promise<any> {

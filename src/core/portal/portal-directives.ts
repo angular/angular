@@ -59,7 +59,7 @@ export class PortalHostDirective extends BasePortalHost {
   }
 
   /** Attach the given ComponentPortal to this PortlHost using the ComponentResolver. */
-  attachComponentPortal(portal: ComponentPortal): Promise<ComponentRef<any>> {
+  attachComponentPortal<T>(portal: ComponentPortal<T>): Promise<ComponentRef<T>> {
     portal.setAttachedHost(this);
 
     // If the portal specifies an origin, use that as the logical location of the component
@@ -70,7 +70,8 @@ export class PortalHostDirective extends BasePortalHost {
 
     return this._componentResolver.resolveComponent(portal.component).then(componentFactory => {
       let ref = viewContainerRef.createComponent(
-          componentFactory, viewContainerRef.length, viewContainerRef.parentInjector);
+          componentFactory, viewContainerRef.length,
+          portal.injector || viewContainerRef.parentInjector);
 
       this.setDisposeFn(() => ref.destroy());
       return ref;
@@ -93,7 +94,7 @@ export class PortalHostDirective extends BasePortalHost {
     let maybeDetach = this.hasAttached() ? this.detach() : Promise.resolve(null);
 
     maybeDetach.then(() => {
-      if (p != null) {
+      if (p) {
         this.attach(p);
         this._portal = p;
       }
