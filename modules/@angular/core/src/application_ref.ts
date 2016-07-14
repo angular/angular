@@ -590,6 +590,7 @@ export class ApplicationRef_ extends ApplicationRef {
   get componentTypes(): Type[] { return this._rootComponentTypes; }
 }
 
+/* @deprecated */
 export const PLATFORM_CORE_PROVIDERS =
     /*@ts2dart_const*/[
       PlatformRef_,
@@ -597,6 +598,7 @@ export const PLATFORM_CORE_PROVIDERS =
           /* @ts2dart_Provider */ {provide: PlatformRef, useExisting: PlatformRef_})
     ];
 
+/* @deprecated */
 export const APPLICATION_CORE_PROVIDERS = /*@ts2dart_const*/[
   /* @ts2dart_Provider */ {
     provide: NgZone,

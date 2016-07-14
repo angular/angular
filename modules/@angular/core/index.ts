@@ -36,3 +36,4 @@ export * from './src/animation/metadata';
 export {AnimationPlayer} from './src/animation/animation_player';
 
 export {SanitizationService, SecurityContext} from './src/security';
+export * from './src/module';

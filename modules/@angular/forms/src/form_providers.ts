@@ -14,13 +14,13 @@ import {FormBuilder} from './form_builder';
 
 /**
  * Shorthand set of providers used for building Angular forms.
- * @experimental
+ * @deprecated Use `FormsModule`
  */
 export const FORM_PROVIDERS: Type[] = /*@ts2dart_const*/[RadioControlRegistry];
 
 /**
  * Shorthand set of providers used for building reactive Angular forms.
- * @experimental
+ * @deprecated Use `ReactiveFormsModule`
  */
 export const REACTIVE_FORM_PROVIDERS: Type[] =
     /*@ts2dart_const*/[FormBuilder, RadioControlRegistry];
@@ -29,7 +29,7 @@ export const REACTIVE_FORM_PROVIDERS: Type[] =
  * The app module for forms.
  * @experimental
  */
-@AppModule({providers: [FORM_PROVIDERS], directives: FORM_DIRECTIVES, pipes: []})
+@AppModule({providers: [FORM_PROVIDERS], directives: FORM_DIRECTIVES})
 export class FormsModule {
 }
 
@@ -37,6 +37,6 @@ export class FormsModule {
  * The app module for reactive forms.
  * @experimental
  */
-@AppModule({providers: [REACTIVE_FORM_PROVIDERS], directives: REACTIVE_FORM_DIRECTIVES, pipes: []})
+@AppModule({providers: [REACTIVE_FORM_PROVIDERS], directives: REACTIVE_FORM_DIRECTIVES})
 export class ReactiveFormsModule {
 }

@@ -30,7 +30,7 @@ import {UpperCasePipe} from './uppercase_pipe';
  * This collection can be used to quickly enumerate all the built-in pipes in the `pipes`
  * property of the `@Component` decorator.
  *
- * @experimental Contains i18n pipes which are experimental
+ * @deprecated Use `CommonModule`
  */
 export const COMMON_PIPES = /*@ts2dart_const*/[
   AsyncPipe,

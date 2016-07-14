@@ -5,7 +5,7 @@ import * as core from '@angular/core/testing';
 import * as httpTesting from '@angular/http';
 import * as http from '@angular/http/testing';
 import * as platformBrowserTesting from '@angular/platform-browser';
-import * as platformBrowserDynmic from '@angular/platform-browser-dynamic';
+import * as platformBrowserDynamic from '@angular/platform-browser-dynamic';
 import * as platformBrowser from '@angular/platform-browser/testing';
 import * as platfomrServerTesting from '@angular/platform-server';
 import * as platfomrServer from '@angular/platform-server/testing';
@@ -22,7 +22,7 @@ export default {
   httpTesting,
   platformBrowser,
   platformBrowserTesting,
-  platformBrowserDynmic,
+  platformBrowserDynamic,
   platfomrServer,
   platfomrServerTesting,
   routerDeprecated,

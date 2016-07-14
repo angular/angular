@@ -54,7 +54,7 @@ export declare abstract class AbstractControlDirective {
     value: any;
 }
 
-/** @stable */
+/** @deprecated */
 export declare const APP_BASE_HREF: OpaqueToken;
 
 /** @stable */
@@ -74,11 +74,16 @@ export declare class CheckboxControlValueAccessor implements ControlValueAccesso
     writeValue(value: any): void;
 }
 
-/** @experimental */
-export declare const COMMON_DIRECTIVES: Type[][];
+/** @deprecated */
+export declare const COMMON_DIRECTIVES: Type[];
 
-/** @experimental */
+/** @deprecated */
 export declare const COMMON_PIPES: (typeof AsyncPipe | typeof SlicePipe | typeof ReplacePipe | typeof I18nPluralPipe | typeof I18nSelectPipe)[];
+
+/** @stable */
+export declare class CommonModule {
+    /** @stable */ static appBaseHref: OpaqueToken;
+}
 
 /** @experimental */
 export declare class Control extends AbstractControl {
@@ -134,7 +139,7 @@ export interface ControlValueAccessor {
     writeValue(obj: any): void;
 }
 
-/** @stable */
+/** @deprecated */
 export declare const CORE_DIRECTIVES: Type[];
 
 /** @experimental */
@@ -177,10 +182,10 @@ export interface Form {
     updateModel(dir: NgControl, value: any): void;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const FORM_DIRECTIVES: Type[];
 
-/** @experimental */
+/** @deprecated */
 export declare const FORM_PROVIDERS: Type[];
 
 /** @experimental */

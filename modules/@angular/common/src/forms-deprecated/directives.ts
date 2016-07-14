@@ -56,7 +56,7 @@ export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValida
  * })
  * class MyApp {}
  * ```
- * @experimental
+ * @deprecated Use `DeprecatedFormsModule`
  */
 export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
   NgControlName,

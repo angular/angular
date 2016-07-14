@@ -47,6 +47,7 @@ export function main() {
 
       describe('transform', () => {
         it('should format each component correctly', () => {
+          var tz = new Date().toString().split(/[\(|\)]/)[1];
           expect(pipe.transform(date, 'y')).toEqual('2015');
           expect(pipe.transform(date, 'yy')).toEqual('15');
           expect(pipe.transform(date, 'M')).toEqual('6');
@@ -64,7 +65,7 @@ export function main() {
           expect(pipe.transform(date, 's')).toEqual('1');
           expect(pipe.transform(date, 'mm')).toEqual('03');
           expect(pipe.transform(date, 'ss')).toEqual('01');
-          expect(pipe.transform(date, 'Z')).toEqual('GMT');
+          expect(pipe.transform(date, 'Z')).toEqual(tz);
         });
 
         it('should format common multi component patterns', () => {

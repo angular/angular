@@ -12,7 +12,6 @@
  * The http module provides services to perform http requests. To get started, see the {@link Http}
  * class.
  */
-import {provide} from '@angular/core';
 
 import {BrowserJsonp} from './src/backends/browser_jsonp';
 import {BrowserXhr} from './src/backends/browser_xhr';
@@ -181,7 +180,7 @@ export {QueryEncoder, URLSearchParams} from './src/url_search_params';
  *   .catch(err => console.error(err));
  * ```
  *
- * @experimental
+ * @deprecated Use `HttpModule``
  */
 export const HTTP_PROVIDERS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
@@ -316,7 +315,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * });
  * ```
  *
- * @experimental
+ * @deprecated Use `JsonpModule`
  */
 export const JSONP_PROVIDERS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI

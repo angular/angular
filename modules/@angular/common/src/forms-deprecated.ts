@@ -55,7 +55,7 @@ export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './forms-deprecated
  * bootstrap(MyApp, [FORM_PROVIDERS]);
  * ```
  *
- * @experimental
+ * @deprecated
  */
 export const FORM_PROVIDERS: Type[] = /*@ts2dart_const*/[FormBuilder, RadioControlRegistry];
 
@@ -65,11 +65,8 @@ export const FORM_PROVIDERS: Type[] = /*@ts2dart_const*/[FormBuilder, RadioContr
  * @deprecated
  */
 @AppModule({
-  providers: [
-    FORM_PROVIDERS,
-  ],
-  directives: FORM_DIRECTIVES,
-  pipes: []
+  providers: FORM_PROVIDERS,
+  directives: FORM_DIRECTIVES
 })
 export class DeprecatedFormsModule {
 }

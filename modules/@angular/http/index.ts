@@ -7,3 +7,4 @@
  */
 
 export * from './http';
+export {HttpModule, JsonpModule} from './module';

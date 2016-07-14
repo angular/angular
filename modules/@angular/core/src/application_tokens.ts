@@ -19,7 +19,7 @@ import {OpaqueToken} from './di';
  * If you need to avoid randomly generated value to be used as an application id, you can provide
  * a custom value via a DI provider <!-- TODO: provider --> configuring the root {@link Injector}
  * using this token.
- * @experimental
+ * @deprecated use `CoreModule.appId`
  */
 export const APP_ID: any = /*@ts2dart_const*/ new OpaqueToken('AppId');
 
@@ -58,7 +58,7 @@ export const APP_INITIALIZER: any =
 
 /**
  * A token which indicates the root directory of the application
- * @experimental
+ * @deprecated see `CoreModule.packageRootUrl`
  */
 export const PACKAGE_ROOT_URL: any =
     /*@ts2dart_const*/ new OpaqueToken('Application Packages Root URL');

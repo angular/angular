@@ -67,6 +67,6 @@ export abstract class LocationStrategy {
  *   {provide: APP_BASE_HREF, useValue: '/my/app'}
  * ]);
  * ```
- * @stable
+ * @deprecated See {CommonModule.appBaseHref}
  */
 export const APP_BASE_HREF: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('appBaseHref');

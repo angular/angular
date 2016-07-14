@@ -33,7 +33,7 @@ export function _keyValueDiffersFactory() {
 /**
  * A default set of providers which should be included in any Angular
  * application, regardless of the platform it runs onto.
- * @stable
+ * @deprecated
  */
 export const APPLICATION_COMMON_PROVIDERS: Array<Type|{[k: string]: any}|any[]> =
     /*@ts2dart_const*/[

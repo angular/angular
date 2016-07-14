@@ -56,7 +56,7 @@ import {NgTemplateOutlet} from './ng_template_outlet';
  * }
  * ```
  *
- * @stable
+ * @deprecated Use `CommonModule`
  */
 export const CORE_DIRECTIVES: Type[] = /*@ts2dart_const*/[
   NgClass,

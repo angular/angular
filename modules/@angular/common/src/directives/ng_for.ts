@@ -121,7 +121,7 @@ export class NgFor implements DoCheck {
     var recordViewTuples: RecordViewTuple[] = [];
     changes.forEachRemovedItem(
         (removedRecord: CollectionChangeRecord) =>
-            recordViewTuples.push(new RecordViewTuple(removedRecord, null)));
+            gi.push(new RecordViewTuple(removedRecord, null)));
 
     changes.forEachMovedItem(
         (movedRecord: CollectionChangeRecord) =>

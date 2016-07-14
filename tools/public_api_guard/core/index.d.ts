@@ -25,7 +25,7 @@ export declare abstract class AfterViewInit {
     abstract ngAfterViewInit(): any;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const ANALYZE_FOR_PRECOMPILE: OpaqueToken;
 
 /** @experimental */
@@ -118,13 +118,13 @@ export declare abstract class AnimationWithStepsMetadata extends AnimationMetada
     constructor();
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const APP_ID: any;
 
 /** @experimental */
 export declare const APP_INITIALIZER: any;
 
-/** @stable */
+/** @deprecated */
 export declare const APPLICATION_COMMON_PROVIDERS: Array<Type | {
     [k: string]: any;
 } | any[]>;
@@ -535,6 +535,13 @@ export declare function coreBootstrap<C>(componentFactory: ComponentFactory<C>, 
 
 /** @deprecated */
 export declare function coreLoadAndBootstrap(componentType: Type, injector: Injector): Promise<ComponentRef<any>>;
+
+/** @stable */
+export declare class CoreModule {
+    /** @experimental */ static analyzeForPrecompile: OpaqueToken;
+    /** @experimental */ static appId: OpaqueToken;
+    /** @experimental */ static packageRootUrl: OpaqueToken;
+}
 
 /** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
@@ -1025,7 +1032,7 @@ export interface OutputMetadataFactory {
     new (bindingPropertyName?: string): any;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const PACKAGE_ROOT_URL: any;
 
 /** @stable */
@@ -1058,7 +1065,7 @@ export interface PipeTransform {
     transform(value: any, ...args: any[]): any;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const PLATFORM_COMMON_PROVIDERS: Array<any | Type | Provider | any[]>;
 
 /** @deprecated */

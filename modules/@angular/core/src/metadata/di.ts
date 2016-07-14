@@ -43,7 +43,7 @@ import {StringWrapper, Type, isString, stringify} from '../facade/lang';
  * class ModuleWithRoutes {}
  * ```
  *
- * @experimental
+ * @deprecated See {CoreModule.analyzeForPrecompile}
  */
 export const ANALYZE_FOR_PRECOMPILE = new OpaqueToken('AnalyzeForPrecompile');
 

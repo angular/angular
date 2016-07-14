@@ -116,7 +116,7 @@ export interface Form {
 /** @experimental */
 export declare const FORM_DIRECTIVES: Type[][];
 
-/** @experimental */
+/** @deprecated */
 export declare const FORM_PROVIDERS: Type[];
 
 /** @experimental */
@@ -373,7 +373,7 @@ export declare class PatternValidator implements Validator {
 /** @experimental */
 export declare const REACTIVE_FORM_DIRECTIVES: Type[][];
 
-/** @experimental */
+/** @deprecated */
 export declare const REACTIVE_FORM_PROVIDERS: Type[];
 
 /** @experimental */
