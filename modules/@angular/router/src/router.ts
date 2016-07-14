@@ -243,12 +243,12 @@ export class Router {
    * router.navigateByUrl("/team/33/user/11");
    * ```
    */
-  navigateByUrl(url: string|UrlTree): Promise<boolean> {
+  navigateByUrl(url: string|UrlTree, preventPushState = false): Promise<boolean> {
     if (url instanceof UrlTree) {
-      return this.scheduleNavigation(url, false);
+      return this.scheduleNavigation(url, preventPushState);
     } else {
       const urlTree = this.urlSerializer.parse(url);
-      return this.scheduleNavigation(urlTree, false);
+      return this.scheduleNavigation(urlTree, preventPushState);
     }
   }
 
@@ -267,8 +267,9 @@ export class Router {
    * router.navigate(['team', 33, 'team', '11], {relativeTo: route});
    * ```
    */
-  navigate(commands: any[], extras: NavigationExtras = {}): Promise<boolean> {
-    return this.scheduleNavigation(this.createUrlTree(commands, extras), false);
+  navigate(commands: any[], extras: NavigationExtras = {}, preventPushState = false):
+      Promise<boolean> {
+    return this.scheduleNavigation(this.createUrlTree(commands, extras), preventPushState);
   }
 
   /**
