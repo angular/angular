@@ -12,6 +12,14 @@ describe('recognize', () => {
     });
   });
 
+  it('should freeze params object', () => {
+    checkRecognize([{path: 'a/:id', component: ComponentA}], 'a/10', (s: RouterStateSnapshot) => {
+      checkActivatedRoute(s.root, '', {}, RootComponent);
+      const child = s.firstChild(s.root);
+      expect(() => child.params['prop'] = "new").toThrowError(/Can't add property/);
+    });
+  });
+
   it('should support secondary routes', () => {
     checkRecognize(
         [
@@ -502,6 +510,12 @@ describe('recognize', () => {
       const config = [{path: 'a', component: ComponentA}];
       checkRecognize(config, 'a?q=11', (s: RouterStateSnapshot) => {
         expect(s.queryParams).toEqual({q: '11'});
+      });
+    });
+
+    it('should freeze query params object', () => {
+      checkRecognize([{path: 'a', component: ComponentA}], 'a?q=11', (s: RouterStateSnapshot) => {
+        expect(() => s.queryParams['prop'] = "new").toThrowError(/Can't add property/);
       });
     });
   });

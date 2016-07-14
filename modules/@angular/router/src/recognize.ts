@@ -44,10 +44,10 @@ export function recognize(rootComponentType: Type, config: Routes, urlTree: UrlT
     const children =
         processSegment(config, urlTree.root, InheritedFromParent.empty(null), PRIMARY_OUTLET);
     const root = new ActivatedRouteSnapshot(
-        [], {}, {}, PRIMARY_OUTLET, rootComponentType, null, urlTree.root, -1,
+        [], Object.freeze({}), {}, PRIMARY_OUTLET, rootComponentType, null, urlTree.root, -1,
         InheritedResolve.empty);
     const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
-    return of (new RouterStateSnapshot(url, rootNode, urlTree.queryParams, urlTree.fragment));
+    return of (new RouterStateSnapshot(url, rootNode, Object.freeze(urlTree.queryParams), urlTree.fragment));
   } catch (e) {
     if (e instanceof NoMatch) {
       return new Observable<RouterStateSnapshot>(
@@ -113,7 +113,7 @@ function processPathsWithParamsAgainstRoute(
   if (route.path === '**') {
     const params = paths.length > 0 ? last(paths).parameters : {};
     const snapshot = new ActivatedRouteSnapshot(
-        paths, merge(inherited.allParams, params), merge(inherited.allData, getData(route)), outlet,
+        paths, Object.freeze(merge(inherited.allParams, params)), merge(inherited.allData, getData(route)), outlet,
         route.component, route, getSourceSegment(rawSegment), getPathIndexShift(rawSegment) - 1,
         newInheritedResolve);
     return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
@@ -127,7 +127,7 @@ function processPathsWithParamsAgainstRoute(
   const {segment, slicedPath} = split(rawSegment, consumedPaths, rawSlicedPath, childConfig);
 
   const snapshot = new ActivatedRouteSnapshot(
-      consumedPaths, merge(inherited.allParams, parameters),
+      consumedPaths, Object.freeze(merge(inherited.allParams, parameters)),
       merge(inherited.allData, getData(route)), outlet, route.component, route,
       getSourceSegment(rawSegment), getPathIndexShift(rawSegment) + pathIndex + lastChild - 1,
       newInheritedResolve);
