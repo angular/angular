@@ -25,6 +25,7 @@ export function config(config) {
       {pattern: 'dist/vendor/zone.js/dist/zone.js', included: true, watched: false},
       {pattern: 'dist/vendor/zone.js/dist/async-test.js', included: true, watched: false},
       {pattern: 'dist/vendor/zone.js/dist/fake-async-test.js', included: true, watched: false},
+      {pattern: 'dist/vendor/hammerjs/hammer.min.js', included: true, watched: false},
 
       {pattern: 'test/karma-test-shim.js', included: true, watched: false},
 
