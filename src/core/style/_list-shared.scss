@@ -1,13 +1,21 @@
 /**
+ * This mixin will ensure that lines that overflow the container will
+ * hide the overflow and truncate neatly with an ellipsis.
+ */
+@mixin md-truncate-line() {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+/**
  * This mixin provides all md-line styles, changing secondary font size
  * based on whether the list is in dense mode.
  */
 @mixin md-line-base($secondary-font-size) {
   [md-line] {
+    @include md-truncate-line();
     display: block;
-    white-space: nowrap;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
     box-sizing: border-box;
 
     // all lines but the top line should have smaller text

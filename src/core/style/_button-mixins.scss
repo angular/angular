@@ -1,0 +1,11 @@
+/**
+ * This mixin overrides default button styles like the gray background,
+ * the border, and the outline.
+ */
+@mixin md-button-reset {
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  border: none;
+}

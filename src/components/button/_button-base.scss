@@ -1,6 +1,7 @@
 
 @import 'variables';
 @import 'elevation';
+@import 'button-mixins';
 
 // TODO(jelbourn): This goes away.
 @import 'default-theme';
@@ -34,12 +35,7 @@ $md-mini-fab-padding: 8px !default;
   position: relative;
 
   // Reset browser <button> styles.
-  background: transparent;
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-  outline: none;
-  border: none;
+  @include md-button-reset();
 
   // Make anchors render like buttons.
   display: inline-block;
@@ -52,6 +48,7 @@ $md-mini-fab-padding: 8px !default;
   font-family: $md-font-family;
   font-weight: 500;
   color: currentColor;
+  text-align: center;
 
   // Sizing.
   margin: $md-button-margin;

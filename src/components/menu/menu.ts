@@ -1,13 +1,21 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component, Directive, ViewEncapsulation} from '@angular/core';
 
 @Component({
   moduleId: module.id,
   selector: 'md-menu',
+  host: {'role': 'menu'},
   templateUrl: 'menu.html',
   styleUrls: ['menu.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  exportAs: 'mdMenu'
 })
 export class MdMenu {}
 
-export const MD_MENU_DIRECTIVES = [MdMenu];
+@Directive({
+  selector: '[md-menu-item]',
+  host: {'role': 'menuitem'}
+})
+export class MdMenuItem {}
+
+export const MD_MENU_DIRECTIVES = [MdMenu, MdMenuItem];
 

@@ -1,0 +1,53 @@
+// TODO(kara): update vars for desktop when MD team responds
+
+@import 'variables';
+@import 'elevation';
+@import 'default-theme';
+@import 'button-mixins';
+@import 'list-shared';
+
+// menu width must be a multiple of 56px
+$md-menu-overlay-min-width: 112px !default;   // 56 * 2
+$md-menu-overlay-max-width: 280px !default;   // 56 * 5
+
+$md-menu-item-height: 48px !default;
+$md-menu-font-size: 16px !default;
+$md-menu-side-padding: 16px !default;
+
+.md-menu {
+  @include md-elevation(2);
+  min-width: $md-menu-overlay-min-width;
+  max-width: $md-menu-overlay-max-width;
+
+  // max height must be 100% of the viewport height + one row height
+  max-height: calc(100vh + 48px);
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;   // for momentum scroll on mobile
+
+  background: md-color($md-background, 'background');
+}
+
+[md-menu-item] {
+  @include md-button-reset();
+  @include md-truncate-line();
+
+  display: block;
+  width: 100%;
+  height: $md-menu-item-height;
+  padding: 0 $md-menu-side-padding;
+
+  font-size: $md-menu-font-size;
+  font-family: $md-font-family;
+  text-align: start;
+  color: md-color($md-foreground, 'text');
+
+  &[disabled] {
+    color: md-color($md-foreground, 'disabled');
+    cursor: default;
+  }
+
+  &:hover:not([disabled]) {
+    background: md-color($md-background, 'hover');
+  }
+}
+
