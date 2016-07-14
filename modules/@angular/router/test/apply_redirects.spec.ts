@@ -29,7 +29,7 @@ describe('applyRedirects', () => {
   });
 
   it('should throw when cannot handle a positional parameter', () => {
-    applyRedirects(null, tree('/a/1'), [
+    applyRedirects(null, null, tree('/a/1'), [
       {path: 'a/:id', redirectTo: 'a/:other'}
     ]).subscribe(() => {}, (e) => {
       expect(e.message).toEqual('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
@@ -133,12 +133,17 @@ describe('applyRedirects', () => {
 
   describe('lazy loading', () => {
     it('should load config on demand', () => {
-      const loadedConfig =
-          new LoadedRouterConfig([{path: 'b', component: ComponentB}], <any>'stubFactoryResolver');
-      const loader = {load: (p: any) => of (loadedConfig)};
+      const loadedConfig = new LoadedRouterConfig(
+          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+      const loader = {
+        load: (injector: any, p: any) => {
+          if (injector !== 'providedInjector') throw 'Invalid Injector';
+          return of (loadedConfig);
+        }
+      };
       const config = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
 
-      applyRedirects(<any>loader, tree('a/b'), config).forEach(r => {
+      applyRedirects(<any>'providedInjector', <any>loader, tree('a/b'), config).forEach(r => {
         compareTrees(r, tree('/a/b'));
         expect((<any>config[0])._loadedConfig).toBe(loadedConfig);
       });
@@ -150,7 +155,7 @@ describe('applyRedirects', () => {
       };
       const config = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
 
-      applyRedirects(<any>loader, tree('a/b'), config).subscribe(() => {}, (e) => {
+      applyRedirects(null, <any>loader, tree('a/b'), config).subscribe(() => {}, (e) => {
         expect(e.message).toEqual('Loading Error');
       });
     });
@@ -199,7 +204,7 @@ describe('applyRedirects', () => {
         {path: '', redirectTo: 'a', pathMatch: 'full'}
       ];
 
-      applyRedirects(null, tree('b'), config)
+      applyRedirects(null, null, tree('b'), config)
           .subscribe(
               (_) => { throw 'Should not be reached'; },
               e => { expect(e.message).toEqual('Cannot match any routes: \'b\''); });
@@ -329,7 +334,7 @@ describe('applyRedirects', () => {
           ]
         }];
 
-        applyRedirects(null, tree('a/(d//aux:e)'), config)
+        applyRedirects(null, null, tree('a/(d//aux:e)'), config)
             .subscribe(
                 (_) => { throw 'Should not be reached'; },
                 e => { expect(e.message).toEqual('Cannot match any routes: \'a\''); });
@@ -339,7 +344,7 @@ describe('applyRedirects', () => {
 });
 
 function checkRedirect(config: Routes, url: string, callback: any): void {
-  applyRedirects(null, tree(url), config).subscribe(callback, e => { throw e; });
+  applyRedirects(null, null, tree(url), config).subscribe(callback, e => { throw e; });
 }
 
 function tree(url: string): UrlTree {

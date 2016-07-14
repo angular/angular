@@ -907,23 +907,23 @@ describe('Integration', () => {
         });
 
 
-        fit('works',
-            fakeAsync(inject(
-                [Router, TestComponentBuilder, Location],
-                (router: Router, tcb: TestComponentBuilder, location: Location) => {
-                  const fixture = createRoot(tcb, router, RootCmp);
+        it('works',
+           fakeAsync(inject(
+               [Router, TestComponentBuilder, Location],
+               (router: Router, tcb: TestComponentBuilder, location: Location) => {
+                 const fixture = createRoot(tcb, router, RootCmp);
 
-                  router.resetConfig(
-                      [{path: 'team/:id', component: TeamCmp, canActivate: ['CanActivate']}]);
+                 router.resetConfig(
+                     [{path: 'team/:id', component: TeamCmp, canActivate: ['CanActivate']}]);
 
-                  router.navigateByUrl('/team/22');
-                  advance(fixture);
-                  expect(location.path()).toEqual('/team/22');
+                 router.navigateByUrl('/team/22');
+                 advance(fixture);
+                 expect(location.path()).toEqual('/team/22');
 
-                  router.navigateByUrl('/team/33');
-                  advance(fixture);
-                  expect(location.path()).toEqual('/team/22');
-                })));
+                 router.navigateByUrl('/team/33');
+                 advance(fixture);
+                 expect(location.path()).toEqual('/team/22');
+               })));
       });
     });
 
@@ -1273,6 +1273,42 @@ describe('Integration', () => {
                       expect(fixture.debugElement.nativeElement)
                           .toHaveText('lazy-loaded-parent [lazy-loaded-child]');
                     })));
+
+    it('should use the injector of the lazily-loaded configuration',
+       fakeAsync(inject(
+           [Router, TestComponentBuilder, Location, AppModuleFactoryLoader],
+           (router: Router, tcb: TestComponentBuilder, location: Location,
+            loader: SpyAppModuleFactoryLoader) => {
+             @Component({selector: 'lazy', template: 'lazy-loaded', directives: ROUTER_DIRECTIVES})
+             class LazyLoadedComponent {
+             }
+
+             @AppModule({
+               precompile: [LazyLoadedComponent],
+               providers: [
+                 provideRoutes([{
+                   path: '',
+                   canActivate: ['alwaysTrue'],
+                   children: [{path: 'loaded', component: LazyLoadedComponent}]
+                 }]),
+                 {provide: 'alwaysTrue', useValue: () => true}
+               ]
+             })
+             class LoadedModule {
+             }
+
+             loader.stubbedModules = {expected: LoadedModule};
+
+             const fixture = createRoot(tcb, router, RootCmp);
+
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+
+             router.navigateByUrl('/lazy/loaded');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/lazy/loaded');
+             expect(fixture.debugElement.nativeElement).toHaveText('lazy-loaded');
+           })));
 
     it('error emit an error when cannot load a config',
        fakeAsync(inject(

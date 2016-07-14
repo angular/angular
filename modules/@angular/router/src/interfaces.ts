@@ -53,7 +53,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  */
 export interface CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|boolean;
+      Observable<boolean>|Promise<boolean>|boolean;
 }
 
 /**
@@ -114,7 +114,7 @@ export interface CanActivate {
 
 export interface CanActivateChild {
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|boolean;
+      Observable<boolean>|Promise<boolean>|boolean;
 }
 
 /**
@@ -161,7 +161,7 @@ export interface CanActivateChild {
  */
 export interface CanDeactivate<T> {
   canDeactivate(component: T, route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|boolean;
+      Observable<boolean>|Promise<boolean>|boolean;
 }
 
 /**
@@ -197,5 +197,6 @@ export interface CanDeactivate<T> {
  * @experimental
  */
 export interface Resolve<T> {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any>|any;
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
+      Observable<any>|Promise<any>|any;
 }

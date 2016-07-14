@@ -10,13 +10,14 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/concatAll';
 
+import {Injector} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 import {EmptyError} from 'rxjs/util/EmptyError';
 
 import {Route, Routes} from './config';
-import {RouterConfigLoader} from './router_config_loader';
+import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlPathWithParams, UrlSegment, UrlTree} from './url_tree';
 import {merge, waitForMap} from './utils/collection';
@@ -38,8 +39,9 @@ function absoluteRedirect(newPaths: UrlPathWithParams[]): Observable<UrlSegment>
 }
 
 export function applyRedirects(
-    configLoader: RouterConfigLoader, urlTree: UrlTree, config: Routes): Observable<UrlTree> {
-  return expandSegment(configLoader, config, urlTree.root, PRIMARY_OUTLET)
+    injector: Injector, configLoader: RouterConfigLoader, urlTree: UrlTree,
+    config: Routes): Observable<UrlTree> {
+  return expandSegment(injector, configLoader, config, urlTree.root, PRIMARY_OUTLET)
       .map(rootSegment => createUrlTree(urlTree, rootSegment))
       .catch(e => {
         if (e instanceof AbsoluteRedirect) {
@@ -61,33 +63,33 @@ function createUrlTree(urlTree: UrlTree, rootCandidate: UrlSegment): UrlTree {
 }
 
 function expandSegment(
-    configLoader: RouterConfigLoader, routes: Route[], segment: UrlSegment,
+    injector: Injector, configLoader: RouterConfigLoader, routes: Route[], segment: UrlSegment,
     outlet: string): Observable<UrlSegment> {
   if (segment.pathsWithParams.length === 0 && segment.hasChildren()) {
-    return expandSegmentChildren(configLoader, routes, segment)
+    return expandSegmentChildren(injector, configLoader, routes, segment)
         .map(children => new UrlSegment([], children));
   } else {
     return expandPathsWithParams(
-        configLoader, segment, routes, segment.pathsWithParams, outlet, true);
+        injector, configLoader, segment, routes, segment.pathsWithParams, outlet, true);
   }
 }
 
 function expandSegmentChildren(
-    configLoader: RouterConfigLoader, routes: Route[],
+    injector: Injector, configLoader: RouterConfigLoader, routes: Route[],
     segment: UrlSegment): Observable<{[name: string]: UrlSegment}> {
   return waitForMap(
       segment.children,
-      (childOutlet, child) => expandSegment(configLoader, routes, child, childOutlet));
+      (childOutlet, child) => expandSegment(injector, configLoader, routes, child, childOutlet));
 }
 
 function expandPathsWithParams(
-    configLoader: RouterConfigLoader, segment: UrlSegment, routes: Route[],
+    injector: Injector, configLoader: RouterConfigLoader, segment: UrlSegment, routes: Route[],
     paths: UrlPathWithParams[], outlet: string, allowRedirects: boolean): Observable<UrlSegment> {
   const processRoutes =
       of (...routes)
           .map(r => {
             return expandPathsWithParamsAgainstRoute(
-                       configLoader, segment, routes, r, paths, outlet, allowRedirects)
+                       injector, configLoader, segment, routes, r, paths, outlet, allowRedirects)
                 .catch((e) => {
                   if (e instanceof NoMatch)
                     return of (null);
@@ -107,27 +109,28 @@ function expandPathsWithParams(
 }
 
 function expandPathsWithParamsAgainstRoute(
-    configLoader: RouterConfigLoader, segment: UrlSegment, routes: Route[], route: Route,
-    paths: UrlPathWithParams[], outlet: string, allowRedirects: boolean): Observable<UrlSegment> {
+    injector: Injector, configLoader: RouterConfigLoader, segment: UrlSegment, routes: Route[],
+    route: Route, paths: UrlPathWithParams[], outlet: string,
+    allowRedirects: boolean): Observable<UrlSegment> {
   if (getOutlet(route) !== outlet) return noMatch(segment);
   if (route.redirectTo !== undefined && !allowRedirects) return noMatch(segment);
 
   if (route.redirectTo !== undefined) {
     return expandPathsWithParamsAgainstRouteUsingRedirect(
-        configLoader, segment, routes, route, paths, outlet);
+        injector, configLoader, segment, routes, route, paths, outlet);
   } else {
-    return matchPathsWithParamsAgainstRoute(configLoader, segment, route, paths);
+    return matchPathsWithParamsAgainstRoute(injector, configLoader, segment, route, paths);
   }
 }
 
 function expandPathsWithParamsAgainstRouteUsingRedirect(
-    configLoader: RouterConfigLoader, segment: UrlSegment, routes: Route[], route: Route,
-    paths: UrlPathWithParams[], outlet: string): Observable<UrlSegment> {
+    injector: Injector, configLoader: RouterConfigLoader, segment: UrlSegment, routes: Route[],
+    route: Route, paths: UrlPathWithParams[], outlet: string): Observable<UrlSegment> {
   if (route.path === '**') {
     return expandWildCardWithParamsAgainstRouteUsingRedirect(route);
   } else {
     return expandRegularPathWithParamsAgainstRouteUsingRedirect(
-        configLoader, segment, routes, route, paths, outlet);
+        injector, configLoader, segment, routes, route, paths, outlet);
   }
 }
 
@@ -141,8 +144,8 @@ function expandWildCardWithParamsAgainstRouteUsingRedirect(route: Route): Observ
 }
 
 function expandRegularPathWithParamsAgainstRouteUsingRedirect(
-    configLoader: RouterConfigLoader, segment: UrlSegment, routes: Route[], route: Route,
-    paths: UrlPathWithParams[], outlet: string): Observable<UrlSegment> {
+    injector: Injector, configLoader: RouterConfigLoader, segment: UrlSegment, routes: Route[],
+    route: Route, paths: UrlPathWithParams[], outlet: string): Observable<UrlSegment> {
   const {matched, consumedPaths, lastChild, positionalParamSegments} = match(segment, route, paths);
   if (!matched) return noMatch(segment);
 
@@ -152,12 +155,13 @@ function expandRegularPathWithParamsAgainstRouteUsingRedirect(
     return absoluteRedirect(newPaths);
   } else {
     return expandPathsWithParams(
-        configLoader, segment, routes, newPaths.concat(paths.slice(lastChild)), outlet, false);
+        injector, configLoader, segment, routes, newPaths.concat(paths.slice(lastChild)), outlet,
+        false);
   }
 }
 
 function matchPathsWithParamsAgainstRoute(
-    configLoader: RouterConfigLoader, rawSegment: UrlSegment, route: Route,
+    injector: Injector, configLoader: RouterConfigLoader, rawSegment: UrlSegment, route: Route,
     paths: UrlPathWithParams[]): Observable<UrlSegment> {
   if (route.path === '**') {
     return of (new UrlSegment(paths, {}));
@@ -168,11 +172,13 @@ function matchPathsWithParamsAgainstRoute(
 
     const rawSlicedPath = paths.slice(lastChild);
 
-    return getChildConfig(configLoader, route).mergeMap(childConfig => {
+    return getChildConfig(injector, configLoader, route).mergeMap(routerConfig => {
+      const childInjector = routerConfig.injector;
+      const childConfig = routerConfig.routes;
       const {segment, slicedPath} = split(rawSegment, consumedPaths, rawSlicedPath, childConfig);
 
       if (slicedPath.length === 0 && segment.hasChildren()) {
-        return expandSegmentChildren(configLoader, childConfig, segment)
+        return expandSegmentChildren(childInjector, configLoader, childConfig, segment)
             .map(children => new UrlSegment(consumedPaths, children));
 
       } else if (childConfig.length === 0 && slicedPath.length === 0) {
@@ -180,23 +186,25 @@ function matchPathsWithParamsAgainstRoute(
 
       } else {
         return expandPathsWithParams(
-                   configLoader, segment, childConfig, slicedPath, PRIMARY_OUTLET, true)
+                   childInjector, configLoader, segment, childConfig, slicedPath, PRIMARY_OUTLET,
+                   true)
             .map(cs => new UrlSegment(consumedPaths.concat(cs.pathsWithParams), cs.children));
       }
     });
   }
 }
 
-function getChildConfig(configLoader: RouterConfigLoader, route: Route): Observable<Route[]> {
+function getChildConfig(injector: Injector, configLoader: RouterConfigLoader, route: Route):
+    Observable<LoadedRouterConfig> {
   if (route.children) {
-    return of (route.children);
+    return of (new LoadedRouterConfig(route.children, injector, null));
   } else if (route.loadChildren) {
-    return configLoader.load(route.loadChildren).map(r => {
+    return configLoader.load(injector, route.loadChildren).map(r => {
       (<any>route)._loadedConfig = r;
-      return r.routes;
+      return r;
     });
   } else {
-    return of ([]);
+    return of (new LoadedRouterConfig([], injector, null));
   }
 }
 
