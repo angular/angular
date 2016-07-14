@@ -4,6 +4,7 @@ import {HammerGestureConfig} from '@angular/platform-browser';
 /* Adjusts configuration of our gesture library, Hammer. */
 @Injectable()
 export class MdGestureConfig extends HammerGestureConfig {
+
   /* List of new event names to add to the gesture support list */
   events: string[] = [
     'drag',
@@ -12,6 +13,11 @@ export class MdGestureConfig extends HammerGestureConfig {
     'dragright',
     'dragleft',
     'longpress',
+    'slide',
+    'slidestart',
+    'slideend',
+    'slideright',
+    'slideleft'
   ];
 
   /*
@@ -29,22 +35,32 @@ export class MdGestureConfig extends HammerGestureConfig {
   buildHammer(element: HTMLElement) {
     var mc = new Hammer(element);
 
-    // create custom gesture recognizers
-    var drag = new Hammer.Pan({event: 'drag', threshold: 6});
-    var longpress = new Hammer.Press({event: 'longpress', time: 500});
+    // Create custom gesture recognizers
+    let drag = this._createRecognizer(Hammer.Pan, {event: 'drag', threshold: 6}, Hammer.Swipe);
+    let slide = this._createRecognizer(Hammer.Pan, {event: 'slide', threshold: 0}, Hammer.Swipe);
+    let longpress = this._createRecognizer(Hammer.Press, {event: 'longpress', time: 500});
 
-    // ensure custom recognizers can coexist with the default gestures (i.e. pan, press, swipe)
-    var pan = new Hammer.Pan();
-    var press = new Hammer.Press();
-    var swipe = new Hammer.Swipe();
-    drag.recognizeWith(pan);
-    drag.recognizeWith(swipe);
+    let pan = new Hammer.Pan();
+    let swipe = new Hammer.Swipe();
+
+    // Overwrite the default `pan` event to use the swipe event.
     pan.recognizeWith(swipe);
-    longpress.recognizeWith(press);
 
-    // add customized gestures to Hammer manager
-    mc.add([drag, pan, swipe, press, longpress]);
+    // Add customized gestures to Hammer manager
+    mc.add([drag, slide, pan, longpress]);
+
     return mc;
+  }
+
+  /** Creates a new recognizer, without affecting the default recognizers of HammerJS */
+  private _createRecognizer(type: RecognizerStatic, options: any, ...extra: RecognizerStatic[]) {
+    let recognizer = new type(options);
+
+    // Add the default recognizer to the new custom recognizer.
+    extra.push(type);
+    extra.forEach(entry => recognizer.recognizeWith(new entry()));
+
+    return recognizer;
   }
 
 }

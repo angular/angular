@@ -129,6 +129,12 @@ $md-slide-toggle-margin: 16px !default;
 
   transition: $swift-linear;
   transition-property: transform;
+
+  // Once the thumb container is being dragged around, we remove the transition duration to
+  // make the drag feeling fast and not delayed.
+  &.md-dragging {
+    transition-duration: 0ms;
+  }
 }
 
 // The thumb will be elevated from the slide-toggle bar.
