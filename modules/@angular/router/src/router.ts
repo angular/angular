@@ -37,6 +37,8 @@ import {UrlSerializer, UrlTree, createEmptyUrlTree} from './url_tree';
 import {forEach, merge, shallowEqual, waitForMap} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
+declare var Zone: any;
+
 export interface NavigationExtras {
   relativeTo?: ActivatedRoute;
   queryParams?: Params;
@@ -288,14 +290,16 @@ export class Router {
   }
 
   private setUpLocationChangeListener(): void {
-    this.locationSubscription = <any>this.location.subscribe((change) => {
+    // Zone.current.wrap is needed because of the issue with RxJS scheduler,
+    // which does not work properly with zone.js in IE and Safari
+    this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
       const tree = this.urlSerializer.parse(change['url']);
       // we fire multiple events for a single URL change
       // we should navigate only once
       return this.currentUrlTree.toString() !== tree.toString() ?
           this.scheduleNavigation(tree, change['pop']) :
           null;
-    });
+    }));
   }
 
   private runNavigate(url: UrlTree, preventPushState: boolean, id: number): Promise<boolean> {
