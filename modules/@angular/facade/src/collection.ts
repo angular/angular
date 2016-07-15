@@ -116,12 +116,10 @@ export class StringMapWrapper {
     return map.hasOwnProperty(key) ? map[key] : undefined;
   }
   static set<V>(map: {[key: string]: V}, key: string, value: V) { map[key] = value; }
+
   static keys(map: {[key: string]: any}): string[] { return Object.keys(map); }
   static values<T>(map: {[key: string]: T}): T[] {
-    return Object.keys(map).reduce((r, a) => {
-      r.push(map[a]);
-      return r;
-    }, []);
+    return Object.keys(map).map((k: string): T => map[k]);
   }
   static isEmpty(map: {[key: string]: any}): boolean {
     for (var prop in map) {
@@ -130,27 +128,21 @@ export class StringMapWrapper {
     return true;
   }
   static delete (map: {[key: string]: any}, key: string) { delete map[key]; }
-  static forEach<K, V>(map: {[key: string]: V}, callback: /*(V, K) => void*/ Function) {
-    for (var prop in map) {
-      if (map.hasOwnProperty(prop)) {
-        callback(map[prop], prop);
-      }
+  static forEach<K, V>(map: {[key: string]: V}, callback: (v: V, K: string) => void) {
+    for (let k of Object.keys(map)) {
+      callback(map[k], k);
     }
   }
 
   static merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
     var m: {[key: string]: V} = {};
 
-    for (var attr in m1) {
-      if (m1.hasOwnProperty(attr)) {
-        m[attr] = m1[attr];
-      }
+    for (let k of Object.keys(m1)) {
+      m[k] = m1[k];
     }
 
-    for (var attr in m2) {
-      if (m2.hasOwnProperty(attr)) {
-        m[attr] = m2[attr];
-      }
+    for (let k of Object.keys(m2)) {
+      m[k] = m2[k];
     }
 
     return m;
