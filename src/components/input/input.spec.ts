@@ -273,6 +273,46 @@ describe('MdInput', function () {
       });
   }));
 
+  it('supports the autoCorrect attribute', async(() => {
+    var template = '<md-input [autoCorrect]="autoCorrect"></md-input>';
+
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
+      .createAsync(MdInputOptionalAttributeController)
+      .then(fixture => {
+        fixture.detectChanges();
+
+        let input: MdInput = fixture.debugElement.query(By.directive(MdInput)).componentInstance;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('autocorrect')).toBeNull();
+
+        input.autoCorrect = 'on';
+        fixture.detectChanges();
+        expect(el.getAttribute('autocorrect')).toEqual('on');
+      });
+  }));
+
+  it('supports the autoCapitalize attribute', async(() => {
+    var template = '<md-input [autoCapitalize]="autoCapitalize"></md-input>';
+
+    builder.overrideTemplate(MdInputOptionalAttributeController, template)
+      .createAsync(MdInputOptionalAttributeController)
+      .then(fixture => {
+        fixture.detectChanges();
+
+        let input: MdInput = fixture.debugElement.query(By.directive(MdInput)).componentInstance;
+        let el: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        expect(el).not.toBeNull();
+        expect(el.getAttribute('autocapitalize')).toBeNull();
+
+        input.autoCapitalize = 'on';
+        fixture.detectChanges();
+        expect(el.getAttribute('autocapitalize')).toEqual('on');
+      });
+  }));
+
   it('supports the autoComplete attribute as an unbound attribute', async(() => {
     var template = '<md-input autoComplete></md-input>';
 
