@@ -1,8 +1,14 @@
 @import 'elevation';
+@import 'default-theme';
+
+$md-dialog-padding: 24px !default;
 
 :host {
-  // TODO(jelbourn): add real Material Design dialog styles.
   display: block;
-  background: deeppink;
-  @include md-elevation(2);
+  overflow: hidden;
+
+  padding: $md-dialog-padding;
+
+  background: md-color($md-background, dialog);
+  @include md-elevation(24);
 }

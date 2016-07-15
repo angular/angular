@@ -37,9 +37,12 @@ export class MdDialog {
    * @param config
    */
   open<T>(component: ComponentType<T>, config: MdDialogConfig): Promise<MdDialogRef<T>> {
+    let overlayRef: OverlayRef;
+
     return this._createOverlay(config)
-        .then(overlayRef => this._attachDialogContainer(overlayRef, config))
-        .then(containerRef => this._attachDialogContent(component, containerRef));
+        .then(overlay => overlayRef = overlay)
+        .then(overlay => this._attachDialogContainer(overlay, config))
+        .then(containerRef => this._attachDialogContent(component, containerRef, overlayRef));
   }
 
   /**
@@ -54,14 +57,14 @@ export class MdDialog {
 
   /**
    * Attaches an MdDialogContainer to a dialog's already-created overlay.
-   * @param overlayRef Reference to the dialog's underlying overlay.
+   * @param overlay Reference to the dialog's underlying overlay.
    * @param config The dialog configuration.
    * @returns A promise resolving to a ComponentRef for the attached container.
    */
-  private _attachDialogContainer(overlayRef: OverlayRef, config: MdDialogConfig):
+  private _attachDialogContainer(overlay: OverlayRef, config: MdDialogConfig):
       Promise<ComponentRef<MdDialogContainer>> {
     let containerPortal = new ComponentPortal(MdDialogContainer, config.viewContainerRef);
-    return overlayRef.attach(containerPortal).then(containerRef => {
+    return overlay.attach(containerPortal).then((containerRef: ComponentRef<MdDialogContainer>) => {
       // Pass the config directly to the container so that it can consume any relevant settings.
       containerRef.instance.dialogConfig = config;
       return containerRef;
@@ -72,16 +75,18 @@ export class MdDialog {
    * Attaches the user-provided component to the already-created MdDialogContainer.
    * @param component The type of component being loaded into the dialog.
    * @param containerRef Reference to the wrapping MdDialogContainer.
+   * @param overlayRef Reference to the overlay in which the dialog resides.
    * @returns A promise resolving to the MdDialogRef that should be returned to the user.
    */
   private _attachDialogContent<T>(
       component: ComponentType<T>,
-      containerRef: ComponentRef<MdDialogContainer>): Promise<MdDialogRef<T>> {
+      containerRef: ComponentRef<MdDialogContainer>,
+      overlayRef: OverlayRef): Promise<MdDialogRef<T>> {
     let dialogContainer = containerRef.instance;
 
     // Create a reference to the dialog we're creating in order to give the user a handle
     // to modify and close it.
-    let dialogRef = new MdDialogRef();
+    let dialogRef = new MdDialogRef(overlayRef);
 
     // We create an injector specifically for the component we're instantiating so that it can
     // inject the MdDialogRef. This allows a component loaded inside of a dialog to close itself

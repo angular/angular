@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 
 import {Dir} from '@angular2-material/core/rtl/dir';
@@ -32,6 +32,7 @@ export class Home {}
     MD_LIST_DIRECTIVES,
     MdToolbar,
   ],
-  pipes: []
+  pipes: [],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DemoApp { }

@@ -84,6 +84,29 @@ describe('MdDialog', () => {
 
     detectChangesForDialogOpen(viewContainerFixture);
   }));
+
+  it('should close a dialog and get back a result', async(() => {
+    let config = new MdDialogConfig();
+    config.viewContainerRef = testViewContainerRef;
+
+    dialog.open(PizzaMsg, config).then(dialogRef => {
+      viewContainerFixture.detectChanges();
+
+      let afterCloseResult: string;
+      dialogRef.afterClosed().subscribe(result => {
+        afterCloseResult = result;
+      });
+
+      dialogRef.close('Charmander');
+
+      viewContainerFixture.whenStable().then(() => {
+        expect(afterCloseResult).toBe('Charmander');
+        expect(overlayContainerElement.childNodes.length).toBe(0);
+      });
+    });
+
+    detectChangesForDialogOpen(viewContainerFixture);
+  }));
 });
 
 
