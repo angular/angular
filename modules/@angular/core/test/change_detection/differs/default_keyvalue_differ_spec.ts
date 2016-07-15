@@ -189,11 +189,8 @@ export function main() {
         });
 
         it('should work regardless key order', () => {
-          let m: {[k: string]: number} = {a: 0, b: 0};
-          differ.check(m);
-
-          m = {b: 1, a: 1};
-          differ.check(m);
+          differ.check({a: 0, b: 0});
+          differ.check({b: 1, a: 1});
 
           expect(differ.toString()).toEqual(kvChangesAsString({
             map: ['b[0->1]', 'a[0->1]'],

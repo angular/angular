@@ -79,7 +79,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
       throw new BaseException(`Error trying to diff '${map}'`);
     }
 
-    return this.check(map) ? this : null
+    return this.check(map) ? this : null;
   }
 
   onDestroy() {}
@@ -96,11 +96,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
       let newSeqRecord: any;
       if (oldSeqRecord && key === oldSeqRecord.key) {
         newSeqRecord = oldSeqRecord;
-        if (!looseIdentical(value, oldSeqRecord.currentValue)) {
-          oldSeqRecord.previousValue = oldSeqRecord.currentValue;
-          oldSeqRecord.currentValue = value;
-          this._addToChanges(oldSeqRecord);
-        }
+        this._maybeAddToChanges(newSeqRecord, value);
       } else {
         seqChanged = true;
         if (oldSeqRecord !== null) {
@@ -109,6 +105,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
         }
         if (records.has(key)) {
           newSeqRecord = records.get(key);
+          this._maybeAddToChanges(newSeqRecord, value);
         } else {
           newSeqRecord = new KeyValueChangeRecord(key);
           records.set(key, newSeqRecord);
@@ -176,6 +173,14 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
       rec.previousValue = rec.currentValue;
       rec.currentValue = null;
       this._records.delete(rec.key);
+    }
+  }
+
+  private _maybeAddToChanges(record: KeyValueChangeRecord, newValue: any): void {
+    if (!looseIdentical(newValue, record.currentValue)) {
+      record.previousValue = record.currentValue;
+      record.currentValue = newValue;
+      this._addToChanges(record);
     }
   }
 

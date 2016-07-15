@@ -66,6 +66,41 @@ export function main() {
                  });
            }));
 
+    // keyValueDiffer is sensitive to key order #9115
+    it('should change styles specified in an object expression',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             const template = `<div [ngStyle]="expr"></div>`;
+
+             tcb.overrideTemplate(TestComponent, template)
+                 .createAsync(TestComponent)
+                 .then((fixture) => {
+                   fixture.debugElement.componentInstance.expr = {
+                     // height, width order is important here
+                     height: '10px',
+                     width: '10px'
+                   };
+
+                   fixture.detectChanges();
+                   let el = fixture.debugElement.children[0].nativeElement;
+                   expect(getDOM().getStyle(el, 'height')).toEqual('10px');
+                   expect(getDOM().getStyle(el, 'width')).toEqual('10px');
+
+                   fixture.debugElement.componentInstance.expr = {
+                     // width, height order is important here
+                     width: '5px',
+                     height: '5px',
+                   };
+
+                   fixture.detectChanges();
+                   expect(getDOM().getStyle(el, 'height')).toEqual('5px');
+                   expect(getDOM().getStyle(el, 'width')).toEqual('5px');
+
+                   async.done();
+                 });
+           }));
+
     it('should remove styles when deleting a key in an object expression',
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
