@@ -58,7 +58,6 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
   private _color: string;
   private _hasFocus: boolean = false;
   private _isMousedown: boolean = false;
-  private _isInitialized: boolean = false;
   private _slideRenderer: SlideToggleRenderer = null;
 
   @Input() @BooleanFieldValue() disabled: boolean = false;
@@ -79,11 +78,6 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
   /** TODO: internal */
   ngAfterContentInit() {
     this._slideRenderer = new SlideToggleRenderer(this._elementRef);
-
-    // Mark this component as initialized in AfterContentInit because the initial checked value can
-    // possibly be set by NgModel or the checked attribute. This would cause the change event to
-    // be emitted, before the component is actually initialized.
-    this._isInitialized = true;
   }
 
   /**
@@ -100,6 +94,11 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
     // Once a drag is currently in progress, we do not want to toggle the slide-toggle on a click.
     if (!this.disabled && !this._slideRenderer.isDragging()) {
       this.toggle();
+
+      // Emit our custom change event if the native input emitted one.
+      // It is important to only emit it, if the native input triggered one, because
+      // we don't want to trigger a change event, when the `checked` variable changes for example.
+      this._emitChangeEvent();
     }
   }
 
@@ -171,12 +170,6 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
     if (this.checked !== !!value) {
       this._checked = value;
       this.onChange(this._checked);
-
-      // Only fire a change event if the `slide-toggle` is completely initialized and
-      // all attributes / inputs are properly loaded.
-      if (this._isInitialized) {
-        this._emitChangeEvent();
-      }
     }
   }
 

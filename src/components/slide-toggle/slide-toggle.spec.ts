@@ -127,7 +127,27 @@ describe('MdSlideToggle', () => {
       expect(testComponent.onSlideClick).toHaveBeenCalledTimes(1);
     });
 
-    it('should not trigger the change event multiple times', async(() => {
+    it('should trigger the change event properly', async(() => {
+      expect(inputElement.checked).toBe(false);
+      expect(slideToggleElement.classList).not.toContain('md-checked');
+
+      labelElement.click();
+      fixture.detectChanges();
+
+      expect(inputElement.checked).toBe(true);
+      expect(slideToggleElement.classList).toContain('md-checked');
+
+      // Wait for the fixture to become stable, because the EventEmitter for the change event,
+      // will only fire after the zone async change detection has finished.
+      fixture.whenStable().then(() => {
+        // The change event shouldn't fire, because the value change was not caused
+        // by any interaction.
+        expect(testComponent.onSlideChange).toHaveBeenCalledTimes(1);
+      });
+
+    }));
+
+    it('should not trigger the change event by changing the native value', async(() => {
       expect(inputElement.checked).toBe(false);
       expect(slideToggleElement.classList).not.toContain('md-checked');
 
@@ -140,7 +160,9 @@ describe('MdSlideToggle', () => {
       // Wait for the fixture to become stable, because the EventEmitter for the change event,
       // will only fire after the zone async change detection has finished.
       fixture.whenStable().then(() => {
-        expect(testComponent.onSlideChange).toHaveBeenCalledTimes(1);
+        // The change event shouldn't fire, because the value change was not caused
+        // by any interaction.
+        expect(testComponent.onSlideChange).not.toHaveBeenCalled();
       });
 
     }));
@@ -158,7 +180,8 @@ describe('MdSlideToggle', () => {
       // Wait for the fixture to become stable, because the EventEmitter for the change event,
       // will only fire after the zone async change detection has finished.
       fixture.whenStable().then(() => {
-        expect(testComponent.onSlideChange).toHaveBeenCalledTimes(1);
+        // The change event shouldn't fire, because the native input element is not focused.
+        expect(testComponent.onSlideChange).not.toHaveBeenCalled();
       });
 
     }));
