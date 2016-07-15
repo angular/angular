@@ -263,8 +263,8 @@ export function main() {
 }
 
 function getExtractionResult(
-  html: string, implicitTags: string[],
-  implicitAttrs: {[k: string]: string[]}): ExtractionResult {
+    html: string, implicitTags: string[], implicitAttrs:
+    {[k: string]: string[]}): ExtractionResult {
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(html, 'extractor spec', true);
   if (parseResult.errors.length > 1) {
@@ -275,8 +275,8 @@ function getExtractionResult(
 }
 
 function extract(
-  html: string, implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
+    html: string, implicitTags: string[] = [], implicitAttrs:
+    {[k: string]: string[]} = {}): [string[], string, string][] {
   const messages = getExtractionResult(html, implicitTags, implicitAttrs).messages;
 
   // clang-format off
@@ -287,8 +287,8 @@ function extract(
 }
 
 function extractErrors(
-  html: string, implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {}): any[] {
+    html: string, implicitTags: string[] = [], implicitAttrs:
+    {[k: string]: string[]} = {}): any[] {
   const errors = getExtractionResult(html, implicitTags, implicitAttrs).errors;
 
   return errors.map((e): [string, string] => [e.msg, e.span.toString()]);

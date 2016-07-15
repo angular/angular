@@ -6,58 +6,53 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceSpan} from "../parse_util";
+import {ParseSourceSpan} from '../parse_util';
 
-export interface I18nNode {
-  visit(visitor: Visitor, context?: any): any;
+export class Message {
+  constructor(public nodes: Node[], public meaning: string, public description: string) {}
 }
 
-export class Text implements I18nNode {
+export interface Node { visit(visitor: Visitor, context?: any): any; }
+
+export class Text implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any {
-    return visitor.visitText(this, context);
-  }
+  visit(visitor: Visitor, context?: any): any { return visitor.visitText(this, context); }
 }
 
-export class Container implements I18nNode {
-  constructor(public children: I18nNode[], public sourceSpan: ParseSourceSpan) {}
+export class Container implements Node {
+  constructor(public children: Node[], public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any {
-    return visitor.visitContainer(this, context);
-  }
+  visit(visitor: Visitor, context?: any): any { return visitor.visitContainer(this, context); }
 }
 
-export class Icu implements I18nNode {
-  constructor(public expression: string, public type: string, public cases: {[k: string]: I18nNode}, public sourceSpan: ParseSourceSpan) {}
+export class Icu implements Node {
+  constructor(
+      public expression: string, public type: string, public cases: {[k: string]: Node},
+      public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any {
-    return visitor.visitIcu(this, context);
-  }
+  visit(visitor: Visitor, context?: any): any { return visitor.visitIcu(this, context); }
 }
 
 export class TagPlaceholder {
-  constructor(public name: string, public attrs: {[k: string]: string}, public children: I18nNode[], public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public tag: string, public attrs: {[k: string]: string}, public startName: string,
+      public closeName: string, public children: Node[], public isVoid: boolean,
+      public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any {
-    return visitor.visitTagPlaceholder(this, context);
-  }
+  visit(visitor: Visitor, context?: any): any { return visitor.visitTagPlaceholder(this, context); }
 }
 
 export class Placeholder {
   constructor(public value: string, public name: string = '', public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any {
-    return visitor.visitPlaceholder(this, context);
-  }
+  visit(visitor: Visitor, context?: any): any { return visitor.visitPlaceholder(this, context); }
 }
 
 export class IcuPlaceholder {
   constructor(public value: Icu, public name: string = '', public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any {
-    return visitor.visitIcuPlaceholder(this, context);
-  }
+  visit(visitor: Visitor, context?: any): any { return visitor.visitIcuPlaceholder(this, context); }
 }
 
 export interface Visitor {
@@ -68,7 +63,3 @@ export interface Visitor {
   visitPlaceholder(ph: Placeholder, context?: any): any;
   visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): any;
 }
-
-
-
-

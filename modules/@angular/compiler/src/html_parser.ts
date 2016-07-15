@@ -140,8 +140,8 @@ class TreeBuilder {
 
     // read {
     if (this.peek.type !== HtmlTokenType.EXPANSION_CASE_EXP_START) {
-      this.errors.push(HtmlTreeError.create(
-          null, this.peek.sourceSpan, `Invalid ICU message. Missing '{'.`));
+      this.errors.push(
+          HtmlTreeError.create(null, this.peek.sourceSpan, `Invalid ICU message. Missing '{'.`));
       return null;
     }
 

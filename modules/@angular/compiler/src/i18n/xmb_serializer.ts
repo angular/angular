@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RegExpWrapper, isBlank, isPresent} from '../facade/lang';
+import {RegExpWrapper, isPresent} from '../facade/lang';
 import {HtmlAst, HtmlElementAst} from '../html_ast';
 import {HtmlParser} from '../html_parser';
 import {ParseError, ParseSourceSpan} from '../parse_util';

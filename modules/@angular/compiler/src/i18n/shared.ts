@@ -175,8 +175,7 @@ export function extractPhNameFromInterpolation(input: string, index: number): st
 }
 
 export function extractPlaceholderName(input: string): string {
-  const matches = StringWrapper.split(input, _CUSTOM_PH_EXP);
-  return matches[1] || `interpolation`;
+  return StringWrapper.split(input, _CUSTOM_PH_EXP)[1];
 }
 
 

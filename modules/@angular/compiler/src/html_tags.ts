@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent, isBlank, normalizeBool, RegExpWrapper,} from '../src/facade/lang';
+import {normalizeBool, RegExpWrapper,} from '../src/facade/lang';
 
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
 // see https://html.spec.whatwg.org/multipage/entities.json
@@ -294,31 +294,32 @@ export class HtmlTagDefinition {
         isVoid?: boolean,
         ignoreFirstLf?: boolean
       } = {}) {
-    if (isPresent(closedByChildren) && closedByChildren.length > 0) {
+    if (closedByChildren && closedByChildren.length > 0) {
       closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
     }
     this.isVoid = normalizeBool(isVoid);
     this.closedByParent = normalizeBool(closedByParent) || this.isVoid;
-    if (isPresent(requiredParents) && requiredParents.length > 0) {
+    if (requiredParents && requiredParents.length > 0) {
       this.requiredParents = {};
+      // The first parent is the list is automatically when none of the listed parents are present
       this.parentToAdd = requiredParents[0];
       requiredParents.forEach(tagName => this.requiredParents[tagName] = true);
     }
     this.implicitNamespacePrefix = implicitNamespacePrefix;
-    this.contentType = isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
+    this.contentType = contentType || HtmlTagContentType.PARSABLE_DATA;
     this.ignoreFirstLf = normalizeBool(ignoreFirstLf);
   }
 
   requireExtraParent(currentParent: string): boolean {
-    if (isBlank(this.requiredParents)) {
+    if (!this.requiredParents) {
       return false;
     }
 
-    if (isBlank(currentParent)) {
+    if (!currentParent) {
       return true;
     }
 
-    let lcParent = currentParent.toLowerCase();
+    const lcParent = currentParent.toLowerCase();
     return this.requiredParents[lcParent] != true && lcParent != 'template';
   }
 
@@ -382,20 +383,19 @@ var TAG_DEFINITIONS: {[key: string]: HtmlTagDefinition} = {
       {contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true}),
 };
 
-var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
+const _DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
 
 export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
-  var result = TAG_DEFINITIONS[tagName.toLowerCase()];
-  return isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
+  return TAG_DEFINITIONS[tagName.toLowerCase()] || _DEFAULT_TAG_DEFINITION;
 }
 
-var NS_PREFIX_RE = /^:([^:]+):(.+)/g;
+const _NS_PREFIX_RE = /^:([^:]+):(.+)/g;
 
-export function splitNsName(elementName: string): string[] {
+export function splitNsName(elementName: string): [string, string] {
   if (elementName[0] != ':') {
     return [null, elementName];
   }
-  let match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+  const match = RegExpWrapper.firstMatch(_NS_PREFIX_RE, elementName);
   return [match[1], match[2]];
 }
 
@@ -404,5 +404,5 @@ export function getNsPrefix(elementName: string): string {
 }
 
 export function mergeNsAndName(prefix: string, localName: string): string {
-  return isPresent(prefix) ? `:${prefix}:${localName}` : localName;
+  return prefix ? `:${prefix}:${localName}` : localName;
 }
