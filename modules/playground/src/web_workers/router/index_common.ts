@@ -10,13 +10,18 @@ import {Component} from '@angular/core';
 import {Start} from './components/start';
 import {About} from './components/about';
 import {Contact} from './components/contact';
-import {ROUTER_DIRECTIVES, RouteConfig, Route} from '@angular/router-deprecated';
+import {ROUTER_DIRECTIVES, Router} from '@angular/router';
 
 @Component({selector: 'app', directives: [ROUTER_DIRECTIVES], templateUrl: 'app.html'})
-@RouteConfig([
-  new Route({path: '/', component: Start, name: "Start"}),
-  new Route({path: '/contact', component: Contact, name: "Contact"}),
-  new Route({path: '/about', component: About, name: "About"})
-])
 export class App {
+  constructor(router: Router) {
+    // this should not be required once web worker bootstrap method can use modules
+    router.initialNavigation();
+  }
 }
+
+export const ROUTES = [
+  {path: '', component: Start},
+  {path: 'contact', component: Contact},
+  {path: 'about', component: About}
+];

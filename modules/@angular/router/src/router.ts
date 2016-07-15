@@ -143,7 +143,7 @@ export class Router {
   }
 
   /**
-   * @internal
+   * Sets up the location change listener and performs the inital navigation
    */
   initialNavigation(): void {
     this.setUpLocationChangeListener();
@@ -185,7 +185,7 @@ export class Router {
   }
 
   /**
-   * @internal
+   * Disposes of the router.
    */
   dispose(): void { this.locationSubscription.unsubscribe(); }
 

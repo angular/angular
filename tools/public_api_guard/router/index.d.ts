@@ -127,6 +127,8 @@ export declare class Router {
     url: string;
     constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: AppModuleFactoryLoader, config: Routes);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment}?: NavigationExtras): UrlTree;
+    dispose(): void;
+    initialNavigation(): void;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree): Promise<boolean>;
     parseUrl(url: string): UrlTree;
