@@ -345,12 +345,13 @@ export declare class NgControlStatus {
 }
 
 /** @stable */
-export declare class NgFor implements DoCheck {
+export declare class NgFor implements DoCheck, OnChanges {
     ngForOf: any;
     ngForTemplate: TemplateRef<NgForRow>;
     ngForTrackBy: TrackByFn;
     constructor(_viewContainer: ViewContainerRef, _templateRef: TemplateRef<NgForRow>, _iterableDiffers: IterableDiffers, _cdr: ChangeDetectorRef);
     ngDoCheck(): void;
+    ngOnChanges(changes: SimpleChanges): void;
 }
 
 /** @experimental */

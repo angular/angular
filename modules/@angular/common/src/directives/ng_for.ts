@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, IterableDiffer, IterableDiffers, TemplateRef, TrackByFn, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, Input, IterableDiffer, IterableDiffers, OnChanges, SimpleChanges, TemplateRef, TrackByFn, ViewContainerRef} from '@angular/core';
 
 import {BaseException} from '../facade/exceptions';
 import {getTypeNameForDebugging, isBlank, isPresent} from '../facade/lang';
@@ -76,41 +76,42 @@ export class NgForRow {
  *
  * @stable
  */
-@Directive({selector: '[ngFor][ngForOf]', inputs: ['ngForTrackBy', 'ngForOf', 'ngForTemplate']})
-export class NgFor implements DoCheck {
-  /** @internal */
-  _ngForOf: any;
-  /** @internal */
-  _ngForTrackBy: TrackByFn;
+@Directive({selector: '[ngFor][ngForOf]'})
+export class NgFor implements DoCheck, OnChanges {
+  @Input() ngForOf: any;
+  @Input() ngForTrackBy: TrackByFn;
+
   private _differ: IterableDiffer;
 
   constructor(
       private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<NgForRow>,
       private _iterableDiffers: IterableDiffers, private _cdr: ChangeDetectorRef) {}
 
-  set ngForOf(value: any) {
-    this._ngForOf = value;
-    if (isBlank(this._differ) && isPresent(value)) {
-      try {
-        this._differ = this._iterableDiffers.find(value).create(this._cdr, this._ngForTrackBy);
-      } catch (e) {
-        throw new BaseException(
-            `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
-      }
-    }
-  }
-
+  @Input()
   set ngForTemplate(value: TemplateRef<NgForRow>) {
     if (isPresent(value)) {
       this._templateRef = value;
     }
   }
 
-  set ngForTrackBy(value: TrackByFn) { this._ngForTrackBy = value; }
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('ngForOf' in changes) {
+      // React on ngForOf changes only once all inputs have been initialized
+      const value = changes['ngForOf'].currentValue;
+      if (isBlank(this._differ) && isPresent(value)) {
+        try {
+          this._differ = this._iterableDiffers.find(value).create(this._cdr, this.ngForTrackBy);
+        } catch (e) {
+          throw new BaseException(
+              `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+        }
+      }
+    }
+  }
 
   ngDoCheck() {
     if (isPresent(this._differ)) {
-      var changes = this._differ.diff(this._ngForOf);
+      const changes = this._differ.diff(this.ngForOf);
       if (isPresent(changes)) this._applyChanges(changes);
     }
   }
@@ -118,7 +119,7 @@ export class NgFor implements DoCheck {
   private _applyChanges(changes: DefaultIterableDiffer) {
     // TODO(rado): check if change detection can produce a change record that is
     // easier to consume than current.
-    var recordViewTuples: RecordViewTuple[] = [];
+    const recordViewTuples: RecordViewTuple[] = [];
     changes.forEachRemovedItem(
         (removedRecord: CollectionChangeRecord) =>
             recordViewTuples.push(new RecordViewTuple(removedRecord, null)));
@@ -127,7 +128,7 @@ export class NgFor implements DoCheck {
         (movedRecord: CollectionChangeRecord) =>
             recordViewTuples.push(new RecordViewTuple(movedRecord, null)));
 
-    var insertTuples = this._bulkRemove(recordViewTuples);
+    const insertTuples = this._bulkRemove(recordViewTuples);
 
     changes.forEachAddedItem(
         (addedRecord: CollectionChangeRecord) =>
@@ -135,17 +136,17 @@ export class NgFor implements DoCheck {
 
     this._bulkInsert(insertTuples);
 
-    for (var i = 0; i < insertTuples.length; i++) {
+    for (let i = 0; i < insertTuples.length; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
     }
 
-    for (var i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
+    for (let i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
       var viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
     }
 
-    changes.forEachIdentityChange((record: any /** TODO #9100 */) => {
+    changes.forEachIdentityChange((record: any) => {
       var viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(record.currentIndex);
       viewRef.context.$implicit = record.item;
     });
@@ -159,9 +160,9 @@ export class NgFor implements DoCheck {
     tuples.sort(
         (a: RecordViewTuple, b: RecordViewTuple) =>
             a.record.previousIndex - b.record.previousIndex);
-    var movedTuples: RecordViewTuple[] = [];
-    for (var i = tuples.length - 1; i >= 0; i--) {
-      var tuple = tuples[i];
+    const movedTuples: RecordViewTuple[] = [];
+    for (let i = tuples.length - 1; i >= 0; i--) {
+      const tuple = tuples[i];
       // separate moved views from removed views.
       if (isPresent(tuple.record.currentIndex)) {
         tuple.view =
@@ -176,7 +177,7 @@ export class NgFor implements DoCheck {
 
   private _bulkInsert(tuples: RecordViewTuple[]): RecordViewTuple[] {
     tuples.sort((a, b) => a.record.currentIndex - b.record.currentIndex);
-    for (var i = 0; i < tuples.length; i++) {
+    for (let i = 0; i < tuples.length; i++) {
       var tuple = tuples[i];
       if (isPresent(tuple.view)) {
         this._viewContainer.insert(tuple.view, tuple.record.currentIndex);
@@ -190,10 +191,5 @@ export class NgFor implements DoCheck {
 }
 
 class RecordViewTuple {
-  view: EmbeddedViewRef<NgForRow>;
-  record: any;
-  constructor(record: any, view: EmbeddedViewRef<NgForRow>) {
-    this.record = record;
-    this.view = view;
-  }
+  constructor(public record: any, public view: EmbeddedViewRef<NgForRow>) {}
 }
