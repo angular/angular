@@ -7,22 +7,22 @@ export declare class AbstractProviderError extends BaseException {
 
 /** @stable */
 export declare abstract class AfterContentChecked {
-    abstract ngAfterContentChecked(): any;
+    abstract ngAfterContentChecked(): void;
 }
 
 /** @stable */
 export declare abstract class AfterContentInit {
-    abstract ngAfterContentInit(): any;
+    abstract ngAfterContentInit(): void;
 }
 
 /** @stable */
 export declare abstract class AfterViewChecked {
-    abstract ngAfterViewChecked(): any;
+    abstract ngAfterViewChecked(): void;
 }
 
 /** @stable */
 export declare abstract class AfterViewInit {
-    abstract ngAfterViewInit(): any;
+    abstract ngAfterViewInit(): void;
 }
 
 /** @experimental */
@@ -686,7 +686,7 @@ export declare function disposePlatform(): void;
 
 /** @stable */
 export declare abstract class DoCheck {
-    abstract ngDoCheck(): any;
+    abstract ngDoCheck(): void;
 }
 
 /** @deprecated */
@@ -972,17 +972,17 @@ export declare class NoProviderError extends AbstractProviderError {
 
 /** @stable */
 export declare abstract class OnChanges {
-    abstract ngOnChanges(changes: SimpleChanges): any;
+    abstract ngOnChanges(changes: SimpleChanges): void;
 }
 
 /** @stable */
 export declare abstract class OnDestroy {
-    abstract ngOnDestroy(): any;
+    abstract ngOnDestroy(): void;
 }
 
 /** @stable */
 export declare abstract class OnInit {
-    abstract ngOnInit(): any;
+    abstract ngOnInit(): void;
 }
 
 /** @stable */
