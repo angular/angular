@@ -195,10 +195,10 @@ export abstract class AppView<T> {
     for (var i = 0; i < this.disposables.length; i++) {
       this.disposables[i]();
     }
+    this.destroyInternal();
     for (var i = 0; i < this.subscriptions.length; i++) {
       ObservableWrapper.dispose(this.subscriptions[i]);
     }
-    this.destroyInternal();
     this.dirtyParentQueriesInternal();
 
     if (this.animationPlayers.length == 0) {
