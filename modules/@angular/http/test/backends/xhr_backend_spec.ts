@@ -9,6 +9,7 @@
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
 import {BrowserXhr} from '../../src/backends/browser_xhr';
+import {Json} from '../../src/facade/lang';
 import {XSRFStrategy} from '../../src/interfaces';
 import {XHRConnection, XHRBackend, CookieXSRFStrategy} from '../../src/backends/xhr_backend';
 import {provide, Injector, Injectable, ReflectiveInjector} from '@angular/core';
@@ -256,7 +257,7 @@ export function main() {
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         connection.response.subscribe();
-        expect(sendSpy).toHaveBeenCalledWith(body);
+        expect(sendSpy).toHaveBeenCalledWith(Json.stringify(body));
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'application/json');
       });
 
