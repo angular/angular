@@ -81,6 +81,28 @@ describe('recognize', () => {
         });
   });
 
+  it('should set url segment and index properly (wildcard)', () => {
+    const url = tree('a/b/c');
+    recognize(
+        RootComponent,
+        [
+          {path: 'a', component: ComponentA, children: [{path: '**', component: ComponentB}]},
+        ],
+        url, 'a/b/c')
+        .subscribe((s: RouterStateSnapshot) => {
+          expect(s.root._urlSegment).toBe(url.root);
+          expect(s.root._lastPathIndex).toBe(-1);
+
+          const compA = s.firstChild(s.root);
+          expect(compA._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+          expect(compA._lastPathIndex).toBe(0);
+
+          const compC = s.firstChild(<any>compA);
+          expect(compC._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+          expect(compC._lastPathIndex).toBe(2);
+        });
+  });
+
   it('should match routes in the depth first order', () => {
     checkRecognize(
         [
@@ -355,6 +377,62 @@ describe('recognize', () => {
               const c = s.children(a)[1];
               expect(c._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
               expect(c._lastPathIndex).toBe(0);
+            });
+      });
+
+      it('should set url segment and index properly when nested empty-path segments', () => {
+        const url = tree('a');
+        recognize(
+            RootComponent, [{
+              path: 'a',
+              children: [
+                {path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}
+              ]
+            }],
+            url, 'a')
+            .forEach((s: RouterStateSnapshot) => {
+              expect(s.root._urlSegment).toBe(url.root);
+              expect(s.root._lastPathIndex).toBe(-1);
+
+              const a = s.firstChild(s.root);
+              expect(a._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+              expect(a._lastPathIndex).toBe(0);
+
+              const b = s.firstChild(a);
+              expect(b._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+              expect(b._lastPathIndex).toBe(0);
+
+              const c = s.firstChild(b);
+              expect(c._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+              expect(c._lastPathIndex).toBe(0);
+            });
+      });
+
+      it('should set url segment and index properly when nested empty-path segments (2)', () => {
+        const url = tree('');
+        recognize(
+            RootComponent, [{
+              path: '',
+              children: [
+                {path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}
+              ]
+            }],
+            url, '')
+            .forEach((s: RouterStateSnapshot) => {
+              expect(s.root._urlSegment).toBe(url.root);
+              expect(s.root._lastPathIndex).toBe(-1);
+
+              const a = s.firstChild(s.root);
+              expect(a._urlSegment).toBe(url.root);
+              expect(a._lastPathIndex).toBe(-1);
+
+              const b = s.firstChild(a);
+              expect(b._urlSegment).toBe(url.root);
+              expect(b._lastPathIndex).toBe(-1);
+
+              const c = s.firstChild(b);
+              expect(c._urlSegment).toBe(url.root);
+              expect(c._lastPathIndex).toBe(-1);
             });
       });
     });

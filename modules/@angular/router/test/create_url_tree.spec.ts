@@ -8,7 +8,6 @@ import {DefaultUrlSerializer, UrlPathWithParams, UrlSegment, UrlTree} from '../s
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
 
-
   it('should navigate to the root', () => {
     const p = serializer.parse('/');
     const t = createRoot(p, ['/']);
@@ -132,12 +131,6 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t)).toEqual('/a/c2');
     });
 
-    it('should work when given ../', () => {
-      const p = serializer.parse('/a/c');
-      const t = create(p.root.children[PRIMARY_OUTLET], 1, p, ['../', 'c2']);
-      expect(serializer.serialize(t)).toEqual('/a/c2');
-    });
-
     it('should support setting matrix params', () => {
       const p = serializer.parse('/a/(c//left:cp)(left:ap)');
       const t = create(p.root.children[PRIMARY_OUTLET], 0, p, ['../', {x: 5}]);
@@ -152,10 +145,22 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t)).toEqual('/q2(left:ap)');
     });
 
-    xit('should navigate to the root', () => {
+    it('should navigate to the root', () => {
       const p = serializer.parse('/a/c');
       const t = create(p.root.children[PRIMARY_OUTLET], 0, p, ['../']);
-      expect(serializer.serialize(t)).toEqual('');
+      expect(serializer.serialize(t)).toEqual('/');
+    });
+
+    it('should work with ../ when absolute url', () => {
+      const p = serializer.parse('/a/c');
+      const t = create(p.root.children[PRIMARY_OUTLET], 1, p, ['../', 'c2']);
+      expect(serializer.serialize(t)).toEqual('/a/c2');
+    });
+
+    it('should work with position = -1', () => {
+      const p = serializer.parse('/');
+      const t = create(p.root, -1, p, ['11']);
+      expect(serializer.serialize(t)).toEqual('/11');
     });
 
     it('should throw when too many ..', () => {
@@ -195,6 +200,7 @@ describe('createUrlTree', () => {
     expect(t.fragment).toEqual('fragment');
   });
 });
+
 
 function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragment?: string) {
   const s = new ActivatedRouteSnapshot(

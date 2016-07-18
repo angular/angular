@@ -116,7 +116,8 @@ function processPathsWithParamsAgainstRoute(
     const snapshot = new ActivatedRouteSnapshot(
         paths, Object.freeze(merge(inherited.allParams, params)),
         merge(inherited.allData, getData(route)), outlet, route.component, route,
-        getSourceSegment(rawSegment), getPathIndexShift(rawSegment) - 1, newInheritedResolve);
+        getSourceSegment(rawSegment), getPathIndexShift(rawSegment) + paths.length,
+        newInheritedResolve);
     return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
   }
 
@@ -130,7 +131,7 @@ function processPathsWithParamsAgainstRoute(
   const snapshot = new ActivatedRouteSnapshot(
       consumedPaths, Object.freeze(merge(inherited.allParams, parameters)),
       merge(inherited.allData, getData(route)), outlet, route.component, route,
-      getSourceSegment(rawSegment), getPathIndexShift(rawSegment) + pathIndex + lastChild - 1,
+      getSourceSegment(rawSegment), getPathIndexShift(rawSegment) + consumedPaths.length,
       newInheritedResolve);
 
   const newInherited = route.component ?
@@ -227,12 +228,12 @@ function getSourceSegment(segment: UrlSegment): UrlSegment {
 
 function getPathIndexShift(segment: UrlSegment): number {
   let s = segment;
-  let res = 0;
+  let res = (s._pathIndexShift ? s._pathIndexShift : 0);
   while (s._sourceSegment) {
     s = s._sourceSegment;
-    res += segment._pathIndexShift;
+    res += (s._pathIndexShift ? s._pathIndexShift : 0);
   }
-  return res;
+  return res - 1;
 }
 
 function split(
@@ -245,7 +246,7 @@ function split(
         createChildrenForEmptyPaths(
             segment, consumedPaths, config, new UrlSegment(slicedPath, segment.children)));
     s._sourceSegment = segment;
-    s._pathIndexShift = 0;
+    s._pathIndexShift = consumedPaths.length;
     return {segment: s, slicedPath: []};
 
   } else if (slicedPath.length === 0 && containsEmptyPathMatches(segment, slicedPath, config)) {
@@ -253,11 +254,14 @@ function split(
         segment.pathsWithParams,
         addEmptyPathsToChildrenIfNeeded(segment, slicedPath, config, segment.children));
     s._sourceSegment = segment;
-    s._pathIndexShift = 0;
+    s._pathIndexShift = consumedPaths.length;
     return {segment: s, slicedPath};
 
   } else {
-    return {segment, slicedPath};
+    const s = new UrlSegment(segment.pathsWithParams, segment.children);
+    s._sourceSegment = segment;
+    s._pathIndexShift = consumedPaths.length;
+    return {segment: s, slicedPath};
   }
 }
 
