@@ -87,14 +87,13 @@ export function main() {
            expect(log.result()).toEqual('1; 2');
          }));
 
-      // TODO(vicb): check why this doesn't work in JS - linked to open issues on GH ?
-      xit('should complain if the test throws an exception during async calls', () => {
+      it('should complain if the test throws an exception during async calls', () => {
         expect(() => {
           fakeAsync(() => {
             PromiseWrapper.resolve(null).then((_) => { throw new BaseException('async'); });
             flushMicrotasks();
           })();
-        }).toThrowError('async');
+        }).toThrowError('Uncaught (in promise): async');
       });
 
       it('should complain if a test throws an exception', () => {

@@ -10,10 +10,10 @@ import {InjectableMetadata} from '../di/metadata';
 import {Type} from '../facade/lang';
 
 /**
- * Declares an Application Module.
- * @stable
+ * Declares an Angular Module.
+ * @experimental
  */
-export class AppModuleMetadata extends InjectableMetadata {
+export class NgModuleMetadata extends InjectableMetadata {
   /**
    * Defines the set of injectable objects that are available in the injector
    * of this module.
@@ -29,7 +29,7 @@ export class AppModuleMetadata extends InjectableMetadata {
    *    }
    * }
    *
-   * @AppModule({
+   * @NgModule({
    *   providers: [
    *     Greeter
    *   ]
@@ -48,36 +48,52 @@ export class AppModuleMetadata extends InjectableMetadata {
 
 
   /**
-   * Specifies a list of directives that can be used within the template
-   * of any component that is part of this application module.
+   * Specifies a list of directives/pipes that belong to this module.
    *
    * ### Example
    *
    * ```javascript
-   * @AppModule({
-   *   directives: [NgFor]
+   * @NgModule({
+   *   declarations: [NgFor]
    * })
-   * class MyAppModule {
+   * class CommonModule {
    * }
    * ```
    */
-  directives: Array<Type|any[]>;
+  declarations: Array<Type|any[]>;
 
   /**
-   * Specifies a list of pipes that can be used within the template
-   * of any component that is part of this application module.
+   * Specifies a list of modules whose exported directives/pipes
+   * should be available to templates in this module.
    *
    * ### Example
    *
    * ```javascript
-   * @AppModule({
-   *   pipes: [SomePipe]
+   * @NgModule({
+   *   imports: [CommonModule]
    * })
-   * class MyAppModule {
+   * class MainModule {
    * }
    * ```
    */
-  pipes: Array<Type|any[]>;
+  imports: Array<Type|any[]>;
+
+  /**
+   * Specifies a list of directives/pipes/module that can be used within the template
+   * of any component that is part of an angular module
+   * that imports this angular module.
+   *
+   * ### Example
+   *
+   * ```javascript
+   * @NgModule({
+   *   exports: [NgFor]
+   * })
+   * class CommonModule {
+   * }
+   * ```
+   */
+  exports: Array<Type|any[]>;
 
   /**
    * Defines the components that should be precompiled as well when
@@ -87,27 +103,18 @@ export class AppModuleMetadata extends InjectableMetadata {
    */
   precompile: Array<Type|any[]>;
 
-  /**
-   * Defines modules that should be included into this module.
-   * The providers / directives / pipes / precompile entries will be added
-   * to this module.
-   * Just like the main module, the modules listed here are also eagerly
-   * created and accessible via DI.
-   */
-  modules: Array<Type|any[]>;
-
-  constructor({providers, directives, pipes, precompile, modules}: {
+  constructor({providers, declarations, imports, exports, precompile}: {
     providers?: any[],
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
-    precompile?: Array<Type|any[]>,
-    modules?: Array<Type|any[]>
+    declarations?: Array<Type|any[]>,
+    imports?: Array<Type|any[]>,
+    exports?: Array<Type|any[]>,
+    precompile?: Array<Type|any[]>
   } = {}) {
     super();
     this._providers = providers;
-    this.directives = directives;
-    this.pipes = pipes;
+    this.declarations = declarations;
+    this.imports = imports;
+    this.exports = exports;
     this.precompile = precompile;
-    this.modules = modules;
   }
 }

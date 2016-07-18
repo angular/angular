@@ -20,8 +20,6 @@ export var LifecycleHooks: typeof t.LifecycleHooks = r.LifecycleHooks;
 export var LIFECYCLE_HOOKS_VALUES: typeof t.LIFECYCLE_HOOKS_VALUES = r.LIFECYCLE_HOOKS_VALUES;
 export type ReflectorReader = t.ReflectorReader;
 export var ReflectorReader: typeof t.ReflectorReader = r.ReflectorReader;
-export var ReflectorComponentResolver: typeof t.ReflectorComponentResolver =
-    r.ReflectorComponentResolver;
 export type AppElement = t.AppElement;
 export var AppElement: typeof t.AppElement = r.AppElement;
 export var CodegenComponentFactoryResolver: typeof t.CodegenComponentFactoryResolver =
@@ -29,7 +27,7 @@ export var CodegenComponentFactoryResolver: typeof t.CodegenComponentFactoryReso
 export var AppView: typeof t.AppView = r.AppView;
 export type DebugAppView<T> = t.DebugAppView<T>;
 export var DebugAppView: typeof t.DebugAppView = r.DebugAppView;
-export var AppModuleInjector: typeof t.AppModuleInjector = r.AppModuleInjector;
+export var NgModuleInjector: typeof t.NgModuleInjector = r.NgModuleInjector;
 export type ViewType = t.ViewType;
 export var ViewType: typeof t.ViewType = r.ViewType;
 export var MAX_INTERPOLATION_VALUES: typeof t.MAX_INTERPOLATION_VALUES = r.MAX_INTERPOLATION_VALUES;
@@ -68,6 +66,8 @@ export var Console: typeof t.Console = r.Console;
 export var reflector: t.Reflector = r.reflector;
 export var Reflector: typeof t.Reflector = r.Reflector;
 export type Reflector = t.Reflector;
+export var ReflectionCapabilities: typeof t.ReflectionCapabilities = r.ReflectionCapabilities;
+export type ReflectionCapabilities = t.ReflectionCapabilities;
 export type NoOpAnimationPlayer = t.NoOpAnimationPlayer;
 export var NoOpAnimationPlayer: typeof t.NoOpAnimationPlayer = r.NoOpAnimationPlayer;
 export type AnimationPlayer = t.AnimationPlayer;

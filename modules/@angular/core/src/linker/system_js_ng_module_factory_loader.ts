@@ -10,9 +10,9 @@
 import {Injectable, Optional} from '../di';
 import {global} from '../facade/lang';
 
-import {AppModuleFactory} from './app_module_factory';
-import {AppModuleFactoryLoader} from './app_module_factory_loader';
 import {Compiler} from './compiler';
+import {NgModuleFactory} from './ng_module_factory';
+import {NgModuleFactoryLoader} from './ng_module_factory_loader';
 
 const _SEPARATOR = '#';
 
@@ -20,18 +20,18 @@ const FACTORY_MODULE_SUFFIX = '.ngfactory';
 const FACTORY_CLASS_SUFFIX = 'NgFactory';
 
 /**
- * AppModuleFactoryLoader that uses SystemJS to load AppModuleFactory
+ * NgModuleFactoryLoader that uses SystemJS to load NgModuleFactory
  * @experimental
  */
 @Injectable()
-export class SystemJsAppModuleLoader implements AppModuleFactoryLoader {
+export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
   constructor(@Optional() private _compiler: Compiler) {}
 
-  load(path: string): Promise<AppModuleFactory<any>> {
+  load(path: string): Promise<NgModuleFactory<any>> {
     return this._compiler ? this.loadAndCompile(path) : this.loadFactory(path);
   }
 
-  private loadAndCompile(path: string): Promise<AppModuleFactory<any>> {
+  private loadAndCompile(path: string): Promise<NgModuleFactory<any>> {
     let [module, exportName] = path.split(_SEPARATOR);
     if (exportName === undefined) exportName = 'default';
 
@@ -39,10 +39,10 @@ export class SystemJsAppModuleLoader implements AppModuleFactoryLoader {
         .System.import(module)
         .then((module: any) => module[exportName])
         .then((type: any) => checkNotEmpty(type, module, exportName))
-        .then((type: any) => this._compiler.compileAppModuleAsync(type));
+        .then((type: any) => this._compiler.compileModuleAsync(type));
   }
 
-  private loadFactory(path: string): Promise<AppModuleFactory<any>> {
+  private loadFactory(path: string): Promise<NgModuleFactory<any>> {
     let [module, exportName] = path.split(_SEPARATOR);
     if (exportName === undefined) exportName = 'default';
 

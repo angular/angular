@@ -9,7 +9,7 @@
 import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {TestComponentBuilder, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, withProviders} from '@angular/core/testing';
-import {Injectable, Component, Input, ViewMetadata} from '@angular/core';
+import {Injectable, Component, Input, ViewMetadata, Pipe, NgModule} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {TimerWrapper} from '../src/facade/async';
 import {PromiseWrapper} from '../src/facade/promise';
@@ -325,6 +325,27 @@ export function main() {
              tcb.overrideTemplate(MockChildComp, '<span>Mock</span>').createSync(MockChildComp);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('Mock');
+       }));
+
+    it('should create components synchronously with a custom module',
+       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         @Pipe({name: 'somePipe'})
+         class SomePipe {
+           transform(value: any) { return `transformed ${value}`; }
+         }
+
+         @NgModule({declarations: [SomePipe]})
+         class SomeModule {
+         }
+
+         @Component({selector: 'comp', template: `{{'hello' | somePipe}}`})
+         class SomeComponent {
+         }
+
+
+         let componentFixture = tcb.createSync(SomeComponent, SomeModule);
+         componentFixture.detectChanges();
+         expect(componentFixture.nativeElement).toHaveText('transformed hello');
        }));
 
     describe('ComponentFixture', () => {

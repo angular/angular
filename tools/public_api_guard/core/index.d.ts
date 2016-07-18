@@ -124,10 +124,14 @@ export declare const APP_ID: any;
 /** @experimental */
 export declare const APP_INITIALIZER: any;
 
-/** @stable */
+/** @deprecated */
 export declare const APPLICATION_COMMON_PROVIDERS: Array<Type | {
     [k: string]: any;
 } | any[]>;
+
+/** @experimental */
+export declare class ApplicationModule {
+}
 
 /** @experimental */
 export declare abstract class ApplicationRef {
@@ -141,68 +145,6 @@ export declare abstract class ApplicationRef {
     abstract run(callback: Function): any;
     abstract tick(): void;
     abstract waitForAsyncInitializers(): Promise<any>;
-}
-
-/** @stable */
-export declare var AppModule: AppModuleMetadataFactory;
-
-/** @stable */
-export interface AppModuleDecorator extends TypeDecorator {
-}
-
-/** @stable */
-export declare class AppModuleFactory<T> {
-    moduleType: ConcreteType<T>;
-    constructor(_injectorClass: {
-        new (parentInjector: Injector): AppModuleInjector<T>;
-    }, _moduleype: ConcreteType<T>);
-    create(parentInjector?: Injector): AppModuleRef<T>;
-}
-
-/** @experimental */
-export declare abstract class AppModuleFactoryLoader {
-    abstract load(path: string): Promise<AppModuleFactory<any>>;
-}
-
-/** @stable */
-export declare class AppModuleMetadata extends InjectableMetadata {
-    directives: Array<Type | any[]>;
-    modules: Array<Type | any[]>;
-    pipes: Array<Type | any[]>;
-    precompile: Array<Type | any[]>;
-    providers: any[];
-    constructor({providers, directives, pipes, precompile, modules}?: {
-        providers?: any[];
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        precompile?: Array<Type | any[]>;
-        modules?: Array<Type | any[]>;
-    });
-}
-
-/** @stable */
-export interface AppModuleMetadataFactory {
-    (obj: {
-        providers?: any[];
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        precompile?: Array<Type | any[]>;
-        modules?: Array<Type | any[]>;
-    }): AppModuleDecorator;
-    new (obj: {
-        providers?: any[];
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        precompile?: Array<Type | any[]>;
-        modules?: Array<Type | any[]>;
-    }): AppModuleMetadata;
-}
-
-/** @stable */
-export declare abstract class AppModuleRef<T> {
-    componentFactoryResolver: ComponentFactoryResolver;
-    injector: Injector;
-    instance: T;
 }
 
 /** @experimental */
@@ -259,10 +201,10 @@ export declare class Binding extends Provider {
 }
 
 /** @stable */
-export declare function bootstrapModule<M>(moduleType: ConcreteType<M>, platform: PlatformRef, compilerOptions?: CompilerOptions): Promise<AppModuleRef<M>>;
+export declare function bootstrapModule<M>(moduleType: ConcreteType<M>, platform: PlatformRef, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
 
 /** @experimental */
-export declare function bootstrapModuleFactory<M>(moduleFactory: AppModuleFactory<M>, platform: PlatformRef): AppModuleRef<M>;
+export declare function bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, platform: PlatformRef): NgModuleRef<M>;
 
 /** @stable */
 export declare enum ChangeDetectionStrategy {
@@ -301,30 +243,21 @@ export declare class CollectionChangeRecord {
 
 /** @stable */
 export declare class Compiler {
-    injector: Injector;
     clearCache(): void;
     clearCacheFor(type: Type): void;
-    compileAppModuleAsync<T>(moduleType: ConcreteType<T>, metadata?: AppModuleMetadata): Promise<AppModuleFactory<T>>;
-    compileAppModuleSync<T>(moduleType: ConcreteType<T>, metadata?: AppModuleMetadata): AppModuleFactory<T>;
-    compileComponentAsync<T>(component: ConcreteType<T>): Promise<ComponentFactory<T>>;
-    compileComponentSync<T>(component: ConcreteType<T>): ComponentFactory<T>;
+    compileComponentAsync<T>(component: ConcreteType<T>, ngModule?: Type): Promise<ComponentFactory<T>>;
+    compileComponentSync<T>(component: ConcreteType<T>, ngModule?: Type): ComponentFactory<T>;
+    compileModuleAsync<T>(moduleType: ConcreteType<T>): Promise<NgModuleFactory<T>>;
+    compileModuleSync<T>(moduleType: ConcreteType<T>): NgModuleFactory<T>;
 }
 
 /** @experimental */
 export declare abstract class CompilerFactory {
-    abstract createCompiler(options?: CompilerOptions): Compiler;
-    withDefaults(options?: CompilerOptions): CompilerFactory;
-    static mergeOptions(defaultOptions?: CompilerOptions, newOptions?: CompilerOptions): CompilerOptions;
+    abstract createCompiler(options?: CompilerOptions[]): Compiler;
 }
 
 /** @experimental */
-export declare type CompilerOptions = {
-    useDebug?: boolean;
-    useJit?: boolean;
-    defaultEncapsulation?: ViewEncapsulation;
-    providers?: any[];
-    deprecatedAppProviders?: any[];
-};
+export declare const CompilerOptions: OpaqueToken;
 
 /** @stable */
 export declare var Component: ComponentMetadataFactory;
@@ -537,10 +470,13 @@ export declare function coreBootstrap<C>(componentFactory: ComponentFactory<C>, 
 export declare function coreLoadAndBootstrap(componentType: Type, injector: Injector): Promise<ComponentRef<any>>;
 
 /** @experimental */
+export declare const corePlatform: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(name: string, providers: any[]): () => PlatformRef;
+export declare function createPlatformFactory(parentPlaformFactory: PlatformFactory, name: string, providers?: any[]): PlatformFactory;
 
 /** @stable */
 export declare class CyclicDependencyError extends AbstractProviderError {
@@ -928,6 +864,68 @@ export declare class KeyValueDiffers {
 export declare function lockRunMode(): void;
 
 /** @experimental */
+export declare var NgModule: NgModuleMetadataFactory;
+
+/** @stable */
+export interface NgModuleDecorator extends TypeDecorator {
+}
+
+/** @experimental */
+export declare class NgModuleFactory<T> {
+    moduleType: ConcreteType<T>;
+    constructor(_injectorClass: {
+        new (parentInjector: Injector): NgModuleInjector<T>;
+    }, _moduleype: ConcreteType<T>);
+    create(parentInjector: Injector): NgModuleRef<T>;
+}
+
+/** @experimental */
+export declare abstract class NgModuleFactoryLoader {
+    abstract load(path: string): Promise<NgModuleFactory<any>>;
+}
+
+/** @experimental */
+export declare class NgModuleMetadata extends InjectableMetadata {
+    declarations: Array<Type | any[]>;
+    exports: Array<Type | any[]>;
+    imports: Array<Type | any[]>;
+    precompile: Array<Type | any[]>;
+    providers: any[];
+    constructor({providers, declarations, imports, exports, precompile}?: {
+        providers?: any[];
+        declarations?: Array<Type | any[]>;
+        imports?: Array<Type | any[]>;
+        exports?: Array<Type | any[]>;
+        precompile?: Array<Type | any[]>;
+    });
+}
+
+/** @experimental */
+export interface NgModuleMetadataFactory {
+    (obj?: {
+        providers?: any[];
+        declarations?: Array<Type | any[]>;
+        imports?: Array<Type | any[]>;
+        exports?: Array<Type | any[]>;
+        precompile?: Array<Type | any[]>;
+    }): NgModuleDecorator;
+    new (obj?: {
+        providers?: any[];
+        declarations?: Array<Type | any[]>;
+        imports?: Array<Type | any[]>;
+        exports?: Array<Type | any[]>;
+        precompile?: Array<Type | any[]>;
+    }): NgModuleMetadata;
+}
+
+/** @experimental */
+export declare abstract class NgModuleRef<T> {
+    componentFactoryResolver: ComponentFactoryResolver;
+    injector: Injector;
+    instance: T;
+}
+
+/** @experimental */
 export declare class NgZone {
     hasPendingMacrotasks: boolean;
     hasPendingMicrotasks: boolean;
@@ -1058,8 +1056,8 @@ export interface PipeTransform {
     transform(value: any, ...args: any[]): any;
 }
 
-/** @experimental */
-export declare const PLATFORM_COMMON_PROVIDERS: Array<any | Type | Provider | any[]>;
+/** @deprecated */
+export declare const PLATFORM_COMMON_PROVIDERS: any[];
 
 /** @deprecated */
 export declare const PLATFORM_DIRECTIVES: OpaqueToken;
@@ -1336,12 +1334,6 @@ export declare function style(tokens: string | {
     [key: string]: string | number;
 }>): AnimationStyleMetadata;
 
-/** @experimental */
-export declare class SystemJsAppModuleLoader implements AppModuleFactoryLoader {
-    constructor(_compiler: Compiler);
-    load(path: string): Promise<AppModuleFactory<any>>;
-}
-
 /** @deprecated */
 export declare class SystemJsCmpFactoryResolver implements ComponentResolver {
     constructor(_console: Console);
@@ -1354,6 +1346,12 @@ export declare class SystemJsComponentResolver implements ComponentResolver {
     constructor(_resolver: ComponentResolver, _console: Console);
     clearCache(): void;
     resolveComponent(componentType: string | Type): Promise<ComponentFactory<any>>;
+}
+
+/** @experimental */
+export declare class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
+    constructor(_compiler: Compiler);
+    load(path: string): Promise<NgModuleFactory<any>>;
 }
 
 /** @stable */

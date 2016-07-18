@@ -10,7 +10,7 @@ import {ListWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {isArray, isBlank, isPresent, normalizeBlank} from '../src/facade/lang';
 
-import {CompileAppModuleMetadata, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMap, CompileTokenMetadata, CompileTypeMetadata} from './compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMap, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata} from './compile_metadata';
 import {Identifiers, identifierToken} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
 import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, ReferenceAst, VariableAst} from './template_ast';
@@ -23,16 +23,16 @@ export class ProviderViewContext {
   /**
    * @internal
    */
-  viewQueries: CompileTokenMap<CompileQueryMetadata[]>;
+  viewQueries: CompileIdentifierMap<CompileTokenMetadata, CompileQueryMetadata[]>;
   /**
    * @internal
    */
-  viewProviders: CompileTokenMap<boolean>;
+  viewProviders: CompileIdentifierMap<CompileTokenMetadata, boolean>;
   errors: ProviderError[] = [];
 
   constructor(public component: CompileDirectiveMetadata, public sourceSpan: ParseSourceSpan) {
     this.viewQueries = _getViewQueries(component);
-    this.viewProviders = new CompileTokenMap<boolean>();
+    this.viewProviders = new CompileIdentifierMap<CompileTokenMetadata, boolean>();
     _normalizeProviders(component.viewProviders, sourceSpan, this.errors).forEach((provider) => {
       if (isBlank(this.viewProviders.get(provider.token))) {
         this.viewProviders.add(provider.token, true);
@@ -42,11 +42,11 @@ export class ProviderViewContext {
 }
 
 export class ProviderElementContext {
-  private _contentQueries: CompileTokenMap<CompileQueryMetadata[]>;
+  private _contentQueries: CompileIdentifierMap<CompileTokenMetadata, CompileQueryMetadata[]>;
 
-  private _transformedProviders = new CompileTokenMap<ProviderAst>();
-  private _seenProviders = new CompileTokenMap<boolean>();
-  private _allProviders: CompileTokenMap<ProviderAst>;
+  private _transformedProviders = new CompileIdentifierMap<CompileTokenMetadata, ProviderAst>();
+  private _seenProviders = new CompileIdentifierMap<CompileTokenMetadata, boolean>();
+  private _allProviders: CompileIdentifierMap<CompileTokenMetadata, ProviderAst>;
   private _attrs: {[key: string]: string};
   private _hasViewContainer: boolean = false;
 
@@ -60,7 +60,7 @@ export class ProviderElementContext {
     this._allProviders =
         _resolveProvidersFromDirectives(directivesMeta, _sourceSpan, _viewContext.errors);
     this._contentQueries = _getContentQueries(directivesMeta);
-    var queriedTokens = new CompileTokenMap<boolean>();
+    var queriedTokens = new CompileIdentifierMap<CompileTokenMetadata, boolean>();
     this._allProviders.values().forEach(
         (provider) => { this._addQueryReadsTo(provider.token, queriedTokens); });
     refs.forEach((refAst) => {
@@ -100,7 +100,9 @@ export class ProviderElementContext {
 
   get transformedHasViewContainer(): boolean { return this._hasViewContainer; }
 
-  private _addQueryReadsTo(token: CompileTokenMetadata, queryReadTokens: CompileTokenMap<boolean>) {
+  private _addQueryReadsTo(
+      token: CompileTokenMetadata,
+      queryReadTokens: CompileIdentifierMap<CompileTokenMetadata, boolean>) {
     this._getQueriesFor(token).forEach((query) => {
       const queryReadToken = isPresent(query.read) ? query.read : token;
       if (isBlank(queryReadTokens.get(queryReadToken))) {
@@ -272,24 +274,28 @@ export class ProviderElementContext {
 }
 
 
-export class AppModuleProviderParser {
-  private _transformedProviders = new CompileTokenMap<ProviderAst>();
-  private _seenProviders = new CompileTokenMap<boolean>();
+export class NgModuleProviderAnalyzer {
+  private _transformedProviders = new CompileIdentifierMap<CompileTokenMetadata, ProviderAst>();
+  private _seenProviders = new CompileIdentifierMap<CompileTokenMetadata, boolean>();
   private _unparsedProviders: any[] = [];
-  private _allProviders: CompileTokenMap<ProviderAst>;
+  private _allProviders: CompileIdentifierMap<CompileTokenMetadata, ProviderAst>;
   private _errors: ProviderError[] = [];
 
-  constructor(appModule: CompileAppModuleMetadata, sourceSpan: ParseSourceSpan) {
-    this._allProviders = new CompileTokenMap<ProviderAst>();
-    [appModule.type].concat(appModule.modules).forEach((appModuleType: CompileTypeMetadata) => {
-      const appModuleProvider = new CompileProviderMetadata(
-          {token: new CompileTokenMetadata({identifier: appModuleType}), useClass: appModuleType});
+  constructor(
+      ngModule: CompileNgModuleMetadata, extraProviders: CompileProviderMetadata[],
+      sourceSpan: ParseSourceSpan) {
+    this._allProviders = new CompileIdentifierMap<CompileTokenMetadata, ProviderAst>();
+    const ngModuleTypes = ngModule.transitiveModule.modules.map((moduleMeta) => moduleMeta.type);
+    ngModuleTypes.forEach((ngModuleType: CompileTypeMetadata) => {
+      const ngModuleProvider = new CompileProviderMetadata(
+          {token: new CompileTokenMetadata({identifier: ngModuleType}), useClass: ngModuleType});
       _resolveProviders(
-          [appModuleProvider], ProviderAstType.PublicService, true, sourceSpan, this._errors,
+          [ngModuleProvider], ProviderAstType.PublicService, true, sourceSpan, this._errors,
           this._allProviders);
     });
     _resolveProviders(
-        _normalizeProviders(appModule.providers, sourceSpan, this._errors),
+        _normalizeProviders(
+            ngModule.transitiveModule.providers.concat(extraProviders), sourceSpan, this._errors),
         ProviderAstType.PublicService, false, sourceSpan, this._errors, this._allProviders);
   }
 
@@ -436,8 +442,8 @@ function _normalizeProviders(
 
 function _resolveProvidersFromDirectives(
     directives: CompileDirectiveMetadata[], sourceSpan: ParseSourceSpan,
-    targetErrors: ParseError[]): CompileTokenMap<ProviderAst> {
-  var providersByToken = new CompileTokenMap<ProviderAst>();
+    targetErrors: ParseError[]): CompileIdentifierMap<CompileTokenMetadata, ProviderAst> {
+  var providersByToken = new CompileIdentifierMap<CompileTokenMetadata, ProviderAst>();
   directives.forEach((directive) => {
     var dirProvider = new CompileProviderMetadata(
         {token: new CompileTokenMetadata({identifier: directive.type}), useClass: directive.type});
@@ -464,7 +470,7 @@ function _resolveProvidersFromDirectives(
 function _resolveProviders(
     providers: CompileProviderMetadata[], providerType: ProviderAstType, eager: boolean,
     sourceSpan: ParseSourceSpan, targetErrors: ParseError[],
-    targetProvidersByToken: CompileTokenMap<ProviderAst>) {
+    targetProvidersByToken: CompileIdentifierMap<CompileTokenMetadata, ProviderAst>) {
   providers.forEach((provider) => {
     var resolvedProvider = targetProvidersByToken.get(provider.token);
     if (isPresent(resolvedProvider) && resolvedProvider.multiProvider !== provider.multi) {
@@ -487,8 +493,8 @@ function _resolveProviders(
 
 
 function _getViewQueries(component: CompileDirectiveMetadata):
-    CompileTokenMap<CompileQueryMetadata[]> {
-  var viewQueries = new CompileTokenMap<CompileQueryMetadata[]>();
+    CompileIdentifierMap<CompileTokenMetadata, CompileQueryMetadata[]> {
+  var viewQueries = new CompileIdentifierMap<CompileTokenMetadata, CompileQueryMetadata[]>();
   if (isPresent(component.viewQueries)) {
     component.viewQueries.forEach((query) => _addQueryToTokenMap(viewQueries, query));
   }
@@ -501,8 +507,8 @@ function _getViewQueries(component: CompileDirectiveMetadata):
 }
 
 function _getContentQueries(directives: CompileDirectiveMetadata[]):
-    CompileTokenMap<CompileQueryMetadata[]> {
-  var contentQueries = new CompileTokenMap<CompileQueryMetadata[]>();
+    CompileIdentifierMap<CompileTokenMetadata, CompileQueryMetadata[]> {
+  var contentQueries = new CompileIdentifierMap<CompileTokenMetadata, CompileQueryMetadata[]>();
   directives.forEach(directive => {
     if (isPresent(directive.queries)) {
       directive.queries.forEach((query) => _addQueryToTokenMap(contentQueries, query));
@@ -517,7 +523,8 @@ function _getContentQueries(directives: CompileDirectiveMetadata[]):
 }
 
 function _addQueryToTokenMap(
-    map: CompileTokenMap<CompileQueryMetadata[]>, query: CompileQueryMetadata) {
+    map: CompileIdentifierMap<CompileTokenMetadata, CompileQueryMetadata[]>,
+    query: CompileQueryMetadata) {
   query.selectors.forEach((token: CompileTokenMetadata) => {
     var entry = map.get(token);
     if (isBlank(entry)) {

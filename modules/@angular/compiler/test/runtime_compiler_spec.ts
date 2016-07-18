@@ -8,7 +8,7 @@
 
 import {beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
-import {Injectable, Component, Input, ViewMetadata, Compiler, ComponentFactory, Injector, AppModule, AppModuleMetadata, AppModuleFactory} from '@angular/core';
+import {Injectable, Component, Input, ViewMetadata, Compiler, ComponentFactory, Injector, NgModule, NgModuleFactory} from '@angular/core';
 import {ConcreteType, stringify} from '../src/facade/lang';
 import {fakeAsync, tick, TestComponentBuilder, ComponentFixture, configureCompiler} from '@angular/core/testing';
 import {XHR, ViewResolver} from '@angular/compiler';
@@ -26,10 +26,6 @@ class SomeComp {
 
 @Component({selector: 'some-cmp', templateUrl: './someTpl'})
 class SomeCompWithUrlTemplate {
-}
-
-@AppModule({})
-class SomeModule {
 }
 
 export function main() {
@@ -118,49 +114,61 @@ export function main() {
          }));
     });
 
-    describe('compileAppModuleAsync', () => {
+    describe('compileModuleAsync', () => {
       it('should allow to use templateUrl components', fakeAsync(() => {
+           @NgModule(
+               {declarations: [SomeCompWithUrlTemplate], precompile: [SomeCompWithUrlTemplate]})
+           class SomeModule {
+           }
+
            xhr.spy('get').andCallFake(() => Promise.resolve('hello'));
-           let appModuleFactory: AppModuleFactory<any>;
-           compiler
-               .compileAppModuleAsync(
-                   SomeModule, new AppModuleMetadata({precompile: [SomeCompWithUrlTemplate]}))
-               .then((f) => appModuleFactory = f);
+           let ngModuleFactory: NgModuleFactory<any>;
+           compiler.compileModuleAsync(SomeModule).then((f) => ngModuleFactory = f);
            tick();
-           expect(appModuleFactory.moduleType).toBe(SomeModule);
+           expect(ngModuleFactory.moduleType).toBe(SomeModule);
          }));
     });
 
-    describe('compileAppModuleSync', () => {
+    describe('compileModuleSync', () => {
       it('should throw when using a templateUrl that has not been compiled before', () => {
+        @NgModule({declarations: [SomeCompWithUrlTemplate], precompile: [SomeCompWithUrlTemplate]})
+        class SomeModule {
+        }
+
         xhr.spy('get').andCallFake(() => Promise.resolve(''));
-        expect(
-            () => compiler.compileAppModuleSync(
-                SomeModule, new AppModuleMetadata({precompile: [SomeCompWithUrlTemplate]})))
+        expect(() => compiler.compileModuleSync(SomeModule))
             .toThrowError(
                 `Can't compile synchronously as ${stringify(SomeCompWithUrlTemplate)} is still being loaded!`);
       });
 
       it('should throw when using a templateUrl in a nested component that has not been compiled before',
          () => {
+           @NgModule({declarations: [SomeComp], precompile: [SomeComp]})
+           class SomeModule {
+           }
+
            xhr.spy('get').andCallFake(() => Promise.resolve(''));
            viewResolver.setView(
                SomeComp, new ViewMetadata({template: '', directives: [ChildComp]}));
            viewResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
-           expect(
-               () => compiler.compileAppModuleSync(
-                   SomeModule, new AppModuleMetadata({precompile: [SomeComp]})))
+           expect(() => compiler.compileModuleSync(SomeModule))
                .toThrowError(
                    `Can't compile synchronously as ${stringify(ChildComp)} is still being loaded!`);
          });
 
       it('should allow to use templateUrl components that have been loaded before',
          fakeAsync(() => {
+           @NgModule(
+               {declarations: [SomeCompWithUrlTemplate], precompile: [SomeCompWithUrlTemplate]})
+           class SomeModule {
+           }
+
            xhr.spy('get').andCallFake(() => Promise.resolve('hello'));
-           tcb.createFakeAsync(SomeCompWithUrlTemplate);
-           let appModuleFactory = compiler.compileAppModuleSync(
-               SomeModule, new AppModuleMetadata({precompile: [SomeCompWithUrlTemplate]}));
-           expect(appModuleFactory).toBeTruthy();
+           compiler.compileModuleAsync(SomeModule);
+           tick();
+
+           let ngModuleFactory = compiler.compileModuleSync(SomeModule);
+           expect(ngModuleFactory).toBeTruthy();
          }));
     });
   });

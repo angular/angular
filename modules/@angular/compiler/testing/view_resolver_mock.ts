@@ -72,10 +72,13 @@ export class MockViewResolver extends ViewResolver {
    * - Override the directives, see `overrideViewDirective`.
    * - Override the @View definition, see `setInlineTemplate`.
    */
-  resolve(component: Type): ViewMetadata {
+  resolve(component: Type, throwIfNotFound = true): ViewMetadata {
     var view = this._views.get(component);
     if (isBlank(view)) {
-      view = super.resolve(component);
+      view = super.resolve(component, throwIfNotFound);
+      if (!view) {
+        return null;
+      }
     }
 
     var directives: any[] /** TODO #9100 */ = [];

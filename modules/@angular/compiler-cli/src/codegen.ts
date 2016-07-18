@@ -11,12 +11,12 @@
  * Intended to be used in a build step.
  */
 import * as compiler from '@angular/compiler';
-import {AppModuleMetadata, ComponentMetadata, ViewEncapsulation} from '@angular/core';
+import {ComponentMetadata, NgModuleMetadata, ViewEncapsulation} from '@angular/core';
 import {AngularCompilerOptions} from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {AppModuleCompiler, CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './compiler_private';
+import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleCompiler, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './compiler_private';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector, StaticSymbol} from './static_reflector';
@@ -39,7 +39,7 @@ export class CodeGenerator {
 
   private readFileMetadata(absSourcePath: string): FileMetadata {
     const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
-    const result: FileMetadata = {components: [], appModules: [], fileUrl: absSourcePath};
+    const result: FileMetadata = {components: [], ngModules: [], fileUrl: absSourcePath};
     if (!moduleMetadata) {
       console.log(`WARNING: no metadata found for ${absSourcePath}`);
       return result;
@@ -57,8 +57,8 @@ export class CodeGenerator {
       const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
       const annotations = this.staticReflector.annotations(staticType);
       annotations.forEach((annotation) => {
-        if (annotation instanceof AppModuleMetadata) {
-          result.appModules.push(staticType);
+        if (annotation instanceof NgModuleMetadata) {
+          result.ngModules.push(staticType);
         } else if (annotation instanceof ComponentMetadata) {
           result.components.push(staticType);
         }
@@ -86,17 +86,17 @@ export class CodeGenerator {
     let filePaths =
         this.program.getSourceFiles().map(sf => sf.fileName).filter(f => !GENERATED_FILES.test(f));
     let fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
-    let appModules = fileMetas.reduce((appModules, fileMeta) => {
-      appModules.push(...fileMeta.appModules);
-      return appModules;
+    let ngModules = fileMetas.reduce((ngModules, fileMeta) => {
+      ngModules.push(...fileMeta.ngModules);
+      return ngModules;
     }, <StaticSymbol[]>[]);
-    let analyzedAppModules = this.compiler.analyzeModules(appModules);
+    let analyzedNgModules = this.compiler.analyzeModules(ngModules);
     return Promise
         .all(fileMetas.map(
             (fileMeta) => this.compiler
                               .compile(
-                                  fileMeta.fileUrl, analyzedAppModules, fileMeta.components,
-                                  fileMeta.appModules)
+                                  fileMeta.fileUrl, analyzedNgModules, fileMeta.components,
+                                  fileMeta.ngModules)
                               .then((generatedModules) => {
                                 generatedModules.forEach((generatedModule) => {
                                   const sourceFile = this.program.getSourceFile(fileMeta.fileUrl);
@@ -139,11 +139,12 @@ export class CodeGenerator {
         expressionParser, new DomElementSchemaRegistry(), htmlParser,
         /*console*/ null, []);
     const resolver = new CompileMetadataResolver(
+        new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        new compiler.ViewResolver(staticReflector), config, staticReflector);
+        new compiler.ViewResolver(staticReflector), config, /*console*/ null, staticReflector);
     const offlineCompiler = new compiler.OfflineCompiler(
         resolver, normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
-        new AppModuleCompiler(), new TypeScriptEmitter(reflectorHost));
+        new NgModuleCompiler(), new TypeScriptEmitter(reflectorHost));
 
     return new CodeGenerator(
         options, program, compilerHost, staticReflector, offlineCompiler, reflectorHost);
@@ -153,5 +154,5 @@ export class CodeGenerator {
 interface FileMetadata {
   fileUrl: string;
   components: StaticSymbol[];
-  appModules: StaticSymbol[];
+  ngModules: StaticSymbol[];
 }

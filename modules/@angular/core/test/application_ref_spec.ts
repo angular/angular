@@ -8,8 +8,10 @@
 
 import {AsyncTestCompleter, ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {SpyChangeDetectorRef} from './spies';
-import {ApplicationRef_, ApplicationRef, PLATFORM_CORE_PROVIDERS, APPLICATION_CORE_PROVIDERS} from '@angular/core/src/application_ref';
-import {Type, Injector, APP_INITIALIZER, Component, ReflectiveInjector, coreLoadAndBootstrap, PlatformRef, createPlatform, disposePlatform, ComponentResolver, ComponentFactoryResolver, ChangeDetectorRef} from '@angular/core';
+import {ConcreteType} from '../src/facade/lang';
+import {ApplicationRef_, ApplicationRef} from '@angular/core/src/application_ref';
+import {Type, NgModule, CompilerFactory, Injector, APP_INITIALIZER, Component, ReflectiveInjector, bootstrapModule, bootstrapModuleFactory, PlatformRef, disposePlatform, createPlatformFactory, ComponentResolver, ComponentFactoryResolver, ChangeDetectorRef, ApplicationModule} from '@angular/core';
+import {coreDynamicPlatform} from '@angular/compiler';
 import {Console} from '@angular/core/src/console';
 import {BaseException} from '../src/facade/exceptions';
 import {PromiseWrapper, PromiseCompleter, TimerWrapper} from '../src/facade/async';
@@ -18,36 +20,48 @@ import {ExceptionHandler} from '../src/facade/exception_handler';
 
 export function main() {
   describe('bootstrap', () => {
-    var platform: PlatformRef;
+    var defaultPlatform: PlatformRef;
     var errorLogger: _ArrayLogger;
     var someCompFactory: ComponentFactory<any>;
+    var appProviders: any[];
 
     beforeEach(() => {
       errorLogger = new _ArrayLogger();
       disposePlatform();
-      platform = createPlatform(ReflectiveInjector.resolveAndCreate(PLATFORM_CORE_PROVIDERS));
+      defaultPlatform = createPlatformFactory(coreDynamicPlatform, 'test')();
       someCompFactory =
           new _MockComponentFactory(new _MockComponentRef(ReflectiveInjector.resolveAndCreate([])));
+      appProviders = [
+        {provide: Console, useValue: new _MockConsole()},
+        {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
+        {provide: ComponentResolver, useValue: new _MockComponentResolver(someCompFactory)}
+      ];
     });
 
     afterEach(() => { disposePlatform(); });
 
-    function createApplication(providers: any[]): ApplicationRef_ {
-      var appInjector = ReflectiveInjector.resolveAndCreate(
-          [
-            APPLICATION_CORE_PROVIDERS, {provide: Console, useValue: new _MockConsole()},
-            {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
-            {provide: ComponentResolver, useValue: new _MockComponentResolver(someCompFactory)},
-            {provide: ComponentFactoryResolver, useValue: ComponentFactoryResolver.NULL}, providers
-          ],
-          platform.injector);
+    function createModule(providers: any[] = []): ConcreteType<any> {
+      @NgModule({providers: [appProviders, providers], imports: [ApplicationModule]})
+      class MyModule {
+      }
+
+      return MyModule;
+    }
+
+    function createApplication(
+        providers: any[] = [], platform: PlatformRef = defaultPlatform): ApplicationRef_ {
+      const compilerFactory: CompilerFactory = platform.injector.get(CompilerFactory);
+      const compiler = compilerFactory.createCompiler();
+      const appInjector =
+          bootstrapModuleFactory(compiler.compileModuleSync(createModule(providers)), platform)
+              .injector;
       return appInjector.get(ApplicationRef);
     }
 
     describe('ApplicationRef', () => {
       it('should throw when reentering tick', () => {
         var cdRef = <any>new SpyChangeDetectorRef();
-        var ref = createApplication([]);
+        var ref = createApplication();
         try {
           ref.registerChangeDetector(cdRef);
           cdRef.spy('detectChanges').andCallFake(() => ref.tick());
@@ -59,14 +73,14 @@ export function main() {
 
       describe('run', () => {
         it('should rethrow errors even if the exceptionHandler is not rethrowing', () => {
-          var ref = createApplication([]);
+          var ref = createApplication();
           expect(() => ref.run(() => { throw new BaseException('Test'); })).toThrowError('Test');
         });
 
         it('should return a promise with rejected errors even if the exceptionHandler is not rethrowing',
            inject(
                [AsyncTestCompleter, Injector], (async: AsyncTestCompleter, injector: Injector) => {
-                 var ref = createApplication([]);
+                 var ref = createApplication();
                  var promise = ref.run(() => PromiseWrapper.reject('Test', null));
                  PromiseWrapper.catchError(promise, (e) => {
                    expect(e).toEqual('Test');
@@ -76,7 +90,7 @@ export function main() {
       });
     });
 
-    describe('coreLoadAndBootstrap', () => {
+    describe('bootstrapModule', () => {
       it('should wait for asynchronous app initializers',
          inject([AsyncTestCompleter, Injector], (async: AsyncTestCompleter, injector: Injector) => {
            let completer: PromiseCompleter<any> = PromiseWrapper.completer();
@@ -85,16 +99,19 @@ export function main() {
              completer.resolve(true);
              initializerDone = true;
            }, 1);
-           var app = createApplication(
-               [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]);
-           coreLoadAndBootstrap(MyComp6, app.injector).then(_ => {
-             expect(initializerDone).toBe(true);
-             async.done();
-           });
+
+           bootstrapModule(
+               createModule(
+                   [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]),
+               defaultPlatform)
+               .then(_ => {
+                 expect(initializerDone).toBe(true);
+                 async.done();
+               });
          }));
     });
 
-    describe('coreBootstrap', () => {
+    describe('ApplicationRef.bootstrap', () => {
       it('should throw if an APP_INITIIALIZER is not yet resolved',
          inject([Injector], (injector: Injector) => {
            var app = createApplication([{

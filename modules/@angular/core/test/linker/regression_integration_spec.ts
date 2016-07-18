@@ -26,7 +26,7 @@ function declareTests({useJit}: {useJit: boolean}) {
     describe('platform pipes', () => {
       beforeEach(() => {
         configureCompiler({useJit: useJit});
-        configureModule({pipes: [PlatformPipe]});
+        configureModule({declarations: [PlatformPipe]});
       });
 
       it('should overwrite them by custom pipes',

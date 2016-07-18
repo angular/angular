@@ -7,7 +7,7 @@
  */
 
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {ANALYZE_FOR_PRECOMPILE, APP_INITIALIZER, AppModuleFactoryLoader, ApplicationRef, ComponentResolver, Injector, OpaqueToken, SystemJsAppModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_PRECOMPILE, APP_INITIALIZER, ApplicationRef, ComponentResolver, Injector, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
 
 import {Routes} from './config';
 import {Router} from './router';
@@ -26,7 +26,7 @@ export interface ExtraOptions { enableTracing?: boolean; }
 export function setupRouter(
     ref: ApplicationRef, resolver: ComponentResolver, urlSerializer: UrlSerializer,
     outletMap: RouterOutletMap, location: Location, injector: Injector,
-    loader: AppModuleFactoryLoader, config: Routes, opts: ExtraOptions) {
+    loader: NgModuleFactoryLoader, config: Routes, opts: ExtraOptions) {
   if (ref.componentTypes.length == 0) {
     throw new Error('Bootstrap at least one component before injecting Router.');
   }
@@ -100,7 +100,7 @@ export function provideRouter(routes: Routes, config: ExtraOptions): any[] {
       useFactory: setupRouter,
       deps: [
         ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
-        AppModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
+        NgModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
       ]
     },
 
@@ -108,7 +108,7 @@ export function provideRouter(routes: Routes, config: ExtraOptions): any[] {
 
     // Trigger initial navigation
     {provide: APP_INITIALIZER, multi: true, useFactory: setupRouterInitializer, deps: [Injector]},
-    {provide: AppModuleFactoryLoader, useClass: SystemJsAppModuleLoader}
+    {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader}
   ];
 }
 
@@ -118,7 +118,7 @@ export function provideRouter(routes: Routes, config: ExtraOptions): any[] {
  * ### Example
  *
  * ```
- * @AppModule({providers: [
+ * @NgModule({providers: [
  *   provideRoutes([{path: 'home', component: Home}])
  * ]})
  * class LazyLoadedModule {
@@ -141,7 +141,7 @@ export function provideRoutes(routes: Routes): any {
  * ### Example
  *
  * ```
- * @AppModule({providers: [
+ * @NgModule({providers: [
  *   provideRouterOptions({enableTracing: true})
  * ]})
  * class LazyLoadedModule {

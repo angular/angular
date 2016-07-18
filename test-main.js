@@ -76,8 +76,8 @@ System.import('@angular/core/testing')
     return System.import('@angular/platform-browser-dynamic/testing')
       .then(function(browserTesting) {
          coreTesting.initTestEnvironment(
-           browserTesting.BrowserDynamicTestModule,
-           browserTesting.browserDynamicTestPlatform());
+           browserTesting.BrowserDynamicTestingModule,
+           browserTesting.browserDynamicTestingPlatform());
       });
   })
 .then(function() {

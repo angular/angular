@@ -8,7 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {CompilerConfig, XHR} from '@angular/compiler';
-import {AppModule, Component, ComponentFactoryResolver, Directive, Injectable, Input, Pipe, ViewMetadata, provide} from '@angular/core';
+import {Component, ComponentFactoryResolver, Directive, Injectable, Input, NgModule, Pipe, ViewMetadata, provide} from '@angular/core';
 import {TestComponentBuilder, addProviders, async, configureCompiler, configureModule, doAsyncPrecompilation, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -112,8 +112,8 @@ class SomePipe {
 class CompUsingModuleDirectiveAndPipe {
 }
 
-@AppModule({})
-class SomeNestedModule {
+@NgModule()
+class SomeLibModule {
 }
 
 @Component({
@@ -233,10 +233,9 @@ export function main() {
     beforeEach(() => {
       moduleConfig = {
         providers: [FancyService],
-        directives: [SomeDirective],
-        pipes: [SomePipe],
-        precompile: [CompUsingModuleDirectiveAndPipe],
-        modules: [SomeNestedModule]
+        imports: [SomeLibModule],
+        declarations: [SomeDirective, SomePipe, CompUsingModuleDirectiveAndPipe],
+        precompile: [CompUsingModuleDirectiveAndPipe]
       };
     });
 
@@ -256,9 +255,9 @@ export function main() {
            expect(el.children[0].properties['title']).toBe('transformed someValue');
          }));
 
-      it('should use set up nested modules',
-         inject([SomeNestedModule], (nestedModule: SomeNestedModule) => {
-           expect(nestedModule).toBeAnInstanceOf(SomeNestedModule);
+      it('should use set up library modules',
+         inject([SomeLibModule], (libModule: SomeLibModule) => {
+           expect(libModule).toBeAnInstanceOf(SomeLibModule);
          }));
 
       it('should use set up precompile components',
@@ -284,11 +283,10 @@ export function main() {
                expect(el.children[0].properties['title']).toBe('transformed someValue');
              }));
 
-      it('should use set up nested modules',
-         withModule(() => moduleConfig)
-             .inject([SomeNestedModule], (nestedModule: SomeNestedModule) => {
-               expect(nestedModule).toBeAnInstanceOf(SomeNestedModule);
-             }));
+      it('should use set up library modules',
+         withModule(() => moduleConfig).inject([SomeLibModule], (libModule: SomeLibModule) => {
+           expect(libModule).toBeAnInstanceOf(SomeLibModule);
+         }));
 
       it('should use set up precompile components',
          withModule(() => moduleConfig)
@@ -301,7 +299,7 @@ export function main() {
 
     describe('precompile components with template url', () => {
       beforeEach(async(() => {
-        configureModule({precompile: [CompWithUrlTemplate]});
+        configureModule({declarations: [CompWithUrlTemplate], precompile: [CompWithUrlTemplate]});
         doAsyncPrecompilation();
       }));
 
@@ -450,7 +448,12 @@ export function main() {
            expect(
                () =>
                    it('should fail',
-                      withModule(() => { return {precompile: [CompWithUrlTemplate]}; })
+                      withModule(() => {
+                        return {
+                          declarations: [CompWithUrlTemplate],
+                          precompile: [CompWithUrlTemplate]
+                        };
+                      })
                           .inject(
                               [ComponentFactoryResolver],
                               (resolver: ComponentFactoryResolver) => {

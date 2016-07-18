@@ -7,7 +7,7 @@
  */
 
 import {LowerCasePipe, NgIf} from '@angular/common';
-import {ANALYZE_FOR_PRECOMPILE, AppModule, Component, ComponentFactoryResolver, Directive, Inject, Injectable, Input, OpaqueToken, Pipe} from '@angular/core';
+import {ANALYZE_FOR_PRECOMPILE, Component, ComponentFactoryResolver, Directive, Inject, Injectable, Input, NgModule, OpaqueToken, Pipe} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 @Injectable()
@@ -16,50 +16,37 @@ export class SomeService {
 }
 
 @Injectable()
-export class NestedService {
+export class ServiceUsingLibModule {
 }
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
-export class SomeDirective {
+export class SomeDirectiveInRootModule {
+  @Input()
+  someDir: string;
+}
+
+@Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
+export class SomeDirectiveInLibModule {
   @Input()
   someDir: string;
 }
 
 @Pipe({name: 'somePipe'})
-export class SomePipe {
+export class SomePipeInRootModule {
   transform(value: string): any { return `transformed ${value}`; }
 }
 
-@Component({selector: 'cmp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
-export class SomeComp {
-  constructor() {}
+@Pipe({name: 'somePipe'})
+export class SomePipeInLibModule {
+  transform(value: string): any { return `transformed ${value}`; }
 }
 
-@Component({selector: 'parent', template: `<cmp></cmp>`, directives: [SomeComp]})
-export class ParentComp {
+@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
+export class CompUsingRootModuleDirectiveAndPipe {
 }
 
-@AppModule({providers: [NestedService]})
-export class NestedModule {
-}
-
-@AppModule({
-  directives: [SomeDirective],
-  pipes: [SomePipe],
-  providers: [SomeService],
-  precompile: [SomeComp],
-  modules: [NestedModule, BrowserModule]
-})
-export class SomeModule {
-}
-
-@AppModule({
-  directives: [SomeDirective],
-  pipes: [SomePipe],
-  precompile: [ParentComp],
-  modules: [BrowserModule]
-})
-export class SomeModuleUsingParentComp {
+@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
+export class CompUsingLibModuleDirectiveAndPipe {
 }
 
 export const SOME_TOKEN = new OpaqueToken('someToken');
@@ -71,7 +58,13 @@ export function provideValueWithPrecompile(value: any) {
   ];
 }
 
-@AppModule({providers: [provideValueWithPrecompile([{a: 'b', component: SomeComp}])]})
-export class SomeModuleWithAnalyzePrecompileProvider {
-  constructor(@Inject(SOME_TOKEN) public providedValue: any) {}
+@NgModule({
+  declarations: [SomeDirectiveInLibModule, SomePipeInLibModule, CompUsingLibModuleDirectiveAndPipe],
+  precompile: [CompUsingLibModuleDirectiveAndPipe],
+  providers: [
+    ServiceUsingLibModule,
+    provideValueWithPrecompile([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
+  ],
+})
+export class SomeLibModule {
 }

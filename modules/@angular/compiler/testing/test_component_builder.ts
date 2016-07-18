@@ -87,14 +87,16 @@ export class OverridingTestComponentBuilder extends TestComponentBuilder {
     return clone;
   }
 
-  createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>> {
+  createAsync<T>(rootComponentType: ConcreteType<T>, ngModule: ConcreteType<any> = null):
+      Promise<ComponentFixture<T>> {
     this._applyMetadataOverrides();
-    return super.createAsync(rootComponentType);
+    return super.createAsync(rootComponentType, ngModule);
   }
 
-  createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
+  createSync<T>(rootComponentType: ConcreteType<T>, ngModule: ConcreteType<any> = null):
+      ComponentFixture<T> {
     this._applyMetadataOverrides();
-    return super.createSync(rootComponentType);
+    return super.createSync(rootComponentType, ngModule);
   }
 
   private _applyMetadataOverrides() {

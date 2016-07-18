@@ -9,21 +9,27 @@
 import 'rxjs/add/operator/map';
 
 import {Location} from '@angular/common';
-import {AppModule, AppModuleFactoryLoader, Component} from '@angular/core';
+import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
 import {ComponentFixture, TestComponentBuilder, addProviders, configureModule, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterStateSnapshot, RoutesRecognized, provideRoutes} from '../index';
-import {RouterTestingModule, SpyAppModuleFactoryLoader} from '../testing';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterModuleWithoutProviders, RouterStateSnapshot, RoutesRecognized, provideRoutes} from '../index';
+import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
   beforeEach(() => {
     configureModule({
-      modules: [RouterTestingModule],
+      imports: [RouterTestingModule],
       providers: [provideRoutes(
-          [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])]
+          [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])],
+      declarations: [
+        BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
+        RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
+        QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp, LinkInNgIf,
+        ComponentRecordingQueryParams, ComponentRecordingRoutePathAndUrl, RouteCmp
+      ]
     });
   });
 
@@ -254,24 +260,6 @@ describe('Integration', () => {
   it('should not push query params into components that will be deactivated',
      fakeAsync(
          inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-           @Component({template: ''})
-           class ComponentRecordingQueryParams {
-             recordedQueryParams: any[] = [];
-             subscription: any;
-             constructor(r: Router) {
-               this.subscription =
-                   r.routerState.queryParams.subscribe(r => this.recordedQueryParams.push(r));
-             }
-
-             ngOnDestroy() { this.subscription.unsubscribe(); }
-           }
-
-           @Component({
-             template: '<router-outlet></router-outlet>',
-             precompile: [SimpleCmp, ComponentRecordingQueryParams]
-           })
-           class RootCmp {
-           }
 
            router.resetConfig([
              {path: '', component: ComponentRecordingQueryParams},
@@ -524,25 +512,10 @@ describe('Integration', () => {
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],
          (router: Router, tcb: TestComponentBuilder, location: Location) => {
-           @Component({selector: 'cmp', template: ''})
-           class Cmp {
-             private path: any;
-             private url: any;
 
-             constructor(router: Router, route: ActivatedRoute) {
-               this.path = router.routerState.pathFromRoot(route);
-               this.url = router.url.toString();
-             }
-           }
+           const fixture = createRoot(tcb, router, RootCmp);
 
-           @Component(
-               {selector: 'root', template: '<router-outlet></router-outlet>', precompile: [Cmp]})
-           class Root {
-           }
-
-           const fixture = createRoot(tcb, router, Root);
-
-           router.resetConfig([{path: 'cmp', component: Cmp}]);
+           router.resetConfig([{path: 'cmp', component: ComponentRecordingRoutePathAndUrl}]);
 
            router.navigateByUrl('/cmp');
            advance(fixture);
@@ -1330,9 +1303,9 @@ describe('Integration', () => {
 
   describe('lazy loading', () => {
     it('works', fakeAsync(inject(
-                    [Router, TestComponentBuilder, Location, AppModuleFactoryLoader],
+                    [Router, TestComponentBuilder, Location, NgModuleFactoryLoader],
                     (router: Router, tcb: TestComponentBuilder, location: Location,
-                     loader: SpyAppModuleFactoryLoader) => {
+                     loader: SpyNgModuleFactoryLoader) => {
                       @Component({
                         selector: 'lazy',
                         template: 'lazy-loaded-parent [<router-outlet></router-outlet>]',
@@ -1345,12 +1318,14 @@ describe('Integration', () => {
                       class ChildLazyLoadedComponent {
                       }
 
-                      @AppModule({
+                      @NgModule({
+                        declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent],
                         providers: [provideRoutes([{
                           path: 'loaded',
                           component: ParentLazyLoadedComponent,
                           children: [{path: 'child', component: ChildLazyLoadedComponent}]
                         }])],
+                        imports: [RouterModuleWithoutProviders],
                         precompile: [ParentLazyLoadedComponent, ChildLazyLoadedComponent]
                       })
                       class LoadedModule {
@@ -1373,9 +1348,9 @@ describe('Integration', () => {
 
     it('should use the injector of the lazily-loaded configuration',
        fakeAsync(inject(
-           [Router, TestComponentBuilder, Location, AppModuleFactoryLoader],
+           [Router, TestComponentBuilder, Location, NgModuleFactoryLoader],
            (router: Router, tcb: TestComponentBuilder, location: Location,
-            loader: SpyAppModuleFactoryLoader) => {
+            loader: SpyNgModuleFactoryLoader) => {
              class LazyLoadedService {}
 
              @Component({selector: 'lazy', template: 'lazy-loaded', directives: ROUTER_DIRECTIVES})
@@ -1383,8 +1358,10 @@ describe('Integration', () => {
                constructor(service: LazyLoadedService) {}
              }
 
-             @AppModule({
+             @NgModule({
                precompile: [LazyLoadedComponent],
+               declarations: [LazyLoadedComponent],
+               imports: [RouterModuleWithoutProviders],
                providers: [
                  LazyLoadedService, provideRoutes([{
                    path: '',
@@ -1412,9 +1389,9 @@ describe('Integration', () => {
 
     it('error emit an error when cannot load a config',
        fakeAsync(inject(
-           [Router, TestComponentBuilder, Location, AppModuleFactoryLoader],
+           [Router, TestComponentBuilder, Location, NgModuleFactoryLoader],
            (router: Router, tcb: TestComponentBuilder, location: Location,
-            loader: SpyAppModuleFactoryLoader) => {
+            loader: SpyNgModuleFactoryLoader) => {
              loader.stubbedModules = {};
              const fixture = createRoot(tcb, router, RootCmp);
 
@@ -1609,6 +1586,29 @@ class DummyLinkWithParentCmp {
   constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
 }
 
+
+@Component({template: ''})
+class ComponentRecordingQueryParams {
+  recordedQueryParams: any[] = [];
+  subscription: any;
+  constructor(r: Router) {
+    this.subscription = r.routerState.queryParams.subscribe(r => this.recordedQueryParams.push(r));
+  }
+
+  ngOnDestroy() { this.subscription.unsubscribe(); }
+}
+
+@Component({selector: 'cmp', template: ''})
+class ComponentRecordingRoutePathAndUrl {
+  private path: any;
+  private url: any;
+
+  constructor(router: Router, route: ActivatedRoute) {
+    this.path = router.routerState.pathFromRoot(route);
+    this.url = router.url.toString();
+  }
+}
+
 @Component({
   selector: 'root-cmp',
   template: `<router-outlet></router-outlet>`,
@@ -1616,7 +1616,8 @@ class DummyLinkWithParentCmp {
   precompile: [
     BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
     RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
-    QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp, LinkInNgIf
+    QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp, LinkInNgIf,
+    ComponentRecordingQueryParams, ComponentRecordingRoutePathAndUrl
   ]
 })
 class RootCmp {
@@ -1631,6 +1632,7 @@ class RootCmp {
 })
 class RootCmpWithTwoOutlets {
 }
+
 
 function advance(fixture: ComponentFixture<any>): void {
   tick();

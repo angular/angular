@@ -14,34 +14,15 @@ import {ConcreteType, IS_DART, Type, isBlank, isPresent, isPromise} from '../src
 import {APP_INITIALIZER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 import {Console} from './console';
-import {Inject, Injectable, Injector, OpaqueToken, Optional, OptionalMetadata, ReflectiveInjector, SkipSelf, SkipSelfMetadata, forwardRef} from './di';
-import {AppModuleFactory, AppModuleRef} from './linker/app_module_factory';
+import {Inject, Injectable, Injector, OpaqueToken, Optional, ReflectiveInjector, SkipSelf, forwardRef} from './di';
 import {Compiler, CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {ComponentResolver} from './linker/component_resolver';
+import {NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {NgZone, NgZoneError} from './zone/ng_zone';
-
-
-
-/**
- * Create an Angular zone.
- * @experimental
- */
-export function createNgZone(parent: NgZone): NgZone {
-  // If an NgZone is already present in the parent injector,
-  // use that one. Creating the NgZone in the same injector as the
-  // application is dangerous as some services might get created before
-  // the NgZone has been created.
-  // We keep the NgZone factory in the application providers for
-  // backwards compatibility for now though.
-  if (parent) {
-    return parent;
-  }
-  return new NgZone({enableLongStackTrace: isDevMode()});
-}
 
 var _devMode: boolean = true;
 var _runModeLocked: boolean = false;
@@ -114,16 +95,29 @@ export function createPlatform(injector: Injector): PlatformRef {
 }
 
 /**
+ * Factory for a platform.
+ *
+ * @experimental
+ */
+export type PlatformFactory = (extraProviders?: any[]) => PlatformRef;
+
+/**
  * Creates a fatory for a platform
  *
  * @experimental APIs related to application bootstrap are currently under review.
  */
-export function createPlatformFactory(name: string, providers: any[]): () => PlatformRef {
+export function createPlatformFactory(
+    parentPlaformFactory: PlatformFactory, name: string, providers: any[] = []): PlatformFactory {
   const marker = new OpaqueToken(`Platform: ${name}`);
-  return () => {
+  return (extraProviders: any[] = []) => {
     if (!getPlatform()) {
-      createPlatform(
-          ReflectiveInjector.resolveAndCreate(providers.concat({provide: marker, useValue: true})));
+      if (parentPlaformFactory) {
+        parentPlaformFactory(
+            providers.concat(extraProviders).concat({provide: marker, useValue: true}));
+      } else {
+        createPlatform(ReflectiveInjector.resolveAndCreate(
+            providers.concat(extraProviders).concat({provide: marker, useValue: true})));
+      }
     }
     return assertPlatform(marker);
   };
@@ -168,7 +162,7 @@ export function getPlatform(): PlatformRef {
 }
 
 /**
- * Creates an instance of an `@AppModule` for the given platform
+ * Creates an instance of an `@NgModule` for the given platform
  * for offline compilation.
  *
  * ## Simple Example
@@ -176,8 +170,8 @@ export function getPlatform(): PlatformRef {
  * ```typescript
  * my_module.ts:
  *
- * @AppModule({
- *   modules: [BrowserModule]
+ * @NgModule({
+ *   imports: [BrowserModule]
  * })
  * class MyModule {}
  *
@@ -192,11 +186,11 @@ export function getPlatform(): PlatformRef {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function bootstrapModuleFactory<M>(
-    moduleFactory: AppModuleFactory<M>, platform: PlatformRef): AppModuleRef<M> {
+    moduleFactory: NgModuleFactory<M>, platform: PlatformRef): NgModuleRef<M> {
   // Note: We need to create the NgZone _before_ we instantiate the module,
   // as instantiating the module creates some providers eagerly.
   // So we create a mini parent injector that just contains the new NgZone and
-  // pass that as parent to the AppModuleFactory.
+  // pass that as parent to the NgModuleFactory.
   const ngZone = new NgZone({enableLongStackTrace: isDevMode()});
   const ngZoneInjector =
       ReflectiveInjector.resolveAndCreate([{provide: NgZone, useValue: ngZone}], platform.injector);
@@ -204,13 +198,13 @@ export function bootstrapModuleFactory<M>(
 }
 
 /**
- * Creates an instance of an `@AppModule` for a given platform using the given runtime compiler.
+ * Creates an instance of an `@NgModule` for a given platform using the given runtime compiler.
  *
  * ## Simple Example
  *
  * ```typescript
- * @AppModule({
- *   modules: [BrowserModule]
+ * @NgModule({
+ *   imports: [BrowserModule]
  * })
  * class MyModule {}
  *
@@ -220,10 +214,11 @@ export function bootstrapModuleFactory<M>(
  */
 export function bootstrapModule<M>(
     moduleType: ConcreteType<M>, platform: PlatformRef,
-    compilerOptions: CompilerOptions = {}): Promise<AppModuleRef<M>> {
+    compilerOptions: CompilerOptions | CompilerOptions[] = []): Promise<NgModuleRef<M>> {
   const compilerFactory: CompilerFactory = platform.injector.get(CompilerFactory);
-  const compiler = compilerFactory.createCompiler(compilerOptions);
-  return compiler.compileAppModuleAsync(moduleType)
+  const compiler = compilerFactory.createCompiler(
+      compilerOptions instanceof Array ? compilerOptions : [compilerOptions]);
+  return compiler.compileModuleAsync(moduleType)
       .then((moduleFactory) => bootstrapModuleFactory(moduleFactory, platform))
       .then((moduleRef) => {
         const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
@@ -239,10 +234,7 @@ export function bootstrapModule<M>(
  */
 export function coreBootstrap<C>(
     componentFactory: ComponentFactory<C>, injector: Injector): ComponentRef<C> {
-  let console = injector.get(Console);
-  console.warn('coreBootstrap is deprecated. Use bootstrapModuleFactory instead.');
-  var appRef: ApplicationRef = injector.get(ApplicationRef);
-  return appRef.bootstrap(componentFactory);
+  throw new BaseException('coreBootstrap is deprecated. Use bootstrapModuleFactory instead.');
 }
 
 /**
@@ -254,15 +246,7 @@ export function coreBootstrap<C>(
  */
 export function coreLoadAndBootstrap(
     componentType: Type, injector: Injector): Promise<ComponentRef<any>> {
-  let console = injector.get(Console);
-  console.warn('coreLoadAndBootstrap is deprecated. Use bootstrapModule instead.');
-  var appRef: ApplicationRef = injector.get(ApplicationRef);
-  return appRef.run(() => {
-    var componentResolver: ComponentResolver = injector.get(ComponentResolver);
-    return PromiseWrapper
-        .all([componentResolver.resolveComponent(componentType), appRef.waitForAsyncInitializers()])
-        .then((arr) => appRef.bootstrap(arr[0]));
-  });
+  throw new BaseException('coreLoadAndBootstrap is deprecated. Use bootstrapModule instead.');
 }
 
 /**
@@ -592,20 +576,3 @@ export class ApplicationRef_ extends ApplicationRef {
 
   get componentTypes(): Type[] { return this._rootComponentTypes; }
 }
-
-export const PLATFORM_CORE_PROVIDERS =
-    /*@ts2dart_const*/[
-      PlatformRef_,
-      /*@ts2dart_const*/ (
-          /* @ts2dart_Provider */ {provide: PlatformRef, useExisting: PlatformRef_})
-    ];
-
-export const APPLICATION_CORE_PROVIDERS = /*@ts2dart_const*/[
-  /* @ts2dart_Provider */ {
-    provide: NgZone,
-    useFactory: createNgZone,
-    deps: <any>[[new SkipSelfMetadata(), new OptionalMetadata(), NgZone]]
-  },
-  ApplicationRef_,
-  /* @ts2dart_Provider */ {provide: ApplicationRef, useExisting: ApplicationRef_},
-];

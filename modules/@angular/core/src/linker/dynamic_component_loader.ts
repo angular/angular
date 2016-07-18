@@ -8,13 +8,15 @@
 
 import {Injectable, Injector, ReflectiveInjector, ResolvedReflectiveProvider} from '../di';
 import {Type, isPresent} from '../facade/lang';
+
+import {Compiler} from './compiler';
 import {ComponentRef} from './component_factory';
-import {ComponentResolver} from './component_resolver';
 import {ViewContainerRef} from './view_container_ref';
 
 
+
 /**
- * Use ComponentResolver and ViewContainerRef directly.
+ * Use ComponentFactoryResolver and ViewContainerRef directly.
  *
  * @deprecated
  */
@@ -119,12 +121,12 @@ export abstract class DynamicComponentLoader {
 
 @Injectable()
 export class DynamicComponentLoader_ extends DynamicComponentLoader {
-  constructor(private _compiler: ComponentResolver) { super(); }
+  constructor(private _compiler: Compiler) { super(); }
 
   loadAsRoot(
       type: Type, overrideSelectorOrNode: string|any, injector: Injector, onDispose?: () => void,
       projectableNodes?: any[][]): Promise<ComponentRef<any>> {
-    return this._compiler.resolveComponent(type).then(componentFactory => {
+    return this._compiler.compileComponentAsync(<any>type).then(componentFactory => {
       var componentRef = componentFactory.create(
           injector, projectableNodes,
           isPresent(overrideSelectorOrNode) ? overrideSelectorOrNode : componentFactory.selector);
@@ -138,7 +140,7 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
   loadNextToLocation(
       type: Type, location: ViewContainerRef, providers: ResolvedReflectiveProvider[] = null,
       projectableNodes: any[][] = null): Promise<ComponentRef<any>> {
-    return this._compiler.resolveComponent(type).then(componentFactory => {
+    return this._compiler.compileComponentAsync(<any>type).then(componentFactory => {
       var contextInjector = location.parentInjector;
       var childInjector = isPresent(providers) && providers.length > 0 ?
           ReflectiveInjector.fromResolvedProviders(providers, contextInjector) :

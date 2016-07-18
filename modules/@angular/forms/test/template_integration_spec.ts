@@ -20,7 +20,7 @@ import {ListWrapper} from '../src/facade/collection';
 export function main() {
   describe('template-driven forms integration tests', () => {
 
-    beforeEach(() => { configureModule({modules: [FormsModule]}); });
+    beforeEach(() => { configureModule({imports: [FormsModule]}); });
 
     it('should support ngModel for single fields',
        fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {

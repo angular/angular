@@ -42,5 +42,6 @@ export var __platform_browser_private__ = {
   SharedStylesHost: shared_styles_host.SharedStylesHost,
   ELEMENT_PROBE_PROVIDERS: ng_proble.ELEMENT_PROBE_PROVIDERS,
   DomEventsPlugin: dom_events.DomEventsPlugin,
-  initDomAdapter: browser.initDomAdapter
+  initDomAdapter: browser.initDomAdapter,
+  INTERNAL_BROWSER_PLATFORM_PROVIDERS: browser.INTERNAL_BROWSER_PLATFORM_PROVIDERS
 };

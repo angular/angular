@@ -119,25 +119,27 @@ export class TestComponentBuilder {
   /**
    * Builds and returns a ComponentFixture.
    */
-  createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>> {
+  createAsync<T>(rootComponentType: ConcreteType<T>, ngModule: ConcreteType<any> = null):
+      Promise<ComponentFixture<T>> {
     let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
     let compiler: Compiler = this._injector.get(Compiler);
 
     let initComponent = () => {
       let promise: Promise<ComponentFactory<any>> =
-          compiler.compileComponentAsync(rootComponentType);
+          compiler.compileComponentAsync(rootComponentType, ngModule);
       return promise.then(componentFactory => this.createFromFactory(ngZone, componentFactory));
     };
 
     return ngZone == null ? initComponent() : ngZone.run(initComponent);
   }
 
-  createFakeAsync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
+  createFakeAsync<T>(rootComponentType: ConcreteType<T>, ngModule: ConcreteType<any> = null):
+      ComponentFixture<T> {
     let result: any /** TODO #9100 */;
     let error: any /** TODO #9100 */;
     PromiseWrapper.then(
-        this.createAsync(rootComponentType), (_result) => { result = _result; },
+        this.createAsync(rootComponentType, ngModule), (_result) => { result = _result; },
         (_error) => { error = _error; });
     tick();
     if (isPresent(error)) {
@@ -146,14 +148,15 @@ export class TestComponentBuilder {
     return result;
   }
 
-  createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
+  createSync<T>(rootComponentType: ConcreteType<T>, ngModule: ConcreteType<any> = null):
+      ComponentFixture<T> {
     let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
     let compiler: Compiler = this._injector.get(Compiler);
 
     let initComponent = () => {
       return this.createFromFactory(
-          ngZone, this._injector.get(Compiler).compileComponentSync(rootComponentType));
+          ngZone, compiler.compileComponentSync(rootComponentType, ngModule));
     };
 
     return ngZone == null ? initComponent() : ngZone.run(initComponent);

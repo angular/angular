@@ -13,7 +13,7 @@ import {RegExpWrapper, isPresent, StringWrapper, isBlank} from '../src/facade/la
 import {BaseException} from '../src/facade/exceptions';
 import {AST, Interpolation, ASTWithSource, TemplateBinding, RecursiveAstVisitor, BindingPipe, ParserError} from './expression_parser/ast';
 import {Parser} from './expression_parser/parser';
-import {CompileDirectiveMetadata, CompilePipeMetadata, CompileMetadataWithType, CompileTokenMetadata,} from './compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeMetadata, CompileMetadataWithIdentifier, CompileTokenMetadata, CompileIdentifierMap, removeIdentifierDuplicates} from './compile_metadata';
 import {HtmlParser, HtmlParseTreeResult} from './html_parser';
 import {splitNsName, mergeNsAndName} from './html_tags';
 import {ParseSourceSpan, ParseError, ParseErrorLevel} from './parse_util';
@@ -27,7 +27,7 @@ import {HtmlAstVisitor, HtmlElementAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst
 import {splitAtColon} from './util';
 import {identifierToken, Identifiers} from './identifiers';
 import {expandNodes} from './expander';
-import {ProviderElementContext, ProviderViewContext} from './provider_parser';
+import {ProviderElementContext, ProviderViewContext} from './provider_analyzer';
 
 // Group 1 = "bind-"
 // Group 2 = "var-"
@@ -118,8 +118,8 @@ export class TemplateParser {
     }
 
     if (htmlAstWithErrors.rootNodes.length > 0) {
-      const uniqDirectives = <CompileDirectiveMetadata[]>removeDuplicates(directives);
-      const uniqPipes = <CompilePipeMetadata[]>removeDuplicates(pipes);
+      const uniqDirectives = removeIdentifierDuplicates(directives);
+      const uniqPipes = removeIdentifierDuplicates(pipes);
       const providerViewContext =
           new ProviderViewContext(component, htmlAstWithErrors.rootNodes[0].sourceSpan);
       const parseVisitor = new TemplateParseVisitor(
@@ -181,7 +181,6 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
     const tempMeta = providerViewContext.component.template;
 
-    // TODO
     if (isPresent(tempMeta) && isPresent(tempMeta.interpolation)) {
       this._interpolationConfig = {
         start: tempMeta.interpolation[0],
@@ -1014,19 +1013,4 @@ export class PipeCollector extends RecursiveAstVisitor {
     this.visitAll(ast.args, context);
     return null;
   }
-}
-
-function removeDuplicates(items: CompileMetadataWithType[]): CompileMetadataWithType[] {
-  let res: CompileMetadataWithType[] = [];
-  items.forEach(item => {
-    let hasMatch =
-        res.filter(
-               r => r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl &&
-                   r.type.runtime == item.type.runtime)
-            .length > 0;
-    if (!hasMatch) {
-      res.push(item);
-    }
-  });
-  return res;
 }

@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModuleFactoryLoader, ComponentFactoryResolver, Injector, OpaqueToken} from '@angular/core';
+import {ComponentFactoryResolver, Injector, NgModuleFactoryLoader, OpaqueToken} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 
 import {Route} from './config';
+
 
 
 /**
@@ -26,7 +27,7 @@ export class LoadedRouterConfig {
 }
 
 export class RouterConfigLoader {
-  constructor(private loader: AppModuleFactoryLoader) {}
+  constructor(private loader: NgModuleFactoryLoader) {}
 
   load(parentInjector: Injector, path: string): Observable<LoadedRouterConfig> {
     return fromPromise(this.loader.load(path).then(r => {

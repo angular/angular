@@ -8,5 +8,6 @@
 
 import {__platform_browser_private__ as r, __platform_browser_private__ as t} from '@angular/platform-browser';
 
+export var INTERNAL_BROWSER_PLATFORM_PROVIDERS: typeof t.INTERNAL_BROWSER_PLATFORM_PROVIDERS =
+    r.INTERNAL_BROWSER_PLATFORM_PROVIDERS;
 export var getDOM: typeof t.getDOM = r.getDOM;
-export var initDomAdapter: typeof t.initDomAdapter = r.initDomAdapter;

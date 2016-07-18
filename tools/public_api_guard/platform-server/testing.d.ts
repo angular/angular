@@ -1,9 +1,9 @@
-/** @stable */
-export declare class ServerTestModule {
+/** @experimental */
+export declare class ServerTestingModule {
 }
 
 /** @experimental */
-export declare const serverTestPlatform: () => PlatformRef;
+export declare const serverTestingPlatform: (extraProviders?: any[]) => PlatformRef;
 
 /** @deprecated */
 export declare const TEST_SERVER_APPLICATION_PROVIDERS: Array<any>;

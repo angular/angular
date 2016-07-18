@@ -7,8 +7,9 @@
  */
 
 import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {Component, ComponentFactoryResolver, NoComponentFactoryError, forwardRef, ANALYZE_FOR_PRECOMPILE} from '@angular/core';
+import {TestComponentBuilder, configureModule} from '@angular/core/testing';
+import {Component, ComponentFactoryResolver, NoComponentFactoryError, forwardRef, ANALYZE_FOR_PRECOMPILE, ViewMetadata} from '@angular/core';
+import {stringify} from '../../src/facade/lang';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });
@@ -17,19 +18,33 @@ export function main() {
 
 function declareTests({useJit}: {useJit: boolean}) {
   describe('@Component.precompile', function() {
+    beforeEach(() => { configureModule({declarations: [MainComp, ChildComp, NestedChildComp]}); });
+
+    it('should error if the component was not declared nor imported by the module',
+       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+
+         @Component({selector: 'child', template: ''})
+         class ChildComp {
+         }
+
+         @Component({template: 'comp', precompile: [ChildComp]})
+         class SomeComp {
+         }
+
+         expect(() => tcb.createSync(SomeComp))
+             .toThrowError(
+                 `Component ${stringify(SomeComp)} in NgModule DynamicTestModule uses ${stringify(ChildComp)} via "precompile" but it was neither declared nor imported into the module!`);
+       }));
+
+
     it('should resolve ComponentFactories from the same component',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.createAsync(MainComp).then((compFixture) => {
-               let mainComp: MainComp = compFixture.componentInstance;
-               expect(compFixture.debugElement.injector.get(ComponentFactoryResolver))
-                   .toBe(mainComp.cfr);
-               var cf = mainComp.cfr.resolveComponentFactory(ChildComp);
-               expect(cf.componentType).toBe(ChildComp);
-               async.done();
-             });
-           }));
+       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         const compFixture = tcb.createSync(MainComp);
+         let mainComp: MainComp = compFixture.componentInstance;
+         expect(compFixture.componentRef.injector.get(ComponentFactoryResolver)).toBe(mainComp.cfr);
+         var cf = mainComp.cfr.resolveComponentFactory(ChildComp);
+         expect(cf.componentType).toBe(ChildComp);
+       }));
 
 
     it('should resolve ComponentFactories via ANALYZE_FOR_PRECOMPILE',
@@ -37,63 +52,52 @@ function declareTests({useJit}: {useJit: boolean}) {
          let compFixture = tcb.createSync(CompWithAnalyzePrecompileProvider);
          let mainComp: CompWithAnalyzePrecompileProvider = compFixture.componentInstance;
          let cfr: ComponentFactoryResolver =
-             compFixture.debugElement.injector.get(ComponentFactoryResolver);
+             compFixture.componentRef.injector.get(ComponentFactoryResolver);
          expect(cfr.resolveComponentFactory(ChildComp).componentType).toBe(ChildComp);
          expect(cfr.resolveComponentFactory(NestedChildComp).componentType).toBe(NestedChildComp);
        }));
 
     it('should be able to get a component form a parent component (view hiearchy)',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(MainComp, '<child></child>')
-                 .createAsync(MainComp)
-                 .then((compFixture) => {
-                   let childCompEl = compFixture.debugElement.children[0];
-                   let childComp: ChildComp = childCompEl.componentInstance;
-                   // declared on ChildComp directly
-                   expect(childComp.cfr.resolveComponentFactory(NestedChildComp).componentType)
-                       .toBe(NestedChildComp);
-                   // inherited from MainComp
-                   expect(childComp.cfr.resolveComponentFactory(ChildComp).componentType)
-                       .toBe(ChildComp);
-                   async.done();
-                 });
-           }));
+       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         const compFixture =
+             tcb.overrideView(
+                    MainComp,
+                    new ViewMetadata({template: '<child></child>', directives: [ChildComp]}))
+                 .createSync(MainComp);
+         let childCompEl = compFixture.debugElement.children[0];
+         let childComp: ChildComp = childCompEl.componentInstance;
+         // declared on ChildComp directly
+         expect(childComp.cfr.resolveComponentFactory(NestedChildComp).componentType)
+             .toBe(NestedChildComp);
+         // inherited from MainComp
+         expect(childComp.cfr.resolveComponentFactory(ChildComp).componentType).toBe(ChildComp);
+       }));
 
     it('should not be able to get components from a parent component (content hierarchy)',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(MainComp, '<child><nested></nested></child>')
-                 .overrideTemplate(ChildComp, '<ng-content></ng-content>')
-                 .createAsync(MainComp)
-                 .then((compFixture) => {
-                   let nestedChildCompEl = compFixture.debugElement.children[0].children[0];
-                   let nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
-                   expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp).componentType)
-                       .toBe(ChildComp);
-                   expect(() => nestedChildComp.cfr.resolveComponentFactory(NestedChildComp))
-                       .toThrow(new NoComponentFactoryError(NestedChildComp));
-                   async.done();
-                 });
-           }));
+       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         const compFixture = tcb.overrideView(MainComp, new ViewMetadata({
+                                                template: '<child><nested></nested></child>',
+                                                directives: [ChildComp, NestedChildComp]
+                                              }))
+                                 .overrideTemplate(ChildComp, '<ng-content></ng-content>')
+                                 .createSync(MainComp);
+         let nestedChildCompEl = compFixture.debugElement.children[0].children[0];
+         let nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
+         expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp).componentType)
+             .toBe(ChildComp);
+         expect(() => nestedChildComp.cfr.resolveComponentFactory(NestedChildComp))
+             .toThrow(new NoComponentFactoryError(NestedChildComp));
+       }));
 
   });
 }
 
-var DIRECTIVES: any[] = [
-  forwardRef(() => NestedChildComp),
-  forwardRef(() => ChildComp),
-  forwardRef(() => MainComp),
-];
-
-@Component({selector: 'nested', directives: DIRECTIVES, template: ''})
+@Component({selector: 'nested', template: ''})
 class NestedChildComp {
   constructor(public cfr: ComponentFactoryResolver) {}
 }
 
-@Component({selector: 'child', precompile: [NestedChildComp], directives: DIRECTIVES, template: ''})
+@Component({selector: 'child', precompile: [NestedChildComp], template: ''})
 class ChildComp {
   constructor(public cfr: ComponentFactoryResolver) {}
 }
@@ -101,7 +105,6 @@ class ChildComp {
 @Component({
   selector: 'main',
   precompile: [ChildComp],
-  directives: DIRECTIVES,
   template: '',
 })
 class MainComp {

@@ -18,9 +18,9 @@ const _SEPARATOR = '#';
 /**
  * Component resolver that can load components lazily
  *
- * @deprecated Lazy loading of components is deprecated. Use {@link SystemJsAppModuleLoader} to lazy
+ * @deprecated Lazy loading of components is deprecated. Use {@link SystemJsNgModuleLoader} to lazy
  * load
- * {@link AppModuleFactory}s instead.
+ * {@link NgModuleFactory}s instead.
  */
 @Injectable()
 export class SystemJsComponentResolver implements ComponentResolver {
@@ -53,9 +53,9 @@ const FACTORY_CLASS_SUFFIX = 'NgFactory';
 /**
  * Component resolver that can load component factories lazily
  *
- * @deprecated Lazy loading of components is deprecated. Use {@link SystemJsAppModuleLoader}
+ * @deprecated Lazy loading of components is deprecated. Use {@link SystemJsNgModuleLoader}
  * to lazy
- * load {@link AppModuleFactory}s instead.
+ * load {@link NgModuleFactory}s instead.
  */
 @Injectable()
 export class SystemJsCmpFactoryResolver implements ComponentResolver {

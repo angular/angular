@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModuleMetadata, AttributeMetadata, ComponentMetadata, ContentChildMetadata, ContentChildrenMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, HostMetadata, InjectMetadata, InjectableMetadata, InputMetadata, OptionalMetadata, OutputMetadata, PipeMetadata, Provider, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
+import {AttributeMetadata, ComponentMetadata, ContentChildMetadata, ContentChildrenMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, HostMetadata, InjectMetadata, InjectableMetadata, InputMetadata, NgModuleMetadata, OptionalMetadata, OutputMetadata, PipeMetadata, Provider, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 
 import {ReflectorReader} from './core_private';
 
@@ -217,7 +217,7 @@ export class StaticReflector implements ReflectorReader {
     this.registerDecoratorOrConstructor(
         this.host.findDeclaration(coreDecorators, 'Component'), ComponentMetadata);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'AppModule'), AppModuleMetadata);
+        this.host.findDeclaration(coreDecorators, 'NgModule'), NgModuleMetadata);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
     this.registerDecoratorOrConstructor(

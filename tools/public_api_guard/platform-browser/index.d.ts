@@ -1,13 +1,16 @@
 /** @experimental */
+export declare const _WORKER_UI_PLATFORM_PROVIDERS: Array<any>;
+
+/** @experimental */
 export declare abstract class AnimationDriver {
     abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
     static NOOP: AnimationDriver;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const BROWSER_APP_PROVIDERS: Array<any>;
 
-/** @experimental */
+/** @deprecated */
 export declare const BROWSER_PLATFORM_PROVIDERS: Array<any>;
 
 /** @experimental */
@@ -18,7 +21,7 @@ export declare class BrowserModule {
 }
 
 /** @experimental */
-export declare const browserPlatform: () => PlatformRef;
+export declare const browserPlatform: (extraProviders?: any[]) => PlatformRef;
 
 /** @stable */
 export declare class BrowserPlatformLocation extends PlatformLocation {
@@ -186,7 +189,7 @@ export declare class WebWorkerInstance {
     worker: Worker;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const WORKER_APP_APPLICATION_PROVIDERS: Array<any>;
 
 /** @experimental */
@@ -200,13 +203,13 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     deps: (typeof PlatformLocation | typeof NgZone)[];
 })[];
 
-/** @experimental */
+/** @deprecated */
 export declare const WORKER_APP_PLATFORM_PROVIDERS: Array<any>;
 
 /** @experimental */
 export declare const WORKER_SCRIPT: OpaqueToken;
 
-/** @experimental */
+/** @deprecated */
 export declare const WORKER_UI_APPLICATION_PROVIDERS: Array<any>;
 
 /** @experimental */
@@ -217,7 +220,7 @@ export declare const WORKER_UI_LOCATION_PROVIDERS: (typeof MessageBasedPlatformL
     deps: typeof Injector[];
 })[];
 
-/** @experimental */
+/** @deprecated */
 export declare const WORKER_UI_PLATFORM_PROVIDERS: Array<any>;
 
 /** @experimental */
@@ -228,11 +231,7 @@ export declare class WorkerAppModule {
 }
 
 /** @experimental */
-export declare const workerAppPlatform: () => PlatformRef;
+export declare const workerAppPlatform: (extraProviders?: any[]) => PlatformRef;
 
 /** @experimental */
-export declare class WorkerUiModule {
-}
-
-/** @experimental */
-export declare const workerUiPlatform: () => PlatformRef;
+export declare const workerUiPlatform: (extraProviders?: any[]) => PlatformRef;

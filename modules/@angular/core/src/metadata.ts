@@ -14,15 +14,15 @@
 import {ChangeDetectionStrategy} from '../src/change_detection/change_detection';
 
 import {AnimationEntryMetadata} from './animation/metadata';
-import {AppModuleMetadata} from './metadata/app_module';
 import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
+import {NgModuleMetadata} from './metadata/ng_module';
 import {ViewEncapsulation, ViewMetadata} from './metadata/view';
 
-export {AppModuleMetadata} from './metadata/app_module';
 export {ANALYZE_FOR_PRECOMPILE, AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 export {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
 export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from './metadata/lifecycle_hooks';
+export {NgModuleMetadata} from './metadata/ng_module';
 export {ViewEncapsulation, ViewMetadata} from './metadata/view';
 
 import {makeDecorator, makeParamDecorator, makePropDecorator, TypeDecorator,} from './util/decorators';
@@ -86,13 +86,13 @@ export interface ViewDecorator extends TypeDecorator {
 }
 
 /**
- * Interface for the {@link AppModuleMetadata} decorator function.
+ * Interface for the {@link NgModuleMetadata} decorator function.
  *
- * See {@link AppModuleMetadataFactory}.
+ * See {@link NgModuleMetadataFactory}.
  *
  * @stable
  */
-export interface AppModuleDecorator extends TypeDecorator {}
+export interface NgModuleDecorator extends TypeDecorator {}
 
 
 /**
@@ -490,25 +490,25 @@ export interface HostListenerMetadataFactory {
 }
 
 /**
- * {@link AppModuleMetadata} factory for creating annotations, decorators or DSL.
+ * {@link NgModuleMetadata} factory for creating annotations, decorators or DSL.
  *
- * @stable
+ * @experimental
  */
-export interface AppModuleMetadataFactory {
-  (obj: {
+export interface NgModuleMetadataFactory {
+  (obj?: {
     providers?: any[],
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
-    precompile?: Array<Type|any[]>,
-    modules?: Array<Type|any[]>,
-  }): AppModuleDecorator;
-  new (obj: {
+    declarations?: Array<Type|any[]>,
+    imports?: Array<Type|any[]>,
+    exports?: Array<Type|any[]>,
+    precompile?: Array<Type|any[]>
+  }): NgModuleDecorator;
+  new (obj?: {
     providers?: any[],
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
-    precompile?: Array<Type|any[]>,
-    modules?: Array<Type|any[]>,
-  }): AppModuleMetadata;
+    declarations?: Array<Type|any[]>,
+    imports?: Array<Type|any[]>,
+    exports?: Array<Type|any[]>,
+    precompile?: Array<Type|any[]>
+  }): NgModuleMetadata;
 }
 
 // TODO(alexeagle): remove the duplication of this doc. It is copied from ComponentMetadata.
@@ -1537,9 +1537,9 @@ export var HostBinding: HostBindingMetadataFactory = makePropDecorator(HostBindi
 export var HostListener: HostListenerMetadataFactory = makePropDecorator(HostListenerMetadata);
 
 /**
- * Declares an app module.
- * @stable
+ * Declares an ng module.
+ * @experimental
  * @Annotation
  */
-export var AppModule: AppModuleMetadataFactory =
-    <AppModuleMetadataFactory>makeDecorator(AppModuleMetadata);
+export var NgModule: NgModuleMetadataFactory =
+    <NgModuleMetadataFactory>makeDecorator(NgModuleMetadata);
