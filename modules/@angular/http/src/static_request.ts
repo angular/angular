@@ -128,7 +128,7 @@ export class Request extends Body {
   getBody(): any {
     switch (this.contentType) {
       case ContentType.JSON:
-        return this.json();
+        return this.text();
       case ContentType.FORM:
         return this.text();
       case ContentType.FORM_DATA:
