@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, NoComponentFactoryError, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
+import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, NoComponentFactoryError, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef, Injector} from '@angular/core';
 
 import {RouterOutletMap} from '../router_outlet_map';
 import {ActivatedRoute} from '../router_state';
@@ -72,7 +72,8 @@ export class RouterOutlet {
 
   activate(
       activatedRoute: ActivatedRoute, loadedResolver: ComponentFactoryResolver,
-      providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void {
+      loadedInjector: Injector, providers: ResolvedReflectiveProvider[],
+      outletMap: RouterOutletMap): void {
     this.outletMap = outletMap;
     this._activatedRoute = activatedRoute;
 
@@ -99,7 +100,9 @@ export class RouterOutlet {
       factory = snapshot._resolvedComponentFactory;
     }
 
-    const inj = ReflectiveInjector.fromResolvedProviders(providers, this.location.parentInjector);
+    const injector = loadedInjector ? loadedInjector : this.location.parentInjector;
+
+    const inj = ReflectiveInjector.fromResolvedProviders(providers, injector);
     this.activated = this.location.createComponent(factory, this.location.length, inj, []);
     this.activated.changeDetectorRef.detectChanges();
 

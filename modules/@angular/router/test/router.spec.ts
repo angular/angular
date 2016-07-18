@@ -1279,14 +1279,17 @@ describe('Integration', () => {
            [Router, TestComponentBuilder, Location, AppModuleFactoryLoader],
            (router: Router, tcb: TestComponentBuilder, location: Location,
             loader: SpyAppModuleFactoryLoader) => {
+             class LazyLoadedService {}
+
              @Component({selector: 'lazy', template: 'lazy-loaded', directives: ROUTER_DIRECTIVES})
              class LazyLoadedComponent {
+               constructor(service: LazyLoadedService) {}
              }
 
              @AppModule({
                precompile: [LazyLoadedComponent],
                providers: [
-                 provideRoutes([{
+                 LazyLoadedService, provideRoutes([{
                    path: '',
                    canActivate: ['alwaysTrue'],
                    children: [{path: 'loaded', component: LazyLoadedComponent}]

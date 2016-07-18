@@ -696,14 +696,17 @@ class ActivateRoutes {
 
     const config = closestLoadedConfig(this.futureState.snapshot, future.snapshot);
     let loadedFactoryResolver: ComponentFactoryResolver = null;
+    let loadedInjector: Injector = null;
 
     if (config) {
-      const loadedResolver = config.factoryResolver;
-      loadedFactoryResolver = loadedResolver;
-      resolved.push({provide: ComponentFactoryResolver, useValue: loadedResolver});
+      loadedFactoryResolver = config.factoryResolver;
+      loadedInjector = config.injector;
+      resolved.push({provide: ComponentFactoryResolver, useValue: loadedFactoryResolver});
     };
 
-    outlet.activate(future, loadedFactoryResolver, ReflectiveInjector.resolve(resolved), outletMap);
+    outlet.activate(
+        future, loadedFactoryResolver, loadedInjector, ReflectiveInjector.resolve(resolved),
+        outletMap);
   }
 
   private deactivateOutletAndItChildren(outlet: RouterOutlet): void {
