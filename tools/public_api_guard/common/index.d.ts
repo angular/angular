@@ -81,6 +81,10 @@ export declare const COMMON_DIRECTIVES: Type[][];
 export declare const COMMON_PIPES: (typeof AsyncPipe | typeof SlicePipe | typeof ReplacePipe | typeof I18nPluralPipe | typeof I18nSelectPipe)[];
 
 /** @experimental */
+export declare class CommonModule {
+}
+
+/** @experimental */
 export declare class Control extends AbstractControl {
     constructor(value?: any, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     registerOnChange(fn: Function): void;

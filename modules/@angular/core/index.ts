@@ -23,8 +23,8 @@ export {DebugElement, DebugNode, asNativeElements, getDebugNode} from './src/deb
 export * from './src/testability/testability';
 export * from './src/change_detection';
 export * from './src/platform_directives_and_pipes';
-export * from './src/platform_common_providers';
-export {APPLICATION_COMMON_PROVIDERS} from './src/application_common_providers';
+export * from './src/platform_core_providers';
+export {APPLICATION_COMMON_PROVIDERS, ApplicationModule} from './src/application_module';
 export {wtfCreateScope, wtfLeave, wtfStartTimeRange, wtfEndTimeRange, WtfScopeFn} from './src/profile/profile';
 
 export {Type} from './src/facade/lang';

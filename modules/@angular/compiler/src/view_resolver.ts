@@ -22,7 +22,7 @@ function _isComponentMetadata(obj: any): obj is ComponentMetadata {
 export class ViewResolver {
   constructor(private _reflector: ReflectorReader = reflector) {}
 
-  resolve(component: Type): ViewMetadata {
+  resolve(component: Type, throwIfNotFound = true): ViewMetadata {
     const compMeta: ComponentMetadata =
         this._reflector.annotations(component).find(_isComponentMetadata);
 
@@ -45,8 +45,11 @@ export class ViewResolver {
         });
       }
     } else {
-      throw new BaseException(
-          `Could not compile '${stringify(component)}' because it is not a component.`);
+      if (throwIfNotFound) {
+        throw new BaseException(
+            `Could not compile '${stringify(component)}' because it is not a component.`);
+      }
+      return null;
     }
   }
 }

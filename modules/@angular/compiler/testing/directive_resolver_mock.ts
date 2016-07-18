@@ -27,8 +27,11 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
   private get _compiler(): Compiler { return this._injector.get(Compiler); }
 
-  resolve(type: Type): DirectiveMetadata {
-    var dm = super.resolve(type);
+  resolve(type: Type, throwIfNotFound = true): DirectiveMetadata {
+    var dm = super.resolve(type, throwIfNotFound);
+    if (!dm) {
+      return null;
+    }
 
     var providerOverrides = this._providerOverrides.get(type);
     var viewProviderOverrides = this.viewProviderOverrides.get(type);

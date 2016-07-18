@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Console} from '../console';
-import {Injectable} from '../di/decorators';
-import {PromiseWrapper} from '../facade/async';
-import {BaseException} from '../facade/exceptions';
-import {Type, isBlank, isString, stringify} from '../facade/lang';
-import {reflector} from '../reflection/reflection';
+import {Type} from '../facade/lang';
 import {ComponentFactory} from './component_factory';
 
 /**
@@ -19,43 +14,17 @@ import {ComponentFactory} from './component_factory';
  * can later be used to create and render a Component instance.
  *
  * @deprecated Use {@link ComponentFactoryResolver} together with {@link
- * AppModule}.precompile}/{@link Component}.precompile or
+ * NgModule}.precompile}/{@link Component}.precompile or
  * {@link ANALYZE_FOR_PRECOMPILE} provider for dynamic component creation.
- * Use {@link AppModuleFactoryLoader} for lazy loading.
+ * Use {@link NgModuleFactoryLoader} for lazy loading.
  */
 export abstract class ComponentResolver {
   static DynamicCompilationDeprecationMsg =
-      'ComponentResolver is deprecated for dynamic compilation. Use ComponentFactoryResolver together with @AppModule/@Component.precompile or ANALYZE_FOR_PRECOMPILE provider instead.';
+      'ComponentResolver is deprecated for dynamic compilation. Use ComponentFactoryResolver together with @NgModule/@Component.precompile or ANALYZE_FOR_PRECOMPILE provider instead. For runtime compile only, you can also use Compiler.compileComponentSync/Async.';
   static LazyLoadingDeprecationMsg =
-      'ComponentResolver is deprecated for lazy loading. Use AppModuleFactoryLoader instead.';
+      'ComponentResolver is deprecated for lazy loading. Use NgModuleFactoryLoader instead.';
 
 
   abstract resolveComponent(component: Type|string): Promise<ComponentFactory<any>>;
   abstract clearCache(): void;
-}
-
-function _isComponentFactory(type: any): boolean {
-  return type instanceof ComponentFactory;
-}
-
-@Injectable()
-export class ReflectorComponentResolver extends ComponentResolver {
-  constructor(private _console: Console) { super(); }
-  resolveComponent(component: Type|string): Promise<ComponentFactory<any>> {
-    if (isString(component)) {
-      return PromiseWrapper.reject(
-          new BaseException(`Cannot resolve component using '${component}'.`), null);
-    }
-    this._console.warn(ComponentResolver.DynamicCompilationDeprecationMsg);
-
-    var metadatas = reflector.annotations(<Type>component);
-    var componentFactory = metadatas.find(_isComponentFactory);
-
-    if (isBlank(componentFactory)) {
-      throw new BaseException(`No precompiled component ${stringify(component)} found`);
-    }
-    return PromiseWrapper.resolve(componentFactory);
-  }
-
-  clearCache() {}
 }

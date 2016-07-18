@@ -13,13 +13,13 @@ import {StringWrapper, Type, isString, stringify} from '../facade/lang';
 
 /**
  * This token can be used to create a virtual provider that will populate the
- * `precompile` fields of components and app modules based on its `useValue`.
+ * `precompile` fields of components and ng modules based on its `useValue`.
  * All components that are referenced in the `useValue` value (either directly
  * or in a nested array or map) will be added to the `precompile` property.
  *
  * ### Example
  * The following example shows how the router can populate the `precompile`
- * field of an AppModule based on the router configuration which refers
+ * field of an NgModule based on the router configuration which refers
  * to components.
  *
  * ```typescript
@@ -37,7 +37,7 @@ import {StringWrapper, Type, isString, stringify} from '../facade/lang';
  *   {path: /teams', component: TeamsComp}
  * ];
  *
- * @AppModule({
+ * @NgModule({
  *   providers: [provideRoutes(routes)]
  * })
  * class ModuleWithRoutes {}

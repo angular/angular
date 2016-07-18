@@ -37,10 +37,9 @@ export declare function configureCompiler(config: {
 /** @stable */
 export declare function configureModule(moduleDef: {
     providers?: any[];
-    directives?: any[];
-    pipes?: any[];
+    declarations?: any[];
+    imports?: any[];
     precompile?: any[];
-    modules?: any[];
 }): void;
 
 /** @experimental */
@@ -62,7 +61,7 @@ export declare function getTestBed(): TestBed;
 export declare function getTestInjector(): TestBed;
 
 /** @experimental */
-export declare function initTestEnvironment(appModule: Type, platform: PlatformRef): void;
+export declare function initTestEnvironment(ngModule: Type, platform: PlatformRef): Injector;
 
 /** @stable */
 export declare function inject(tokens: any[], fn: Function): () => any;
@@ -71,10 +70,9 @@ export declare function inject(tokens: any[], fn: Function): () => any;
 export declare class InjectSetupWrapper {
     constructor(_moduleDef: () => {
         providers?: any[];
-        directives?: any[];
-        pipes?: any[];
+        declarations?: any[];
+        imports?: any[];
         precompile?: any[];
-        modules?: any[];
     });
     inject(tokens: any[], fn: Function): () => any;
 }
@@ -90,7 +88,7 @@ export declare function setBaseTestProviders(platformProviders: Array<Type | Pro
 
 /** @experimental */
 export declare class TestBed implements Injector {
-    appModule: Type;
+    ngModule: Type;
     platform: PlatformRef;
     configureCompiler(config: {
         providers?: any[];
@@ -98,15 +96,14 @@ export declare class TestBed implements Injector {
     }): void;
     configureModule(moduleDef: {
         providers?: any[];
-        directives?: any[];
-        pipes?: any[];
+        declarations?: any[];
+        imports?: any[];
         precompile?: any[];
-        modules?: any[];
     }): void;
-    createAppModuleFactory(): Promise<AppModuleFactory<any>>;
+    createModuleFactory(): Promise<NgModuleFactory<any>>;
     execute(tokens: any[], fn: Function): any;
     get(token: any, notFoundValue?: any): any;
-    initTestAppModule(): void;
+    initTestModule(): void;
     reset(): void;
 }
 
@@ -114,10 +111,10 @@ export declare class TestBed implements Injector {
 export declare class TestComponentBuilder {
     protected _injector: Injector;
     constructor(_injector: Injector);
-    createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>>;
-    createFakeAsync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T>;
+    createAsync<T>(rootComponentType: ConcreteType<T>, ngModule?: ConcreteType<any>): Promise<ComponentFixture<T>>;
+    createFakeAsync<T>(rootComponentType: ConcreteType<T>, ngModule?: ConcreteType<any>): ComponentFixture<T>;
     protected createFromFactory<C>(ngZone: NgZone, componentFactory: ComponentFactory<C>): ComponentFixture<C>;
-    createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T>;
+    createSync<T>(rootComponentType: ConcreteType<T>, ngModule?: ConcreteType<any>): ComponentFixture<T>;
     overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder;
     overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder;
     overrideProviders(type: Type, providers: any[]): TestComponentBuilder;
@@ -137,10 +134,9 @@ export declare function tick(millis?: number): void;
 /** @experimental */
 export declare function withModule(moduleDef: () => {
     providers?: any[];
-    directives?: any[];
-    pipes?: any[];
+    declarations?: any[];
+    imports?: any[];
     precompile?: any[];
-    modules?: any[];
 }): InjectSetupWrapper;
 
 /** @experimental */

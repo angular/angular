@@ -1775,17 +1775,6 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
 
     describe('logging property updates', () => {
-      beforeEach(() => {
-        configureCompiler({
-          providers: [{
-            provide: CompilerConfig,
-            // Note: we are testing the `genDebugInfo` flag here, so we
-            // need to set it explicitely!
-            useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
-          }]
-        });
-      });
-
       it('should reflect property values as attributes',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],

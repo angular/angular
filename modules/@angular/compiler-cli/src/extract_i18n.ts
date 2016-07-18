@@ -76,7 +76,7 @@ class Extractor {
     for (const symbol of symbols) {
       const staticType = this._reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
       let directive: compiler.CompileDirectiveMetadata;
-      directive = this._resolver.maybeGetDirectiveMetadata(<any>staticType);
+      directive = this._resolver.getDirectiveMetadata(<any>staticType, false);
 
       if (directive && directive.isComponent) {
         let promise = this._normalizer.normalizeDirective(directive).asyncResult;
@@ -147,8 +147,9 @@ class Extractor {
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const expressionParser = new Parser(new Lexer());
     const resolver = new CompileMetadataResolver(
+        new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        new compiler.ViewResolver(staticReflector), config, staticReflector);
+        new compiler.ViewResolver(staticReflector), config, /*console*/ null, staticReflector);
 
     // TODO(vicb): handle implicit
     const extractor = new MessageExtractor(htmlParser, expressionParser, [], {});

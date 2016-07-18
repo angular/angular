@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APPLICATION_COMMON_PROVIDERS, APP_INITIALIZER, AppModule, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
+import {ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, corePlatform, createPlatform, createPlatformFactory, getPlatform, isDevMode} from '@angular/core';
 
 import {wtfInit} from '../core_private';
 
@@ -32,6 +32,7 @@ import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
 import {MessageBasedRenderer} from './web_workers/ui/renderer';
+
 
 
 /**
@@ -70,16 +71,8 @@ export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
 /**
  * @experimental WebWorker support is currently experimental.
  */
-export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  PLATFORM_COMMON_PROVIDERS,
-  {provide: PLATFORM_INITIALIZER, useValue: initWebWorkerRenderPlatform, multi: true}
-];
-
-/**
- * @experimental WebWorker support is currently experimental.
- */
-export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  APPLICATION_COMMON_PROVIDERS,
+export const _WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
+  {provide: NgZone, useFactory: createNgZone, deps: []},
   MessageBasedRenderer,
   {provide: WORKER_UI_STARTABLE_MESSAGING_SERVICE, useExisting: MessageBasedRenderer, multi: true},
   BROWSER_SANITIZATION_PROVIDERS,
@@ -104,9 +97,26 @@ export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[
   Testability,
   EventManager,
   WebWorkerInstance,
-  {provide: APP_INITIALIZER, useFactory: initWebWorkerAppFn, multi: true, deps: [Injector]},
+  {
+    provide: PLATFORM_INITIALIZER,
+    useFactory: initWebWorkerRenderPlatform,
+    multi: true,
+    deps: [Injector]
+  },
   {provide: MessageBus, useFactory: messageBusFactory, deps: [WebWorkerInstance]}
 ];
+
+/**
+ * * @deprecated Use `workerUiPlatform()` or create a custom platform factory via
+ * `createPlatformFactory(workerUiPlatform, ...)`
+ */
+export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+    [PLATFORM_COMMON_PROVIDERS, _WORKER_UI_PLATFORM_PROVIDERS];
+
+/**
+ * @deprecated Worker UI only has a platform but no application
+ */
+export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [];
 
 function initializeGenericWorkerRenderer(injector: Injector) {
   var bus = injector.get(MessageBus);
@@ -122,27 +132,11 @@ function messageBusFactory(instance: WebWorkerInstance): MessageBus {
   return instance.bus;
 }
 
-function initWebWorkerRenderPlatform(): void {
-  BrowserDomAdapter.makeCurrent();
-  wtfInit();
-  BrowserGetTestability.init();
-}
-
-/**
- * @experimental WebWorker support is currently experimental.
- */
-export const workerUiPlatform = createPlatformFactory('workerUi', WORKER_UI_PLATFORM_PROVIDERS);
-
-function _exceptionHandler(): ExceptionHandler {
-  return new ExceptionHandler(getDOM());
-}
-
-function _document(): any {
-  return getDOM().defaultDoc();
-}
-
-function initWebWorkerAppFn(injector: Injector): () => void {
+function initWebWorkerRenderPlatform(injector: Injector): () => void {
   return () => {
+    BrowserDomAdapter.makeCurrent();
+    wtfInit();
+    BrowserGetTestability.init();
     var scriptUri: string;
     try {
       scriptUri = injector.get(WORKER_SCRIPT);
@@ -156,6 +150,24 @@ function initWebWorkerAppFn(injector: Injector): () => void {
 
     initializeGenericWorkerRenderer(injector);
   };
+}
+
+/**
+ * @experimental WebWorker support is currently experimental.
+ */
+export const workerUiPlatform =
+    createPlatformFactory(corePlatform, 'workerUi', _WORKER_UI_PLATFORM_PROVIDERS);
+
+function _exceptionHandler(): ExceptionHandler {
+  return new ExceptionHandler(getDOM());
+}
+
+function _document(): any {
+  return getDOM().defaultDoc();
+}
+
+function createNgZone(): NgZone {
+  return new NgZone({enableLongStackTrace: isDevMode()});
 }
 
 /**
@@ -174,15 +186,4 @@ function _resolveDefaultAnimationDriver(): AnimationDriver {
   // web workers have not been tested or configured to
   // work with animations just yet...
   return AnimationDriver.NOOP;
-}
-
-/**
- * The app module for the worker ui side.
- * To use this, you need to create an own module that includes this module
- * and provides the `WORKER_SCRIPT` token.
- *
- * @experimental
- */
-@AppModule({providers: WORKER_UI_APPLICATION_PROVIDERS})
-export class WorkerUiModule {
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InboxApp, ROUTER_CONFIG} from './app/inbox-app';
+import {InboxApp, InboxCmp, DraftsCmp, ROUTER_CONFIG} from './app/inbox-app';
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {provideRoutes, RouterModule} from '@angular/router';
@@ -17,6 +17,7 @@ export function main() {
       provideRoutes(ROUTER_CONFIG),
       {provide: LocationStrategy, useClass: HashLocationStrategy}
     ],
-    modules: [RouterModule]
+    declarations: [InboxCmp, DraftsCmp],
+    imports: [RouterModule]
   });
 }

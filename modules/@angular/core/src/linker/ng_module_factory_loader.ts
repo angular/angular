@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModuleFactory} from './app_module_factory';
+import {NgModuleFactory} from './ng_module_factory';
 
 /**
- * Used to load app moduled factories.
+ * Used to load ng moduled factories.
  * @experimental
  */
-export abstract class AppModuleFactoryLoader {
-  abstract load(path: string): Promise<AppModuleFactory<any>>;
+export abstract class NgModuleFactoryLoader {
+  abstract load(path: string): Promise<NgModuleFactory<any>>;
 }

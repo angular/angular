@@ -30,13 +30,14 @@ generated code:
 main_module.ts
 -------------
 import {BrowserModule} from '@angular/platform-browser';
-import {Component, AppModule, ApplicationRef} from '@angular/core';
+import {Component, NgModule, ApplicationRef} from '@angular/core';
 
 @Component(...)
 export class MyComponent {}
 
-@AppModule({
-  modules: [BrowserModule],
+@NgModule({
+  imports: [BrowserModule],
+  declarations: [MyComponent],
   precompile: [MyComponent]
 })
 export class MainModule {

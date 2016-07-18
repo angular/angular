@@ -41,8 +41,7 @@ function resolveNode(
 
 function resolveComponent(
     resolver: ComponentResolver, snapshot: ActivatedRouteSnapshot): Promise<any> {
-  // TODO: vsavkin change to typeof snapshot.component === 'string' in beta2
-  if (snapshot.component && snapshot._routeConfig) {
+  if (snapshot.component && snapshot._routeConfig && typeof snapshot.component === 'string') {
     return resolver.resolveComponent(<any>snapshot.component);
   } else {
     return Promise.resolve(null);

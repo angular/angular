@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, AppModule} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {ROUTER_DIRECTIVES, ActivatedRoute, provideRoutes} from '@angular/router';
 import {PromiseWrapper} from '@angular/core/src/facade/async';
 import {InboxRecord, DbService} from './inbox-app';
@@ -24,7 +24,8 @@ export class InboxDetailCmp {
   }
 }
 
-@AppModule({
+@NgModule({
+  declarations: [InboxDetailCmp],
   providers: [provideRoutes([{path: ':id', component: InboxDetailCmp}])]
 })
 export default class InboxDetailModule {}

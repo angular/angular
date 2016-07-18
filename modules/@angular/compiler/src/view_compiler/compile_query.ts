@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileQueryMetadata, CompileTokenMap} from '../compile_metadata';
+import {CompileIdentifierMap, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
@@ -125,7 +125,8 @@ export function createQueryList(
   return expr;
 }
 
-export function addQueryToTokenMap(map: CompileTokenMap<CompileQuery[]>, query: CompileQuery) {
+export function addQueryToTokenMap(
+    map: CompileIdentifierMap<CompileTokenMetadata, CompileQuery[]>, query: CompileQuery) {
   query.meta.selectors.forEach((selector) => {
     var entry = map.get(selector);
     if (isBlank(entry)) {

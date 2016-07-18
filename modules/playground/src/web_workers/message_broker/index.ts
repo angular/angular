@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef} from '@angular/core';
+import {PlatformRef} from '@angular/core';
 import {UiArguments, FnArg, PRIMITIVE, ClientMessageBrokerFactory} from '@angular/platform-browser';
 import {bootstrapWorkerUi} from "@angular/platform-browser-dynamic";
 
 const ECHO_CHANNEL = "ECHO";
 
 export function main() {
-  bootstrapWorkerUi("loader.js").then((ref) => afterBootstrap(ref));
+  bootstrapWorkerUi("loader.js").then(afterBootstrap);
 }
 
-function afterBootstrap(ref: ApplicationRef) {
+function afterBootstrap(ref: PlatformRef) {
   let brokerFactory: ClientMessageBrokerFactory = ref.injector.get(ClientMessageBrokerFactory);
   var broker = brokerFactory.createMessageBroker(ECHO_CHANNEL, false);
 

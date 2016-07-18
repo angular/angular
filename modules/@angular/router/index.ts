@@ -14,7 +14,7 @@ export {RouterLinkActive} from './src/directives/router_link_active';
 export {RouterOutlet} from './src/directives/router_outlet';
 export {CanActivate, CanActivateChild, CanDeactivate, Resolve} from './src/interfaces';
 export {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationExtras, NavigationStart, Router, RoutesRecognized} from './src/router';
-export {ROUTER_DIRECTIVES, RouterModule} from './src/router_module';
+export {ROUTER_DIRECTIVES, RouterModule, RouterModuleWithoutProviders} from './src/router_module';
 export {RouterOutletMap} from './src/router_outlet_map';
 export {provideRouter} from './src/router_providers';
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './src/router_state';

@@ -12,6 +12,7 @@ import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks
 import {configureCompiler} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
+import {CompileNgModuleMetadata} from '../src/compile_metadata';
 import {IS_DART, stringify} from '../src/facade/lang';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 
@@ -22,7 +23,7 @@ export function main() {
   describe('CompileMetadataResolver', () => {
     beforeEach(() => { configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 
-    describe('getMetadata', () => {
+    describe('getDirectiveMetadata', () => {
       it('should read metadata',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            var meta = resolver.getDirectiveMetadata(ComponentWithEverything);
@@ -100,35 +101,6 @@ export function main() {
            expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidInterpolation5))
                .toThrowError(`['&lbrace;', '}}'] contains unusable interpolation symbol.`);
          }));
-    });
-
-    describe('getViewDirectivesMetadata', () => {
-
-      it('should return the directive metadatas',
-         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-           expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-               .toContain(resolver.getDirectiveMetadata(SomeDirective));
-         }));
-
-      describe('platform directives', () => {
-        beforeEach(() => {
-          configureCompiler({
-            providers: [{
-              provide: CompilerConfig,
-              useValue: new CompilerConfig(
-                  {genDebugInfo: true, deprecatedPlatformDirectives: [ADirective]})
-            }]
-          });
-        });
-
-        it('should include platform directives when available',
-           inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-             expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-                 .toContain(resolver.getDirectiveMetadata(ADirective));
-             expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-                 .toContain(resolver.getDirectiveMetadata(SomeDirective));
-           }));
-      });
     });
 
   });

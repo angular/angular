@@ -22,7 +22,7 @@ import {PromiseWrapper} from '../src/facade/promise';
 export function main() {
   describe('reactive forms integration tests', () => {
 
-    beforeEach(() => { configureModule({modules: [FormsModule, ReactiveFormsModule]}); });
+    beforeEach(() => { configureModule({imports: [FormsModule, ReactiveFormsModule]}); });
 
     it('should initialize DOM elements with the given form object',
        inject(

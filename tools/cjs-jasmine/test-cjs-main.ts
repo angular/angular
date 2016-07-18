@@ -2,4 +2,4 @@ var testingPlatformServer = require('../../all/@angular/platform-server/testing/
 var testing = require('../../all/@angular/core/testing');
 
 testing.initTestEnvironment(
-    testingPlatformServer.ServerTestModule, testingPlatformServer.serverTestPlatform());
+    testingPlatformServer.ServerTestingModule, testingPlatformServer.serverTestingPlatform());

@@ -1,12 +1,9 @@
-/** @experimental */
-export declare const BROWSER_DYNAMIC_TEST_COMPILER_FACTORY: CompilerFactory;
-
 /** @stable */
-export declare class BrowserDynamicTestModule {
+export declare class BrowserDynamicTestingModule {
 }
 
 /** @experimental */
-export declare const browserDynamicTestPlatform: () => PlatformRef;
+export declare const browserDynamicTestingPlatform: (extraProviders?: any[]) => PlatformRef;
 
 /** @deprecated */
 export declare const TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS: Array<any>;

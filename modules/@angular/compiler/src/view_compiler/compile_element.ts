@@ -18,7 +18,7 @@ import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst} from '../templa
 import {CompileView} from './compile_view';
 import {InjectMethodVars} from './constants';
 
-import {CompileTokenMap, CompileDirectiveMetadata, CompileTokenMetadata, CompileQueryMetadata, CompileProviderMetadata, CompileDiDependencyMetadata, CompileIdentifierMetadata,} from '../compile_metadata';
+import {CompileIdentifierMap, CompileDirectiveMetadata, CompileTokenMetadata, CompileQueryMetadata, CompileProviderMetadata, CompileDiDependencyMetadata, CompileIdentifierMetadata,} from '../compile_metadata';
 import {getPropertyInView, injectFromViewParentInjector} from './util';
 import {CompileQuery, createQueryList, addQueryToTokenMap} from './compile_query';
 import {CompileMethod} from './compile_method';
@@ -43,11 +43,11 @@ export class CompileElement extends CompileNode {
   public appElement: o.ReadPropExpr;
   public elementRef: o.Expression;
   public injector: o.Expression;
-  private _instances = new CompileTokenMap<o.Expression>();
-  private _resolvedProviders: CompileTokenMap<ProviderAst>;
+  private _instances = new CompileIdentifierMap<CompileTokenMetadata, o.Expression>();
+  private _resolvedProviders: CompileIdentifierMap<CompileTokenMetadata, ProviderAst>;
 
   private _queryCount = 0;
-  private _queries = new CompileTokenMap<CompileQuery[]>();
+  private _queries = new CompileIdentifierMap<CompileTokenMetadata, CompileQuery[]>();
   private _componentConstructorViewQueryLists: o.Expression[] = [];
 
   public contentNodesByNgContentIndex: Array<o.Expression>[] = null;
@@ -144,7 +144,7 @@ export class CompileElement extends CompileNode {
           identifierToken(Identifiers.ViewContainerRef), this.appElement.prop('vcRef'));
     }
 
-    this._resolvedProviders = new CompileTokenMap<ProviderAst>();
+    this._resolvedProviders = new CompileIdentifierMap<CompileTokenMetadata, ProviderAst>();
     this._resolvedProvidersArray.forEach(
         provider => this._resolvedProviders.add(provider.token, provider));
 

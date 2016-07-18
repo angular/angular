@@ -135,7 +135,7 @@ export declare class Router {
     /** @experimental */ navigated: boolean;
     routerState: RouterState;
     url: string;
-    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: AppModuleFactoryLoader, config: Routes);
+    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, config: Routes);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
@@ -201,6 +201,10 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
 /** @experimental */
 export declare class RouterModule {
     constructor(injector: Injector);
+}
+
+/** @experimental */
+export declare class RouterModuleWithoutProviders {
 }
 
 /** @stable */

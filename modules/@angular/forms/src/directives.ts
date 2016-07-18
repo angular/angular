@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
+import {NgModule, Type} from '@angular/core';
 
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 import {DefaultValueAccessor} from './directives/default_value_accessor';
@@ -83,3 +83,10 @@ export const FORM_DIRECTIVES: Type[][] =
 
 export const REACTIVE_FORM_DIRECTIVES: Type[][] =
     /*@ts2dart_const*/[REACTIVE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
+
+/**
+ * Internal module used for sharing directives between FormsModule and ReactiveFormsModule
+ */
+@NgModule({declarations: SHARED_FORM_DIRECTIVES, exports: SHARED_FORM_DIRECTIVES})
+export class InternalFormsSharedModule {
+}

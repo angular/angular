@@ -49,13 +49,9 @@ export function addProviders(providers: Array<any>): void {
  *
  * @stable
  */
-export function configureModule(moduleDef: {
-  providers?: any[],
-  directives?: any[],
-  pipes?: any[],
-  precompile?: any[],
-  modules?: any[]
-}): void {
+export function configureModule(
+    moduleDef: {providers?: any[], declarations?: any[], imports?: any[], precompile?: any[]}):
+    void {
   if (!moduleDef) return;
   try {
     testBed.configureModule(moduleDef);

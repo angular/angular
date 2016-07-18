@@ -14,15 +14,16 @@ import {CodegenComponentFactoryResolver, ComponentFactoryResolver} from './compo
 
 
 /**
- * Represents an instance of an AppModule created via a {@link AppModuleFactory}.
+ * Represents an instance of an NgModule created via a {@link NgModuleFactory}.
  *
- * `AppModuleRef` provides access to the AppModule Instance as well other objects related to this
- * AppModule Instance.
- * @stable
+ * `NgModuleRef` provides access to the NgModule Instance as well other objects related to this
+ * NgModule Instance.
+ *
+ * @experimental
  */
-export abstract class AppModuleRef<T> {
+export abstract class NgModuleRef<T> {
   /**
-   * The injector that contains all of the providers of the AppModule.
+   * The injector that contains all of the providers of the NgModule.
    */
   get injector(): Injector { return unimplemented(); }
 
@@ -33,22 +34,22 @@ export abstract class AppModuleRef<T> {
   get componentFactoryResolver(): ComponentFactoryResolver { return unimplemented(); }
 
   /**
-   * The AppModule instance.
+   * The NgModule instance.
    */
   get instance(): T { return unimplemented(); }
 }
 
 /**
- * @stable
+ * @experimental
  */
-export class AppModuleFactory<T> {
+export class NgModuleFactory<T> {
   constructor(
-      private _injectorClass: {new (parentInjector: Injector): AppModuleInjector<T>},
+      private _injectorClass: {new (parentInjector: Injector): NgModuleInjector<T>},
       private _moduleype: ConcreteType<T>) {}
 
   get moduleType(): ConcreteType<T> { return this._moduleype; }
 
-  create(parentInjector: Injector = null): AppModuleRef<T> {
+  create(parentInjector: Injector): NgModuleRef<T> {
     if (!parentInjector) {
       parentInjector = Injector.NULL;
     }
@@ -60,9 +61,9 @@ export class AppModuleFactory<T> {
 
 const _UNDEFINED = new Object();
 
-export abstract class AppModuleInjector<T> extends CodegenComponentFactoryResolver implements
+export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolver implements
     Injector,
-    AppModuleRef<T> {
+    NgModuleRef<T> {
   public instance: T;
 
   constructor(public parent: Injector, factories: ComponentFactory<any>[]) {

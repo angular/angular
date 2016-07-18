@@ -8,15 +8,15 @@
 
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {XHR} from '@angular/compiler';
-import {APP_INITIALIZER, Component, Directive, ExceptionHandler, Inject, Input, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, coreLoadAndBootstrap, createPlatform, provide} from '@angular/core';
+import {APP_INITIALIZER, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, bootstrapModule, createPlatformFactory, provide} from '@angular/core';
 import {ApplicationRef, disposePlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {ComponentFixture} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
-import {BROWSER_APP_PROVIDERS, BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
-import {BROWSER_APP_COMPILER_PROVIDERS, bootstrap} from '@angular/platform-browser-dynamic';
+import {BrowserModule} from '@angular/platform-browser';
+import {bootstrap, browserDynamicPlatform} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -223,16 +223,10 @@ export function main() {
 
     it('should unregister change detectors when components are disposed',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var platform =
-             createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));
-         var app = ReflectiveInjector
-                       .resolveAndCreate(
-                           [BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS, testProviders],
-                           platform.injector)
-                       .get(ApplicationRef);
-         coreLoadAndBootstrap(HelloRootCmp, app.injector).then((ref) => {
+         bootstrap(HelloRootCmp, testProviders).then((ref) => {
+           const appRef = ref.injector.get(ApplicationRef);
            ref.destroy();
-           expect(() => app.tick()).not.toThrow();
+           expect(() => appRef.tick()).not.toThrow();
            async.done();
          });
        }));
@@ -258,24 +252,29 @@ export function main() {
          });
        }));
 
-    it('should run platform initializers', inject([Log], (log: Log) => {
-         let p = createPlatform(ReflectiveInjector.resolveAndCreate([
-           BROWSER_PLATFORM_PROVIDERS,
+    it('should run platform initializers',
+       inject([Log, AsyncTestCompleter], (log: Log, async: AsyncTestCompleter) => {
+         let p = createPlatformFactory(browserDynamicPlatform, 'someName', [
            {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init1'), multi: true},
            {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init2'), multi: true}
-         ]));
+         ])();
+
+         @NgModule({
+           imports: [BrowserModule],
+           providers: [
+             {provide: APP_INITIALIZER, useValue: log.fn('app_init1'), multi: true},
+             {provide: APP_INITIALIZER, useValue: log.fn('app_init2'), multi: true}
+           ]
+         })
+         class SomeModule {
+         }
+
          expect(log.result()).toEqual('platform_init1; platform_init2');
          log.clear();
-         var a = ReflectiveInjector.resolveAndCreate(
-             [
-               BROWSER_APP_PROVIDERS,
-               {provide: APP_INITIALIZER, useValue: log.fn('app_init1'), multi: true},
-               {provide: APP_INITIALIZER, useValue: log.fn('app_init2'), multi: true}
-             ],
-             p.injector);
-         a.get(ApplicationRef);
-
-         expect(log.result()).toEqual('app_init1; app_init2');
+         bootstrapModule(SomeModule, p).then(() => {
+           expect(log.result()).toEqual('app_init1; app_init2');
+           async.done();
+         });
        }));
 
     it('should register each application with the testability registry',
@@ -305,7 +304,7 @@ export function main() {
          ])).then((compRef) => {
            expect(el).toHaveText('hello world!');
            expect(compilerConsole.warnings).toEqual([
-             'Passing an instance of XHR to "bootstrap()" as provider is deprecated. Pass the provider via the new parameter "compilerOptions" of "bootstrap()" instead.'
+             'Passing XHR as regular provider is deprecated. Pass the provider via "compilerOptions" instead.'
            ]);
            async.done();
          });
@@ -325,10 +324,8 @@ export function main() {
                .toBe('transformed someValue');
 
            expect(compilerConsole.warnings).toEqual([
-             'Passing PLATFORM_DIRECTIVES to "bootstrap()" as provider is deprecated. Use the new parameter "directives" of "bootstrap()" instead.',
-             'Passing PLATFORM_PIPES to "bootstrap()" as provider is deprecated. Use the new parameter "pipes" of "bootstrap()" instead.',
-             `Providing platform directives via the PLATFORM_DIRECTIVES provider or the "CompilerConfig" is deprecated. Provide platform directives via an @AppModule instead. Directives: ${stringify(SomeDirective)}`,
-             `Providing platform pipes via the PLATFORM_PIPES provider or the "CompilerConfig" is deprecated. Provide platform pipes via an @AppModule instead. Pipes: ${stringify(SomePipe)}`
+             `The PLATFORM_DIRECTIVES provider and CompilerConfig.platformDirectives is deprecated. Add the directives to an NgModule instead! (Directives: ${stringify(SomeDirective)})`,
+             `The PLATFORM_PIPES provider and CompilerConfig.platformPipes is deprecated. Add the pipes to an NgModule instead! (Pipes: ${stringify(SomePipe)})`
            ]);
            async.done();
          });

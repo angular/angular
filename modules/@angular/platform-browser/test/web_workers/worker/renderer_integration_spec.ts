@@ -23,8 +23,8 @@ import {MessageBasedRenderer} from '@angular/platform-browser/src/web_workers/ui
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 import {ServiceMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
 import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
-import {BrowserTestModule} from '@angular/platform-browser/testing';
-import {browserDynamicTestPlatform} from '@angular/platform-browser-dynamic/testing';
+import {BrowserTestingModule} from '@angular/platform-browser/testing';
+import {browserDynamicTestingPlatform} from '@angular/platform-browser-dynamic/testing';
 
 export function main() {
   function createWebWorkerBrokerFactory(
@@ -65,8 +65,8 @@ export function main() {
     beforeEach(() => {
       uiRenderStore = new RenderStore();
       var testUiInjector = new TestBed();
-      testUiInjector.platform = browserDynamicTestPlatform();
-      testUiInjector.appModule = BrowserTestModule;
+      testUiInjector.platform = browserDynamicTestingPlatform();
+      testUiInjector.ngModule = BrowserTestingModule;
       testUiInjector.configureModule({
         providers: [
           Serializer, {provide: RenderStore, useValue: uiRenderStore},
@@ -74,7 +74,7 @@ export function main() {
           {provide: RootRenderer, useExisting: DomRootRenderer}
         ]
       });
-      testUiInjector.initTestAppModule();
+      testUiInjector.initTestModule();
       var uiSerializer = testUiInjector.get(Serializer);
       var domRootRenderer = testUiInjector.get(DomRootRenderer);
       workerRenderStore = new RenderStore();

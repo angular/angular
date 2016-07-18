@@ -6,20 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModule, ApplicationRef} from '@angular/core';
+import {ApplicationRef, NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
+import {CompWithProviders, CompWithReferences} from './features';
+import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomeLibModule, SomePipeInRootModule, SomeService} from './module_fixtures';
 import {CompWithAnalyzePrecompileProvider, CompWithPrecompile} from './precompile';
 import {ProjectingComp} from './projection';
-import {CompWithChildQuery} from './queries';
+import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
 
-@AppModule({
-  modules: [BrowserModule],
+@NgModule({
+  declarations: [
+    SomeDirectiveInRootModule, SomePipeInRootModule, AnimateCmp, BasicComp, CompWithPrecompile,
+    CompWithAnalyzePrecompileProvider, ProjectingComp, CompWithChildQuery, CompWithDirectiveChild,
+    CompUsingRootModuleDirectiveAndPipe, CompWithProviders, CompWithReferences
+  ],
+  imports: [BrowserModule, FormsModule, SomeLibModule],
+  providers: [SomeService],
   precompile: [
     AnimateCmp, BasicComp, CompWithPrecompile, CompWithAnalyzePrecompileProvider, ProjectingComp,
-    CompWithChildQuery
+    CompWithChildQuery, CompUsingRootModuleDirectiveAndPipe
   ]
 })
 export class MainModule {

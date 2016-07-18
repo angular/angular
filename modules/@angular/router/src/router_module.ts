@@ -7,7 +7,7 @@
  */
 
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {AppModule, AppModuleFactoryLoader, ApplicationRef, ComponentResolver, Injector, OpaqueToken, SystemJsAppModuleLoader} from '@angular/core';
+import {ApplicationRef, ComponentResolver, Injector, NgModule, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
 
 import {ROUTER_CONFIGURATION, rootRoute, setupRouter} from './common_router_providers';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -33,13 +33,34 @@ export const ROUTER_PROVIDERS: any[] = [
     useFactory: setupRouter,
     deps: [
       ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
-      AppModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
+      NgModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
     ]
   },
   RouterOutletMap, {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
-  {provide: AppModuleFactoryLoader, useClass: SystemJsAppModuleLoader},
+  {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader},
   {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}}
 ];
+
+
+/**
+ * Router module to be used for lazy loaded parts.
+ *
+ * ### Example
+ *
+ * ```
+ * @NgModule({
+ *   imports: [RouterModuleWithoutProviders]
+ * })
+ * class TeamsModule {}
+ * ```
+ *
+ * @experimental We will soon have a way for the `RouterModule` to be imported with and without a
+ * provider,
+ * and then this module will be removed.
+ */
+@NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
+export class RouterModuleWithoutProviders {
+}
 
 /**
  * Router module.
@@ -52,7 +73,7 @@ export const ROUTER_PROVIDERS: any[] = [
  *
  * @experimental
  */
-@AppModule({directives: ROUTER_DIRECTIVES, providers: ROUTER_PROVIDERS})
+@NgModule({exports: [RouterModuleWithoutProviders], providers: ROUTER_PROVIDERS})
 export class RouterModule {
   constructor(private injector: Injector) {
     setTimeout(() => {
