@@ -79,6 +79,13 @@ export declare class NavigationError {
     toString(): string;
 }
 
+/** @experimental */
+export interface NavigationExtras {
+    fragment?: string;
+    queryParams?: Params;
+    relativeTo?: ActivatedRoute;
+}
+
 /** @stable */
 export declare class NavigationStart {
     id: number;

@@ -38,6 +38,9 @@ import {TreeNode} from './utils/tree';
 
 declare var Zone: any;
 
+/**
+ * @experimental
+ */
 export interface NavigationExtras {
   relativeTo?: ActivatedRoute;
   queryParams?: Params;
