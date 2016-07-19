@@ -6,7 +6,7 @@
 4. Clone your fork. 
    Recommendation: name your git remotes `upstream` for `angular/material2`
    and `<your-username>` for your fork. Also see the [team git shortcuts](https://github.com/angular/material2/wiki/Team-git----bash-shortcuts).
-5. From the root of the project, run `npm install`, then run `npm run typings` to install typescript definitions.
+5. From the root of the project, run `npm install`.
 
 To build the project, run `ng build`. 
 To watch for changes and automatically rebuild, run `ng build --watch`
