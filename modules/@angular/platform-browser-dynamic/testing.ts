@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {COMMON_DIRECTIVES, COMMON_PIPES} from '@angular/common';
 import {CompilerConfig, DirectiveResolver, ViewResolver} from '@angular/compiler';
 import {MockDirectiveResolver, MockViewResolver, OverridingTestComponentBuilder} from '@angular/compiler/testing';
-import {AppModule, Compiler, CompilerFactory, PlatformRef, Provider, ReflectiveInjector, Type, createPlatformFactory} from '@angular/core';
+import {AppModule, Compiler, CompilerFactory, PLATFORM_DIRECTIVES, PLATFORM_PIPES, PlatformRef, Provider, ReflectiveInjector, Type, createPlatformFactory} from '@angular/core';
 import {TestComponentBuilder, TestComponentRenderer} from '@angular/core/testing';
 import {BrowserTestModule, TEST_BROWSER_APPLICATION_PROVIDERS, TEST_BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser/testing';
 
@@ -62,11 +63,26 @@ export const browserDynamicTestPlatform =
 export class BrowserDynamicTestModule {
 }
 
+// Used only as a shim until TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS is deprecated.
+const BROWSER_DYNAMIC_TEST_COMPILER_FACTORY_OLD = BROWSER_DYNAMIC_COMPILER_FACTORY.withDefaults({
+  providers: [
+    {provide: DirectiveResolver, useClass: MockDirectiveResolver},
+    {provide: ViewResolver, useClass: MockViewResolver}
+  ],
+  deprecatedAppProviders: [
+    {provide: PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true},
+    {provide: PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true}
+  ]
+});
+
 /**
  * @deprecated Use initTestEnvironment with browserDynamicTestPlatform instead.
  */
-export const TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    BROWSER_DYNAMIC_TEST_PLATFORM_PROVIDERS;
+export const TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
+  TEST_BROWSER_PLATFORM_PROVIDERS,
+  BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
+  {provide: CompilerFactory, useValue: BROWSER_DYNAMIC_TEST_COMPILER_FACTORY_OLD},
+];
 
 
 /**
