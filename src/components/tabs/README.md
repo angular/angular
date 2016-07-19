@@ -35,4 +35,4 @@ A basic tab group would have the following markup.
 | Name | Type | Description |
 | --- | --- | --- |
 | `focusChange` | `Event` | Fired when focus changes from one label to another |
-| `selectedChange` | `Event` | Fired when the selected tab changes |
+| `selectChange` | `Event` | Fired when the selected tab changes |
