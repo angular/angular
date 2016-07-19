@@ -98,7 +98,7 @@ export interface CanActivate {
  *   provideRouter([
  *     {
  *       path: 'root',
- *       canActivateChild: [CanActivateTeam],
+ *       canActivateChild: ['canActivateTeam'],
  *       children: [
  *        {
  *          path: 'team/:id',
