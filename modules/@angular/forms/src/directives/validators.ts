@@ -33,7 +33,7 @@ import {NG_VALIDATORS, Validators} from '../validators';
  *
  * @experimental
  */
-export interface Validator { validate(c: AbstractControl): {[key: string]: any}; }
+export interface Validator { validate(c: AbstractControl): null|{[key: string]: any}; }
 
 const REQUIRED = /*@ts2dart_const*/ Validators.required;
 
@@ -65,7 +65,7 @@ export class RequiredValidator {
 /**
  * @experimental
  */
-export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
+export interface ValidatorFn { (c: AbstractControl): null|{[key: string]: any}; }
 
 /**
  * @experimental
