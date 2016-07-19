@@ -32,8 +32,19 @@ export function main() {
             expect(pipe.transform(1.1234)).toEqual('1.123');
           });
 
-          it('should not support other objects',
-             () => { expect(() => pipe.transform(new Object())).toThrowError(); });
+          it('should support strings', () => {
+            expect(pipe.transform('12345')).toEqual('12,345');
+            expect(pipe.transform('123', '.2')).toEqual('123.00');
+            expect(pipe.transform('1', '3.')).toEqual('001');
+            expect(pipe.transform('1.1', '3.4-5')).toEqual('001.1000');
+            expect(pipe.transform('1.123456', '3.4-5')).toEqual('001.12346');
+            expect(pipe.transform('1.1234')).toEqual('1.123');
+          });
+
+          it('should not support other objects', () => {
+            expect(() => pipe.transform(new Object())).toThrowError();
+            expect(() => pipe.transform('123abc')).toThrowError();
+          });
         });
       });
 

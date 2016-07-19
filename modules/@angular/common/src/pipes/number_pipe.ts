@@ -7,9 +7,11 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
+
 import {BaseException} from '../facade/exceptions';
 import {NumberFormatStyle, NumberFormatter} from '../facade/intl';
-import {NumberWrapper, RegExpWrapper, Type, isBlank, isNumber, isPresent} from '../facade/lang';
+import {NumberWrapper, RegExpWrapper, StringWrapper, Type, isBlank, isNumber, isPresent, isString} from '../facade/lang';
+
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 var defaultLocale: string = 'en-US';
@@ -19,13 +21,17 @@ const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/g;
  * Internal function to format numbers used by Decimal, Percent and Date pipes.
  */
 function formatNumber(
-    pipe: Type, value: number, style: NumberFormatStyle, digits: string, currency: string = null,
-    currencyAsSymbol: boolean = false): string {
+    pipe: Type, value: number | string, style: NumberFormatStyle, digits: string,
+    currency: string = null, currencyAsSymbol: boolean = false): string {
   if (isBlank(value)) return null;
+  // Convert strings to numbers
+  value = isString(value) && NumberWrapper.isNumeric(value) ? +value : value;
   if (!isNumber(value)) {
     throw new InvalidPipeArgumentException(pipe, value);
   }
-  var minInt = 1, minFraction = 0, maxFraction = 3;
+  let minInt = 1;
+  let minFraction = 0;
+  let maxFraction = 3;
   if (isPresent(digits)) {
     var parts = RegExpWrapper.firstMatch(_NUMBER_FORMAT_REGEXP, digits);
     if (isBlank(parts)) {
@@ -41,7 +47,7 @@ function formatNumber(
       maxFraction = NumberWrapper.parseIntAutoRadix(parts[5]);
     }
   }
-  return NumberFormatter.format(value, defaultLocale, style, {
+  return NumberFormatter.format(value as number, defaultLocale, style, {
     minimumIntegerDigits: minInt,
     minimumFractionDigits: minFraction,
     maximumFractionDigits: maxFraction,
