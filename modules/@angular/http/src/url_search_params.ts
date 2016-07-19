@@ -152,7 +152,7 @@ export class URLSearchParams {
     searchParams.paramsMap.forEach((value, param) => {
       var mapParam = this.paramsMap.get(param);
       var list = isPresent(mapParam) ? mapParam : [];
-      for (var i = 0; i < value.length; ++i) {
+      for (var i = 0, len = value.length; i < len; ++i) {
         list.push(value[i]);
       }
       this.paramsMap.set(param, list);
@@ -172,7 +172,7 @@ export class URLSearchParams {
       var mapParam = this.paramsMap.get(param);
       var list = isPresent(mapParam) ? mapParam : [];
       ListWrapper.clear(list);
-      for (var i = 0; i < value.length; ++i) {
+      for (var i = 0, len = value.length; i < len; ++i) {
         list.push(value[i]);
       }
       this.paramsMap.set(param, list);

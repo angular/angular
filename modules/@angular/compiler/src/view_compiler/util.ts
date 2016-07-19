@@ -59,7 +59,7 @@ export function getViewFactoryName(
 export function createFlatArray(expressions: o.Expression[]): o.Expression {
   var lastNonArrayExpressions: any[] /** TODO #9100 */ = [];
   var result: o.Expression = o.literalArr([]);
-  for (var i = 0; i < expressions.length; i++) {
+  for (var i = 0, len = expressions.length; i < len; i++) {
     var expr = expressions[i];
     if (expr.type instanceof o.ArrayType) {
       if (lastNonArrayExpressions.length > 0) {

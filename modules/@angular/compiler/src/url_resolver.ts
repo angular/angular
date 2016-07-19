@@ -279,7 +279,7 @@ function _removeDotSegments(path: string): string {
 
   var out: string[] = [];
   var up = 0;
-  for (var pos = 0; pos < segments.length; pos++) {
+  for (var pos = 0, len = segments.length; pos < len; pos++) {
     var segment = segments[pos];
     switch (segment) {
       case '':

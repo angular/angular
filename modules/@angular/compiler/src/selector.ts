@@ -94,7 +94,7 @@ export class CssSelector {
     let classAttr = this.classNames.length > 0 ? ` class="${this.classNames.join(' ')}"` : '';
 
     let attrs = '';
-    for (let i = 0; i < this.attrs.length; i += 2) {
+    for (let i = 0, len = this.attrs.length; i < len; i += 2) {
       let attrName = this.attrs[i];
       let attrValue = this.attrs[i + 1] !== '' ? `="${this.attrs[i + 1]}"` : '';
       attrs += ` ${attrName}${attrValue}`;
@@ -121,12 +121,12 @@ export class CssSelector {
       res += this.element;
     }
     if (isPresent(this.classNames)) {
-      for (var i = 0; i < this.classNames.length; i++) {
+      for (var i = 0, len = this.classNames.length; i < len; i++) {
         res += '.' + this.classNames[i];
       }
     }
     if (isPresent(this.attrs)) {
-      for (var i = 0; i < this.attrs.length;) {
+      for (var i = 0, len = this.attrs.length; i < len;) {
         var attrName = this.attrs[i++];
         var attrValue = this.attrs[i++];
         res += '[' + attrName;
@@ -166,7 +166,7 @@ export class SelectorMatcher {
       listContext = new SelectorListContext(cssSelectors);
       this._listContexts.push(listContext);
     }
-    for (var i = 0; i < cssSelectors.length; i++) {
+    for (var i = 0, len = cssSelectors.length; i < len; i++) {
       this._addSelectable(cssSelectors[i], callbackCtxt, listContext);
     }
   }
@@ -194,7 +194,7 @@ export class SelectorMatcher {
     }
 
     if (isPresent(classNames)) {
-      for (var index = 0; index < classNames.length; index++) {
+      for (var index = 0, len = classNames.length; index < len; index++) {
         var isTerminal = attrs.length === 0 && index === classNames.length - 1;
         var className = classNames[index];
         if (isTerminal) {
@@ -206,7 +206,7 @@ export class SelectorMatcher {
     }
 
     if (isPresent(attrs)) {
-      for (var index = 0; index < attrs.length;) {
+      for (var index = 0, len = attrs.length; index < len;) {
         var isTerminal = index === attrs.length - 2;
         var attrName = attrs[index++];
         var attrValue = attrs[index++];
@@ -263,7 +263,7 @@ export class SelectorMatcher {
     var classNames = cssSelector.classNames;
     var attrs = cssSelector.attrs;
 
-    for (var i = 0; i < this._listContexts.length; i++) {
+    for (var i = 0, len = this._listContexts.length; i < len; i++) {
       this._listContexts[i].alreadyMatched = false;
     }
 
@@ -272,7 +272,7 @@ export class SelectorMatcher {
         result;
 
     if (isPresent(classNames)) {
-      for (var index = 0; index < classNames.length; index++) {
+      for (var index = 0, len = classNames.length; index < len; index++) {
         var className = classNames[index];
         result =
             this._matchTerminal(this._classMap, className, cssSelector, matchedCallback) || result;
@@ -283,7 +283,7 @@ export class SelectorMatcher {
     }
 
     if (isPresent(attrs)) {
-      for (var index = 0; index < attrs.length;) {
+      for (var index = 0, len = attrs.length; index < len;) {
         var attrName = attrs[index++];
         var attrValue = attrs[index++];
 
@@ -327,7 +327,7 @@ export class SelectorMatcher {
     }
     var selectable: SelectorContext;
     var result = false;
-    for (var index = 0; index < selectables.length; index++) {
+    for (var index = 0, len = selectables.length; index < len; index++) {
       selectable = selectables[index];
       result = selectable.finalize(cssSelector, matchedCallback) || result;
     }

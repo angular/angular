@@ -101,7 +101,7 @@ export class DebugElement extends DebugNode {
       var nextChildren = this.childNodes.slice(siblingIndex + 1);
       this.childNodes =
           ListWrapper.concat(ListWrapper.concat(previousChildren, newChildren), nextChildren);
-      for (var i = 0; i < newChildren.length; ++i) {
+      for (var i = 0, len = newChildren.length; i < len; ++i) {
         var newChild = newChildren[i];
         if (isPresent(newChild.parent)) {
           newChild.parent.removeChild(newChild);

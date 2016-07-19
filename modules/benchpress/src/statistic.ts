@@ -26,7 +26,7 @@ export class Statistic {
     // See http://en.wikipedia.org/wiki/Simple_linear_regression
     var dividendSum = 0;
     var divisorSum = 0;
-    for (var i = 0; i < xValues.length; i++) {
+    for (var i = 0, len = xValues.length; i < len; i++) {
       dividendSum += (xValues[i] - xMean) * (yValues[i] - yMean);
       divisorSum += Math.pow(xValues[i] - xMean, 2);
     }

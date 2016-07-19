@@ -27,7 +27,7 @@ function _executeFunctionStatements(
     varNames: string[], varValues: any[], statements: o.Statement[], ctx: _ExecutionContext,
     visitor: StatementInterpreter): any {
   var childCtx = ctx.createChildWihtLocalVars();
-  for (var i = 0; i < varNames.length; i++) {
+  for (var i = 0, len = varNames.length; i < len; i++) {
     childCtx.vars.set(varNames[i], varValues[i]);
   }
   var result = visitor.visitAllStatements(statements, childCtx);
@@ -318,7 +318,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   }
 
   visitAllStatements(statements: o.Statement[], ctx: _ExecutionContext): ReturnValue {
-    for (var i = 0; i < statements.length; i++) {
+    for (var i = 0, len = statements.length; i < len; i++) {
       var stmt = statements[i];
       var val = stmt.visitStatement(this, ctx);
       if (val instanceof ReturnValue) {

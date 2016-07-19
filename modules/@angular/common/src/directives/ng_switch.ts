@@ -134,7 +134,7 @@ export class NgSwitch {
   /** @internal */
   _emptyAllActiveViews(): void {
     var activeContainers = this._activeViews;
-    for (var i = 0; i < activeContainers.length; i++) {
+    for (var i = 0, len = activeContainers.length; i < len; i++) {
       activeContainers[i].destroy();
     }
     this._activeViews = [];
@@ -144,7 +144,7 @@ export class NgSwitch {
   _activateViews(views: SwitchView[]): void {
     // TODO(vicb): assert(this._activeViews.length === 0);
     if (isPresent(views)) {
-      for (var i = 0; i < views.length; i++) {
+      for (var i = 0, len = views.length; i < len; i++) {
         views[i].create();
       }
       this._activeViews = views;

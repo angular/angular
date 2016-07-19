@@ -346,7 +346,7 @@ export function main() {
         it('should use array buffer body to the request', () => {
           var body = new ArrayBuffer(512);
           var longInt8View = new Uint8Array(body);
-          for (var i = 0; i < longInt8View.length; i++) {
+          for (var i = 0, len = longInt8View.length; i < len; i++) {
             longInt8View[i] = i % 255;
           }
           var base = new BaseRequestOptions();
@@ -362,7 +362,7 @@ export function main() {
              var headers = new Headers({'Content-Type': 'text/css'});
              var body = new ArrayBuffer(512);
              var longInt8View = new Uint8Array(body);
-             for (var i = 0; i < longInt8View.length; i++) {
+             for (var i = 0, len = longInt8View.length; i < len; i++) {
                longInt8View[i] = i % 255;
              }
              var base = new BaseRequestOptions();

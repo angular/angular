@@ -78,7 +78,7 @@ export class DbService {
 
   email(id: any /** TODO #9100 */): Promise<any> {
     return PromiseWrapper.then(this.getData(), (data: any[]) => {
-      for (var i = 0; i < data.length; i++) {
+      for (var i = 0, len = data.length; i < len; i++) {
         var entry = data[i];
         if (entry['id'] == id) {
           return entry;

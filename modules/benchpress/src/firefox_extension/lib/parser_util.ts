@@ -27,7 +27,7 @@ export function convertPerfProfileToEvents(perfProfile: any): any[] {
   // In perf profile, firefox samples all the frames in set time intervals. Here
   // we go through all the samples and construct the start and end time for each
   // event.
-  for (var i = 0; i < samples.length; ++i) {
+  for (var i = 0, len = samples.length; i < len; ++i) {
     var sample = samples[i];
     var sampleTime = sample.time;
 

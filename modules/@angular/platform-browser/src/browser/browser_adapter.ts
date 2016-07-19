@@ -162,7 +162,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   childNodesAsList(el: any /** TODO #9100 */): any[] {
     var childNodes = el.childNodes;
     var res = ListWrapper.createFixedSize(childNodes.length);
-    for (var i = 0; i < childNodes.length; i++) {
+    for (var i = 0, len = childNodes.length; i < len; i++) {
       res[i] = childNodes[i];
     }
     return res;
@@ -261,7 +261,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   attributeMap(element: any /** TODO #9100 */): Map<string, string> {
     var res = new Map<string, string>();
     var elAttrs = element.attributes;
-    for (var i = 0; i < elAttrs.length; i++) {
+    for (var i = 0, len = elAttrs.length; i < len; i++) {
       var attrib = elAttrs[i];
       res.set(attrib.name, attrib.value);
     }

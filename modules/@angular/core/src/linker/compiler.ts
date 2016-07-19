@@ -135,7 +135,7 @@ class _DefaultApplyingCompilerFactory extends CompilerFactory {
 }
 
 function _firstDefined<T>(...args: T[]): T {
-  for (var i = 0; i < args.length; i++) {
+  for (var i = 0, len = args.length; i < len; i++) {
     if (args[i] !== undefined) {
       return args[i];
     }

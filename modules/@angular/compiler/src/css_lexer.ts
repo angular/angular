@@ -64,7 +64,7 @@ export function findProblemCode(
     pointerPadding += ' ';
   }
   var pointerString = '';
-  for (var i = 0; i < errorValue.length; i++) {
+  for (var i = 0, len = errorValue.length; i < len; i++) {
     pointerString += '^';
   }
   return choppedString + '\n' + pointerPadding + pointerString + '\n';

@@ -83,7 +83,7 @@ export class Parse5DomAdapter extends DomAdapter {
          selector: any /** TODO #9100 */, matcher: any /** TODO #9100 */) => {
           var cNodes = node.childNodes;
           if (cNodes && cNodes.length > 0) {
-            for (var i = 0; i < cNodes.length; i++) {
+            for (var i = 0, len = cNodes.length; i < len; i++) {
               var childNode = cNodes[i];
               if (this.elementMatches(childNode, selector, matcher)) {
                 result.push(childNode);
@@ -121,7 +121,7 @@ export class Parse5DomAdapter extends DomAdapter {
         }
       }
       var classList = this.classList(node);
-      for (var i = 0; i < classList.length; i++) {
+      for (var i = 0, len = classList.length; i < len; i++) {
         cssSelector.addClassName(classList[i]);
       }
 
@@ -159,7 +159,7 @@ export class Parse5DomAdapter extends DomAdapter {
     if (isPresent(el._eventListenersMap)) {
       var listeners: any = StringMapWrapper.get(el._eventListenersMap, evt.type);
       if (isPresent(listeners)) {
-        for (var i = 0; i < listeners.length; i++) {
+        for (var i = 0, len = listeners.length; i < len; i++) {
           listeners[i](evt);
         }
       }
@@ -206,7 +206,7 @@ export class Parse5DomAdapter extends DomAdapter {
   childNodesAsList(el: any /** TODO #9100 */): any[] {
     var childNodes = el.childNodes;
     var res = ListWrapper.createFixedSize(childNodes.length);
-    for (var i = 0; i < childNodes.length; i++) {
+    for (var i = 0, len = childNodes.length; i < len; i++) {
       res[i] = childNodes[i];
     }
     return res;
@@ -261,7 +261,7 @@ export class Parse5DomAdapter extends DomAdapter {
   setInnerHTML(el: any /** TODO #9100 */, value: any /** TODO #9100 */) {
     this.clearNodes(el);
     var content = parser.parseFragment(value);
-    for (var i = 0; i < content.childNodes.length; i++) {
+    for (var i = 0, len = content.childNodes.length; i < len; i++) {
       treeAdapter.appendChild(el, content.childNodes[i]);
     }
   }
@@ -276,7 +276,7 @@ export class Parse5DomAdapter extends DomAdapter {
       return '';
     } else {
       var textContent = '';
-      for (var i = 0; i < el.childNodes.length; i++) {
+      for (var i = 0, len = el.childNodes.length; i < len; i++) {
         textContent += this.getText(el.childNodes[i], true);
       }
       return textContent;
@@ -354,7 +354,7 @@ export class Parse5DomAdapter extends DomAdapter {
       var cNodes = node.children;
       if (cNodes) {
         var cNodesClone = new Array(cNodes.length);
-        for (var i = 0; i < cNodes.length; i++) {
+        for (var i = 0, len = cNodes.length; i < len; i++) {
           var childNode = cNodes[i];
           var childNodeClone = _recursive(childNode);
           cNodesClone[i] = childNodeClone;
@@ -414,7 +414,7 @@ export class Parse5DomAdapter extends DomAdapter {
     if (attributes && attributes.hasOwnProperty('style')) {
       var styleAttrValue = attributes['style'];
       var styleList = styleAttrValue.split(/;+/g);
-      for (var i = 0; i < styleList.length; i++) {
+      for (var i = 0, len = styleList.length; i < len; i++) {
         if (styleList[i].length > 0) {
           var elems = styleList[i].split(/:+/g);
           (styleMap as any /** TODO #9100 */)[elems[0].trim()] = elems[1].trim();
@@ -452,7 +452,7 @@ export class Parse5DomAdapter extends DomAdapter {
   attributeMap(element: any /** TODO #9100 */): Map<string, string> {
     var res = new Map<string, string>();
     var elAttrs = treeAdapter.getAttrList(element);
-    for (var i = 0; i < elAttrs.length; i++) {
+    for (var i = 0, len = elAttrs.length; i < len; i++) {
       var attrib = elAttrs[i];
       res.set(attrib.name, attrib.value);
     }
@@ -540,7 +540,7 @@ export class Parse5DomAdapter extends DomAdapter {
   /** @internal */
   _buildRules(parsedRules: any /** TODO #9100 */, css?: any /** TODO #9100 */) {
     var rules: any[] /** TODO #9100 */ = [];
-    for (var i = 0; i < parsedRules.length; i++) {
+    for (var i = 0, len = parsedRules.length; i < len; i++) {
       var parsedRule = parsedRules[i];
       var rule: {[key: string]: any} = StringMapWrapper.create();
       StringMapWrapper.set(rule, 'cssText', css);
@@ -557,7 +557,7 @@ export class Parse5DomAdapter extends DomAdapter {
         if (isBlank(parsedRule.declarations)) {
           continue;
         }
-        for (var j = 0; j < parsedRule.declarations.length; j++) {
+        for (var j = 0, ruleLen = parsedRule.declarations.length; j < ruleLen; j++) {
           var declaration = parsedRule.declarations[j];
           StringMapWrapper.set(
               StringMapWrapper.get(rule, 'style'), declaration.property, declaration.value);

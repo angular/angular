@@ -66,7 +66,7 @@ class ShowError {
     var form: ControlGroup = this.formDir.form;
     var control = form.find(this.controlPath);
     if (isPresent(control) && control.touched) {
-      for (var i = 0; i < this.errorTypes.length; ++i) {
+      for (var i = 0, len = this.errorTypes.length; i < len; ++i) {
         if (control.hasError(this.errorTypes[i])) {
           return this._errorMessage(this.errorTypes[i]);
         }

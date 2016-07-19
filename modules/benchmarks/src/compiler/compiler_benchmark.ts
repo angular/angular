@@ -72,7 +72,7 @@ class MultiplyViewResolver extends ViewResolver {
   _fillCache(component: Type) {
     var view = super.resolve(component);
     var multipliedTemplates = ListWrapper.createFixedSize(this._multiplyBy);
-    for (var i = 0; i < this._multiplyBy; ++i) {
+    for (var i = 0, multiplyBy = this._multiplyBy; i < multiplyBy; ++i) {
       multipliedTemplates[i] = view.template;
     }
     this._cache.set(

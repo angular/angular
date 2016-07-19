@@ -26,7 +26,7 @@ class JitEmitterVisitor extends AbstractJsEmitterVisitor {
 
   getArgs(): {[key: string]: any} {
     var result = {};
-    for (var i = 0; i < this._evalArgNames.length; i++) {
+    for (var i = 0, len = this._evalArgNames.length; i < len; i++) {
       (result as any /** TODO #9100 */)[this._evalArgNames[i]] = this._evalArgValues[i];
     }
     return result;

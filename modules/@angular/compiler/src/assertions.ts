@@ -17,7 +17,7 @@ export function assertArrayOfStrings(identifier: string, value: any) {
   if (!isArray(value)) {
     throw new Error(`Expected '${identifier}' to be an array of strings.`);
   }
-  for (var i = 0; i < value.length; i += 1) {
+  for (var i = 0, len = value.length; i < len; i += 1) {
     if (!isString(value[i])) {
       throw new Error(`Expected '${identifier}' to be an array of strings.`);
     }

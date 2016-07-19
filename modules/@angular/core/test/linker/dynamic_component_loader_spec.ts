@@ -203,7 +203,7 @@ export function main() {
 
 function createRootElement(doc: any, name: string): any {
   var nodes = getDOM().querySelectorAll(doc, name);
-  for (var i = 0; i < nodes.length; i++) {
+  for (var i = 0, len = nodes.length; i < len; i++) {
     getDOM().remove(nodes[i]);
   }
   var rootEl = el(`<${name}></${name}>`);

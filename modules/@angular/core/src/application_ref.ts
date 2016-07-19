@@ -445,7 +445,7 @@ export class ApplicationRef_ extends ApplicationRef {
       var asyncInitResults: Promise<any>[] = [];
       var asyncInitDonePromise: Promise<any>;
       if (isPresent(inits)) {
-        for (var i = 0; i < inits.length; i++) {
+        for (var i = 0, len = inits.length; i < len; i++) {
           var initResult = inits[i]();
           if (isPromise(initResult)) {
             asyncInitResults.push(initResult);

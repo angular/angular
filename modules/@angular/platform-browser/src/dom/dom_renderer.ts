@@ -111,7 +111,7 @@ export class DomRenderer implements Renderer {
     if (this.componentProto.encapsulation === ViewEncapsulation.Native) {
       nodesParent = getDOM().createShadowRoot(hostElement);
       this._rootRenderer.sharedStylesHost.addHost(nodesParent);
-      for (var i = 0; i < this._styles.length; i++) {
+      for (var i = 0, len = this._styles.length; i < len; i++) {
         getDOM().appendChild(nodesParent, getDOM().createStyleElement(this._styles[i]));
       }
     } else {
@@ -147,7 +147,7 @@ export class DomRenderer implements Renderer {
   attachViewAfter(node: any, viewRootNodes: any[]) { moveNodesAfterSibling(node, viewRootNodes); }
 
   detachView(viewRootNodes: any[]) {
-    for (var i = 0; i < viewRootNodes.length; i++) {
+    for (var i = 0, len = viewRootNodes.length; i < len; i++) {
       getDOM().remove(viewRootNodes[i]);
     }
   }
@@ -245,11 +245,11 @@ function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TO
   if (nodes.length > 0 && isPresent(parent)) {
     var nextSibling = getDOM().nextSibling(sibling);
     if (isPresent(nextSibling)) {
-      for (var i = 0; i < nodes.length; i++) {
+      for (var i = 0, len = nodes.length; i < len; i++) {
         getDOM().insertBefore(nextSibling, nodes[i]);
       }
     } else {
-      for (var i = 0; i < nodes.length; i++) {
+      for (var i = 0, len = nodes.length; i < len; i++) {
         getDOM().appendChild(parent, nodes[i]);
       }
     }
@@ -257,7 +257,7 @@ function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TO
 }
 
 function appendNodes(parent: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
-  for (var i = 0; i < nodes.length; i++) {
+  for (var i = 0, len = nodes.length; i < len; i++) {
     getDOM().appendChild(parent, nodes[i]);
   }
 }
@@ -286,7 +286,7 @@ function _shimHostAttribute(componentShortId: string): string {
 }
 
 function _flattenStyles(compId: string, styles: Array<any|any[]>, target: string[]): string[] {
-  for (var i = 0; i < styles.length; i++) {
+  for (var i = 0, len = styles.length; i < len; i++) {
     var style = styles[i];
     if (isArray(style)) {
       _flattenStyles(compId, style, target);

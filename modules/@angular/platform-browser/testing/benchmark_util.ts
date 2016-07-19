@@ -22,7 +22,7 @@ export function getStringParameter(name: string) {
   var value: any /** TODO #9100 */;
   var el: any /** TODO #9100 */;
 
-  for (var i = 0; i < els.length; i++) {
+  for (var i = 0, len = els.length; i < len; i++) {
     el = els[i];
     var type = DOM.type(el);
     if ((type != 'radio' && type != 'checkbox') || DOM.getChecked(el)) {

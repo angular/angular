@@ -26,7 +26,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
         this._animationPrefix = '';
       } else {
         var domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
-        for (var i = 0; i < domPrefixes.length; i++) {
+        for (var i = 0, len = domPrefixes.length; i < len; i++) {
           if (isPresent(this.getStyle(element, domPrefixes[i] + 'AnimationName'))) {
             this._animationPrefix = '-' + domPrefixes[i].toLowerCase() + '-';
             break;

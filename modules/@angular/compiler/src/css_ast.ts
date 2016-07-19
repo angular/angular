@@ -239,7 +239,7 @@ export class CssUnknownTokenListAst extends CssRuleAst {
 export function mergeTokens(tokens: CssToken[], separator: string = ''): CssToken {
   var mainToken = tokens[0];
   var str = mainToken.strValue;
-  for (var i = 1; i < tokens.length; i++) {
+  for (var i = 1, len = tokens.length; i < len; i++) {
     str += separator + tokens[i].strValue;
   }
 
