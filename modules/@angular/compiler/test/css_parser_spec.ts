@@ -13,7 +13,7 @@ import {BaseException} from '../src/facade/exceptions';
 import {ParseLocation} from '../src/parse_util';
 
 export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
-  for (var i = 0; i < tokens.length; i++) {
+  for (var i = 0, len = tokens.length; i < len; i++) {
     expect(tokens[i].strValue == valuesArr[i]);
   }
 }

@@ -76,7 +76,7 @@ class StringWrapper {
     regExp.allMatches(s).forEach((match) {
       parts.add(s.substring(lastEnd, match.start));
       lastEnd = match.end;
-      for (var i = 0; i < match.groupCount; i++) {
+      for (var i = 0, len = match.groupCount; i < len; i++) {
         parts.add(match.group(i + 1));
       }
     });
@@ -91,7 +91,7 @@ class StringWrapper {
   static String stripLeft(String s, String charVal) {
     if (isPresent(s) && s.length > 0) {
       var pos = 0;
-      for (var i = 0; i < s.length; i++) {
+      for (var i = 0, len = s.length; i < len; i++) {
         if (s[i] != charVal) break;
         pos++;
       }

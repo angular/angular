@@ -154,7 +154,7 @@ export function mergeResolvedReflectiveProviders(
     providers: ResolvedReflectiveProvider[],
     normalizedProvidersMap: Map<number, ResolvedReflectiveProvider>):
     Map<number, ResolvedReflectiveProvider> {
-  for (var i = 0; i < providers.length; i++) {
+  for (var i = 0, len = providers.length; i < len; i++) {
     var provider = providers[i];
     var existing = normalizedProvidersMap.get(provider.key.id);
     if (isPresent(existing)) {
@@ -246,7 +246,7 @@ function _extractToken(
   var lowerBoundVisibility: any /** TODO #9100 */ = null;
   var upperBoundVisibility: any /** TODO #9100 */ = null;
 
-  for (var i = 0; i < metadata.length; ++i) {
+  for (var i = 0, len = metadata.length; i < len; ++i) {
     var paramMetadata = metadata[i];
 
     if (paramMetadata instanceof Type) {

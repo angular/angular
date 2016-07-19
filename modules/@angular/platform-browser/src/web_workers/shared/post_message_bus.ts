@@ -106,7 +106,7 @@ export class PostMessageBusSource implements MessageBusSource {
 
   private _handleMessages(ev: MessageEvent): void {
     var messages = ev.data;
-    for (var i = 0; i < messages.length; i++) {
+    for (var i = 0, len = messages.length; i < len; i++) {
       this._handleMessage(messages[i]);
     }
   }

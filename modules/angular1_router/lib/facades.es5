@@ -146,7 +146,7 @@ var StringMapWrapper = {
       return false;
     }
     var key;
-    for (var i = 0; i < k1.length; i++) {
+    for (var i = 0, len = k1.length; i < len; i++) {
       key = k1[i];
       if (m1[key] !== m2[key]) {
         return false;
@@ -235,7 +235,7 @@ var ListWrapper = {
     }
     var solution = null;
     var maxValue = -Infinity;
-    for (var index = 0; index < list.length; index++) {
+    for (var index = 0, len = list.length; index < len; index++) {
       var candidate = list[index];
       if (isBlank(candidate)) {
         continue;

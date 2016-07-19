@@ -14,7 +14,7 @@ import {isPresent} from '../src/facade/lang';
 
 function _assertTokens(tokens: CssToken[], valuesArr: string[]): void {
   expect(tokens.length).toEqual(valuesArr.length);
-  for (var i = 0; i < tokens.length; i++) {
+  for (var i = 0, len = tokens.length; i < len; i++) {
     expect(tokens[i].strValue == valuesArr[i]);
   }
 }

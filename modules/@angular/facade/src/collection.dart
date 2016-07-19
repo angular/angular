@@ -118,7 +118,7 @@ class ListWrapper {
       list.lastIndexOf(value, startIndex == null ? list.length : startIndex);
 
   static void forEachWithIndex/*<T>*/(List/*<T>*/ list, fn(/*=T*/ item, int index)) {
-    for (var i = 0; i < list.length; ++i) {
+    for (var i = 0, len = list.length; i < len; ++i) {
       fn(list[i], i);
     }
   }
@@ -138,7 +138,7 @@ class ListWrapper {
 
   static removeAt(List l, int index) => l.removeAt(index);
   static void removeAll/*<T>*/(List/*<T>*/ list, List/*<T>*/ items) {
-    for (var i = 0; i < items.length; ++i) {
+    for (var i = 0, len = items.length; i < len; ++i) {
       list.remove(items[i]);
     }
   }
@@ -155,7 +155,7 @@ class ListWrapper {
 
   static bool equals/*<T>*/(List/*<T>*/ a, List/*<T>*/ b) {
     if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; ++i) {
+    for (var i = 0, len = a.length; i < len; ++i) {
       if (a[i] != b[i]) return false;
     }
     return true;
@@ -212,7 +212,7 @@ class ListWrapper {
     }
     var solution = null;
     var maxValue = double.NEGATIVE_INFINITY;
-    for (var index = 0; index < l.length; index++) {
+    for (var index = 0, len = l.length; index < len; index++) {
       var candidate = l[index];
       if (candidate == null) {
         continue;
@@ -239,7 +239,7 @@ class ListWrapper {
 
 List _flattenArray(List source, List target) {
   if (source != null) {
-    for (var i = 0; i < source.length; i++) {
+    for (var i = 0, len = source.length; i < len; i++) {
       var item = source[i];
       if (item is List) {
         _flattenArray(item, target);

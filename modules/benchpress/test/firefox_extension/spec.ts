@@ -1,6 +1,6 @@
 var assertEventsContainsName = function(events, eventName) {
   var found = false;
-  for (var i = 0; i < events.length; ++i) {
+  for (var i = 0, len = events.length; i < len; ++i) {
     if (events[i].name == eventName) {
       found = true;
       break;

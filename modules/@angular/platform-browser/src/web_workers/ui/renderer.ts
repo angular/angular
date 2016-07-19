@@ -135,7 +135,7 @@ export class MessageBasedRenderer {
 
   private _destroyView(renderer: Renderer, hostElement: any, viewAllNodes: any[]) {
     renderer.destroyView(hostElement, viewAllNodes);
-    for (var i = 0; i < viewAllNodes.length; i++) {
+    for (var i = 0, len = viewAllNodes.length; i < len; i++) {
       this._renderStore.remove(viewAllNodes[i]);
     }
   }

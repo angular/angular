@@ -515,12 +515,12 @@ export class UpgradeAdapter {
       Promise<ComponentFactoryRefMap> {
     var promises: Array<Promise<ComponentFactory<any>>> = [];
     var types = this.upgradedComponents;
-    for (var i = 0; i < types.length; i++) {
+    for (var i = 0, len = types.length; i < len; i++) {
       promises.push(compiler.compileComponentAsync(<any>types[i]));
     }
     return Promise.all(promises).then((componentFactories: Array<ComponentFactory<any>>) => {
       var types = this.upgradedComponents;
-      for (var i = 0; i < componentFactories.length; i++) {
+      for (var i = 0, len = componentFactories.length; i < len; i++) {
         componentFactoryRefMap[getComponentInfo(types[i]).selector] = componentFactories[i];
       }
       return componentFactoryRefMap;

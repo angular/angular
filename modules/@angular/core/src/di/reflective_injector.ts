@@ -119,11 +119,9 @@ export class ReflectiveProtoInjectorDynamicStrategy implements ReflectiveProtoIn
   keyIds: number[];
 
   constructor(protoInj: ReflectiveProtoInjector, public providers: ResolvedReflectiveProvider[]) {
-    var len = providers.length;
-
     this.keyIds = ListWrapper.createFixedSize(len);
 
-    for (var i = 0; i < len; i++) {
+    for (var i = 0, len = providers.length; i < len; i++) {
       this.keyIds[i] = providers[i].key.id;
     }
   }
@@ -299,7 +297,7 @@ export class ReflectiveInjectorDynamicStrategy implements ReflectiveInjectorStra
   getObjByKeyId(keyId: number): any {
     var p = this.protoStrategy;
 
-    for (var i = 0; i < p.keyIds.length; i++) {
+    for (var i = 0, len = p.keyIds.length; i < len; i++) {
       if (p.keyIds[i] === keyId) {
         if (this.objs[i] === UNDEFINED) {
           this.objs[i] = this.injector._new(p.providers[i]);
@@ -675,7 +673,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   private _instantiateProvider(provider: ResolvedReflectiveProvider): any {
     if (provider.multiProvider) {
       var res = ListWrapper.createFixedSize(provider.resolvedFactories.length);
-      for (var i = 0; i < provider.resolvedFactories.length; ++i) {
+      for (var i = 0, len = provider.resolvedFactories.length; i < len; ++i) {
         res[i] = this._instantiate(provider, provider.resolvedFactories[i]);
       }
       return res;
@@ -893,7 +891,7 @@ var INJECTOR_KEY = ReflectiveKey.get(Injector);
 
 function _mapProviders(injector: ReflectiveInjector_, fn: Function): any[] {
   var res: any[] = new Array(injector._proto.numberOfProviders);
-  for (var i = 0; i < injector._proto.numberOfProviders; ++i) {
+  for (var i = 0, len = injector._proto.numberOfProviders; i < len; ++i) {
     res[i] = fn(injector._proto.getProviderAtIndex(i));
   }
   return res;

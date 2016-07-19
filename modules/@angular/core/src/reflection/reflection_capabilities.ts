@@ -114,7 +114,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       result = new Array(paramTypes.length);
     }
 
-    for (var i = 0; i < result.length; i++) {
+    for (var i = 0, len = result.length; i < len; i++) {
       // TS outputs Object for parameters without types, while Traceur omits
       // the annotations. For now we preserve the Traceur behavior to aid
       // migration, but this can be revisited.

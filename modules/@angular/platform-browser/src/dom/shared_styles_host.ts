@@ -47,7 +47,7 @@ export class DomSharedStylesHost extends SharedStylesHost {
   }
   /** @internal */
   _addStylesToHost(styles: string[], host: Node) {
-    for (var i = 0; i < styles.length; i++) {
+    for (var i = 0, len = styles.length; i < len; i++) {
       var style = styles[i];
       getDOM().appendChild(host, getDOM().createStyleElement(style));
     }

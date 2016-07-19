@@ -93,7 +93,7 @@ var stripAnsi = require('strip-ansi');
 function shortenFormatterOutput(formatterOutput: string) {
   var lines = formatterOutput.split('\n');
   var match: string, line: string;
-  for (var i = 0; i < lines.length; i += 1) {
+  for (var i = 0, len = lines.length; i < len; i += 1) {
     line = lines[i];
     if (match = stripAnsi(line).match(ARROW_LINE)) {
       let leadingWhitespace = match[1].length;

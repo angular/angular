@@ -192,7 +192,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var component = directives.find(directive => directive.isComponent);
     var htmlAttrs = _readHtmlAttrs(ast.attrs);
     var attrNameAndValues = _mergeHtmlAndDirectiveAttrs(htmlAttrs, directives);
-    for (var i = 0; i < attrNameAndValues.length; i++) {
+    for (var i = 0, len = attrNameAndValues.length; i < len; i++) {
       var attrName = attrNameAndValues[i][0];
       var attrValue = attrNameAndValues[i][1];
       this.view.createMethod.addStmt(

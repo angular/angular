@@ -127,7 +127,7 @@ export class MockViewResolver extends ViewResolver {
 
 function flattenArray(tree: any[], out: Array<Type|any[]>): void {
   if (!isPresent(tree)) return;
-  for (var i = 0; i < tree.length; i++) {
+  for (var i = 0, len = tree.length; i < len; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {
       flattenArray(item, out);

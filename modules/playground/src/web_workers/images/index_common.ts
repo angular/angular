@@ -21,7 +21,7 @@ export class ImageDemo {
   constructor(private _bitmapService: BitmapService) {}
 
   uploadFiles(files: any /** TODO #9100 */) {
-    for (var i = 0; i < files.length; i++) {
+    for (var i = 0, len = files.length; i < len; i++) {
       var reader = new FileReader();
       reader.addEventListener("load", this.handleReaderLoad(reader));
       reader.readAsArrayBuffer(files[i]);
@@ -40,7 +40,7 @@ export class ImageDemo {
   }
 
   applyFilters() {
-    for (var i = 0; i < this.images.length; i++) {
+    for (var i = 0, len = this.images.length; i < len; i++) {
       this.images[i].filtering = true;
 
       TimerWrapper.setTimeout(this._filter(i), 0);

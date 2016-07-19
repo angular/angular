@@ -98,7 +98,7 @@ const _$9 = 57;
 const _$PERIOD = 46;
 
 function _findDimensionalSuffix(value: string): string {
-  for (var i = 0; i < value.length; i++) {
+  for (var i = 0, len = value.length; i < len; i++) {
     var c = StringWrapper.charCodeAt(value, i);
     if ((c >= _$0 && c <= _$9) || c == _$PERIOD) continue;
     return value.substring(i, value.length);

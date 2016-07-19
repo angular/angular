@@ -119,7 +119,7 @@ function fixDartFolderLayout(sourceTree: BroccoliTree) {
       {pattern: /^./, insertion: 'lib'},
     ];
 
-    for (var i = 0; i < replacements.length; i++) {
+    for (var i = 0, len = replacements.length; i < len; i++) {
       var repl = replacements[i];
       if (relativePath.match(repl.pattern)) {
         var parts = relativePath.split('/');

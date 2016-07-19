@@ -388,7 +388,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   visitAllObjects(
       handler: Function, expressions: any, ctx: EmitterVisitorContext, separator: string,
       newLine: boolean = false): void {
-    for (var i = 0; i < expressions.length; i++) {
+    for (var i = 0, len = expressions.length; i < len; i++) {
       if (i > 0) {
         ctx.print(separator, newLine);
       }

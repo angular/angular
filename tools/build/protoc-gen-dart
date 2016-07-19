@@ -958,7 +958,7 @@ class Context {
   ParsedPath _parse_A(String path_A) => new ParsedPath.parse_A(path_A, style);
 }
 _validateArgList(String method_A, List<String> args) {
-  for (var i = 1; i < args.length; i++) {
+  for (var i = 1, len = args.length; i < len; i++) {
     if (args[i] == null || args[i - 1] != null) continue;
     var numArgs;
     for (numArgs = args.length; numArgs >= 1; numArgs--) {

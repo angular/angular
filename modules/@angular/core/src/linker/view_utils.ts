@@ -53,13 +53,13 @@ export function flattenNestedViewRenderNodes(nodes: any[]): any[] {
 }
 
 function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] {
-  for (var i = 0; i < nodes.length; i++) {
+  for (var i = 0, len = nodes.length; i < len; i++) {
     var node = nodes[i];
     if (node instanceof AppElement) {
       var appEl = <AppElement>node;
       renderNodes.push(appEl.nativeElement);
       if (isPresent(appEl.nestedViews)) {
-        for (var k = 0; k < appEl.nestedViews.length; k++) {
+        for (var k = 0, klen = appEl.nestedViews.length; k < klen; k++) {
           _flattenNestedViewRenderNodes(appEl.nestedViews[k].rootNodesOrAppElements, renderNodes);
         }
       }

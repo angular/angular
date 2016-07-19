@@ -206,16 +206,16 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       this.destinationObj = this.componentScope;
     }
 
-    for (var i = 0; i < inputs.length; i++) {
+    for (var i = 0, len = inputs.length; i < len; i++) {
       (this as any /** TODO #9100 */)[inputs[i]] = null;
     }
-    for (var j = 0; j < outputs.length; j++) {
+    for (var j = 0, len = outputs.length; j < len; j++) {
       var emitter = (this as any /** TODO #9100 */)[outputs[j]] = new EventEmitter();
       this.setComponentProperty(
           outputs[j], ((emitter: any /** TODO #9100 */) => (value: any /** TODO #9100 */) =>
                            emitter.emit(value))(emitter));
     }
-    for (var k = 0; k < propOuts.length; k++) {
+    for (var k = 0, len = propOuts.length; k < len; k++) {
       (this as any /** TODO #9100 */)[propOuts[k]] = new EventEmitter();
       this.checkLastValues.push(INITIAL_VALUE);
     }
@@ -268,7 +268,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     var destinationObj = this.destinationObj;
     var lastValues = this.checkLastValues;
     var checkProperties = this.checkProperties;
-    for (var i = 0; i < checkProperties.length; i++) {
+    for (var i = 0, len = checkProperties.length; i < len; i++) {
       var value = destinationObj[checkProperties[i]];
       var last = lastValues[i];
       if (value !== last) {
@@ -326,7 +326,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       return dep;
     } else if (require instanceof Array) {
       var deps: any[] /** TODO #9100 */ = [];
-      for (var i = 0; i < require.length; i++) {
+      for (var i = 0, len = require.length; i < len; i++) {
         deps.push(this.resolveRequired($element, require[i]));
       }
       return deps;

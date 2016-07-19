@@ -44,7 +44,7 @@ export class EventManager {
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
     var plugins = this._plugins;
-    for (var i = 0; i < plugins.length; i++) {
+    for (var i = 0, len = plugins.length; i < len; i++) {
       var plugin = plugins[i];
       if (plugin.supports(eventName)) {
         return plugin;

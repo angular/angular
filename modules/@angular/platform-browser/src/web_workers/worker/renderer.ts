@@ -79,7 +79,7 @@ export class WebWorkerRootRenderer implements RootRenderer {
   allocateId(): number { return this._renderStore.allocateId(); }
 
   destroyNodes(nodes: any[]) {
-    for (var i = 0; i < nodes.length; i++) {
+    for (var i = 0, len = nodes.length; i < len; i++) {
       this._renderStore.remove(nodes[i]);
     }
   }
@@ -263,7 +263,7 @@ export class NamedEventEmitter {
 
   dispatchEvent(eventName: string, event: any) {
     var listeners = this._getListeners(eventName);
-    for (var i = 0; i < listeners.length; i++) {
+    for (var i = 0, len = listeners.length; i < len; i++) {
       listeners[i](event);
     }
   }

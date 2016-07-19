@@ -30,7 +30,7 @@ export class BitmapService {
 
   applySepia(imageData: ImageData): ImageData {
     var buffer = imageData.data;
-    for (var i = 0; i < buffer.length; i += 4) {
+    for (var i = 0, len = buffer.length; i < len; i += 4) {
       var r = buffer[i];
       var g = buffer[i + 1];
       var b = buffer[i + 2];

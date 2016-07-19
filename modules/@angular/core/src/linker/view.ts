@@ -177,11 +177,11 @@ export abstract class AppView<T> {
       return;
     }
     var children = this.contentChildren;
-    for (var i = 0; i < children.length; i++) {
+    for (var i = 0, len = children.length; i < len; i++) {
       children[i]._destroyRecurse();
     }
     children = this.viewChildren;
-    for (var i = 0; i < children.length; i++) {
+    for (var i = 0, len = children.length; i < len; i++) {
       children[i]._destroyRecurse();
     }
     this.destroyLocal();
@@ -192,10 +192,10 @@ export abstract class AppView<T> {
   destroyLocal() {
     var hostElement =
         this.type === ViewType.COMPONENT ? this.declarationAppElement.nativeElement : null;
-    for (var i = 0; i < this.disposables.length; i++) {
+    for (var i = 0, len = this.disposables.length; i < len; i++) {
       this.disposables[i]();
     }
-    for (var i = 0; i < this.subscriptions.length; i++) {
+    for (var i = 0, len = this.subscriptions.length; i < len; i++) {
       ObservableWrapper.dispose(this.subscriptions[i]);
     }
     this.destroyInternal();
@@ -273,7 +273,7 @@ export abstract class AppView<T> {
   }
 
   detectContentChildrenChanges(throwOnChange: boolean) {
-    for (var i = 0; i < this.contentChildren.length; ++i) {
+    for (var i = 0, len = this.contentChildren.length; i < len; ++i) {
       var child = this.contentChildren[i];
       if (child.cdMode === ChangeDetectorStatus.Detached) continue;
       child.detectChanges(throwOnChange);
@@ -281,7 +281,7 @@ export abstract class AppView<T> {
   }
 
   detectViewChildrenChanges(throwOnChange: boolean) {
-    for (var i = 0; i < this.viewChildren.length; ++i) {
+    for (var i = 0, len = this.viewChildren.length; i < len; ++i) {
       var child = this.viewChildren[i];
       if (child.cdMode === ChangeDetectorStatus.Detached) continue;
       child.detectChanges(throwOnChange);

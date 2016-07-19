@@ -23,7 +23,7 @@ export class ConsoleReporter extends Reporter {
 
   static _lpad(value, columnWidth, fill = ' ') {
     var result = '';
-    for (var i = 0; i < columnWidth - value.length; i++) {
+    for (var i = 0, expr = columnWidth - value.length; i < expr; i++) {
       result += fill;
     }
     return result + value;

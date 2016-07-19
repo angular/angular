@@ -36,7 +36,7 @@ export class RegressionSlopeValidator extends Validator {
                                            completeSample.length);
       var xValues = [];
       var yValues = [];
-      for (var i = 0; i < latestSample.length; i++) {
+      for (var i = 0, len = latestSample.length; i < len; i++) {
         // For now, we only use the array index as x value.
         // TODO(tbosch): think about whether we should use time here instead
         xValues.push(i);

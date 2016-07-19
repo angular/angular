@@ -34,7 +34,7 @@ export class RadioControlRegistry {
 
   remove(accessor: RadioControlValueAccessor) {
     var indexToRemove = -1;
-    for (var i = 0; i < this._accessors.length; ++i) {
+    for (var i = 0, len = this._accessors.length; i < len; ++i) {
       if (this._accessors[i][1] === accessor) {
         indexToRemove = i;
       }

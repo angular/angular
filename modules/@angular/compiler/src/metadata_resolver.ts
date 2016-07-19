@@ -302,7 +302,7 @@ export class CompileMetadataResolver {
   getViewDirectivesMetadata(component: Type): cpl.CompileDirectiveMetadata[] {
     var view = this._viewResolver.resolve(component);
     var directives = flattenDirectives(view, this._config.deprecatedPlatformDirectives);
-    for (var i = 0; i < directives.length; i++) {
+    for (var i = 0, len = directives.length; i < len; i++) {
       if (!isValidType(directives[i])) {
         throw new BaseException(
             `Unexpected directive value '${stringify(directives[i])}' on the View of component '${stringify(component)}'`);
@@ -314,7 +314,7 @@ export class CompileMetadataResolver {
   getViewPipesMetadata(component: Type): cpl.CompilePipeMetadata[] {
     var view = this._viewResolver.resolve(component);
     var pipes = flattenPipes(view, this._config.deprecatedPlatformPipes);
-    for (var i = 0; i < pipes.length; i++) {
+    for (var i = 0, len = pipes.length; i < len; i++) {
       if (!isValidType(pipes[i])) {
         throw new BaseException(
             `Unexpected piped value '${stringify(pipes[i])}' on the View of component '${stringify(component)}'`);
@@ -546,7 +546,7 @@ function flattenPipes(view: ViewMetadata, platformPipes: any[]): Type[] {
 }
 
 function flattenArray(tree: any[], out: Array<Type> = []): Array<Type> {
-  for (var i = 0; i < tree.length; i++) {
+  for (var i = 0, len = tree.length; i < len; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {
       flattenArray(item, out);
@@ -563,7 +563,7 @@ function verifyNonBlankProviders(
   var errMsg: string;
 
   flattenArray(providersTree, flat);
-  for (var i = 0; i < flat.length; i++) {
+  for (var i = 0, len = flat.length; i < len; i++) {
     if (isBlank(flat[i])) {
       errMsg = flat.map(provider => isBlank(provider) ? '?' : stringify(provider)).join(', ');
       throw new BaseException(

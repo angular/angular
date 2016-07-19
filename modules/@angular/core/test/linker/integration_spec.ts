@@ -2626,7 +2626,7 @@ class SomeImperativeViewport {
     if (value) {
       this.view = this.vc.createEmbeddedView(this.templateRef);
       var nodes = this.view.rootNodes;
-      for (var i = 0; i < nodes.length; i++) {
+      for (var i = 0, len = nodes.length; i < len; i++) {
         getDOM().appendChild(this.anchor, nodes[i]);
       }
     }

@@ -50,7 +50,7 @@ export function getComponentInfo(type: Type): ComponentInfo {
 export function parseFields(names: string[]): AttrProp[] {
   var attrProps: AttrProp[] = [];
   if (names) {
-    for (var i = 0; i < names.length; i++) {
+    for (var i = 0, len = names.length; i < len; i++) {
       var parts = names[i].split(':');
       var prop = parts[0].trim();
       var attr = (parts[1] || parts[0]).trim();

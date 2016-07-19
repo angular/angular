@@ -118,7 +118,7 @@ export class CompileElement extends CompileNode {
     this._compViewExpr = compViewExpr;
     this.contentNodesByNgContentIndex =
         ListWrapper.createFixedSize(this.component.template.ngContentSelectors.length);
-    for (var i = 0; i < this.contentNodesByNgContentIndex.length; i++) {
+    for (var i = 0, len = this.contentNodesByNgContentIndex.length; i < len; i++) {
       this.contentNodesByNgContentIndex[i] = [];
     }
   }
@@ -178,7 +178,7 @@ export class CompileElement extends CompileNode {
 
     this.directiveInstances =
         this._directives.map((directive) => this._instances.get(identifierToken(directive.type)));
-    for (var i = 0; i < this.directiveInstances.length; i++) {
+    for (var i = 0, len = this.directiveInstances.length; i < len; i++) {
       var directiveInstance = this.directiveInstances[i];
       var directive = this._directives[i];
       directive.queries.forEach((queryMeta) => { this._addQuery(queryMeta, directiveInstance); });

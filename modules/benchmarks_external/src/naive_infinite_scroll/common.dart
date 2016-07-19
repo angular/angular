@@ -92,7 +92,7 @@ class RawEntity extends Object
 
   _resolve(List<String> pieces, start) {
     var cur = start;
-    for (var i = 0; i < pieces.length; i++) {
+    for (var i = 0, len = pieces.length; i < len; i++) {
       cur = cur[pieces[i]];
       if (cur == null) {
         return null;

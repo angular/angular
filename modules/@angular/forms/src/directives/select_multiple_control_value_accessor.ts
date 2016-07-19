@@ -79,7 +79,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
       let selected: Array<any> = [];
       if (_.hasOwnProperty('selectedOptions')) {
         let options: HTMLCollection = _.selectedOptions;
-        for (var i = 0; i < options.length; i++) {
+        for (var i = 0, len = options.length; i < len; i++) {
           let opt: any = options.item(i);
           let val: any = this._getOptionValue(opt.value);
           selected.push(val);
@@ -88,7 +88,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
       // Degrade on IE
       else {
         let options: HTMLCollection = <HTMLCollection>_.options;
-        for (var i = 0; i < options.length; i++) {
+        for (var i = 0, len = options.length; i < len; i++) {
           let opt: HTMLOption = options.item(i);
           if (opt.selected) {
             let val: any = this._getOptionValue(opt.value);

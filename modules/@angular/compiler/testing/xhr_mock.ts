@@ -72,7 +72,7 @@ export class MockXHR extends XHR {
     if (this._expectations.length === 0) return;
 
     var urls: any[] /** TODO #9100 */ = [];
-    for (var i = 0; i < this._expectations.length; i++) {
+    for (var i = 0, len = this._expectations.length; i < len; i++) {
       var expectation = this._expectations[i];
       urls.push(expectation.url);
     }

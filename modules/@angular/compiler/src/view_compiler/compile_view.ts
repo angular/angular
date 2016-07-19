@@ -155,7 +155,7 @@ export class CompileView implements NameResolver {
     var proxyExpr = o.THIS_EXPR.prop(`_arr_${this.literalArrayCount++}`);
     var proxyParams: o.FnParam[] = [];
     var proxyReturnEntries: o.Expression[] = [];
-    for (var i = 0; i < values.length; i++) {
+    for (var i = 0, len = values.length; i < len; i++) {
       var paramName = `p${i}`;
       proxyParams.push(new o.FnParam(paramName));
       proxyReturnEntries.push(o.variable(paramName));
@@ -176,7 +176,7 @@ export class CompileView implements NameResolver {
     var proxyParams: o.FnParam[] = [];
     var proxyReturnEntries: Array<Array<string|o.Expression>> = [];
     var values: o.Expression[] = [];
-    for (var i = 0; i < entries.length; i++) {
+    for (var i = 0, len = entries.length; i < len; i++) {
       var paramName = `p${i}`;
       proxyParams.push(new o.FnParam(paramName));
       proxyReturnEntries.push([entries[i][0], o.variable(paramName)]);

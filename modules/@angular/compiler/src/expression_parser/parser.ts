@@ -108,7 +108,7 @@ export class Parser {
 
     let expressions: AST[] = [];
 
-    for (let i = 0; i < split.expressions.length; ++i) {
+    for (let i = 0, len = split.expressions.length; i < len; ++i) {
       var tokens = this._lexer.tokenize(this._stripComments(split.expressions[i]));
       var ast = new _ParseAST(input, location, tokens, false, this.errors).parseChain();
       expressions.push(ast);
@@ -131,7 +131,7 @@ export class Parser {
     var strings: string[] = [];
     var expressions: string[] = [];
 
-    for (var i = 0; i < parts.length; i++) {
+    for (var i = 0, len = parts.length; i < len; i++) {
       var part: string = parts[i];
       if (i % 2 === 0) {
         // fixed string
@@ -161,7 +161,7 @@ export class Parser {
 
   private _commentStart(input: string): number {
     var outerQuote: number = null;
-    for (var i = 0; i < input.length - 1; i++) {
+    for (var i = 0, len = input.length - 1; i < len; i++) {
       let char = StringWrapper.charCodeAt(input, i);
       let nextChar = StringWrapper.charCodeAt(input, i + 1);
 
@@ -782,7 +782,7 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitAll(asts: any[]): any[] {
     var res = ListWrapper.createFixedSize(asts.length);
-    for (var i = 0; i < asts.length; ++i) {
+    for (var i = 0, len = asts.length; i < len; ++i) {
       res[i] = asts[i].visit(this);
     }
     return res;

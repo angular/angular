@@ -166,7 +166,7 @@ export class _RuntimeCompilerFactory extends CompilerFactory {
 export const RUNTIME_COMPILER_FACTORY = new _RuntimeCompilerFactory();
 
 function _firstDefined<T>(...args: T[]): T {
-  for (var i = 0; i < args.length; i++) {
+  for (var i = 0, len = args.length; i < len; i++) {
     if (args[i] !== undefined) {
       return args[i];
     }

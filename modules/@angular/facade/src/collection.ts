@@ -22,7 +22,7 @@ var createMapFromPairs: {(pairs: any[]): Map<any, any>} = (function() {
   }
   return function createMapAndPopulateFromPairs(pairs: any[]): Map<any, any> {
     var map = new Map();
-    for (var i = 0; i < pairs.length; i++) {
+    for (var i = 0, l = pairs.length; i < l; i++) {
       var pair = pairs[i];
       map.set(pair[0], pair[1]);
     }
@@ -155,7 +155,7 @@ export class StringMapWrapper {
       return false;
     }
     var key: any /** TODO #???? */;
-    for (var i = 0; i < k1.length; i++) {
+    for (var i = 0, len = k1.length; i < len; i++) {
       key = k1[i];
       if (m1[key] !== m2[key]) {
         return false;
@@ -178,7 +178,7 @@ export class ListWrapper {
   static createGrowableSize(size: number): any[] { return new Array(size); }
   static clone<T>(array: T[]): T[] { return array.slice(0); }
   static forEachWithIndex<T>(array: T[], fn: (t: T, n: number) => void) {
-    for (var i = 0; i < array.length; i++) {
+    for (var i = 0, len = array.length; i < len; i++) {
       fn(array[i], i);
     }
   }
@@ -206,7 +206,7 @@ export class ListWrapper {
     return res;
   }
   static removeAll<T>(list: T[], items: T[]) {
-    for (var i = 0; i < items.length; ++i) {
+    for (var i = 0, len = items.length; i < len; ++i) {
       var index = list.indexOf(items[i]);
       list.splice(index, 1);
     }
@@ -226,7 +226,7 @@ export class ListWrapper {
   }
   static equals(a: any[], b: any[]): boolean {
     if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; ++i) {
+    for (var i = 0, len = a.length; i < len; ++i) {
       if (a[i] !== b[i]) return false;
     }
     return true;
@@ -251,7 +251,7 @@ export class ListWrapper {
     }
     var solution: any /** TODO #???? */ = null;
     var maxValue = -Infinity;
-    for (var index = 0; index < list.length; index++) {
+    for (var index = 0, len = list.length; index < len; index++) {
       var candidate = list[index];
       if (isBlank(candidate)) {
         continue;
@@ -272,7 +272,7 @@ export class ListWrapper {
   }
 
   static addAll<T>(list: Array<T>, source: Array<T>): void {
-    for (var i = 0; i < source.length; i++) {
+    for (var i = 0, len = source.length; i < len; i++) {
       list.push(source[i]);
     }
   }
@@ -280,7 +280,7 @@ export class ListWrapper {
 
 function _flattenArray(source: any[], target: any[]): any[] {
   if (isPresent(source)) {
-    for (var i = 0; i < source.length; i++) {
+    for (var i = 0, len = source.length; i < len; i++) {
       var item = source[i];
       if (isArray(item)) {
         _flattenArray(item, target);
@@ -315,7 +315,7 @@ export function areIterablesEqual(a: any, b: any, comparator: Function): boolean
 
 export function iterateListLike(obj: any, fn: Function) {
   if (isArray(obj)) {
-    for (var i = 0; i < obj.length; i++) {
+    for (var i = 0, len = obj.length; i < len; i++) {
       fn(obj[i]);
     }
   } else {
@@ -337,7 +337,7 @@ var createSetFromList: {(lst: any[]): Set<any>} = (function() {
     return function createSetAndPopulateFromList(lst: any[]): Set<any> {
       var res = new Set(lst);
       if (res.size !== lst.length) {
-        for (var i = 0; i < lst.length; i++) {
+        for (var i = 0, len = lst.length; i < len; i++) {
           res.add(lst[i]);
         }
       }

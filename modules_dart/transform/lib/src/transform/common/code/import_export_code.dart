@@ -55,7 +55,7 @@ void _updateIfBootstrap(NamespaceDirective node, dynamic model) {
     model.uri = BOOTSTRAP_STATIC_URI;
     [model.showCombinators, model.hideCombinators]
         .forEach((List<String> cList) {
-      for (var i = 0; i < cList.length; ++i) {
+      for (var i = 0, len = cList.length; i < len; ++i) {
         if (cList[i] == BOOTSTRAP_NAME) {
           cList[i] = BOOTSTRAP_STATIC_NAME;
         }
@@ -111,7 +111,7 @@ abstract class ExportWriterMixin {
 void _writeCombinators(StringBuffer buffer, dynamic model) {
   if (model.showCombinators != null && model.showCombinators.isNotEmpty) {
     buffer.write(' show ');
-    for (var i = 0; i < model.showCombinators.length; ++i) {
+    for (var i = 0, len = model.showCombinators.length; i < len; ++i) {
       if (i != 0) {
         buffer.write(', ');
       }
@@ -120,7 +120,7 @@ void _writeCombinators(StringBuffer buffer, dynamic model) {
   }
   if (model.hideCombinators != null && model.hideCombinators.isNotEmpty) {
     buffer.write(' hide ');
-    for (var i = 0; i < model.hideCombinators.length; ++i) {
+    for (var i = 0, len = model.hideCombinators.length; i < len; ++i) {
       if (i != 0) {
         buffer.write(', ');
       }

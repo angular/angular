@@ -291,7 +291,7 @@ export class ShadowCss {
     return StringWrapper.replaceAllMapped(cssText, regExp, function(m: any /** TODO #9100 */) {
       if (isPresent(m[2])) {
         var parts = m[2].split(','), r: any[] /** TODO #9100 */ = [];
-        for (var i = 0; i < parts.length; i++) {
+        for (var i = 0, len = parts.length; i < len; i++) {
           var p = parts[i];
           if (isBlank(p)) break;
           p = p.trim();
@@ -321,7 +321,7 @@ export class ShadowCss {
    * by replacing with space.
   */
   private _convertShadowDOMSelectors(cssText: string): string {
-    for (var i = 0; i < _shadowDOMSelectorsRe.length; i++) {
+    for (var i = 0, len = _shadowDOMSelectorsRe.length; i < len; i++) {
       cssText = StringWrapper.replaceAll(cssText, _shadowDOMSelectorsRe[i], ' ');
     }
     return cssText;
@@ -345,7 +345,7 @@ export class ShadowCss {
   private _scopeSelector(
       selector: string, scopeSelector: string, hostSelector: string, strict: boolean): string {
     var r: any[] /** TODO #9100 */ = [], parts = selector.split(',');
-    for (var i = 0; i < parts.length; i++) {
+    for (var i = 0, len = parts.length; i < len; i++) {
       var p = parts[i].trim();
       var deepParts = StringWrapper.split(p, _shadowDeepSelectors);
       var shallowPart = deepParts[0];
@@ -398,7 +398,7 @@ export class ShadowCss {
     scopeSelector =
         StringWrapper.replaceAllMapped(scopeSelector, isRe, (m: any /** TODO #9100 */) => m[1]);
     var splits = [' ', '>', '+', '~'], scoped = selector, attrName = '[' + scopeSelector + ']';
-    for (var i = 0; i < splits.length; i++) {
+    for (var i = 0, len = splits.length; i < len; i++) {
       var sep = splits[i];
       var parts = scoped.split(sep);
       scoped = parts
@@ -499,7 +499,7 @@ function escapeBlocks(input:string):StringWithEscapedBlocks {
   var escapedBlocks: any[] /** TODO #9100 */ = [];
   var bracketCount = 0;
   var currentBlockParts: any[] /** TODO #9100 */ = [];
-  for (var partIndex = 0; partIndex<inputParts.length; partIndex++) {
+  for (var partIndex = 0, len = inputParts.length; partIndex < len; partIndex++) {
     var part = inputParts[partIndex];
     if (part == CLOSE_CURLY) {
       bracketCount--;

@@ -65,7 +65,7 @@ function addTarget(e: Event, serializedEvent: {[key: string]: any}): {[key: stri
 
 function serializeEvent(e: any, properties: string[]): {[key: string]: any} {
   var serialized = {};
-  for (var i = 0; i < properties.length; i++) {
+  for (var i = 0, len = properties.length; i < len; i++) {
     var prop = properties[i];
     (serialized as any /** TODO #9100 */)[prop] = e[prop];
   }
