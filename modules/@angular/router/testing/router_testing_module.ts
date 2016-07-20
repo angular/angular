@@ -77,5 +77,5 @@ export class SpyAppModuleFactoryLoader implements AppModuleFactoryLoader {
     },
   ]
 })
-export class RouterTestModule {
+export class RouterTestingModule {
 }

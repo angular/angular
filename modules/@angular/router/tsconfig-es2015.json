@@ -21,6 +21,7 @@
     "target": "es6"
   },
   "files": [
-    "index.ts"
+    "index.ts",
+    "testing.ts"
   ]
 }

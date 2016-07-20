@@ -21,7 +21,8 @@
     "target": "es5"
   },
   "files": [
-    "index.ts"
+    "index.ts",
+    "testing.ts"
   ]
 }
 

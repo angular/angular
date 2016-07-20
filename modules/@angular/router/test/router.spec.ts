@@ -9,12 +9,12 @@ import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterStateSnapshot, RoutesRecognized, provideRoutes} from '../index';
-import {RouterTestModule, SpyAppModuleFactoryLoader} from '../testing';
+import {RouterTestingModule, SpyAppModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
   beforeEach(() => {
     configureModule({
-      modules: [RouterTestModule],
+      modules: [RouterTestingModule],
       providers: [provideRoutes(
           [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])]
     });

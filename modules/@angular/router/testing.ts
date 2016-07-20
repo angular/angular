@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './testing/router_test_module';
+export * from './testing/router_testing_module';

@@ -22,6 +22,7 @@
   },
   "files": [
     "index.ts",
+    "testing.ts",
     "src/router.ts",
     "src/apply_redirects.ts",
     "src/recognize.ts",
