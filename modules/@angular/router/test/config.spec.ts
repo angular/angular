@@ -51,7 +51,7 @@ describe('config', () => {
     it('should throw when none of component and children or direct are missing', () => {
       expect(() => { validateConfig([{path: 'a'}]); })
           .toThrowError(
-              `Invalid configuration of route 'a': component, redirectTo, children, loadChildren must be provided`);
+              `Invalid configuration of route 'a': one of the following must be provided (component or redirectTo or children or loadChildren)`);
     });
 
     it('should throw when path starts with a slash', () => {

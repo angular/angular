@@ -525,7 +525,7 @@ function validateNode(route: Route): void {
   if (route.redirectTo === undefined && !route.component && !route.children &&
       !route.loadChildren) {
     throw new Error(
-        `Invalid configuration of route '${route.path}': component, redirectTo, children, loadChildren must be provided`);
+        `Invalid configuration of route '${route.path}': one of the following must be provided (component or redirectTo or children or loadChildren)`);
   }
   if (route.path === undefined) {
     throw new Error(`Invalid route configuration: routes must have path specified`);
