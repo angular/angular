@@ -11,6 +11,16 @@ import {isBlank} from '../src/facade/lang';
 
 import {isListLikeIterable, iterateListLike, Map, MapWrapper, StringMapWrapper, ListWrapper,} from '../src/facade/collection';
 
+// "HTTP character sets are identified by case-insensitive tokens"
+// Spec at https://tools.ietf.org/html/rfc2616
+// This implementation is same as NodeJS.
+// see https://nodejs.org/dist/latest-v6.x/docs/api/http.html#http_message_headers
+export class HeadersMap extends Map<string, string[]> {
+  set(key: string, value: string[]):HeadersMap {
+    super.set(key.toLowerCase(), value);
+    return this;
+  }
+}
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
  * specified in the [Fetch Spec](https://fetch.spec.whatwg.org/#headers-class).
@@ -41,14 +51,14 @@ import {isListLikeIterable, iterateListLike, Map, MapWrapper, StringMapWrapper, 
  */
 export class Headers {
   /** @internal */
-  _headersMap: Map<string, string[]>;
+  _headersMap: HeadersMap;
   constructor(headers?: Headers|{[key: string]: any}) {
     if (headers instanceof Headers) {
       this._headersMap = (<Headers>headers)._headersMap;
       return;
     }
 
-    this._headersMap = new Map<string, string[]>();
+    this._headersMap = new HeadersMap();
 
     if (isBlank(headers)) {
       return;
