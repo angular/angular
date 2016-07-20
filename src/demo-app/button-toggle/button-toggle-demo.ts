@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
-import {FORM_DIRECTIVES, NgFor} from '@angular/common';
+import {NgFor} from '@angular/common';
+import {FORM_DIRECTIVES} from '@angular/forms';
 import {MD_BUTTON_TOGGLE_DIRECTIVES} from '@angular2-material/button-toggle/button-toggle';
 import {
   MdUniqueSelectionDispatcher
