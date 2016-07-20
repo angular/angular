@@ -8,7 +8,7 @@
 
 import {inject, ddescribe, describe, it, iit, expect, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestInjector, TestComponentBuilder, configureModule} from '@angular/core/testing';
+import {TestBed, TestComponentBuilder, configureModule} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {provide, Injector, ViewMetadata, Component, Injectable, ComponentRef, ReflectiveInjector, getPlatform} from '@angular/core';
 import {NgIf} from '@angular/common';
@@ -67,7 +67,7 @@ export function main() {
 
         beforeEach(() => {
           uiRenderStore = new RenderStore();
-          var testUiInjector = new TestInjector();
+          var testUiInjector = new TestBed();
           testUiInjector.platform = browserDynamicTestPlatform();
           testUiInjector.appModule = BrowserTestModule;
           testUiInjector.configureModule({
@@ -77,9 +77,9 @@ export function main() {
               {provide: RootRenderer, useExisting: DomRootRenderer}
             ]
           });
-          uiInjector = testUiInjector.createInjectorSync();
-          var uiSerializer = uiInjector.get(Serializer);
-          var domRootRenderer = uiInjector.get(DomRootRenderer);
+          testUiInjector.initTestAppModule();
+          var uiSerializer = testUiInjector.get(Serializer);
+          var domRootRenderer = testUiInjector.get(DomRootRenderer);
           workerRenderStore = new RenderStore();
 
           configureModule({

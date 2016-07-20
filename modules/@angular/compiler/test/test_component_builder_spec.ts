@@ -7,7 +7,7 @@
  */
 
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from '@angular/core/testing';
+import {TestComponentBuilder, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, withProviders} from '@angular/core/testing';
 import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {Injectable, Component, Input, ViewMetadata} from '@angular/core';
 import {NgIf} from '@angular/common';
@@ -15,7 +15,6 @@ import {TimerWrapper} from '../src/facade/async';
 import {IS_DART} from '../src/facade/lang';
 import {PromiseWrapper} from '../src/facade/promise';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
-import {withProviders} from '@angular/core/testing/test_injector';
 
 @Component(
     {selector: 'child-comp', template: `<span>Original {{childBinding}}</span>`, directives: []})

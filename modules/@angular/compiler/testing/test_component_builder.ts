@@ -7,11 +7,12 @@
  */
 
 import {AnimationEntryMetadata, Compiler, ComponentFactory, Inject, Injectable, Injector, NgZone, ViewMetadata} from '@angular/core';
-import {ComponentFixture, ComponentFixtureNoNgZone, TestComponentBuilder, TestInjector} from '@angular/core/testing';
+import {ComponentFixture, ComponentFixtureNoNgZone, TestBed, TestComponentBuilder} from '@angular/core/testing';
 
 import {DirectiveResolver, ViewResolver} from '../index';
 import {MapWrapper} from '../src/facade/collection';
 import {ConcreteType, IS_DART, Type, isPresent} from '../src/facade/lang';
+
 
 /**
  * A TestComponentBuilder that allows overriding based on the compiler.
@@ -31,7 +32,7 @@ export class OverridingTestComponentBuilder extends TestComponentBuilder {
   /** @internal */
   _viewOverrides = new Map<Type, ViewMetadata>();
 
-  constructor(@Inject(TestInjector) injector: Injector) { super(injector); }
+  constructor(@Inject(TestBed) injector: Injector) { super(injector); }
 
   /** @internal */
   _clone(): OverridingTestComponentBuilder {

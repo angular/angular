@@ -11,11 +11,11 @@ import {StringMapWrapper} from '../src/facade/collection';
 import {Math, global, isFunction, isPromise} from '../src/facade/lang';
 
 import {AsyncTestCompleter} from './async_test_completer';
-import {getTestInjector, inject} from './test_injector';
+import {getTestBed, inject} from './test_bed';
 
 export {AsyncTestCompleter} from './async_test_completer';
 export {MockAnimationPlayer} from './mock_animation_player';
-export {inject} from './test_injector';
+export {inject} from './test_bed';
 export * from './logger';
 export * from './ng_zone_mock';
 export * from './mock_application_ref';
@@ -40,7 +40,7 @@ var inIt = false;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
 var globalTimeOut = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
-var testInjector = getTestInjector();
+var testBed = getTestBed();
 
 /**
  * Mechanism to run `beforeEach()` functions of Angular tests.
@@ -61,7 +61,7 @@ class BeforeEachRunner {
 }
 
 // Reset the test providers before each test
-jsmBeforeEach(() => { testInjector.reset(); });
+jsmBeforeEach(() => { testBed.reset(); });
 
 function _describe(jsmFn: any /** TODO #9100 */, ...args: any[] /** TODO #9100 */) {
   var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
@@ -110,7 +110,7 @@ export function beforeEachProviders(fn: any /** TODO #9100 */): void {
   jsmBeforeEach(() => {
     var providers = fn();
     if (!providers) return;
-    testInjector.configureModule({providers: providers});
+    testBed.configureModule({providers: providers});
   });
 }
 
@@ -138,7 +138,7 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
         return new AsyncTestCompleter();
       }
     };
-    testInjector.configureModule({providers: [completerProvider]});
+    testBed.configureModule({providers: [completerProvider]});
     runner.run();
 
     inIt = true;
