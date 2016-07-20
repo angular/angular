@@ -68,23 +68,23 @@ export class Headers {
         .split('\n')
         .map(val => val.split(':'))
         .map(([key, ...parts]) => ([key.trim(), parts.join(':').trim()]))
-        .reduce((headers, [key, value]) => !headers.set(key, value) && headers, new Headers());
+        .reduce((headers, [key, value]) => !headers.set(normalizeHeaderName(key), value) && headers, new Headers());
   }
 
   /**
    * Appends a header to existing list of header values for a given header name.
    */
   append(name: string, value: string): void {
-    var mapName = this._headersMap.get(name);
+    var mapName = this._headersMap.get(normalizeHeaderName(name));
     var list = isListLikeIterable(mapName) ? mapName : [];
     list.push(value);
-    this._headersMap.set(name, list);
+    this._headersMap.set(normalizeHeaderName(name), list);
   }
 
   /**
    * Deletes all header values for the given name.
    */
-  delete (name: string): void { this._headersMap.delete(name); }
+  delete (name: string): void { this._headersMap.delete(normalizeHeaderName(name)); }
 
   forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void {
     this._headersMap.forEach(fn);
@@ -93,12 +93,12 @@ export class Headers {
   /**
    * Returns first header that matches given name.
    */
-  get(header: string): string { return ListWrapper.first(this._headersMap.get(header)); }
+  get(header: string): string { return ListWrapper.first(this._headersMap.get(normalizeHeaderName(header))); }
 
   /**
    * Check for existence of header by given name.
    */
-  has(header: string): boolean { return this._headersMap.has(header); }
+  has(header: string): boolean { return this._headersMap.has(normalizeHeaderName(header)); }
 
   /**
    * Provides names of set headers
@@ -118,7 +118,7 @@ export class Headers {
       list.push(<string>value);
     }
 
-    this._headersMap.set(header, list);
+    this._headersMap.set(normalizeHeaderName(header), list);
   }
 
   /**
@@ -146,7 +146,7 @@ export class Headers {
    * Returns list of header values for a given name.
    */
   getAll(header: string): string[] {
-    var headers = this._headersMap.get(header);
+    var headers = this._headersMap.get(normalizeHeaderName(header));
     return isListLikeIterable(headers) ? headers : [];
   }
 
@@ -154,4 +154,12 @@ export class Headers {
    * This method is not implemented.
    */
   entries() { throw new BaseException('"entries" method is not implemented on Headers class'); }
+}
+
+// "HTTP character sets are identified by case-insensitive tokens"
+// Spec at https://tools.ietf.org/html/rfc2616
+// This implementation is same as NodeJS.
+// see https://nodejs.org/dist/latest-v6.x/docs/api/http.html#http_message_headers
+function normalizeHeaderName(headerName: string): string {
+  return headerName.toLowerCase();
 }
