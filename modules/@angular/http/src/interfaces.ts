@@ -67,8 +67,7 @@ export interface RequestArgs extends RequestOptionsArgs { url: string; }
  * @experimental
  */
 export type ResponseOptionsArgs = {
-  // TODO: Support Blob, JSON
-  body?: string | Object | FormData | ArrayBuffer; status?: number; statusText?: string;
+  body?: string | Object | FormData | ArrayBuffer | Blob; status?: number; statusText?: string;
   headers?: Headers;
   type?: ResponseType;
   url?: string;

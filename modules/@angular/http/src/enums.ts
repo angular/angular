@@ -67,7 +67,8 @@ export enum ContentType {
  * @experimental
  */
 export enum ResponseContentType {
-  ArrayBuffer,
+  Text,
   Json,
-  Text
+  ArrayBuffer,
+  Blob
 }

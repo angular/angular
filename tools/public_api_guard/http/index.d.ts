@@ -179,14 +179,15 @@ export declare class Response extends Body {
 
 /** @experimental */
 export declare enum ResponseContentType {
-    ArrayBuffer = 0,
+    Text = 0,
     Json = 1,
-    Text = 2,
+    ArrayBuffer = 2,
+    Blob = 3,
 }
 
 /** @experimental */
 export declare class ResponseOptions {
-    body: string | Object | ArrayBuffer;
+    body: string | Object | ArrayBuffer | Blob;
     headers: Headers;
     status: number;
     url: string;
@@ -196,7 +197,7 @@ export declare class ResponseOptions {
 
 /** @experimental */
 export declare type ResponseOptionsArgs = {
-    body?: string | Object | FormData | ArrayBuffer;
+    body?: string | Object | FormData | ArrayBuffer | Blob;
     status?: number;
     statusText?: string;
     headers?: Headers;
