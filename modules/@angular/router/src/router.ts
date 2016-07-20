@@ -45,6 +45,8 @@ export interface NavigationExtras {
   relativeTo?: ActivatedRoute;
   queryParams?: Params;
   fragment?: string;
+  preserveQueryParams?: boolean;
+  preserveFragment?: boolean;
 }
 
 /**
@@ -227,10 +229,13 @@ export class Router {
    * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
    * ```
    */
-  createUrlTree(commands: any[], {relativeTo, queryParams, fragment}: NavigationExtras = {}):
-      UrlTree {
+  createUrlTree(
+      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams,
+                        preserveFragment}: NavigationExtras = {}): UrlTree {
     const a = relativeTo ? relativeTo : this.routerState.root;
-    return createUrlTree(a, this.currentUrlTree, commands, queryParams, fragment);
+    const q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
+    const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
+    return createUrlTree(a, this.currentUrlTree, commands, q, f);
   }
 
   /**

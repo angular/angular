@@ -42,13 +42,11 @@ function validateCommands(n: NormalizedNavigationCommands): void {
 function tree(
     oldSegment: UrlSegment, newSegment: UrlSegment, urlTree: UrlTree, queryParams: Params,
     fragment: string): UrlTree {
-  const q = queryParams ? stringify(queryParams) : urlTree.queryParams;
-  const f = fragment ? fragment : urlTree.fragment;
-
   if (urlTree.root === oldSegment) {
-    return new UrlTree(newSegment, q, f);
+    return new UrlTree(newSegment, stringify(queryParams), fragment);
   } else {
-    return new UrlTree(replaceSegment(urlTree.root, oldSegment, newSegment), q, f);
+    return new UrlTree(
+        replaceSegment(urlTree.root, oldSegment, newSegment), stringify(queryParams), fragment);
   }
 }
 

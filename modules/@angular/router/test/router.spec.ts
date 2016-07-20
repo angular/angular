@@ -594,10 +594,9 @@ describe('Integration', () => {
              expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
            })));
 
-    it('should update hrefs when query params change',
+    it('should not preserve query params and fragment by default',
        fakeAsync(
            inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-
              @Component({
                selector: 'someRoot',
                template: `<router-outlet></router-outlet><a routerLink="/home">Link</a>`,
@@ -612,14 +611,41 @@ describe('Integration', () => {
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
 
-             router.navigateByUrl('/home?q=123');
+             router.navigateByUrl('/home?q=123#fragment');
              advance(fixture);
-             expect(native.getAttribute('href')).toEqual('/home?q=123');
-
-             router.navigateByUrl('/home?q=456');
-             advance(fixture);
-             expect(native.getAttribute('href')).toEqual('/home?q=456');
+             expect(native.getAttribute('href')).toEqual('/home');
            })));
+
+    it('should update hrefs when query params or fragment change',
+       fakeAsync(inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
+
+         @Component({
+           selector: 'someRoot',
+           template:
+               `<router-outlet></router-outlet><a routerLink="/home" preserveQueryParams preserveFragment>Link</a>`,
+           directives: ROUTER_DIRECTIVES
+         })
+         class RootCmpWithLink {
+         }
+
+         const fixture = createRoot(tcb, router, RootCmpWithLink);
+
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+         const native = fixture.debugElement.nativeElement.querySelector('a');
+
+         router.navigateByUrl('/home?q=123');
+         advance(fixture);
+         expect(native.getAttribute('href')).toEqual('/home?q=123');
+
+         router.navigateByUrl('/home?q=456');
+         advance(fixture);
+         expect(native.getAttribute('href')).toEqual('/home?q=456');
+
+         router.navigateByUrl('/home?q=456#1');
+         advance(fixture);
+         expect(native.getAttribute('href')).toEqual('/home?q=456#1');
+       })));
 
     it('should support using links on non-a tags',
        fakeAsync(

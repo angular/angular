@@ -182,21 +182,9 @@ describe('createUrlTree', () => {
     expect(t.queryParams).toEqual({a: '1'});
   });
 
-  it('should reuse old query params when given undefined', () => {
-    const p = serializer.parse('/?a=1');
-    const t = createRoot(p, [], undefined);
-    expect(t.queryParams).toEqual({a: '1'});
-  });
-
   it('should set fragment', () => {
     const p = serializer.parse('/');
     const t = createRoot(p, [], {}, 'fragment');
-    expect(t.fragment).toEqual('fragment');
-  });
-
-  it('should reused old fragment when given undefined', () => {
-    const p = serializer.parse('/#fragment');
-    const t = createRoot(p, [], undefined, undefined);
     expect(t.fragment).toEqual('fragment');
   });
 });
