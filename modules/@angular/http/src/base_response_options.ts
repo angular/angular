@@ -46,9 +46,9 @@ import {ResponseOptionsArgs} from './interfaces';
 export class ResponseOptions {
   // TODO: FormData | Blob
   /**
-   * String, Object, ArrayBuffer representing the body of the {@link Response}.
+   * String, Object, ArrayBuffer or Blob representing the body of the {@link Response}.
    */
-  body: string|Object|ArrayBuffer;
+  body: string|Object|ArrayBuffer|Blob;
   /**
    * Http {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
    * associated with the response.

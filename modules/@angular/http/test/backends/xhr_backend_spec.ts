@@ -20,7 +20,7 @@ import {Headers} from '../../src/headers';
 import {Map} from '../../src/facade/collection';
 import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
-import {ResponseType} from '../../src/enums';
+import {ResponseType, ResponseContentType} from '../../src/enums';
 import {URLSearchParams} from '../../src/url_search_params';
 
 var abortSpy: any;
@@ -53,6 +53,9 @@ class MockBrowserXHR extends BrowserXhr {
     this.send = sendSpy = spy.spy('send');
     this.open = openSpy = spy.spy('open');
     this.setRequestHeader = setRequestHeaderSpy = spy.spy('setRequestHeader');
+    // If responseType is supported by the browser, then it should be set to an empty string.
+    // (https://www.w3.org/TR/XMLHttpRequest/#the-responsetype-attribute)
+    this.responseType = '';
   }
 
   setStatusCode(status: number) { this.status = status; }
@@ -649,6 +652,24 @@ export function main() {
            });
 
            existingXHRs[0].setResponseHeaders(responseHeaders);
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should set the responseType attribute to blob when the corresponding response content type is present',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var statusCode = 200;
+           var base = new BaseRequestOptions();
+           var connection = new XHRConnection(
+               new Request(
+                   base.merge(new RequestOptions({responseType: ResponseContentType.Blob}))),
+               new MockBrowserXHR());
+
+           connection.response.subscribe((res: Response) => {
+             expect(existingXHRs[0].responseType).toBe('blob');
+             async.done();
+           });
+
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));

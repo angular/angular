@@ -120,6 +120,9 @@ export class XHRConnection implements Connection {
           case ResponseContentType.Text:
             _xhr.responseType = 'text';
             break;
+          case ResponseContentType.Blob:
+            _xhr.responseType = 'blob';
+            break;
           default:
             throw new Error('The selected responseType is not supported');
         }
