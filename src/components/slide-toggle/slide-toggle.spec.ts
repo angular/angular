@@ -58,15 +58,18 @@ describe('MdSlideToggle', () => {
       });
     }));
 
-
-    it('should update the model correctly', () => {
+    // TODO(kara); update when core/testing adds fix
+    it('should update the model correctly', async(() => {
       expect(slideToggleElement.classList).not.toContain('md-checked');
 
       testComponent.slideModel = true;
       fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(slideToggleElement.classList).toContain('md-checked');
+      });
 
-      expect(slideToggleElement.classList).toContain('md-checked');
-    });
+    }));
 
     it('should apply class based on color attribute', () => {
       testComponent.slideColor = 'primary';
@@ -315,17 +318,20 @@ describe('MdSlideToggle', () => {
       expect(slideToggleElement.classList).not.toContain('md-checked');
     });
 
-    it('should not set the control to touched when changing the model', () => {
+    // TODO(kara): update when core/testing adds fix
+    it('should not set the control to touched when changing the model', async(() => {
       // The control should start off with being untouched.
       expect(slideToggleControl.touched).toBe(false);
 
       testComponent.slideModel = true;
       fixture.detectChanges();
-
-      expect(slideToggleControl.touched).toBe(false);
-      expect(slideToggle.checked).toBe(true);
-      expect(slideToggleElement.classList).toContain('md-checked');
-    });
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(slideToggleControl.touched).toBe(false);
+        expect(slideToggle.checked).toBe(true);
+        expect(slideToggleElement.classList).toContain('md-checked');
+      });
+    }));
 
     it('should correctly set the slide-toggle to checked on focus', () => {
       expect(slideToggleElement.classList).not.toContain('md-slide-toggle-focused');
