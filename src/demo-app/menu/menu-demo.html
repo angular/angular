@@ -1,5 +1,31 @@
-<md-menu>
-  <button md-menu-item>Refresh</button>
-  <button md-menu-item>Settings</button>
-  <button md-menu-item disabled>Help</button>
-</md-menu>
+<div class="demo-menu">
+  <div class="menu-section">
+    <p>You clicked on: {{ selected }}</p>
+
+    <md-toolbar>
+      <button md-icon-button [md-menu-trigger-for]="menu">
+        <md-icon>more_vert</md-icon>
+      </button>
+    </md-toolbar>
+
+    <md-menu #menu="mdMenu">
+      <button md-menu-item *ngFor="let item of items" (click)="select(item.text)" [disabled]="item.disabled">
+        {{ item.text }}
+      </button>
+    </md-menu>
+  </div>
+  <div class="menu-section">
+    <p> Clicking these will navigate:</p>
+    <md-toolbar>
+      <button md-icon-button [md-menu-trigger-for]="anchorMenu">
+        <md-icon>more_vert</md-icon>
+      </button>
+    </md-toolbar>
+
+    <md-menu #anchorMenu="mdMenu">
+      <a md-menu-item *ngFor="let item of items" href="http://www.google.com" [disabled]="item.disabled">
+        {{ item.text }}
+      </a>
+    </md-menu>
+  </div>
+</div>

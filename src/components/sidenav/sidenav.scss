@@ -2,7 +2,7 @@
 @import 'mixins';
 @import 'variables';
 @import 'elevation';
-
+@import 'sidenav-mixins';
 
 // We use invert() here to have the darken the background color expected to be used. If the
 // background is light, we use a dark backdrop. If the background is dark, we use a light backdrop.
@@ -42,16 +42,6 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   }
 }
 
-/* This mixin ensures a sidenav element spans the whole viewport.*/
-@mixin md-sidenav-fullscreen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-
 :host {
   // We need a stacking context here so that the backdrop and drawers are clipped to the
   // MdSidenavLayout. This creates a new z-index stack so we use low numbered z-indices.
@@ -64,7 +54,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
 
   // TODO(hansl): Update this with a more robust solution.
   &[fullscreen] {
-    @include md-sidenav-fullscreen();
+    @include md-fullscreen();
 
     &.md-sidenav-opened {
       overflow: hidden;
@@ -78,7 +68,7 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   overflow: hidden;
 
   & > .md-sidenav-backdrop {
-    @include md-sidenav-fullscreen();
+    @include md-fullscreen();
 
     display: block;
 

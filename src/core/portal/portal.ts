@@ -195,7 +195,8 @@ export abstract class BasePortalHost implements PortalHost {
   abstract attachTemplatePortal(portal: TemplatePortal): Promise<Map<string, any>>;
 
   detach(): Promise<void> {
-    this._attachedPortal.setAttachedHost(null);
+    if (this._attachedPortal) { this._attachedPortal.setAttachedHost(null); }
+
     this._attachedPortal = null;
     if (this._disposeFn != null) {
       this._disposeFn();

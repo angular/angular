@@ -1,4 +1,15 @@
-import {Component, Directive, ViewEncapsulation} from '@angular/core';
+// TODO(kara): keyboard events for menu navigation
+// TODO(kara): prevent-close functionality
+// TODO(kara): set position of menu
+
+import {
+    Component,
+    ViewEncapsulation,
+    Output,
+    ViewChild,
+    TemplateRef,
+    EventEmitter
+} from '@angular/core';
 
 @Component({
   moduleId: module.id,
@@ -9,13 +20,23 @@ import {Component, Directive, ViewEncapsulation} from '@angular/core';
   encapsulation: ViewEncapsulation.None,
   exportAs: 'mdMenu'
 })
-export class MdMenu {}
+export class MdMenu {
+  private _showClickCatcher: boolean = false;
 
-@Directive({
-  selector: '[md-menu-item]',
-  host: {'role': 'menuitem'}
-})
-export class MdMenuItem {}
+  @Output() close = new EventEmitter;
+  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
-export const MD_MENU_DIRECTIVES = [MdMenu, MdMenuItem];
+  /**
+   * This function toggles the display of the menu's click catcher element.
+   * This element covers the viewport when the menu is open to detect clicks outside the menu.
+   * TODO: internal
+   */
+  _setClickCatcher(bool: boolean): void {
+    this._showClickCatcher = bool;
+  }
+
+  private _emitCloseEvent(): void {
+    this.close.emit(null);
+  }
+}
 

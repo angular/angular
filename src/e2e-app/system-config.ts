@@ -13,6 +13,7 @@ const components = [
   'icon',
   'input',
   'list',
+  'menu',
   'progress-bar',
   'progress-circle',
   'radio',

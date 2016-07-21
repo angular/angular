@@ -1,9 +1,10 @@
 // TODO(kara): update vars for desktop when MD team responds
-
+// TODO(kara): animation for menu opening
 @import 'variables';
 @import 'elevation';
 @import 'default-theme';
 @import 'button-mixins';
+@import 'sidenav-mixins';
 @import 'list-shared';
 
 // menu width must be a multiple of 56px
@@ -24,14 +25,16 @@ $md-menu-side-padding: 16px !default;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;   // for momentum scroll on mobile
 
-  background: md-color($md-background, 'background');
+  background: md-color($md-background, 'card');
 }
 
 [md-menu-item] {
   @include md-button-reset();
   @include md-truncate-line();
 
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   width: 100%;
   height: $md-menu-item-height;
   padding: 0 $md-menu-side-padding;
@@ -39,6 +42,7 @@ $md-menu-side-padding: 16px !default;
   font-size: $md-menu-font-size;
   font-family: $md-font-family;
   text-align: start;
+  text-decoration: none;   // necessary to reset anchor tags
   color: md-color($md-foreground, 'text');
 
   &[disabled] {
@@ -51,3 +55,6 @@ $md-menu-side-padding: 16px !default;
   }
 }
 
+.md-menu-click-catcher {
+  @include md-fullscreen();
+}
