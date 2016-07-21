@@ -23,7 +23,7 @@ import {RadioDemo} from '../radio/radio-demo';
 import {CardDemo} from '../card/card-demo';
 import {MenuDemo} from '../menu/menu-demo';
 import {DialogDemo} from '../dialog/dialog-demo';
-
+import {TooltipDemo} from '../tooltip/tooltip-demo';
 
 
 export const routes: RouterConfig = [
@@ -51,6 +51,7 @@ export const routes: RouterConfig = [
   {path: 'button-toggle', component: ButtonToggleDemo},
   {path: 'baseline', component: BaselineDemo},
   {path: 'dialog', component: DialogDemo},
+  {path: 'tooltip', component: TooltipDemo},
 ];
 
 export const DEMO_APP_ROUTE_PROVIDER = provideRouter(routes);

@@ -17,7 +17,7 @@ export class OverlayRef implements PortalHost {
     // Don't chain the .then() call in the return because we want the result of portalHost.attach
     // to be returned from this method.
     attachPromise.then(() => {
-      this._updatePosition();
+      this.updatePosition();
     });
 
     return attachPromise;
@@ -41,7 +41,7 @@ export class OverlayRef implements PortalHost {
   }
 
   /** Updates the position of the overlay based on the position strategy. */
-  private _updatePosition() {
+  updatePosition() {
     if (this._state.positionStrategy) {
       this._state.positionStrategy.apply(this._pane);
     }

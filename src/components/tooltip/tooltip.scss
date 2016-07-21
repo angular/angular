@@ -1,0 +1,22 @@
+@import 'variables';
+@import 'theme-functions';
+@import 'palette';
+
+$md-tooltip-height: 22px;
+$md-tooltip-margin: 14px;
+$md-tooltip-padding: 8px;
+
+:host {
+  pointer-events: none;
+}
+.md-tooltip {
+  background: md-color($md-grey, 700, 0.9);
+  color: white;
+  padding: 0 $md-tooltip-padding;
+  border-radius: 2px;
+  font-family: $md-font-family;
+  font-size: 10px;
+  margin: $md-tooltip-margin;
+  height: $md-tooltip-height;
+  line-height: $md-tooltip-height;
+}
