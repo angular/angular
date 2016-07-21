@@ -277,7 +277,8 @@ function matchUrlQueryParamValue(str: string): string {
 }
 
 class UrlParser {
-  constructor(private remaining: string) {}
+  private remaining: string;
+  constructor(private url: string) { this.remaining = url; }
 
   peekStartsWith(str: string): boolean { return this.remaining.startsWith(str); }
 
@@ -422,7 +423,16 @@ class UrlParser {
     const segments: {[key: string]: UrlSegment} = {};
     this.capture('(');
     while (!this.peekStartsWith(')') && this.remaining.length > 0) {
-      let path = matchPathWithParams(this.remaining);
+      const path = matchPathWithParams(this.remaining);
+
+      const next = this.remaining[path.length];
+
+      // if is is not one of these characters, then the segment was unescaped
+      // or the group was not closed
+      if (next !== '/' && next !== ')' && next !== ';') {
+        throw new Error(`Cannot parse url '${this.url}'`);
+      }
+
       let outletName: string;
       if (path.indexOf(':') > -1) {
         outletName = path.substr(0, path.indexOf(':'));
@@ -435,7 +445,6 @@ class UrlParser {
       const children = this.parseSegmentChildren();
       segments[outletName] = Object.keys(children).length === 1 ? children[PRIMARY_OUTLET] :
                                                                   new UrlSegment([], children);
-
       if (this.peekStartsWith('//')) {
         this.capture('//');
       }

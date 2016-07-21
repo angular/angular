@@ -148,6 +148,7 @@ describe('url serializer', () => {
     expect(url.serialize(tree)).toEqual('/one#two');
   });
 
+
   it('should parse empty fragment', () => {
     const tree = url.parse('/one#');
     expect(tree.fragment).toEqual('');
@@ -181,6 +182,17 @@ describe('url serializer', () => {
 
       expect(tree.fragment).toEqual('one two');
       expect(url.serialize(tree)).toEqual(u);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should throw when invalid characters inside children', () => {
+      expect(() => url.parse('/one/(left#one)'))
+          .toThrowError('Cannot parse url \'/one/(left#one)\'');
+    });
+
+    it('should throw when missing closing )', () => {
+      expect(() => url.parse('/one/(left')).toThrowError('Cannot parse url \'/one/(left\'');
     });
   });
 });
