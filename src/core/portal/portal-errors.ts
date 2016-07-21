@@ -42,13 +42,13 @@ export class MdUnknownPortalTypeError extends MdError {
 /** Exception thrown when attempting to attach a portal to a null host. */
 export class MdNullPortalHostError extends MdError {
   constructor() {
-      super('Attmepting to attach a portal to a null PortalHost');
+      super('Attempting to attach a portal to a null PortalHost');
   }
 }
 
 /** Exception thrown when attempting to detach a portal that is not attached. */
 export class MdNoPortalAttachedError extends MdError {
   constructor() {
-      super('Attmepting to detach a portal that is not attached to a host');
+      super('Attempting to detach a portal that is not attached to a host');
   }
 }
