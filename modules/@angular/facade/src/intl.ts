@@ -15,7 +15,7 @@ export enum NumberFormatStyle {
 export class NumberFormatter {
   static format(
       num: number, locale: string, style: NumberFormatStyle,
-      {minimumIntegerDigits = 1, minimumFractionDigits = 0, maximumFractionDigits = 3, currency,
+      {minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, currency,
        currencyAsSymbol = false}: {
         minimumIntegerDigits?: number,
         minimumFractionDigits?: number,
@@ -23,17 +23,18 @@ export class NumberFormatter {
         currency?: string,
         currencyAsSymbol?: boolean
       } = {}): string {
-    var intlOptions: Intl.NumberFormatOptions = {
-      minimumIntegerDigits: minimumIntegerDigits,
-      minimumFractionDigits: minimumFractionDigits,
-      maximumFractionDigits: maximumFractionDigits
+    let options: Intl.NumberFormatOptions = {
+      minimumIntegerDigits,
+      minimumFractionDigits,
+      maximumFractionDigits,
+      style: NumberFormatStyle[style].toLowerCase()
     };
-    intlOptions.style = NumberFormatStyle[style].toLowerCase();
+
     if (style == NumberFormatStyle.Currency) {
-      intlOptions.currency = currency;
-      intlOptions.currencyDisplay = currencyAsSymbol ? 'symbol' : 'code';
+      options.currency = currency;
+      options.currencyDisplay = currencyAsSymbol ? 'symbol' : 'code';
     }
-    return new Intl.NumberFormat(locale, intlOptions).format(num);
+    return new Intl.NumberFormat(locale, options).format(num);
   }
 }
 var DATE_FORMATS_SPLIT =
