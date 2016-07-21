@@ -12,7 +12,9 @@ Angular
 =========
 
 Angular is a development platform for building mobile and desktop web applications. This is the
-repository for [Angular 2][ng2], both the JavaScript (JS) and [Dart][dart] versions.
+repository for [Angular 2][ng2] Typescript/JavaScript (JS).
+ 
+Angular2 for [Dart][dart] can be found at [dart-lang/angular2][ng2dart].
 
 Angular 2 is currently in **Release Candidate**.
 
@@ -34,3 +36,4 @@ guidelines for [contributing][contributing] and then check out one of our issues
 [ng2]: http://angular.io
 [ngDart]: http://angulardart.org
 [ngJS]: http://angularjs.org
+[ng2dart]: https://github.com/dart-lang/angular2
