@@ -9,7 +9,7 @@
 import {LifecycleHooks} from '../../core_private';
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
 import * as o from '../output/output_ast';
-import {DirectiveAst} from '../template_ast';
+import {DirectiveAst} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';

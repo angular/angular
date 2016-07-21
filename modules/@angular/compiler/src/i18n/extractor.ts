@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst} from '../html_ast';
+import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst} from '../html_parser/html_ast';
 import {I18nError, I18N_ATTR_PREFIX, getI18nAttr, meaning, description, isOpeningComment, isClosingComment,} from './shared';
-import {htmlVisitAll} from '@angular/compiler/src/html_ast';
+import {htmlVisitAll} from '../html_parser/html_ast';
 
 export function extractAstMessages(
     sourceAst: HtmlAst[], implicitTags: string[],

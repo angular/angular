@@ -15,7 +15,7 @@ import {BaseException} from '../facade/exceptions';
 import {isArray, isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
-import * as t from '../template_ast';
+import * as t from '../template_parser/template_ast';
 
 import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from './animation_ast';
 import {AnimationParseError, ParsedAnimationResult, parseAnimationEntry} from './animation_parser';

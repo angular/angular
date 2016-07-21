@@ -8,8 +8,8 @@
 
 import {Compiler, CompilerFactory, CompilerOptions, Component, ComponentResolver, Inject, Injectable, NgModule, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, Type, ViewEncapsulation, createPlatformFactory, disposePlatform, isDevMode, platformCore} from '@angular/core';
 
-export * from './template_ast';
-export {TEMPLATE_TRANSFORMS} from './template_parser';
+export * from './template_parser/template_ast';
+export {TEMPLATE_TRANSFORMS} from './template_parser/template_parser';
 export {CompilerConfig, RenderTypes} from './config';
 export * from './compile_metadata';
 export * from './offline_compiler';
@@ -23,8 +23,8 @@ export {NgModuleResolver} from './ng_module_resolver';
 
 import {stringify} from './facade/lang';
 import {ListWrapper} from './facade/collection';
-import {TemplateParser} from './template_parser';
-import {HtmlParser} from './html_parser';
+import {TemplateParser} from './template_parser/template_parser';
+import {HtmlParser} from './html_parser/html_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {StyleCompiler} from './style_compiler';

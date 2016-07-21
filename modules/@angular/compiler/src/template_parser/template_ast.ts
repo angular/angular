@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent} from '../src/facade/lang';
-import {AST} from './expression_parser/ast';
-import {CompileDirectiveMetadata, CompileTokenMetadata, CompileProviderMetadata,} from './compile_metadata';
-import {ParseSourceSpan} from './parse_util';
-import {SecurityContext} from '@angular/core';
+import {AST} from '../expression_parser/ast';
+import {isPresent} from '../facade/lang';
+
+import {CompileDirectiveMetadata, CompileTokenMetadata, CompileProviderMetadata,} from '../compile_metadata';
+import {ParseSourceSpan} from '../parse_util';
+import {SecurityContext} from '../../../core/index';
 
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.

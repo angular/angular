@@ -10,7 +10,7 @@ import {CompileDirectiveMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isBlank, isPresent} from '../facade/lang';
 import * as o from '../output/output_ast';
-import {BoundEventAst, DirectiveAst} from '../template_ast';
+import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
 
 import {CompileBinding} from './compile_binding';
 import {CompileElement} from './compile_element';

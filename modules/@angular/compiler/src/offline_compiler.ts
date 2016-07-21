@@ -17,7 +17,7 @@ import {NgModuleCompiler} from './ng_module_compiler';
 import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
 import {CompiledStylesheet, StyleCompiler} from './style_compiler';
-import {TemplateParser} from './template_parser';
+import {TemplateParser} from './template_parser/template_parser';
 import {ComponentFactoryDependency, ViewCompileResult, ViewCompiler, ViewFactoryDependency} from './view_compiler/view_compiler';
 
 export class SourceModule {

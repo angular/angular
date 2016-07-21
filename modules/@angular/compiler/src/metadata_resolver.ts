@@ -11,7 +11,7 @@ import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata
 import {Console, LIFECYCLE_HOOKS_VALUES, ReflectorReader, createProvider, isProviderLiteral, reflector} from '../core_private';
 import {MapWrapper, StringMapWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
-import {Type, isArray, isBlank, isPresent, isString, isStringMap, stringify} from '../src/facade/lang';
+import {Type, isArray, isBlank, isPresent, isString, stringify} from '../src/facade/lang';
 
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';

@@ -8,10 +8,11 @@
 
 import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
-import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {Message} from '@angular/compiler/src/i18n/message';
 import {MessageExtractor, removeDuplicates} from '@angular/compiler/src/i18n/message_extractor';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+
+import {HtmlParser} from '../../src/html_parser/html_parser';
 
 
 export function main() {

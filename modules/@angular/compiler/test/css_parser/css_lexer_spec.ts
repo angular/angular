@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../core/testing/testing_internal';
-import {CssLexer, CssLexerMode, CssScannerError, CssToken, CssTokenType} from '../src/css_lexer';
-import {isPresent} from '../src/facade/lang';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
+import {CssLexer, CssLexerMode, CssScannerError, CssToken, CssTokenType} from '../../src/css_parser/css_lexer';
+import {isPresent} from '../../src/facade/lang';
 
 export function main() {
   function tokenize(
-      code: any /** TODO #9100 */, trackComments: boolean = false,
+      code: string, trackComments: boolean = false,
       mode: CssLexerMode = CssLexerMode.ALL): CssToken[] {
-    var scanner = new CssLexer().scan(code, trackComments);
+    const scanner = new CssLexer().scan(code, trackComments);
     scanner.setMode(mode);
 
-    var tokens: any[] /** TODO #9100 */ = [];
+    var tokens: CssToken[] = [];
     var output = scanner.scan();
     while (output != null) {
       var error = output.error;
@@ -316,7 +316,7 @@ export function main() {
 
     describe('Media Query Mode', () => {
       it('should validate media queries with a reduced subset of valid characters', () => {
-        function tokenizeQuery(code: any /** TODO #9100 */) {
+        function tokenizeQuery(code: string) {
           return tokenize(code, false, CssLexerMode.MEDIA_QUERY);
         }
 
@@ -357,7 +357,7 @@ export function main() {
         'Style Block Mode', () => {
           it('should style blocks with a reduced subset of valid characters',
              () => {
-               function tokenizeStyles(code: any /** TODO #9100 */) {
+               function tokenizeStyles(code: string) {
                  return tokenize(code, false, CssLexerMode.STYLE_BLOCK);
                }
 

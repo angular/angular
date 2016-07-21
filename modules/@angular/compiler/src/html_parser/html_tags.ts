@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalizeBool, RegExpWrapper,} from '../src/facade/lang';
+import {normalizeBool, RegExpWrapper,} from '../facade/lang';
 
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
 // see https://html.spec.whatwg.org/multipage/entities.json

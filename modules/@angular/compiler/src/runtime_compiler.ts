@@ -12,14 +12,12 @@ import {Console} from '../core_private';
 import {BaseException} from '../src/facade/exceptions';
 import {ConcreteType, IS_DART, Type, isBlank, isString, stringify} from '../src/facade/lang';
 
-import {ListWrapper,} from '../src/facade/collection';
 import {PromiseWrapper} from '../src/facade/async';
 import {createHostComponentMeta, CompileDirectiveMetadata, CompilePipeMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata} from './compile_metadata';
-import {TemplateAst,} from './template_ast';
-import {StyleCompiler, StylesCompileDependency, CompiledStylesheet} from './style_compiler';
-import {ViewCompiler, ViewCompileResult, ViewFactoryDependency, ComponentFactoryDependency} from './view_compiler/view_compiler';
+import {StyleCompiler, CompiledStylesheet} from './style_compiler';
+import {ViewCompiler, ViewFactoryDependency, ComponentFactoryDependency} from './view_compiler/view_compiler';
 import {NgModuleCompiler} from './ng_module_compiler';
-import {TemplateParser} from './template_parser';
+import {TemplateParser} from './template_parser/template_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {CompilerConfig} from './config';

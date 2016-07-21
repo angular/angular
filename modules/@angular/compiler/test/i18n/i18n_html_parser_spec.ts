@@ -8,17 +8,17 @@
 
 import {Lexer as ExpressionLexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser as ExpressionParser} from '@angular/compiler/src/expression_parser/parser';
-import {HtmlAttrAst, HtmlElementAst, HtmlTextAst} from '@angular/compiler/src/html_ast';
-import {HtmlParseTreeResult, HtmlParser} from '@angular/compiler/src/html_parser';
 import {I18nHtmlParser} from '@angular/compiler/src/i18n/i18n_html_parser';
 import {Message, id} from '@angular/compiler/src/i18n/message';
 import {deserializeXmb} from '@angular/compiler/src/i18n/xmb_serializer';
-import {InterpolationConfig} from '@angular/compiler/src/interpolation_config';
 import {ParseError} from '@angular/compiler/src/parse_util';
-import {humanizeDom} from '@angular/compiler/test/html_ast_spec_utils';
 import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 
 import {StringMapWrapper} from '../../src/facade/collection';
+import {HtmlAttrAst, HtmlElementAst, HtmlTextAst} from '../../src/html_parser/html_ast';
+import {HtmlParseTreeResult, HtmlParser} from '../../src/html_parser/html_parser';
+import {InterpolationConfig} from '../../src/html_parser/interpolation_config';
+import {humanizeDom} from '../html_parser/html_ast_spec_utils';
 
 export function main() {
   describe('I18nHtmlParser', () => {

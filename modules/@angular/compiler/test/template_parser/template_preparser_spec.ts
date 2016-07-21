@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlParser} from '@angular/compiler/src/html_parser';
-import {PreparsedElement, PreparsedElementType, preparseElement} from '@angular/compiler/src/template_preparser';
-import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../../core/testing/testing_internal';
+import {HtmlElementAst} from '../../src/html_parser/html_ast';
+import {HtmlParser} from '../../src/html_parser/html_parser';
+import {PreparsedElement, PreparsedElementType, preparseElement} from '../../src/template_parser/template_preparser';
 
 export function main() {
   describe('preparseElement', () => {
-    var htmlParser: any /** TODO #9100 */;
+    var htmlParser: HtmlParser;
     beforeEach(inject([HtmlParser], (_htmlParser: HtmlParser) => { htmlParser = _htmlParser; }));
 
     function preparse(html: string): PreparsedElement {
-      return preparseElement(htmlParser.parse(html, 'TestComp').rootNodes[0]);
+      return preparseElement(htmlParser.parse(html, 'TestComp').rootNodes[0] as HtmlElementAst);
     }
 
     it('should detect script elements', inject([HtmlParser], (htmlParser: HtmlParser) => {

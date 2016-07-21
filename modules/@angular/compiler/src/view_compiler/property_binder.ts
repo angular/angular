@@ -12,7 +12,7 @@ import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import {DetectChangesVars, ViewProperties} from './constants';
-import {BoundTextAst, BoundElementPropertyAst, DirectiveAst, PropertyBindingType,} from '../template_ast';
+import {BoundTextAst, BoundElementPropertyAst, DirectiveAst, PropertyBindingType,} from '../template_parser/template_ast';
 import {CompileView} from './compile_view';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';

@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {serializeAst} from '@angular/compiler/src/i18n/catalog';
 import {extractI18nMessages} from '@angular/compiler/src/i18n/i18n_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/interpolation_config';
 import {ddescribe, describe, expect, it} from '@angular/core/testing/testing_internal';
+
+import {HtmlParser} from '../../src/html_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/html_parser/interpolation_config';
 
 export function main() {
   ddescribe('I18nParser', () => {

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlParser} from '../html_parser';
-import {InterpolationConfig} from '../interpolation_config';
+import {HtmlParser} from '../html_parser/html_parser';
+import {InterpolationConfig} from '../html_parser/interpolation_config';
 
 import * as i18nAst from './i18n_ast';
 import {extractI18nMessages} from './i18n_parser';

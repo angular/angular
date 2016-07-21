@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chars from './chars';
-import {isBlank, isPresent} from './facade/lang';
+import * as chars from '../chars';
+import {isBlank, isPresent} from '../facade/lang';
+import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
+
 import {HtmlTagContentType, NAMED_ENTITIES, getHtmlTagDefinition} from './html_tags';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
-import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
 
 export enum HtmlTokenType {
   TAG_OPEN_START,

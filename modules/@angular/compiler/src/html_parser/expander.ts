@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ParseError, ParseSourceSpan} from '../parse_util';
+
 import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from './html_ast';
-import {ParseError, ParseSourceSpan} from './parse_util';
+
 
 // http://cldr.unicode.org/index/cldr-spec/plural-rules
 const PLURAL_CASES: string[] = ['zero', 'one', 'two', 'few', 'many', 'other'];

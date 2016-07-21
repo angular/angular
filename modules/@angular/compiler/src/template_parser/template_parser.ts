@@ -6,30 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityContext} from '@angular/core';
-
-import {Console, MAX_INTERPOLATION_VALUES} from '../core_private';
-
-import {ListWrapper, StringMapWrapper, SetWrapper,} from '../src/facade/collection';
-import {RegExpWrapper, isPresent, StringWrapper, isBlank} from '../src/facade/lang';
-import {BaseException} from '../src/facade/exceptions';
-import {AST, Interpolation, ASTWithSource, TemplateBinding, RecursiveAstVisitor, BindingPipe, ParserError} from './expression_parser/ast';
-import {Parser} from './expression_parser/parser';
-import {CompileDirectiveMetadata, CompilePipeMetadata, CompileMetadataWithIdentifier, CompileTokenMetadata, CompileIdentifierMap, removeIdentifierDuplicates} from './compile_metadata';
-import {HtmlParser, HtmlParseTreeResult} from './html_parser';
-import {splitNsName, mergeNsAndName} from './html_tags';
-import {ParseSourceSpan, ParseError, ParseErrorLevel} from './parse_util';
-import {InterpolationConfig} from './interpolation_config';
+import {Inject, Injectable, OpaqueToken, Optional, SecurityContext, SchemaMetadata} from '../../../core/index';
+import {Console, MAX_INTERPOLATION_VALUES} from '../../core_private';
+import {ListWrapper, StringMapWrapper, SetWrapper,} from '../facade/collection';
+import {RegExpWrapper, isPresent, StringWrapper, isBlank} from '../facade/lang';
+import {BaseException} from '../facade/exceptions';
+import {AST, Interpolation, ASTWithSource, TemplateBinding, RecursiveAstVisitor, BindingPipe, ParserError} from '../expression_parser/ast';
+import {Parser} from '../expression_parser/parser';
+import {
+  CompileDirectiveMetadata, CompilePipeMetadata, CompileTokenMetadata,
+  removeIdentifierDuplicates,
+} from '../compile_metadata';
+import {HtmlParser, HtmlParseTreeResult} from '../html_parser/html_parser';
+import {splitNsName, mergeNsAndName} from '../html_parser/html_tags';
+import {ParseSourceSpan, ParseError, ParseErrorLevel} from '../parse_util';
+import {InterpolationConfig} from '../html_parser/interpolation_config';
 import {ElementAst, BoundElementPropertyAst, BoundEventAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst, ProviderAst, ProviderAstType, VariableAst} from './template_ast';
-import {CssSelector, SelectorMatcher} from './selector';
-import {ElementSchemaRegistry} from './schema/element_schema_registry';
+import {CssSelector, SelectorMatcher} from '../selector';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {preparseElement, PreparsedElementType} from './template_preparser';
-import {isStyleUrlResolvable} from './style_url_resolver';
-import {HtmlAstVisitor, HtmlElementAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, HtmlExpansionAst, HtmlExpansionCaseAst, htmlVisitAll} from './html_ast';
-import {splitAtColon} from './util';
-import {identifierToken, Identifiers} from './identifiers';
-import {expandNodes} from './expander';
-import {ProviderElementContext, ProviderViewContext} from './provider_analyzer';
+import {isStyleUrlResolvable} from '../style_url_resolver';
+import {HtmlAstVisitor, HtmlElementAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, HtmlExpansionAst, HtmlExpansionCaseAst, htmlVisitAll} from '../html_parser/html_ast';
+import {splitAtColon} from '../util';
+import {identifierToken, Identifiers} from '../identifiers';
+import {expandNodes} from '../html_parser/expander';
+import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer';
 
 // Group 1 = "bind-"
 // Group 2 = "var-"

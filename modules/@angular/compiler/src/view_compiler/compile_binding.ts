@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TemplateAst} from '../template_ast';
+import {TemplateAst} from '../template_parser/template_ast';
 
 import {CompileNode} from './compile_element';
 

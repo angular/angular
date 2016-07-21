@@ -1,6 +1,6 @@
-import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '@angular/compiler/src/html_ast';
-import {HtmlParser} from '@angular/compiler/src/html_parser';
-import {beforeEach, ddescribe, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, it} from '../../../core/testing/testing_internal';
+import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../../src/html_parser/html_ast';
+import {HtmlParser} from '../../src/html_parser/html_parser';
 
 export function main() {
   describe('HtmlAst serilaizer', () => {

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlToken, HtmlTokenError, HtmlTokenType, tokenizeHtml} from '@angular/compiler/src/html_lexer';
-import {InterpolationConfig} from '@angular/compiler/src/interpolation_config';
-import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
+import {HtmlToken, HtmlTokenError, HtmlTokenType, tokenizeHtml} from '../../src/html_parser/html_lexer';
+import {InterpolationConfig} from '../../src/html_parser/interpolation_config';
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
 
 export function main() {
   describe('HtmlLexer', () => {

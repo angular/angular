@@ -9,9 +9,9 @@
 import {Parser as ExpressionParser} from '../expression_parser/parser';
 import {StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
-import {HtmlAst, HtmlElementAst} from '../html_ast';
-import {HtmlParser} from '../html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../interpolation_config';
+import {HtmlAst, HtmlElementAst} from '../html_parser/html_ast';
+import {HtmlParser} from '../html_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../html_parser/interpolation_config';
 import {ParseError} from '../parse_util';
 
 import {Message, id} from './message';

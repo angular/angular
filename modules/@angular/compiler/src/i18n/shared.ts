@@ -9,8 +9,8 @@
 import {normalizeBlank} from '../../../router-deprecated/src/facade/lang';
 import {Parser as ExpressionParser} from '../expression_parser/parser';
 import {StringWrapper, isBlank, isPresent} from '../facade/lang';
-import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../html_ast';
-import {InterpolationConfig} from '../interpolation_config';
+import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../html_parser/html_ast';
+import {InterpolationConfig} from '../html_parser/interpolation_config';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import {Message} from './message';

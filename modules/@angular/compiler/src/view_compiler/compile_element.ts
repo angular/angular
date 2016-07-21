@@ -13,7 +13,7 @@ import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers, identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
-import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst} from '../template_ast';
+import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst} from '../template_parser/template_ast';
 
 import {CompileView} from './compile_view';
 import {InjectMethodVars} from './constants';

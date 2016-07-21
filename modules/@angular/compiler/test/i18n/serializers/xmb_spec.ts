@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {Catalog} from '@angular/compiler/src/i18n/catalog';
 import {XmbSerializer} from '@angular/compiler/src/i18n/serializers/xmb';
-import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/interpolation_config';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+
+import {HtmlParser} from '../../../src/html_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/html_parser/interpolation_config';
 
 
 export function main(): void {

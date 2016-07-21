@@ -8,9 +8,9 @@
 
 import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
 import {Parser as ExpressionParser} from '../expression_parser/parser';
-import * as hAst from '../html_ast';
-import {getHtmlTagDefinition} from '../html_tags';
-import {InterpolationConfig} from '../interpolation_config';
+import * as hAst from '../html_parser/html_ast';
+import {getHtmlTagDefinition} from '../html_parser/html_tags';
+import {InterpolationConfig} from '../html_parser/interpolation_config';
 import {ParseSourceSpan} from '../parse_util';
 
 import {extractAstMessages} from './extractor';

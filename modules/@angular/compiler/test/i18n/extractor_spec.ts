@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {ExtractionResult, extractAstMessages} from '@angular/compiler/src/i18n/extractor';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {serializeAst} from '../html_ast_serializer_spec'
+import {HtmlParser} from '../../src/html_parser/html_parser';
+import {serializeAst} from '../html_parser/html_ast_serializer_spec'
 
 export function main() {
   ddescribe(

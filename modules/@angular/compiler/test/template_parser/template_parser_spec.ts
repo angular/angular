@@ -9,19 +9,19 @@
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_ast';
-import {TEMPLATE_TRANSFORMS, TemplateParser, splitClasses} from '@angular/compiler/src/template_parser';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
+import {TEMPLATE_TRANSFORMS, TemplateParser, splitClasses} from '@angular/compiler/src/template_parser/template_parser';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {SchemaMetadata, SecurityContext} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {TestBed} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {Identifiers, identifierToken} from '../src/identifiers';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../src/interpolation_config';
+import {Identifiers, identifierToken} from '../../src/identifiers';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/html_parser/interpolation_config';
 
-import {unparse} from './expression_parser/unparser';
-import {TEST_COMPILER_PROVIDERS} from './test_bindings';
+import {unparse} from '../expression_parser/unparser';
+import {TEST_COMPILER_PROVIDERS} from '../test_bindings';
 
 var someModuleUrl = 'package:someModule';
 

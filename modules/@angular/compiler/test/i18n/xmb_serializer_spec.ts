@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlAst} from '@angular/compiler/src/html_ast';
 import {Message, id} from '@angular/compiler/src/i18n/message';
 import {deserializeXmb, serializeXmb} from '@angular/compiler/src/i18n/xmb_serializer';
 import {ParseError, ParseSourceSpan} from '@angular/compiler/src/parse_util';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+
+import {HtmlAst} from '../../src/html_parser/html_ast';
 
 export function main() {
   describe('Xmb', () => {

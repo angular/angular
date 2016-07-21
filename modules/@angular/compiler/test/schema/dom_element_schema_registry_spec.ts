@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlElementAst} from '@angular/compiler/src/html_ast';
-import {HtmlParser} from '@angular/compiler/src/html_parser';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {CUSTOM_ELEMENTS_SCHEMA, SecurityContext} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+
+import {HtmlElementAst} from '../../src/html_parser/html_ast';
+import {HtmlParser} from '../../src/html_parser/html_parser';
 
 import {extractSchema} from './schema_extractor';
 

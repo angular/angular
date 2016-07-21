@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst} from '@angular/compiler/src/html_ast';
-import {HtmlTokenType} from '@angular/compiler/src/html_lexer';
-import {HtmlParseTreeResult, HtmlParser, HtmlTreeError} from '@angular/compiler/src/html_parser';
-import {ParseError} from '@angular/compiler/src/parse_util';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
+import {HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst} from '../../src/html_parser/html_ast';
+import {HtmlTokenType} from '../../src/html_parser/html_lexer';
+import {HtmlParseTreeResult, HtmlParser, HtmlTreeError} from '../../src/html_parser/html_parser';
+import {ParseError} from '../../src/parse_util';
 
 import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './html_ast_spec_utils';
 

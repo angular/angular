@@ -9,7 +9,7 @@
 import * as directive_normalizer from './src/directive_normalizer';
 import * as lexer from './src/expression_parser/lexer';
 import * as parser from './src/expression_parser/parser';
-import * as html_parser from './src/html_parser';
+import * as html_parser from './src/html_parser/html_parser';
 import * as i18n_html_parser from './src/i18n/i18n_html_parser';
 import * as i18n_message from './src/i18n/message';
 import * as i18n_extractor from './src/i18n/message_extractor';
@@ -22,7 +22,7 @@ import * as parse_util from './src/parse_util';
 import * as dom_element_schema_registry from './src/schema/dom_element_schema_registry';
 import * as selector from './src/selector';
 import * as style_compiler from './src/style_compiler';
-import * as template_parser from './src/template_parser';
+import * as template_parser from './src/template_parser/template_parser';
 import * as view_compiler from './src/view_compiler/view_compiler';
 
 export namespace __compiler_private__ {

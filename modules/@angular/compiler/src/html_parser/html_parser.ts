@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-import {isPresent, isBlank,} from '../src/facade/lang';
-import {ListWrapper} from '../src/facade/collection';
+import {Injectable} from '../../../core/index';
+import {isPresent, isBlank,} from '../facade/lang';
+import {ListWrapper} from '../facade/collection';
 import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst} from './html_ast';
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
-import {ParseError, ParseSourceSpan} from './parse_util';
+import {ParseError, ParseSourceSpan} from '../parse_util';
 import {getHtmlTagDefinition, getNsPrefix, mergeNsAndName} from './html_tags';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 

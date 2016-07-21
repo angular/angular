@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '@angular/compiler/src/html_ast';
-import {HtmlParseTreeResult} from '@angular/compiler/src/html_parser';
-import {ParseLocation} from '@angular/compiler/src/parse_util';
-
-import {BaseException} from '../src/facade/exceptions';
+import {BaseException} from '../../src/facade/exceptions';
+import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../../src/html_parser/html_ast';
+import {HtmlParseTreeResult} from '../../src/html_parser/html_parser';
+import {ParseLocation} from '../../src/parse_util';
 
 export function humanizeDom(
     parseResult: HtmlParseTreeResult, addSourceSpan: boolean = false): any[] {

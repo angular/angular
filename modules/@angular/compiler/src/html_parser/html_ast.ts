@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent} from '../src/facade/lang';
+import {isPresent} from '../facade/lang';
 
-import {ParseSourceSpan} from './parse_util';
+import {ParseSourceSpan} from '../parse_util';
 
 export interface HtmlAst {
   sourceSpan: ParseSourceSpan;

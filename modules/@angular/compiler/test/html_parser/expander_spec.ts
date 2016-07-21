@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, expect, iit, it} from '../../core/testing/testing_internal';
-import {ExpansionResult, expandNodes} from '../src/expander';
-import {HtmlAttrAst, HtmlElementAst, HtmlTextAst} from '../src/html_ast';
-import {HtmlParser} from '../src/html_parser';
-import {ParseError} from '../src/parse_util';
+import {ddescribe, describe, expect, iit, it} from '../../../core/testing/testing_internal';
+import {ExpansionResult, expandNodes} from '../../src/html_parser/expander';
+import {HtmlAttrAst, HtmlElementAst, HtmlTextAst} from '../../src/html_parser/html_ast';
+import {HtmlParser} from '../../src/html_parser/html_parser';
+import {ParseError} from '../../src/parse_util';
 
 import {humanizeNodes} from './html_ast_spec_utils';
 

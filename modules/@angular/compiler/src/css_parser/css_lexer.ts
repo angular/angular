@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chars from './chars';
-import {BaseException} from './facade/exceptions';
-import {StringWrapper, isPresent, resolveEnumToken} from './facade/lang';
+import * as chars from '../chars';
+import {BaseException} from '../facade/exceptions';
+import {StringWrapper, isPresent, resolveEnumToken} from '../facade/lang';
 
 export enum CssTokenType {
   EOF,

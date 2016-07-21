@@ -15,7 +15,7 @@ import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
-import {ProviderAst, ProviderAstType} from './template_ast';
+import {ProviderAst} from './template_parser/template_ast';
 import {createDiTokenExpression} from './util';
 
 export class ComponentFactoryDependency {

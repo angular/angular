@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chars from './chars';
+import * as chars from '../chars';
+import {isPresent} from '../facade/lang';
+import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
+
 import {BlockType, CssAst, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssUnknownRuleAst, CssUnknownTokenListAst, mergeTokens} from './css_ast';
 import {CssLexer, CssLexerMode, CssScanner, CssToken, CssTokenType, generateErrorMessage, isNewline} from './css_lexer';
-import {isPresent} from './facade/lang';
-import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
 
 const SPACE_OPERATOR = ' ';
 
@@ -47,10 +48,6 @@ function isSelectorOperatorCharacter(code: number): boolean {
     default:
       return chars.isWhitespace(code);
   }
-}
-
-function getDelimFromToken(token: CssToken): number {
-  return getDelimFromCharacter(token.numValue);
 }
 
 function getDelimFromCharacter(code: number): number {

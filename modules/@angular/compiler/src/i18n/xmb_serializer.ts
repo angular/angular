@@ -7,8 +7,8 @@
  */
 
 import {RegExpWrapper, isPresent} from '../facade/lang';
-import {HtmlAst, HtmlElementAst} from '../html_ast';
-import {HtmlParser} from '../html_parser';
+import {HtmlAst, HtmlElementAst} from '../html_parser/html_ast';
+import {HtmlParser} from '../html_parser/html_parser';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import {Message, id} from './message';

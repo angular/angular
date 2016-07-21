@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank} from '../src/facade/lang';
+import {isBlank} from '../facade/lang';
 
-import {HtmlElementAst} from './html_ast';
-import {splitNsName} from './html_tags';
+import {HtmlElementAst} from '../html_parser/html_ast';
+import {splitNsName} from '../html_parser/html_tags';
 
 const NG_CONTENT_SELECT_ATTR = 'select';
 const NG_CONTENT_ELEMENT = 'ng-content';
