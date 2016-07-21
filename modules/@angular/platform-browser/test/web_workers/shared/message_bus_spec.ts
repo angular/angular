@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgZone, provide} from '@angular/core';
+import {NgZone} from '@angular/core';
 import {withProviders} from '@angular/core/testing/test_bed';
-import {MockNgZone, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, MockNgZone, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 
 import {ObservableWrapper, TimerWrapper} from '../../../src/facade/async';

@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('non-bindable', () => {
@@ -61,7 +60,7 @@ export function main() {
                    async.done();
                  });
            }));
-  })
+  });
 }
 
 @Directive({selector: '[test-dec]'})

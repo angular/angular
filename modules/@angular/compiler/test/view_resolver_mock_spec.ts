@@ -8,10 +8,9 @@
 
 import {beforeEach, ddescribe, describe, expect, iit, it, inject,} from '@angular/core/testing/testing_internal';
 
-import {stringify} from '../src/facade/lang';
+import {stringify, isBlank} from '../src/facade/lang';
 import {MockViewResolver} from '../testing';
 import {Component, ViewMetadata, Injector} from '@angular/core';
-import {isBlank} from '../src/facade/lang';
 
 export function main() {
   describe('MockViewResolver', () => {

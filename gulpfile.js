@@ -97,7 +97,7 @@ gulp.task('lint', ['format:enforce', 'tools:build'], () => {
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules
   const tslintConfig = require('./tslint.json');
-  return gulp.src(['modules/@angular/**/*.ts', '!modules/@angular/*/test/**'])
+  return gulp.src(['modules/@angular/**/*.ts'])
     .pipe(tslint({
       tslint: require('tslint').default,
       configuration: tslintConfig,

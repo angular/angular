@@ -51,7 +51,7 @@ export function main() {
     };
 
     var getAnimationAstFromEntryAst =
-        (ast: AnimationEntryAst) => { return ast.stateTransitions[0].animation; }
+        (ast: AnimationEntryAst) => { return ast.stateTransitions[0].animation; };
 
     var parseAnimationAst = (data: AnimationMetadata[]) => {
       return getAnimationAstFromEntryAst(parseAnimation(data).ast);

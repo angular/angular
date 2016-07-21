@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Log, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, Log, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
 
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {NgZone, NgZoneError} from '@angular/core/src/zone/ng_zone';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
 import {ObservableWrapper, PromiseCompleter, PromiseWrapper, TimerWrapper} from '../../src/facade/async';
 import {BaseException} from '../../src/facade/exceptions';
-import {IS_DART, isPresent, scheduleMicroTask} from '../../src/facade/lang';
+import {isPresent, scheduleMicroTask} from '../../src/facade/lang';
 
 var needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
 var resultTimer = 1000;
@@ -443,7 +442,7 @@ function commonTests() {
 
          macroTask(() => {
            expect(_log.result()).toEqual('run');
-           async.done()
+           async.done();
          });
        }), testTimeout);
 

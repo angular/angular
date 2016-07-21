@@ -8,8 +8,7 @@
 
 import {Location} from '@angular/common';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {RouteData, RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';
 
 import {AsyncRoute, AuxRoute, Redirect, Route, RouteConfig} from '../../src/route_config/route_config_decorator';
@@ -44,7 +43,7 @@ export function main() {
            [AsyncTestCompleter, Location],
            (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
              compile(tcb)
-                 .then((rtc) => {rootTC = rtc})
+                 .then((rtc) => { rootTC = rtc; })
                  .then((_) => rtr.config([
                    new Redirect({path: '/original', redirectTo: ['Hello']}),
                    new Route({path: '/redirected', component: HelloCmp, name: 'Hello'})
@@ -64,7 +63,7 @@ export function main() {
            [AsyncTestCompleter, Location],
            (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
              compile(tcb)
-                 .then((rtc) => {rootTC = rtc})
+                 .then((rtc) => { rootTC = rtc; })
                  .then((_) => rtr.config([
                    new Redirect({path: '/original', redirectTo: ['/Hello']}),
                    new Route({path: '/redirected', component: HelloCmp, name: 'Hello'})
@@ -84,7 +83,7 @@ export function main() {
            [AsyncTestCompleter, Location],
            (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
              compile(tcb)
-                 .then((rtc) => {rootTC = rtc})
+                 .then((rtc) => { rootTC = rtc; })
                  .then((_) => rtr.config([
                    new Redirect({path: '/original', redirectTo: ['./Hello']}),
                    new Route({path: '/redirected', component: HelloCmp, name: 'Hello'})
@@ -104,7 +103,7 @@ export function main() {
            [AsyncTestCompleter, Location],
            (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
              compile(tcb)
-                 .then((rtc) => {rootTC = rtc})
+                 .then((rtc) => { rootTC = rtc; })
                  .then((_) => rtr.config([
                    new Route({path: '/original/...', component: RedirectToParentCmp}),
                    new Route({path: '/redirected', component: HelloCmp, name: 'HelloSib'})
@@ -124,7 +123,7 @@ export function main() {
            [AsyncTestCompleter, Location],
            (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
              compile(tcb)
-                 .then((rtc) => {rootTC = rtc})
+                 .then((rtc) => { rootTC = rtc; })
                  .then((_) => rtr.config([
                    new Route({path: '/foo', component: HelloCmp, name: 'Hello'}),
                    new Route({path: '/:param', component: GoodbyeCmp, name: 'Goodbye'}),

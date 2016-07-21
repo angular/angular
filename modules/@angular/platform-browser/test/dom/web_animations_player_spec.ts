@@ -22,6 +22,7 @@ class ExtendedWebAnimationsPlayer extends WebAnimationsPlayer {
     super(element, keyframes, options);
   }
 
+  /** @internal */
   _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {
     return this.domPlayer;
   }

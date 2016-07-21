@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {Json} from '../../src/facade/lang';
 import {XSRFStrategy} from '../../src/interfaces';
 import {XHRConnection, XHRBackend, CookieXSRFStrategy} from '../../src/backends/xhr_backend';
-import {provide, Injector, Injectable, ReflectiveInjector} from '@angular/core';
+import {Injectable,} from '@angular/core';
 import {__platform_browser_private__} from '@angular/platform-browser';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
@@ -146,7 +145,7 @@ export function main() {
             backend.createConnection(sampleRequest);
             expect(sampleRequest.headers.get('X-MY-HEADER')).toBe('XSRF value');
           });
-        })
+        });
       });
     }
 
@@ -558,7 +557,7 @@ export function main() {
            let responseHeaderString = `Date: Fri, 20 Nov 2015 01:45:26 GMT
                Content-Type: application/json; charset=utf-8
                Transfer-Encoding: chunked
-               Connection: keep-alive`
+               Connection: keep-alive`;
 
            connection.response.subscribe((res: Response) => {
              expect(res.headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
@@ -595,7 +594,7 @@ export function main() {
            var connection = new XHRConnection(
                sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
            var responseHeaders = `X-Request-URL: http://somedomain.com
-           Foo: Bar`
+           Foo: Bar`;
 
            connection.response.subscribe((res: Response) => {
              expect(res.url).toEqual('http://somedomain.com');
@@ -643,7 +642,7 @@ export function main() {
            var connection =
                new XHRConnection(sampleRequest, mockXhr, new ResponseOptions({status: statusCode}));
            var responseHeaders = `X-Request-URL: http://somedomain.com
-           Foo: Bar`
+           Foo: Bar`;
 
            connection.response.subscribe((res: Response) => {
              expect(res.url).toEqual('http://somedomain.com');

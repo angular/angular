@@ -21,7 +21,7 @@ describe('reflector_host', () => {
 
   beforeEach(() => {
     context = new MockContext('/tmp/src', clone(FILES));
-    host = new MockCompilerHost(context)
+    host = new MockCompilerHost(context);
     program = ts.createProgram(
         ['main.ts'], {
           module: ts.ModuleKind.CommonJS,
@@ -93,10 +93,10 @@ describe('reflector_host', () => {
     expect(reflectorHost.getStaticSymbol('angularjs', 'SomeAngularSymbol')).toBeDefined();
   });
 
-  it('should be able to read a metadata file',
-     () => {
-         expect(reflectorHost.getMetadataFor('node_modules/@angular/core.d.ts'))
-             .toEqual({__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}})});
+  it('should be able to read a metadata file', () => {
+    expect(reflectorHost.getMetadataFor('node_modules/@angular/core.d.ts'))
+        .toEqual({__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}});
+  });
 
   it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
     expect(reflectorHost.getMetadataFor('node_modules/@angular/unused.d.ts')).toBeUndefined();
@@ -107,7 +107,8 @@ describe('reflector_host', () => {
   });
 });
 
-const dummyModule = 'export let foo: any[];'
+const dummyModule = 'export let foo: any[];';
+
 const FILES: Entry = {
   'tmp': {
     'src': {
@@ -134,7 +135,7 @@ const FILES: Entry = {
       }
     }
   }
-}
+};
 
 function clone(entry: Entry): Entry {
   if (typeof entry === 'string') {

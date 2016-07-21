@@ -6,26 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, expect, inject, beforeEachProviders, beforeEach, afterEach, it,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, ddescribe, describe, expect, inject, beforeEachProviders, beforeEach, afterEach, it,} from '@angular/core/testing/testing_internal';
 import {configureCompiler, TestComponentBuilder} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {provide, Injectable, OpaqueToken} from '@angular/core';
-import {CompilerConfig} from '@angular/compiler';
-import {Component, ViewMetadata} from '@angular/core/src/metadata';
-import {IS_DART} from '../../src/facade/lang';
-import {el} from '@angular/platform-browser/testing/browser_util';
+import {Component} from '@angular/core/src/metadata';
 import {DomSanitizationService} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 
 export function main() {
-  if (IS_DART) {
-    declareTests({useJit: false});
-  } else {
-    describe('jit', () => { declareTests({useJit: true}); });
+  describe('jit', () => { declareTests({useJit: true}); });
 
-    describe('no jit', () => { declareTests({useJit: false}); });
-  }
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 @Component({selector: 'my-comp', template: '', directives: []})

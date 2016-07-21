@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, it, expect, beforeEach, ddescribe, iit, xit, inject,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, describe, it, expect, beforeEach, ddescribe, iit, xit, inject,} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 import {ObservableWrapper, Observable, Subject, EventEmitter, PromiseWrapper} from '../src/async';
 

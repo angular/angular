@@ -13,8 +13,7 @@ import {XHR} from '@angular/compiler/src/xhr';
 import {MockXHR} from '@angular/compiler/testing/xhr_mock';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 import {configureCompiler} from '@angular/core/testing';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 import {SpyXHR} from './spies';
 import {TEST_COMPILER_PROVIDERS} from './test_bindings';
@@ -53,7 +52,7 @@ export function main() {
                                                              templateUrl: null,
                                                              styles: [],
                                                              styleUrls: []
-                                                           }))
+                                                           }));
            expect(template.template).toEqual('a');
            expect(template.templateUrl).toEqual('package:some/module/a.js');
          }));
@@ -66,7 +65,7 @@ export function main() {
                                                              templateUrl: null,
                                                              styles: [],
                                                              styleUrls: ['test.css']
-                                                           }))
+                                                           }));
            expect(template.styleUrls).toEqual(['package:some/module/test.css']);
          }));
 
@@ -79,7 +78,7 @@ export function main() {
                                                   templateUrl: null,
                                                   styles: [],
                                                   styleUrls: []
-                                                }))
+                                                }));
            expect(template.styleUrls).toEqual(['package:some/module/test.css']);
          }));
 
@@ -91,7 +90,7 @@ export function main() {
                                                              templateUrl: null,
                                                              styles: [],
                                                              styleUrls: ['test.css']
-                                                           }))
+                                                           }));
            expect(template.encapsulation).toEqual(ViewEncapsulation.Emulated);
          }));
 
@@ -107,7 +106,7 @@ export function main() {
                                                       templateUrl: null,
                                                       styles: [],
                                                       styleUrls: ['test.css']
-                                                    }))
+                                                    }));
                expect(template.encapsulation).toEqual(ViewEncapsulation.None);
              }));
     });
@@ -277,7 +276,7 @@ export function main() {
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}), 'a',
                'package:some/module/');
-           expect(template.template).toEqual('a')
+           expect(template.template).toEqual('a');
          }));
 
       it('should collect ngContent',

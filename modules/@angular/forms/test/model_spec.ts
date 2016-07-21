@@ -7,12 +7,11 @@
  */
 
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {EventEmitter, ObservableWrapper, TimerWrapper} from '../src/facade/async';
-import {IS_DART, isPresent} from '../src/facade/lang';
+import {isPresent} from '../src/facade/lang';
 import {PromiseWrapper} from '../src/facade/promise';
 
 export function main() {
@@ -492,17 +491,15 @@ export function main() {
            }));
 
         // TODO: remove the if statement after making observable delivery sync
-        if (!IS_DART) {
-          it('should update set errors and status before emitting an event',
-             inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-               c.valueChanges.subscribe((value: any /** TODO #9100 */) => {
-                 expect(c.valid).toEqual(false);
-                 expect(c.errors).toEqual({'required': true});
-                 async.done();
-               });
-               c.updateValue('');
-             }));
-        }
+        it('should update set errors and status before emitting an event',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             c.valueChanges.subscribe((value: any /** TODO #9100 */) => {
+               expect(c.valid).toEqual(false);
+               expect(c.errors).toEqual({'required': true});
+               async.done();
+             });
+             c.updateValue('');
+           }));
 
         it('should return a cold observable',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -946,7 +943,7 @@ export function main() {
 
           // rename contains into has
           it('should return false when the component is not included',
-             () => { expect(group.contains('optional')).toEqual(false); })
+             () => { expect(group.contains('optional')).toEqual(false); });
 
           it('should return false when there is no component with the given name',
              () => { expect(group.contains('something else')).toEqual(false); });
@@ -1066,11 +1063,8 @@ export function main() {
              c2.updateValue('new2');
            }));
 
-        xit('should not fire an event when an excluded control is updated',
-            inject(
-                [AsyncTestCompleter], (async: AsyncTestCompleter) => {
-                                          // hard to test without hacking zones
-                                      }));
+        // hard to test without hacking zones
+        // xit('should not fire an event when an excluded control is updated', () => null);
       });
 
       describe('statusChanges', () => {
@@ -1143,7 +1137,7 @@ export function main() {
              expect(g.errors).toEqual({'async': true});
              expect(g.find(['one']).errors).toEqual({'async': true});
            }));
-      })
+      });
     });
 
     describe('FormArray', () => {
@@ -1644,7 +1638,7 @@ export function main() {
              expect(g.errors).toEqual({'async': true});
              expect(g.pending).toEqual(false);
            }));
-      })
+      });
     });
   });
 }

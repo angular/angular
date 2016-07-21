@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {Predicate} from '../../src/facade/collection';
-import {Injector, OnDestroy, DebugElement, Type, ViewContainerRef, ViewChild} from '@angular/core';
-import {Component, ViewMetadata} from '@angular/core/src/metadata';
+import {Injector, DebugElement, Type, ViewContainerRef, ViewChild} from '@angular/core';
+import {Component} from '@angular/core/src/metadata';
 import {DynamicComponentLoader} from '@angular/core/src/linker/dynamic_component_loader';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';

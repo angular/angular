@@ -8,11 +8,9 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {Control, ControlGroup, ControlValueAccessor, DeprecatedFormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, NgForm, RadioButtonState, Validator, Validators} from '@angular/common/src/forms-deprecated';
-import {Component, Directive, EventEmitter, Output} from '@angular/core';
-import {Input, Provider, forwardRef} from '@angular/core';
+import {Component, Directive, EventEmitter, Input, Output, Provider, forwardRef} from '@angular/core';
 import {ComponentFixture, TestComponentBuilder, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
@@ -24,7 +22,7 @@ import {PromiseWrapper} from '../../src/facade/promise';
 export function main() {
   describe('integration tests', () => {
 
-    beforeEach(() => {configureModule({modules: [DeprecatedFormsModule]})});
+    beforeEach(() => { configureModule({modules: [DeprecatedFormsModule]}); });
 
     it('should initialize DOM elements with the given form object',
        inject(

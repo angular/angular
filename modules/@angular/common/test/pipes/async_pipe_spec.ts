@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {SpyChangeDetectorRef} from '../spies';
 import {isBlank} from '../../src/facade/lang';
 import {AsyncPipe} from '@angular/common';
@@ -45,7 +44,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(emitter)).toEqual(new WrappedValue(message));
                async.done();
-             }, 0)
+             }, 0);
            }));
 
 
@@ -58,7 +57,7 @@ export function main() {
                pipe.transform(emitter);
                expect(pipe.transform(emitter)).toBe(message);
                async.done();
-             }, 0)
+             }, 0);
            }));
 
         it('should dispose of the existing subscription when subscribing to a new observable',
@@ -74,7 +73,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(newEmitter)).toBe(null);
                async.done();
-             }, 0)
+             }, 0);
            }));
 
         it('should request a change detection check upon receiving a new value',
@@ -85,7 +84,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(ref.spy('markForCheck')).toHaveBeenCalled();
                async.done();
-             }, 10)
+             }, 10);
            }));
       });
 
@@ -103,7 +102,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(emitter)).toBe(null);
                async.done();
-             }, 0)
+             }, 0);
            }));
       });
     });
@@ -135,7 +134,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
                async.done();
-             }, timer)
+             }, timer);
            }));
 
         it('should return unwrapped value when nothing has changed since the last call',
@@ -147,7 +146,7 @@ export function main() {
                pipe.transform(completer.promise);
                expect(pipe.transform(completer.promise)).toBe(message);
                async.done();
-             }, timer)
+             }, timer);
            }));
 
         it('should dispose of the existing subscription when subscribing to a new promise',
@@ -163,7 +162,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(newCompleter.promise)).toBe(null);
                async.done();
-             }, timer)
+             }, timer);
            }));
 
         it('should request a change detection check upon receiving a new value',
@@ -175,7 +174,7 @@ export function main() {
              TimerWrapper.setTimeout(() => {
                expect(markForCheck).toHaveBeenCalled();
                async.done();
-             }, timer)
+             }, timer);
            }));
 
         describe('ngOnDestroy', () => {
@@ -186,7 +185,7 @@ export function main() {
              inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
                pipe.transform(completer.promise);
                expect(pipe.transform(completer.promise)).toBe(null);
-               completer.resolve(message)
+               completer.resolve(message);
 
 
                TimerWrapper.setTimeout(() => {

@@ -312,7 +312,7 @@ export function main() {
           if (binding.keyIsVar) {
             return 'let ' + binding.key + (isBlank(binding.name) ? '=null' : '=' + binding.name);
           } else {
-            return binding.key + (isBlank(binding.expression) ? '' : `=${binding.expression}`)
+            return binding.key + (isBlank(binding.expression) ? '' : `=${binding.expression}`);
           }
         });
       }
@@ -550,7 +550,7 @@ export function main() {
       it('should be able to recover from a missing ]', () => recover('[a,b', '[a, b]'));
       it('should be able to recover from a missing selector', () => recover('a.'));
       it('should be able to recover from a missing selector in a array literal',
-         () => recover('[[a.], b, c]'))
+         () => recover('[[a.], b, c]'));
     });
   });
 }

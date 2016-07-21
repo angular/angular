@@ -6,18 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
 
 import {bootstrap} from '@angular/platform-browser-dynamic';
-import {APP_BASE_HREF, LocationStrategy} from '@angular/common';
+import {LocationStrategy} from '@angular/common';
 import {Component, Directive} from '@angular/core/src/metadata';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Console} from '@angular/core/src/console';
-import {provide, disposePlatform} from '@angular/core';
+import {ExceptionHandler, disposePlatform} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ROUTER_PROVIDERS, Router, RouteConfig, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
-import {ExceptionHandler} from '@angular/core';
 import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
 
 class _ArrayLogger {
@@ -138,38 +136,37 @@ export function main() {
        }));
 
     it('should throw if a config is missing a target',
-       inject(
-           [AsyncTestCompleter],
-           (async: AsyncTestCompleter) => {bootstrap(WrongConfigCmp, testBindings).catch((e) => {
-             expect(e.originalException)
-                 .toContainError(
-                     'Route config should contain exactly one "component", "loader", or "redirectTo" property.');
-             async.done();
-             return null;
-           })}));
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         bootstrap(WrongConfigCmp, testBindings).catch((e) => {
+           expect(e.originalException)
+               .toContainError(
+                   'Route config should contain exactly one "component", "loader", or "redirectTo" property.');
+           async.done();
+           return null;
+         });
+       }));
 
     it('should throw if a config has an invalid component type',
-       inject(
-           [AsyncTestCompleter],
-           (async:
-                AsyncTestCompleter) => {bootstrap(WrongComponentTypeCmp, testBindings).catch((e) => {
-             expect(e.originalException)
-                 .toContainError(
-                     'Invalid component type "intentionallyWrongComponentType". Valid types are "constructor" and "loader".');
-             async.done();
-             return null;
-           })}));
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         bootstrap(WrongComponentTypeCmp, testBindings).catch((e) => {
+           expect(e.originalException)
+               .toContainError(
+                   'Invalid component type "intentionallyWrongComponentType". Valid types are "constructor" and "loader".');
+           async.done();
+           return null;
+         });
+       }));
 
     it('should throw if a config has an invalid alias name',
-       inject(
-           [AsyncTestCompleter],
-           (async: AsyncTestCompleter) => {bootstrap(BadAliasNameCmp, testBindings).catch((e) => {
-             expect(e.originalException)
-                 .toContainError(
-                     `Route "/child" with name "child" does not begin with an uppercase letter. Route names should be PascalCase like "Child".`);
-             async.done();
-             return null;
-           })}));
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         bootstrap(BadAliasNameCmp, testBindings).catch((e) => {
+           expect(e.originalException)
+               .toContainError(
+                   `Route "/child" with name "child" does not begin with an uppercase letter. Route names should be PascalCase like "Child".`);
+           async.done();
+           return null;
+         });
+       }));
 
   });
 }

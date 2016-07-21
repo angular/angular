@@ -9,8 +9,7 @@
 import {Location} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {AuxRoute, ROUTER_DIRECTIVES, Route, RouteConfig, Router} from '@angular/router-deprecated';
 
@@ -38,7 +37,7 @@ function auxRoutes() {
        compile(
            tcb,
            `main [<router-outlet></router-outlet>] | aux [<router-outlet name="modal"></router-outlet>]`)
-           .then((rtc) => {fixture = rtc})
+           .then((rtc) => { fixture = rtc; })
            .then((_) => rtr.config([
              new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
              new AuxRoute({path: '/modal', component: ModalCmp, name: 'Aux'})
@@ -56,7 +55,7 @@ function auxRoutes() {
        compile(
            tcb,
            `main [<router-outlet></router-outlet>] | aux [<router-outlet name="modal"></router-outlet>]`)
-           .then((rtc) => {fixture = rtc})
+           .then((rtc) => { fixture = rtc; })
            .then((_) => rtr.config([
              new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
              new AuxRoute({path: '/modal', component: ModalCmp, name: 'Modal'})
@@ -73,7 +72,7 @@ function auxRoutes() {
        compile(
            tcb,
            `<a [routerLink]="['/', ['Modal']]">open modal</a> | main [<router-outlet></router-outlet>] | aux [<router-outlet name="modal"></router-outlet>]`)
-           .then((rtc) => {fixture = rtc})
+           .then((rtc) => { fixture = rtc; })
            .then((_) => rtr.config([
              new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
              new AuxRoute({path: '/modal', component: ModalCmp, name: 'Modal'})
@@ -92,7 +91,7 @@ function auxRoutes() {
            compile(
                tcb,
                `<a [routerLink]="['/', ['Modal']]">open modal</a> | <a [routerLink]="['/Hello']">hello</a> | main [<router-outlet></router-outlet>] | aux [<router-outlet name="modal"></router-outlet>]`)
-               .then((rtc) => {fixture = rtc})
+               .then((rtc) => { fixture = rtc; })
                .then((_) => rtr.config([
                  new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
                  new AuxRoute({path: '/modal', component: ModalCmp, name: 'Modal'})
@@ -151,7 +150,7 @@ function auxRoutesWithAPrimaryRoute() {
        compile(
            tcb,
            `main [<router-outlet></router-outlet>] | aux [<router-outlet name="modal"></router-outlet>]`)
-           .then((rtc) => {fixture = rtc})
+           .then((rtc) => { fixture = rtc; })
            .then((_) => rtr.config([
              new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
              new AuxRoute({path: '/modal', component: ModalCmp, name: 'Aux'})
@@ -169,7 +168,7 @@ function auxRoutesWithAPrimaryRoute() {
        compile(
            tcb,
            `main [<router-outlet></router-outlet>] | aux [<router-outlet name="modal"></router-outlet>]`)
-           .then((rtc) => {fixture = rtc})
+           .then((rtc) => { fixture = rtc; })
            .then((_) => rtr.config([
              new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
              new AuxRoute({path: '/modal', component: ModalCmp, name: 'Modal'})
@@ -186,7 +185,7 @@ function auxRoutesWithAPrimaryRoute() {
        compile(
            tcb,
            `<a [routerLink]="['/Hello', ['Modal']]">open modal</a> | main [<router-outlet></router-outlet>] | aux [<router-outlet name="modal"></router-outlet>]`)
-           .then((rtc) => {fixture = rtc})
+           .then((rtc) => { fixture = rtc; })
            .then((_) => rtr.config([
              new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
              new AuxRoute({path: '/modal', component: ModalCmp, name: 'Modal'})
@@ -205,7 +204,7 @@ function auxRoutesWithAPrimaryRoute() {
            compile(
                tcb,
                `<a [routerLink]="['/Hello', ['Modal']]">open modal</a> | main [<router-outlet></router-outlet>] | aux [<router-outlet name="modal"></router-outlet>]`)
-               .then((rtc) => {fixture = rtc})
+               .then((rtc) => { fixture = rtc; })
                .then((_) => rtr.config([
                  new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
                  new AuxRoute({path: '/modal', component: ModalCmp, name: 'Modal'})

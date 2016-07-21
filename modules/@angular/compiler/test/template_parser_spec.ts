@@ -1065,15 +1065,15 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           type:
               new CompileTypeMetadata({moduleUrl: someModuleUrl, name: `SomeComp${compCounter++}`}),
           template: new CompileTemplateMetadata({ngContentSelectors: ngContentSelectors})
-        })
+        });
       }
 
       function createDir(selector: string): CompileDirectiveMetadata {
         return CompileDirectiveMetadata.create({
           selector: selector,
-          type:
-              new CompileTypeMetadata({moduleUrl: someModuleUrl, name: `SomeDir${compCounter++}`})
-        })
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: `SomeDir${compCounter++}`})
+        });
       }
 
       describe('project text nodes', () => {

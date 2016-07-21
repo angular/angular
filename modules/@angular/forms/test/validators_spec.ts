@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {fakeAsync, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 import {AbstractControl, FormControl, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
@@ -19,9 +19,9 @@ export function main() {
   function validator(key: string, error: any) {
     return function(c: AbstractControl) {
       var r = {};
-      (r as any /** TODO #9100 */)[key] = error;
+      (r as any)[key] = error;
       return r;
-    }
+    };
   }
 
   class AsyncValidatorDirective {

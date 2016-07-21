@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ReflectorHost, ReflectorHostContext} from '../src/reflector_host';
+import {ReflectorHostContext} from '../src/reflector_host';
 
 export type Entry = string | Directory;
 
@@ -19,7 +19,7 @@ export class MockContext implements ReflectorHostContext {
 
   fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }
 
-  directoryExists(path: string): boolean { return typeof this.getEntry(path) === 'object' }
+  directoryExists(path: string): boolean { return typeof this.getEntry(path) === 'object'; }
 
   readFile(fileName: string): string|undefined {
     let data = this.getEntry(fileName);

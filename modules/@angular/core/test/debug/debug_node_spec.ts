@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/core/testing';
 
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../src/facade/async';
+import {EventEmitter} from '../../src/facade/async';
 
 import {Injectable} from '@angular/core';
 import {NgFor, NgIf} from '@angular/common';

@@ -65,13 +65,14 @@ export function main() {
         ]);
       });
 
-      it('should store the locations',
-         () => {expect(tokenizeAndHumanizeSourceSpans('<!--t\ne\rs\r\nt-->')).toEqual([
-           [HtmlTokenType.COMMENT_START, '<!--'],
-           [HtmlTokenType.RAW_TEXT, 't\ne\rs\r\nt'],
-           [HtmlTokenType.COMMENT_END, '-->'],
-           [HtmlTokenType.EOF, ''],
-         ])});
+      it('should store the locations', () => {
+        expect(tokenizeAndHumanizeSourceSpans('<!--t\ne\rs\r\nt-->')).toEqual([
+          [HtmlTokenType.COMMENT_START, '<!--'],
+          [HtmlTokenType.RAW_TEXT, 't\ne\rs\r\nt'],
+          [HtmlTokenType.COMMENT_END, '-->'],
+          [HtmlTokenType.EOF, ''],
+        ]);
+      });
 
       it('should report <!- without -', () => {
         expect(tokenizeAndHumanizeErrors('<!-a')).toEqual([

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it,} from '@angular/core/testing/testing_internal';
 import {MockXHR} from '@angular/compiler/testing/xhr_mock';
 import {PromiseWrapper} from '../src/facade/async';
 import {isPresent} from '../src/facade/lang';
@@ -19,8 +18,7 @@ export function main() {
     beforeEach(() => { xhr = new MockXHR(); });
 
     function expectResponse(
-        request: Promise<string>, url: string, response: string,
-        done: any /** TODO #9100 */ = null) {
+        request: Promise<string>, url: string, response: string, done: () => void = null) {
       function onResponse(text: string): string {
         if (response === null) {
           throw `Unexpected response ${url} -> ${text}`;

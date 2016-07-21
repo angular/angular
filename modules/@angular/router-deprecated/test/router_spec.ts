@@ -9,8 +9,7 @@
 import {Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {provide} from '@angular/core';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 import {RouterOutlet} from '../src/directives/router_outlet';
 import {ObservableWrapper, PromiseWrapper} from '../src/facade/async';

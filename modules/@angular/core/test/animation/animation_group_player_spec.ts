@@ -7,7 +7,6 @@
  */
 
 import {AnimationGroupPlayer} from '../../src/animation/animation_group_player';
-import {isPresent} from '../../src/facade/lang';
 import {fakeAsync, flushMicrotasks} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
@@ -32,7 +31,7 @@ export function main() {
           } else {
             expect(actual).not.toEqual(status);
           }
-        }
+        };
 
     var assertPlaying = (player: MockAnimationPlayer, isPlaying: boolean) => {
       assertLastStatus(player, 'play', isPlaying);
