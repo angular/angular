@@ -20,4 +20,4 @@ export declare const BROWSER_DYNAMIC_PLATFORM_PROVIDERS: Array<any>;
 export declare const browserDynamicPlatform: () => PlatformRef;
 
 /** @experimental */
-export declare const CACHED_TEMPLATE_PROVIDER: Array<any>;
+export declare const RESOURCE_CACHE_PROVIDER: Array<any>;
