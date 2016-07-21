@@ -41,8 +41,9 @@ class InheritedFromParent {
 export function recognize(rootComponentType: Type, config: Routes, urlTree: UrlTree, url: string):
     Observable<RouterStateSnapshot> {
   try {
+    const rootSegment = split(urlTree.root, [], [], config).segment;
     const children =
-        processSegment(config, urlTree.root, InheritedFromParent.empty(null), PRIMARY_OUTLET);
+        processSegment(config, rootSegment, InheritedFromParent.empty(null), PRIMARY_OUTLET);
     const root = new ActivatedRouteSnapshot(
         [], Object.freeze({}), {}, PRIMARY_OUTLET, rootComponentType, null, urlTree.root, -1,
         InheritedResolve.empty);
@@ -127,6 +128,8 @@ function processPathsWithParamsAgainstRoute(
   const childConfig = getChildConfig(route);
 
   const {segment, slicedPath} = split(rawSegment, consumedPaths, rawSlicedPath, childConfig);
+  // console.log("raw", rawSegment)
+  // console.log(segment.toString(), childConfig)
 
   const snapshot = new ActivatedRouteSnapshot(
       consumedPaths, Object.freeze(merge(inherited.allParams, parameters)),

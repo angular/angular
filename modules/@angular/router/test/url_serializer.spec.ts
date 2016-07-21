@@ -6,7 +6,6 @@ describe('url serializer', () => {
 
   it('should parse the root url', () => {
     const tree = url.parse('/');
-
     expectSegment(tree.root, '');
     expect(url.serialize(tree)).toEqual('/');
   });
@@ -25,6 +24,26 @@ describe('url serializer', () => {
     expectSegment(tree.root.children['right'], 'four');
 
     expect(url.serialize(tree)).toEqual('/one/two(left:three//right:four)');
+  });
+
+  it('should parse top-level nodes with only secondary segment', () => {
+    const tree = url.parse('/(left:one)');
+
+    expect(tree.root.numberOfChildren).toEqual(1);
+    expectSegment(tree.root.children['left'], 'one');
+
+    expect(url.serialize(tree)).toEqual('/(left:one)');
+  });
+
+  it('should parse nodes with only secondary segment', () => {
+    const tree = url.parse('/one/(left:two)');
+
+    const one = tree.root.children[PRIMARY_OUTLET];
+    expectSegment(one, 'one', true);
+    expect(one.numberOfChildren).toEqual(1);
+    expectSegment(one.children['left'], 'two');
+
+    expect(url.serialize(tree)).toEqual('/one/(left:two)');
   });
 
   it('should not parse empty path segments with params', () => {
@@ -167,6 +186,9 @@ describe('url serializer', () => {
 });
 
 function expectSegment(segment: UrlSegment, expected: string, hasChildren: boolean = false): void {
+  if (segment.pathsWithParams.filter(s => s.path === '').length > 0) {
+    throw new Error(`UrlPathWithParams cannot be empty ${segment.pathsWithParams}`);
+  }
   const p = segment.pathsWithParams.map(p => serializePath(p)).join('/');
   expect(p).toEqual(expected);
   expect(Object.keys(segment.children).length > 0).toEqual(hasChildren);

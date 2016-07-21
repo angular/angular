@@ -195,8 +195,10 @@ export function serializePaths(segment: UrlSegment): string {
 }
 
 function serializeSegment(segment: UrlSegment, root: boolean): string {
-  if (segment.children[PRIMARY_OUTLET] && root) {
-    const primary = serializeSegment(segment.children[PRIMARY_OUTLET], false);
+  if (segment.hasChildren() && root) {
+    const primary = segment.children[PRIMARY_OUTLET] ?
+        serializeSegment(segment.children[PRIMARY_OUTLET], false) :
+        '';
     const children: string[] = [];
     forEach(segment.children, (v: UrlSegment, k: string) => {
       if (k !== PRIMARY_OUTLET) {
@@ -307,7 +309,10 @@ class UrlParser {
       this.capture('/');
     }
 
-    const paths = [this.parsePathWithParams()];
+    let paths: any[] = [];
+    if (!this.peekStartsWith('(')) {
+      paths.push(this.parsePathWithParams());
+    }
 
     while (this.peekStartsWith('/') && !this.peekStartsWith('//') && !this.peekStartsWith('/(')) {
       this.capture('/');
@@ -325,7 +330,10 @@ class UrlParser {
       res = this.parseParens(false);
     }
 
-    res[PRIMARY_OUTLET] = new UrlSegment(paths, children);
+    if (paths.length > 0 || Object.keys(children).length > 0) {
+      res[PRIMARY_OUTLET] = new UrlSegment(paths, children);
+    }
+
     return res;
   }
 
@@ -413,7 +421,6 @@ class UrlParser {
   parseParens(allowPrimary: boolean): {[key: string]: UrlSegment} {
     const segments: {[key: string]: UrlSegment} = {};
     this.capture('(');
-
     while (!this.peekStartsWith(')') && this.remaining.length > 0) {
       let path = matchPathWithParams(this.remaining);
       let outletName: string;
@@ -434,7 +441,6 @@ class UrlParser {
       }
     }
     this.capture(')');
-
     return segments;
   }
 }

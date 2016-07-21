@@ -494,6 +494,22 @@ describe('recognize', () => {
               checkActivatedRoute(c[1], 'c', {}, ComponentC, 'aux');
             });
       });
+
+      it('should work when split is at the root level', () => {
+        checkRecognize(
+            [
+              {path: '', component: ComponentA}, {path: 'b', component: ComponentB},
+              {path: 'c', component: ComponentC, outlet: 'aux'}
+            ],
+            '(aux:c)', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.root, '', {}, RootComponent);
+
+              const children = s.children(s.root);
+              expect(children.length).toEqual(2);
+              checkActivatedRoute(children[0], '', {}, ComponentA);
+              checkActivatedRoute(children[1], 'c', {}, ComponentC, 'aux');
+            });
+      });
     });
 
     describe('split at the end (right child)', () => {
