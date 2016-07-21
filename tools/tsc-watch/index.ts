@@ -79,9 +79,20 @@ if (platform == 'node') {
     start: 'File change detected. Starting incremental compilation...',
     error: 'error',
     complete: 'Compilation complete. Watching for file changes.',
-    onStartCmds:
-        [['node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', 'karma-js.conf.js']],
-    onChangeCmds: [['node', 'node_modules/karma/bin/karma', 'run', 'karma-js.conf.js']]
+    onStartCmds: [
+      [
+        'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9876',
+        'karma-js.conf.js'
+      ],
+      [
+        'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9877',
+        'modules/@angular/router/karma.conf.js'
+      ],
+    ],
+    onChangeCmds: [
+      ['node', 'node_modules/karma/bin/karma', 'run', 'karma-js.conf.js', '--port=9876'],
+      ['node', 'node_modules/karma/bin/karma', 'run', '--port=9877'],
+    ]
   });
 } else if (platform == 'tools') {
   tscWatch = new TscWatch({
@@ -93,6 +104,8 @@ if (platform == 'node') {
       'node', 'dist/tools/cjs-jasmine/index-tools', '--', '@angular/tsc-wrapped/**/*{_,.}spec.js'
     ]]
   });
+} else {
+  throw new Error(`unknown platform: ${platform}`);
 }
 
 if (runMode === 'watch') {
