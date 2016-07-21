@@ -9,7 +9,9 @@
 import {ParseSourceSpan} from '../parse_util';
 
 export class Message {
-  constructor(public nodes: Node[], public meaning: string, public description: string) {}
+  constructor(
+      public nodes: Node[], public placeholders: {[name: string]: string}, public meaning: string,
+      public description: string) {}
 }
 
 export interface Node { visit(visitor: Visitor, context?: any): any; }

@@ -6,30 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, Optional, SecurityContext, SchemaMetadata} from '../../../core/index';
+import {Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityContext} from '@angular/core';
 import {Console, MAX_INTERPOLATION_VALUES} from '../../core_private';
+
 import {ListWrapper, StringMapWrapper, SetWrapper,} from '../facade/collection';
-import {RegExpWrapper, isPresent, StringWrapper, isBlank} from '../facade/lang';
+import {RegExpWrapper, isPresent, isBlank} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';
 import {AST, Interpolation, ASTWithSource, TemplateBinding, RecursiveAstVisitor, BindingPipe, ParserError} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
-import {
-  CompileDirectiveMetadata, CompilePipeMetadata, CompileTokenMetadata,
-  removeIdentifierDuplicates,
-} from '../compile_metadata';
-import {HtmlParser, HtmlParseTreeResult} from '../html_parser/html_parser';
-import {splitNsName, mergeNsAndName} from '../html_parser/html_tags';
+import {CompileDirectiveMetadata, CompilePipeMetadata, CompileTokenMetadata, removeIdentifierDuplicates,} from '../compile_metadata';
+import {HtmlParser, ParseTreeResult} from '../html_parser/html_parser';
+import {splitNsName, mergeNsAndName} from '../html_parser/tags';
 import {ParseSourceSpan, ParseError, ParseErrorLevel} from '../parse_util';
 import {InterpolationConfig} from '../html_parser/interpolation_config';
-import {ElementAst, BoundElementPropertyAst, BoundEventAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst, ProviderAst, ProviderAstType, VariableAst} from './template_ast';
+import {ElementAst, BoundElementPropertyAst, BoundEventAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst, VariableAst} from './template_ast';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {preparseElement, PreparsedElementType} from './template_preparser';
 import {isStyleUrlResolvable} from '../style_url_resolver';
-import {HtmlAstVisitor, HtmlElementAst, HtmlAttrAst, HtmlTextAst, HtmlCommentAst, HtmlExpansionAst, HtmlExpansionCaseAst, htmlVisitAll} from '../html_parser/html_ast';
+import * as html from '../html_parser/ast';
 import {splitAtColon} from '../util';
 import {identifierToken, Identifiers} from '../identifiers';
-import {expandNodes} from '../html_parser/expander';
+import {expandNodes} from '../html_parser/icu_ast_expander';
 import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer';
 
 // Group 1 = "bind-"
@@ -118,7 +116,7 @@ export class TemplateParser {
       // Transform ICU messages to angular directives
       const expandedHtmlAst = expandNodes(htmlAstWithErrors.rootNodes);
       errors.push(...expandedHtmlAst.errors);
-      htmlAstWithErrors = new HtmlParseTreeResult(expandedHtmlAst.nodes, errors);
+      htmlAstWithErrors = new ParseTreeResult(expandedHtmlAst.nodes, errors);
     }
 
     if (htmlAstWithErrors.rootNodes.length > 0) {
@@ -130,7 +128,7 @@ export class TemplateParser {
           providerViewContext, uniqDirectives, uniqPipes, schemas, this._exprParser,
           this._schemaRegistry);
 
-      result = htmlVisitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_ELEMENT_CONTEXT);
+      result = html.visitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_ELEMENT_CONTEXT);
       errors.push(...parseVisitor.errors, ...providerViewContext.errors);
     } else {
       result = [];
@@ -170,7 +168,7 @@ export class TemplateParser {
   }
 }
 
-class TemplateParseVisitor implements HtmlAstVisitor {
+class TemplateParseVisitor implements html.Visitor {
   selectorMatcher: SelectorMatcher;
   errors: TemplateParseError[] = [];
   directivesIndex = new Map<CompileDirectiveMetadata, number>();
@@ -291,27 +289,27 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     }
   }
 
-  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+  visitExpansion(expansion: html.Expansion, context: any): any { return null; }
 
-  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
+  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return null; }
 
-  visitText(ast: HtmlTextAst, parent: ElementContext): any {
+  visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
-    const expr = this._parseInterpolation(ast.value, ast.sourceSpan);
+    const expr = this._parseInterpolation(text.value, text.sourceSpan);
     if (isPresent(expr)) {
-      return new BoundTextAst(expr, ngContentIndex, ast.sourceSpan);
+      return new BoundTextAst(expr, ngContentIndex, text.sourceSpan);
     } else {
-      return new TextAst(ast.value, ngContentIndex, ast.sourceSpan);
+      return new TextAst(text.value, ngContentIndex, text.sourceSpan);
     }
   }
 
-  visitAttr(ast: HtmlAttrAst, contex: any): any {
-    return new AttrAst(ast.name, ast.value, ast.sourceSpan);
+  visitAttribute(attribute: html.Attribute, contex: any): any {
+    return new AttrAst(attribute.name, attribute.value, attribute.sourceSpan);
   }
 
-  visitComment(ast: HtmlCommentAst, context: any): any { return null; }
+  visitComment(comment: html.Comment, context: any): any { return null; }
 
-  visitElement(element: HtmlElementAst, parent: ElementContext): any {
+  visitElement(element: html.Element, parent: ElementContext): any {
     const nodeName = element.name;
     const preparsedElement = preparseElement(element);
     if (preparsedElement.type === PreparsedElementType.SCRIPT ||
@@ -359,7 +357,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
       if (!hasBinding && !hasTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
-        attrs.push(this.visitAttr(attr, null));
+        attrs.push(this.visitAttribute(attr, null));
         matchableAttrs.push([attr.name, attr.value]);
       }
       if (hasTemplateBinding) {
@@ -380,7 +378,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     const providerContext = new ProviderElementContext(
         this.providerViewContext, parent.providerContext, isViewRoot, directiveAsts, attrs,
         references, element.sourceSpan);
-    const children = htmlVisitAll(
+    const children = html.visitAll(
         preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children,
         ElementContext.create(
             isTemplateElement, directiveAsts,
@@ -448,7 +446,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 
   private _parseInlineTemplateBinding(
-      attr: HtmlAttrAst, targetMatchableAttrs: string[][],
+      attr: html.Attribute, targetMatchableAttrs: string[][],
       targetProps: BoundElementOrDirectiveProperty[], targetVars: VariableAst[]): boolean {
     let templateBindingsSource: string = null;
     if (this._normalizeAttributeName(attr.name) == TEMPLATE_ATTR) {
@@ -477,7 +475,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 
   private _parseAttr(
-      isTemplateElement: boolean, attr: HtmlAttrAst, targetMatchableAttrs: string[][],
+      isTemplateElement: boolean, attr: html.Attribute, targetMatchableAttrs: string[][],
       targetProps: BoundElementOrDirectiveProperty[],
       targetAnimationProps: BoundElementPropertyAst[], targetEvents: BoundEventAst[],
       targetRefs: ElementOrDirectiveRef[], targetVars: VariableAst[]): boolean {
@@ -910,8 +908,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 }
 
-class NonBindableVisitor implements HtmlAstVisitor {
-  visitElement(ast: HtmlElementAst, parent: ElementContext): ElementAst {
+class NonBindableVisitor implements html.Visitor {
+  visitElement(ast: html.Element, parent: ElementContext): ElementAst {
     const preparsedElement = preparseElement(ast);
     if (preparsedElement.type === PreparsedElementType.SCRIPT ||
         preparsedElement.type === PreparsedElementType.STYLE ||
@@ -925,21 +923,25 @@ class NonBindableVisitor implements HtmlAstVisitor {
     const attrNameAndValues = ast.attrs.map(attrAst => [attrAst.name, attrAst.value]);
     const selector = createElementCssSelector(ast.name, attrNameAndValues);
     const ngContentIndex = parent.findNgContentIndex(selector);
-    const children = htmlVisitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
+    const children = html.visitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
     return new ElementAst(
-        ast.name, htmlVisitAll(this, ast.attrs), [], [], [], [], [], false, children,
+        ast.name, html.visitAll(this, ast.attrs), [], [], [], [], [], false, children,
         ngContentIndex, ast.sourceSpan);
   }
-  visitComment(ast: HtmlCommentAst, context: any): any { return null; }
-  visitAttr(ast: HtmlAttrAst, context: any): AttrAst {
-    return new AttrAst(ast.name, ast.value, ast.sourceSpan);
+  visitComment(comment: html.Comment, context: any): any { return null; }
+
+  visitAttribute(attribute: html.Attribute, context: any): AttrAst {
+    return new AttrAst(attribute.name, attribute.value, attribute.sourceSpan);
   }
-  visitText(ast: HtmlTextAst, parent: ElementContext): TextAst {
+
+  visitText(text: html.Text, parent: ElementContext): TextAst {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
-    return new TextAst(ast.value, ngContentIndex, ast.sourceSpan);
+    return new TextAst(text.value, ngContentIndex, text.sourceSpan);
   }
-  visitExpansion(ast: HtmlExpansionAst, context: any): any { return ast; }
-  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return ast; }
+
+  visitExpansion(expansion: html.Expansion, context: any): any { return expansion; }
+
+  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
 }
 
 class BoundElementOrDirectiveProperty {
@@ -953,7 +955,7 @@ class ElementOrDirectiveRef {
 }
 
 export function splitClasses(classAttrValue: string): string[] {
-  return StringWrapper.split(classAttrValue.trim(), /\s+/g);
+  return classAttrValue.trim().split(/\s+/g);
 }
 
 class ElementContext {
@@ -967,7 +969,7 @@ class ElementContext {
       const ngContentSelectors = component.directive.template.ngContentSelectors;
       for (let i = 0; i < ngContentSelectors.length; i++) {
         const selector = ngContentSelectors[i];
-        if (StringWrapper.equals(selector, '*')) {
+        if (selector === '*') {
           wildcardNgContentIndex = i;
         } else {
           matcher.addSelectables(CssSelector.parse(ngContentSelectors[i]), i);

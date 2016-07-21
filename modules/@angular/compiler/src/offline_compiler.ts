@@ -70,7 +70,7 @@ export class OfflineCompiler {
     return Promise
         .all(components.map((compType) => {
           const compMeta = this._metadataResolver.getDirectiveMetadata(<any>compType);
-          let ngModule = ngModulesSummary.ngModuleByComponent.get(compType);
+          const ngModule = ngModulesSummary.ngModuleByComponent.get(compType);
           if (!ngModule) {
             throw new BaseException(
                 `Cannot determine the module for component ${compMeta.type.name}!`);

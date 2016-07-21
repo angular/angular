@@ -7,12 +7,12 @@
  */
 
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
-import {HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst} from '../../src/html_parser/html_ast';
-import {HtmlTokenType} from '../../src/html_parser/html_lexer';
-import {HtmlParseTreeResult, HtmlParser, HtmlTreeError} from '../../src/html_parser/html_parser';
+import * as html from '../../src/html_parser/ast';
+import {HtmlParser, ParseTreeResult, TreeError} from '../../src/html_parser/html_parser';
+import {TokenType} from '../../src/html_parser/lexer';
 import {ParseError} from '../../src/parse_util';
 
-import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './html_ast_spec_utils';
+import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spec_utils';
 
 export function main() {
   describe('HtmlParser', () => {
@@ -23,24 +23,24 @@ export function main() {
     describe('parse', () => {
       describe('text nodes', () => {
         it('should parse root level text nodes', () => {
-          expect(humanizeDom(parser.parse('a', 'TestComp'))).toEqual([[HtmlTextAst, 'a', 0]]);
+          expect(humanizeDom(parser.parse('a', 'TestComp'))).toEqual([[html.Text, 'a', 0]]);
         });
 
         it('should parse text nodes inside regular elements', () => {
           expect(humanizeDom(parser.parse('<div>a</div>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'div', 0], [HtmlTextAst, 'a', 1]
+            [html.Element, 'div', 0], [html.Text, 'a', 1]
           ]);
         });
 
         it('should parse text nodes inside template elements', () => {
           expect(humanizeDom(parser.parse('<template>a</template>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'template', 0], [HtmlTextAst, 'a', 1]
+            [html.Element, 'template', 0], [html.Text, 'a', 1]
           ]);
         });
 
         it('should parse CDATA', () => {
           expect(humanizeDom(parser.parse('<![CDATA[text]]>', 'TestComp'))).toEqual([
-            [HtmlTextAst, 'text', 0]
+            [html.Text, 'text', 0]
           ]);
         });
       });
@@ -48,27 +48,27 @@ export function main() {
       describe('elements', () => {
         it('should parse root level elements', () => {
           expect(humanizeDom(parser.parse('<div></div>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'div', 0]
+            [html.Element, 'div', 0]
           ]);
         });
 
         it('should parse elements inside of regular elements', () => {
           expect(humanizeDom(parser.parse('<div><span></span></div>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'div', 0], [HtmlElementAst, 'span', 1]
+            [html.Element, 'div', 0], [html.Element, 'span', 1]
           ]);
         });
 
         it('should parse elements inside of template elements', () => {
           expect(humanizeDom(parser.parse('<template><span></span></template>', 'TestComp')))
-              .toEqual([[HtmlElementAst, 'template', 0], [HtmlElementAst, 'span', 1]]);
+              .toEqual([[html.Element, 'template', 0], [html.Element, 'span', 1]]);
         });
 
         it('should support void elements', () => {
           expect(humanizeDom(parser.parse('<link rel="author license" href="/about">', 'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'link', 0],
-                [HtmlAttrAst, 'rel', 'author license'],
-                [HtmlAttrAst, 'href', '/about'],
+                [html.Element, 'link', 0],
+                [html.Attribute, 'rel', 'author license'],
+                [html.Attribute, 'href', '/about'],
               ]);
         });
 
@@ -87,30 +87,30 @@ export function main() {
 
         it('should close void elements on text nodes', () => {
           expect(humanizeDom(parser.parse('<p>before<br>after</p>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'p', 0],
-            [HtmlTextAst, 'before', 1],
-            [HtmlElementAst, 'br', 1],
-            [HtmlTextAst, 'after', 1],
+            [html.Element, 'p', 0],
+            [html.Text, 'before', 1],
+            [html.Element, 'br', 1],
+            [html.Text, 'after', 1],
           ]);
         });
 
         it('should support optional end tags', () => {
           expect(humanizeDom(parser.parse('<div><p>1<p>2</div>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'div', 0],
-            [HtmlElementAst, 'p', 1],
-            [HtmlTextAst, '1', 2],
-            [HtmlElementAst, 'p', 1],
-            [HtmlTextAst, '2', 2],
+            [html.Element, 'div', 0],
+            [html.Element, 'p', 1],
+            [html.Text, '1', 2],
+            [html.Element, 'p', 1],
+            [html.Text, '2', 2],
           ]);
         });
 
         it('should support nested elements', () => {
           expect(humanizeDom(parser.parse('<ul><li><ul><li></li></ul></li></ul>', 'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'ul', 0],
-                [HtmlElementAst, 'li', 1],
-                [HtmlElementAst, 'ul', 2],
-                [HtmlElementAst, 'li', 3],
+                [html.Element, 'ul', 0],
+                [html.Element, 'li', 1],
+                [html.Element, 'ul', 2],
+                [html.Element, 'li', 3],
               ]);
         });
 
@@ -120,19 +120,19 @@ export function main() {
                   '<table><thead><tr head></tr></thead><tr noparent></tr><tbody><tr body></tr></tbody><tfoot><tr foot></tr></tfoot></table>',
                   'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'table', 0],
-                [HtmlElementAst, 'thead', 1],
-                [HtmlElementAst, 'tr', 2],
-                [HtmlAttrAst, 'head', ''],
-                [HtmlElementAst, 'tbody', 1],
-                [HtmlElementAst, 'tr', 2],
-                [HtmlAttrAst, 'noparent', ''],
-                [HtmlElementAst, 'tbody', 1],
-                [HtmlElementAst, 'tr', 2],
-                [HtmlAttrAst, 'body', ''],
-                [HtmlElementAst, 'tfoot', 1],
-                [HtmlElementAst, 'tr', 2],
-                [HtmlAttrAst, 'foot', ''],
+                [html.Element, 'table', 0],
+                [html.Element, 'thead', 1],
+                [html.Element, 'tr', 2],
+                [html.Attribute, 'head', ''],
+                [html.Element, 'tbody', 1],
+                [html.Element, 'tr', 2],
+                [html.Attribute, 'noparent', ''],
+                [html.Element, 'tbody', 1],
+                [html.Element, 'tr', 2],
+                [html.Attribute, 'body', ''],
+                [html.Element, 'tfoot', 1],
+                [html.Element, 'tr', 2],
+                [html.Attribute, 'foot', ''],
               ]);
         });
 
@@ -140,10 +140,10 @@ export function main() {
           expect(humanizeDom(parser.parse(
                      '<table><ng-container><tr></tr></ng-container></table>', 'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'table', 0],
-                [HtmlElementAst, 'tbody', 1],
-                [HtmlElementAst, 'ng-container', 2],
-                [HtmlElementAst, 'tr', 3],
+                [html.Element, 'table', 0],
+                [html.Element, 'tbody', 1],
+                [html.Element, 'ng-container', 2],
+                [html.Element, 'tr', 3],
               ]);
         });
 
@@ -152,42 +152,43 @@ export function main() {
                      '<table><thead><ng-container><tr></tr></ng-container></thead></table>',
                      'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'table', 0],
-                [HtmlElementAst, 'thead', 1],
-                [HtmlElementAst, 'ng-container', 2],
-                [HtmlElementAst, 'tr', 3],
+                [html.Element, 'table', 0],
+                [html.Element, 'thead', 1],
+                [html.Element, 'ng-container', 2],
+                [html.Element, 'tr', 3],
               ]);
         });
 
         it('should not add the requiredParent when the parent is a template', () => {
           expect(humanizeDom(parser.parse('<template><tr></tr></template>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'template', 0],
-            [HtmlElementAst, 'tr', 1],
+            [html.Element, 'template', 0],
+            [html.Element, 'tr', 1],
           ]);
         });
 
         // https://github.com/angular/angular/issues/5967
         it('should not add the requiredParent to a template root element', () => {
           expect(humanizeDom(parser.parse('<tr></tr>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'tr', 0],
+            [html.Element, 'tr', 0],
           ]);
         });
 
         it('should support explicit mamespace', () => {
           expect(humanizeDom(parser.parse('<myns:div></myns:div>', 'TestComp'))).toEqual([
-            [HtmlElementAst, ':myns:div', 0]
+            [html.Element, ':myns:div', 0]
           ]);
         });
 
         it('should support implicit mamespace', () => {
           expect(humanizeDom(parser.parse('<svg></svg>', 'TestComp'))).toEqual([
-            [HtmlElementAst, ':svg:svg', 0]
+            [html.Element, ':svg:svg', 0]
           ]);
         });
 
         it('should propagate the namespace', () => {
           expect(humanizeDom(parser.parse('<myns:div><p></p></myns:div>', 'TestComp'))).toEqual([
-            [HtmlElementAst, ':myns:div', 0], [HtmlElementAst, ':myns:p', 1]
+            [html.Element, ':myns:div', 0],
+            [html.Element, ':myns:p', 1],
           ]);
         });
 
@@ -202,13 +203,13 @@ export function main() {
 
         it('should support self closing void elements', () => {
           expect(humanizeDom(parser.parse('<input />', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'input', 0]
+            [html.Element, 'input', 0]
           ]);
         });
 
         it('should support self closing foreign elements', () => {
           expect(humanizeDom(parser.parse('<math />', 'TestComp'))).toEqual([
-            [HtmlElementAst, ':math:math', 0]
+            [html.Element, ':math:math', 0]
           ]);
         });
 
@@ -217,13 +218,13 @@ export function main() {
                      '<p>\n</p><textarea>\n</textarea><pre>\n\n</pre><listing>\n\n</listing>',
                      'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'p', 0],
-                [HtmlTextAst, '\n', 1],
-                [HtmlElementAst, 'textarea', 0],
-                [HtmlElementAst, 'pre', 0],
-                [HtmlTextAst, '\n', 1],
-                [HtmlElementAst, 'listing', 0],
-                [HtmlTextAst, '\n', 1],
+                [html.Element, 'p', 0],
+                [html.Text, '\n', 1],
+                [html.Element, 'textarea', 0],
+                [html.Element, 'pre', 0],
+                [html.Text, '\n', 1],
+                [html.Element, 'listing', 0],
+                [html.Text, '\n', 1],
               ]);
         });
 
@@ -232,33 +233,37 @@ export function main() {
       describe('attributes', () => {
         it('should parse attributes on regular elements case sensitive', () => {
           expect(humanizeDom(parser.parse('<div kEy="v" key2=v2></div>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'div', 0],
-            [HtmlAttrAst, 'kEy', 'v'],
-            [HtmlAttrAst, 'key2', 'v2'],
+            [html.Element, 'div', 0],
+            [html.Attribute, 'kEy', 'v'],
+            [html.Attribute, 'key2', 'v2'],
           ]);
         });
 
         it('should parse attributes without values', () => {
           expect(humanizeDom(parser.parse('<div k></div>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'div', 0], [HtmlAttrAst, 'k', '']
+            [html.Element, 'div', 0],
+            [html.Attribute, 'k', ''],
           ]);
         });
 
         it('should parse attributes on svg elements case sensitive', () => {
           expect(humanizeDom(parser.parse('<svg viewBox="0"></svg>', 'TestComp'))).toEqual([
-            [HtmlElementAst, ':svg:svg', 0], [HtmlAttrAst, 'viewBox', '0']
+            [html.Element, ':svg:svg', 0],
+            [html.Attribute, 'viewBox', '0'],
           ]);
         });
 
         it('should parse attributes on template elements', () => {
           expect(humanizeDom(parser.parse('<template k="v"></template>', 'TestComp'))).toEqual([
-            [HtmlElementAst, 'template', 0], [HtmlAttrAst, 'k', 'v']
+            [html.Element, 'template', 0],
+            [html.Attribute, 'k', 'v'],
           ]);
         });
 
         it('should support namespace', () => {
           expect(humanizeDom(parser.parse('<svg:use xlink:href="Port" />', 'TestComp'))).toEqual([
-            [HtmlElementAst, ':svg:use', 0], [HtmlAttrAst, ':xlink:href', 'Port']
+            [html.Element, ':svg:use', 0],
+            [html.Attribute, ':xlink:href', 'Port'],
           ]);
         });
       });
@@ -266,7 +271,8 @@ export function main() {
       describe('comments', () => {
         it('should preserve comments', () => {
           expect(humanizeDom(parser.parse('<!-- comment --><div></div>', 'TestComp'))).toEqual([
-            [HtmlCommentAst, 'comment', 0], [HtmlElementAst, 'div', 0]
+            [html.Comment, 'comment', 0],
+            [html.Element, 'div', 0],
           ]);
         });
       });
@@ -278,54 +284,54 @@ export function main() {
               'TestComp', true);
 
           expect(humanizeDom(parsed)).toEqual([
-            [HtmlElementAst, 'div', 0],
-            [HtmlTextAst, 'before', 1],
-            [HtmlExpansionAst, 'messages.length', 'plural', 1],
-            [HtmlExpansionCaseAst, '=0', 2],
-            [HtmlExpansionCaseAst, '=1', 2],
-            [HtmlTextAst, 'after', 1],
+            [html.Element, 'div', 0],
+            [html.Text, 'before', 1],
+            [html.Expansion, 'messages.length', 'plural', 1],
+            [html.ExpansionCase, '=0', 2],
+            [html.ExpansionCase, '=1', 2],
+            [html.Text, 'after', 1],
           ]);
           let cases = (<any>parsed.rootNodes[0]).children[1].cases;
 
-          expect(humanizeDom(new HtmlParseTreeResult(cases[0].expression, []))).toEqual([
-            [HtmlTextAst, 'You have ', 0],
-            [HtmlElementAst, 'b', 0],
-            [HtmlTextAst, 'no', 1],
-            [HtmlTextAst, ' messages', 0],
+          expect(humanizeDom(new ParseTreeResult(cases[0].expression, []))).toEqual([
+            [html.Text, 'You have ', 0],
+            [html.Element, 'b', 0],
+            [html.Text, 'no', 1],
+            [html.Text, ' messages', 0],
           ]);
 
-          expect(humanizeDom(new HtmlParseTreeResult(cases[1].expression, [
-          ]))).toEqual([[HtmlTextAst, 'One {{message}}', 0]]);
+          expect(humanizeDom(new ParseTreeResult(cases[1].expression, [
+          ]))).toEqual([[html.Text, 'One {{message}}', 0]]);
         });
 
         it('should parse out nested expansion forms', () => {
           let parsed = parser.parse(
               `{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`, 'TestComp', true);
           expect(humanizeDom(parsed)).toEqual([
-            [HtmlExpansionAst, 'messages.length', 'plural', 0],
-            [HtmlExpansionCaseAst, '=0', 1],
+            [html.Expansion, 'messages.length', 'plural', 0],
+            [html.ExpansionCase, '=0', 1],
           ]);
 
           let firstCase = (<any>parsed.rootNodes[0]).cases[0];
 
-          expect(humanizeDom(new HtmlParseTreeResult(firstCase.expression, []))).toEqual([
-            [HtmlExpansionAst, 'p.gender', 'gender', 0],
-            [HtmlExpansionCaseAst, '=m', 1],
-            [HtmlTextAst, ' ', 0],
+          expect(humanizeDom(new ParseTreeResult(firstCase.expression, []))).toEqual([
+            [html.Expansion, 'p.gender', 'gender', 0],
+            [html.ExpansionCase, '=m', 1],
+            [html.Text, ' ', 0],
           ]);
         });
 
         it('should error when expansion form is not closed', () => {
           let p = parser.parse(`{messages.length, plural, =0 {one}`, 'TestComp', true);
           expect(humanizeErrors(p.errors)).toEqual([
-            [null, 'Invalid expansion form. Missing \'}\'.', '0:34']
+            [null, 'Invalid ICU message. Missing \'}\'.', '0:34']
           ]);
         });
 
         it('should error when expansion case is not closed', () => {
           let p = parser.parse(`{messages.length, plural, =0 {one`, 'TestComp', true);
           expect(humanizeErrors(p.errors)).toEqual([
-            [null, 'Invalid expansion form. Missing \'}\'.', '0:29']
+            [null, 'Invalid ICU message. Missing \'}\'.', '0:29']
           ]);
         });
 
@@ -342,23 +348,33 @@ export function main() {
           expect(humanizeDomSourceSpans(parser.parse(
                      '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', 'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'div', 0, '<div [prop]="v1" (e)="do()" attr="v2" noValue>'],
-                [HtmlAttrAst, '[prop]', 'v1', '[prop]="v1"'],
-                [HtmlAttrAst, '(e)', 'do()', '(e)="do()"'],
-                [HtmlAttrAst, 'attr', 'v2', 'attr="v2"'],
-                [HtmlAttrAst, 'noValue', '', 'noValue'],
-                [HtmlTextAst, '\na\n', 1, '\na\n'],
+                [html.Element, 'div', 0, '<div [prop]="v1" (e)="do()" attr="v2" noValue>'],
+                [html.Attribute, '[prop]', 'v1', '[prop]="v1"'],
+                [html.Attribute, '(e)', 'do()', '(e)="do()"'],
+                [html.Attribute, 'attr', 'v2', 'attr="v2"'],
+                [html.Attribute, 'noValue', '', 'noValue'],
+                [html.Text, '\na\n', 1, '\na\n'],
               ]);
         });
 
         it('should set the start and end source spans', () => {
-          let node = <HtmlElementAst>parser.parse('<div>a</div>', 'TestComp').rootNodes[0];
+          let node = <html.Element>parser.parse('<div>a</div>', 'TestComp').rootNodes[0];
 
           expect(node.startSourceSpan.start.offset).toEqual(0);
           expect(node.startSourceSpan.end.offset).toEqual(5);
 
           expect(node.endSourceSpan.start.offset).toEqual(6);
           expect(node.endSourceSpan.end.offset).toEqual(12);
+        });
+
+        it('should support expansion form', () => {
+          expect(humanizeDomSourceSpans(
+                     parser.parse('<div>{count, plural, =0 {msg}}</div>', 'TestComp', true)))
+              .toEqual([
+                [html.Element, 'div', 0, '<div>'],
+                [html.Expansion, 'count', 'plural', 1, '{count, plural, =0 {msg}}'],
+                [html.ExpansionCase, '=0', 2, '=0 {msg}'],
+              ]);
         });
       });
 
@@ -403,7 +419,7 @@ export function main() {
           let errors = parser.parse('<!-err--><div></p></div>', 'TestComp').errors;
           expect(errors.length).toEqual(2);
           expect(humanizeErrors(errors)).toEqual([
-            [HtmlTokenType.COMMENT_START, 'Unexpected character "e"', '0:3'],
+            [TokenType.COMMENT_START, 'Unexpected character "e"', '0:3'],
             ['p', 'Unexpected closing tag "p"', '0:14']
           ]);
         });
@@ -414,7 +430,7 @@ export function main() {
 
 export function humanizeErrors(errors: ParseError[]): any[] {
   return errors.map(e => {
-    if (e instanceof HtmlTreeError) {
+    if (e instanceof TreeError) {
       // Parser errors
       return [<any>e.elementName, e.msg, humanizeLineColumn(e.span.start)];
     }

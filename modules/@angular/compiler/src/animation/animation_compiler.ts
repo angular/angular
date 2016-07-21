@@ -10,9 +10,9 @@ import {AUTO_STYLE} from '@angular/core';
 
 import {ANY_STATE, DEFAULT_STATE, EMPTY_STATE} from '../../core_private';
 import {CompileDirectiveMetadata} from '../compile_metadata';
-import {ListWrapper, Map, StringMapWrapper} from '../facade/collection';
+import {StringMapWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
-import {isArray, isBlank, isPresent} from '../facade/lang';
+import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import * as t from '../template_parser/template_ast';

@@ -84,14 +84,14 @@ export class CodeGenerator {
   }
 
   codegen(): Promise<any> {
-    let filePaths =
+    const filePaths =
         this.program.getSourceFiles().map(sf => sf.fileName).filter(f => !GENERATED_FILES.test(f));
-    let fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
-    let ngModules = fileMetas.reduce((ngModules, fileMeta) => {
+    const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
+    const ngModules = fileMetas.reduce((ngModules, fileMeta) => {
       ngModules.push(...fileMeta.ngModules);
       return ngModules;
     }, <StaticSymbol[]>[]);
-    let analyzedNgModules = this.compiler.analyzeModules(ngModules);
+    const analyzedNgModules = this.compiler.analyzeModules(ngModules);
     return Promise
         .all(fileMetas.map(
             (fileMeta) => this.compiler

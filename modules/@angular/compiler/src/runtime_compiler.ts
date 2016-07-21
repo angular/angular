@@ -9,22 +9,24 @@
 import {Compiler, ComponentFactory, ComponentResolver, ComponentStillLoadingError, Injectable, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleMetadata, OptionalMetadata, Provider, SchemaMetadata, SkipSelfMetadata} from '@angular/core';
 
 import {Console} from '../core_private';
-import {BaseException} from '../src/facade/exceptions';
-import {ConcreteType, IS_DART, Type, isBlank, isString, stringify} from '../src/facade/lang';
 
-import {PromiseWrapper} from '../src/facade/async';
-import {createHostComponentMeta, CompileDirectiveMetadata, CompilePipeMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata} from './compile_metadata';
-import {StyleCompiler, CompiledStylesheet} from './style_compiler';
-import {ViewCompiler, ViewFactoryDependency, ComponentFactoryDependency} from './view_compiler/view_compiler';
-import {NgModuleCompiler} from './ng_module_compiler';
-import {TemplateParser} from './template_parser/template_parser';
-import {DirectiveNormalizer} from './directive_normalizer';
-import {CompileMetadataResolver} from './metadata_resolver';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, createHostComponentMeta} from './compile_metadata';
 import {CompilerConfig} from './config';
+import {DirectiveNormalizer} from './directive_normalizer';
+import {PromiseWrapper} from './facade/async';
+import {BaseException} from './facade/exceptions';
+import {ConcreteType, IS_DART, Type, isBlank, isString, stringify} from './facade/lang';
+import {CompileMetadataResolver} from './metadata_resolver';
+import {NgModuleCompiler} from './ng_module_compiler';
 import * as ir from './output/output_ast';
-import {jitStatements} from './output/output_jit';
 import {interpretStatements} from './output/output_interpreter';
+import {jitStatements} from './output/output_jit';
+import {CompiledStylesheet, StyleCompiler} from './style_compiler';
+import {TemplateParser} from './template_parser/template_parser';
 import {SyncAsyncResult} from './util';
+import {ComponentFactoryDependency, ViewCompiler, ViewFactoryDependency} from './view_compiler/view_compiler';
+
+
 
 /**
  * An internal module of the Angular compiler that begins with component types,

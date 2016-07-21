@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as i18nAst from '../i18n_ast';
+import * as html from '../../html_parser/ast';
+import * as i18n from '../i18n_ast';
 
 export interface Serializer {
-  write(messageMap: {[k: string]: i18nAst.Message}): string;
+  write(messageMap: {[id: string]: i18n.Message}): string;
 
-  load(content: string): {[k: string]: i18nAst.Node[]};
+  load(content: string, url: string, placeholders: {[id: string]: {[name: string]: string}}):
+      {[id: string]: html.Node[]};
 }

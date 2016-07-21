@@ -7,12 +7,12 @@
  */
 
 import {ddescribe, describe, expect, iit, it} from '../../../core/testing/testing_internal';
-import {ExpansionResult, expandNodes} from '../../src/html_parser/expander';
-import {HtmlAttrAst, HtmlElementAst, HtmlTextAst} from '../../src/html_parser/html_ast';
+import * as html from '../../src/html_parser/ast';
 import {HtmlParser} from '../../src/html_parser/html_parser';
+import {ExpansionResult, expandNodes} from '../../src/html_parser/icu_ast_expander';
 import {ParseError} from '../../src/parse_util';
 
-import {humanizeNodes} from './html_ast_spec_utils';
+import {humanizeNodes} from './ast_spec_utils';
 
 export function main() {
   describe('Expander', () => {
@@ -26,13 +26,13 @@ export function main() {
       const res = expand(`{messages.length, plural,=0 {zero<b>bold</b>}}`);
 
       expect(humanizeNodes(res.nodes)).toEqual([
-        [HtmlElementAst, 'ng-container', 0],
-        [HtmlAttrAst, '[ngPlural]', 'messages.length'],
-        [HtmlElementAst, 'template', 1],
-        [HtmlAttrAst, 'ngPluralCase', '=0'],
-        [HtmlTextAst, 'zero', 2],
-        [HtmlElementAst, 'b', 2],
-        [HtmlTextAst, 'bold', 3],
+        [html.Element, 'ng-container', 0],
+        [html.Attribute, '[ngPlural]', 'messages.length'],
+        [html.Element, 'template', 1],
+        [html.Attribute, 'ngPluralCase', '=0'],
+        [html.Text, 'zero', 2],
+        [html.Element, 'b', 2],
+        [html.Text, 'bold', 3],
       ]);
     });
 
@@ -40,23 +40,23 @@ export function main() {
       const res = expand(`{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`);
 
       expect(humanizeNodes(res.nodes)).toEqual([
-        [HtmlElementAst, 'ng-container', 0],
-        [HtmlAttrAst, '[ngPlural]', 'messages.length'],
-        [HtmlElementAst, 'template', 1],
-        [HtmlAttrAst, 'ngPluralCase', '=0'],
-        [HtmlElementAst, 'ng-container', 2],
-        [HtmlAttrAst, '[ngSwitch]', 'p.gender'],
-        [HtmlElementAst, 'template', 3],
-        [HtmlAttrAst, 'ngSwitchCase', '=m'],
-        [HtmlTextAst, 'm', 4],
-        [HtmlTextAst, ' ', 2],
+        [html.Element, 'ng-container', 0],
+        [html.Attribute, '[ngPlural]', 'messages.length'],
+        [html.Element, 'template', 1],
+        [html.Attribute, 'ngPluralCase', '=0'],
+        [html.Element, 'ng-container', 2],
+        [html.Attribute, '[ngSwitch]', 'p.gender'],
+        [html.Element, 'template', 3],
+        [html.Attribute, 'ngSwitchCase', '=m'],
+        [html.Text, 'm', 4],
+        [html.Text, ' ', 2],
       ]);
     });
 
     it('should correctly set source code positions', () => {
       const nodes = expand(`{messages.length, plural,=0 {<b>bold</b>}}`).nodes;
 
-      const container: HtmlElementAst = <HtmlElementAst>nodes[0];
+      const container: html.Element = <html.Element>nodes[0];
       expect(container.sourceSpan.start.col).toEqual(0);
       expect(container.sourceSpan.end.col).toEqual(42);
       expect(container.startSourceSpan.start.col).toEqual(0);
@@ -68,7 +68,7 @@ export function main() {
       expect(switchExp.sourceSpan.start.col).toEqual(1);
       expect(switchExp.sourceSpan.end.col).toEqual(16);
 
-      const template: HtmlElementAst = <HtmlElementAst>container.children[0];
+      const template: html.Element = <html.Element>container.children[0];
       expect(template.sourceSpan.start.col).toEqual(25);
       expect(template.sourceSpan.end.col).toEqual(41);
 
@@ -76,7 +76,7 @@ export function main() {
       expect(switchCheck.sourceSpan.start.col).toEqual(25);
       expect(switchCheck.sourceSpan.end.col).toEqual(28);
 
-      const b: HtmlElementAst = <HtmlElementAst>template.children[0];
+      const b: html.Element = <html.Element>template.children[0];
       expect(b.sourceSpan.start.col).toEqual(29);
       expect(b.endSourceSpan.end.col).toEqual(40);
     });
@@ -85,11 +85,11 @@ export function main() {
       const res = expand(`{person.gender, gender,=male {m}}`);
 
       expect(humanizeNodes(res.nodes)).toEqual([
-        [HtmlElementAst, 'ng-container', 0],
-        [HtmlAttrAst, '[ngSwitch]', 'person.gender'],
-        [HtmlElementAst, 'template', 1],
-        [HtmlAttrAst, 'ngSwitchCase', '=male'],
-        [HtmlTextAst, 'm', 2],
+        [html.Element, 'ng-container', 0],
+        [html.Attribute, '[ngSwitch]', 'person.gender'],
+        [html.Element, 'template', 1],
+        [html.Attribute, 'ngSwitchCase', '=male'],
+        [html.Text, 'm', 2],
       ]);
     });
 

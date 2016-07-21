@@ -45,7 +45,9 @@ const TAG_TO_PLACEHOLDER_NAMES: {[k: string]: string} = {
  * @internal
  */
 export class PlaceholderRegistry {
+  // Count the occurrence of the base name top generate a unique name
   private _placeHolderNameCounts: {[k: string]: number} = {};
+  // Maps signature to placeholder names
   private _signatureToName: {[k: string]: string} = {};
 
   getStartTagPlaceholderName(tag: string, attrs: {[k: string]: string}, isVoid: boolean): string {
@@ -91,18 +93,17 @@ export class PlaceholderRegistry {
     return uniqueName;
   }
 
+  // Generate a hash for a tag - does not take attribute order into account
   private _hashTag(tag: string, attrs: {[k: string]: string}, isVoid: boolean): string {
-    const start = `<${tag.toUpperCase()}`;
+    const start = `<${tag}`;
     const strAttrs =
         Object.getOwnPropertyNames(attrs).sort().map((name) => ` ${name}=${attrs[name]}`).join('');
-    const end = isVoid ? '/>' : `></${tag.toUpperCase()}>`;
+    const end = isVoid ? '/>' : `></${tag}>`;
 
     return start + strAttrs + end;
   }
 
-  private _hashClosingTag(tag: string): string {
-    return this._hashTag(`/${tag.toUpperCase()}`, {}, false);
-  }
+  private _hashClosingTag(tag: string): string { return this._hashTag(`/${tag}`, {}, false); }
 
   private _generateUniqueName(base: string): string {
     let name = base;

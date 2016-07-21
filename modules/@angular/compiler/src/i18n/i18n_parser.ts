@@ -8,44 +8,58 @@
 
 import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
 import {Parser as ExpressionParser} from '../expression_parser/parser';
-import * as hAst from '../html_parser/html_ast';
+import * as html from '../html_parser/ast';
 import {getHtmlTagDefinition} from '../html_parser/html_tags';
 import {InterpolationConfig} from '../html_parser/interpolation_config';
 import {ParseSourceSpan} from '../parse_util';
 
 import {extractAstMessages} from './extractor';
-import * as i18nAst from './i18n_ast';
-import {PlaceholderRegistry} from './serializers/util';
+import * as i18n from './i18n_ast';
+import {PlaceholderRegistry} from './serializers/placeholder';
 import {extractPlaceholderName} from './shared';
 
+/**
+ * Extract all the i18n messages from a component template.
+ */
 export function extractI18nMessages(
-    sourceAst: hAst.HtmlAst[], interpolationConfig: InterpolationConfig, implicitTags: string[],
-    implicitAttrs: {[k: string]: string[]}): i18nAst.Message[] {
+    sourceAst: html.Node[], interpolationConfig: InterpolationConfig, implicitTags: string[],
+    implicitAttrs: {[k: string]: string[]}): i18n.Message[] {
   const extractionResult = extractAstMessages(sourceAst, implicitTags, implicitAttrs);
 
   if (extractionResult.errors.length) {
     return [];
   }
 
-  const visitor =
-      new _I18nVisitor(new ExpressionParser(new ExpressionLexer()), interpolationConfig);
+  const expParser = new ExpressionParser(new ExpressionLexer());
+  const visitor = new _I18nVisitor(expParser, interpolationConfig);
 
-  return extractionResult.messages.map((msg): i18nAst.Message => {
-    return new i18nAst.Message(visitor.convertToI18nAst(msg.nodes), msg.meaning, msg.description);
-  });
+  return extractionResult.messages.map(
+      (msg) => visitor.toI18nMessage(msg.nodes, msg.meaning, msg.description));
 }
 
-class _I18nVisitor implements hAst.HtmlAstVisitor {
+class _I18nVisitor implements html.Visitor {
   private _isIcu: boolean;
   private _icuDepth: number;
   private _placeholderRegistry: PlaceholderRegistry;
+  private _placeholderToContent: {[name: string]: string};
 
   constructor(
       private _expressionParser: ExpressionParser,
       private _interpolationConfig: InterpolationConfig) {}
 
-  visitElement(el: hAst.HtmlElementAst, context: any): i18nAst.Node {
-    const children = hAst.htmlVisitAll(this, el.children);
+  public toI18nMessage(nodes: html.Node[], meaning: string, description: string): i18n.Message {
+    this._isIcu = nodes.length == 1 && nodes[0] instanceof html.Expansion;
+    this._icuDepth = 0;
+    this._placeholderRegistry = new PlaceholderRegistry();
+    this._placeholderToContent = {};
+
+    const i18nodes: i18n.Node[] = html.visitAll(this, nodes, {});
+
+    return new i18n.Message(i18nodes, this._placeholderToContent, meaning, description);
+  }
+
+  visitElement(el: html.Element, context: any): i18n.Node {
+    const children = html.visitAll(this, el.children);
     const attrs: {[k: string]: string} = {};
     el.attrs.forEach(attr => {
       // Do not visit the attributes, translatable ones are top-level ASTs
@@ -55,66 +69,67 @@ class _I18nVisitor implements hAst.HtmlAstVisitor {
     const isVoid: boolean = getHtmlTagDefinition(el.name).isVoid;
     const startPhName =
         this._placeholderRegistry.getStartTagPlaceholderName(el.name, attrs, isVoid);
-    const closePhName = isVoid ? '' : this._placeholderRegistry.getCloseTagPlaceholderName(el.name);
+    this._placeholderToContent[startPhName] = el.sourceSpan.toString();
 
-    return new i18nAst.TagPlaceholder(
+    let closePhName = '';
+
+    if (!isVoid) {
+      closePhName = this._placeholderRegistry.getCloseTagPlaceholderName(el.name);
+      this._placeholderToContent[closePhName] = `</${el.name}>`;
+    }
+
+    return new i18n.TagPlaceholder(
         el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan);
   }
 
-  visitAttr(attr: hAst.HtmlAttrAst, context: any): i18nAst.Node {
-    return this._visitTextWithInterpolation(attr.value, attr.sourceSpan);
+  visitAttribute(attribute: html.Attribute, context: any): i18n.Node {
+    return this._visitTextWithInterpolation(attribute.value, attribute.sourceSpan);
   }
 
-  visitText(text: hAst.HtmlTextAst, context: any): i18nAst.Node {
+  visitText(text: html.Text, context: any): i18n.Node {
     return this._visitTextWithInterpolation(text.value, text.sourceSpan);
   }
 
-  visitComment(comment: hAst.HtmlCommentAst, context: any): i18nAst.Node { return null; }
+  visitComment(comment: html.Comment, context: any): i18n.Node { return null; }
 
-  visitExpansion(icu: hAst.HtmlExpansionAst, context: any): i18nAst.Node {
+  visitExpansion(icu: html.Expansion, context: any): i18n.Node {
     this._icuDepth++;
-    const i18nIcuCases: {[k: string]: i18nAst.Node} = {};
-    const i18nIcu = new i18nAst.Icu(icu.switchValue, icu.type, i18nIcuCases, icu.sourceSpan);
+    const i18nIcuCases: {[k: string]: i18n.Node} = {};
+    const i18nIcu = new i18n.Icu(icu.switchValue, icu.type, i18nIcuCases, icu.sourceSpan);
     icu.cases.forEach((caze): void => {
-      i18nIcuCases[caze.value] = new i18nAst.Container(
-          caze.expression.map((hAst) => hAst.visit(this, {})), caze.expSourceSpan);
+      i18nIcuCases[caze.value] = new i18n.Container(
+          caze.expression.map((node) => node.visit(this, {})), caze.expSourceSpan);
     });
     this._icuDepth--;
 
     if (this._isIcu || this._icuDepth > 0) {
-      // If the message (vs a part of the message) is an ICU message return its
+      // If the message (vs a part of the message) is an ICU message returns it
       return i18nIcu;
     }
 
     // else returns a placeholder
     const phName = this._placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
-    return new i18nAst.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
+    this._placeholderToContent[phName] = icu.sourceSpan.toString();
+    return new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
   }
 
-  visitExpansionCase(icuCase: hAst.HtmlExpansionCaseAst, context: any): i18nAst.Node {
+  visitExpansionCase(icuCase: html.ExpansionCase, context: any): i18n.Node {
     throw new Error('Unreachable code');
   }
 
-  public convertToI18nAst(htmlAsts: hAst.HtmlAst[]): i18nAst.Node[] {
-    this._isIcu = htmlAsts.length == 1 && htmlAsts[0] instanceof hAst.HtmlExpansionAst;
-    this._icuDepth = 0;
-    this._placeholderRegistry = new PlaceholderRegistry();
-
-    return hAst.htmlVisitAll(this, htmlAsts, {});
-  }
-
-  private _visitTextWithInterpolation(text: string, sourceSpan: ParseSourceSpan): i18nAst.Node {
+  private _visitTextWithInterpolation(text: string, sourceSpan: ParseSourceSpan): i18n.Node {
     const splitInterpolation = this._expressionParser.splitInterpolation(
         text, sourceSpan.start.toString(), this._interpolationConfig);
 
     if (!splitInterpolation) {
       // No expression, return a single text
-      return new i18nAst.Text(text, sourceSpan);
+      return new i18n.Text(text, sourceSpan);
     }
 
     // Return a group of text + expressions
-    const nodes: i18nAst.Node[] = [];
-    const container = new i18nAst.Container(nodes, sourceSpan);
+    const nodes: i18n.Node[] = [];
+    const container = new i18n.Container(nodes, sourceSpan);
+    const {start: sDelimiter, end: eDelimiter} = this._interpolationConfig;
 
     for (let i = 0; i < splitInterpolation.strings.length - 1; i++) {
       const expression = splitInterpolation.expressions[i];
@@ -122,16 +137,18 @@ class _I18nVisitor implements hAst.HtmlAstVisitor {
       const phName = this._placeholderRegistry.getPlaceholderName(baseName, expression);
 
       if (splitInterpolation.strings[i].length) {
-        nodes.push(new i18nAst.Text(splitInterpolation.strings[i], sourceSpan));
+        // No need to add empty strings
+        nodes.push(new i18n.Text(splitInterpolation.strings[i], sourceSpan));
       }
 
-      nodes.push(new i18nAst.Placeholder(expression, phName, sourceSpan));
+      nodes.push(new i18n.Placeholder(expression, phName, sourceSpan));
+      this._placeholderToContent[phName] = sDelimiter + expression + eDelimiter;
     }
 
     // The last index contains no expression
     const lastStringIdx = splitInterpolation.strings.length - 1;
     if (splitInterpolation.strings[lastStringIdx].length) {
-      nodes.push(new i18nAst.Text(splitInterpolation.strings[lastStringIdx], sourceSpan));
+      nodes.push(new i18n.Text(splitInterpolation.strings[lastStringIdx], sourceSpan));
     }
     return container;
   }

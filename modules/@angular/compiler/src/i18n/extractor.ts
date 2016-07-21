@@ -6,29 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst} from '../html_parser/html_ast';
+import * as html from '../html_parser/ast';
 import {I18nError, I18N_ATTR_PREFIX, getI18nAttr, meaning, description, isOpeningComment, isClosingComment,} from './shared';
-import {htmlVisitAll} from '../html_parser/html_ast';
 
 export function extractAstMessages(
-    sourceAst: HtmlAst[], implicitTags: string[],
+    sourceAst: html.Node[], implicitTags: string[],
     implicitAttrs: {[k: string]: string[]}): ExtractionResult {
   const visitor = new _ExtractVisitor(implicitTags, implicitAttrs);
   return visitor.extract(sourceAst);
 }
 
 export class ExtractionResult {
-  constructor(public messages: AstMessage[], public errors: I18nError[]) {}
+  constructor(public messages: Message[], public errors: I18nError[]) {}
 }
 
-class _ExtractVisitor implements HtmlAstVisitor {
+class _ExtractVisitor implements html.Visitor {
   // <el i18n>...</el>
   private _inI18nNode = false;
   private _depth: number = 0;
 
   // <!--i18n-->...<!--/i18n-->
   private _blockMeaningAndDesc: string;
-  private _blockChildren: HtmlAst[];
+  private _blockChildren: html.Node[];
   private _blockStartDepth: number;
   private _inI18nBlock: boolean;
 
@@ -40,8 +39,8 @@ class _ExtractVisitor implements HtmlAstVisitor {
 
   constructor(private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
 
-  extract(source: HtmlAst[]): ExtractionResult {
-    const messages: AstMessage[] = [];
+  extract(nodes: html.Node[]): ExtractionResult {
+    const messages: Message[] = [];
     this._inI18nBlock = false;
     this._inI18nNode = false;
     this._depth = 0;
@@ -49,20 +48,20 @@ class _ExtractVisitor implements HtmlAstVisitor {
     this._sectionStartIndex = void 0;
     this._errors = [];
 
-    source.forEach(node => node.visit(this, messages));
+    nodes.forEach(node => node.visit(this, messages));
 
     if (this._inI18nBlock) {
-      this._reportError(source[source.length - 1], 'Unclosed block');
+      this._reportError(nodes[nodes.length - 1], 'Unclosed block');
     }
 
     return new ExtractionResult(messages, this._errors);
   }
 
-  visitExpansionCase(part: HtmlExpansionCaseAst, messages: AstMessage[]): any {
-    htmlVisitAll(this, part.expression, messages);
+  visitExpansionCase(icuCase: html.ExpansionCase, messages: Message[]): any {
+    html.visitAll(this, icuCase.expression, messages);
   }
 
-  visitExpansion(icu: HtmlExpansionAst, messages: AstMessage[]): any {
+  visitExpansion(icu: html.Expansion, messages: Message[]): any {
     this._mayBeAddBlockChildren(icu);
 
     const wasInIcu = this._inIcu;
@@ -74,12 +73,12 @@ class _ExtractVisitor implements HtmlAstVisitor {
       this._inIcu = true;
     }
 
-    htmlVisitAll(this, icu.cases, messages);
+    html.visitAll(this, icu.cases, messages);
 
     this._inIcu = wasInIcu;
   }
 
-  visitComment(comment: HtmlCommentAst, messages: AstMessage[]): any {
+  visitComment(comment: html.Comment, messages: Message[]): any {
     const isOpening = isOpeningComment(comment);
 
     if (isOpening && (this._inI18nBlock || this._inI18nNode)) {
@@ -118,9 +117,9 @@ class _ExtractVisitor implements HtmlAstVisitor {
     }
   }
 
-  visitText(text: HtmlTextAst, messages: AstMessage[]): any { this._mayBeAddBlockChildren(text); }
+  visitText(text: html.Text, messages: Message[]): any { this._mayBeAddBlockChildren(text); }
 
-  visitElement(el: HtmlElementAst, messages: AstMessage[]): any {
+  visitElement(el: html.Element, messages: Message[]): any {
     this._mayBeAddBlockChildren(el);
     this._depth++;
     const wasInI18nNode = this._inI18nNode;
@@ -152,19 +151,21 @@ class _ExtractVisitor implements HtmlAstVisitor {
 
     if (useSection) {
       this._startSection(messages);
-      htmlVisitAll(this, el.children, messages);
+      html.visitAll(this, el.children, messages);
       this._endSection(messages, el.children);
     } else {
-      htmlVisitAll(this, el.children, messages);
+      html.visitAll(this, el.children, messages);
     }
 
     this._depth--;
     this._inI18nNode = wasInI18nNode;
   }
 
-  visitAttr(ast: HtmlAttrAst, messages: AstMessage[]): any { throw new Error('unreachable code'); }
+  visitAttribute(attribute: html.Attribute, messages: Message[]): any {
+    throw new Error('unreachable code');
+  }
 
-  private _extractFromAttributes(el: HtmlElementAst, messages: AstMessage[]): void {
+  private _extractFromAttributes(el: html.Element, messages: Message[]): void {
     const explicitAttrNameToValue: Map<string, string> = new Map();
     const implicitAttrNames: string[] = this._implicitAttrs[el.name] || [];
 
@@ -182,13 +183,13 @@ class _ExtractVisitor implements HtmlAstVisitor {
     });
   }
 
-  private _addMessage(messages: AstMessage[], ast: HtmlAst[], meaningAndDesc?: string): void {
+  private _addMessage(messages: Message[], ast: html.Node[], meaningAndDesc?: string): void {
     if (ast.length == 0 ||
-        ast.length == 1 && ast[0] instanceof HtmlAttrAst && !(<HtmlAttrAst>ast[0]).value) {
+        ast.length == 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value) {
       // Do not create empty messages
       return;
     }
-    messages.push(new AstMessage(ast, meaning(meaningAndDesc), description(meaningAndDesc)));
+    messages.push(new Message(ast, meaning(meaningAndDesc), description(meaningAndDesc)));
   }
 
   /**
@@ -197,16 +198,16 @@ class _ExtractVisitor implements HtmlAstVisitor {
    * - we are not inside a ICU message (those are handled separately),
    * - the node is a "direct child" of the block
    */
-  private _mayBeAddBlockChildren(ast: HtmlAst): void {
+  private _mayBeAddBlockChildren(node: html.Node): void {
     if (this._inI18nBlock && !this._inIcu && this._depth == this._blockStartDepth) {
-      this._blockChildren.push(ast);
+      this._blockChildren.push(node);
     }
   }
 
   /**
    * Marks the start of a section, see `_endSection`
    */
-  private _startSection(messages: AstMessage[]): void {
+  private _startSection(messages: Message[]): void {
     if (this._sectionStartIndex !== void 0) {
       throw new Error('Unexpected section start');
     }
@@ -231,20 +232,20 @@ class _ExtractVisitor implements HtmlAstVisitor {
    * Note that we should still keep messages extracted from attributes inside the section (ie in the
    * ICU message here)
    */
-  private _endSection(messages: AstMessage[], directChildren: HtmlAst[]): void {
+  private _endSection(messages: Message[], directChildren: html.Node[]): void {
     if (this._sectionStartIndex === void 0) {
       throw new Error('Unexpected section end');
     }
 
     const startIndex = this._sectionStartIndex;
     const significantChildren: number = directChildren.reduce(
-        (count: number, node: HtmlAst): number => count + (node instanceof HtmlCommentAst ? 0 : 1),
+        (count: number, node: html.Node): number => count + (node instanceof html.Comment ? 0 : 1),
         0);
 
     if (significantChildren == 1) {
       for (let i = startIndex; i < messages.length; i++) {
         let ast = messages[i].nodes;
-        if (!(ast.length == 1 && ast[0] instanceof HtmlAttrAst)) {
+        if (!(ast.length == 1 && ast[0] instanceof html.Attribute)) {
           messages.splice(i, 1);
           break;
         }
@@ -254,11 +255,14 @@ class _ExtractVisitor implements HtmlAstVisitor {
     this._sectionStartIndex = void 0;
   }
 
-  private _reportError(astNode: HtmlAst, msg: string): void {
-    this._errors.push(new I18nError(astNode.sourceSpan, msg));
+  private _reportError(node: html.Node, msg: string): void {
+    this._errors.push(new I18nError(node.sourceSpan, msg));
   }
 }
 
-export class AstMessage {
-  constructor(public nodes: HtmlAst[], public meaning: string, public description: string) {}
+/**
+ * A Message contain a fragment (= a subtree) of the source html AST.
+ */
+export class Message {
+  constructor(public nodes: html.Node[], public meaning: string, public description: string) {}
 }

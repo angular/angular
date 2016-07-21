@@ -8,24 +8,29 @@
 
 import {HtmlParser} from '../html_parser/html_parser';
 import {InterpolationConfig} from '../html_parser/interpolation_config';
+import {ParseError} from '../parse_util';
 
-import * as i18nAst from './i18n_ast';
+import * as i18n from './i18n_ast';
 import {extractI18nMessages} from './i18n_parser';
 import {Serializer} from './serializers/serializer';
 
-export class Catalog {
-  private _messageMap: {[k: string]: i18nAst.Message} = {};
+
+/**
+ * A container for message extracted from the templates.
+ */
+export class MessageBundle {
+  private _messageMap: {[id: string]: i18n.Message} = {};
 
   constructor(
       private _htmlParser: HtmlParser, private _implicitTags: string[],
       private _implicitAttrs: {[k: string]: string[]}) {}
 
-  public updateFromTemplate(html: string, url: string, interpolationConfig: InterpolationConfig):
-      void {
+  updateFromTemplate(html: string, url: string, interpolationConfig: InterpolationConfig):
+      ParseError[] {
     const htmlParserResult = this._htmlParser.parse(html, url, true, interpolationConfig);
 
     if (htmlParserResult.errors.length) {
-      throw new Error();
+      return htmlParserResult.errors;
     }
 
     const messages = extractI18nMessages(
@@ -37,17 +42,8 @@ export class Catalog {
     });
   }
 
-  public load(content: string, serializer: Serializer): void {
-    const nodeMap = serializer.load(content);
-    this._messageMap = {};
-
-    Object.getOwnPropertyNames(nodeMap).forEach(
-        (id) => { this._messageMap[id] = new i18nAst.Message(nodeMap[id], '', ''); });
-  }
-
-  public write(serializer: Serializer): string { return serializer.write(this._messageMap); }
+  write(serializer: Serializer): string { return serializer.write(this._messageMap); }
 }
-
 
 /**
  * String hash function similar to java.lang.String.hashCode().
@@ -78,35 +74,35 @@ export function strHash(str: string): string {
  *
  * @internal
  */
-class _SerializerVisitor implements i18nAst.Visitor {
-  visitText(text: i18nAst.Text, context: any): any { return text.value; }
+class _SerializerVisitor implements i18n.Visitor {
+  visitText(text: i18n.Text, context: any): any { return text.value; }
 
-  visitContainer(container: i18nAst.Container, context: any): any {
+  visitContainer(container: i18n.Container, context: any): any {
     return `[${container.children.map(child => child.visit(this)).join(', ')}]`;
   }
 
-  visitIcu(icu: i18nAst.Icu, context: any): any {
+  visitIcu(icu: i18n.Icu, context: any): any {
     let strCases = Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
     return `{${icu.expression}, ${icu.type}, ${strCases.join(', ')}}`;
   }
 
-  visitTagPlaceholder(ph: i18nAst.TagPlaceholder, context: any): any {
+  visitTagPlaceholder(ph: i18n.TagPlaceholder, context: any): any {
     return ph.isVoid ?
         `<ph tag name="${ph.startName}"/>` :
         `<ph tag name="${ph.startName}">${ph.children.map(child => child.visit(this)).join(', ')}</ph name="${ph.closeName}">`;
   }
 
-  visitPlaceholder(ph: i18nAst.Placeholder, context: any): any {
+  visitPlaceholder(ph: i18n.Placeholder, context: any): any {
     return `<ph name="${ph.name}">${ph.value}</ph>`;
   }
 
-  visitIcuPlaceholder(ph: i18nAst.IcuPlaceholder, context?: any): any {
+  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     return `<ph icu name="${ph.name}">${ph.value.visit(this)}</ph>`;
   }
 }
 
 const serializerVisitor = new _SerializerVisitor();
 
-export function serializeAst(ast: i18nAst.Node[]): string[] {
+export function serializeAst(ast: i18n.Node[]): string[] {
   return ast.map(a => a.visit(serializerVisitor, null));
 }

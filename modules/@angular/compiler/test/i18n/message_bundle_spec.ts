@@ -6,48 +6,39 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Catalog, strHash} from '@angular/compiler/src/i18n/catalog';
+import * as i18n from '@angular/compiler/src/i18n/i18n_ast';
+import {Serializer} from '@angular/compiler/src/i18n/serializers/serializer';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {HtmlParser} from '../../src/html_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/html_parser/interpolation_config';
-
-import Serializable = webdriver.Serializable;
-import {Serializer} from '@angular/compiler/src/i18n/serializers/serializer';
-import {serializeAst} from '@angular/compiler/src/i18n/catalog';
-import * as i18nAst from '@angular/compiler/src/i18n/i18n_ast';
+import {MessageBundle, serializeAst, strHash} from '../../src/i18n/message_bundle';
 
 export function main(): void {
-  ddescribe('Catalog', () => {
+  describe('MessageBundle', () => {
+    describe('Messages', () => {
+      let messages: MessageBundle;
 
-    describe('write', () => {
-      let catalog: Catalog;
-
-      beforeEach(() => { catalog = new Catalog(new HtmlParser, [], {}); });
+      beforeEach(() => { messages = new MessageBundle(new HtmlParser, [], {}); });
 
       it('should extract the message to the catalog', () => {
-        catalog.updateFromTemplate(
+        messages.updateFromTemplate(
             '<p i18n="m|d">Translate Me</p>', 'url', DEFAULT_INTERPOLATION_CONFIG);
-        expect(humanizeCatalog(catalog)).toEqual([
+        expect(humanizeMessages(messages)).toEqual([
           'a486901=Translate Me',
         ]);
       });
 
       it('should extract the same message with different meaning in different entries', () => {
-        catalog.updateFromTemplate(
+        messages.updateFromTemplate(
             '<p i18n="m|d">Translate Me</p><p i18n>Translate Me</p>', 'url',
             DEFAULT_INTERPOLATION_CONFIG);
-        expect(humanizeCatalog(catalog)).toEqual([
+        expect(humanizeMessages(messages)).toEqual([
           'a486901=Translate Me',
           '8475f2cc=Translate Me',
         ]);
       });
     });
-
-    describe(
-        'load', () => {
-                    // TODO
-                });
 
     describe('strHash', () => {
       it('should return a hash value', () => {
@@ -66,16 +57,16 @@ export function main(): void {
 }
 
 class _TestSerializer implements Serializer {
-  write(messageMap: {[k: string]: i18nAst.Message}): string {
+  write(messageMap: {[id: string]: i18n.Message}): string {
     return Object.keys(messageMap)
         .map(id => `${id}=${serializeAst(messageMap[id].nodes)}`)
         .join('//');
   }
 
-  load(content: string): {[k: string]: i18nAst.Node[]} { return null; }
+  load(content: string, url: string, placeholders: {}): {} { return null; }
 }
 
-function humanizeCatalog(catalog: Catalog): string[] {
+function humanizeMessages(catalog: MessageBundle): string[] {
   return catalog.write(new _TestSerializer()).split('//');
 }
 

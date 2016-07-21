@@ -11,7 +11,7 @@ import {isPresent} from '../facade/lang';
 
 import {CompileDirectiveMetadata, CompileTokenMetadata, CompileProviderMetadata,} from '../compile_metadata';
 import {ParseSourceSpan} from '../parse_util';
-import {SecurityContext} from '../../../core/index';
+import {SecurityContext} from '@angular/core';
 
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.

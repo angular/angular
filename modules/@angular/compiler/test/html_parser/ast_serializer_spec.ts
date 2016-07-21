@@ -1,9 +1,17 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {beforeEach, ddescribe, describe, expect, it} from '../../../core/testing/testing_internal';
-import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from '../../src/html_parser/html_ast';
+import * as html from '../../src/html_parser/ast';
 import {HtmlParser} from '../../src/html_parser/html_parser';
 
 export function main() {
-  describe('HtmlAst serilaizer', () => {
+  describe('Node serilaizer', () => {
     var parser: HtmlParser;
 
     beforeEach(() => { parser = new HtmlParser(); });
@@ -52,35 +60,37 @@ export function main() {
   });
 }
 
-class _SerializerVisitor implements HtmlAstVisitor {
-  visitElement(ast: HtmlElementAst, context: any): any {
-    return `<${ast.name}${this._visitAll(ast.attrs, ' ')}>${this._visitAll(ast.children)}</${ast.name}>`;
+class _SerializerVisitor implements html.Visitor {
+  visitElement(element: html.Element, context: any): any {
+    return `<${element.name}${this._visitAll(element.attrs, ' ')}>${this._visitAll(element.children)}</${element.name}>`;
   }
 
-  visitAttr(ast: HtmlAttrAst, context: any): any { return `${ast.name}="${ast.value}"`; }
-
-  visitText(ast: HtmlTextAst, context: any): any { return ast.value; }
-
-  visitComment(ast: HtmlCommentAst, context: any): any { return `<!--${ast.value}-->`; }
-
-  visitExpansion(ast: HtmlExpansionAst, context: any): any {
-    return `{${ast.switchValue}, ${ast.type},${this._visitAll(ast.cases)}}`;
+  visitAttribute(attribute: html.Attribute, context: any): any {
+    return `${attribute.name}="${attribute.value}"`;
   }
 
-  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any {
-    return ` ${ast.value} {${this._visitAll(ast.expression)}}`;
+  visitText(text: html.Text, context: any): any { return text.value; }
+
+  visitComment(comment: html.Comment, context: any): any { return `<!--${comment.value}-->`; }
+
+  visitExpansion(expansion: html.Expansion, context: any): any {
+    return `{${expansion.switchValue}, ${expansion.type},${this._visitAll(expansion.cases)}}`;
   }
 
-  private _visitAll(ast: HtmlAst[], join: string = ''): string {
-    if (ast.length == 0) {
+  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+    return ` ${expansionCase.value} {${this._visitAll(expansionCase.expression)}}`;
+  }
+
+  private _visitAll(nodes: html.Node[], join: string = ''): string {
+    if (nodes.length == 0) {
       return '';
     }
-    return join + ast.map(a => a.visit(this, null)).join(join);
+    return join + nodes.map(a => a.visit(this, null)).join(join);
   }
 }
 
 const serializerVisitor = new _SerializerVisitor();
 
-export function serializeAst(ast: HtmlAst[]): string[] {
-  return ast.map(a => a.visit(serializerVisitor, null));
+export function serializeAst(nodes: html.Node[]): string[] {
+  return nodes.map(node => node.visit(serializerVisitor, null));
 }

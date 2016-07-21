@@ -7,7 +7,7 @@
  */
 
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../../core/testing/testing_internal';
-import {HtmlElementAst} from '../../src/html_parser/html_ast';
+import {Element} from '../../src/html_parser/ast';
 import {HtmlParser} from '../../src/html_parser/html_parser';
 import {PreparsedElement, PreparsedElementType, preparseElement} from '../../src/template_parser/template_preparser';
 
@@ -17,7 +17,7 @@ export function main() {
     beforeEach(inject([HtmlParser], (_htmlParser: HtmlParser) => { htmlParser = _htmlParser; }));
 
     function preparse(html: string): PreparsedElement {
-      return preparseElement(htmlParser.parse(html, 'TestComp').rootNodes[0] as HtmlElementAst);
+      return preparseElement(htmlParser.parse(html, 'TestComp').rootNodes[0] as Element);
     }
 
     it('should detect script elements', inject([HtmlParser], (htmlParser: HtmlParser) => {

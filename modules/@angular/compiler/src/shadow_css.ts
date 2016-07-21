@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../src/facade/collection';
-import {RegExpMatcherWrapper, RegExpWrapper, StringWrapper, isBlank, isPresent} from '../src/facade/lang';
+import {ListWrapper} from './facade/collection';
+import {RegExpMatcherWrapper, RegExpWrapper, StringWrapper, isBlank, isPresent} from './facade/lang';
 
 /**
  * This file is a port of shadowCSS from webcomponents.js to TypeScript.

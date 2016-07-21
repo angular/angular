@@ -11,7 +11,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, SecurityContext} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
-import {HtmlElementAst} from '../../src/html_parser/html_ast';
+import {Element} from '../../src/html_parser/ast';
 import {HtmlParser} from '../../src/html_parser/html_parser';
 
 import {extractSchema} from './schema_extractor';
@@ -78,7 +78,7 @@ export function main() {
 
     it('should detect properties on namespaced elements', () => {
       const htmlAst = new HtmlParser().parse('<svg:style>', 'TestComp');
-      const nodeName = (<HtmlElementAst>htmlAst.rootNodes[0]).name;
+      const nodeName = (<Element>htmlAst.rootNodes[0]).name;
       expect(registry.hasProperty(nodeName, 'type', [])).toBeTruthy();
     });
 

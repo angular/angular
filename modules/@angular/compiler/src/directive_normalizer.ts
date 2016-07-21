@@ -7,12 +7,13 @@
  */
 
 import {Injectable, ViewEncapsulation} from '@angular/core';
-import {MapWrapper} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
-import {isBlank, isPresent} from '../src/facade/lang';
+
 import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
-import {HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from './html_parser/html_ast';
+import {MapWrapper} from './facade/collection';
+import {BaseException} from './facade/exceptions';
+import {isBlank, isPresent} from './facade/lang';
+import * as html from './html_parser/ast';
 import {HtmlParser} from './html_parser/html_parser';
 import {InterpolationConfig} from './html_parser/interpolation_config';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
@@ -111,7 +112,7 @@ export class DirectiveNormalizer {
     }));
 
     const visitor = new TemplatePreparseVisitor();
-    htmlVisitAll(visitor, rootNodesAndErrors.rootNodes);
+    html.visitAll(visitor, rootNodesAndErrors.rootNodes);
     const templateStyles = this.normalizeStylesheet(new CompileStylesheetMetadata(
         {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
 
@@ -187,13 +188,13 @@ export class DirectiveNormalizer {
   }
 }
 
-class TemplatePreparseVisitor implements HtmlAstVisitor {
+class TemplatePreparseVisitor implements html.Visitor {
   ngContentSelectors: string[] = [];
   styles: string[] = [];
   styleUrls: string[] = [];
   ngNonBindableStackCount: number = 0;
 
-  visitElement(ast: HtmlElementAst, context: any): any {
+  visitElement(ast: html.Element, context: any): any {
     var preparsedElement = preparseElement(ast);
     switch (preparsedElement.type) {
       case PreparsedElementType.NG_CONTENT:
@@ -204,7 +205,7 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
       case PreparsedElementType.STYLE:
         var textContent = '';
         ast.children.forEach(child => {
-          if (child instanceof HtmlTextAst) {
+          if (child instanceof html.Text) {
             textContent += child.value;
           }
         });
@@ -221,18 +222,18 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
     if (preparsedElement.nonBindable) {
       this.ngNonBindableStackCount++;
     }
-    htmlVisitAll(this, ast.children);
+    html.visitAll(this, ast.children);
     if (preparsedElement.nonBindable) {
       this.ngNonBindableStackCount--;
     }
     return null;
   }
-  visitComment(ast: HtmlCommentAst, context: any): any { return null; }
-  visitAttr(ast: HtmlAttrAst, context: any): any { return null; }
-  visitText(ast: HtmlTextAst, context: any): any { return null; }
-  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
+  visitComment(ast: html.Comment, context: any): any { return null; }
+  visitAttribute(ast: html.Attribute, context: any): any { return null; }
+  visitText(ast: html.Text, context: any): any { return null; }
+  visitExpansion(ast: html.Expansion, context: any): any { return null; }
 
-  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
+  visitExpansionCase(ast: html.ExpansionCase, context: any): any { return null; }
 }
 
 function _cloneDirectiveWithTemplate(

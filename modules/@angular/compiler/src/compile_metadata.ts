@@ -8,10 +8,10 @@
 
 import {ChangeDetectionStrategy, SchemaMetadata, ViewEncapsulation} from '@angular/core';
 
-import {CHANGE_DETECTION_STRATEGY_VALUES, LIFECYCLE_HOOKS_VALUES, LifecycleHooks, VIEW_ENCAPSULATION_VALUES, reflector} from '../core_private';
-import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
-import {BaseException, unimplemented} from '../src/facade/exceptions';
-import {NumberWrapper, RegExpWrapper, Type, isArray, isBlank, isBoolean, isNumber, isPresent, isString, isStringMap, normalizeBlank, normalizeBool, serializeEnum} from '../src/facade/lang';
+import {LifecycleHooks, reflector} from '../core_private';
+import {ListWrapper, StringMapWrapper} from './facade/collection';
+import {BaseException, unimplemented} from './facade/exceptions';
+import {RegExpWrapper, Type, isBlank, isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
 
 import {CssSelector} from './selector';
 import {getUrlScheme} from './url_resolver';

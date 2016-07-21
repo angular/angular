@@ -7,7 +7,8 @@
  */
 
 import {ListWrapper} from '../../facade/collection';
-import * as i18nAst from '../i18n_ast';
+import * as html from '../../html_parser/ast';
+import * as i18n from '../i18n_ast';
 
 import {Serializer} from './serializer';
 import * as xml from './xml_helper';
@@ -17,9 +18,9 @@ const _MESSAGE_TAG = 'msg';
 const _PLACEHOLDER_TAG = 'ph';
 const _EXEMPLE_TAG = 'ex';
 
-export class XmbSerializer implements Serializer {
+export class Xmb implements Serializer {
   // TODO(vicb): DOCTYPE
-  write(messageMap: {[k: string]: i18nAst.Message}): string {
+  write(messageMap: {[k: string]: i18n.Message}): string {
     const visitor = new _Visitor();
     const declaration = new xml.Declaration({version: '1.0', encoding: 'UTF-8'});
     let rootNode = new xml.Tag(_MESSAGES_TAG);
@@ -49,19 +50,22 @@ export class XmbSerializer implements Serializer {
     ]);
   }
 
-  load(content: string): {[k: string]: i18nAst.Node[]} { throw new Error('Unsupported'); }
+  load(content: string, url: string, placeholders: {[id: string]: {[name: string]: string}}):
+      {[id: string]: html.Node[]} {
+    throw new Error('Unsupported');
+  }
 }
 
-class _Visitor implements i18nAst.Visitor {
-  visitText(text: i18nAst.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
+class _Visitor implements i18n.Visitor {
+  visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
 
-  visitContainer(container: i18nAst.Container, context?: any): xml.Node[] {
+  visitContainer(container: i18n.Container, context?: any): xml.Node[] {
     const nodes: xml.Node[] = [];
-    container.children.forEach((node: i18nAst.Node) => nodes.push(...node.visit(this)));
+    container.children.forEach((node: i18n.Node) => nodes.push(...node.visit(this)));
     return nodes;
   }
 
-  visitIcu(icu: i18nAst.Icu, context?: any): xml.Node[] {
+  visitIcu(icu: i18n.Icu, context?: any): xml.Node[] {
     const nodes = [new xml.Text(`{${icu.expression}, ${icu.type}, `)];
 
     Object.getOwnPropertyNames(icu.cases).forEach((c: string) => {
@@ -73,7 +77,7 @@ class _Visitor implements i18nAst.Visitor {
     return nodes;
   }
 
-  visitTagPlaceholder(ph: i18nAst.TagPlaceholder, context?: any): xml.Node[] {
+  visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): xml.Node[] {
     const startEx = new xml.Tag(_EXEMPLE_TAG, {}, [new xml.Text(`<${ph.tag}>`)]);
     const startTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name: ph.startName}, [startEx]);
     if (ph.isVoid) {
@@ -87,15 +91,15 @@ class _Visitor implements i18nAst.Visitor {
     return [startTagPh, ...this.serialize(ph.children), closeTagPh];
   }
 
-  visitPlaceholder(ph: i18nAst.Placeholder, context?: any): xml.Node[] {
+  visitPlaceholder(ph: i18n.Placeholder, context?: any): xml.Node[] {
     return [new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name})];
   }
 
-  visitIcuPlaceholder(ph: i18nAst.IcuPlaceholder, context?: any): xml.Node[] {
+  visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
     return [new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name})];
   }
 
-  serialize(nodes: i18nAst.Node[]): xml.Node[] {
+  serialize(nodes: i18n.Node[]): xml.Node[] {
     return ListWrapper.flatten(nodes.map(node => node.visit(this)));
   }
 }

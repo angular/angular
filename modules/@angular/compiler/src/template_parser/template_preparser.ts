@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank} from '../facade/lang';
-
-import {HtmlElementAst} from '../html_parser/html_ast';
-import {splitNsName} from '../html_parser/html_tags';
+import * as html from '../html_parser/ast';
+import {splitNsName} from '../html_parser/tags';
 
 const NG_CONTENT_SELECT_ATTR = 'select';
 const NG_CONTENT_ELEMENT = 'ng-content';
@@ -22,7 +20,7 @@ const SCRIPT_ELEMENT = 'script';
 const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
-export function preparseElement(ast: HtmlElementAst): PreparsedElement {
+export function preparseElement(ast: html.Element): PreparsedElement {
   var selectAttr: string = null;
   var hrefAttr: string = null;
   var relAttr: string = null;
@@ -75,7 +73,7 @@ export class PreparsedElement {
 
 
 function normalizeNgContentSelect(selectAttr: string): string {
-  if (isBlank(selectAttr) || selectAttr.length === 0) {
+  if (selectAttr === null || selectAttr.length === 0) {
     return '*';
   }
   return selectAttr;

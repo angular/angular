@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {PlaceholderRegistry} from '../../../src/i18n/serializers/util';
+import {PlaceholderRegistry} from '../../../src/i18n/serializers/placeholder';
 
 export function main(): void {
-  ddescribe('PlaceholderRegistry', () => {
+  describe('PlaceholderRegistry', () => {
     let reg: PlaceholderRegistry;
 
     beforeEach(() => { reg = new PlaceholderRegistry(); });
@@ -34,11 +32,11 @@ export function main(): void {
         expect(reg.getStartTagPlaceholderName('p', {}, false)).toEqual('START_PARAGRAPH');
       });
 
-      it('should be case insensitive for tag name', () => {
+      it('should be case sensitive for tag name', () => {
         expect(reg.getStartTagPlaceholderName('p', {}, false)).toEqual('START_PARAGRAPH');
-        expect(reg.getStartTagPlaceholderName('P', {}, false)).toEqual('START_PARAGRAPH');
+        expect(reg.getStartTagPlaceholderName('P', {}, false)).toEqual('START_PARAGRAPH_1');
         expect(reg.getCloseTagPlaceholderName('p')).toEqual('CLOSE_PARAGRAPH');
-        expect(reg.getCloseTagPlaceholderName('P')).toEqual('CLOSE_PARAGRAPH');
+        expect(reg.getCloseTagPlaceholderName('P')).toEqual('CLOSE_PARAGRAPH_1');
       });
 
       it('should generate the same name for the same tag with the same attributes', () => {

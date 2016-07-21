@@ -8,8 +8,7 @@
 
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
-import {HtmlAst, HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from './html_ast';
-
+import * as html from './ast';
 
 // http://cldr.unicode.org/index/cldr-spec/plural-rules
 const PLURAL_CASES: string[] = ['zero', 'one', 'two', 'few', 'many', 'other'];
@@ -37,13 +36,13 @@ const PLURAL_CASES: string[] = ['zero', 'one', 'two', 'few', 'many', 'other'];
  * </ng-container>
  * ```
  */
-export function expandNodes(nodes: HtmlAst[]): ExpansionResult {
+export function expandNodes(nodes: html.Node[]): ExpansionResult {
   const expander = new _Expander();
-  return new ExpansionResult(htmlVisitAll(expander, nodes), expander.isExpanded, expander.errors);
+  return new ExpansionResult(html.visitAll(expander, nodes), expander.isExpanded, expander.errors);
 }
 
 export class ExpansionResult {
-  constructor(public nodes: HtmlAst[], public expanded: boolean, public errors: ParseError[]) {}
+  constructor(public nodes: html.Node[], public expanded: boolean, public errors: ParseError[]) {}
 }
 
 export class ExpansionError extends ParseError {
@@ -55,34 +54,34 @@ export class ExpansionError extends ParseError {
  *
  * @internal
  */
-class _Expander implements HtmlAstVisitor {
+class _Expander implements html.Visitor {
   isExpanded: boolean = false;
   errors: ParseError[] = [];
 
-  visitElement(ast: HtmlElementAst, context: any): any {
-    return new HtmlElementAst(
-        ast.name, ast.attrs, htmlVisitAll(this, ast.children), ast.sourceSpan, ast.startSourceSpan,
-        ast.endSourceSpan);
+  visitElement(element: html.Element, context: any): any {
+    return new html.Element(
+        element.name, element.attrs, html.visitAll(this, element.children), element.sourceSpan,
+        element.startSourceSpan, element.endSourceSpan);
   }
 
-  visitAttr(ast: HtmlAttrAst, context: any): any { return ast; }
+  visitAttribute(attribute: html.Attribute, context: any): any { return attribute; }
 
-  visitText(ast: HtmlTextAst, context: any): any { return ast; }
+  visitText(text: html.Text, context: any): any { return text; }
 
-  visitComment(ast: HtmlCommentAst, context: any): any { return ast; }
+  visitComment(comment: html.Comment, context: any): any { return comment; }
 
-  visitExpansion(ast: HtmlExpansionAst, context: any): any {
+  visitExpansion(icu: html.Expansion, context: any): any {
     this.isExpanded = true;
-    return ast.type == 'plural' ? _expandPluralForm(ast, this.errors) :
-                                  _expandDefaultForm(ast, this.errors);
+    return icu.type == 'plural' ? _expandPluralForm(icu, this.errors) :
+                                  _expandDefaultForm(icu, this.errors);
   }
 
-  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any {
+  visitExpansionCase(icuCase: html.ExpansionCase, context: any): any {
     throw new Error('Should not be reached');
   }
 }
 
-function _expandPluralForm(ast: HtmlExpansionAst, errors: ParseError[]): HtmlElementAst {
+function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Element {
   const children = ast.cases.map(c => {
     if (PLURAL_CASES.indexOf(c.value) == -1 && !c.value.match(/^=\d+$/)) {
       errors.push(new ExpansionError(
@@ -93,25 +92,25 @@ function _expandPluralForm(ast: HtmlExpansionAst, errors: ParseError[]): HtmlEle
     const expansionResult = expandNodes(c.expression);
     errors.push(...expansionResult.errors);
 
-    return new HtmlElementAst(
-        `template`, [new HtmlAttrAst('ngPluralCase', `${c.value}`, c.valueSourceSpan)],
+    return new html.Element(
+        `template`, [new html.Attribute('ngPluralCase', `${c.value}`, c.valueSourceSpan)],
         expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
   });
-  const switchAttr = new HtmlAttrAst('[ngPlural]', ast.switchValue, ast.switchValueSourceSpan);
-  return new HtmlElementAst(
+  const switchAttr = new html.Attribute('[ngPlural]', ast.switchValue, ast.switchValueSourceSpan);
+  return new html.Element(
       'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
 }
 
-function _expandDefaultForm(ast: HtmlExpansionAst, errors: ParseError[]): HtmlElementAst {
+function _expandDefaultForm(ast: html.Expansion, errors: ParseError[]): html.Element {
   let children = ast.cases.map(c => {
     const expansionResult = expandNodes(c.expression);
     errors.push(...expansionResult.errors);
 
-    return new HtmlElementAst(
-        `template`, [new HtmlAttrAst('ngSwitchCase', `${c.value}`, c.valueSourceSpan)],
+    return new html.Element(
+        `template`, [new html.Attribute('ngSwitchCase', `${c.value}`, c.valueSourceSpan)],
         expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
   });
-  const switchAttr = new HtmlAttrAst('[ngSwitch]', ast.switchValue, ast.switchValueSourceSpan);
-  return new HtmlElementAst(
+  const switchAttr = new html.Attribute('[ngSwitch]', ast.switchValue, ast.switchValueSourceSpan);
+  return new html.Element(
       'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
 }

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
-import {RegExpMatcherWrapper, RegExpWrapper, StringWrapper, isBlank, isPresent} from '../src/facade/lang';
+import {ListWrapper} from './facade/collection';
+import {BaseException} from './facade/exceptions';
+import {RegExpMatcherWrapper, RegExpWrapper, StringWrapper, isBlank, isPresent} from './facade/lang';
 
 const _EMPTY_ATTR_VALUE = /*@ts2dart_const*/ '';
 

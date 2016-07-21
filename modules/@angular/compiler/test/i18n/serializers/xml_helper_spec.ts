@@ -11,7 +11,7 @@ import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit
 import * as xml from '../../../src/i18n/serializers/xml_helper';
 
 export function main(): void {
-  ddescribe('XML helper', () => {
+  describe('XML helper', () => {
     it('should serialize XML declaration', () => {
       expect(xml.serialize([new xml.Declaration({version: '1.0'})]))
           .toEqual('<? xml version="1.0" ?>');

@@ -7,7 +7,6 @@
  */
 
 import './init';
-let serializer = require('@angular/compiler/src/i18n/xmb_serializer.js');
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -16,13 +15,14 @@ describe('template i18n extraction output', () => {
   const outDir = '';
 
   it('should extract i18n messages', () => {
+    const EXPECTED = `<? xml version="1.0" encoding="UTF-8" ?>
+<messagebundle>
+  <msg id="5a2858f1" desc="desc" meaning="meaning">translate me</msg>
+</messagebundle>`;
+
     const xmbOutput = path.join(outDir, 'messages.xmb');
     expect(fs.existsSync(xmbOutput)).toBeTruthy();
     const xmb = fs.readFileSync(xmbOutput, {encoding: 'utf-8'});
-    const res = serializer.deserializeXmb(xmb);
-    const keys = Object.keys(res.messages);
-    expect(keys.length).toEqual(1);
-    expect(res.errors.length).toEqual(0);
-    expect(res.messages[keys[0]][0].value).toEqual('translate me');
+    expect(xmb).toEqual(EXPECTED);
   });
 });
