@@ -87,16 +87,20 @@ export class ComponentFixture<T> {
           });
       this._onStableSubscription = ObservableWrapper.subscribe(ngZone.onStable, (_) => {
         this._isStable = true;
-        // Check whether there are no pending macrotasks in a microtask so that ngZone gets a chance
-        // to update the state of pending macrotasks.
-        scheduleMicroTask(() => {
-          if (!this.ngZone.hasPendingMacrotasks) {
-            if (this._completer != null) {
-              this._completer.resolve(true);
-              this._completer = null;
+        // Check whether there is a pending whenStable() completer to resolve.
+        if (this._completer !== null) {
+          // If so check whether there are no pending macrotasks before resolving.
+          // Do this check in the next tick so that ngZone gets a chance to update the state of
+          // pending macrotasks.
+          scheduleMicroTask(() => {
+            if (!this.ngZone.hasPendingMacrotasks) {
+              if (this._completer !== null) {
+                this._completer.resolve(true);
+                this._completer = null;
+              }
             }
-          }
-        });
+          });
+        }
       });
 
       this._onErrorSubscription = ObservableWrapper.subscribe(
