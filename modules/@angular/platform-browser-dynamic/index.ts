@@ -20,7 +20,7 @@ import {XHRImpl} from './src/xhr/xhr_impl';
 /**
  * @experimental
  */
-export const CACHED_TEMPLATE_PROVIDER: Provider[] = [{provide: XHR, useClass: CachedXHR}];
+export const RESOURCE_CACHE_PROVIDER: Provider[] = [{provide: XHR, useClass: CachedXHR}];
 
 /**
  * @experimental API related to bootstrapping are still under review.
