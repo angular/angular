@@ -16,6 +16,8 @@ import {EventEmitter, ObservableWrapper} from '../src/facade/async';
 /**
  * A mock implementation of {@link LocationStrategy} that allows tests to fire simulated
  * location events.
+ *
+ * @stable
  */
 @Injectable()
 export class MockLocationStrategy extends LocationStrategy {

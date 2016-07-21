@@ -82,6 +82,8 @@ export declare class NavigationError {
 /** @experimental */
 export interface NavigationExtras {
     fragment?: string;
+    preserveFragment?: boolean;
+    preserveQueryParams?: boolean;
     queryParams?: Params;
     relativeTo?: ActivatedRoute;
 }
@@ -130,10 +132,11 @@ export interface Route {
 /** @stable */
 export declare class Router {
     events: Observable<Event>;
+    /** @experimental */ navigated: boolean;
     routerState: RouterState;
     url: string;
     constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: AppModuleFactoryLoader, config: Routes);
-    createUrlTree(commands: any[], {relativeTo, queryParams, fragment}?: NavigationExtras): UrlTree;
+    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
@@ -152,6 +155,8 @@ export declare type RouterConfig = Route[];
 /** @stable */
 export declare class RouterLink {
     fragment: string;
+    preserveFragment: boolean;
+    preserveQueryParams: boolean;
     queryParams: {
         [k: string]: any;
     };
@@ -176,10 +181,16 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     fragment: string;
     href: string;
+    preserveFragment: boolean;
+    preserveQueryParams: boolean;
     queryParams: {
         [k: string]: any;
     };
     routerLink: any[] | string;
+    routerLinkOptions: {
+        preserveQueryParams: boolean;
+        preserveFragment: boolean;
+    };
     target: string;
     urlTree: UrlTree;
     ngOnChanges(changes: {}): any;

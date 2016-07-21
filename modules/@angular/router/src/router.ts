@@ -134,6 +134,13 @@ export class Router {
   private configLoader: RouterConfigLoader;
 
   /**
+   * Indicates if at least one navigation happened.
+   *
+   * @experimental
+   */
+  navigated: boolean = false;
+
+  /**
    * Creates the router service.
    */
   constructor(
@@ -385,6 +392,7 @@ export class Router {
           })
           .then(
               () => {
+                this.navigated = true;
                 this.routerEvents.next(
                     new NavigationEnd(id, this.serializeUrl(url), this.serializeUrl(appliedUrl)));
                 resolvePromise(navigationIsSuccessful);

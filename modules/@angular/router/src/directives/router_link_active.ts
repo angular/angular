@@ -94,7 +94,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   ngOnDestroy(): any { this.subscription.unsubscribe(); }
 
   private update(): void {
-    if (!this.links || !this.linksWithHrefs) return;
+    if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
 
     const currentUrlTree = this.router.parseUrl(this.router.url);
     const isActiveLinks = this.reduceList(currentUrlTree, this.links);

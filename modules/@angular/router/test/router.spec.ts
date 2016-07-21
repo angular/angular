@@ -1194,6 +1194,29 @@ describe('Integration', () => {
              expect(nativeButton.className).toEqual('');
            })));
 
+    it('should not set the class until the first navigation succeeds',
+       fakeAsync(inject(
+           [Router, TestComponentBuilder, Location],
+           (router: Router, tcb: TestComponentBuilder, location: Location) => {
+             @Component({
+               template:
+                   '<router-outlet></router-outlet><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" >'
+             })
+             class RootCmpWithLink {
+             }
+
+             const f = tcb.createFakeAsync(RootCmpWithLink);
+             advance(f);
+
+             const link = f.debugElement.nativeElement.querySelector('a');
+             expect(link.className).toEqual('');
+
+             router.initialNavigation();
+             advance(f);
+
+             expect(link.className).toEqual('active');
+           })));
+
 
     it('should set the class on a parent element when the link is active',
        fakeAsync(inject(

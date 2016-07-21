@@ -7,13 +7,13 @@
  */
 
 import {Location, LocationStrategy} from '@angular/common';
-import {SpyLocation} from '@angular/common/testing';
-import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
+import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {AppModule, AppModuleFactory, AppModuleFactoryLoader, Compiler, ComponentResolver, Injectable, Injector} from '@angular/core';
 
 import {Router, RouterOutletMap, Routes, UrlSerializer} from '../index';
 import {ROUTES} from '../src/router_config_loader';
 import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS} from '../src/router_module';
+
 
 
 /**
