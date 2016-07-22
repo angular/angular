@@ -68,13 +68,13 @@ describe('createUrlTree', () => {
 
   it('should support updating primary and secondary segments at once', () => {
     const p = serializer.parse('/a(right:b)');
-    const t = createRoot(p, [{outlets: {'': 'y/z', right: 'c/11/d'}}]);
+    const t = createRoot(p, [{outlets: {primary: 'y/z', right: 'c/11/d'}}]);
     expect(serializer.serialize(t)).toEqual('/y/z(right:c/11/d)');
   });
 
   it('should support removing primary segment', () => {
     const p = serializer.parse('/a/(b//right:c)');
-    const t = createRoot(p, ['a', {outlets: {'': null, right: 'd'}}]);
+    const t = createRoot(p, ['a', {outlets: {primary: null, right: 'd'}}]);
     expect(serializer.serialize(t)).toEqual('/a/(right:d)');
   });
 

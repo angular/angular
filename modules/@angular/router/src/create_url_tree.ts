@@ -88,11 +88,10 @@ function normalizeCommands(commands: any[]): NormalizedNavigationCommands {
     if (typeof c === 'object' && c.outlets !== undefined) {
       const r: {[k: string]: any} = {};
       forEach(c.outlets, (commands: any, name: string) => {
-        const n = name === '' ? PRIMARY_OUTLET : name;
         if (typeof commands === 'string') {
-          r[n] = commands.split('/');
+          r[name] = commands.split('/');
         } else {
-          r[n] = commands;
+          r[name] = commands;
         }
       });
       res.push({outlets: r});

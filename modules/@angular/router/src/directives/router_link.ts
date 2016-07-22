@@ -60,6 +60,13 @@ import {UrlTree} from '../url_tree';
  component</a>
  * ```
  *
+ * The router link directive always treats it the provided input as a delta to the current url.
+ *
+ * For instance, if the current url is `/user/(box//aux:team)`.
+ *
+ * Then the following link `<a [routerLink]="['/user/jim']">Jim</a>` will generate the link
+ * `/user/(jim//aux:team)`. See {@link Router.createUrlTree} for more information.
+ *
  * @stable
  */
 @Directive({selector: ':not(a)[routerLink]'})

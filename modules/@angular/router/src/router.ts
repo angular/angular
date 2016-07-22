@@ -222,7 +222,10 @@ export class Router {
    * router.createUrlTree(['/team/33/user', userId]);
    *
    * // create /team/33/(user/11//aux:chat)
-   * router.createUrlTree(['/team', 33, {outlets: {"": 'user/11', right: 'chat'}}]);
+   * router.createUrlTree(['/team', 33, {outlets: {primary: 'user/11', right: 'chat'}}]);
+   *
+   * // remove the right secondary node
+   * router.createUrlTree(['/team', 33, {outlets: {primary: 'user/11', right: null}}]);
    *
    * // assuming the current url is `/team/33/user/11` and the route points to `user/11`
    *
@@ -258,6 +261,9 @@ export class Router {
    * ```
    * router.navigateByUrl("/team/33/user/11");
    * ```
+   *
+   * In opposite to `navigate`, `navigateByUrl` takes a whole URL
+   * and does not apply any delta to the current one.
    */
   navigateByUrl(url: string|UrlTree): Promise<boolean> {
     if (url instanceof UrlTree) {
@@ -282,6 +288,9 @@ export class Router {
    * ```
    * router.navigate(['team', 33, 'team', '11], {relativeTo: route});
    * ```
+   *
+   * In opposite to `navigateByUrl`, `navigate` always takes a detla
+   * that is applied to the current URL.
    */
   navigate(commands: any[], extras: NavigationExtras = {}): Promise<boolean> {
     return this.scheduleNavigation(this.createUrlTree(commands, extras), false);

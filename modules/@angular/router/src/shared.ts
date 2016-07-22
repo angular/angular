@@ -12,7 +12,7 @@
  *
  * @experimental
  */
-export const PRIMARY_OUTLET = 'PRIMARY_OUTLET';
+export const PRIMARY_OUTLET = 'primary';
 
 /**
  * A collection of parameters.
