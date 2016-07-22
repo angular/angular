@@ -76,6 +76,10 @@ export declare const HTTP_PROVIDERS: any[];
 /** @experimental */
 export declare function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions): Http;
 
+/** @experimental */
+export declare class HttpModule {
+}
+
 /** @deprecated */
 export declare const JSON_BINDINGS: any[];
 
@@ -98,6 +102,10 @@ export declare abstract class JSONPConnection implements Connection {
     request: Request;
     response: Observable<Response>;
     abstract finished(data?: any): void;
+}
+
+/** @experimental */
+export declare class JsonpModule {
 }
 
 /** @experimental */
