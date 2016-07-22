@@ -15,7 +15,6 @@ import {ComponentInstruction} from './instruction';
 // TODO(rado): find a better way to fix this, or remove if likely culprit
 // https://github.com/systemjs/systemjs/issues/487 gets closed.
 var __ignore_me = global;
-var __make_dart_analyzer_happy: Promise<any> = null;
 
 /**
  * Defines route lifecycle method `routerOnActivate`, which is called by the router at the end of a
