@@ -4,11 +4,33 @@
     <button [md-menu-trigger-for]="menu" id="trigger">TRIGGER</button>
     <button [md-menu-trigger-for]="menu" id="trigger-two">TRIGGER 2</button>
 
-    <md-menu #menu="mdMenu">
-      <button md-menu-item id="one" (click)="selected='one'">One</button>
-      <button md-menu-item id="two" (click)="selected='two'">Two</button>
-      <button md-menu-item id="three" (click)="selected='three'" disabled>Three</button>
+    <md-menu #menu="mdMenu" class="custom">
+      <button md-menu-item (click)="selected='one'">One</button>
+      <button md-menu-item (click)="selected='two'">Two</button>
+      <button md-menu-item (click)="selected='three'" disabled>Three</button>
     </md-menu>
+
+    <button [md-menu-trigger-for]="beforeMenu" id="before-t">
+      BEFORE
+    </button>
+    <md-menu x-position="before" class="before" #beforeMenu="mdMenu">
+      <button md-menu-item>Item</button>
+    </md-menu>
+
+    <div class="bottom-row">
+      <button [md-menu-trigger-for]="aboveMenu" id="above-t">ABOVE</button>
+      <md-menu y-position="above" class="above" #aboveMenu="mdMenu">
+        <button md-menu-item>Item</button>
+      </md-menu>
+
+      <button [md-menu-trigger-for]="combined" id="combined-t">
+        BOTH
+      </button>
+      <md-menu x-position="before" y-position="above" class="combined" #combined="mdMenu">
+        <button md-menu-item>Item</button>
+      </md-menu>
+
+    </div>
   </div>
 </div>
 

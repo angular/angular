@@ -22,6 +22,10 @@ import {
 import {
     ConnectedPositionStrategy
 } from '@angular2-material/core/overlay/position/connected-position-strategy';
+import {
+  HorizontalConnectionPos,
+  VerticalConnectionPos
+} from '@angular2-material/core/overlay/position/connected-position';
 
 /**
  * This directive is intended to be used in conjunction with an md-menu tag.  It is
@@ -119,10 +123,13 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
    * @returns ConnectedPositionStrategy
    */
   private _getPosition(): ConnectedPositionStrategy  {
+    const positionX: HorizontalConnectionPos = this.menu.positionX === 'before' ? 'end' : 'start';
+    const positionY: VerticalConnectionPos = this.menu.positionY === 'above' ? 'bottom' : 'top';
+
     return this._overlay.position().connectedTo(
       this._element,
-      {originX: 'start', originY: 'top'},
-      {overlayX: 'start', overlayY: 'top'}
+      {originX: positionX, originY: positionY},
+      {overlayX: positionX, overlayY: positionY}
     );
   }
 }

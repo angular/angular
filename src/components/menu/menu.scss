@@ -14,6 +14,7 @@ $md-menu-overlay-max-width: 280px !default;   // 56 * 5
 $md-menu-item-height: 48px !default;
 $md-menu-font-size: 16px !default;
 $md-menu-side-padding: 16px !default;
+$md-menu-vertical-padding: 8px !default;
 
 .md-menu {
   @include md-elevation(2);
@@ -22,10 +23,12 @@ $md-menu-side-padding: 16px !default;
 
   // max height must be 100% of the viewport height + one row height
   max-height: calc(100vh + 48px);
-  overflow: scroll;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;   // for momentum scroll on mobile
 
   background: md-color($md-background, 'card');
+  padding-top: $md-menu-vertical-padding;
+  padding-bottom: $md-menu-vertical-padding;
 }
 
 [md-menu-item] {
@@ -35,7 +38,6 @@ $md-menu-side-padding: 16px !default;
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 100%;
   height: $md-menu-item-height;
   padding: 0 $md-menu-side-padding;
 
@@ -53,6 +55,10 @@ $md-menu-side-padding: 16px !default;
   &:hover:not([disabled]) {
     background: md-color($md-background, 'hover');
   }
+}
+
+button[md-menu-item] {
+  width: 100%;
 }
 
 .md-menu-click-catcher {

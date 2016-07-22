@@ -13,7 +13,7 @@ import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar/toolbar';
     MD_MENU_DIRECTIVES,
     MD_ICON_DIRECTIVES,
     MD_BUTTON_DIRECTIVES,
-    MD_TOOLBAR_DIRECTIVES
+    MD_TOOLBAR_DIRECTIVES,
   ]
 })
 export class MenuDemo {

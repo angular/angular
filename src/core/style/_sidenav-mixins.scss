@@ -1,6 +1,6 @@
 /* This mixin ensures an element spans the whole viewport.*/
 @mixin md-fullscreen {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
