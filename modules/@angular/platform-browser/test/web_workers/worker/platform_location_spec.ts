@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 import {LocationType} from '@angular/platform-browser/src/web_workers/shared/serialized_types';

@@ -201,7 +201,7 @@ export function main() {
                      'ignore: -; ' +
                      'literal: Text; interpolate: Hello world; ' +
                      'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (2) | ' +
-                     'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;')
+                     'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
              ref.dispose();
              async.done();
            });
@@ -230,10 +230,12 @@ export function main() {
            });
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            var element = html('<ng1></ng1>');
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {onDestroyed.subscribe(() => {
-                                                       ref.dispose();
-                                                       async.done();
-                                                     })});
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             onDestroyed.subscribe(() => {
+               ref.dispose();
+               async.done();
+             });
+           });
          }));
 
 
@@ -288,7 +290,7 @@ export function main() {
                      // Should not update because [model-a] is uni directional
                      scope.dataA = 'VICTOR';
                    }
-                 })
+                 });
                }
              };
            };
@@ -351,7 +353,7 @@ export function main() {
 
                  constructor: function() {
                    this.dataList = [1, 2, 3];
-                   this.someText = 'ng2'
+                   this.someText = 'ng2';
                  }
                });
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -395,7 +397,7 @@ export function main() {
 
                  constructor: function() {
                    this.dataList = [1, 2, 3];
-                   this.someText = 'ng2'
+                   this.someText = 'ng2';
                  }
                });
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -446,7 +448,7 @@ export function main() {
                                 post: any /** TODO #9100 */,
                                 cbFn: any /** TODO #9100 */) => { cbFn(200, `${method}:${url}`); });
 
-           var ng1 = function() { return {templateUrl() { return 'url.html' }}; };
+           var ng1 = function() { return {templateUrl() { return 'url.html'; }}; };
            ng1Module.directive('ng1', ng1);
            var Ng2 = Component({
                        selector: 'ng2',
@@ -488,7 +490,7 @@ export function main() {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
 
-           var ng1 = function() { return {template() { return '' }}; };
+           var ng1 = function() { return {template() { return ''; }}; };
            ng1Module.directive('ng1', ng1);
            var Ng2 = Component({
                        selector: 'ng2',

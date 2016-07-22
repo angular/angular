@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from '@angular/common/src/forms-deprecated';
 import {IS_DART, isPresent} from '../../src/facade/lang';
 import {PromiseWrapper} from '../../src/facade/promise';
@@ -430,7 +429,7 @@ export function main() {
 
           // rename contains into has
           it('should return false when the component is not included',
-             () => { expect(group.contains('optional')).toEqual(false); })
+             () => { expect(group.contains('optional')).toEqual(false); });
 
           it('should return false when there is no component with the given name',
              () => { expect(group.contains('something else')).toEqual(false); });
@@ -605,7 +604,7 @@ export function main() {
              expect(g.errors).toEqual({'async': true});
              expect(g.find(['one']).errors).toEqual({'async': true});
            }));
-      })
+      });
     });
 
     describe('ControlArray', () => {
@@ -829,7 +828,7 @@ export function main() {
              expect(g.errors).toEqual({'async': true});
              expect(g.pending).toEqual(false);
            }));
-      })
+      });
     });
   });
 }

@@ -91,6 +91,7 @@ export function main() {
 }
 
 class FakeEventManagerPlugin extends EventManagerPlugin {
+  /** @internal */
   _eventHandler = new Map<string, Function>();
   constructor(public _supports: string[]) { super(); }
 

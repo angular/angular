@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {Injectable, Component, Input, ViewMetadata, Compiler, ComponentFactory, Injector, AppModule, AppModuleMetadata, AppModuleFactory} from '@angular/core';
 import {ConcreteType, stringify} from '../src/facade/lang';

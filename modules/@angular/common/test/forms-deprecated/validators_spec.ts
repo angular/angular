@@ -19,9 +19,9 @@ export function main() {
   function validator(key: string, error: any) {
     return function(c: AbstractControl) {
       var r = {};
-      (r as any /** TODO #9100 */)[key] = error;
+      (r as any)[key] = error;
       return r;
-    }
+    };
   }
 
   class AsyncValidatorDirective {

@@ -107,7 +107,7 @@ export function main() {
     describe('timers', () => {
       it('should run queued zero duration timer on zero tick', fakeAsync(() => {
            var ran = false;
-           TimerWrapper.setTimeout(() => {ran = true}, 0);
+           TimerWrapper.setTimeout(() => { ran = true; }, 0);
 
            expect(ran).toEqual(false);
 

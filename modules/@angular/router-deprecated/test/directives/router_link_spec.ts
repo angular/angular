@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {SpyRouter, SpyLocation} from '../spies';
-import {provide, Component} from '@angular/core';
+import {Component} from '@angular/core';
 import {Location} from '@angular/common';
 import {Router, RouteRegistry, RouterLink, RouterOutlet, Route, RouteParams, ComponentInstruction} from '@angular/router-deprecated';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';

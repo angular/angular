@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, it, iit, ddescribe, expect, inject, beforeEach,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, describe, it, iit, ddescribe, expect, inject, beforeEach,} from '@angular/core/testing/testing_internal';
 
 import {PromiseWrapper} from '../src/facade/async';
 import {Type, IS_DART} from '../src/facade/lang';

@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, provide} from '@angular/core';
 import {ComponentFactory} from '@angular/core/src/linker/component_factory';
 import {ComponentResolver, ReflectorComponentResolver} from '@angular/core/src/linker/component_resolver';
 import {ReflectionInfo, reflector} from '@angular/core/src/reflection/reflection';
-import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {Console} from '../../src/console';
 
 class DummyConsole implements Console {
@@ -42,8 +40,8 @@ export function main() {
     it('should throw when given a string',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compiler.resolveComponent('someString').catch((e) => {
-           expect(e.message).toContain('Cannot resolve component using \'someString\'.')
-               async.done();
+           expect(e.message).toContain('Cannot resolve component using \'someString\'.');
+           async.done();
          });
        }));
   });

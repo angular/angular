@@ -176,7 +176,7 @@ export function main() {
     describe('CompileAnimationAnimateMetadata', () => {
       it('should serialize with full data', () => {
         let full = new CompileAnimationAnimateMetadata(
-            '1s linear', new CompileAnimationStyleMetadata(0, [{'opacity': 0.5, 'color': 'blue'}]))
+            '1s linear', new CompileAnimationStyleMetadata(0, [{'opacity': 0.5, 'color': 'blue'}]));
         expect(CompileAnimationAnimateMetadata.fromJson(full.toJson())).toEqual(full);
       });
 

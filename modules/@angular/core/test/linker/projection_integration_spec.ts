@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {bind, provide, forwardRef, Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation, ViewMetadata} from '@angular/core';
+import {forwardRef, Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation, ViewMetadata} from '@angular/core';
 import {By,} from '@angular/platform-browser/src/dom/debug/by';
 import {getAllDebugNodes} from '@angular/core/src/debug/debug_node';
 

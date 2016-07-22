@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/core/testing';
 import {ListWrapper} from '../../src/facade/collection';
 import {IS_DART} from '../../src/facade/lang';
@@ -182,7 +181,7 @@ export function main() {
                    .then((fixture) => {
                      fixture.debugElement.componentInstance.items = 'whaaa';
                      try {
-                       fixture.detectChanges()
+                       fixture.detectChanges();
                      } catch (e) {
                        expect(e.message).toContain(
                            `Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables such as Arrays.`);

@@ -1,9 +1,16 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import 'rxjs/add/operator/map';
 
 import {Location} from '@angular/common';
 import {AppModule, AppModuleFactoryLoader, Component} from '@angular/core';
-import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {addProviders, configureModule, fakeAsync, inject, tick} from '@angular/core/testing';
+import {ComponentFixture, TestComponentBuilder, addProviders, configureModule, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
@@ -1375,7 +1382,7 @@ describe('Integration', () => {
              const recordedEvents: any[] = [];
              router.events.forEach(e => recordedEvents.push(e));
 
-             router.navigateByUrl('/lazy/loaded').catch(s => {})
+             router.navigateByUrl('/lazy/loaded').catch(s => {});
              advance(fixture);
 
              expect(location.path()).toEqual('/');

@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
-import {ObservableWrapper} from '../../src/facade/async';
+import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {BrowserJsonp} from '../../src/backends/browser_jsonp';
 import {JSONPConnection, JSONPConnection_, JSONPBackend, JSONPBackend_} from '../../src/backends/jsonp_backend';
-import {provide, Injector, ReflectiveInjector} from '@angular/core';
-import {isPresent, StringWrapper} from '../../src/facade/lang';
+import {ReflectiveInjector} from '@angular/core';
+import {isPresent,} from '../../src/facade/lang';
 import {TimerWrapper} from '../../src/facade/async';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
@@ -21,7 +19,6 @@ import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ResponseType, ReadyState, RequestMethod} from '../../src/enums';
 
-var addEventListenerSpy: any;
 var existingScripts: MockBrowserJsonp[] = [];
 var unused: Response;
 

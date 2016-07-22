@@ -22,6 +22,9 @@ function _assertTokens(tokens: CssToken[], valuesArr: string[]): void {
 class MyVisitor implements CssAstVisitor {
   captures: {[key: string]: any[]} = {};
 
+  /**
+   * @internal
+   */
   _capture(method: string, ast: CssAst, context: any) {
     this.captures[method] = isPresent(this.captures[method]) ? this.captures[method] : [];
     this.captures[method].push([ast, context]);

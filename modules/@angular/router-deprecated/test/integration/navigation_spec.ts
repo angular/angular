@@ -9,8 +9,7 @@
 import {Location} from '@angular/common';
 import {Component, Inject, Injector, provide} from '@angular/core';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {RouteData, RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';
 
 import {PromiseWrapper, TimerWrapper} from '../../src/facade/async';
@@ -41,7 +40,7 @@ export function main() {
 
     it('should work in a simple case', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
              .then((_) => rtr.navigateByUrl('/test'))
              .then((_) => {
@@ -55,7 +54,7 @@ export function main() {
     it('should navigate between components with different parameters',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/user/:name', component: UserCmp})]))
              .then((_) => rtr.navigateByUrl('/user/brian'))
              .then((_) => {
@@ -73,7 +72,7 @@ export function main() {
     it('should navigate to child routes',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb, 'outer [ <router-outlet></router-outlet> ]')
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
              .then((_) => rtr.navigateByUrl('/a/b'))
              .then((_) => {
@@ -87,7 +86,7 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
          compile(tcb, 'outer [ <router-outlet></router-outlet> ]')
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
              .then((_) => rtr.navigateByUrl('/a'))
              .then((_) => {
@@ -102,7 +101,7 @@ export function main() {
            [AsyncTestCompleter, Location],
            (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
              compile(tcb, 'outer [ <router-outlet></router-outlet> ]')
-                 .then((rtc) => {fixture = rtc})
+                 .then((rtc) => { fixture = rtc; })
                  .then((_) => rtr.config([new Route({path: '/...', component: ParentCmp})]))
                  .then((_) => rtr.navigateByUrl('/b'))
                  .then((_) => {
@@ -117,7 +116,7 @@ export function main() {
     it('should navigate to child routes of async routes',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb, 'outer [ <router-outlet></router-outlet> ]')
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new AsyncRoute({path: '/a/...', loader: parentLoader})]))
              .then((_) => rtr.navigateByUrl('/a/b'))
              .then((_) => {
@@ -133,7 +132,7 @@ export function main() {
            [AsyncTestCompleter, Location],
            (async: AsyncTestCompleter, location: any /** TODO #9100 */) => {
              compile(tcb)
-                 .then((rtc) => {fixture = rtc})
+                 .then((rtc) => { fixture = rtc; })
                  .then((_) => location.setInitialPath('/test/'))
                  .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
                  .then((_) => rtr.navigateByUrl('/test'))
@@ -148,7 +147,7 @@ export function main() {
     it('should reuse common parent components',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/team/:id/...', component: TeamCmp})]))
              .then((_) => rtr.navigateByUrl('/team/angular/user/rado'))
              .then((_) => {
@@ -169,7 +168,7 @@ export function main() {
     it('should not reuse children when parent components change',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/team/:id/...', component: TeamCmp})]))
              .then((_) => rtr.navigateByUrl('/team/angular/user/rado'))
              .then((_) => {
@@ -191,7 +190,7 @@ export function main() {
     it('should inject route data into component',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route(
                        {path: '/route-data', component: RouteDataCmp, data: {isAdmin: true}})]))
              .then((_) => rtr.navigateByUrl('/route-data'))
@@ -205,7 +204,7 @@ export function main() {
     it('should inject route data into component with AsyncRoute',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new AsyncRoute(
                        {path: '/route-data', loader: asyncRouteDataCmp, data: {isAdmin: true}})]))
              .then((_) => rtr.navigateByUrl('/route-data'))
@@ -219,7 +218,7 @@ export function main() {
     it('should inject empty object if the route has no data property',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route(
                        {path: '/route-data-default', component: RouteDataCmp})]))
              .then((_) => rtr.navigateByUrl('/route-data-default'))
@@ -233,7 +232,7 @@ export function main() {
     it('should fire an event for each activated component',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb, '<router-outlet (activate)="activatedCmp = $event"></router-outlet>')
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
              .then((_) => rtr.navigateByUrl('/test'))
              .then((_) => {

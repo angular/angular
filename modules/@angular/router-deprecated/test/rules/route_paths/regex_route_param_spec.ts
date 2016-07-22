@@ -10,7 +10,7 @@ import {describe, it, iit, ddescribe, expect, inject, beforeEach,} from '@angula
 
 import {GeneratedUrl} from '../../../src/rules/route_paths/route_path';
 import {RegexRoutePath} from '../../../src/rules/route_paths/regex_route_path';
-import {parser, Url} from '../../../src/url_parser';
+import {parser} from '../../../src/url_parser';
 
 function emptySerializer(params: any /** TODO #9100 */) {
   return new GeneratedUrl('', {});
@@ -47,10 +47,9 @@ export function main() {
     });
 
     it('should raise an error when the number of parameters doesnt match', () => {
-      expect(
-          () => {new RegexRoutePath(
-              '^a-([0-9]+)-b-([0-9]+)$', emptySerializer, ['complete_match', 'a'])})
-          .toThrowError(`Regex group names [complete_match,a] must contain names for each matching \
+      expect(() => {
+        new RegexRoutePath('^a-([0-9]+)-b-([0-9]+)$', emptySerializer, ['complete_match', 'a']);
+      }).toThrowError(`Regex group names [complete_match,a] must contain names for each matching \
 group and a name for the complete match as its first element of regex '^a-([0-9]+)-b-([0-9]+)$'. \
 3 group names are expected.`);
     });

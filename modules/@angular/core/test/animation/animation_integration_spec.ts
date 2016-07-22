@@ -7,7 +7,6 @@
  */
 
 import {NgIf} from '@angular/common';
-import {CompilerConfig} from '@angular/compiler';
 import {TestComponentBuilder} from '@angular/core/testing';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -19,20 +18,15 @@ import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
-import {AnimationEntryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
-import {AUTO_STYLE} from '../../src/animation/metadata';
-import {IS_DART, isArray, isPresent} from '../../src/facade/lang';
+import {AUTO_STYLE, AnimationEntryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
+import {isArray, isPresent} from '../../src/facade/lang';
 import {configureCompiler, configureModule, fakeAsync, flushMicrotasks, tick} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {
-  if (IS_DART) {
-    declareTests({useJit: false});
-  } else {
-    describe('jit', () => { declareTests({useJit: true}); });
-    describe('no jit', () => { declareTests({useJit: false}); });
-  }
+  describe('jit', () => { declareTests({useJit: true}); });
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
@@ -254,18 +248,17 @@ function declareTests({useJit}: {useJit: boolean}) {
              })));
 
       describe('groups/sequences', () => {
-        var assertPlaying =
-            (player: MockAnimationDriver, isPlaying: any /** TODO #9100 */) => {
-              var method = 'play';
-              var lastEntry = player.log.length > 0 ? player.log[player.log.length - 1] : null;
-              if (isPresent(lastEntry)) {
-                if (isPlaying) {
-                  expect(lastEntry).toEqual(method);
-                } else {
-                  expect(lastEntry).not.toEqual(method);
-                }
-              }
+        var assertPlaying = (player: MockAnimationDriver, isPlaying: any /** TODO #9100 */) => {
+          var method = 'play';
+          var lastEntry = player.log.length > 0 ? player.log[player.log.length - 1] : null;
+          if (isPresent(lastEntry)) {
+            if (isPlaying) {
+              expect(lastEntry).toEqual(method);
+            } else {
+              expect(lastEntry).not.toEqual(method);
             }
+          }
+        };
 
         it('should run animations in sequence one by one if a top-level array is used',
            inject(

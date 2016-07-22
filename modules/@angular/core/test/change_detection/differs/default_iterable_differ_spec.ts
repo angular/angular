@@ -17,13 +17,13 @@ import {iterableChangesAsString} from '../../change_detection/util';
 class ItemWithId {
   constructor(private id: string) {}
 
-  toString() { return `{id: ${this.id}}` }
+  toString() { return `{id: ${this.id}}`; }
 }
 
 class ComplexItem {
   constructor(private id: string, private color: string) {}
 
-  toString() { return `{id: ${this.id}, color: ${this.color}}` }
+  toString() { return `{id: ${this.id}, color: ${this.color}}`; }
 }
 
 // todo(vicb): UnmodifiableListView / frozen object when implemented
@@ -328,7 +328,7 @@ export function main() {
       var trackByItemId = (index: number, item: any): any => item.id;
 
       var buildItemList =
-          (list: string[]) => { return list.map((val) => {return new ItemWithId(val)}) };
+          (list: string[]) => { return list.map((val) => { return new ItemWithId(val); }); };
 
       beforeEach(() => { differ = new DefaultIterableDiffer(trackByItemId); });
 

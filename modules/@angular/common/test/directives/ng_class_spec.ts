@@ -581,7 +581,7 @@ export function main() {
              }));
 
     });
-  })
+  });
 }
 
 @Component({selector: 'test-cmp', directives: [NgClass, NgFor], template: ''})

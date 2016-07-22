@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, beforeEachProviders, ddescribe, xdescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, xdescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {StringMapWrapper} from '../../src/facade/collection';
 
@@ -191,7 +190,7 @@ export function main() {
                    async.done();
                  });
            }));
-  })
+  });
 }
 
 @Component({selector: 'test-cmp', directives: [NgStyle], template: ''})

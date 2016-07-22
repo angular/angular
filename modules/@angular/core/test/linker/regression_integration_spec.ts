@@ -6,24 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {configureCompiler, configureModule, TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
-import {IS_DART} from '../../src/facade/lang';
-
-import {Component, Pipe, PipeTransform, provide, ViewMetadata, PLATFORM_PIPES, OpaqueToken, Injector, forwardRef} from '@angular/core';
+import {Component, Pipe, PipeTransform, ViewMetadata, OpaqueToken, Injector, forwardRef} from '@angular/core';
 import {NgIf, NgClass} from '@angular/common';
-import {CompilerConfig} from '@angular/compiler';
 
 export function main() {
-  if (IS_DART) {
-    declareTests({useJit: false});
-  } else {
-    describe('jit', () => { declareTests({useJit: true}); });
+  describe('jit', () => { declareTests({useJit: true}); });
 
-    describe('no jit', () => { declareTests({useJit: false}); });
-  }
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
@@ -68,20 +60,18 @@ function declareTests({useJit}: {useJit: boolean}) {
                    });
              }));
 
-      if (!IS_DART) {
-        it('should evaluate conditional and unary operators with right precedence - #8235',
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter],
-               (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-                 tcb.overrideView(MyComp1, new ViewMetadata({template: `{{!null?.length}}`}))
-                     .createAsync(MyComp1)
-                     .then((fixture) => {
-                       fixture.detectChanges();
-                       expect(fixture.nativeElement).toHaveText('true');
-                       async.done();
-                     });
-               }));
-      }
+      it('should evaluate conditional and unary operators with right precedence - #8235',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               tcb.overrideView(MyComp1, new ViewMetadata({template: `{{!null?.length}}`}))
+                   .createAsync(MyComp1)
+                   .then((fixture) => {
+                     fixture.detectChanges();
+                     expect(fixture.nativeElement).toHaveText('true');
+                     async.done();
+                   });
+             }));
     });
 
     describe('providers', () => {

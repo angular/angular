@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {configureCompiler, TestComponentBuilder} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {OpaqueToken, ViewMetadata, Component, Directive, AfterContentInit, AfterViewInit, QueryList, ContentChildren, ViewChildren, Input} from '@angular/core';
+import {Component, Directive, AfterContentInit, AfterViewInit, QueryList, ContentChildren, ViewChildren, Input} from '@angular/core';
 import {NgIf} from '@angular/common';
-import {CompilerConfig} from '@angular/compiler';
-import {el} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });

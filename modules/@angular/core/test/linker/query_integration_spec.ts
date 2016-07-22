@@ -6,16 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {isPresent, stringify} from '../../src/facade/lang';
 import {ObservableWrapper} from '../../src/facade/async';
 
-import {Component, Directive, TemplateRef, Query, QueryList, ViewQuery, ContentChildren, ViewChildren, ContentChild, ViewChild, AfterContentInit, AfterViewInit, AfterContentChecked, AfterViewChecked} from '@angular/core';
+import {asNativeElements, ViewContainerRef, Component, Directive, TemplateRef, Query, QueryList, ViewQuery, ContentChildren, ViewChildren, ContentChild, ViewChild, AfterContentInit, AfterViewInit, AfterContentChecked, AfterViewChecked} from '@angular/core';
 import {NgIf, NgFor} from '@angular/common';
-import {asNativeElements, ViewContainerRef} from '@angular/core';
 
 export function main() {
   describe('Query API', () => {
@@ -303,9 +301,9 @@ export function main() {
                  expect(needsTpl.vc.createEmbeddedView(needsTpl.contentTpl).rootNodes[0])
                      .toHaveText('light');
                  expect(needsTpl.vc.createEmbeddedView(needsTpl.viewTpl).rootNodes[0])
-                     .toHaveText('shadow')
+                     .toHaveText('shadow');
 
-                         async.done();
+                 async.done();
                });
              }));
     });
@@ -833,6 +831,7 @@ class NeedsViewChildren implements AfterViewInit {
 
 @Component({selector: 'needs-content-child', template: ''})
 class NeedsContentChild implements AfterContentInit, AfterContentChecked {
+  /** @internal */
   _child: TextDirective;
 
   @ContentChild(TextDirective)
@@ -862,6 +861,7 @@ class NeedsViewChild implements AfterViewInit,
     AfterViewChecked {
   shouldShow: boolean = true;
   shouldShow2: boolean = false;
+  /** @internal */
   _child: TextDirective;
 
   @ViewChild(TextDirective)

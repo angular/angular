@@ -1,5 +1,11 @@
-import {LowerCasePipe, NgIf} from '@angular/common';
-import {CompilerConfig} from '@angular/compiler';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {ANALYZE_FOR_PRECOMPILE, AppModule, AppModuleMetadata, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, Inject, Injectable, Injector, Input, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
 import {ComponentFixture, configureCompiler} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';

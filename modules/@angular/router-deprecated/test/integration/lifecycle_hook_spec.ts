@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, Injector, provide} from '@angular/core';
+import {Component,} from '@angular/core';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';
 
 import {EventEmitter, ObservableWrapper, PromiseCompleter, PromiseWrapper} from '../../src/facade/async';
@@ -19,7 +18,7 @@ import {CanDeactivate, CanReuse, OnActivate, OnDeactivate, OnReuse} from '../../
 import {CanActivate} from '../../src/lifecycle/lifecycle_annotations';
 import {AsyncRoute, AuxRoute, Redirect, Route, RouteConfig} from '../../src/route_config/route_config_decorator';
 
-import {RootCmp, TEST_ROUTER_PROVIDERS, compile} from './util';
+import {TEST_ROUTER_PROVIDERS, compile} from './util';
 
 var cmpInstanceCount: any /** TODO #9100 */;
 var log: string[];
@@ -47,7 +46,7 @@ export function main() {
     it('should call the routerOnActivate hook',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/on-activate'))
              .then((_) => {
@@ -61,7 +60,7 @@ export function main() {
     it('should wait for a parent component\'s routerOnActivate hook to resolve before calling its child\'s',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => {
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -83,7 +82,7 @@ export function main() {
     it('should call the routerOnDeactivate hook',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/on-deactivate'))
              .then((_) => rtr.navigateByUrl('/a'))
@@ -98,7 +97,7 @@ export function main() {
     it('should wait for a child component\'s routerOnDeactivate hook to resolve before calling its parent\'s',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/parent-deactivate/child-deactivate'))
              .then((_) => {
@@ -124,7 +123,7 @@ export function main() {
     it('should reuse a component when the routerCanReuse hook returns true',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/on-reuse/1/a'))
              .then((_) => {
@@ -147,7 +146,7 @@ export function main() {
     it('should not reuse a component when the routerCanReuse hook returns false',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/never-reuse/1/a'))
              .then((_) => {
@@ -170,7 +169,7 @@ export function main() {
     it('should navigate when routerCanActivate returns true',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => {
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -190,7 +189,7 @@ export function main() {
     it('should not navigate when routerCanActivate returns false',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => {
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -210,7 +209,7 @@ export function main() {
     it('should navigate away when routerCanDeactivate returns true',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/can-deactivate/a'))
              .then((_) => {
@@ -236,7 +235,7 @@ export function main() {
     it('should not navigate away when routerCanDeactivate returns false',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/can-deactivate/a'))
              .then((_) => {
@@ -263,7 +262,7 @@ export function main() {
     it('should run activation and deactivation hooks in the correct order',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/activation-hooks/child'))
              .then((_) => {
@@ -291,7 +290,7 @@ export function main() {
     it('should only run reuse hooks when reusing',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          compile(tcb)
-             .then((rtc) => {fixture = rtc})
+             .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/reuse-hooks/1'))
              .then((_) => {

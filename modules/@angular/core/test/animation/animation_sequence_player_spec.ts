@@ -32,7 +32,7 @@ export function main() {
           } else {
             expect(actual).not.toEqual(status);
           }
-        }
+        };
 
     var assertPlaying = (player: MockAnimationPlayer, isPlaying: boolean) => {
       assertLastStatus(player, 'play', isPlaying);

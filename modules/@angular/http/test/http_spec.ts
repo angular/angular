@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ReflectiveInjector, provide} from '@angular/core';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {Injector, ReflectiveInjector} from '@angular/core';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
 import {zip} from 'rxjs/observable/zip';
 
 import {BaseRequestOptions, ConnectionBackend, HTTP_PROVIDERS, Http, JSONPBackend, JSONP_PROVIDERS, Jsonp, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../http';
@@ -354,7 +352,7 @@ export function main() {
         it('should allow case insensitive strings for method names', () => {
           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
             backend.connections.subscribe((c: MockConnection) => {
-              expect(c.request.method).toBe(RequestMethod.Post)
+              expect(c.request.method).toBe(RequestMethod.Post);
               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
               async.done();
             });
@@ -478,7 +476,7 @@ export function main() {
                    return stringToArrayBuffer(Json.stringify(message));
                }
              };
-             c.mockRespond(new Response(new ResponseOptions({body: body()})))
+             c.mockRespond(new Response(new ResponseOptions({body: body()})));
            });
 
            zip(http.get(

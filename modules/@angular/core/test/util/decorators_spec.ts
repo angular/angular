@@ -89,7 +89,7 @@ export function main() {
         expect(proto.extends).toEqual(undefined);
         expect(proto.prototype).toEqual(undefined);
 
-        expect(reflector.annotations(MyClass)[0].arg).toEqual('test-works')
+        expect(reflector.annotations(MyClass)[0].arg).toEqual('test-works');
       });
 
       describe('errors', () => {
@@ -108,13 +108,15 @@ export function main() {
 
 
         it('should ensure that last position is function', () => {
-          expect(() => {Class({constructor: []})})
+          expect(() => { Class({constructor: []}); })
               .toThrowError(
                   'Last position of Class method array must be Function in key constructor was \'undefined\'');
         });
 
         it('should ensure that annotation count matches parameters count', () => {
-          expect(() => {Class({constructor: [String, function MyType() {}]})})
+          expect(() => {
+            Class({constructor: [String, function MyType() {}]});
+          })
               .toThrowError(
                   'Number of annotations (1) does not match number of arguments (0) in the function: MyType');
         });
@@ -126,7 +128,7 @@ export function main() {
         });
 
         it('should ensure that extends is a Function', () => {
-          expect(() => {(<Function>Class)({extends: 'non_type', constructor: function() {}})})
+          expect(() => { (<Function>Class)({extends: 'non_type', constructor: function() {}}); })
               .toThrowError(
                   'Class definition \'extends\' property must be a constructor function was: non_type');
         });

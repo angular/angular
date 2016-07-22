@@ -70,7 +70,8 @@ class FancyService {
   value: string = 'real value';
   getAsyncValue() { return Promise.resolve('async value'); }
   getTimeoutValue() {
-    return new Promise((resolve, reject) => { setTimeout(() => {resolve('timeout value')}, 10); })
+    return new Promise(
+        (resolve, reject) => { setTimeout(() => { resolve('timeout value'); }, 10); });
   }
 }
 
@@ -351,8 +352,8 @@ export function main() {
       var deferred = PromiseWrapper.completer();
       originalJasmineIt = jasmine.getEnv().it;
       jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
-        var done = () => { deferred.resolve() };
-        (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err) };
+        var done = () => { deferred.resolve(); };
+        (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err); };
         fn(done);
         return null;
       };
@@ -365,8 +366,8 @@ export function main() {
       var deferred = PromiseWrapper.completer();
       originalJasmineBeforeEach = jasmine.getEnv().beforeEach;
       jasmine.getEnv().beforeEach = (fn: any) => {
-        var done = () => { deferred.resolve() };
-        (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err) };
+        var done = () => { deferred.resolve(); };
+        (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err); };
         fn(done);
         return null;
       };

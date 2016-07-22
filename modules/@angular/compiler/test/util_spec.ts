@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fakeAsync, flushMicrotasks} from '@angular/core/testing/fake_async';
+import {fakeAsync} from '@angular/core/testing/fake_async';
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 import {SyncAsyncResult} from '../src/util';
@@ -20,5 +20,5 @@ export function main() {
            sar.asyncResult.then((v: any) => expect(v).toBe(syncValue));
          }));
     });
-  })
+  });
 }

@@ -7,13 +7,12 @@
  */
 
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
-import {ClientMessageBroker, ClientMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
+import {ClientMessageBroker, ClientMessageBrokerFactory_, UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 
 import {PromiseWrapper} from '../../../src/facade/async';
 import {ListWrapper, StringMapWrapper} from '../../../src/facade/collection';
-import {BaseException, WrappedException} from '../../../src/facade/exceptions';
+import {BaseException} from '../../../src/facade/exceptions';
 import {Type, isPresent} from '../../../src/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
 
@@ -52,11 +51,11 @@ export function expectBrokerCall(
     expect(args.method).toEqual(methodName);
     if (isPresent(vals)) {
       expect(args.args.length).toEqual(vals.length);
-      ListWrapper.forEachWithIndex(vals, (v, i) => {expect(v).toEqual(args.args[i].value)});
+      ListWrapper.forEachWithIndex(vals, (v, i) => { expect(v).toEqual(args.args[i].value); });
     }
     var promise: any /** TODO #9100 */ = null;
     if (isPresent(handler)) {
-      let givenValues = args.args.map((arg) => {arg.value});
+      let givenValues = args.args.map((arg) => arg.value);
       if (givenValues.length > 0) {
         promise = handler(givenValues);
       } else {

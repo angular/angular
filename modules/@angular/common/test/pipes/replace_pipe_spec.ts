@@ -7,7 +7,6 @@
  */
 
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
 
 import {ReplacePipe} from '@angular/common';
 import {RegExpWrapper, StringJoiner} from '../../src/facade/lang';
