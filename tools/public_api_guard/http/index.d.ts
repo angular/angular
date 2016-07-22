@@ -125,6 +125,7 @@ export declare class Request extends Body {
     withCredentials: boolean;
     constructor(requestOptions: RequestArgs);
     detectContentType(): ContentType;
+    detectContentTypeFromBody(): ContentType;
     getBody(): any;
 }
 
