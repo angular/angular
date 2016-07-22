@@ -8,11 +8,11 @@ import {
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, ViewChild} from '@angular/core';
 import {ConnectedOverlayDirective, OverlayOrigin} from './overlay-directives';
-import {OVERLAY_CONTAINER_TOKEN, Overlay} from './overlay';
+import {Overlay} from './overlay';
+import {OverlayContainer} from './overlay-container';
 import {ViewportRuler} from './position/viewport-ruler';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
-
 
 describe('Overlay directives', () => {
   let builder: TestComponentBuilder;
@@ -24,9 +24,13 @@ describe('Overlay directives', () => {
       Overlay,
       OverlayPositionBuilder,
       ViewportRuler,
-      {provide: OVERLAY_CONTAINER_TOKEN, useFactory: () => {
-        overlayContainerElement = document.createElement('div');
-        return overlayContainerElement;
+      {provide: OverlayContainer, useFactory: () => {
+        return {
+          getContainerElement: () => {
+           overlayContainerElement = document.createElement('div');
+            return overlayContainerElement;
+          }
+        };
       }},
     ]);
   });

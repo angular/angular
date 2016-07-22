@@ -13,7 +13,8 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import {MdDialog} from './dialog';
-import {OVERLAY_PROVIDERS, OVERLAY_CONTAINER_TOKEN} from '@angular2-material/core/overlay/overlay';
+import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
+import {OverlayContainer} from '@angular2-material/core/overlay/overlay-container';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 
@@ -31,10 +32,14 @@ describe('MdDialog', () => {
     addProviders([
       OVERLAY_PROVIDERS,
       MdDialog,
-      {provide: OVERLAY_CONTAINER_TOKEN, useFactory: () => {
-        overlayContainerElement = document.createElement('div');
-        return overlayContainerElement;
-      }}
+      {provide: OverlayContainer, useFactory: () => {
+        return {
+          getContainerElement: () => {
+            overlayContainerElement = document.createElement('div');
+            return overlayContainerElement;
+          }
+        };
+      }},
     ]);
   });
 

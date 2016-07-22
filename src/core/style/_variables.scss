@@ -8,9 +8,11 @@ $md-font-family: Roboto, 'Helvetica Neue', sans-serif !default;
 // Media queries
 $md-xsmall: 'max-width: 600px';
 
+// TODO: Revisit all z-indices before beta
 // z-index master list
 $z-index-fab: 20 !default;
 $z-index-drawer: 100 !default;
+$z-index-overlay: 1000 !default;
 
 // Global constants
 $pi: 3.14159265;

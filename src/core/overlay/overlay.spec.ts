@@ -12,7 +12,8 @@ import {
 } from '@angular/core';
 import {TemplatePortalDirective} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
-import {Overlay, OVERLAY_CONTAINER_TOKEN} from './overlay';
+import {Overlay} from './overlay';
+import {OverlayContainer} from './overlay-container';
 import {OverlayRef} from './overlay-ref';
 import {OverlayState} from './overlay-state';
 import {PositionStrategy} from './position/position-strategy';
@@ -32,9 +33,14 @@ describe('Overlay', () => {
       Overlay,
       OverlayPositionBuilder,
       ViewportRuler,
-      {provide: OVERLAY_CONTAINER_TOKEN, useFactory: () => {
-        overlayContainerElement = document.createElement('div');
-        return overlayContainerElement;
+      {provide: OverlayContainer, useFactory: () => {
+        return {
+          getContainerElement: () => {
+            if (overlayContainerElement) { return overlayContainerElement; }
+            overlayContainerElement = document.createElement('div');
+            return overlayContainerElement;
+          }
+        };
       }}
     ]);
   });

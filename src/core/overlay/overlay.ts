@@ -1,7 +1,5 @@
 import {
   ComponentResolver,
-  OpaqueToken,
-  Inject,
   Injectable,
 } from '@angular/core';
 import {OverlayState} from './overlay-state';
@@ -10,10 +8,7 @@ import {OverlayRef} from './overlay-ref';
 
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {ViewportRuler} from './position/viewport-ruler';
-
-
-/** Token used to inject the DOM element that serves as the overlay container. */
-export const OVERLAY_CONTAINER_TOKEN = new OpaqueToken('overlayContainer');
+import {OverlayContainer} from './overlay-container';
 
 /** Next overlay unique ID. */
 let nextUniqueId = 0;
@@ -32,18 +27,9 @@ let defaultState = new OverlayState();
  */
  @Injectable()
 export class Overlay {
-  private _overlayContainerElement: HTMLElement;
-
-  constructor(
-      @Inject(OVERLAY_CONTAINER_TOKEN) overlayContainerElement: any,
-      private _componentResolver: ComponentResolver,
-      private _positionBuilder: OverlayPositionBuilder) {
-
-    // We inject the container as `any` because the constructor signature cannot reference
-    // browser globals (HTMLElement) on non-browser environments, since having a class decorator
-    // causes TypeScript to preserve the constructor signature types.
-    this._overlayContainerElement = overlayContainerElement;
-  }
+  constructor(private _overlayContainer: OverlayContainer,
+              private _componentResolver: ComponentResolver,
+              private _positionBuilder: OverlayPositionBuilder) {}
 
   /**
    * Creates an overlay.
@@ -71,7 +57,7 @@ export class Overlay {
     pane.id = `md-overlay-${nextUniqueId++}`;
     pane.classList.add('md-overlay-pane');
 
-    this._overlayContainerElement.appendChild(pane);
+    this._overlayContainer.getContainerElement().appendChild(pane);
 
     return Promise.resolve(pane);
   }

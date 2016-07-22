@@ -8,11 +8,12 @@ import {
     beforeEachProviders,
 } from '@angular/core/testing';
 import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
-import {Component, provide, DebugElement} from '@angular/core';
+import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MD_TOOLTIP_DIRECTIVES, TooltipPosition, MdTooltip} from
     '@angular2-material/tooltip/tooltip';
-import {OVERLAY_PROVIDERS, OVERLAY_CONTAINER_TOKEN} from '@angular2-material/core/overlay/overlay';
+import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
+import {OverlayContainer} from '@angular2-material/core/overlay/overlay-container';
 
 describe('MdTooltip', () => {
   let builder: TestComponentBuilder;
@@ -20,12 +21,14 @@ describe('MdTooltip', () => {
 
   beforeEachProviders(() => [
     OVERLAY_PROVIDERS,
-    provide(OVERLAY_CONTAINER_TOKEN, {
-      useFactory: () => {
-        overlayContainerElement = document.createElement('div');
-        return overlayContainerElement;
-      }
-    })
+    {provide: OverlayContainer, useFactory: () => {
+      return {
+        getContainerElement: () => {
+          overlayContainerElement = document.createElement('div');
+          return overlayContainerElement;
+        }
+      };
+    }},
   ]);
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {

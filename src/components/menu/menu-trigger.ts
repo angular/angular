@@ -71,7 +71,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   }
 
   destroyMenu(): void {
-    this._overlayRef.dispose();
+    if (this._overlayRef) { this._overlayRef.dispose(); }
   }
 
   // set state rather than toggle to support triggers sharing a menu

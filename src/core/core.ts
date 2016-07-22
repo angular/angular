@@ -17,7 +17,8 @@ export {
 export {DomPortalHost} from './portal/dom-portal-host';
 
 // Overlay
-export {Overlay, OVERLAY_CONTAINER_TOKEN, OVERLAY_PROVIDERS} from './overlay/overlay';
+export {Overlay, OVERLAY_PROVIDERS} from './overlay/overlay';
+export {OverlayContainer} from './overlay/overlay-container';
 export {OverlayRef} from './overlay/overlay-ref';
 export {OverlayState} from './overlay/overlay-state';
 export {
