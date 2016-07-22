@@ -25,7 +25,7 @@ export var proxy: ClassDecorator = (t: any /** TODO #9100 */) => t;
 var _global = <any>(typeof window === 'undefined' ? global : window);
 
 export var afterEach: Function = _global.afterEach;
-export var expect: Function = _global.expect;
+export var expect: (actual: any) => jasmine.Matchers = _global.expect;
 
 var jsmBeforeEach = _global.beforeEach;
 var jsmDescribe = _global.describe;

@@ -14,11 +14,12 @@ import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {ComponentFixture} from '@angular/core/testing';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {BROWSER_APP_PROVIDERS, BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
 import {BROWSER_APP_COMPILER_PROVIDERS, bootstrap} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {PromiseWrapper} from '../../src/facade/async';
 import {stringify} from '../../src/facade/lang';

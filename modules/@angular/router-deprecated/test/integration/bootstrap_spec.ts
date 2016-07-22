@@ -13,10 +13,11 @@ import {ApplicationRef} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {Component} from '@angular/core/src/metadata';
 import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, MockApplicationRef, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, MockApplicationRef, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT, ROUTER_PROVIDERS, RouteParams, Router} from '@angular/router-deprecated';
 
 import {PromiseWrapper} from '../../src/facade/async';

@@ -9,8 +9,9 @@
 import {Location} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {AuxRoute, ROUTER_DIRECTIVES, Route, RouteConfig, Router} from '@angular/router-deprecated';
 
 import {BaseException} from '../../../src/facade/exceptions';
