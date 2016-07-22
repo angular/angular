@@ -25,3 +25,6 @@ npm-debug.log
 
 # rollup-test output
 /modules/rollup-test/dist/
+
+# plunker generation
+plnkr.html

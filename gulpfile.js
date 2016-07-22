@@ -60,6 +60,7 @@ const publicApiArgs = [
   '--allowModuleIdentifiers', 'angular',
   '--onStabilityMissing', 'error'
 ].concat(entrypoints);
+const apiExamples = './modules/@angular/examples';
 
 gulp.task('build.sh', (done) => {
   const childProcess = require('child_process');
@@ -170,6 +171,12 @@ gulp.task('changelog', () => {
       currentTag: require('./package.json').version
     }))
     .pipe(gulp.dest('./'));
+});
+
+gulp.task('build-plunkers', () => {
+  const plunkerBuilder = require('./tools/plunker-builder/plunkerBuilder');
+
+  plunkerBuilder.buildPlunkers(apiExamples);
 });
 
 function tsc(projectPath, done) {
