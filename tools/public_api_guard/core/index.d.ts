@@ -715,7 +715,7 @@ export declare function enableProdMode(): void;
 export declare class EventEmitter<T> extends Subject<T> {
     __isAsync: boolean;
     constructor(isAsync?: boolean);
-    emit(value: T): void;
+    emit(value?: T): void;
     /** @deprecated */ next(value: any): void;
     subscribe(generatorOrNext?: any, error?: any, complete?: any): any;
 }
