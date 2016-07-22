@@ -51,9 +51,6 @@ var defaultLocale: string = 'en-US';
  *
  * In javascript, only the components specified will be respected (not the ordering,
  * punctuations, ...) and details of the formatting will be dependent on the locale.
- * On the other hand in Dart version, you can also include quoted text as well as some extra
- * date/time components such as quarter. For more information see:
- * https://www.dartdocs.org/documentation/intl/0.13.0/intl/DateFormat-class.html
  *
  * `format` can also be one of the following predefined formats:
  *
