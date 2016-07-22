@@ -294,7 +294,7 @@ class UrlParser {
       this.capture('/');
     }
 
-    if (this.remaining === '' || this.remaining.startsWith('?')) {
+    if (this.remaining === '' || this.remaining.startsWith('?') || this.remaining.startsWith('#')) {
       return new UrlSegment([], {});
     } else {
       return new UrlSegment([], this.parseSegmentChildren());

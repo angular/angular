@@ -156,6 +156,11 @@ describe('url serializer', () => {
     expect(url.serialize(tree)).toEqual('/one#two');
   });
 
+  it('should parse fragment (root)', () => {
+    const tree = url.parse('/#one');
+    expectSegment(tree.root, '');
+    expect(url.serialize(tree)).toEqual('/#one');
+  });
 
   it('should parse empty fragment', () => {
     const tree = url.parse('/one#');
