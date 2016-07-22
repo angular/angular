@@ -13,4 +13,5 @@ export class GesturesDemo {
   pressCount: number = 0;
   longpressCount: number = 0;
   swipeCount: number = 0;
+  slideCount: number = 0;
 }

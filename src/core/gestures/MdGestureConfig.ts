@@ -33,34 +33,34 @@ export class MdGestureConfig extends HammerGestureConfig {
    * TODO: Confirm threshold numbers with Material Design UX Team
    * */
   buildHammer(element: HTMLElement) {
-    var mc = new Hammer(element);
+    const mc = new Hammer(element);
 
-    // Create custom gesture recognizers
-    let drag = this._createRecognizer(Hammer.Pan, {event: 'drag', threshold: 6}, Hammer.Swipe);
-    let slide = this._createRecognizer(Hammer.Pan, {event: 'slide', threshold: 0}, Hammer.Swipe);
-    let longpress = this._createRecognizer(Hammer.Press, {event: 'longpress', time: 500});
+    // create custom gesture recognizers
+    const drag = new Hammer.Pan({event: 'drag', threshold: 6});
+    const longpress = new Hammer.Press({event: 'longpress', time: 500});
+    const slide = new Hammer.Pan({event: 'slide', threshold: 0});
 
-    let pan = new Hammer.Pan();
-    let swipe = new Hammer.Swipe();
+    // ensure custom recognizers can coexist with the default gestures (i.e. pan, press, swipe)
+    // custom recognizers can overwrite default recognizers if they aren't configured to
+    // "recognizeWith" others that listen to the same base events.
+    const pan = new Hammer.Pan();
+    const press = new Hammer.Press();
+    const swipe = new Hammer.Swipe();
 
-    // Overwrite the default `pan` event to use the swipe event.
+    drag.recognizeWith(pan);
+    drag.recognizeWith(swipe);
+    drag.recognizeWith(slide);
+
     pan.recognizeWith(swipe);
+    pan.recognizeWith(slide);
 
-    // Add customized gestures to Hammer manager
-    mc.add([drag, slide, pan, longpress]);
+    slide.recognizeWith(swipe);
 
+    longpress.recognizeWith(press);
+
+    // add customized gestures to Hammer manager
+    mc.add([drag, pan, swipe, press, longpress, slide]);
     return mc;
-  }
-
-  /** Creates a new recognizer, without affecting the default recognizers of HammerJS */
-  private _createRecognizer(type: RecognizerStatic, options: any, ...extra: RecognizerStatic[]) {
-    let recognizer = new type(options);
-
-    // Add the default recognizer to the new custom recognizer.
-    extra.push(type);
-    extra.forEach(entry => recognizer.recognizeWith(new entry()));
-
-    return recognizer;
   }
 
 }
