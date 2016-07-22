@@ -130,7 +130,7 @@ export class EventEmitter<T> extends Subject<T> {
     this.__isAsync = isAsync;
   }
 
-  emit(value: T) { super.next(value); }
+  emit(value?: T) { super.next(value); }
 
   /**
    * @deprecated - use .emit(value) instead
