@@ -644,9 +644,9 @@ class ActivateRoutes {
   activate(parentOutletMap: RouterOutletMap): void {
     const futureRoot = this.futureState._root;
     const currRoot = this.currState ? this.currState._root : null;
-    pushQueryParamsAndFragment(this.futureState);
     advanceActivatedRoute(this.futureState.root);
     this.activateChildRoutes(futureRoot, currRoot, parentOutletMap);
+    pushQueryParamsAndFragment(this.futureState);
   }
 
   private activateChildRoutes(
