@@ -128,8 +128,6 @@ function processPathsWithParamsAgainstRoute(
   const childConfig = getChildConfig(route);
 
   const {segment, slicedPath} = split(rawSegment, consumedPaths, rawSlicedPath, childConfig);
-  // console.log("raw", rawSegment)
-  // console.log(segment.toString(), childConfig)
 
   const snapshot = new ActivatedRouteSnapshot(
       consumedPaths, Object.freeze(merge(inherited.allParams, parameters)),
@@ -292,7 +290,7 @@ function createChildrenForEmptyPaths(
   primarySegment._pathIndexShift = consumedPaths.length;
 
   for (let r of routes) {
-    if (r.path === '') {
+    if (r.path === '' && getOutlet(r) !== PRIMARY_OUTLET) {
       const s = new UrlSegment([], {});
       s._sourceSegment = segment;
       s._pathIndexShift = consumedPaths.length;

@@ -339,6 +339,39 @@ describe('recognize', () => {
             });
       });
 
+      it('should match (non-termianl) when both primary and secondary and primary has a child',
+         () => {
+           const config = [{
+             path: 'parent',
+             children: [
+               {
+                 path: '',
+                 component: ComponentA,
+                 children: [
+                   {path: 'b', component: ComponentB},
+                   {path: 'c', component: ComponentC},
+                 ]
+               },
+               {
+                 path: '',
+                 component: ComponentD,
+                 outlet: 'secondary',
+               }
+             ]
+           }];
+
+           checkRecognize(config, 'parent/b', (s: RouterStateSnapshot) => {
+             checkActivatedRoute(s.root, '', {}, RootComponent);
+             checkActivatedRoute(s.firstChild(s.root), 'parent', {}, undefined);
+
+             const cc = s.children(s.firstChild(s.root));
+             checkActivatedRoute(cc[0], '', {}, ComponentA);
+             checkActivatedRoute(cc[1], '', {}, ComponentD, 'secondary');
+
+             checkActivatedRoute(s.firstChild(cc[0]), 'b', {}, ComponentB);
+           });
+         });
+
       it('should match (terminal)', () => {
         checkRecognize(
             [{

@@ -60,7 +60,7 @@ import {UrlTree} from '../url_tree';
  component</a>
  * ```
  *
- * The router link directive always treats it the provided input as a delta to the current url.
+ * The router link directive always treats the provided input as a delta to the current url.
  *
  * For instance, if the current url is `/user/(box//aux:team)`.
  *

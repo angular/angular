@@ -15,6 +15,7 @@ import {LoadedRouterConfig} from '../src/router_config_loader';
 import {DefaultUrlSerializer, UrlSegment, UrlTree, equalPathsWithParams} from '../src/url_tree';
 
 describe('applyRedirects', () => {
+
   it('should return the same url tree when no redirects', () => {
     checkRedirect(
         [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],

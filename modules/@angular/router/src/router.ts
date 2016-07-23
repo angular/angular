@@ -289,7 +289,7 @@ export class Router {
    * router.navigate(['team', 33, 'team', '11], {relativeTo: route});
    * ```
    *
-   * In opposite to `navigateByUrl`, `navigate` always takes a detla
+   * In opposite to `navigateByUrl`, `navigate` always takes a delta
    * that is applied to the current URL.
    */
   navigate(commands: any[], extras: NavigationExtras = {}): Promise<boolean> {
