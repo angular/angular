@@ -728,6 +728,14 @@ export function main() {
     });
 
     describe('errors', () => {
+      it('should parse nested expansion forms', () => {
+        expect(tokenizeAndHumanizeErrors(`<p>before { after</p>`, true)).toEqual([[
+          HtmlTokenType.RAW_TEXT,
+          'Unexpected character "EOF" (Do you have an unescaped "{" in your template?).',
+          '0:21',
+        ]]);
+      });
+
       it('should include 2 lines of context in message', () => {
         let src = '111\n222\n333\nE\n444\n555\n666\n';
         let file = new ParseSourceFile(src, 'file://');
@@ -787,7 +795,7 @@ function tokenizeAndHumanizeLineColumn(input: string): any[] {
       token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
 }
 
-function tokenizeAndHumanizeErrors(input: string): any[] {
-  return tokenizeHtml(input, 'someUrl')
+function tokenizeAndHumanizeErrors(input: string, tokenizeExpansionForms: boolean = false): any[] {
+  return tokenizeHtml(input, 'someUrl', tokenizeExpansionForms)
       .errors.map(e => [<any>e.tokenType, e.msg, humanizeLineColumn(e.span.start)]);
 }

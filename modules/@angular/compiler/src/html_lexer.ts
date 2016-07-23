@@ -202,6 +202,9 @@ class _HtmlTokenizer {
   }
 
   private _createError(msg: string, span: ParseSourceSpan): _ControlFlowError {
+    if (this._isInExpansionForm()) {
+      msg += ' (Do you have an unescaped "{" in your template?).';
+    }
     const error = new HtmlTokenError(msg, this._currentTokenType, span);
     this._currentTokenStart = null;
     this._currentTokenType = null;
@@ -523,6 +526,8 @@ class _HtmlTokenizer {
     this._requireCharCode(chars.$LBRACE);
     this._endToken([]);
 
+    this._expansionCaseStack.push(HtmlTokenType.EXPANSION_FORM_START);
+
     this._beginToken(HtmlTokenType.RAW_TEXT, this._getLocation());
     const condition = this._readUntil(chars.$COMMA);
     this._endToken([condition], this._getLocation());
@@ -534,8 +539,6 @@ class _HtmlTokenizer {
     this._endToken([type], this._getLocation());
     this._requireCharCode(chars.$COMMA);
     this._attemptCharCodeUntilFn(isNotWhitespace);
-
-    this._expansionCaseStack.push(HtmlTokenType.EXPANSION_FORM_START);
   }
 
   private _consumeExpansionCaseStart() {
