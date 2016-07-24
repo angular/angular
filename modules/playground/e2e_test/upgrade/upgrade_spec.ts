@@ -8,14 +8,18 @@
 
 import {verifyNoBrowserErrors} from "e2e_util/e2e_util";
 
-// TODO(i): reenable once we fix issue with exposing testability to protractor when using ngUpgrade
-// https://github.com/angular/angular/issues/9407
-xdescribe('ngUpgrade', function() {
+describe('ngUpgrade', function() {
   var URL = 'all/playground/src/upgrade/index.html';
 
-  beforeEach(function() { browser.get(URL); });
+  beforeEach(function() {
+    browser.rootEl = 'body';
+    browser.get(URL);
+  });
 
-  afterEach(verifyNoBrowserErrors);
+  afterEach(function() {
+    (<any>browser).useAllAngular2AppRoots();
+    verifyNoBrowserErrors();
+  });
 
   it('should bootstrap Angular 1 and Angular 2 apps together', function() {
     var ng1NameInput = element(by.css('input[ng-model]=name'));
