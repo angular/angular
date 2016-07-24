@@ -456,7 +456,7 @@ export type RouterConfig = Route[];
  *
  * @stable use Routes
  */
-export type Routes = Route[];
+export type Routes = Array<Route|Route[]>;
 
 /**
  * See {@link Routes} for more details.
@@ -498,7 +498,7 @@ export interface Route {
   loadChildren?: string;
 }
 
-export function validateConfig(config: Routes): void {
+export function validateConfig(config: Route[]): void {
   config.forEach(validateNode);
 }
 
