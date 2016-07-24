@@ -238,7 +238,7 @@ export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
 }
 
 /** @stable */
-export declare type Routes = Route[];
+export declare type Routes = Array<Route | Route[]>;
 
 /** @stable */
 export declare class RoutesRecognized {

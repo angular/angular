@@ -22,8 +22,10 @@ describe('Integration', () => {
   beforeEach(() => {
     configureModule({
       modules: [RouterTestingModule],
-      providers: [provideRoutes(
-          [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])]
+      providers: [provideRoutes([
+        {path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp},
+        [{path: 'nested', component: SimpleCmp}]
+      ])]
     });
   });
 
@@ -37,6 +39,18 @@ describe('Integration', () => {
            advance(fixture);
 
            expect(location.path()).toEqual('/simple');
+         })));
+
+  it('should navigate with a provided nested config',
+     fakeAsync(inject(
+         [Router, TestComponentBuilder, Location],
+         (router: Router, tcb: TestComponentBuilder, location: Location) => {
+           const fixture = createRoot(tcb, router, RootCmp);
+
+           router.navigateByUrl('/nested');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/nested');
          })));
 
   it('should work when an outlet is in an ngIf',

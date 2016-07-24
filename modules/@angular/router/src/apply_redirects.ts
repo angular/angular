@@ -40,7 +40,7 @@ function absoluteRedirect(newPaths: UrlPathWithParams[]): Observable<UrlSegment>
 
 export function applyRedirects(
     injector: Injector, configLoader: RouterConfigLoader, urlTree: UrlTree,
-    config: Routes): Observable<UrlTree> {
+    config: Route[]): Observable<UrlTree> {
   return expandSegment(injector, configLoader, config, urlTree.root, PRIMARY_OUTLET)
       .map(rootSegment => createUrlTree(urlTree, rootSegment))
       .catch(e => {

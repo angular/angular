@@ -38,7 +38,7 @@ class InheritedFromParent {
   }
 }
 
-export function recognize(rootComponentType: Type, config: Routes, urlTree: UrlTree, url: string):
+export function recognize(rootComponentType: Type, config: Route[], urlTree: UrlTree, url: string):
     Observable<RouterStateSnapshot> {
   try {
     const rootSegment = split(urlTree.root, [], [], config).segment;

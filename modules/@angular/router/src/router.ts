@@ -22,7 +22,7 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
 
 import {applyRedirects} from './apply_redirects';
-import {ResolveData, Routes, validateConfig} from './config';
+import {ResolveData, Route, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -130,7 +130,7 @@ export class Router {
   private locationSubscription: Subscription;
   private routerEvents: Subject<Event>;
   private navigationId: number = 0;
-  private config: Routes;
+  private config: Route[];
   private configLoader: RouterConfigLoader;
 
   /**
@@ -193,8 +193,9 @@ export class Router {
    * ```
    */
   resetConfig(config: Routes): void {
-    validateConfig(config);
-    this.config = config;
+    let flattenedConfig = [].concat(...config);
+    validateConfig(flattenedConfig);
+    this.config = flattenedConfig;
   }
 
   /**
