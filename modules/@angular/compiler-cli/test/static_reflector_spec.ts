@@ -322,8 +322,8 @@ describe('StaticReflector', () => {
     })).toEqual(['some-value']);
     expect(simplify(new StaticSymbol('/tmp/src/function-reference.ts', ''), {
       __symbolic: 'reference',
-      name: 'two'
-    })).toEqual(2);
+      name: 'three'
+    })).toEqual(3);
   });
 
   it('should error on direct recursive calls', () => {
@@ -332,7 +332,7 @@ describe('StaticReflector', () => {
             new StaticSymbol('/tmp/src/function-reference.ts', ''),
             {__symbolic: 'reference', name: 'recursion'}))
         .toThrow(new Error(
-            'Recursion not supported, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
+            'Recursion not supported, resolving symbol recursive in /tmp/src/function-recursive.d.ts, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
 
   it('should error on indirect recursive calls', () => {
@@ -341,7 +341,7 @@ describe('StaticReflector', () => {
             new StaticSymbol('/tmp/src/function-reference.ts', ''),
             {__symbolic: 'reference', name: 'indirectRecursion'}))
         .toThrow(new Error(
-            'Recursion not supported, resolving symbol indirectRecursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
+            'Recursion not supported, resolving symbol indirectRecursion2 in /tmp/src/function-recursive.d.ts, resolving symbol indirectRecursion1 in /tmp/src/function-recursive.d.ts, resolving symbol indirectRecursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
 
   it('should simplify a spread expression', () => {
@@ -749,9 +749,15 @@ class MockReflectorHost implements StaticReflectorHost {
               __symbolic: 'binop',
               operator: '+',
               left: {__symbolic: 'reference', name: 'a'},
-              right: {__symbolic: 'reference', name: 'b'}
+              right: {
+                __symbolic: 'binop',
+                operator: '+',
+                left: {__symbolic: 'reference', name: 'b'},
+                right: {__symbolic: 'reference', name: 'oneLiteral'}
+              }
             }
-          }
+          },
+          oneLiteral: 1
         }
       },
       '/tmp/src/function-reference.ts': {
@@ -767,7 +773,7 @@ class MockReflectorHost implements StaticReflectorHost {
             },
             arguments: ['some-value']
           },
-          two: {
+          three: {
             __symbolic: 'call',
             expression: {
               __symbolic: 'reference',

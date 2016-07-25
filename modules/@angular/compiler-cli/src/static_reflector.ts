@@ -279,16 +279,18 @@ export class StaticReflector implements ReflectorReader {
         let callContext: {[name: string]: string}|undefined = undefined;
         if (expression['__symbolic'] == 'call') {
           let target = expression['expression'];
+          let functionSymbol: StaticSymbol;
           let targetFunction: any;
           if (target && target.__symbolic === 'reference') {
             callContext = {name: target.name};
-            targetFunction = resolveReferenceValue(resolveReference(context, target));
+            functionSymbol = resolveReference(context, target);
+            targetFunction = resolveReferenceValue(functionSymbol);
           }
           if (targetFunction && targetFunction['__symbolic'] == 'function') {
-            if (calling.get(targetFunction)) {
+            if (calling.get(functionSymbol)) {
               throw new Error('Recursion not supported');
             }
-            calling.set(targetFunction, true);
+            calling.set(functionSymbol, true);
             let value = targetFunction['value'];
             if (value) {
               // Determine the arguments
@@ -302,13 +304,13 @@ export class StaticReflector implements ReflectorReader {
               let result: any;
               try {
                 scope = functionScope.done();
-                result = simplify(value);
+                result = simplifyInContext(functionSymbol, value, depth + 1);
               } finally {
                 scope = oldScope;
               }
               return result;
             }
-            calling.delete(targetFunction);
+            calling.delete(functionSymbol);
           }
         }
 
