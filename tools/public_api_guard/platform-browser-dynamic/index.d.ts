@@ -10,11 +10,17 @@ export declare function bootstrapWorkerUi(workerScriptUri: string, customProvide
 /** @deprecated */
 export declare const BROWSER_APP_COMPILER_PROVIDERS: Array<any>;
 
-/** @experimental */
+/** @deprecated */
 export declare const browserDynamicPlatform: (extraProviders?: any[]) => PlatformRef;
 
 /** @experimental */
 export declare const CACHED_TEMPLATE_PROVIDER: Array<any>;
 
 /** @experimental */
+export declare const platformBrowserDynamic: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
+export declare const platformWorkerAppDynamic: (extraProviders?: any[]) => PlatformRef;
+
+/** @deprecated */
 export declare const workerAppDynamicPlatform: (extraProviders?: any[]) => PlatformRef;

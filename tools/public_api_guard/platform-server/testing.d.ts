@@ -1,8 +1,11 @@
 /** @experimental */
+export declare const platformServerTesting: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
 export declare class ServerTestingModule {
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const serverTestingPlatform: (extraProviders?: any[]) => PlatformRef;
 
 /** @deprecated */
