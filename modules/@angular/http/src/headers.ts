@@ -75,6 +75,7 @@ export class Headers {
    * Appends a header to existing list of header values for a given header name.
    */
   append(name: string, value: string): void {
+    name = lookupExistingName(this._headersMap, name);
     var mapName = this._headersMap.get(name);
     var list = isListLikeIterable(mapName) ? mapName : [];
     list.push(value);
@@ -84,7 +85,9 @@ export class Headers {
   /**
    * Deletes all header values for the given name.
    */
-  delete (name: string): void { this._headersMap.delete(name); }
+  delete (name: string): void {
+    this._headersMap.delete(lookupExistingName(this._headersMap, name));
+  }
 
   forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void {
     this._headersMap.forEach(fn);
@@ -93,12 +96,16 @@ export class Headers {
   /**
    * Returns first header that matches given name.
    */
-  get(header: string): string { return ListWrapper.first(this._headersMap.get(header)); }
+  get(header: string): string {
+    return ListWrapper.first(this._headersMap.get(lookupExistingName(this._headersMap, header)));
+  }
 
   /**
    * Check for existence of header by given name.
    */
-  has(header: string): boolean { return this._headersMap.has(header); }
+  has(header: string): boolean {
+    return this._headersMap.has(lookupExistingName(this._headersMap, header));
+  }
 
   /**
    * Provides names of set headers
@@ -118,7 +125,7 @@ export class Headers {
       list.push(<string>value);
     }
 
-    this._headersMap.set(header, list);
+    this._headersMap.set(lookupExistingName(this._headersMap, header), list);
   }
 
   /**
@@ -146,7 +153,7 @@ export class Headers {
    * Returns list of header values for a given name.
    */
   getAll(header: string): string[] {
-    var headers = this._headersMap.get(header);
+    var headers = this._headersMap.get(lookupExistingName(this._headersMap, header));
     return isListLikeIterable(headers) ? headers : [];
   }
 
@@ -154,4 +161,23 @@ export class Headers {
    * This method is not implemented.
    */
   entries() { throw new BaseException('"entries" method is not implemented on Headers class'); }
+}
+
+// "HTTP character sets are identified by case-insensitive tokens"
+// Spec at https://tools.ietf.org/html/rfc2616
+// This implementation is same as NodeJS.
+// see https://nodejs.org/dist/latest-v6.x/docs/api/http.html#http_message_headers
+function lookupExistingName(map: Map<string, any>, name: string): string {
+  // lookup directly for speed
+  if (map.has(name)) {
+    return name;
+  }
+  // lookup case-insensitively for right
+  var realName: string = '';
+  map.forEach((value, key) => {
+    if (key.toLowerCase() === name) {
+      realName = key;
+    }
+  });
+  return realName;
 }
