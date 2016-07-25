@@ -40,7 +40,7 @@ import {
 export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _portal: TemplatePortal;
   private _overlayRef: OverlayRef;
-  menuOpen: boolean = false;
+  private _menuOpen: boolean = false;
 
   @Input('md-menu-trigger-for') menu: MdMenu;
   @Output() onMenuOpen = new EventEmitter();
@@ -56,9 +56,11 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() { this.destroyMenu(); }
 
+  get menuOpen(): boolean { return this._menuOpen; }
+
   @HostListener('click')
   toggleMenu(): Promise<void> {
-    return this.menuOpen ? this.closeMenu() : this.openMenu();
+    return this._menuOpen ? this.closeMenu() : this.openMenu();
   }
 
   openMenu(): Promise<void> {
@@ -75,14 +77,17 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   }
 
   destroyMenu(): void {
-    if (this._overlayRef) { this._overlayRef.dispose(); }
+    if (this._overlayRef) {
+      this._overlayRef.dispose();
+      this._overlayRef = null;
+    }
   }
 
   // set state rather than toggle to support triggers sharing a menu
   private _setIsMenuOpen(isOpen: boolean): void {
-    this.menuOpen = isOpen;
+    this._menuOpen = isOpen;
     this.menu._setClickCatcher(isOpen);
-    this.menuOpen ? this.onMenuOpen.emit(null) : this.onMenuClose.emit(null);
+    this._menuOpen ? this.onMenuOpen.emit(null) : this.onMenuClose.emit(null);
   }
 
   /**
