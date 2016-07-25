@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberWrapper, RegExpMatcherWrapper, RegExpWrapper, StringWrapper, escapeRegExp, hasConstructor, isPresent, resolveEnumToken} from '../src/lang';
+import {NumberWrapper, RegExpMatcherWrapper, RegExpWrapper, StringWrapper, escapeRegExp, hasConstructor, isPresent, isPromise, resolveEnumToken} from '../src/lang';
 
 enum UsefulEnum {
   MyToken,
@@ -182,6 +182,24 @@ export function main() {
 
       it('should be false for subtypes',
          () => { expect(hasConstructor(new MySubclass(), MySuperclass)).toEqual(false); });
+    });
+  });
+  describe('isPromise', () => {
+    it('should be true for native Promises',
+       () => expect(isPromise(Promise.resolve(true))).toEqual(true));
+
+    it('should be true for thenables',
+       () => expect(isPromise({then: function() {}})).toEqual(true));
+
+    it('should be false if "then" is not a function',
+       () => expect(isPromise({then: 0})).toEqual(false));
+
+    it('should be false if the argument has no "then" function',
+       () => expect(isPromise({})).toEqual(false));
+
+    it('should be false if the argument is undefined or null', () => {
+      expect(isPromise(undefined)).toEqual(false);
+      expect(isPromise(null)).toEqual(false);
     });
   });
 }
