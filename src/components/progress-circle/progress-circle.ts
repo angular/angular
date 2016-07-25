@@ -72,7 +72,7 @@ export class MdProgressCircle implements OnDestroy {
     this._interdeterminateInterval = interval;
   }
 
-  /** The current path value, representing the progres circle. */
+  /** The current path value, representing the progress circle. */
   private _currentPath: string;
 
   /** TODO: internal */
