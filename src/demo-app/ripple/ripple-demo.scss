@@ -1,0 +1,35 @@
+.demo-ripple {
+  button, a {
+    margin: 8px;
+    text-transform: uppercase;
+  }
+
+  .demo-ripple-container {
+    box-shadow: rgba(0, 0, 0, 0.118) 0 10px 15px, rgba(0, 0, 0, 0.239) 0 5px 10px;
+    cursor: pointer;
+    font-size: 24px;
+    height: 150px;
+    line-height: 150px;
+    position: relative;
+    text-align: center;
+    transition: all 200ms linear;
+    width: 200px;
+    user-select: none;
+
+    &.demo-ripple-disabled {
+      color: rgba(32, 32, 32, 0.4);
+    }
+
+    &.demo-ripple-rounded {
+      border-radius: 50%;
+      overflow: hidden;
+      // z-index needed to make clipping to border-radius work correctly.
+      // http://stackoverflow.com/questions/20001515/chrome-bug-border-radius-not-clipping-contents-when-combined-with-css-transiti
+      z-index: 1;
+    }
+  }
+
+  .demo-ripple-checkbox-option {
+    margin: 10px 0;
+  }
+}

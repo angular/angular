@@ -1,0 +1,62 @@
+@import 'default-theme';
+@import 'theme-functions';
+
+$md-ripple-focused-opacity: 0.1;
+$md-ripple-background-fade-duration: 300ms;
+$md-ripple-background-default-color: rgba(0, 0, 0, 0.0588);
+$md-ripple-foreground-initial-opacity: 0.25;
+$md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
+
+/**
+ * The host element of an md-ripple directive should always have a position of "absolute" or
+ * "relative" so that the ripple divs it creates inside itself are correctly positioned.
+ */
+[md-ripple] {
+  overflow: hidden;
+}
+
+[md-ripple].md-ripple-unbounded {
+  overflow: visible;
+}
+
+.md-ripple-background {
+  background-color: $md-ripple-background-default-color;
+  opacity: 0;
+  transition: opacity $md-ripple-background-fade-duration linear;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.md-ripple-unbounded .md-ripple-background {
+  display: none;
+}
+
+.md-ripple-background.md-ripple-active {
+  opacity: 1;
+}
+
+.md-ripple-focused .md-ripple-background {
+  background-color: md-color($md-accent, $md-ripple-focused-opacity);
+  opacity: 1;
+}
+
+.md-ripple-foreground {
+  background-color: $md-ripple-foreground-default-color;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: $md-ripple-foreground-initial-opacity;
+  position: absolute;
+  // The transition duration is manually set based on the ripple size.
+  transition: 'opacity, transform' 0ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.md-ripple-foreground.md-ripple-fade-in {
+  opacity: 1;
+}
+
+.md-ripple-foreground.md-ripple-fade-out {
+  opacity: 0;
+}

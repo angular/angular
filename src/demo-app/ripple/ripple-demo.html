@@ -1,0 +1,52 @@
+<!-- Use <md-card>? -->
+<div class="demo-ripple">
+  <section>
+    <button md-button>flat</button>
+    <button md-raised-button>raised</button>
+    <button md-fab>
+      <md-icon>check</md-icon>
+    </button>
+    <button md-mini-fab>
+      <md-icon>check</md-icon>
+    </button>
+  </section>
+
+  <section>
+    <div class="demo-ripple-checkbox-option"><md-checkbox [(ngModel)]="centered">Centered</md-checkbox></div>
+    <div class="demo-ripple-checkbox-option"><md-checkbox [(ngModel)]="unbounded">Unbounded</md-checkbox></div>
+    <div class="demo-ripple-checkbox-option"><md-checkbox [(ngModel)]="disabled">Disabled</md-checkbox></div>
+    <div class="demo-ripple-checkbox-option"><md-checkbox [(ngModel)]="rounded">Rounded container (flaky in Firefox)</md-checkbox></div>
+  </section>
+  <section>
+    Speed
+    <md-radio-group [(ngModel)]="rippleSpeed">
+      <md-radio-button name="demo-ripple-options" value="0.1">Slow</md-radio-button>
+      <md-radio-button name="demo-ripple-options" value="1">Normal</md-radio-button>
+      <md-radio-button name="demo-ripple-options" value="4">Fast</md-radio-button>
+    </md-radio-group>
+  </section>
+  <section>
+    <md-input placeholder="Max radius" aria-label="radius" [(ngModel)]="maxRadius"></md-input>
+    <md-input placeholder="Ripple color" aria-label="color" [(ngModel)]="rippleColor"></md-input>
+    <md-input placeholder="Ripple background" aria-label="background" [(ngModel)]="rippleBackgroundColor"></md-input>
+  </section>
+  <section>
+    <button md-raised-button (click)="doManualRipple()">Manual ripple</button>
+  </section>
+  <section>
+    <div class="demo-ripple-container"
+        [class.demo-ripple-disabled]="disabled"
+        [class.demo-ripple-rounded]="rounded"
+        md-ripple
+        [md-ripple-centered]="centered"
+        [md-ripple-disabled]="disabled"
+        [md-ripple-unbounded]="unbounded"
+        [md-ripple-max-radius]="maxRadius"
+        [md-ripple-color]="rippleColor"
+        [md-ripple-background-color]="rippleBackgroundColor"
+        [md-ripple-speed-factor]="rippleSpeed">
+      Click me
+    </div>
+  </section>
+  {{centered.checked}} {{rounded.checked}}
+</div>
