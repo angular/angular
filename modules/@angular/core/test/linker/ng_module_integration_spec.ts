@@ -9,7 +9,7 @@
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {CompilerConfig, NgModuleResolver, ViewResolver} from '@angular/compiler';
 import {MockNgModuleResolver, MockViewResolver} from '@angular/compiler/testing';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleMetadata, NgModuleRef, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, ViewMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, HostBinding, Inject, Injectable, Injector, Input, ModuleWithProviders, NgModule, NgModuleMetadata, NgModuleRef, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, ViewMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, configureCompiler} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
@@ -449,6 +449,28 @@ function declareTests({useJit}: {useJit: boolean}) {
               .toBe('transformed someValue');
         });
 
+        it('should support exported directives and pipes if the module is wrapped into an `ModuleWithProviders`',
+           () => {
+             @NgModule(
+                 {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
+             class SomeImportedModule {
+             }
+
+             @NgModule({
+               declarations: [CompUsingModuleDirectiveAndPipe],
+               imports: [{ngModule: SomeImportedModule}],
+               entryComponents: [CompUsingModuleDirectiveAndPipe]
+             })
+             class SomeModule {
+             }
+
+
+             const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
+             compFixture.detectChanges();
+             expect(compFixture.debugElement.children[0].properties['title'])
+                 .toBe('transformed someValue');
+           });
+
         it('should support reexported modules', () => {
           @NgModule({declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
           class SomeReexportedModule {
@@ -866,6 +888,26 @@ function declareTests({useJit}: {useJit: boolean}) {
           }
 
           @NgModule({imports: [ImportedModule]})
+          class SomeModule {
+          }
+
+          const injector = createModule(SomeModule).injector;
+
+          expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
+          expect(injector.get(ImportedModule)).toBeAnInstanceOf(ImportedModule);
+          expect(injector.get('token1')).toBe('imported');
+        });
+
+        it('should add the providers of imported ModuleWithProviders', () => {
+          @NgModule()
+          class ImportedModule {
+          }
+
+          @NgModule({
+            imports: [
+              {ngModule: ImportedModule, providers: [{provide: 'token1', useValue: 'imported'}]}
+            ]
+          })
           class SomeModule {
           }
 

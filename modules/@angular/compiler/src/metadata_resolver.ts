@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, Inject, InjectMetadata, Injectable, NgModule, NgModuleMetadata, Optional, OptionalMetadata, Provider, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewMetadata, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, Inject, InjectMetadata, Injectable, ModuleWithProviders, NgModule, NgModuleMetadata, Optional, OptionalMetadata, Provider, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewMetadata, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
 
 import {Console, LIFECYCLE_HOOKS_VALUES, ReflectorReader, createProvider, isProviderLiteral, reflector} from '../core_private';
 import {MapWrapper, StringMapWrapper} from '../src/facade/collection';
@@ -206,16 +206,24 @@ export class CompileMetadataResolver {
       const exportedPipes: cpl.CompilePipeMetadata[] = [];
       const importedModules: cpl.CompileNgModuleMetadata[] = [];
       const exportedModules: cpl.CompileNgModuleMetadata[] = [];
+      const providers: any[] = [];
+      const entryComponents: cpl.CompileTypeMetadata[] = [];
 
       if (meta.imports) {
         flattenArray(meta.imports).forEach((importedType) => {
-          if (!isValidType(importedType)) {
-            throw new BaseException(
-                `Unexpected value '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`);
+          let importedModuleType: Type;
+          if (isValidType(importedType)) {
+            importedModuleType = importedType;
+          } else if (importedType && importedType.ngModule) {
+            const moduleWithProviders: ModuleWithProviders = importedType;
+            importedModuleType = moduleWithProviders.ngModule;
+            if (moduleWithProviders.providers) {
+              providers.push(
+                  ...this.getProvidersMetadata(moduleWithProviders.providers, entryComponents));
+            }
           }
-          let importedModuleMeta: cpl.CompileNgModuleMetadata;
-          if (importedModuleMeta = this.getNgModuleMetadata(importedType, false)) {
-            importedModules.push(importedModuleMeta);
+          if (importedModuleType) {
+            importedModules.push(this.getNgModuleMetadata(importedModuleType, false));
           } else {
             throw new BaseException(
                 `Unexpected value '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`);
@@ -274,8 +282,6 @@ export class CompileMetadataResolver {
         });
       }
 
-      const providers: any[] = [];
-      const entryComponents: cpl.CompileTypeMetadata[] = [];
       if (meta.providers) {
         providers.push(...this.getProvidersMetadata(meta.providers, entryComponents));
       }

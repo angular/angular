@@ -10,6 +10,16 @@ import {InjectableMetadata} from '../di/metadata';
 import {Type} from '../facade/lang';
 
 /**
+ * A wrapper around a module that also includes the providers.
+ *
+ * @experimental
+ */
+export interface ModuleWithProviders {
+  ngModule: Type;
+  providers?: any[];
+}
+
+/**
  * Declares an Angular Module.
  * @experimental
  */
@@ -65,6 +75,7 @@ export class NgModuleMetadata extends InjectableMetadata {
   /**
    * Specifies a list of modules whose exported directives/pipes
    * should be available to templates in this module.
+   * This can also contain {@link ModuleWithProviders}.
    *
    * ### Example
    *
@@ -76,7 +87,7 @@ export class NgModuleMetadata extends InjectableMetadata {
    * }
    * ```
    */
-  imports: Array<Type|any[]>;
+  imports: Array<Type|ModuleWithProviders|any[]>;
 
   /**
    * Specifies a list of directives/pipes/module that can be used within the template
