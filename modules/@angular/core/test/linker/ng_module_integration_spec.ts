@@ -9,7 +9,7 @@
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {CompilerConfig, NgModuleResolver, ViewResolver} from '@angular/compiler';
 import {MockNgModuleResolver, MockViewResolver} from '@angular/compiler/testing';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, HostBinding, Inject, Injectable, Injector, Input, ModuleWithProviders, NgModule, NgModuleMetadata, NgModuleRef, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, ViewMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, HostBinding, Inject, Injectable, Injector, Input, ModuleWithProviders, NgModule, NgModuleMetadata, NgModuleRef, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, ViewMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, configureCompiler} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
@@ -238,7 +238,35 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     });
 
-    describe('entryComponents', function() {
+    describe('schemas', () => {
+      it('should error on unknown bound properties on custom elements by default', () => {
+        @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+        class ComponentUsingInvalidProperty {
+        }
+
+        @NgModule({declarations: [ComponentUsingInvalidProperty]})
+        class SomeModule {
+        }
+
+        expect(() => createModule(SomeModule)).toThrowError(/Can't bind to 'someUnknownProp'/);
+      });
+
+      it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
+         () => {
+           @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+           class ComponentUsingInvalidProperty {
+           }
+
+           @NgModule(
+               {schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: [ComponentUsingInvalidProperty]})
+           class SomeModule {
+           }
+
+           expect(() => createModule(SomeModule)).not.toThrow();
+         });
+    });
+
+    describe('entryComponents', () => {
       it('should entryComponents ComponentFactories in root modules', () => {
         @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
         class SomeModule {

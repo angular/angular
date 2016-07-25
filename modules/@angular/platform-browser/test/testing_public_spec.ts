@@ -8,7 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {CompilerConfig, XHR} from '@angular/compiler';
-import {Component, ComponentFactoryResolver, Directive, Injectable, Input, NgModule, Pipe, ViewMetadata, provide} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, ComponentFactoryResolver, Directive, Injectable, Input, NgModule, Pipe, ViewMetadata, provide} from '@angular/core';
 import {TestComponentBuilder, addProviders, async, configureCompiler, configureModule, doAsyncEntryPointCompilation, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -265,6 +265,30 @@ export function main() {
            expect(resolver.resolveComponentFactory(CompUsingModuleDirectiveAndPipe).componentType)
                .toBe(CompUsingModuleDirectiveAndPipe);
          }));
+
+      it('should error on unknown bound properties on custom elements by default',
+         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+           class ComponentUsingInvalidProperty {
+           }
+
+           expect(() => tcb.createSync(ComponentUsingInvalidProperty))
+               .toThrowError(/Can't bind to 'someUnknownProp'/);
+         }));
+
+      describe('provided schemas', () => {
+        beforeEach(() => { configureModule({schemas: [CUSTOM_ELEMENTS_SCHEMA]}); });
+
+        it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
+           inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+             class ComponentUsingInvalidProperty {
+             }
+
+             tcb.createSync(ComponentUsingInvalidProperty)
+             expect(() => tcb.createSync(ComponentUsingInvalidProperty)).not.toThrow();
+           }));
+      });
     });
 
     describe('per test modules', () => {

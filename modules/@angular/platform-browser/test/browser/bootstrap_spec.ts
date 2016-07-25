@@ -8,7 +8,7 @@
 
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {XHR} from '@angular/compiler';
-import {APP_INITIALIZER, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, bootstrapModule, createPlatformFactory, provide} from '@angular/core';
+import {APP_INITIALIZER, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, bootstrapModule, createPlatform, provide} from '@angular/core';
 import {ApplicationRef, disposePlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -92,6 +92,10 @@ class SomePipe {
 @Component({selector: 'hello-app', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
 class HelloCmpUsingPlatformDirectiveAndPipe {
   show: boolean = false;
+}
+
+@Component({selector: 'hello-app', template: '<some-el [someProp]="true">hello world!</some-el>'})
+class HelloCmpUsingCustomElement {
 }
 
 class _ArrayLogger {
@@ -327,6 +331,16 @@ export function main() {
              `The PLATFORM_DIRECTIVES provider and CompilerConfig.platformDirectives is deprecated. Add the directives to an NgModule instead! (Directives: ${stringify(SomeDirective)})`,
              `The PLATFORM_PIPES provider and CompilerConfig.platformPipes is deprecated. Add the pipes to an NgModule instead! (Pipes: ${stringify(SomePipe)})`
            ]);
+           async.done();
+         });
+       }));
+
+    it('should allow to pass schemas', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         bootstrap(HelloCmpUsingCustomElement, {
+           providers: testProviders,
+           schemas: [CUSTOM_ELEMENTS_SCHEMA]
+         }).then((compRef) => {
+           expect(el).toHaveText('hello world!');
            async.done();
          });
        }));

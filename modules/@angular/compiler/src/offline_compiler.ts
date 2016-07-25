@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SchemaMetadata} from '@angular/core';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {ListWrapper} from './facade/collection';
@@ -91,7 +92,7 @@ export class OfflineCompiler {
                 // compile components
                 exportedVars.push(this._compileComponentFactory(compMeta, fileSuffix, statements));
                 exportedVars.push(this._compileComponent(
-                    compMeta, dirMetas, ngModule.transitiveModule.pipes,
+                    compMeta, dirMetas, ngModule.transitiveModule.pipes, ngModule.schemas,
                     stylesCompileResults.componentStylesheet, fileSuffix, statements));
               });
         }))
@@ -120,7 +121,7 @@ export class OfflineCompiler {
       targetStatements: o.Statement[]): string {
     var hostMeta = createHostComponentMeta(compMeta);
     var hostViewFactoryVar =
-        this._compileComponent(hostMeta, [compMeta], [], null, fileSuffix, targetStatements);
+        this._compileComponent(hostMeta, [compMeta], [], [], null, fileSuffix, targetStatements);
     var compFactoryVar = _componentFactoryName(compMeta.type);
     targetStatements.push(
         o.variable(compFactoryVar)
@@ -139,10 +140,10 @@ export class OfflineCompiler {
 
   private _compileComponent(
       compMeta: CompileDirectiveMetadata, directives: CompileDirectiveMetadata[],
-      pipes: CompilePipeMetadata[], componentStyles: CompiledStylesheet, fileSuffix: string,
-      targetStatements: o.Statement[]): string {
+      pipes: CompilePipeMetadata[], schemas: SchemaMetadata[], componentStyles: CompiledStylesheet,
+      fileSuffix: string, targetStatements: o.Statement[]): string {
     var parsedTemplate = this._templateParser.parse(
-        compMeta, compMeta.template.template, directives, pipes, compMeta.type.name);
+        compMeta, compMeta.template.template, directives, pipes, schemas, compMeta.type.name);
     var stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
     var viewResult =
         this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, pipes);

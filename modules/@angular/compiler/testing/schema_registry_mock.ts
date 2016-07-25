@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SecurityContext} from '@angular/core';
+import {SchemaMetadata, SecurityContext} from '@angular/core';
+
 import {ElementSchemaRegistry} from '../index';
 import {isPresent} from '../src/facade/lang';
 
@@ -15,7 +16,7 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
       public existingProperties: {[key: string]: boolean},
       public attrPropMapping: {[key: string]: string}) {}
 
-  hasProperty(tagName: string, property: string): boolean {
+  hasProperty(tagName: string, property: string, schemas: SchemaMetadata[]): boolean {
     var result = this.existingProperties[property];
     return isPresent(result) ? result : true;
   }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, Inject, InjectMetadata, Injectable, ModuleWithProviders, NgModule, NgModuleMetadata, Optional, OptionalMetadata, Provider, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewMetadata, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, Inject, InjectMetadata, Injectable, ModuleWithProviders, NgModule, NgModuleMetadata, Optional, OptionalMetadata, Provider, QueryMetadata, SchemaMetadata, SelfMetadata, SkipSelfMetadata, ViewMetadata, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
 
 import {Console, LIFECYCLE_HOOKS_VALUES, ReflectorReader, createProvider, isProviderLiteral, reflector} from '../core_private';
 import {MapWrapper, StringMapWrapper} from '../src/facade/collection';
@@ -208,6 +208,19 @@ export class CompileMetadataResolver {
       const exportedModules: cpl.CompileNgModuleMetadata[] = [];
       const providers: any[] = [];
       const entryComponents: cpl.CompileTypeMetadata[] = [];
+      const schemas: SchemaMetadata[] = [];
+
+      if (meta.providers) {
+        providers.push(...this.getProvidersMetadata(meta.providers, entryComponents));
+      }
+      if (meta.entryComponents) {
+        entryComponents.push(
+            ...flattenArray(meta.entryComponents)
+                .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
+      }
+      if (meta.schemas) {
+        schemas.push(...flattenArray(meta.schemas));
+      }
 
       if (meta.imports) {
         flattenArray(meta.imports).forEach((importedType) => {
@@ -282,15 +295,6 @@ export class CompileMetadataResolver {
         });
       }
 
-      if (meta.providers) {
-        providers.push(...this.getProvidersMetadata(meta.providers, entryComponents));
-      }
-      if (meta.entryComponents) {
-        entryComponents.push(
-            ...flattenArray(meta.entryComponents)
-                .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
-      }
-
       transitiveModule.entryComponents.push(...entryComponents);
       transitiveModule.providers.push(...providers);
 
@@ -298,6 +302,7 @@ export class CompileMetadataResolver {
         type: this.getTypeMetadata(moduleType, staticTypeModuleUrl(moduleType)),
         providers: providers,
         entryComponents: entryComponents,
+        schemas: schemas,
         declaredDirectives: declaredDirectives,
         exportedDirectives: exportedDirectives,
         declaredPipes: declaredPipes,

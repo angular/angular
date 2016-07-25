@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, SchemaMetadata, ViewEncapsulation} from '@angular/core';
 
 import {CHANGE_DETECTION_STRATEGY_VALUES, LIFECYCLE_HOOKS_VALUES, LifecycleHooks, VIEW_ENCAPSULATION_VALUES, reflector} from '../core_private';
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
@@ -16,6 +16,7 @@ import {NumberWrapper, RegExpWrapper, Type, isArray, isBlank, isBoolean, isNumbe
 import {CssSelector} from './selector';
 import {getUrlScheme} from './url_resolver';
 import {sanitizeIdentifier, splitAtColon} from './util';
+
 
 
 // group 0: "[prop] or (event) or @trigger"
@@ -625,12 +626,13 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
 
   importedModules: CompileNgModuleMetadata[];
   exportedModules: CompileNgModuleMetadata[];
+  schemas: SchemaMetadata[];
 
   transitiveModule: TransitiveCompileNgModuleMetadata;
 
   constructor(
       {type, providers, declaredDirectives, exportedDirectives, declaredPipes, exportedPipes,
-       entryComponents, importedModules, exportedModules, transitiveModule}: {
+       entryComponents, importedModules, exportedModules, schemas, transitiveModule}: {
         type?: CompileTypeMetadata,
         providers?:
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
@@ -641,7 +643,8 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
         entryComponents?: CompileTypeMetadata[],
         importedModules?: CompileNgModuleMetadata[],
         exportedModules?: CompileNgModuleMetadata[],
-        transitiveModule?: TransitiveCompileNgModuleMetadata
+        transitiveModule?: TransitiveCompileNgModuleMetadata,
+        schemas?: SchemaMetadata[]
       } = {}) {
     this.type = type;
     this.declaredDirectives = _normalizeArray(declaredDirectives);
@@ -652,6 +655,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
     this.entryComponents = _normalizeArray(entryComponents);
     this.importedModules = _normalizeArray(importedModules);
     this.exportedModules = _normalizeArray(exportedModules);
+    this.schemas = _normalizeArray(schemas);
     this.transitiveModule = transitiveModule;
   }
 

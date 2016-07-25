@@ -12,7 +12,7 @@ import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_ast';
 import {TEMPLATE_TRANSFORMS, TemplateParser, splitClasses} from '@angular/compiler/src/template_parser';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
-import {SecurityContext} from '@angular/core';
+import {SchemaMetadata, SecurityContext} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {configureCompiler} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
@@ -56,11 +56,11 @@ export function main() {
 
       parse =
           (template: string, directives: CompileDirectiveMetadata[],
-           pipes: CompilePipeMetadata[] = null): TemplateAst[] => {
+           pipes: CompilePipeMetadata[] = null, schemas: SchemaMetadata[] = []): TemplateAst[] => {
             if (pipes === null) {
               pipes = [];
             }
-            return parser.parse(component, template, directives, pipes, 'TestComp');
+            return parser.parse(component, template, directives, pipes, schemas, 'TestComp');
           };
     }));
   }
@@ -181,7 +181,7 @@ export function main() {
              isComponent: true,
              template: new CompileTemplateMetadata({interpolation: ['{%', '%}']})
            });
-           expect(humanizeTplAst(parser.parse(component, '{%a%}', [], [], 'TestComp'), {
+           expect(humanizeTplAst(parser.parse(component, '{%a%}', [], [], [], 'TestComp'), {
              start: '{%',
              end: '%}'
            })).toEqual([[BoundTextAst, '{% a %}']]);

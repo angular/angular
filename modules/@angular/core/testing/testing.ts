@@ -12,6 +12,7 @@
  * allows tests to be asynchronous by either returning a promise or using a 'done' parameter.
  */
 
+import {SchemaMetadata} from '../index';
 import {TestBed, getTestBed} from './test_bed';
 
 declare var global: any;
@@ -49,9 +50,13 @@ export function addProviders(providers: Array<any>): void {
  *
  * @stable
  */
-export function configureModule(
-    moduleDef: {providers?: any[], declarations?: any[], imports?: any[], entryComponents?: any[]}):
-    void {
+export function configureModule(moduleDef: {
+  providers?: any[],
+  declarations?: any[],
+  imports?: any[],
+  entryComponents?: any[],
+  schemas?: Array<SchemaMetadata|any[]>
+}): void {
   if (!moduleDef) return;
   try {
     testBed.configureModule(moduleDef);

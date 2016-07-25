@@ -20,6 +20,23 @@ export interface ModuleWithProviders {
 }
 
 /**
+ * Interface for schema definitions in @NgModules.
+ *
+ * @experimental
+ */
+export interface SchemaMetadata { name: string; }
+
+/**
+ * Defines a schema that will allow any property on elements with a `-` in their name,
+ * which is the common rule for custom elements.
+ *
+ * @experimental
+ */
+export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
+  name: 'custom-elements'
+};
+
+/**
  * Declares an Angular Module.
  * @experimental
  */
@@ -114,12 +131,15 @@ export class NgModuleMetadata extends InjectableMetadata {
    */
   entryComponents: Array<Type|any[]>;
 
-  constructor({providers, declarations, imports, exports, entryComponents}: {
+  schemas: Array<SchemaMetadata|any[]>;
+
+  constructor({providers, declarations, imports, exports, entryComponents, schemas}: {
     providers?: any[],
     declarations?: Array<Type|any[]>,
     imports?: Array<Type|any[]>,
     exports?: Array<Type|any[]>,
-    entryComponents?: Array<Type|any[]>
+    entryComponents?: Array<Type|any[]>,
+    schemas?: Array<SchemaMetadata|any[]>
   } = {}) {
     super();
     this._providers = providers;
@@ -127,5 +147,6 @@ export class NgModuleMetadata extends InjectableMetadata {
     this.imports = imports;
     this.exports = exports;
     this.entryComponents = entryComponents;
+    this.schemas = schemas;
   }
 }

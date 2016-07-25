@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerFactory, CompilerOptions, ComponentStillLoadingError, Injector, NgModule, NgModuleFactory, NgModuleMetadata, NgModuleRef, PlatformRef, Provider, ReflectiveInjector, Type, assertPlatform, createPlatform, getPlatform} from '../index';
+import {Compiler, SchemaMetadata, CompilerFactory, CompilerOptions, ComponentStillLoadingError, Injector, NgModule, NgModuleFactory, NgModuleMetadata, NgModuleRef, PlatformRef, Provider, ReflectiveInjector, Type, assertPlatform, createPlatform, getPlatform} from '../index';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {ConcreteType, FunctionWrapper, isPresent, stringify} from '../src/facade/lang';
@@ -31,6 +31,7 @@ export class TestBed implements Injector {
   private _declarations: Array<Type|any[]|any> = [];
   private _imports: Array<Type|any[]|any> = [];
   private _entryComponents: Array<Type|any[]|any> = [];
+  private _schemas: Array<SchemaMetadata|any[]> = [];
 
   reset() {
     this._compiler = null;
@@ -41,6 +42,7 @@ export class TestBed implements Injector {
     this._declarations = [];
     this._imports = [];
     this._entryComponents = [];
+    this._schemas = [];
     this._instantiated = false;
   }
 
@@ -55,9 +57,13 @@ export class TestBed implements Injector {
     this._compilerOptions.push(config);
   }
 
-  configureModule(
-      moduleDef:
-          {providers?: any[], declarations?: any[], imports?: any[], entryComponents?: any[]}) {
+  configureModule(moduleDef: {
+    providers?: any[],
+    declarations?: any[],
+    imports?: any[],
+    entryComponents?: any[],
+    schemas?: Array<SchemaMetadata|any>
+  }) {
     if (this._instantiated) {
       throw new BaseException('Cannot add configuration after test injector is instantiated');
     }
@@ -72,6 +78,9 @@ export class TestBed implements Injector {
     }
     if (moduleDef.entryComponents) {
       this._entryComponents = ListWrapper.concat(this._entryComponents, moduleDef.entryComponents);
+    }
+    if (moduleDef.schemas) {
+      this._schemas = ListWrapper.concat(this._schemas, moduleDef.schemas);
     }
   }
 
@@ -124,12 +133,14 @@ export class TestBed implements Injector {
     const declarations = this._declarations;
     const imports = [this.ngModule, this._imports];
     const entryComponents = this._entryComponents;
+    const schemas = this._schemas;
 
     @NgModule({
       providers: providers,
       declarations: declarations,
       imports: imports,
-      entryComponents: entryComponents
+      entryComponents: entryComponents,
+      schemas: schemas
     })
     class DynamicTestModule {
     }
@@ -364,7 +375,8 @@ export function withModule(moduleDef: () => {
   providers?: any[],
   declarations?: any[],
   imports?: any[],
-  entryComponents?: any[]
+  entryComponents?: any[],
+  schemas?: Array<SchemaMetadata|any[]>
 }) {
   return new InjectSetupWrapper(moduleDef);
 }

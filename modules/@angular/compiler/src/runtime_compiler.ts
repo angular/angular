@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, ComponentResolver, ComponentStillLoadingError, Injectable, Injector, NgModule, NgModuleFactory, NgModuleMetadata, OptionalMetadata, Provider, SkipSelfMetadata} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentResolver, ComponentStillLoadingError, Injectable, Injector, NgModule, NgModuleFactory, NgModuleMetadata, OptionalMetadata, Provider, SchemaMetadata, SkipSelfMetadata} from '@angular/core';
 
 import {Console} from '../core_private';
 import {BaseException} from '../src/facade/exceptions';
@@ -143,9 +143,7 @@ export class RuntimeCompiler implements Compiler {
     ngModule.transitiveModule.modules.forEach((localModuleMeta) => {
       localModuleMeta.declaredDirectives.forEach((dirMeta) => {
         if (dirMeta.isComponent) {
-          templates.add(this._createCompiledTemplate(
-              dirMeta, localModuleMeta.transitiveModule.directives,
-              localModuleMeta.transitiveModule.pipes));
+          templates.add(this._createCompiledTemplate(dirMeta, localModuleMeta));
           dirMeta.entryComponents.forEach((entryComponentType) => {
             templates.add(this._createCompiledHostTemplate(entryComponentType.runtime));
           });
@@ -200,7 +198,7 @@ export class RuntimeCompiler implements Compiler {
       assertComponent(compMeta);
       var hostMeta = createHostComponentMeta(compMeta);
       compiledTemplate = new CompiledTemplate(
-          true, compMeta.selector, compMeta.type, [compMeta], [],
+          true, compMeta.selector, compMeta.type, [compMeta], [], [],
           this._templateNormalizer.normalizeDirective(hostMeta));
       this._compiledHostTemplateCache.set(compType, compiledTemplate);
     }
@@ -208,13 +206,13 @@ export class RuntimeCompiler implements Compiler {
   }
 
   private _createCompiledTemplate(
-      compMeta: CompileDirectiveMetadata, directives: CompileDirectiveMetadata[],
-      pipes: CompilePipeMetadata[]): CompiledTemplate {
+      compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata): CompiledTemplate {
     var compiledTemplate = this._compiledTemplateCache.get(compMeta.type.runtime);
     if (isBlank(compiledTemplate)) {
       assertComponent(compMeta);
       compiledTemplate = new CompiledTemplate(
-          false, compMeta.selector, compMeta.type, directives, pipes,
+          false, compMeta.selector, compMeta.type, ngModule.transitiveModule.directives,
+          ngModule.transitiveModule.pipes, ngModule.schemas,
           this._templateNormalizer.normalizeDirective(compMeta));
       this._compiledTemplateCache.set(compMeta.type.runtime, compiledTemplate);
     }
@@ -255,7 +253,7 @@ export class RuntimeCompiler implements Compiler {
         (compType) => this._assertComponentLoaded(compType, false).normalizedCompMeta);
     const parsedTemplate = this._templateParser.parse(
         compMeta, compMeta.template.template, template.viewDirectives.concat(viewCompMetas),
-        template.viewPipes, compMeta.type.name);
+        template.viewPipes, template.schemas, compMeta.type.name);
     const compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
         template.viewPipes);
@@ -322,7 +320,7 @@ class CompiledTemplate {
   constructor(
       public isHost: boolean, selector: string, public compType: CompileIdentifierMetadata,
       viewDirectivesAndComponents: CompileDirectiveMetadata[],
-      public viewPipes: CompilePipeMetadata[],
+      public viewPipes: CompilePipeMetadata[], public schemas: SchemaMetadata[],
       _normalizeResult: SyncAsyncResult<CompileDirectiveMetadata>) {
     viewDirectivesAndComponents.forEach((dirMeta) => {
       if (dirMeta.isComponent) {

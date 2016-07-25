@@ -16,13 +16,13 @@ import {ChangeDetectionStrategy} from '../src/change_detection/change_detection'
 import {AnimationEntryMetadata} from './animation/metadata';
 import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
-import {ModuleWithProviders, NgModuleMetadata} from './metadata/ng_module';
+import {ModuleWithProviders, NgModuleMetadata, SchemaMetadata} from './metadata/ng_module';
 import {ViewEncapsulation, ViewMetadata} from './metadata/view';
 
 export {ANALYZE_FOR_ENTRY_COMPONENTS, AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 export {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
 export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from './metadata/lifecycle_hooks';
-export {ModuleWithProviders, NgModuleMetadata} from './metadata/ng_module';
+export {CUSTOM_ELEMENTS_SCHEMA, ModuleWithProviders, NgModuleMetadata, SchemaMetadata} from './metadata/ng_module';
 export {ViewEncapsulation, ViewMetadata} from './metadata/view';
 
 import {makeDecorator, makeParamDecorator, makePropDecorator, TypeDecorator,} from './util/decorators';
@@ -500,14 +500,16 @@ export interface NgModuleMetadataFactory {
     declarations?: Array<Type|any[]>,
     imports?: Array<Type|ModuleWithProviders|any[]>,
     exports?: Array<Type|any[]>,
-    entryComponents?: Array<Type|any[]>
+    entryComponents?: Array<Type|any[]>,
+    schemas?: Array<SchemaMetadata|any[]>
   }): NgModuleDecorator;
   new (obj?: {
     providers?: any[],
     declarations?: Array<Type|any[]>,
     imports?: Array<Type|any[]>,
     exports?: Array<Type|any[]>,
-    entryComponents?: Array<Type|any[]>
+    entryComponents?: Array<Type|any[]>,
+    schemas?: Array<SchemaMetadata|any[]>
   }): NgModuleMetadata;
 }
 

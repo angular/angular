@@ -13,7 +13,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
-import {CompWithProviders, CompWithReferences} from './features';
+import {CompWithProviders, CompWithReferences, ModuleUsingCustomElements} from './features';
 import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, someLibModuleWithProviders, SomePipeInRootModule, SomeService} from './module_fixtures';
 import {ProjectingComp} from './projection';
 import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
@@ -25,7 +25,7 @@ import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
     CompWithDirectiveChild, CompUsingRootModuleDirectiveAndPipe, CompWithProviders,
     CompWithReferences
   ],
-  imports: [BrowserModule, FormsModule, someLibModuleWithProviders()],
+  imports: [BrowserModule, FormsModule, someLibModuleWithProviders(), ModuleUsingCustomElements],
   providers: [SomeService],
   entryComponents: [
     AnimateCmp, BasicComp, CompWithEntryComponents, CompWithAnalyzeEntryComponentsProvider,

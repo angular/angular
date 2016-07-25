@@ -7,7 +7,7 @@
  */
 
 import * as common from '@angular/common';
-import {Component, Inject, OpaqueToken} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, Inject, NgModule, OpaqueToken} from '@angular/core';
 
 import {wrapInArray} from './funcs';
 
@@ -36,4 +36,17 @@ export class CompWithProviders {
   directives: [wrapInArray(common.NgIf)]
 })
 export class CompWithReferences {
+}
+
+@Component({
+  selector: 'cmp-custom-els',
+  template: `
+    <some-custom-element [someUnknownProp]="true"></some-custom-element>
+  `,
+})
+export class CompUsingCustomElements {
+}
+
+@NgModule({schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: [CompUsingCustomElements]})
+export class ModuleUsingCustomElements {
 }

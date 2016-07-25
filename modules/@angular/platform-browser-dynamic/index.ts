@@ -7,7 +7,7 @@
  */
 
 import {XHR, analyzeAppProvidersForDeprecatedConfiguration, coreDynamicPlatform} from '@angular/compiler';
-import {ApplicationRef, Compiler, CompilerFactory, CompilerOptions, ComponentRef, ComponentResolver, ExceptionHandler, NgModule, NgModuleRef, OpaqueToken, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, Type, assertPlatform, bootstrapModule, bootstrapModuleFactory, createPlatform, createPlatformFactory, getPlatform, isDevMode} from '@angular/core';
+import {SchemaMetadata, ApplicationRef, Compiler, CompilerFactory, CompilerOptions, ComponentRef, ComponentResolver, ExceptionHandler, NgModule, NgModuleRef, OpaqueToken, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, Type, assertPlatform, bootstrapModule, bootstrapModuleFactory, createPlatform, createPlatformFactory, getPlatform, isDevMode} from '@angular/core';
 import {BROWSER_PLATFORM_PROVIDERS, BrowserModule, WORKER_APP_PLATFORM_PROVIDERS, WORKER_SCRIPT, WorkerAppModule, browserPlatform, workerAppPlatform, workerUiPlatform} from '@angular/platform-browser';
 
 import {Console} from './core_private';
@@ -121,11 +121,12 @@ export function bootstrap<C>(
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<C>>;
 export function bootstrap<C>(
     appComponentType: ConcreteType<C>,
-    {providers, imports, declarations, entryComponents, compilerOptions}?: {
+    {providers, imports, declarations, entryComponents, schemas, compilerOptions}?: {
       providers?: Array<any /*Type | Provider | any[]*/>,
       declarations?: any[],
       imports?: any[],
       entryComponents?: any[],
+      schemas?: Array<SchemaMetadata|any[]>,
       compilerOptions?: CompilerOptions
     }): Promise<ComponentRef<C>>;
 export function bootstrap<C>(
@@ -134,7 +135,7 @@ export function bootstrap<C>(
       providers: Array<any /*Type | Provider | any[]*/>,
       declarations?: any[],
       imports: any[],
-      entryComponents: any[],
+      entryComponents: any[], schemas?: Array<SchemaMetadata|any[]>,
       compilerOptions: CompilerOptions
     }): Promise<ComponentRef<C>> {
   let compilerOptions: CompilerOptions;
@@ -143,6 +144,7 @@ export function bootstrap<C>(
   let imports: any[] = [];
   let entryComponents: any[] = [];
   let deprecationMessages: string[] = [];
+  let schemas: any[] = [];
   if (customProvidersOrDynamicModule instanceof Array) {
     providers = customProvidersOrDynamicModule;
     const deprecatedConfiguration = analyzeAppProvidersForDeprecatedConfiguration(providers);
@@ -154,6 +156,7 @@ export function bootstrap<C>(
     declarations = normalizeArray(customProvidersOrDynamicModule.declarations);
     imports = normalizeArray(customProvidersOrDynamicModule.imports);
     entryComponents = normalizeArray(customProvidersOrDynamicModule.entryComponents);
+    schemas = normalizeArray(customProvidersOrDynamicModule.schemas);
     compilerOptions = customProvidersOrDynamicModule.compilerOptions;
   }
 
@@ -161,7 +164,8 @@ export function bootstrap<C>(
     providers: providers,
     declarations: declarations.concat([appComponentType]),
     imports: [BrowserModule, imports],
-    entryComponents: entryComponents.concat([appComponentType])
+    entryComponents: entryComponents.concat([appComponentType]),
+    schemas: schemas
   })
   class DynamicModule {
   }

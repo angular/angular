@@ -1651,7 +1651,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
 
                tcb.overrideView(MyComp, new ViewMetadata({
-                                  template: '<child-cmp [title]="a.b"></child-cmp>',
+                                  template: '<child-cmp [dirProp]="a.b"></child-cmp>',
                                   directives: [ChildComp]
                                 }))
                    .createAsync(MyComp)

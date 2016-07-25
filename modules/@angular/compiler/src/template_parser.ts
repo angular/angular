@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, Optional, SecurityContext} from '@angular/core';
+import {Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityContext} from '@angular/core';
+
 import {Console, MAX_INTERPOLATION_VALUES} from '../core_private';
+
 import {ListWrapper, StringMapWrapper, SetWrapper,} from '../src/facade/collection';
 import {RegExpWrapper, isPresent, StringWrapper, isBlank} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
@@ -83,8 +85,8 @@ export class TemplateParser {
 
   parse(
       component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveMetadata[],
-      pipes: CompilePipeMetadata[], templateUrl: string): TemplateAst[] {
-    const result = this.tryParse(component, template, directives, pipes, templateUrl);
+      pipes: CompilePipeMetadata[], schemas: SchemaMetadata[], templateUrl: string): TemplateAst[] {
+    const result = this.tryParse(component, template, directives, pipes, schemas, templateUrl);
     const warnings = result.errors.filter(error => error.level === ParseErrorLevel.WARNING);
     const errors = result.errors.filter(error => error.level === ParseErrorLevel.FATAL);
     if (warnings.length > 0) {
@@ -100,7 +102,8 @@ export class TemplateParser {
 
   tryParse(
       component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveMetadata[],
-      pipes: CompilePipeMetadata[], templateUrl: string): TemplateParseResult {
+      pipes: CompilePipeMetadata[], schemas: SchemaMetadata[],
+      templateUrl: string): TemplateParseResult {
     let interpolationConfig: any;
     if (component.template) {
       interpolationConfig = InterpolationConfig.fromArray(component.template.interpolation);
@@ -123,7 +126,8 @@ export class TemplateParser {
       const providerViewContext =
           new ProviderViewContext(component, htmlAstWithErrors.rootNodes[0].sourceSpan);
       const parseVisitor = new TemplateParseVisitor(
-          providerViewContext, uniqDirectives, uniqPipes, this._exprParser, this._schemaRegistry);
+          providerViewContext, uniqDirectives, uniqPipes, schemas, this._exprParser,
+          this._schemaRegistry);
 
       result = htmlVisitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_ELEMENT_CONTEXT);
       errors.push(...parseVisitor.errors, ...providerViewContext.errors);
@@ -175,7 +179,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   constructor(
       public providerViewContext: ProviderViewContext, directives: CompileDirectiveMetadata[],
-      pipes: CompilePipeMetadata[], private _exprParser: Parser,
+      pipes: CompilePipeMetadata[], private _schemas: SchemaMetadata[], private _exprParser: Parser,
       private _schemaRegistry: ElementSchemaRegistry) {
     this.selectorMatcher = new SelectorMatcher();
 
@@ -801,10 +805,14 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         boundPropertyName = this._schemaRegistry.getMappedPropName(partValue);
         securityContext = this._schemaRegistry.securityContext(elementName, boundPropertyName);
         bindingType = PropertyBindingType.Property;
-        if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName)) {
-          this._reportError(
-              `Can't bind to '${boundPropertyName}' since it isn't a known native property`,
-              sourceSpan);
+        if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName, this._schemas)) {
+          let errorMsg =
+              `Can't bind to '${boundPropertyName}' since it isn't a known native property`;
+          if (elementName.indexOf('-') !== -1) {
+            errorMsg +=
+                `. To ignore this error on custom elements, add the "CUSTOM_ELEMENTS_SCHEMA" to the NgModule of this component`;
+          }
+          this._reportError(errorMsg, sourceSpan);
         }
       }
     } else {
