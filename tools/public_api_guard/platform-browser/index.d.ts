@@ -20,7 +20,7 @@ export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
 export declare class BrowserModule {
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const browserPlatform: (extraProviders?: any[]) => PlatformRef;
 
 /** @stable */
@@ -127,6 +127,15 @@ export interface MessageBusSource {
 }
 
 /** @experimental */
+export declare const platformBrowser: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
+export declare const platformWorkerApp: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
+export declare const platformWorkerUi: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
 export declare const PRIMITIVE: Type;
 
 /** @experimental */
@@ -230,8 +239,8 @@ export declare const WORKER_UI_STARTABLE_MESSAGING_SERVICE: OpaqueToken;
 export declare class WorkerAppModule {
 }
 
-/** @experimental */
+/** @deprecated */
 export declare const workerAppPlatform: (extraProviders?: any[]) => PlatformRef;
 
-/** @experimental */
+/** @deprecated */
 export declare const workerUiPlatform: (extraProviders?: any[]) => PlatformRef;

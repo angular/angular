@@ -39,14 +39,15 @@ export declare function configureModule(moduleDef: {
     providers?: any[];
     declarations?: any[];
     imports?: any[];
-    precompile?: any[];
+    entryComponents?: any[];
+    schemas?: Array<SchemaMetadata | any[]>;
 }): void;
 
 /** @experimental */
 export declare function discardPeriodicTasks(): void;
 
 /** @experimental */
-export declare function doAsyncPrecompilation(): Promise<any>;
+export declare function doAsyncEntryPointCompilation(): Promise<any>;
 
 /** @experimental */
 export declare function fakeAsync(fn: Function): (...args: any[]) => any;
@@ -72,7 +73,7 @@ export declare class InjectSetupWrapper {
         providers?: any[];
         declarations?: any[];
         imports?: any[];
-        precompile?: any[];
+        entryComponents?: any[];
     });
     inject(tokens: any[], fn: Function): () => any;
 }
@@ -98,7 +99,8 @@ export declare class TestBed implements Injector {
         providers?: any[];
         declarations?: any[];
         imports?: any[];
-        precompile?: any[];
+        entryComponents?: any[];
+        schemas?: Array<SchemaMetadata | any>;
     }): void;
     createModuleFactory(): Promise<NgModuleFactory<any>>;
     execute(tokens: any[], fn: Function): any;
@@ -136,7 +138,8 @@ export declare function withModule(moduleDef: () => {
     providers?: any[];
     declarations?: any[];
     imports?: any[];
-    precompile?: any[];
+    entryComponents?: any[];
+    schemas?: Array<SchemaMetadata | any[]>;
 }): InjectSetupWrapper;
 
 /** @experimental */

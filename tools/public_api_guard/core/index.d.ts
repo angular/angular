@@ -26,7 +26,7 @@ export declare abstract class AfterViewInit {
 }
 
 /** @experimental */
-export declare const ANALYZE_FOR_PRECOMPILE: OpaqueToken;
+export declare const ANALYZE_FOR_ENTRY_COMPONENTS: OpaqueToken;
 
 /** @experimental */
 export declare function animate(timing: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
@@ -201,12 +201,6 @@ export declare class Binding extends Provider {
 }
 
 /** @stable */
-export declare function bootstrapModule<M>(moduleType: ConcreteType<M>, platform: PlatformRef, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
-
-/** @experimental */
-export declare function bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, platform: PlatformRef): NgModuleRef<M>;
-
-/** @stable */
 export declare enum ChangeDetectionStrategy {
     OnPush = 0,
     Default = 1,
@@ -297,16 +291,16 @@ export declare class ComponentMetadata extends DirectiveMetadata {
     changeDetection: ChangeDetectionStrategy;
     directives: Array<Type | any[]>;
     encapsulation: ViewEncapsulation;
+    entryComponents: Array<Type | any[]>;
     interpolation: [string, string];
     moduleId: string;
     pipes: Array<Type | any[]>;
-    precompile: Array<Type | any[]>;
     styleUrls: string[];
     styles: string[];
     template: string;
     templateUrl: string;
     viewProviders: any[];
-    constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, directives, pipes, encapsulation, interpolation, precompile}?: {
+    constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, directives, pipes, encapsulation, interpolation, precompile, entryComponents}?: {
         selector?: string;
         inputs?: string[];
         outputs?: string[]; properties?: string[]; events?: string[];
@@ -331,6 +325,7 @@ export declare class ComponentMetadata extends DirectiveMetadata {
         encapsulation?: ViewEncapsulation;
         interpolation?: [string, string];
         precompile?: Array<Type | any[]>;
+        entryComponents?: Array<Type | any[]>;
     });
 }
 
@@ -362,7 +357,7 @@ export interface ComponentMetadataFactory {
         pipes?: Array<Type | any[]>;
         encapsulation?: ViewEncapsulation;
         interpolation?: [string, string];
-        precompile?: Array<Type | any[]>;
+        entryComponents?: Array<Type | any[]>;
     }): ComponentDecorator;
     new (obj: {
         selector?: string;
@@ -390,7 +385,7 @@ export interface ComponentMetadataFactory {
         pipes?: Array<Type | any[]>;
         encapsulation?: ViewEncapsulation;
         interpolation?: [string, string];
-        precompile?: Array<Type | any[]>;
+        entryComponents?: Array<Type | any[]>;
     }): ComponentMetadata;
 }
 
@@ -470,13 +465,13 @@ export declare function coreBootstrap<C>(componentFactory: ComponentFactory<C>, 
 export declare function coreLoadAndBootstrap(componentType: Type, injector: Injector): Promise<ComponentRef<any>>;
 
 /** @experimental */
-export declare const corePlatform: (extraProviders?: any[]) => PlatformRef;
-
-/** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
 export declare function createPlatformFactory(parentPlaformFactory: PlatformFactory, name: string, providers?: any[]): PlatformFactory;
+
+/** @experimental */
+export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
 /** @stable */
 export declare class CyclicDependencyError extends AbstractProviderError {
@@ -864,6 +859,12 @@ export declare class KeyValueDiffers {
 export declare function lockRunMode(): void;
 
 /** @experimental */
+export interface ModuleWithProviders {
+    ngModule: Type;
+    providers?: any[];
+}
+
+/** @experimental */
 export declare var NgModule: NgModuleMetadataFactory;
 
 /** @stable */
@@ -887,16 +888,18 @@ export declare abstract class NgModuleFactoryLoader {
 /** @experimental */
 export declare class NgModuleMetadata extends InjectableMetadata {
     declarations: Array<Type | any[]>;
+    entryComponents: Array<Type | any[]>;
     exports: Array<Type | any[]>;
-    imports: Array<Type | any[]>;
-    precompile: Array<Type | any[]>;
+    imports: Array<Type | ModuleWithProviders | any[]>;
     providers: any[];
-    constructor({providers, declarations, imports, exports, precompile}?: {
+    schemas: Array<SchemaMetadata | any[]>;
+    constructor({providers, declarations, imports, exports, entryComponents, schemas}?: {
         providers?: any[];
         declarations?: Array<Type | any[]>;
         imports?: Array<Type | any[]>;
         exports?: Array<Type | any[]>;
-        precompile?: Array<Type | any[]>;
+        entryComponents?: Array<Type | any[]>;
+        schemas?: Array<SchemaMetadata | any[]>;
     });
 }
 
@@ -905,16 +908,18 @@ export interface NgModuleMetadataFactory {
     (obj?: {
         providers?: any[];
         declarations?: Array<Type | any[]>;
-        imports?: Array<Type | any[]>;
+        imports?: Array<Type | ModuleWithProviders | any[]>;
         exports?: Array<Type | any[]>;
-        precompile?: Array<Type | any[]>;
+        entryComponents?: Array<Type | any[]>;
+        schemas?: Array<SchemaMetadata | any[]>;
     }): NgModuleDecorator;
     new (obj?: {
         providers?: any[];
         declarations?: Array<Type | any[]>;
         imports?: Array<Type | any[]>;
         exports?: Array<Type | any[]>;
-        precompile?: Array<Type | any[]>;
+        entryComponents?: Array<Type | any[]>;
+        schemas?: Array<SchemaMetadata | any[]>;
     }): NgModuleMetadata;
 }
 
@@ -1069,9 +1074,14 @@ export declare const PLATFORM_INITIALIZER: any;
 export declare const PLATFORM_PIPES: OpaqueToken;
 
 /** @experimental */
+export declare const platformCore: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
 export declare abstract class PlatformRef {
     disposed: boolean;
     injector: Injector;
+    /** @stable */ bootstrapModule<M>(moduleType: ConcreteType<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
+    /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): NgModuleRef<M>;
     abstract dispose(): void;
     abstract registerDisposeListener(dispose: () => void): void;
 }
@@ -1265,6 +1275,11 @@ export declare abstract class RootRenderer {
 /** @stable */
 export declare abstract class SanitizationService {
     abstract sanitize(context: SecurityContext, value: string): string;
+}
+
+/** @experimental */
+export interface SchemaMetadata {
+    name: string;
 }
 
 /** @stable */
