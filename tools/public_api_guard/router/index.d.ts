@@ -5,7 +5,7 @@ export declare class ActivatedRoute {
     outlet: string;
     params: Observable<Params>;
     snapshot: ActivatedRouteSnapshot;
-    url: Observable<UrlPathWithParams[]>;
+    url: Observable<UrlSegment[]>;
     toString(): string;
 }
 
@@ -15,7 +15,7 @@ export declare class ActivatedRouteSnapshot {
     data: Data;
     outlet: string;
     params: Params;
-    url: UrlPathWithParams[];
+    url: UrlSegment[];
     toString(): string;
 }
 
@@ -251,7 +251,7 @@ export declare class RoutesRecognized {
 }
 
 /** @stable */
-export declare class UrlPathWithParams {
+export declare class UrlSegment {
     parameters: {
         [key: string]: string;
     };
@@ -274,6 +274,6 @@ export declare class UrlTree {
     queryParams: {
         [key: string]: string;
     };
-    root: UrlSegment;
+    root: UrlSegmentGroup;
     toString(): string;
 }

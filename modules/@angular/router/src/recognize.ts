@@ -14,12 +14,12 @@ import {of } from 'rxjs/observable/of';
 import {Data, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, InheritedResolve, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET, Params} from './shared';
-import {UrlPathWithParams, UrlSegment, UrlTree, mapChildrenIntoArray} from './url_tree';
+import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
 import {last, merge} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 class NoMatch {
-  constructor(public segment: UrlSegment = null) {}
+  constructor(public segmentGroup: UrlSegmentGroup = null) {}
 }
 
 class InheritedFromParent {
@@ -41,9 +41,9 @@ class InheritedFromParent {
 export function recognize(rootComponentType: Type, config: Routes, urlTree: UrlTree, url: string):
     Observable<RouterStateSnapshot> {
   try {
-    const rootSegment = split(urlTree.root, [], [], config).segment;
-    const children =
-        processSegment(config, rootSegment, InheritedFromParent.empty(null), PRIMARY_OUTLET);
+    const rootSegmentGroup = split(urlTree.root, [], [], config).segmentGroup;
+    const children = processSegmentGroup(
+        config, rootSegmentGroup, InheritedFromParent.empty(null), PRIMARY_OUTLET);
     const root = new ActivatedRouteSnapshot(
         [], Object.freeze({}), {}, PRIMARY_OUTLET, rootComponentType, null, urlTree.root, -1,
         InheritedResolve.empty);
@@ -54,7 +54,7 @@ export function recognize(rootComponentType: Type, config: Routes, urlTree: UrlT
     if (e instanceof NoMatch) {
       return new Observable<RouterStateSnapshot>(
           (obs: Observer<RouterStateSnapshot>) =>
-              obs.error(new Error(`Cannot match any routes: '${e.segment}'`)));
+              obs.error(new Error(`Cannot match any routes: '${e.segmentGroup}'`)));
     } else {
       return new Observable<RouterStateSnapshot>(
           (obs: Observer<RouterStateSnapshot>) => obs.error(e));
@@ -62,21 +62,22 @@ export function recognize(rootComponentType: Type, config: Routes, urlTree: UrlT
   }
 }
 
-function processSegment(
-    config: Route[], segment: UrlSegment, inherited: InheritedFromParent,
+function processSegmentGroup(
+    config: Route[], segmentGroup: UrlSegmentGroup, inherited: InheritedFromParent,
     outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
-  if (segment.pathsWithParams.length === 0 && segment.hasChildren()) {
-    return processSegmentChildren(config, segment, inherited);
+  if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
+    return processChildren(config, segmentGroup, inherited);
   } else {
-    return processPathsWithParams(config, segment, 0, segment.pathsWithParams, inherited, outlet);
+    return processSegment(config, segmentGroup, 0, segmentGroup.segments, inherited, outlet);
   }
 }
 
-function processSegmentChildren(
-    config: Route[], segment: UrlSegment,
+function processChildren(
+    config: Route[], segmentGroup: UrlSegmentGroup,
     inherited: InheritedFromParent): TreeNode<ActivatedRouteSnapshot>[] {
   const children = mapChildrenIntoArray(
-      segment, (child, childOutlet) => processSegment(config, child, inherited, childOutlet));
+      segmentGroup,
+      (child, childOutlet) => processSegmentGroup(config, child, inherited, childOutlet));
   checkOutletNameUniqueness(children);
   sortActivatedRouteSnapshots(children);
   return children;
@@ -90,21 +91,21 @@ function sortActivatedRouteSnapshots(nodes: TreeNode<ActivatedRouteSnapshot>[]):
   });
 }
 
-function processPathsWithParams(
-    config: Route[], segment: UrlSegment, pathIndex: number, paths: UrlPathWithParams[],
+function processSegment(
+    config: Route[], segmentGroup: UrlSegmentGroup, pathIndex: number, segments: UrlSegment[],
     inherited: InheritedFromParent, outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
   for (let r of config) {
     try {
-      return processPathsWithParamsAgainstRoute(r, segment, pathIndex, paths, inherited, outlet);
+      return processSegmentAgainstRoute(r, segmentGroup, pathIndex, segments, inherited, outlet);
     } catch (e) {
       if (!(e instanceof NoMatch)) throw e;
     }
   }
-  throw new NoMatch(segment);
+  throw new NoMatch(segmentGroup);
 }
 
-function processPathsWithParamsAgainstRoute(
-    route: Route, rawSegment: UrlSegment, pathIndex: number, paths: UrlPathWithParams[],
+function processSegmentAgainstRoute(
+    route: Route, rawSegment: UrlSegmentGroup, pathIndex: number, segments: UrlSegment[],
     inherited: InheritedFromParent, outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
   if (route.redirectTo) throw new NoMatch();
 
@@ -113,42 +114,44 @@ function processPathsWithParamsAgainstRoute(
   const newInheritedResolve = new InheritedResolve(inherited.resolve, getResolve(route));
 
   if (route.path === '**') {
-    const params = paths.length > 0 ? last(paths).parameters : {};
+    const params = segments.length > 0 ? last(segments).parameters : {};
     const snapshot = new ActivatedRouteSnapshot(
-        paths, Object.freeze(merge(inherited.allParams, params)),
+        segments, Object.freeze(merge(inherited.allParams, params)),
         merge(inherited.allData, getData(route)), outlet, route.component, route,
-        getSourceSegment(rawSegment), getPathIndexShift(rawSegment) + paths.length,
+        getSourceSegmentGroup(rawSegment), getPathIndexShift(rawSegment) + segments.length,
         newInheritedResolve);
     return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
   }
 
-  const {consumedPaths, parameters, lastChild} =
-      match(rawSegment, route, paths, inherited.snapshot);
-  const rawSlicedPath = paths.slice(lastChild);
+  const {consumedSegments, parameters, lastChild} =
+      match(rawSegment, route, segments, inherited.snapshot);
+  const rawSlicedSegments = segments.slice(lastChild);
   const childConfig = getChildConfig(route);
 
-  const {segment, slicedPath} = split(rawSegment, consumedPaths, rawSlicedPath, childConfig);
+  const {segmentGroup, slicedSegments} =
+      split(rawSegment, consumedSegments, rawSlicedSegments, childConfig);
 
   const snapshot = new ActivatedRouteSnapshot(
-      consumedPaths, Object.freeze(merge(inherited.allParams, parameters)),
+      consumedSegments, Object.freeze(merge(inherited.allParams, parameters)),
       merge(inherited.allData, getData(route)), outlet, route.component, route,
-      getSourceSegment(rawSegment), getPathIndexShift(rawSegment) + consumedPaths.length,
+      getSourceSegmentGroup(rawSegment), getPathIndexShift(rawSegment) + consumedSegments.length,
       newInheritedResolve);
 
   const newInherited = route.component ?
       InheritedFromParent.empty(snapshot) :
       new InheritedFromParent(inherited, snapshot, parameters, getData(route), newInheritedResolve);
 
-  if (slicedPath.length === 0 && segment.hasChildren()) {
-    const children = processSegmentChildren(childConfig, segment, newInherited);
+  if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
+    const children = processChildren(childConfig, segmentGroup, newInherited);
     return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
 
-  } else if (childConfig.length === 0 && slicedPath.length === 0) {
+  } else if (childConfig.length === 0 && slicedSegments.length === 0) {
     return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
 
   } else {
-    const children = processPathsWithParams(
-        childConfig, segment, pathIndex + lastChild, slicedPath, newInherited, PRIMARY_OUTLET);
+    const children = processSegment(
+        childConfig, segmentGroup, pathIndex + lastChild, slicedSegments, newInherited,
+        PRIMARY_OUTLET);
     return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
   }
 }
@@ -164,27 +167,28 @@ function getChildConfig(route: Route): Route[] {
 }
 
 function match(
-    segment: UrlSegment, route: Route, paths: UrlPathWithParams[], parent: ActivatedRouteSnapshot) {
+    segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[],
+    parent: ActivatedRouteSnapshot) {
   if (route.path === '') {
     if ((route.terminal || route.pathMatch === 'full') &&
-        (segment.hasChildren() || paths.length > 0)) {
+        (segmentGroup.hasChildren() || segments.length > 0)) {
       throw new NoMatch();
     } else {
       const params = parent ? parent.params : {};
-      return {consumedPaths: [], lastChild: 0, parameters: params};
+      return {consumedSegments: [], lastChild: 0, parameters: params};
     }
   }
 
   const path = route.path;
   const parts = path.split('/');
   const posParameters: {[key: string]: any} = {};
-  const consumedPaths: UrlPathWithParams[] = [];
+  const consumedSegments: UrlSegment[] = [];
 
   let currentIndex = 0;
 
   for (let i = 0; i < parts.length; ++i) {
-    if (currentIndex >= paths.length) throw new NoMatch();
-    const current = paths[currentIndex];
+    if (currentIndex >= segments.length) throw new NoMatch();
+    const current = segments[currentIndex];
 
     const p = parts[i];
     const isPosParam = p.startsWith(':');
@@ -193,17 +197,17 @@ function match(
     if (isPosParam) {
       posParameters[p.substring(1)] = current.path;
     }
-    consumedPaths.push(current);
+    consumedSegments.push(current);
     currentIndex++;
   }
 
   if ((route.terminal || route.pathMatch === 'full') &&
-      (segment.hasChildren() || currentIndex < paths.length)) {
+      (segmentGroup.hasChildren() || currentIndex < segments.length)) {
     throw new NoMatch();
   }
 
-  const parameters = merge(posParameters, consumedPaths[consumedPaths.length - 1].parameters);
-  return {consumedPaths, lastChild: currentIndex, parameters};
+  const parameters = merge(posParameters, consumedSegments[consumedSegments.length - 1].parameters);
+  return {consumedSegments, lastChild: currentIndex, parameters};
 }
 
 function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): void {
@@ -219,62 +223,64 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): v
   });
 }
 
-function getSourceSegment(segment: UrlSegment): UrlSegment {
-  let s = segment;
+function getSourceSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGroup {
+  let s = segmentGroup;
   while (s._sourceSegment) {
     s = s._sourceSegment;
   }
   return s;
 }
 
-function getPathIndexShift(segment: UrlSegment): number {
-  let s = segment;
-  let res = (s._pathIndexShift ? s._pathIndexShift : 0);
+function getPathIndexShift(segmentGroup: UrlSegmentGroup): number {
+  let s = segmentGroup;
+  let res = (s._segmentIndexShift ? s._segmentIndexShift : 0);
   while (s._sourceSegment) {
     s = s._sourceSegment;
-    res += (s._pathIndexShift ? s._pathIndexShift : 0);
+    res += (s._segmentIndexShift ? s._segmentIndexShift : 0);
   }
   return res - 1;
 }
 
 function split(
-    segment: UrlSegment, consumedPaths: UrlPathWithParams[], slicedPath: UrlPathWithParams[],
+    segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
     config: Route[]) {
-  if (slicedPath.length > 0 &&
-      containsEmptyPathMatchesWithNamedOutlets(segment, slicedPath, config)) {
-    const s = new UrlSegment(
-        consumedPaths,
-        createChildrenForEmptyPaths(
-            segment, consumedPaths, config, new UrlSegment(slicedPath, segment.children)));
-    s._sourceSegment = segment;
-    s._pathIndexShift = consumedPaths.length;
-    return {segment: s, slicedPath: []};
+  if (slicedSegments.length > 0 &&
+      containsEmptyPathMatchesWithNamedOutlets(segmentGroup, slicedSegments, config)) {
+    const s = new UrlSegmentGroup(
+        consumedSegments, createChildrenForEmptyPaths(
+                              segmentGroup, consumedSegments, config,
+                              new UrlSegmentGroup(slicedSegments, segmentGroup.children)));
+    s._sourceSegment = segmentGroup;
+    s._segmentIndexShift = consumedSegments.length;
+    return {segmentGroup: s, slicedSegments: []};
 
-  } else if (slicedPath.length === 0 && containsEmptyPathMatches(segment, slicedPath, config)) {
-    const s = new UrlSegment(
-        segment.pathsWithParams,
-        addEmptyPathsToChildrenIfNeeded(segment, slicedPath, config, segment.children));
-    s._sourceSegment = segment;
-    s._pathIndexShift = consumedPaths.length;
-    return {segment: s, slicedPath};
+  } else if (
+      slicedSegments.length === 0 &&
+      containsEmptyPathMatches(segmentGroup, slicedSegments, config)) {
+    const s = new UrlSegmentGroup(
+        segmentGroup.segments, addEmptyPathsToChildrenIfNeeded(
+                                   segmentGroup, slicedSegments, config, segmentGroup.children));
+    s._sourceSegment = segmentGroup;
+    s._segmentIndexShift = consumedSegments.length;
+    return {segmentGroup: s, slicedSegments};
 
   } else {
-    const s = new UrlSegment(segment.pathsWithParams, segment.children);
-    s._sourceSegment = segment;
-    s._pathIndexShift = consumedPaths.length;
-    return {segment: s, slicedPath};
+    const s = new UrlSegmentGroup(segmentGroup.segments, segmentGroup.children);
+    s._sourceSegment = segmentGroup;
+    s._segmentIndexShift = consumedSegments.length;
+    return {segmentGroup: s, slicedSegments};
   }
 }
 
 function addEmptyPathsToChildrenIfNeeded(
-    segment: UrlSegment, slicedPath: UrlPathWithParams[], routes: Route[],
-    children: {[name: string]: UrlSegment}): {[name: string]: UrlSegment} {
-  const res: {[name: string]: UrlSegment} = {};
+    segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[],
+    children: {[name: string]: UrlSegmentGroup}): {[name: string]: UrlSegmentGroup} {
+  const res: {[name: string]: UrlSegmentGroup} = {};
   for (let r of routes) {
-    if (emptyPathMatch(segment, slicedPath, r) && !children[getOutlet(r)]) {
-      const s = new UrlSegment([], {});
-      s._sourceSegment = segment;
-      s._pathIndexShift = segment.pathsWithParams.length;
+    if (emptyPathMatch(segmentGroup, slicedSegments, r) && !children[getOutlet(r)]) {
+      const s = new UrlSegmentGroup([], {});
+      s._sourceSegment = segmentGroup;
+      s._segmentIndexShift = segmentGroup.segments.length;
       res[getOutlet(r)] = s;
     }
   }
@@ -282,18 +288,18 @@ function addEmptyPathsToChildrenIfNeeded(
 }
 
 function createChildrenForEmptyPaths(
-    segment: UrlSegment, consumedPaths: UrlPathWithParams[], routes: Route[],
-    primarySegment: UrlSegment): {[name: string]: UrlSegment} {
-  const res: {[name: string]: UrlSegment} = {};
+    segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], routes: Route[],
+    primarySegment: UrlSegmentGroup): {[name: string]: UrlSegmentGroup} {
+  const res: {[name: string]: UrlSegmentGroup} = {};
   res[PRIMARY_OUTLET] = primarySegment;
-  primarySegment._sourceSegment = segment;
-  primarySegment._pathIndexShift = consumedPaths.length;
+  primarySegment._sourceSegment = segmentGroup;
+  primarySegment._segmentIndexShift = consumedSegments.length;
 
   for (let r of routes) {
     if (r.path === '' && getOutlet(r) !== PRIMARY_OUTLET) {
-      const s = new UrlSegment([], {});
-      s._sourceSegment = segment;
-      s._pathIndexShift = consumedPaths.length;
+      const s = new UrlSegmentGroup([], {});
+      s._sourceSegment = segmentGroup;
+      s._segmentIndexShift = consumedSegments.length;
       res[getOutlet(r)] = s;
     }
   }
@@ -301,19 +307,23 @@ function createChildrenForEmptyPaths(
 }
 
 function containsEmptyPathMatchesWithNamedOutlets(
-    segment: UrlSegment, slicedPath: UrlPathWithParams[], routes: Route[]): boolean {
+    segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[]): boolean {
   return routes
-             .filter(r => emptyPathMatch(segment, slicedPath, r) && getOutlet(r) !== PRIMARY_OUTLET)
+             .filter(
+                 r => emptyPathMatch(segmentGroup, slicedSegments, r) &&
+                     getOutlet(r) !== PRIMARY_OUTLET)
              .length > 0;
 }
 
 function containsEmptyPathMatches(
-    segment: UrlSegment, slicedPath: UrlPathWithParams[], routes: Route[]): boolean {
-  return routes.filter(r => emptyPathMatch(segment, slicedPath, r)).length > 0;
+    segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[]): boolean {
+  return routes.filter(r => emptyPathMatch(segmentGroup, slicedSegments, r)).length > 0;
 }
 
-function emptyPathMatch(segment: UrlSegment, slicedPath: UrlPathWithParams[], r: Route): boolean {
-  if ((segment.hasChildren() || slicedPath.length > 0) && (r.terminal || r.pathMatch === 'full'))
+function emptyPathMatch(
+    segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], r: Route): boolean {
+  if ((segmentGroup.hasChildren() || slicedSegments.length > 0) &&
+      (r.terminal || r.pathMatch === 'full'))
     return false;
   return r.path === '' && r.redirectTo === undefined;
 }

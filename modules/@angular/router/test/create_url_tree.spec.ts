@@ -11,7 +11,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {createUrlTree} from '../src/create_url_tree';
 import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
-import {DefaultUrlSerializer, UrlPathWithParams, UrlSegment, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
@@ -37,7 +37,7 @@ describe('createUrlTree', () => {
   it('should stringify positional parameters', () => {
     const p = serializer.parse('/a/b');
     const t = createRoot(p, ['/one', 11]);
-    const params = t.root.children[PRIMARY_OUTLET].pathsWithParams;
+    const params = t.root.children[PRIMARY_OUTLET].segments;
     expect(params[0].path).toEqual('one');
     expect(params[1].path).toEqual('11');
   });
@@ -209,8 +209,8 @@ function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragme
 }
 
 function create(
-    segment: UrlSegment, startIndex: number, tree: UrlTree, commands: any[], queryParams?: Params,
-    fragment?: string) {
+    segment: UrlSegmentGroup, startIndex: number, tree: UrlTree, commands: any[],
+    queryParams?: Params, fragment?: string) {
   if (!segment) {
     expect(segment).toBeDefined();
   }

@@ -10,7 +10,7 @@ import {Routes} from '../src/config';
 import {recognize} from '../src/recognize';
 import {resolve} from '../src/resolve';
 import {RouterStateSnapshot} from '../src/router_state';
-import {DefaultUrlSerializer, UrlSegment, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
 describe('resolve', () => {
   it('should resolve components', () => {

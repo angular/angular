@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegment, serializePath} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, serializePath} from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
@@ -174,8 +174,8 @@ describe('url serializer', () => {
           `/${encodeURIComponent("one two")};${encodeURIComponent("p 1")}=${encodeURIComponent("v 1")};${encodeURIComponent("p 2")}=${encodeURIComponent("v 2")}`;
       const tree = url.parse(u);
 
-      expect(tree.root.children[PRIMARY_OUTLET].pathsWithParams[0].path).toEqual('one two');
-      expect(tree.root.children[PRIMARY_OUTLET].pathsWithParams[0].parameters)
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].path).toEqual('one two');
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters)
           .toEqual({['p 1']: 'v 1', ['p 2']: 'v 2'});
       expect(url.serialize(tree)).toEqual(u);
     });
@@ -210,11 +210,12 @@ describe('url serializer', () => {
   });
 });
 
-function expectSegment(segment: UrlSegment, expected: string, hasChildren: boolean = false): void {
-  if (segment.pathsWithParams.filter(s => s.path === '').length > 0) {
-    throw new Error(`UrlPathWithParams cannot be empty ${segment.pathsWithParams}`);
+function expectSegment(
+    segment: UrlSegmentGroup, expected: string, hasChildren: boolean = false): void {
+  if (segment.segments.filter(s => s.path === '').length > 0) {
+    throw new Error(`UrlSegments cannot be empty ${segment.segments}`);
   }
-  const p = segment.pathsWithParams.map(p => serializePath(p)).join('/');
+  const p = segment.segments.map(p => serializePath(p)).join('/');
   expect(p).toEqual(expected);
   expect(Object.keys(segment.children).length > 0).toEqual(hasChildren);
 }

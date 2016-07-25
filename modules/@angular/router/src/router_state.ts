@@ -12,7 +12,7 @@ import {Observable} from 'rxjs/Observable';
 
 import {Data, ResolveData, Route} from './config';
 import {PRIMARY_OUTLET, Params} from './shared';
-import {UrlPathWithParams, UrlSegment, UrlTree} from './url_tree';
+import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {merge, shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
@@ -49,7 +49,7 @@ export class RouterState extends Tree<ActivatedRoute> {
 
 export function createEmptyState(urlTree: UrlTree, rootComponent: Type): RouterState {
   const snapshot = createEmptyStateSnapshot(urlTree, rootComponent);
-  const emptyUrl = new BehaviorSubject([new UrlPathWithParams('', {})]);
+  const emptyUrl = new BehaviorSubject([new UrlSegment('', {})]);
   const emptyParams = new BehaviorSubject({});
   const emptyData = new BehaviorSubject({});
   const emptyQueryParams = new BehaviorSubject({});
@@ -99,7 +99,7 @@ export class ActivatedRoute {
    * @internal
    */
   constructor(
-      public url: Observable<UrlPathWithParams[]>, public params: Observable<Params>,
+      public url: Observable<UrlSegment[]>, public params: Observable<Params>,
       public data: Observable<Data>, public outlet: string, public component: Type|string,
       futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
@@ -158,7 +158,7 @@ export class ActivatedRouteSnapshot {
   _routeConfig: Route;
 
   /** @internal **/
-  _urlSegment: UrlSegment;
+  _urlSegment: UrlSegmentGroup;
 
   /** @internal */
   _lastPathIndex: number;
@@ -170,9 +170,9 @@ export class ActivatedRouteSnapshot {
    * @internal
    */
   constructor(
-      public url: UrlPathWithParams[], public params: Params, public data: Data,
-      public outlet: string, public component: Type|string, routeConfig: Route,
-      urlSegment: UrlSegment, lastPathIndex: number, resolve: InheritedResolve) {
+      public url: UrlSegment[], public params: Params, public data: Data, public outlet: string,
+      public component: Type|string, routeConfig: Route, urlSegment: UrlSegmentGroup,
+      lastPathIndex: number, resolve: InheritedResolve) {
     this._routeConfig = routeConfig;
     this._urlSegment = urlSegment;
     this._lastPathIndex = lastPathIndex;

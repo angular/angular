@@ -12,7 +12,7 @@ import {of } from 'rxjs/observable/of';
 import {applyRedirects} from '../src/apply_redirects';
 import {Routes} from '../src/config';
 import {LoadedRouterConfig} from '../src/router_config_loader';
-import {DefaultUrlSerializer, UrlSegment, UrlTree, equalPathsWithParams} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree, equalSegments} from '../src/url_tree';
 
 describe('applyRedirects', () => {
 
@@ -367,10 +367,9 @@ function compareTrees(actual: UrlTree, expected: UrlTree): void {
   compareSegments(actual.root, expected.root, error);
 }
 
-function compareSegments(actual: UrlSegment, expected: UrlSegment, error: string): void {
+function compareSegments(actual: UrlSegmentGroup, expected: UrlSegmentGroup, error: string): void {
   expect(actual).toBeDefined(error);
-  expect(equalPathsWithParams(actual.pathsWithParams, expected.pathsWithParams))
-      .toEqual(true, error);
+  expect(equalSegments(actual.segments, expected.segments)).toEqual(true, error);
 
   expect(Object.keys(actual.children).length).toEqual(Object.keys(expected.children).length, error);
 

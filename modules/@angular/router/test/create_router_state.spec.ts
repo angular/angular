@@ -11,12 +11,12 @@ import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
 import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegment, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
 describe('create router state', () => {
   const emptyState = () =>
-      createEmptyState(new UrlTree(new UrlSegment([], {}), {}, null), RootComponent);
+      createEmptyState(new UrlTree(new UrlSegmentGroup([], {}), {}, null), RootComponent);
 
   it('should work create new state', () => {
     const state = createRouterState(
