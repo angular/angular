@@ -35,32 +35,34 @@ export class MdGestureConfig extends HammerGestureConfig {
   buildHammer(element: HTMLElement) {
     const mc = new Hammer(element);
 
-    // create custom gesture recognizers
-    const drag = new Hammer.Pan({event: 'drag', threshold: 6});
-    const longpress = new Hammer.Press({event: 'longpress', time: 500});
-    const slide = new Hammer.Pan({event: 'slide', threshold: 0});
+    // Default Hammer Recognizers.
+    let pan = new Hammer.Pan();
+    let swipe = new Hammer.Swipe();
+    let press = new Hammer.Press();
 
-    // ensure custom recognizers can coexist with the default gestures (i.e. pan, press, swipe)
-    // custom recognizers can overwrite default recognizers if they aren't configured to
-    // "recognizeWith" others that listen to the same base events.
-    const pan = new Hammer.Pan();
-    const press = new Hammer.Press();
-    const swipe = new Hammer.Swipe();
+    // Notice that a HammerJS recognizer can only depend on one other recognizer once.
+    // Otherwise the previous `recognizeWith` will be dropped.
+    let slide = this._createRecognizer(pan, {event: 'slide', threshold: 0}, swipe);
+    let drag = this._createRecognizer(slide, {event: 'drag', threshold: 6}, swipe);
+    let longpress = this._createRecognizer(press, {event: 'longpress', time: 500});
 
-    drag.recognizeWith(pan);
-    drag.recognizeWith(swipe);
-    drag.recognizeWith(slide);
-
+    // Overwrite the default `pan` event to use the swipe event.
     pan.recognizeWith(swipe);
-    pan.recognizeWith(slide);
 
-    slide.recognizeWith(swipe);
+    // Add customized gestures to Hammer manager
+    mc.add([swipe, press, pan, drag, slide, longpress]);
 
-    longpress.recognizeWith(press);
-
-    // add customized gestures to Hammer manager
-    mc.add([drag, pan, swipe, press, longpress, slide]);
     return mc;
+  }
+
+  /** Creates a new recognizer, without affecting the default recognizers of HammerJS */
+  private _createRecognizer(base: Recognizer, options: any, ...inheritances: Recognizer[]) {
+    let recognizer = new (<RecognizerStatic> base.constructor)(options);
+
+    inheritances.push(base);
+    inheritances.forEach((item) => recognizer.recognizeWith(item));
+
+    return recognizer;
   }
 
 }
