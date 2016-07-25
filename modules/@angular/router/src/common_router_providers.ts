@@ -7,7 +7,7 @@
  */
 
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {ANALYZE_FOR_PRECOMPILE, APP_INITIALIZER, AppModuleFactoryLoader, ApplicationRef, ComponentResolver, Injector, OpaqueToken, SystemJsAppModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_PRECOMPILE, APP_INITIALIZER, AppModuleFactoryLoader, ApplicationRef, ComponentResolver, Injector, OpaqueToken, SystemJsAppModuleLoader, Type} from '@angular/core';
 
 import {Routes} from './config';
 import {Router} from './router';
@@ -19,21 +19,23 @@ import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
 
 /**
+ * Provides a token for the primary router component
+ *
+ * @experimental
+ */
+export const ROUTER_PRIMARY_COMPONENT = new OpaqueToken('ROUTER_PRIMARY_COMPONENT');
+
+/**
  * @experimental
  */
 export interface ExtraOptions { enableTracing?: boolean; }
 
 export function setupRouter(
-    ref: ApplicationRef, resolver: ComponentResolver, urlSerializer: UrlSerializer,
+    rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer,
     outletMap: RouterOutletMap, location: Location, injector: Injector,
     loader: AppModuleFactoryLoader, config: Routes, opts: ExtraOptions) {
-  if (ref.componentTypes.length == 0) {
-    throw new Error('Bootstrap at least one component before injecting Router.');
-  }
-  const componentType = ref.componentTypes[0];
   const r = new Router(
-      componentType, resolver, urlSerializer, outletMap, location, injector, loader, config);
-  ref.registerDisposeListener(() => r.dispose());
+      rootComponentType, resolver, urlSerializer, outletMap, location, injector, loader, config);
 
   if (opts.enableTracing) {
     r.events.subscribe(e => {
@@ -45,6 +47,16 @@ export function setupRouter(
   }
 
   return r;
+}
+
+export function setupRouterPrimaryComponent(ref: ApplicationRef, injector: Injector) {
+  if (ref.componentTypes.length == 0) {
+    throw new Error('Bootstrap at least one component before injecting Router.');
+  }
+
+  ref.registerDisposeListener(() => injector.get(Router).dispose());
+
+  return ref.componentTypes[0];
 }
 
 export function setupRouterInitializer(injector: Injector) {
@@ -89,14 +101,17 @@ export function provideRouter(routes: Routes, config: ExtraOptions): any[] {
 
     {provide: ROUTER_CONFIGURATION, useValue: config}, Location,
     {provide: LocationStrategy, useClass: PathLocationStrategy},
-    {provide: UrlSerializer, useClass: DefaultUrlSerializer},
-
+    {provide: UrlSerializer, useClass: DefaultUrlSerializer}, {
+      provide: ROUTER_PRIMARY_COMPONENT,
+      useFactory: setupRouterPrimaryComponent,
+      deps: [ApplicationRef, Injector]
+    },
     {
       provide: Router,
       useFactory: setupRouter,
       deps: [
-        ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
-        AppModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
+        ROUTER_PRIMARY_COMPONENT, ComponentResolver, UrlSerializer, RouterOutletMap, Location,
+        Injector, AppModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
       ]
     },
 
