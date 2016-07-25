@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MD_MENU_DIRECTIVES} from '@angular2-material/menu/menu-trigger';
+import {MD_MENU_DIRECTIVES} from '@angular2-material/menu/menu';
 
 @Component({
   moduleId: module.id,

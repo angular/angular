@@ -2,7 +2,7 @@ import {inject} from '@angular/core/testing';
 import {TestComponentBuilder} from '@angular/compiler/testing';
 import {Component} from '@angular/core';
 
-import {MD_MENU_DIRECTIVES} from './menu-trigger';
+import {MD_MENU_DIRECTIVES} from './menu';
 
 describe('MdMenu', () => {
   let builder: TestComponentBuilder;

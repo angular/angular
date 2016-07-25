@@ -9,8 +9,7 @@ import {
     AfterViewInit,
     OnDestroy
 } from '@angular/core';
-import {MdMenu} from './menu';
-import {MdMenuItem, MdMenuAnchor} from './menu-item';
+import {MdMenu} from './menu-directive';
 import {MdMenuMissingError} from './menu-errors';
 import {
     Overlay,
@@ -138,5 +137,3 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     );
   }
 }
-
-export const MD_MENU_DIRECTIVES = [MdMenu, MdMenuItem, MdMenuTrigger, MdMenuAnchor];
