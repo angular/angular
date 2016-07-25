@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {TestComponentBuilder, configureModule} from '@angular/core/testing';
-import {Component, ComponentFactoryResolver, NoComponentFactoryError, forwardRef, ANALYZE_FOR_PRECOMPILE, ViewMetadata} from '@angular/core';
+import {Component, ComponentFactoryResolver, NoComponentFactoryError, forwardRef, ANALYZE_FOR_ENTRY_COMPONENTS, ViewMetadata} from '@angular/core';
 import {stringify} from '../../src/facade/lang';
 
 export function main() {
@@ -17,7 +17,7 @@ export function main() {
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
-  describe('@Component.precompile', function() {
+  describe('@Component.entryComponents', function() {
     beforeEach(() => { configureModule({declarations: [MainComp, ChildComp, NestedChildComp]}); });
 
     it('should error if the component was not declared nor imported by the module',
@@ -27,13 +27,13 @@ function declareTests({useJit}: {useJit: boolean}) {
          class ChildComp {
          }
 
-         @Component({template: 'comp', precompile: [ChildComp]})
+         @Component({template: 'comp', entryComponents: [ChildComp]})
          class SomeComp {
          }
 
          expect(() => tcb.createSync(SomeComp))
              .toThrowError(
-                 `Component ${stringify(SomeComp)} in NgModule DynamicTestModule uses ${stringify(ChildComp)} via "precompile" but it was neither declared nor imported into the module!`);
+                 `Component ${stringify(SomeComp)} in NgModule DynamicTestModule uses ${stringify(ChildComp)} via "entryComponents" but it was neither declared nor imported into the module!`);
        }));
 
 
@@ -47,10 +47,10 @@ function declareTests({useJit}: {useJit: boolean}) {
        }));
 
 
-    it('should resolve ComponentFactories via ANALYZE_FOR_PRECOMPILE',
+    it('should resolve ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS',
        inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         let compFixture = tcb.createSync(CompWithAnalyzePrecompileProvider);
-         let mainComp: CompWithAnalyzePrecompileProvider = compFixture.componentInstance;
+         let compFixture = tcb.createSync(CompWithAnalyzeEntryComponentsProvider);
+         let mainComp: CompWithAnalyzeEntryComponentsProvider = compFixture.componentInstance;
          let cfr: ComponentFactoryResolver =
              compFixture.componentRef.injector.get(ComponentFactoryResolver);
          expect(cfr.resolveComponentFactory(ChildComp).componentType).toBe(ChildComp);
@@ -97,14 +97,14 @@ class NestedChildComp {
   constructor(public cfr: ComponentFactoryResolver) {}
 }
 
-@Component({selector: 'child', precompile: [NestedChildComp], template: ''})
+@Component({selector: 'child', entryComponents: [NestedChildComp], template: ''})
 class ChildComp {
   constructor(public cfr: ComponentFactoryResolver) {}
 }
 
 @Component({
   selector: 'main',
-  precompile: [ChildComp],
+  entryComponents: [ChildComp],
   template: '',
 })
 class MainComp {
@@ -115,7 +115,7 @@ class MainComp {
   selector: 'comp-with-analyze',
   template: '',
   providers: [{
-    provide: ANALYZE_FOR_PRECOMPILE,
+    provide: ANALYZE_FOR_ENTRY_COMPONENTS,
     multi: true,
     useValue: [
       {a: 'b', component: ChildComp},
@@ -123,5 +123,5 @@ class MainComp {
     ]
   }]
 })
-class CompWithAnalyzePrecompileProvider {
+class CompWithAnalyzeEntryComponentsProvider {
 }

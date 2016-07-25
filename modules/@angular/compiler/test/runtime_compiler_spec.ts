@@ -116,8 +116,10 @@ export function main() {
 
     describe('compileModuleAsync', () => {
       it('should allow to use templateUrl components', fakeAsync(() => {
-           @NgModule(
-               {declarations: [SomeCompWithUrlTemplate], precompile: [SomeCompWithUrlTemplate]})
+           @NgModule({
+             declarations: [SomeCompWithUrlTemplate],
+             entryComponents: [SomeCompWithUrlTemplate]
+           })
            class SomeModule {
            }
 
@@ -131,7 +133,8 @@ export function main() {
 
     describe('compileModuleSync', () => {
       it('should throw when using a templateUrl that has not been compiled before', () => {
-        @NgModule({declarations: [SomeCompWithUrlTemplate], precompile: [SomeCompWithUrlTemplate]})
+        @NgModule(
+            {declarations: [SomeCompWithUrlTemplate], entryComponents: [SomeCompWithUrlTemplate]})
         class SomeModule {
         }
 
@@ -143,7 +146,7 @@ export function main() {
 
       it('should throw when using a templateUrl in a nested component that has not been compiled before',
          () => {
-           @NgModule({declarations: [SomeComp], precompile: [SomeComp]})
+           @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
            class SomeModule {
            }
 
@@ -158,8 +161,10 @@ export function main() {
 
       it('should allow to use templateUrl components that have been loaded before',
          fakeAsync(() => {
-           @NgModule(
-               {declarations: [SomeCompWithUrlTemplate], precompile: [SomeCompWithUrlTemplate]})
+           @NgModule({
+             declarations: [SomeCompWithUrlTemplate],
+             entryComponents: [SomeCompWithUrlTemplate]
+           })
            class SomeModule {
            }
 

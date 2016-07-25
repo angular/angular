@@ -9,23 +9,24 @@
 import './init';
 
 import {BasicComp} from '../src/basic';
-import {CompWithAnalyzePrecompileProvider, CompWithPrecompile} from '../src/precompile';
+import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from '../src/entry_components';
 
 import {createComponent} from './util';
 
 describe('content projection', () => {
-  it('should support precompile in components', () => {
-    var compFixture = createComponent(CompWithPrecompile);
+  it('should support entryComponents in components', () => {
+    var compFixture = createComponent(CompWithEntryComponents);
     var cf = compFixture.componentInstance.cfr.resolveComponentFactory(BasicComp);
     expect(cf.componentType).toBe(BasicComp);
   });
 
-  it('should support precompile via the ANALYZE_FOR_PRECOMPILE provider and function providers in components',
+  it('should support entryComponents via the ANALYZE_FOR_ENTRY_COMPONENTS provider and function providers in components',
      () => {
-       const compFixture = createComponent(CompWithAnalyzePrecompileProvider);
+       const compFixture = createComponent(CompWithAnalyzeEntryComponentsProvider);
        const cf = compFixture.componentInstance.cfr.resolveComponentFactory(BasicComp);
        expect(cf.componentType).toBe(BasicComp);
-       // check that the function call that created the provider for ANALYZE_FOR_PRECOMPILE worked.
+       // check that the function call that created the provider for ANALYZE_FOR_ENTRY_COMPONENTS
+       // worked.
        expect(compFixture.componentInstance.providedValue).toEqual([
          {a: 'b', component: BasicComp}
        ]);

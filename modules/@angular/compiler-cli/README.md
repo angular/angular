@@ -38,7 +38,7 @@ export class MyComponent {}
 @NgModule({
   imports: [BrowserModule],
   declarations: [MyComponent],
-  precompile: [MyComponent]
+  entryComponents: [MyComponent]
 })
 export class MainModule {
   constructor(appRef: ApplicationRef) {

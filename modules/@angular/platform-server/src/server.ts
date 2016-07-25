@@ -100,7 +100,7 @@ export function serverBootstrap<T>(
     providers: customProviders,
     declarations: declarations,
     imports: [BrowserModule],
-    precompile: [appComponentType]
+    entryComponents: [appComponentType]
   })
   class DynamicModule {
   }

@@ -1326,7 +1326,7 @@ describe('Integration', () => {
                           children: [{path: 'child', component: ChildLazyLoadedComponent}]
                         }])],
                         imports: [RouterModuleWithoutProviders],
-                        precompile: [ParentLazyLoadedComponent, ChildLazyLoadedComponent]
+                        entryComponents: [ParentLazyLoadedComponent, ChildLazyLoadedComponent]
                       })
                       class LoadedModule {
                       }
@@ -1359,7 +1359,7 @@ describe('Integration', () => {
              }
 
              @NgModule({
-               precompile: [LazyLoadedComponent],
+               entryComponents: [LazyLoadedComponent],
                declarations: [LazyLoadedComponent],
                imports: [RouterModuleWithoutProviders],
                providers: [
@@ -1558,7 +1558,7 @@ class RouteCmp {
   template:
       `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`,
   directives: ROUTER_DIRECTIVES,
-  precompile: [BlankCmp, SimpleCmp]
+  entryComponents: [BlankCmp, SimpleCmp]
 })
 class RelativeLinkInIfCmp {
   show: boolean = false;
@@ -1613,7 +1613,7 @@ class ComponentRecordingRoutePathAndUrl {
   selector: 'root-cmp',
   template: `<router-outlet></router-outlet>`,
   directives: [ROUTER_DIRECTIVES],
-  precompile: [
+  entryComponents: [
     BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
     RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
     QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp, LinkInNgIf,
@@ -1628,7 +1628,7 @@ class RootCmp {
   template:
       `primary [<router-outlet></router-outlet>] right [<router-outlet name="right"></router-outlet>]`,
   directives: [ROUTER_DIRECTIVES],
-  precompile: [BlankCmp, SimpleCmp, RouteCmp, UserCmp]
+  entryComponents: [BlankCmp, SimpleCmp, RouteCmp, UserCmp]
 })
 class RootCmpWithTwoOutlets {
 }

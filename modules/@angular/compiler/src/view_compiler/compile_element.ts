@@ -92,14 +92,13 @@ export class CompileElement extends CompileNode {
     this._instances.add(identifierToken(Identifiers.AppElement), this.appElement);
   }
 
-  public createComponentFactoryResolver(precompileComponent: CompileIdentifierMetadata[]) {
-    if (!precompileComponent || precompileComponent.length === 0) {
+  public createComponentFactoryResolver(entryComponents: CompileIdentifierMetadata[]) {
+    if (!entryComponents || entryComponents.length === 0) {
       return;
     }
     var createComponentFactoryResolverExpr =
         o.importExpr(Identifiers.CodegenComponentFactoryResolver).instantiate([
-          o.literalArr(precompileComponent.map(
-              (precompiledComponent) => o.importExpr(precompiledComponent))),
+          o.literalArr(entryComponents.map((entryComponent) => o.importExpr(entryComponent))),
           injectFromViewParentInjector(identifierToken(Identifiers.ComponentFactoryResolver), false)
         ]);
     var provider = new CompileProviderMetadata({

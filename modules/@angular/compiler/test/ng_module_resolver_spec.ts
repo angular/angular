@@ -21,7 +21,7 @@ class SomeClass5 {}
   imports: [SomeClass2],
   exports: [SomeClass3],
   providers: [SomeClass4],
-  precompile: [SomeClass5]
+  entryComponents: [SomeClass5]
 })
 class SomeModule {
 }
@@ -41,7 +41,7 @@ export function main() {
         imports: [SomeClass2],
         exports: [SomeClass3],
         providers: [SomeClass4],
-        precompile: [SomeClass5]
+        entryComponents: [SomeClass5]
       }));
     });
 

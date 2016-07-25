@@ -211,13 +211,13 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
           new CompileIdentifierMetadata({name: getViewFactoryName(component, 0)});
       this.targetDependencies.push(
           new ViewFactoryDependency(component.type, nestedComponentIdentifier));
-      let precompileComponentIdentifiers =
-          component.precompile.map((precompileComp: CompileIdentifierMetadata) => {
-            var id = new CompileIdentifierMetadata({name: precompileComp.name});
-            this.targetDependencies.push(new ComponentFactoryDependency(precompileComp, id));
+      let entryComponentIdentifiers =
+          component.entryComponents.map((entryComponent: CompileIdentifierMetadata) => {
+            var id = new CompileIdentifierMetadata({name: entryComponent.name});
+            this.targetDependencies.push(new ComponentFactoryDependency(entryComponent, id));
             return id;
           });
-      compileElement.createComponentFactoryResolver(precompileComponentIdentifiers);
+      compileElement.createComponentFactoryResolver(entryComponentIdentifiers);
 
       compViewExpr = o.variable(`compView_${nodeIndex}`);  // fix highlighting: `
       compileElement.setComponentView(compViewExpr);

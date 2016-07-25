@@ -20,7 +20,7 @@ describe('NgModule', () => {
     expect(moduleRef.injector.get(SomeService) instanceof SomeService).toBe(true);
   });
 
-  it('should support precompile components', () => {
+  it('should support entryComponents components', () => {
     const moduleRef = createModule();
     const cf = moduleRef.componentFactoryResolver.resolveComponentFactory(
         CompUsingRootModuleDirectiveAndPipe);
@@ -29,13 +29,14 @@ describe('NgModule', () => {
     expect(compRef.instance instanceof CompUsingRootModuleDirectiveAndPipe).toBe(true);
   });
 
-  it('should support precompile via the ANALYZE_FOR_PRECOMPILE provider and function providers in components',
+  it('should support entryComponents via the ANALYZE_FOR_ENTRY_COMPONENTS provider and function providers in components',
      () => {
        const moduleRef = createModule();
        const cf = moduleRef.componentFactoryResolver.resolveComponentFactory(
            CompUsingRootModuleDirectiveAndPipe);
        expect(cf.componentType).toBe(CompUsingRootModuleDirectiveAndPipe);
-       // check that the function call that created the provider for ANALYZE_FOR_PRECOMPILE worked.
+       // check that the function call that created the provider for ANALYZE_FOR_ENTRY_COMPONENTS
+       // worked.
        expect(moduleRef.injector.get(SOME_TOKEN)).toEqual([
          {a: 'b', component: CompUsingLibModuleDirectiveAndPipe}
        ]);

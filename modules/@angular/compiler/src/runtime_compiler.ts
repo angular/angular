@@ -146,13 +146,13 @@ export class RuntimeCompiler implements Compiler {
           templates.add(this._createCompiledTemplate(
               dirMeta, localModuleMeta.transitiveModule.directives,
               localModuleMeta.transitiveModule.pipes));
-          dirMeta.precompile.forEach((precompileType) => {
-            templates.add(this._createCompiledHostTemplate(precompileType.runtime));
+          dirMeta.entryComponents.forEach((entryComponentType) => {
+            templates.add(this._createCompiledHostTemplate(entryComponentType.runtime));
           });
         }
       });
-      localModuleMeta.precompile.forEach((precompileType) => {
-        templates.add(this._createCompiledHostTemplate(precompileType.runtime));
+      localModuleMeta.entryComponents.forEach((entryComponentType) => {
+        templates.add(this._createCompiledHostTemplate(entryComponentType.runtime));
       });
     });
     templates.forEach((template) => {

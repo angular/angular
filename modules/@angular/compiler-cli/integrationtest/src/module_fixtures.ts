@@ -7,7 +7,7 @@
  */
 
 import {LowerCasePipe, NgIf} from '@angular/common';
-import {ANALYZE_FOR_PRECOMPILE, Component, ComponentFactoryResolver, Directive, Inject, Injectable, Input, NgModule, OpaqueToken, Pipe} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Directive, Inject, Injectable, Input, NgModule, OpaqueToken, Pipe} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 @Injectable()
@@ -51,19 +51,19 @@ export class CompUsingLibModuleDirectiveAndPipe {
 
 export const SOME_TOKEN = new OpaqueToken('someToken');
 
-export function provideValueWithPrecompile(value: any) {
+export function provideValueWithEntryComponents(value: any) {
   return [
     {provide: SOME_TOKEN, useValue: value},
-    {provide: ANALYZE_FOR_PRECOMPILE, useValue: value, multi: true},
+    {provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: value, multi: true},
   ];
 }
 
 @NgModule({
   declarations: [SomeDirectiveInLibModule, SomePipeInLibModule, CompUsingLibModuleDirectiveAndPipe],
-  precompile: [CompUsingLibModuleDirectiveAndPipe],
+  entryComponents: [CompUsingLibModuleDirectiveAndPipe],
   providers: [
     ServiceUsingLibModule,
-    provideValueWithPrecompile([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
+    provideValueWithEntryComponents([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
   ],
 })
 export class SomeLibModule {

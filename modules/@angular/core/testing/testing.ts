@@ -50,7 +50,7 @@ export function addProviders(providers: Array<any>): void {
  * @stable
  */
 export function configureModule(
-    moduleDef: {providers?: any[], declarations?: any[], imports?: any[], precompile?: any[]}):
+    moduleDef: {providers?: any[], declarations?: any[], imports?: any[], entryComponents?: any[]}):
     void {
   if (!moduleDef) return;
   try {

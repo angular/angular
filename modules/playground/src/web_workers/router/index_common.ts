@@ -31,7 +31,7 @@ export const ROUTES = [
 @NgModule({
   imports: [WorkerAppModule, RouterModule],
   providers: [provideRoutes(ROUTES), WORKER_APP_LOCATION_PROVIDERS, {provide: LocationStrategy, useClass: HashLocationStrategy}],
-  precompile: [App],
+  entryComponents: [App],
   declarations: [App, Start, Contact, About]
 })
 export class AppModule {

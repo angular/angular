@@ -106,7 +106,7 @@ export const browserDynamicPlatform = createPlatformFactory(
  * ## API (version 2)
  * - `appComponentType`: The root component which should act as the application. This is
  *   a reference to a `Type` which is annotated with `@Component(...)`.
- * - `providers`, `declarations`, `imports`, `precompile`: Defines the properties
+ * - `providers`, `declarations`, `imports`, `entryComponents`: Defines the properties
  *   of the dynamically created module that is used to bootstrap the module.
  * - to configure the compiler, use the `compilerOptions` parameter.
  *
@@ -121,11 +121,11 @@ export function bootstrap<C>(
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<C>>;
 export function bootstrap<C>(
     appComponentType: ConcreteType<C>,
-    {providers, imports, declarations, precompile, compilerOptions}?: {
+    {providers, imports, declarations, entryComponents, compilerOptions}?: {
       providers?: Array<any /*Type | Provider | any[]*/>,
       declarations?: any[],
       imports?: any[],
-      precompile?: any[],
+      entryComponents?: any[],
       compilerOptions?: CompilerOptions
     }): Promise<ComponentRef<C>>;
 export function bootstrap<C>(
@@ -134,14 +134,14 @@ export function bootstrap<C>(
       providers: Array<any /*Type | Provider | any[]*/>,
       declarations?: any[],
       imports: any[],
-      precompile: any[],
+      entryComponents: any[],
       compilerOptions: CompilerOptions
     }): Promise<ComponentRef<C>> {
   let compilerOptions: CompilerOptions;
   let providers: any[] = [];
   let declarations: any[] = [];
   let imports: any[] = [];
-  let precompile: any[] = [];
+  let entryComponents: any[] = [];
   let deprecationMessages: string[] = [];
   if (customProvidersOrDynamicModule instanceof Array) {
     providers = customProvidersOrDynamicModule;
@@ -153,7 +153,7 @@ export function bootstrap<C>(
     providers = normalizeArray(customProvidersOrDynamicModule.providers);
     declarations = normalizeArray(customProvidersOrDynamicModule.declarations);
     imports = normalizeArray(customProvidersOrDynamicModule.imports);
-    precompile = normalizeArray(customProvidersOrDynamicModule.precompile);
+    entryComponents = normalizeArray(customProvidersOrDynamicModule.entryComponents);
     compilerOptions = customProvidersOrDynamicModule.compilerOptions;
   }
 
@@ -161,7 +161,7 @@ export function bootstrap<C>(
     providers: providers,
     declarations: declarations.concat([appComponentType]),
     imports: [BrowserModule, imports],
-    precompile: precompile.concat([appComponentType])
+    entryComponents: entryComponents.concat([appComponentType])
   })
   class DynamicModule {
   }
@@ -218,7 +218,7 @@ export function bootstrapWorkerApp<T>(
     providers: customProviders,
     declarations: declarations,
     imports: [WorkerAppModule],
-    precompile: [appComponentType]
+    entryComponents: [appComponentType]
   })
   class DynamicModule {
   }

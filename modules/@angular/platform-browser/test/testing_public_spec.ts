@@ -9,7 +9,7 @@
 import {NgIf} from '@angular/common';
 import {CompilerConfig, XHR} from '@angular/compiler';
 import {Component, ComponentFactoryResolver, Directive, Injectable, Input, NgModule, Pipe, ViewMetadata, provide} from '@angular/core';
-import {TestComponentBuilder, addProviders, async, configureCompiler, configureModule, doAsyncPrecompilation, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
+import {TestComponentBuilder, addProviders, async, configureCompiler, configureModule, doAsyncEntryPointCompilation, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../../http/src/facade/lang';
@@ -235,7 +235,7 @@ export function main() {
         providers: [FancyService],
         imports: [SomeLibModule],
         declarations: [SomeDirective, SomePipe, CompUsingModuleDirectiveAndPipe],
-        precompile: [CompUsingModuleDirectiveAndPipe]
+        entryComponents: [CompUsingModuleDirectiveAndPipe]
       };
     });
 
@@ -260,7 +260,7 @@ export function main() {
            expect(libModule).toBeAnInstanceOf(SomeLibModule);
          }));
 
-      it('should use set up precompile components',
+      it('should use set up entryComponents components',
          inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
            expect(resolver.resolveComponentFactory(CompUsingModuleDirectiveAndPipe).componentType)
                .toBe(CompUsingModuleDirectiveAndPipe);
@@ -288,7 +288,7 @@ export function main() {
            expect(libModule).toBeAnInstanceOf(SomeLibModule);
          }));
 
-      it('should use set up precompile components',
+      it('should use set up entryComponents components',
          withModule(() => moduleConfig)
              .inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
                expect(
@@ -297,13 +297,14 @@ export function main() {
              }));
     });
 
-    describe('precompile components with template url', () => {
+    describe('entryComponents components with template url', () => {
       beforeEach(async(() => {
-        configureModule({declarations: [CompWithUrlTemplate], precompile: [CompWithUrlTemplate]});
-        doAsyncPrecompilation();
+        configureModule(
+            {declarations: [CompWithUrlTemplate], entryComponents: [CompWithUrlTemplate]});
+        doAsyncEntryPointCompilation();
       }));
 
-      it('should allow to createSync components with templateUrl after async precompilation',
+      it('should allow to createSync components with templateUrl after explicit async compilation',
          inject([TestComponentBuilder], (builder: TestComponentBuilder) => {
            let fixture = builder.createSync(CompWithUrlTemplate);
            expect(fixture.nativeElement).toHaveText('from external template\n');
@@ -434,14 +435,14 @@ export function main() {
       });
     });
 
-    describe('precompile', () => {
+    describe('entryComponents', () => {
       let xhrGet: jasmine.Spy;
       beforeEach(() => {
         xhrGet = jasmine.createSpy('xhrGet').and.returnValue(Promise.resolve('Hello world!'));
         configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
       });
 
-      it('should report an error for precompile components with templateUrl which never call doAsyncPrecompile',
+      it('should report an error for entryComponents components with templateUrl which never call doAsyncEntryComponents',
          () => {
            var itPromise = patchJasmineIt();
 
@@ -451,7 +452,7 @@ export function main() {
                       withModule(() => {
                         return {
                           declarations: [CompWithUrlTemplate],
-                          precompile: [CompWithUrlTemplate]
+                          entryComponents: [CompWithUrlTemplate]
                         };
                       })
                           .inject(
@@ -462,8 +463,8 @@ export function main() {
                                     .toBe(CompWithUrlTemplate);
                               })))
                .toThrowError(
-                   `This test module precompiles the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but precompilation was never done. ` +
-                   'Please call "doAsyncPrecompilation" before "inject".');
+                   `This test module uses the entryComponents ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but they were never compiled. ` +
+                   `Please call "doAsyncEntryPointCompilation" before "inject".`);
 
            restoreJasmineIt();
          });

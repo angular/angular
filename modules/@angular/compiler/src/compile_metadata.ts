@@ -405,7 +405,7 @@ export class CompileTemplateMetadata {
 export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   static create(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
-       lifecycleHooks, providers, viewProviders, queries, viewQueries, precompile, template}: {
+       lifecycleHooks, providers, viewProviders, queries, viewQueries, entryComponents, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -421,7 +421,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
         queries?: CompileQueryMetadata[],
         viewQueries?: CompileQueryMetadata[],
-        precompile?: CompileTypeMetadata[],
+        entryComponents?: CompileTypeMetadata[],
         template?: CompileTemplateMetadata
       } = {}): CompileDirectiveMetadata {
     var hostListeners: {[key: string]: string} = {};
@@ -470,7 +470,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
       viewProviders,
       queries,
       viewQueries,
-      precompile,
+      entryComponents,
       template,
     });
   }
@@ -490,13 +490,13 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   queries: CompileQueryMetadata[];
   viewQueries: CompileQueryMetadata[];
   // Note: Need to keep types here to prevent cycles!
-  precompile: CompileTypeMetadata[];
+  entryComponents: CompileTypeMetadata[];
   template: CompileTemplateMetadata;
 
   constructor(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, hostListeners,
        hostProperties, hostAttributes, lifecycleHooks, providers, viewProviders, queries,
-       viewQueries, precompile, template}: {
+       viewQueries, entryComponents, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -514,7 +514,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
         queries?: CompileQueryMetadata[],
         viewQueries?: CompileQueryMetadata[],
-        precompile?: CompileTypeMetadata[],
+        entryComponents?: CompileTypeMetadata[],
         template?: CompileTemplateMetadata,
       } = {}) {
     this.type = type;
@@ -532,7 +532,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
     this.viewProviders = _normalizeArray(viewProviders);
     this.queries = _normalizeArray(queries);
     this.viewQueries = _normalizeArray(viewQueries);
-    this.precompile = _normalizeArray(precompile);
+    this.entryComponents = _normalizeArray(entryComponents);
     this.template = template;
   }
 
@@ -619,8 +619,8 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
   exportedDirectives: CompileDirectiveMetadata[];
   declaredPipes: CompilePipeMetadata[];
   exportedPipes: CompilePipeMetadata[];
-  // Note: See CompileDirectiveMetadata.precompile why this has to be a type.
-  precompile: CompileTypeMetadata[];
+  // Note: See CompileDirectiveMetadata.entryComponents why this has to be a type.
+  entryComponents: CompileTypeMetadata[];
   providers: CompileProviderMetadata[];
 
   importedModules: CompileNgModuleMetadata[];
@@ -630,7 +630,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
 
   constructor(
       {type, providers, declaredDirectives, exportedDirectives, declaredPipes, exportedPipes,
-       precompile, importedModules, exportedModules, transitiveModule}: {
+       entryComponents, importedModules, exportedModules, transitiveModule}: {
         type?: CompileTypeMetadata,
         providers?:
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
@@ -638,7 +638,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
         exportedDirectives?: CompileDirectiveMetadata[],
         declaredPipes?: CompilePipeMetadata[],
         exportedPipes?: CompilePipeMetadata[],
-        precompile?: CompileTypeMetadata[],
+        entryComponents?: CompileTypeMetadata[],
         importedModules?: CompileNgModuleMetadata[],
         exportedModules?: CompileNgModuleMetadata[],
         transitiveModule?: TransitiveCompileNgModuleMetadata
@@ -649,7 +649,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
     this.declaredPipes = _normalizeArray(declaredPipes);
     this.exportedPipes = _normalizeArray(exportedPipes);
     this.providers = _normalizeArray(providers);
-    this.precompile = _normalizeArray(precompile);
+    this.entryComponents = _normalizeArray(entryComponents);
     this.importedModules = _normalizeArray(importedModules);
     this.exportedModules = _normalizeArray(exportedModules);
     this.transitiveModule = transitiveModule;
@@ -670,7 +670,7 @@ export class TransitiveCompileNgModuleMetadata {
   pipesSet = new Set<Type>();
   constructor(
       public modules: CompileNgModuleMetadata[], public providers: CompileProviderMetadata[],
-      public precompile: CompileTypeMetadata[], public directives: CompileDirectiveMetadata[],
+      public entryComponents: CompileTypeMetadata[], public directives: CompileDirectiveMetadata[],
       public pipes: CompilePipeMetadata[]) {
     directives.forEach(dir => this.directivesSet.add(dir.type.runtime));
     pipes.forEach(pipe => this.pipesSet.add(pipe.type.runtime));

@@ -30,7 +30,7 @@ export class TestBed implements Injector {
   private _providers: Array<Type|Provider|any[]|any> = [];
   private _declarations: Array<Type|any[]|any> = [];
   private _imports: Array<Type|any[]|any> = [];
-  private _precompile: Array<Type|any[]|any> = [];
+  private _entryComponents: Array<Type|any[]|any> = [];
 
   reset() {
     this._compiler = null;
@@ -40,7 +40,7 @@ export class TestBed implements Injector {
     this._providers = [];
     this._declarations = [];
     this._imports = [];
-    this._precompile = [];
+    this._entryComponents = [];
     this._instantiated = false;
   }
 
@@ -56,7 +56,8 @@ export class TestBed implements Injector {
   }
 
   configureModule(
-      moduleDef: {providers?: any[], declarations?: any[], imports?: any[], precompile?: any[]}) {
+      moduleDef:
+          {providers?: any[], declarations?: any[], imports?: any[], entryComponents?: any[]}) {
     if (this._instantiated) {
       throw new BaseException('Cannot add configuration after test injector is instantiated');
     }
@@ -69,16 +70,16 @@ export class TestBed implements Injector {
     if (moduleDef.imports) {
       this._imports = ListWrapper.concat(this._imports, moduleDef.imports);
     }
-    if (moduleDef.precompile) {
-      this._precompile = ListWrapper.concat(this._precompile, moduleDef.precompile);
+    if (moduleDef.entryComponents) {
+      this._entryComponents = ListWrapper.concat(this._entryComponents, moduleDef.entryComponents);
     }
   }
 
   createModuleFactory(): Promise<NgModuleFactory<any>> {
     if (this._instantiated) {
       throw new BaseException(
-          'Cannot run precompilation when the test NgModule has already been instantiated. ' +
-          'Make sure you are not using `inject` before `doAsyncPrecompilation`.');
+          'Cannot compile entryComponents when the test NgModule has already been instantiated. ' +
+          'Make sure you are not using `inject` before `doAsyncEntryPointCompilation`.');
     }
 
     if (this._ngModuleFactory) {
@@ -122,13 +123,13 @@ export class TestBed implements Injector {
     const providers = this._providers.concat([{provide: TestBed, useValue: this}]);
     const declarations = this._declarations;
     const imports = [this.ngModule, this._imports];
-    const precompile = this._precompile;
+    const entryComponents = this._entryComponents;
 
     @NgModule({
       providers: providers,
       declarations: declarations,
       imports: imports,
-      precompile: precompile
+      entryComponents: entryComponents
     })
     class DynamicTestModule {
     }
@@ -258,13 +259,13 @@ export function resetTestEnvironment() {
 }
 
 /**
- * Run asynchronous precompilation for the test's NgModule. It is necessary to call this function
- * if your test is using an NgModule which has precompiled components that require an asynchronous
- * call, such as an XHR. Should be called once before the test case.
+ * Compile entryComponents with a `templateUrl` for the test's NgModule.
+ * It is necessary to call this function
+ * as fetching urls is asynchronous.
  *
  * @experimental
  */
-export function doAsyncPrecompilation(): Promise<any> {
+export function doAsyncEntryPointCompilation(): Promise<any> {
   let testBed = getTestBed();
   return testBed.createModuleFactory();
 }
@@ -312,8 +313,8 @@ export function inject(tokens: any[], fn: Function): () => any {
       } catch (e) {
         if (e instanceof ComponentStillLoadingError) {
           throw new Error(
-              `This test module precompiles the component ${stringify(e.compType)} which is using a "templateUrl", but precompilation was never done. ` +
-              `Please call "doAsyncPrecompilation" before "inject".`);
+              `This test module uses the entryComponents ${stringify(e.compType)} which is using a "templateUrl", but they were never compiled. ` +
+              `Please call "doAsyncEntryPointCompilation" before "inject".`);
         } else {
           throw e;
         }
@@ -327,9 +328,12 @@ export function inject(tokens: any[], fn: Function): () => any {
  * @experimental
  */
 export class InjectSetupWrapper {
-  constructor(
-      private _moduleDef:
-          () => {providers?: any[], declarations?: any[], imports?: any[], precompile?: any[]}) {}
+  constructor(private _moduleDef: () => {
+    providers?: any[],
+    declarations?: any[],
+    imports?: any[],
+    entryComponents?: any[]
+  }) {}
 
   private _addModule() {
     var moduleDef = this._moduleDef();
@@ -360,7 +364,7 @@ export function withModule(moduleDef: () => {
   providers?: any[],
   declarations?: any[],
   imports?: any[],
-  precompile?: any[]
+  entryComponents?: any[]
 }) {
   return new InjectSetupWrapper(moduleDef);
 }

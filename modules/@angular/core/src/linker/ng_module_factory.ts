@@ -29,7 +29,7 @@ export abstract class NgModuleRef<T> {
 
   /**
    * The ComponentFactoryResolver to get hold of the ComponentFactories
-   * delcared in the `precompile` property of the module.
+   * delcared in the `entryComponents` property of the module.
    */
   get componentFactoryResolver(): ComponentFactoryResolver { return unimplemented(); }
 

@@ -12,23 +12,24 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
+import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
 import {CompWithProviders, CompWithReferences} from './features';
 import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomeLibModule, SomePipeInRootModule, SomeService} from './module_fixtures';
-import {CompWithAnalyzePrecompileProvider, CompWithPrecompile} from './precompile';
 import {ProjectingComp} from './projection';
 import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
 
 @NgModule({
   declarations: [
-    SomeDirectiveInRootModule, SomePipeInRootModule, AnimateCmp, BasicComp, CompWithPrecompile,
-    CompWithAnalyzePrecompileProvider, ProjectingComp, CompWithChildQuery, CompWithDirectiveChild,
-    CompUsingRootModuleDirectiveAndPipe, CompWithProviders, CompWithReferences
+    SomeDirectiveInRootModule, SomePipeInRootModule, AnimateCmp, BasicComp, CompWithEntryComponents,
+    CompWithAnalyzeEntryComponentsProvider, ProjectingComp, CompWithChildQuery,
+    CompWithDirectiveChild, CompUsingRootModuleDirectiveAndPipe, CompWithProviders,
+    CompWithReferences
   ],
   imports: [BrowserModule, FormsModule, SomeLibModule],
   providers: [SomeService],
-  precompile: [
-    AnimateCmp, BasicComp, CompWithPrecompile, CompWithAnalyzePrecompileProvider, ProjectingComp,
-    CompWithChildQuery, CompUsingRootModuleDirectiveAndPipe
+  entryComponents: [
+    AnimateCmp, BasicComp, CompWithEntryComponents, CompWithAnalyzeEntryComponentsProvider,
+    ProjectingComp, CompWithChildQuery, CompUsingRootModuleDirectiveAndPipe
   ]
 })
 export class MainModule {

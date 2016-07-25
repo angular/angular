@@ -41,12 +41,12 @@ export class NgModuleCompiler {
         new ParseLocation(sourceFile, null, null, null),
         new ParseLocation(sourceFile, null, null, null));
     var deps: ComponentFactoryDependency[] = [];
-    var precompileComponents = ngModuleMeta.transitiveModule.precompile.map((precompileComp) => {
-      var id = new CompileIdentifierMetadata({name: precompileComp.name});
-      deps.push(new ComponentFactoryDependency(precompileComp, id));
+    var entryComponents = ngModuleMeta.transitiveModule.entryComponents.map((entryComponent) => {
+      var id = new CompileIdentifierMetadata({name: entryComponent.name});
+      deps.push(new ComponentFactoryDependency(entryComponent, id));
       return id;
     });
-    var builder = new _InjectorBuilder(ngModuleMeta, precompileComponents, sourceSpan);
+    var builder = new _InjectorBuilder(ngModuleMeta, entryComponents, sourceSpan);
 
     var providerParser = new NgModuleProviderAnalyzer(ngModuleMeta, extraProviders, sourceSpan);
     providerParser.parse().forEach((provider) => builder.addProvider(provider));
@@ -75,8 +75,8 @@ class _InjectorBuilder {
 
   constructor(
       private _ngModuleMeta: CompileNgModuleMetadata,
-      private _precompileComponents: CompileIdentifierMetadata[],
-      private _sourceSpan: ParseSourceSpan) {}
+      private _entryComponents: CompileIdentifierMetadata[], private _sourceSpan: ParseSourceSpan) {
+  }
 
   addProvider(resolvedProvider: ProviderAst) {
     var providerValueExpressions =
@@ -116,8 +116,8 @@ class _InjectorBuilder {
         [o.SUPER_EXPR
              .callFn([
                o.variable(InjectorProps.parent.name),
-               o.literalArr(this._precompileComponents.map(
-                   (precompiledComponent) => o.importExpr(precompiledComponent)))
+               o.literalArr(
+                   this._entryComponents.map((entryComponent) => o.importExpr(entryComponent)))
              ])
              .toStmt()]);
 

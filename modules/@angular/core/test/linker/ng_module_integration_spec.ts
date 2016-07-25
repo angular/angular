@@ -9,7 +9,7 @@
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {CompilerConfig, NgModuleResolver, ViewResolver} from '@angular/compiler';
 import {MockNgModuleResolver, MockViewResolver} from '@angular/compiler/testing';
-import {ANALYZE_FOR_PRECOMPILE, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleMetadata, NgModuleRef, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, ViewMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleMetadata, NgModuleRef, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, ViewMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, configureCompiler} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
@@ -164,14 +164,14 @@ function declareTests({useJit}: {useJit: boolean}) {
                 `Can't export pipe ${stringify(SomePipe)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
       });
 
-      it('should error when precompiling a component that was neither declared nor imported', () => {
-        @NgModule({precompile: [SomeComp]})
+      it('should error when using an entryComponent that was neither declared nor imported', () => {
+        @NgModule({entryComponents: [SomeComp]})
         class SomeModule {
         }
 
         expect(() => createModule(SomeModule))
             .toThrowError(
-                `NgModule ${stringify(SomeModule)} uses ${stringify(SomeComp)} via "precompile" but it was neither declared nor imported!`);
+                `NgModule ${stringify(SomeModule)} uses ${stringify(SomeComp)} via "entryComponents" but it was neither declared nor imported!`);
       });
 
       it('should error if a directive is declared in more than 1 module', () => {
@@ -238,9 +238,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     });
 
-    describe('precompile', function() {
-      it('should precompile ComponentFactories in root modules', () => {
-        @NgModule({declarations: [SomeComp], precompile: [SomeComp]})
+    describe('entryComponents', function() {
+      it('should entryComponents ComponentFactories in root modules', () => {
+        @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
         class SomeModule {
         }
 
@@ -253,11 +253,11 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toBe(SomeComp);
       });
 
-      it('should precompile ComponentFactories via ANALYZE_FOR_PRECOMPILE', () => {
+      it('should entryComponents ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
         @NgModule({
           declarations: [SomeComp],
           providers: [{
-            provide: ANALYZE_FOR_PRECOMPILE,
+            provide: ANALYZE_FOR_ENTRY_COMPONENTS,
             multi: true,
             useValue: [{a: 'b', component: SomeComp}]
           }]
@@ -274,8 +274,8 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toBe(SomeComp);
       });
 
-      it('should precompile ComponentFactories in imported modules', () => {
-        @NgModule({declarations: [SomeComp], precompile: [SomeComp]})
+      it('should entryComponents ComponentFactories in imported modules', () => {
+        @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
         class SomeImportedModule {
         }
 
@@ -292,12 +292,12 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toBe(SomeComp);
       });
 
-      it('should precompile ComponentFactories if the component was imported', () => {
+      it('should entryComponents ComponentFactories if the component was imported', () => {
         @NgModule({declarations: [SomeComp], exports: [SomeComp]})
         class SomeImportedModule {
         }
 
-        @NgModule({imports: [SomeImportedModule], precompile: [SomeComp]})
+        @NgModule({imports: [SomeImportedModule], entryComponents: [SomeComp]})
         class SomeModule {
         }
 
@@ -317,7 +317,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         it('should be supported in root modules', () => {
           @NgModule({
             declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
-            precompile: [CompUsingModuleDirectiveAndPipe]
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
           })
           class SomeModule {
           }
@@ -331,7 +331,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         it('should be supported in imported modules', () => {
           @NgModule({
             declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
-            precompile: [CompUsingModuleDirectiveAndPipe]
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
           })
           class SomeImportedModule {
           }
@@ -360,7 +360,7 @@ function declareTests({useJit}: {useJit: boolean}) {
               ParentCompUsingModuleDirectiveAndPipe, CompUsingModuleDirectiveAndPipe, SomeDirective,
               SomePipe
             ],
-            precompile: [ParentCompUsingModuleDirectiveAndPipe]
+            entryComponents: [ParentCompUsingModuleDirectiveAndPipe]
           })
           class SomeModule {
           }
@@ -383,7 +383,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
           @NgModule({
             declarations: [ParentCompUsingModuleDirectiveAndPipe],
-            precompile: [ParentCompUsingModuleDirectiveAndPipe]
+            entryComponents: [ParentCompUsingModuleDirectiveAndPipe]
           })
           class SomeModule {
           }
@@ -415,7 +415,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              @NgModule({
                declarations: [ParentCompUsingModuleDirectiveAndPipe],
                imports: [SomeImportedModule],
-               precompile: [ParentCompUsingModuleDirectiveAndPipe]
+               entryComponents: [ParentCompUsingModuleDirectiveAndPipe]
              })
              class SomeModule {
              }
@@ -437,7 +437,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           @NgModule({
             declarations: [CompUsingModuleDirectiveAndPipe],
             imports: [SomeImportedModule],
-            precompile: [CompUsingModuleDirectiveAndPipe]
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
           })
           class SomeModule {
           }
@@ -461,7 +461,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           @NgModule({
             declarations: [CompUsingModuleDirectiveAndPipe],
             imports: [SomeImportedModule],
-            precompile: [CompUsingModuleDirectiveAndPipe]
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
           })
           class SomeModule {
           }
@@ -484,7 +484,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           @NgModule({
             declarations: [CompUsingModuleDirectiveAndPipe],
             imports: [SomeImportedModule],
-            precompile: [CompUsingModuleDirectiveAndPipe]
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
           })
           class SomeModule {
           }
@@ -505,7 +505,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           @NgModule({
             declarations: [CompUsingModuleDirectiveAndPipe],
             imports: [SomeImportedModule],
-            precompile: [CompUsingModuleDirectiveAndPipe]
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
           })
           class SomeModule {
           }
@@ -524,7 +524,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           @NgModule({
             declarations: [CompUsingModuleDirectiveAndPipe, SomePipe],
             imports: [SomeImportedModule],
-            precompile: [CompUsingModuleDirectiveAndPipe]
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
           })
           class SomeModule {
           }

@@ -123,7 +123,7 @@ export class CompileMetadataResolver {
       var changeDetectionStrategy: ChangeDetectionStrategy = null;
       var viewProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
       var moduleUrl = staticTypeModuleUrl(directiveType);
-      var precompileTypes: cpl.CompileTypeMetadata[] = [];
+      var entryComponentTypes: cpl.CompileTypeMetadata[] = [];
       if (dirMeta instanceof ComponentMetadata) {
         var cmpMeta = <ComponentMetadata>dirMeta;
         var viewMeta = this._viewResolver.resolve(directiveType);
@@ -150,9 +150,10 @@ export class CompileMetadataResolver {
               verifyNonBlankProviders(directiveType, dirMeta.viewProviders, 'viewProviders'), []);
         }
         moduleUrl = componentModuleUrl(this._reflector, directiveType, cmpMeta);
-        if (cmpMeta.precompile) {
-          precompileTypes = flattenArray(cmpMeta.precompile)
-                                .map((cmp) => this.getTypeMetadata(cmp, staticTypeModuleUrl(cmp)));
+        if (cmpMeta.entryComponents) {
+          entryComponentTypes =
+              flattenArray(cmpMeta.entryComponents)
+                  .map((cmp) => this.getTypeMetadata(cmp, staticTypeModuleUrl(cmp)));
         }
       }
 
@@ -160,7 +161,7 @@ export class CompileMetadataResolver {
       if (isPresent(dirMeta.providers)) {
         providers = this.getProvidersMetadata(
             verifyNonBlankProviders(directiveType, dirMeta.providers, 'providers'),
-            precompileTypes);
+            entryComponentTypes);
       }
       var queries: cpl.CompileQueryMetadata[] = [];
       var viewQueries: cpl.CompileQueryMetadata[] = [];
@@ -184,7 +185,7 @@ export class CompileMetadataResolver {
         viewProviders: viewProviders,
         queries: queries,
         viewQueries: viewQueries,
-        precompile: precompileTypes
+        entryComponents: entryComponentTypes
       });
       this._directiveCache.set(directiveType, meta);
     }
@@ -259,7 +260,8 @@ export class CompileMetadataResolver {
           if (declaredDirMeta = this.getDirectiveMetadata(declaredType, false)) {
             this._addDirectiveToModule(
                 declaredDirMeta, moduleType, transitiveModule, declaredDirectives, true);
-            // Collect @Component.directives/pipes/precompile into our declared directives/pipes.
+            // Collect @Component.directives/pipes/entryComponents into our declared
+            // directives/pipes.
             this._getTransitiveViewDirectivesAndPipes(
                 declaredDirMeta, moduleType, transitiveModule, declaredDirectives, declaredPipes);
           } else if (declaredPipeMeta = this.getPipeMetadata(declaredType, false)) {
@@ -273,22 +275,23 @@ export class CompileMetadataResolver {
       }
 
       const providers: any[] = [];
-      const precompile: cpl.CompileTypeMetadata[] = [];
+      const entryComponents: cpl.CompileTypeMetadata[] = [];
       if (meta.providers) {
-        providers.push(...this.getProvidersMetadata(meta.providers, precompile));
+        providers.push(...this.getProvidersMetadata(meta.providers, entryComponents));
       }
-      if (meta.precompile) {
-        precompile.push(...flattenArray(meta.precompile)
-                            .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
+      if (meta.entryComponents) {
+        entryComponents.push(
+            ...flattenArray(meta.entryComponents)
+                .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
       }
 
-      transitiveModule.precompile.push(...precompile);
+      transitiveModule.entryComponents.push(...entryComponents);
       transitiveModule.providers.push(...providers);
 
       compileMeta = new cpl.CompileNgModuleMetadata({
         type: this.getTypeMetadata(moduleType, staticTypeModuleUrl(moduleType)),
         providers: providers,
-        precompile: precompile,
+        entryComponents: entryComponents,
         declaredDirectives: declaredDirectives,
         exportedDirectives: exportedDirectives,
         declaredPipes: declaredPipes,
@@ -306,7 +309,7 @@ export class CompileMetadataResolver {
 
   addComponentToModule(moduleType: Type, compType: Type) {
     const moduleMeta = this.getNgModuleMetadata(moduleType);
-    // Collect @Component.directives/pipes/precompile into our declared directives/pipes.
+    // Collect @Component.directives/pipes/entryComponents into our declared directives/pipes.
     const compMeta = this.getDirectiveMetadata(compType, false);
     this._addDirectiveToModule(
         compMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule,
@@ -315,8 +318,8 @@ export class CompileMetadataResolver {
         compMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule,
         moduleMeta.declaredDirectives, moduleMeta.declaredPipes);
 
-    moduleMeta.transitiveModule.precompile.push(compMeta.type);
-    moduleMeta.precompile.push(compMeta.type);
+    moduleMeta.transitiveModule.entryComponents.push(compMeta.type);
+    moduleMeta.entryComponents.push(compMeta.type);
 
     this._verifyModule(moduleMeta);
   }
@@ -335,17 +338,17 @@ export class CompileMetadataResolver {
       }
     });
     moduleMeta.declaredDirectives.forEach((dirMeta) => {
-      dirMeta.precompile.forEach((precompileComp) => {
-        if (!moduleMeta.transitiveModule.directivesSet.has(precompileComp.runtime)) {
+      dirMeta.entryComponents.forEach((entryComponent) => {
+        if (!moduleMeta.transitiveModule.directivesSet.has(entryComponent.runtime)) {
           throw new BaseException(
-              `Component ${stringify(dirMeta.type.runtime)} in NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(precompileComp.runtime)} via "precompile" but it was neither declared nor imported into the module!`);
+              `Component ${stringify(dirMeta.type.runtime)} in NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponent.runtime)} via "entryComponents" but it was neither declared nor imported into the module!`);
         }
       });
     });
-    moduleMeta.precompile.forEach((precompileType) => {
-      if (!moduleMeta.transitiveModule.directivesSet.has(precompileType.runtime)) {
+    moduleMeta.entryComponents.forEach((entryComponentType) => {
+      if (!moduleMeta.transitiveModule.directivesSet.has(entryComponentType.runtime)) {
         throw new BaseException(
-            `NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(precompileType.runtime)} via "precompile" but it was neither declared nor imported!`);
+            `NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponentType.runtime)} via "entryComponents" but it was neither declared nor imported!`);
       }
     });
   }
@@ -400,17 +403,18 @@ export class CompileMetadataResolver {
   private _getTransitiveNgModuleMetadata(
       importedModules: cpl.CompileNgModuleMetadata[],
       exportedModules: cpl.CompileNgModuleMetadata[]): cpl.TransitiveCompileNgModuleMetadata {
-    // collect `providers` / `precompile` from all imported and all exported modules
+    // collect `providers` / `entryComponents` from all imported and all exported modules
     const transitiveModules = getTransitiveModules(importedModules.concat(exportedModules), true);
     const providers = flattenArray(transitiveModules.map((ngModule) => ngModule.providers));
-    const precompile = flattenArray(transitiveModules.map((ngModule) => ngModule.precompile));
+    const entryComponents =
+        flattenArray(transitiveModules.map((ngModule) => ngModule.entryComponents));
 
     const transitiveExportedModules = getTransitiveModules(importedModules, false);
     const directives =
         flattenArray(transitiveExportedModules.map((ngModule) => ngModule.exportedDirectives));
     const pipes = flattenArray(transitiveExportedModules.map((ngModule) => ngModule.exportedPipes));
     return new cpl.TransitiveCompileNgModuleMetadata(
-        transitiveModules, providers, precompile, directives, pipes);
+        transitiveModules, providers, entryComponents, directives, pipes);
   }
 
   private _addDirectiveToModule(
@@ -571,7 +575,7 @@ export class CompileMetadataResolver {
     return compileToken;
   }
 
-  getProvidersMetadata(providers: any[], targetPrecompileComponents: cpl.CompileTypeMetadata[]):
+  getProvidersMetadata(providers: any[], targetEntryComponents: cpl.CompileTypeMetadata[]):
       Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> {
     const compileProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
     providers.forEach((provider) => {
@@ -581,11 +585,11 @@ export class CompileMetadataResolver {
       }
       let compileProvider: cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[];
       if (isArray(provider)) {
-        compileProvider = this.getProvidersMetadata(provider, targetPrecompileComponents);
+        compileProvider = this.getProvidersMetadata(provider, targetEntryComponents);
       } else if (provider instanceof Provider) {
         let tokenMeta = this.getTokenMetadata(provider.token);
-        if (tokenMeta.equalsTo(identifierToken(Identifiers.ANALYZE_FOR_PRECOMPILE))) {
-          targetPrecompileComponents.push(...this.getPrecompileComponentsFromProvider(provider));
+        if (tokenMeta.equalsTo(identifierToken(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS))) {
+          targetEntryComponents.push(...this._getEntryComponentsFromProvider(provider));
         } else {
           compileProvider = this.getProviderMetadata(provider);
         }
@@ -602,14 +606,15 @@ export class CompileMetadataResolver {
     return compileProviders;
   }
 
-  getPrecompileComponentsFromProvider(provider: Provider): cpl.CompileTypeMetadata[] {
+  private _getEntryComponentsFromProvider(provider: Provider): cpl.CompileTypeMetadata[] {
     let components: cpl.CompileTypeMetadata[] = [];
     let collectedIdentifiers: cpl.CompileIdentifierMetadata[] = [];
     if (provider.useFactory || provider.useExisting || provider.useClass) {
-      throw new BaseException(`The ANALYZE_FOR_PRECOMPILE token only supports useValue!`);
+      throw new BaseException(`The ANALYZE_FOR_ENTRY_COMPONENTS token only supports useValue!`);
     }
     if (!provider.multi) {
-      throw new BaseException(`The ANALYZE_FOR_PRECOMPILE token only supports 'multi = true'!`);
+      throw new BaseException(
+          `The ANALYZE_FOR_ENTRY_COMPONENTS token only supports 'multi = true'!`);
     }
     convertToCompileValue(provider.useValue, collectedIdentifiers);
     collectedIdentifiers.forEach((identifier) => {
