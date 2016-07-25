@@ -218,12 +218,13 @@ $_md-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1)
 }
 
 md-checkbox {
-  &, label {
-    cursor: pointer;
-  }
+  cursor: pointer;
 }
 
 .md-checkbox-layout {
+  // `cursor: inherit` ensures that the wrapper element gets the same cursor as the md-checkbox
+  // (e.g. pointer by default, regular when disabled), instead of the browser default.
+  cursor: inherit;
   align-items: baseline;
   display: inline-flex;
 }
