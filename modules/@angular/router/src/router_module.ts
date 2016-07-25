@@ -9,7 +9,7 @@
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
 import {AppModule, AppModuleFactoryLoader, ApplicationRef, ComponentResolver, Injector, OpaqueToken, SystemJsAppModuleLoader} from '@angular/core';
 
-import {ROUTER_CONFIGURATION, setupRouter} from './common_router_providers';
+import {ROUTER_CONFIGURATION, rootRoute, setupRouter} from './common_router_providers';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
@@ -18,6 +18,7 @@ import {ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
+
 
 
 /**
@@ -35,8 +36,7 @@ export const ROUTER_PROVIDERS: any[] = [
       AppModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
     ]
   },
-  RouterOutletMap,
-  {provide: ActivatedRoute, useFactory: (r: Router) => r.routerState.root, deps: [Router]},
+  RouterOutletMap, {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
   {provide: AppModuleFactoryLoader, useClass: SystemJsAppModuleLoader},
   {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}}
 ];

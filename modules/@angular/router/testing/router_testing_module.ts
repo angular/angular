@@ -37,6 +37,12 @@ export class SpyAppModuleFactoryLoader implements AppModuleFactoryLoader {
   }
 }
 
+function setupTestingRouter(
+    resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap,
+    location: Location, loader: AppModuleFactoryLoader, injector: Injector, routes: Routes) {
+  return new Router(null, resolver, urlSerializer, outletMap, location, injector, loader, routes);
+}
+
 /**
  * A module setting up the router that should be used for testing.
  * It provides spy implementations of Location, LocationStrategy, and AppModuleFactoryLoader.
@@ -64,12 +70,7 @@ export class SpyAppModuleFactoryLoader implements AppModuleFactoryLoader {
     {provide: AppModuleFactoryLoader, useClass: SpyAppModuleFactoryLoader},
     {
       provide: Router,
-      useFactory: (resolver: ComponentResolver, urlSerializer: UrlSerializer,
-                   outletMap: RouterOutletMap, location: Location, loader: AppModuleFactoryLoader,
-                   injector: Injector, routes: Routes) => {
-        return new Router(
-            null, resolver, urlSerializer, outletMap, location, injector, loader, routes);
-      },
+      useFactory: setupTestingRouter,
       deps: [
         ComponentResolver, UrlSerializer, RouterOutletMap, Location, AppModuleFactoryLoader,
         Injector, ROUTES
