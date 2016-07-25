@@ -398,9 +398,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return window.requestAnimationFrame(callback);
   }
   cancelAnimationFrame(id: number) { window.cancelAnimationFrame(id); }
-  supportsWebAnimation(): boolean {
-    return isFunction((document as any /** TODO #9100 */).body['animate']);
-  }
+  supportsWebAnimation(): boolean { return isFunction((<any>Element).prototype['animate']); }
   performanceNow(): number {
     // performance.now() is not available in all browsers, see
     // http://caniuse.com/#search=performance.now
