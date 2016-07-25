@@ -63,6 +63,10 @@ export function main() {
       t.expect(sanitizeHtml('&#128640;')).toEqual('&#128640;');
       t.expect(logMsgs).toEqual([]);
     });
+    t.it('does not warn when just re-encoding text', () => {
+      t.expect(sanitizeHtml('<p>Hellö Wörld</p>')).toEqual('<p>Hell&#246; W&#246;rld</p>');
+      t.expect(logMsgs).toEqual([]);
+    });
     t.it('escapes entities', () => {
       t.expect(sanitizeHtml('<p>Hello &lt; World</p>')).toEqual('<p>Hello &lt; World</p>');
       t.expect(sanitizeHtml('<p>Hello < World</p>')).toEqual('<p>Hello &lt; World</p>');
