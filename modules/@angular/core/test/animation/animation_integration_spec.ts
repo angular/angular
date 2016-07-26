@@ -874,6 +874,39 @@ function declareTests({useJit}: {useJit: boolean}) {
              })));
     });
 
+    describe('ng directives', () => {
+      describe('[ngClass]', () => {
+        it('should persist ngClass class values when a remove element animation is active',
+           inject(
+               [TestComponentBuilder, AnimationDriver],
+               fakeAsync(
+                   (tcb: TestComponentBuilder, driver: InnerContentTrackingAnimationDriver) => {
+                     makeAnimationCmp(
+                         tcb, `<div [ngClass]="exp2" *ngIf="exp" @trigger></div>`,
+                         [
+                           trigger('trigger', [transition('* => void', [animate(1000)])]),
+                         ],
+                         (fixture: any /** TODO #9100 */) => {
+                           var cmp = fixture.debugElement.componentInstance;
+                           cmp.exp = true;
+                           cmp.exp2 = 'blue';
+                           fixture.detectChanges();
+                           flushMicrotasks();
+
+                           expect(driver.log.length).toEqual(0);
+
+                           cmp.exp = false;
+                           fixture.detectChanges();
+                           flushMicrotasks();
+
+                           var animation = driver.log.pop();
+                           var element = animation['element'];
+                           (<any>expect(element)).toHaveCssClass('blue');
+                         });
+                   })));
+      });
+    });
+
     describe('animation states', () => {
       it('should throw an error when an animation is referenced that isn\'t defined within the component annotation',
          inject(

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CollectionChangeRecord, Directive, DoCheck, ElementRef, Input, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, OnDestroy, Renderer} from '@angular/core';
+import {CollectionChangeRecord, Directive, DoCheck, ElementRef, Input, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
 
 import {StringMapWrapper, isListLikeIterable} from '../facade/collection';
 import {isArray, isPresent, isString} from '../facade/lang';
@@ -75,7 +75,7 @@ import {isArray, isPresent, isString} from '../facade/lang';
  * @stable
  */
 @Directive({selector: '[ngClass]'})
-export class NgClass implements DoCheck, OnDestroy {
+export class NgClass implements DoCheck {
   private _iterableDiffer: IterableDiffer;
   private _keyValueDiffer: KeyValueDiffer;
   private _initialClasses: string[] = [];
@@ -128,8 +128,6 @@ export class NgClass implements DoCheck, OnDestroy {
       }
     }
   }
-
-  ngOnDestroy(): void { this._cleanupClasses(this._rawClass); }
 
   private _cleanupClasses(rawClassVal: string[]|Set<string>|{[key: string]: any}): void {
     this._applyClasses(rawClassVal, true);
