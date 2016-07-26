@@ -31,6 +31,9 @@ $md-slider-disabled-color: rgba(black, 0.26);
 @mixin slider-thumb-position($width: $md-slider-thumb-size, $height: $md-slider-thumb-size) {
   position: absolute;
   top: center-vertically($md-slider-thickness, $height);
+  // This makes it so that the center of the thumb aligns with where the click was.
+  // This is not affected by the movement of the thumb.
+  left: (-$width / 2);
   width: $width;
   height: $height;
   border-radius: max($width, $height);

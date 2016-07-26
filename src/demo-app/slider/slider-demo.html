@@ -6,7 +6,7 @@
 
 <h1>Slider with Min and Max</h1>
 <section class="demo-section">
-  <md-slider min="10" max="50" #slider2></md-slider>
+  <md-slider min="5" max="7" #slider2></md-slider>
   {{slider2.value}}
 </section>
 
@@ -19,4 +19,10 @@
 <h1>Slider with set value</h1>
 <section class="demo-section">
   <md-slider value="43" #slider4></md-slider>
+</section>
+
+<h1>Slider with step defined</h1>
+<section class="demo-section">
+  <md-slider min="1" max="100" step="20" #slider5></md-slider>
+  {{slider5.value}}
 </section>
