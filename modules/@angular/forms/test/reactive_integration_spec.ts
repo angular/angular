@@ -43,21 +43,6 @@ export function main() {
              });
            }));
 
-    it('should throw if a form isn\'t passed into formGroup',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const t = `<div [formGroup]="form">
-                <input type="text" formControlName="login">
-               </div>`;
-
-             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-               expect(() => fixture.detectChanges())
-                   .toThrowError(new RegExp(`formGroup expects a FormGroup instance`));
-               async.done();
-             });
-           }));
-
     it('should update the form group values on DOM change',
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
@@ -623,23 +608,6 @@ export function main() {
                });
              }));
 
-      it('should throw if radio button name does not match formControlName attr',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               const t = `<form [formGroup]="form">
-                  <input type="radio" formControlName="food" name="drink" value="chicken">
-                </form>`;
-
-               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-                 fixture.debugElement.componentInstance.form =
-                     new FormGroup({'food': new FormControl('fish')});
-                 expect(() => fixture.detectChanges())
-                     .toThrowError(new RegExp('If you define both a name and a formControlName'));
-                 async.done();
-               });
-             }));
-
       it('should support removing controls from <type=radio>',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
@@ -1162,6 +1130,139 @@ export function main() {
          // selection start has not changed because we did not reset the value
          expect(input.selectionStart).toEqual(1);
        })));
+
+    describe('errors', () => {
+
+      it('should throw if a form isn\'t passed into formGroup',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<div [formGroup]="form">
+                <input type="text" formControlName="login">
+               </div>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(`formGroup expects a FormGroup instance`));
+                 async.done();
+               });
+             }));
+
+      it('should throw if formControlName is used without a control container',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<input type="text" formControlName="login">`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(
+                         `formControlName must be used with a parent formGroup directive`));
+                 async.done();
+               });
+             }));
+
+      it('should throw if formGroupName is used without a control container',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<div formGroupName="person">
+                <input type="text" formControlName="login">
+               </div>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(
+                         `formGroupName must be used with a parent formGroup directive`));
+                 async.done();
+               });
+             }));
+
+      it('should throw if formArrayName is used without a control container',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<div formArrayName="cities">
+                <input type="text" formControlName="login">
+               </div>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(
+                         `formArrayName must be used with a parent formGroup directive`));
+                 async.done();
+               });
+             }));
+
+      it('should throw if formControlName is used with the wrong control container',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form>
+                <input type="text" formControlName="login">
+               </form>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(
+                         `formControlName must be used with a parent formGroup directive.`));
+                 async.done();
+               });
+             }));
+
+      it('should throw if formGroupName is used with the wrong control container',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form>
+            <div formGroupName="person">
+              <input type="text" formControlName="login">
+            </div>
+          </form>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(
+                         `formGroupName must be used with a parent formGroup directive.`));
+                 async.done();
+               });
+             }));
+
+      it('should throw if formArrayName is used with the wrong control container',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form>
+            <div formArrayName="person">
+              <input type="text" formControlName="login">
+            </div>
+          </form>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(
+                         `formArrayName must be used with a parent formGroup directive.`));
+                 async.done();
+               });
+             }));
+
+      it('should throw if radio button name does not match formControlName attr',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form [formGroup]="form">
+                  <input type="radio" formControlName="food" name="drink" value="chicken">
+                </form>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 fixture.debugElement.componentInstance.form =
+                     new FormGroup({'food': new FormControl('fish')});
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp('If you define both a name and a formControlName'));
+                 async.done();
+               });
+             }));
+    });
   });
 }
 

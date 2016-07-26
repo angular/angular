@@ -9,14 +9,18 @@
 import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf, forwardRef} from '@angular/core';
 
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {BaseException} from '../../facade/exceptions';
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
-
 import {ControlContainer} from '../control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
 import {AsyncValidatorFn, ValidatorFn} from '../validators';
+
+import {FormArrayName} from './form_array_name';
+import {FormGroupDirective} from './form_group_directive';
+import {FormGroupName} from './form_group_name';
 
 
 export const controlNameBinding: any =
@@ -105,7 +109,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   @Input('ngModel') model: any;
   @Output('ngModelChange') update = new EventEmitter();
 
-  constructor(@Host() @SkipSelf() private _parent: ControlContainer,
+  constructor(@Optional() @Host() @SkipSelf() private _parent: ControlContainer,
               @Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
                   /* Array<Validator|Function> */ any[],
               @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
@@ -118,6 +122,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
               ngOnChanges(changes: SimpleChanges) {
                 if (!this._added) {
+                  this._checkParentType();
                   this.formDirective.addControl(this);
                   this._added = true;
                 }
@@ -145,4 +150,29 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
               }
 
               get control(): FormControl { return this.formDirective.getControl(this); }
+
+              private _checkParentType(): void {
+                if (!(this._parent instanceof FormGroupName) &&
+                    !(this._parent instanceof FormGroupDirective) &&
+                    !(this._parent instanceof FormArrayName)) {
+                  this._throwParentException();
+                }
+              }
+
+              private _throwParentException(): void {
+                throw new BaseException(
+                    `formControlName must be used with a parent formGroup directive.
+                You'll want to add a formGroup directive and pass it an existing FormGroup instance
+                (you can create one in your class).
+
+                Example:
+                <div [formGroup]="myGroup">
+                  <input formControlName="firstName">
+                </div>
+
+                In your class:
+                this.myGroup = new FormGroup({
+                   firstName: new FormControl()
+                });`);
+              }
 }
