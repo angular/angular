@@ -236,9 +236,9 @@ export function main() {
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({headers: headers}))), new MockBrowserXHR());
         connection.response.subscribe();
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/xml');
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Breaking-Bad', '<3');
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('X-Multi', 'a,b');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/xml');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('breaking-bad', '<3');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('x-multi', 'a,b');
       });
 
       it('should skip content type detection if custom content type header is set', () => {
@@ -249,8 +249,8 @@ export function main() {
             new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
             new MockBrowserXHR());
         connection.response.subscribe();
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/plain');
-        expect(setRequestHeaderSpy).not.toHaveBeenCalledWith('Content-Type', 'application/json');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/plain');
+        expect(setRequestHeaderSpy).not.toHaveBeenCalledWith('content-type', 'application/json');
       });
 
       it('should use object body and detect content type header to the request', () => {
@@ -260,7 +260,7 @@ export function main() {
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         connection.response.subscribe();
         expect(sendSpy).toHaveBeenCalledWith(Json.stringify(body));
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'application/json');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'application/json');
       });
 
       it('should use number body and detect content type header to the request', () => {
@@ -270,7 +270,7 @@ export function main() {
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         connection.response.subscribe();
         expect(sendSpy).toHaveBeenCalledWith('23');
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/plain');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/plain');
       });
 
       it('should use string body and detect content type header to the request', () => {
@@ -280,7 +280,7 @@ export function main() {
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         connection.response.subscribe();
         expect(sendSpy).toHaveBeenCalledWith(body);
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/plain');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/plain');
       });
 
       it('should use URLSearchParams body and detect content type header to the request', () => {
@@ -294,7 +294,7 @@ export function main() {
         expect(sendSpy).toHaveBeenCalledWith('test1=val1&test2=val2');
         expect(setRequestHeaderSpy)
             .toHaveBeenCalledWith(
-                'Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+                'content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
       });
 
       if ((global as any /** TODO #9100 */)['Blob']) {
@@ -335,7 +335,7 @@ export function main() {
               new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
           connection.response.subscribe();
           expect(sendSpy).toHaveBeenCalledWith(body);
-          expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
+          expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/css');
         });
 
         it('should use blob body without type to the request', () => {
@@ -358,7 +358,7 @@ export function main() {
                  new MockBrowserXHR());
              connection.response.subscribe();
              expect(sendSpy).toHaveBeenCalledWith(body);
-             expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
+             expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/css');
            });
 
         it('should use array buffer body to the request', () => {
@@ -389,7 +389,7 @@ export function main() {
                  new MockBrowserXHR());
              connection.response.subscribe();
              expect(sendSpy).toHaveBeenCalledWith(body);
-             expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
+             expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/css');
            });
       }
 
