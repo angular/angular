@@ -20,6 +20,10 @@ export function main() {
       var firstHeaders = new Headers();  // Currently empty
       firstHeaders.append('Content-Type', 'image/jpeg');
       expect(firstHeaders.get('Content-Type')).toBe('image/jpeg');
+      // "HTTP character sets are identified by case-insensitive tokens"
+      // Spec at https://tools.ietf.org/html/rfc2616
+      expect(firstHeaders.get('content-type')).toBe('image/jpeg');
+      expect(firstHeaders.get('content-Type')).toBe('image/jpeg');
       var httpHeaders = StringMapWrapper.create();
       StringMapWrapper.set(httpHeaders, 'Content-Type', 'image/jpeg');
       StringMapWrapper.set(httpHeaders, 'Accept-Charset', 'utf-8');
@@ -72,7 +76,7 @@ export function main() {
       beforeEach(() => {
         headers = new Headers();
         inputArr = ['application/jeisen', 'application/jason', 'application/patrickjs'];
-        obj = {'Accept': inputArr};
+        obj = {'accept': inputArr};
         headers.set('Accept', inputArr);
       });
 
