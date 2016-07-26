@@ -47,8 +47,12 @@ export function main() {
       expect(registry.hasProperty('video', 'click', [])).toBeFalsy();
     });
 
-    it('should return false for custom-like elements by default',
-       () => { expect(registry.hasProperty('custom-like', 'unknown', [])).toBe(false); });
+    it('should treat custom elements as an unknown element by default', () => {
+      expect(registry.hasProperty('custom-like', 'unknown', [])).toBe(false);
+      expect(registry.hasProperty('custom-like', 'className', [])).toBeTruthy();
+      expect(registry.hasProperty('custom-like', 'style', [])).toBeTruthy();
+      expect(registry.hasProperty('custom-like', 'id', [])).toBeTruthy();
+    });
 
     it('should return true for custom-like elements if the CUSTOM_ELEMENTS_SCHEMA was used', () => {
       expect(registry.hasProperty('custom-like', 'unknown', [CUSTOM_ELEMENTS_SCHEMA])).toBeTruthy();
