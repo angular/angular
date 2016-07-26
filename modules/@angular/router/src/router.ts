@@ -18,7 +18,6 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
-import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
 
 import {applyRedirects} from './apply_redirects';
@@ -33,7 +32,7 @@ import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
 import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlSerializer, UrlTree, createEmptyUrlTree} from './url_tree';
-import {forEach, merge, shallowEqual, waitForMap} from './utils/collection';
+import {andObservables, forEach, merge, shallowEqual, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 declare var Zone: any;
@@ -628,16 +627,6 @@ class PreActivation {
   }
 }
 
-function wrapIntoObservable<T>(value: T | Observable<T>): Observable<T> {
-  if (value instanceof Observable) {
-    return value;
-  } else if (value instanceof Promise) {
-    return fromPromise(value);
-  } else {
-    return of (value);
-  }
-}
-
 class ActivateRoutes {
   constructor(private futureState: RouterState, private currState: RouterState) {}
 
@@ -753,10 +742,6 @@ function closestLoadedConfig(
     return config && config._loadedConfig && s !== snapshot;
   });
   return b.length > 0 ? (<any>b[b.length - 1])._routeConfig._loadedConfig : null;
-}
-
-function andObservables(observables: Observable<Observable<any>>): Observable<boolean> {
-  return observables.mergeAll().every(result => result === true);
 }
 
 function pushQueryParamsAndFragment(state: RouterState): void {

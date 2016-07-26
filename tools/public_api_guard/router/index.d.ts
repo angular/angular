@@ -35,6 +35,11 @@ export interface CanDeactivate<T> {
 }
 
 /** @stable */
+export interface CanLoad {
+    canLoad(route: Route): Observable<boolean> | Promise<boolean> | boolean;
+}
+
+/** @stable */
 export declare type Data = {
     [name: string]: any;
 };

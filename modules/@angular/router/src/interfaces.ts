@@ -7,7 +7,10 @@
  */
 
 import {Observable} from 'rxjs/Observable';
+
+import {Route} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
+
 
 /**
  * An interface a class can implement to be a guard deciding if a route can be activated.
@@ -68,7 +71,7 @@ export interface CanActivate {
  *
  *   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean>
  * {
- *     return this.permissions.canActivate(this.currentUser, this.route.params.id);
+ *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
  *
@@ -128,7 +131,7 @@ export interface CanActivateChild {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
  *   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean> {
- *     return this.permissions.canDeactivate(this.currentUser, this.route.params.id);
+ *     return this.permissions.canDeactivate(this.currentUser, route.params.id);
  *   }
  * }
  *
@@ -200,3 +203,49 @@ export interface Resolve<T> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
       Observable<any>|Promise<any>|any;
 }
+
+
+/**
+ * An interface a class can implement to be a guard deciding if a children can be loaded.
+ *
+ * ### Example
+ *
+ * ```
+ * @Injectable()
+ * class CanLoadTeamSection implements CanActivate {
+ *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *
+ *   canLoad(route: Route):Observable<boolean> {
+ *     return this.permissions.canLoadChildren(this.currentUser, route);
+ *   }
+ * }
+ *
+ * bootstrap(AppComponent, [
+ *   CanLoadTeamSection,
+ *
+ *   provideRouter([{
+ *     path: 'team/:id',
+ *     component: Team,
+ *     loadChildren: 'team.js',
+ *     canLoad: [CanLoadTeamSection]
+ *   }])
+ * ]);
+ * ```
+ *
+ * You can also provide a function with the same signature instead of the class:
+ *
+ * ```
+ * bootstrap(AppComponent, [
+ *   {provide: 'canLoadTeamSection', useValue: (route: Route) => true},
+ *   provideRouter([{
+ *     path: 'team/:id',
+ *     component: Team,
+ *     loadChildren: 'team.js',
+ *     canLoad: ['canLoadTeamSection']
+ *   }])
+ * ]);
+ * ```
+ *
+ * @stable
+ */
+export interface CanLoad { canLoad(route: Route): Observable<boolean>|Promise<boolean>|boolean; }

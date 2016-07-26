@@ -1116,6 +1116,36 @@ describe('Integration', () => {
                  expect(location.path()).toEqual('/team/33');
                })));
       });
+
+
+      describe('should work when returns an observable', () => {
+        beforeEach(() => {
+          addProviders([{
+            provide: 'CanDeactivate',
+            useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+              return of (false);
+            }
+          }]);
+        });
+
+        it('works',
+           fakeAsync(inject(
+               [Router, TestComponentBuilder, Location],
+               (router: Router, tcb: TestComponentBuilder, location: Location) => {
+                 const fixture = createRoot(tcb, router, RootCmp);
+
+                 router.resetConfig(
+                     [{path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivate']}]);
+
+                 router.navigateByUrl('/team/22');
+                 advance(fixture);
+                 expect(location.path()).toEqual('/team/22');
+
+                 router.navigateByUrl('/team/33');
+                 advance(fixture);
+                 expect(location.path()).toEqual('/team/22');
+               })));
+      });
     });
 
     describe('CanActivateChild', () => {
@@ -1151,33 +1181,71 @@ describe('Integration', () => {
       });
     });
 
-    describe('should work when returns an observable', () => {
-      beforeEach(() => {
-        addProviders([{
-          provide: 'CanDeactivate',
-          useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-            return of (false);
-          }
-        }]);
+    describe('CanLoad', () => {
+      describe('should not load children when CanLoad returns false', () => {
+        beforeEach(() => {
+          addProviders([
+            {provide: 'alwaysFalse', useValue: (a: any) => false},
+            {provide: 'alwaysTrue', useValue: (a: any) => true}
+          ]);
+        });
+
+        it('works',
+           fakeAsync(inject(
+               [Router, TestComponentBuilder, Location, NgModuleFactoryLoader],
+               (router: Router, tcb: TestComponentBuilder, location: Location,
+                loader: SpyNgModuleFactoryLoader) => {
+
+                 @Component({selector: 'lazy', template: 'lazy-loaded'})
+                 class LazyLoadedComponent {
+                 }
+
+                 @NgModule({
+                   declarations: [LazyLoadedComponent],
+                   providers: [provideRoutes([{path: 'loaded', component: LazyLoadedComponent}])],
+                   imports: [RouterModuleWithoutProviders],
+                   entryComponents: [LazyLoadedComponent]
+                 })
+                 class LoadedModule {
+                 }
+
+                 loader.stubbedModules = {lazyFalse: LoadedModule, lazyTrue: LoadedModule};
+                 const fixture = createRoot(tcb, router, RootCmp);
+
+                 router.resetConfig([
+                   {path: 'lazyFalse', canLoad: ['alwaysFalse'], loadChildren: 'lazyFalse'},
+                   {path: 'lazyTrue', canLoad: ['alwaysTrue'], loadChildren: 'lazyTrue'}
+                 ]);
+
+                 const recordedEvents: any[] = [];
+                 router.events.forEach(e => recordedEvents.push(e));
+
+
+                 // failed navigation
+                 router.navigateByUrl('/lazyFalse/loaded').catch(s => {});
+                 advance(fixture);
+
+                 expect(location.path()).toEqual('/');
+
+                 expectEvents(recordedEvents, [
+                   [NavigationStart, '/lazyFalse/loaded'], [NavigationError, '/lazyFalse/loaded']
+                 ]);
+
+                 recordedEvents.splice(0);
+
+
+                 // successful navigation
+                 router.navigateByUrl('/lazyTrue/loaded');
+                 advance(fixture);
+
+                 expect(location.path()).toEqual('/lazyTrue/loaded');
+
+                 expectEvents(recordedEvents, [
+                   [NavigationStart, '/lazyTrue/loaded'], [RoutesRecognized, '/lazyTrue/loaded'],
+                   [NavigationEnd, '/lazyTrue/loaded']
+                 ]);
+               })));
       });
-
-      it('works',
-         fakeAsync(inject(
-             [Router, TestComponentBuilder, Location],
-             (router: Router, tcb: TestComponentBuilder, location: Location) => {
-               const fixture = createRoot(tcb, router, RootCmp);
-
-               router.resetConfig(
-                   [{path: 'team/:id', component: TeamCmp, canDeactivate: ['CanDeactivate']}]);
-
-               router.navigateByUrl('/team/22');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/22');
-
-               router.navigateByUrl('/team/33');
-               advance(fixture);
-               expect(location.path()).toEqual('/team/22');
-             })));
     });
   });
 

@@ -13,6 +13,7 @@ import 'rxjs/add/operator/concatAll';
 import {Injector} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
+import {from} from 'rxjs/observable/from';
 import {of } from 'rxjs/observable/of';
 import {EmptyError} from 'rxjs/util/EmptyError';
 
@@ -20,7 +21,7 @@ import {Route, Routes} from './config';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {merge, waitForMap} from './utils/collection';
+import {andObservables, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 
 class NoMatch {
   constructor(public segmentGroup: UrlSegmentGroup = null) {}
@@ -38,6 +39,12 @@ function noMatch(segmentGroup: UrlSegmentGroup): Observable<UrlSegmentGroup> {
 function absoluteRedirect(segments: UrlSegment[]): Observable<UrlSegmentGroup> {
   return new Observable<UrlSegmentGroup>(
       (obs: Observer<UrlSegmentGroup>) => obs.error(new AbsoluteRedirect(segments)));
+}
+
+function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
+  return new Observable<LoadedRouterConfig>(
+      (obs: Observer<LoadedRouterConfig>) => obs.error(new Error(
+          `Cannot load children because the guard of the route "path: '${route.path}'" returned false`)));
 }
 
 
@@ -209,13 +216,33 @@ function getChildConfig(injector: Injector, configLoader: RouterConfigLoader, ro
   if (route.children) {
     return of (new LoadedRouterConfig(route.children, injector, null));
   } else if (route.loadChildren) {
-    return configLoader.load(injector, route.loadChildren).map(r => {
-      (<any>route)._loadedConfig = r;
-      return r;
+    return runGuards(injector, route).mergeMap(shouldLoad => {
+      if (shouldLoad) {
+        return configLoader.load(injector, route.loadChildren).map(r => {
+          (<any>route)._loadedConfig = r;
+          return r;
+        });
+      } else {
+        return canLoadFails(route);
+      }
     });
   } else {
     return of (new LoadedRouterConfig([], injector, null));
   }
+}
+
+function runGuards(injector: Injector, route: Route): Observable<boolean> {
+  const canLoad = route.canLoad;
+  if (!canLoad || canLoad.length === 0) return of (true);
+  const obs = from(canLoad).map(c => {
+    const guard = injector.get(c);
+    if (guard.canLoad) {
+      return wrapIntoObservable(guard.canLoad(route));
+    } else {
+      return wrapIntoObservable(guard(route));
+    }
+  });
+  return andObservables(obs);
 }
 
 function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): {
