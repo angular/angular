@@ -395,6 +395,13 @@ describe('StaticReflector', () => {
         .toThrow(new Error(
             `Error encountered resolving symbol values statically. Calling function 'someFunction', function calls are not supported. Consider replacing the function or lambda with a reference to an exported function, resolving symbol MyComponent in /tmp/src/invalid-calls.ts, resolving symbol MyComponent in /tmp/src/invalid-calls.ts`));
   });
+
+  it('should be able to get metadata for a class containing a static method call', () => {
+    const annotations = reflector.annotations(
+        host.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyComponent'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers).toEqual({provider: 'a', useValue: 100});
+  });
 });
 
 class MockReflectorHost implements StaticReflectorHost {
@@ -456,7 +463,12 @@ class MockReflectorHost implements StaticReflectorHost {
     }
 
     if (modulePath.indexOf('.') === 0) {
-      return this.getStaticSymbol(pathTo(containingFile, modulePath) + '.d.ts', symbolName);
+      const baseName = pathTo(containingFile, modulePath);
+      const tsName = baseName + '.ts';
+      if (this.getMetadataFor(tsName)) {
+        return this.getStaticSymbol(tsName, symbolName);
+      }
+      return this.getStaticSymbol(baseName + '.d.ts', symbolName);
     }
     return this.getStaticSymbol('/tmp/' + modulePath + '.d.ts', symbolName);
   }
@@ -907,6 +919,27 @@ class MockReflectorHost implements StaticReflectorHost {
           directives: [NgIf]
         })
         export class MyOtherComponent { }
+      `,
+      '/tmp/src/static-method.ts': `
+        import {Component} from 'angular2/src/core/metadata';
+
+        @Component({
+          selector: 'stub'
+        })
+        export class MyModule {
+          static with(data: any) {
+            return { provider: 'a', useValue: data }
+          }
+        }
+      `,
+      '/tmp/src/static-method-call.ts': `
+        import {Component} from 'angular2/src/core/metadata';
+        import {MyModule} from './static-method';
+
+        @Component({
+          providers: MyModule.with(100)
+        })
+        export class MyComponent { }
       `
     };
 

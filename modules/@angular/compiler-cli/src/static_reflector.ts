@@ -281,10 +281,25 @@ export class StaticReflector implements ReflectorReader {
           let target = expression['expression'];
           let functionSymbol: StaticSymbol;
           let targetFunction: any;
-          if (target && target.__symbolic === 'reference') {
-            callContext = {name: target.name};
-            functionSymbol = resolveReference(context, target);
-            targetFunction = resolveReferenceValue(functionSymbol);
+          if (target) {
+            switch (target.__symbolic) {
+              case 'reference':
+                // Find the function to call.
+                callContext = {name: target.name};
+                functionSymbol = resolveReference(context, target);
+                targetFunction = resolveReferenceValue(functionSymbol);
+                break;
+              case 'select':
+                // Find the static method to call
+                if (target.expression.__symbolic == 'reference') {
+                  functionSymbol = resolveReference(context, target.expression);
+                  const classData = resolveReferenceValue(functionSymbol);
+                  if (classData && classData.statics) {
+                    targetFunction = classData.statics[target.member];
+                  }
+                }
+                break;
+            }
           }
           if (targetFunction && targetFunction['__symbolic'] == 'function') {
             if (calling.get(functionSymbol)) {
@@ -292,7 +307,7 @@ export class StaticReflector implements ReflectorReader {
             }
             calling.set(functionSymbol, true);
             let value = targetFunction['value'];
-            if (value) {
+            if (value && (depth != 0 || value.__symbolic != 'error')) {
               // Determine the arguments
               let args = (expression['arguments'] || []).map((arg: any) => simplify(arg));
               let parameters: string[] = targetFunction['parameters'];

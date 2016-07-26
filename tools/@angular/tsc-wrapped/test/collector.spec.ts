@@ -16,7 +16,7 @@ describe('Collector', () => {
     host = new Host(FILES, [
       '/app/app.component.ts', '/app/cases-data.ts', '/app/error-cases.ts', '/promise.ts',
       '/unsupported-1.ts', '/unsupported-2.ts', 'import-star.ts', 'exported-functions.ts',
-      'exported-enum.ts', 'exported-consts.ts'
+      'exported-enum.ts', 'exported-consts.ts', 'static-method.ts', 'static-method-call.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
@@ -337,6 +337,47 @@ describe('Collector', () => {
       E: {__symbolic: 'reference', module: './exported-consts', name: 'constValue'}
     });
   });
+
+  it('should be able to collect a simple static method', () => {
+    let staticSource = program.getSourceFile('/static-method.ts');
+    let metadata = collector.getMetadata(staticSource);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['MyModule'];
+    expect(classData).toBeDefined();
+    expect(classData.statics).toEqual({
+      with: {
+        __symbolic: 'function',
+        parameters: ['comp'],
+        value: [
+          {__symbolic: 'reference', name: 'MyModule'},
+          {provider: 'a', useValue: {__symbolic: 'reference', name: 'comp'}}
+        ]
+      }
+    });
+  });
+
+  it('should be able to collect a call to a static method', () => {
+    let staticSource = program.getSourceFile('/static-method-call.ts');
+    let metadata = collector.getMetadata(staticSource);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['Foo'];
+    expect(classData).toBeDefined();
+    expect(classData.decorators).toEqual([{
+      __symbolic: 'call',
+      expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+      arguments: [{
+        providers: {
+          __symbolic: 'call',
+          expression: {
+            __symbolic: 'select',
+            expression: {__symbolic: 'reference', module: './static-method.ts', name: 'MyModule'},
+            member: 'with'
+          },
+          arguments: ['a']
+        }
+      }]
+    }]);
+  });
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -578,6 +619,28 @@ const FILES: Directory = {
   `,
   'exported-consts.ts': `
     export const constValue = 100;
+  `,
+  'static-method.ts': `
+    import {Injectable} from 'angular2/core';
+
+    @Injectable()
+    export class MyModule {
+      static with(comp: any): any[] {
+        return [
+          MyModule,
+          { provider: 'a', useValue: comp }
+        ];
+      }
+    }
+  `,
+  'static-method-call.ts': `
+    import {Component} from 'angular2/core';
+    import {MyModule} from './static-method.ts';
+
+    @Component({
+      providers: MyModule.with('a')
+    })
+    export class Foo { }
   `,
   'node_modules': {
     'angular2': {
