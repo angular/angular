@@ -291,14 +291,13 @@ export declare const NG_VALIDATORS: OpaqueToken;
 export declare const NG_VALUE_ACCESSOR: OpaqueToken;
 
 /** @stable */
-export declare class NgClass implements DoCheck, OnDestroy {
+export declare class NgClass implements DoCheck {
     initialClasses: string;
     ngClass: string | string[] | Set<string> | {
         [key: string]: any;
     };
     constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer);
     ngDoCheck(): void;
-    ngOnDestroy(): void;
 }
 
 /** @experimental */
