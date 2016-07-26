@@ -66,7 +66,7 @@ md-slider *::after {
 }
 
 /**
- * Holds the isActive and isDragging classes as well as helps with positioning the children.
+ * Holds the isActive and isSliding classes as well as helps with positioning the children.
  * Cannot be merged with .md-slider-wrapper.
  */
 .md-slider-container {
@@ -130,8 +130,8 @@ md-slider *::after {
   border-color: md-color($md-accent);
 }
 
-.md-slider-dragging .md-slider-thumb-position,
-.md-slider-dragging .md-slider-track-fill {
+.md-slider-sliding .md-slider-thumb-position,
+.md-slider-sliding .md-slider-track-fill {
   transition: none;
   cursor: default;
 }

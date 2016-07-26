@@ -15,9 +15,9 @@ import {applyCssTransform} from '@angular2-material/core/style/apply-transform';
   host: {
     'tabindex': '0',
     '(click)': 'onClick($event)',
-    '(drag)': 'onDrag($event)',
-    '(dragstart)': 'onDragStart($event)',
-    '(dragend)': 'onDragEnd()',
+    '(slide)': 'onSlide($event)',
+    '(slidestart)': 'onSlideStart($event)',
+    '(slideend)': 'onSlideEnd()',
     '(window:resize)': 'onResize()',
     '(blur)': 'onBlur()',
   },
@@ -51,14 +51,14 @@ export class MdSlider implements AfterContentInit {
   @Input() step: number = 1;
 
   /**
-   * Whether or not the thumb is currently being dragged.
+   * Whether or not the thumb is sliding.
    * Used to determine if there should be a transition for the thumb and fill track.
    * TODO: internal
    */
-  isDragging: boolean = false;
+  isSliding: boolean = false;
 
   /**
-   * Whether or not the slider is active (clicked or is being dragged).
+   * Whether or not the slider is active (clicked or sliding).
    * Used to shrink and grow the thumb as according to the Material Design spec.
    * TODO: internal
    */
@@ -128,45 +128,45 @@ export class MdSlider implements AfterContentInit {
     }
 
     this.isActive = true;
-    this.isDragging = false;
+    this.isSliding = false;
     this._renderer.addFocus();
     this.updateValueFromPosition(event.clientX);
     this.snapToValue();
   }
 
   /** TODO: internal */
-  onDrag(event: HammerInput) {
+  onSlide(event: HammerInput) {
     if (this.disabled) {
       return;
     }
 
-    // Prevent the drag from selecting anything else.
+    // Prevent the slide from selecting anything else.
     event.preventDefault();
     this.updateValueFromPosition(event.center.x);
   }
 
   /** TODO: internal */
-  onDragStart(event: HammerInput) {
+  onSlideStart(event: HammerInput) {
     if (this.disabled) {
       return;
     }
 
     event.preventDefault();
-    this.isDragging = true;
+    this.isSliding = true;
     this.isActive = true;
     this._renderer.addFocus();
     this.updateValueFromPosition(event.center.x);
   }
 
   /** TODO: internal */
-  onDragEnd() {
-    this.isDragging = false;
-    this.snapToValue();
+  onSlideEnd() {
+    this.isSliding = false;
+      this.snapToValue();
   }
 
   /** TODO: internal */
   onResize() {
-    this.isDragging = true;
+    this.isSliding = true;
     this._sliderDimensions = this._renderer.getSliderDimensions();
     // Skip updating the value and position as there is no new placement.
     this._renderer.updateThumbAndFillPosition(this._percent, this._sliderDimensions.width);
@@ -180,7 +180,7 @@ export class MdSlider implements AfterContentInit {
   /**
    * When the value changes without a physical position, the percentage needs to be recalculated
    * independent of the physical location.
-   * This is also used to move the thumb to a snapped value once dragging is done.
+   * This is also used to move the thumb to a snapped value once sliding is done.
    */
   updatePercentFromValue() {
     this._percent = (this.value - this.min) / (this.max - this.min);

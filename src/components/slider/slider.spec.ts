@@ -71,22 +71,22 @@ describe('MdSlider', () => {
       expect(sliderInstance.value).toBe(19);
     });
 
-    it('should update the value on a drag', () => {
+    it('should update the value on a slide', () => {
       expect(sliderInstance.value).toBe(0);
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, 0.89, gestureConfig);
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.89, gestureConfig);
       // The expected value is 89 from: percentage * difference of max and min.
       expect(sliderInstance.value).toBe(89);
     });
 
-    it('should set the value as min when dragging before the track', () => {
+    it('should set the value as min when sliding before the track', () => {
       expect(sliderInstance.value).toBe(0);
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, -1.33, gestureConfig);
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, -1.33, gestureConfig);
       expect(sliderInstance.value).toBe(0);
     });
 
-    it('should set the value as max when dragging past the track', () => {
+    it('should set the value as max when sliding past the track', () => {
       expect(sliderInstance.value).toBe(0);
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, 1.75, gestureConfig);
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 1.75, gestureConfig);
       expect(sliderInstance.value).toBe(100);
     });
 
@@ -116,9 +116,9 @@ describe('MdSlider', () => {
       expect(thumbDimensions.left).toBe(sliderDimensions.width * 0.5 + sliderDimensions.left);
     });
 
-    it('should update the track fill on drag', () => {
+    it('should update the track fill on slide', () => {
       expect(trackFillDimensions.width).toBe(0);
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, 0.86, gestureConfig);
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.86, gestureConfig);
 
       trackFillDimensions = trackFillElement.getBoundingClientRect();
       thumbDimensions = thumbElement.getBoundingClientRect();
@@ -130,11 +130,11 @@ describe('MdSlider', () => {
       expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
     });
 
-    it('should update the thumb position on drag', () => {
+    it('should update the thumb position on slide', () => {
       expect(thumbDimensions.left).toBe(sliderDimensions.left);
-      // The drag event also truncates the position passed in, so 50% is used here as well to
+      // The slide event also truncates the position passed in, so 50% is used here as well to
       // ensure the ability to calculate the expected position.
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, 0.5, gestureConfig);
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.5, gestureConfig);
 
       thumbDimensions = thumbElement.getBoundingClientRect();
       expect(thumbDimensions.left).toBe(sliderDimensions.width * 0.5 + sliderDimensions.left);
@@ -165,19 +165,19 @@ describe('MdSlider', () => {
       expect(containerElement.classList).not.toContain('md-slider-active');
     });
 
-    it('should add and remove the md-slider-dragging class when dragging', () => {
+    it('should add and remove the md-slider-sliding class when sliding', () => {
       let containerElement = sliderNativeElement.querySelector('.md-slider-container');
-      expect(containerElement.classList).not.toContain('md-slider-dragging');
+      expect(containerElement.classList).not.toContain('md-slider-sliding');
 
-      dispatchDragStartEvent(sliderNativeElement, 0, gestureConfig);
+      dispatchSlideStartEvent(sliderNativeElement, 0, gestureConfig);
       fixture.detectChanges();
 
-      expect(containerElement.classList).toContain('md-slider-dragging');
+      expect(containerElement.classList).toContain('md-slider-sliding');
 
-      dispatchDragEndEvent(sliderNativeElement, 0.34, gestureConfig);
+      dispatchSlideEndEvent(sliderNativeElement, 0.34, gestureConfig);
       fixture.detectChanges();
 
-      expect(containerElement.classList).not.toContain('md-slider-dragging');
+      expect(containerElement.classList).not.toContain('md-slider-sliding');
     });
   });
 
@@ -208,9 +208,9 @@ describe('MdSlider', () => {
       expect(sliderInstance.value).toBe(0);
     });
 
-    it('should not change the value on drag when disabled', () => {
+    it('should not change the value on slide when disabled', () => {
       expect(sliderInstance.value).toBe(0);
-      dispatchDragEvent(sliderNativeElement, sliderNativeElement, 0, 0.5, gestureConfig);
+      dispatchSlideEvent(sliderNativeElement, sliderNativeElement, 0, 0.5, gestureConfig);
       expect(sliderInstance.value).toBe(0);
     });
 
@@ -224,14 +224,14 @@ describe('MdSlider', () => {
       expect(containerElement.classList).not.toContain('md-slider-active');
     });
 
-    it('should not add the md-slider-dragging class on drag when disabled', () => {
+    it('should not add the md-slider-sliding class on slide when disabled', () => {
       let containerElement = sliderNativeElement.querySelector('.md-slider-container');
-      expect(containerElement.classList).not.toContain('md-slider-dragging');
+      expect(containerElement.classList).not.toContain('md-slider-sliding');
 
-      dispatchDragStartEvent(sliderNativeElement, 0.46, gestureConfig);
+      dispatchSlideStartEvent(sliderNativeElement, 0.46, gestureConfig);
       fixture.detectChanges();
 
-      expect(containerElement.classList).not.toContain('md-slider-dragging');
+      expect(containerElement.classList).not.toContain('md-slider-sliding');
     });
   });
 
@@ -274,8 +274,8 @@ describe('MdSlider', () => {
       expect(sliderInstance.value).toBe(value);
     });
 
-    it('should set the correct value on drag', () => {
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, 0.62, gestureConfig);
+    it('should set the correct value on slide', () => {
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.62, gestureConfig);
       // Computed by multiplying the difference between the min and the max by the percentage from
       // the click and adding that to the minimum.
       let value = Math.round(4 + (0.62 * (6 - 4)));
@@ -295,11 +295,11 @@ describe('MdSlider', () => {
       expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
     });
 
-    it('should snap the thumb and fill to the nearest value on drag', () => {
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, 0.74, gestureConfig);
+    it('should snap the thumb and fill to the nearest value on slide', () => {
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.74, gestureConfig);
       fixture.detectChanges();
 
-      dispatchDragEndEvent(sliderNativeElement, 0.74, gestureConfig);
+      dispatchSlideEndEvent(sliderNativeElement, 0.74, gestureConfig);
       fixture.detectChanges();
 
       let trackFillDimensions = trackFillElement.getBoundingClientRect();
@@ -343,8 +343,8 @@ describe('MdSlider', () => {
       expect(sliderInstance.value).toBe(92);
     });
 
-    it('should set the correct value on drag', () => {
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, 0.32, gestureConfig);
+    it('should set the correct value on slide', () => {
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.32, gestureConfig);
       expect(sliderInstance.value).toBe(32);
     });
   });
@@ -396,18 +396,18 @@ describe('MdSlider', () => {
       expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
     });
 
-    it('should set the correct step value on drag', () => {
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, 0.07, gestureConfig);
+    it('should set the correct step value on slide', () => {
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.07, gestureConfig);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(0);
     });
 
-    it('should snap the thumb and fill to a step on drag', () => {
-      dispatchDragEvent(sliderTrackElement, sliderNativeElement, 0, 0.88, gestureConfig);
+    it('should snap the thumb and fill to a step on slide', () => {
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.88, gestureConfig);
       fixture.detectChanges();
 
-      dispatchDragEndEvent(sliderNativeElement, 0.88, gestureConfig);
+      dispatchSlideEndEvent(sliderNativeElement, 0.88, gestureConfig);
       fixture.detectChanges();
 
       let trackFillDimensions = trackFillElement.getBoundingClientRect();
@@ -489,62 +489,62 @@ function dispatchClickEvent(element: HTMLElement, percentage: number): void {
 }
 
 /**
- * Dispatches a drag event from an element.
+ * Dispatches a slide event from an element.
  * @param trackElement The track element from which the event location will be calculated.
  * @param containerElement The container element from which the event will be dispatched.
- * @param startPercent The percentage of the slider where the drag will begin.
- * @param endPercent The percentage of the slider where the drag will end.
- * @param gestureConfig The gesture config for the test to handle emitting the drag events.
+ * @param startPercent The percentage of the slider where the slide will begin.
+ * @param endPercent The percentage of the slider where the slide will end.
+ * @param gestureConfig The gesture config for the test to handle emitting the slide events.
  */
-function dispatchDragEvent(trackElement: HTMLElement, containerElement: HTMLElement,
-                           startPercent: number, endPercent: number,
-                           gestureConfig: TestGestureConfig): void {
+function dispatchSlideEvent(trackElement: HTMLElement, containerElement: HTMLElement,
+                            startPercent: number, endPercent: number,
+                            gestureConfig: TestGestureConfig): void {
   let dimensions = trackElement.getBoundingClientRect();
   let startX = dimensions.left + (dimensions.width * startPercent);
   let endX = dimensions.left + (dimensions.width * endPercent);
 
-  gestureConfig.emitEventForElement('dragstart', containerElement, {
-    // The actual event has a center with an x value that the drag listener is looking for.
+  gestureConfig.emitEventForElement('slidestart', containerElement, {
+    // The actual event has a center with an x value that the slide listener is looking for.
     center: { x: startX },
     // The event needs a source event with a prevent default so we fake one.
     srcEvent: { preventDefault: jasmine.createSpy('preventDefault') }
   });
 
-  gestureConfig.emitEventForElement('drag', containerElement, {
+  gestureConfig.emitEventForElement('slide', containerElement, {
     center: { x: endX },
     srcEvent: { preventDefault: jasmine.createSpy('preventDefault') }
   });
 }
 
 /**
- * Dispatches a dragstart event from an element.
+ * Dispatches a slidestart event from an element.
  * @param element The element from which the event will be dispatched.
- * @param startPercent The percentage of the slider where the drag will begin.
- * @param gestureConfig The gesture config for the test to handle emitting the drag events.
+ * @param startPercent The percentage of the slider where the slide will begin.
+ * @param gestureConfig The gesture config for the test to handle emitting the slide events.
  */
-function dispatchDragStartEvent(element: HTMLElement, startPercent: number,
-                                gestureConfig: TestGestureConfig): void {
+function dispatchSlideStartEvent(element: HTMLElement, startPercent: number,
+                                 gestureConfig: TestGestureConfig): void {
   let dimensions = element.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * startPercent);
 
-  gestureConfig.emitEventForElement('dragstart', element, {
+  gestureConfig.emitEventForElement('slidestart', element, {
     center: { x: x },
     srcEvent: { preventDefault: jasmine.createSpy('preventDefault') }
   });
 }
 
 /**
- * Dispatches a dragend event from an element.
+ * Dispatches a slideend event from an element.
  * @param element The element from which the event will be dispatched.
- * @param endPercent The percentage of the slider where the drag will end.
- * @param gestureConfig The gesture config for the test to handle emitting the drag events.
+ * @param endPercent The percentage of the slider where the slide will end.
+ * @param gestureConfig The gesture config for the test to handle emitting the slide events.
  */
-function dispatchDragEndEvent(element: HTMLElement, endPercent: number,
-                                gestureConfig: TestGestureConfig): void {
+function dispatchSlideEndEvent(element: HTMLElement, endPercent: number,
+                               gestureConfig: TestGestureConfig): void {
   let dimensions = element.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * endPercent);
 
-  gestureConfig.emitEventForElement('dragend', element, {
+  gestureConfig.emitEventForElement('slideend', element, {
     center: { x: x },
     srcEvent: { preventDefault: jasmine.createSpy('preventDefault') }
   });
