@@ -39,9 +39,11 @@ export const BROWSER_APP_COMPILER_PROVIDERS: Array<any /*Type | Provider | any[]
 ];
 
 /**
+ * Provider for using the resource cache while fetching template resources
+ *
  * @experimental
  */
-export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
+export const RESOURCE_CACHE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
     [{provide: XHR, useClass: CachedXHR}];
 
 function initReflector() {
