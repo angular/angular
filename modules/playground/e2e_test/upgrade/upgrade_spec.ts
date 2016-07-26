@@ -8,20 +8,28 @@
 
 import {verifyNoBrowserErrors} from "e2e_util/e2e_util";
 
-// TODO(i): reenable once we fix issue with exposing testability to protractor when using ngUpgrade
-// https://github.com/angular/angular/issues/9407
+// TODO(i): reenable once we are using a version of protractor containing the
+// change in https://github.com/angular/protractor/pull/3403
 xdescribe('ngUpgrade', function() {
   var URL = 'all/playground/src/upgrade/index.html';
 
-  beforeEach(function() { browser.get(URL); });
+  beforeEach(function() {
+    browser.rootEl = 'body';
+    (<any>browser).ng12Hybrid = true;
+    browser.get(URL);
+  });
 
-  afterEach(verifyNoBrowserErrors);
+  afterEach(function() {
+    (<any>browser).useAllAngular2AppRoots();
+    (<any>browser).ng12Hybrid = false;
+    verifyNoBrowserErrors();
+  });
 
   it('should bootstrap Angular 1 and Angular 2 apps together', function() {
-    var ng1NameInput = element(by.css('input[ng-model]=name'));
+    var ng1NameInput = element(by.css('input[ng-model="name"]'));
     expect(ng1NameInput.getAttribute('value')).toEqual('World');
 
     var userSpan = element(by.css('user span'));
-    expect(userSpan.getText()).toMatch('/World$/');
+    expect(userSpan.getText()).toMatch(/World$/);
   });
 });
