@@ -29,7 +29,10 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
   /** @internal */
   _asyncValidators: any[];
 
-  ngOnInit(): void { this.formDirective.addFormGroup(this); }
+  ngOnInit(): void {
+    this._checkParentType();
+    this.formDirective.addFormGroup(this);
+  }
 
   ngOnDestroy(): void { this.formDirective.removeFormGroup(this); }
 
@@ -51,4 +54,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
   get validator(): ValidatorFn { return composeValidators(this._validators); }
 
   get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
+
+  /** @internal */
+  _checkParentType(): void {}
 }

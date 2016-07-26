@@ -7,9 +7,13 @@
  */
 
 import {Directive, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
+
+import {BaseException} from '../../facade/exceptions';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
+
+import {FormGroupDirective} from './form_group_directive';
 
 export const formGroupNameProvider: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
@@ -70,12 +74,37 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
   @Input('formGroupName') name: string;
 
   constructor(
-      @Host() @SkipSelf() parent: ControlContainer,
+      @Optional() @Host() @SkipSelf() parent: ControlContainer,
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
     this._parent = parent;
     this._validators = validators;
     this._asyncValidators = asyncValidators;
+  }
+
+  /** @internal */
+  _checkParentType(): void {
+    if (!(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective)) {
+      this._throwParentException();
+    }
+  }
+
+  private _throwParentException() {
+    throw new BaseException(`formGroupName must be used with a parent formGroup directive.
+                You'll want to add a formGroup directive and pass it an existing FormGroup instance
+                (you can create one in your class).
+
+                Example:
+                <div [formGroup]="myGroup">
+                  <div formGroupName="person">
+                    <input formControlName="firstName">
+                  </div>
+                </div>
+
+                In your class:
+                this.myGroup = new FormGroup({
+                  person: new FormGroup({ firstName: new FormControl() })
+                });`);
   }
 }

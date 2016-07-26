@@ -8,6 +8,7 @@
 
 import {Directive, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
 
+import {BaseException} from '../../facade/exceptions';
 import {FormArray} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
@@ -15,6 +16,7 @@ import {composeAsyncValidators, composeValidators, controlPath} from '../shared'
 import {AsyncValidatorFn, ValidatorFn} from '../validators';
 
 import {FormGroupDirective} from './form_group_directive';
+import {FormGroupName} from './form_group_name';
 
 export const formArrayNameProvider: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
@@ -71,7 +73,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   @Input('formArrayName') name: string;
 
   constructor(
-      @Host() @SkipSelf() parent: ControlContainer,
+      @Optional() @Host() @SkipSelf() parent: ControlContainer,
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
@@ -80,7 +82,10 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
     this._asyncValidators = asyncValidators;
   }
 
-  ngOnInit(): void { this.formDirective.addFormArray(this); }
+  ngOnInit(): void {
+    this._checkParentType();
+    this.formDirective.addFormArray(this);
+  }
 
   ngOnDestroy(): void { this.formDirective.removeFormArray(this); }
 
@@ -93,4 +98,31 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   get validator(): ValidatorFn { return composeValidators(this._validators); }
 
   get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
+
+  private _checkParentType(): void {
+    if (!(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective)) {
+      this._throwParentException();
+    }
+  }
+
+  private _throwParentException(): void {
+    throw new BaseException(`formArrayName must be used with a parent formGroup directive.
+                You'll want to add a formGroup directive and pass it an existing FormGroup instance
+                (you can create one in your class).
+
+                Example:
+                <div [formGroup]="myGroup">
+                  <div formArrayName="cities">
+                    <div *ngFor="let city of cityArray.controls; let i=index">
+                      <input [formControlName]="i">
+                    </div>
+                  </div>
+                </div>
+
+                In your class:
+                this.cityArray = new FormArray([new FormControl('SF')]);
+                this.myGroup = new FormGroup({
+                  cities: this.cityArray
+                });`);
+  }
 }
