@@ -143,6 +143,23 @@ describe('MdButton', () => {
     });
 
   });
+
+  // Ripple tests.
+  describe('button ripples', () => {
+    it('should remove ripple if md-ripple-disabled input is set', async(() => {
+      builder.createAsync(TestApp).then(fixture => {
+        let testComponent = fixture.debugElement.componentInstance;
+        let buttonDebugElement = fixture.debugElement.query(By.css('button'));
+
+        fixture.detectChanges();
+        expect(buttonDebugElement.nativeElement.querySelectorAll('[md-ripple]').length).toBe(1);
+
+        testComponent.rippleDisabled = true;
+        fixture.detectChanges();
+        expect(buttonDebugElement.nativeElement.querySelectorAll('[md-ripple]').length).toBe(0);
+      });
+    }));
+  });
 });
 
 /** Test component that contains an MdButton. */
@@ -150,7 +167,7 @@ describe('MdButton', () => {
   selector: 'test-app',
   template: `
     <button md-button type="button" (click)="increment()"
-      [disabled]="isDisabled" [color]="buttonColor">
+      [disabled]="isDisabled" [color]="buttonColor" [disableRipple]="rippleDisabled">
       Go
     </button>
     <a href="http://www.google.com" md-button [disabled]="isDisabled" [color]="buttonColor">Link</a>
@@ -159,6 +176,7 @@ describe('MdButton', () => {
 class TestApp {
   clickCount: number = 0;
   isDisabled: boolean = false;
+  rippleDisabled: boolean = false;
 
   increment() {
     this.clickCount++;
