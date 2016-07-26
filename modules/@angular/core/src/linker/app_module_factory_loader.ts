@@ -9,7 +9,7 @@
 import {AppModuleFactory} from './app_module_factory';
 
 /**
- * Used to load app moduled factories.
+ * Used to load app module factories.
  * @experimental
  */
 export abstract class AppModuleFactoryLoader {

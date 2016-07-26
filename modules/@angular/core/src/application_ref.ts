@@ -223,12 +223,9 @@ export function bootstrapModule<M>(
     compilerOptions: CompilerOptions = {}): Promise<AppModuleRef<M>> {
   const compilerFactory: CompilerFactory = platform.injector.get(CompilerFactory);
   const compiler = compilerFactory.createCompiler(compilerOptions);
-  return compiler.compileAppModuleAsync(moduleType)
-      .then((moduleFactory) => bootstrapModuleFactory(moduleFactory, platform))
-      .then((moduleRef) => {
-        const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-        return appRef.waitForAsyncInitializers().then(() => moduleRef);
-      });
+  return compiler.compileAppModuleAsync(moduleType).then((moduleFactory) => {
+    return bootstrapModuleFactory(moduleFactory, platform);
+  });
 }
 
 /**
