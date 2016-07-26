@@ -10,8 +10,8 @@ import {AsyncTestCompleter, ddescribe, describe, it, iit, xit, expect, beforeEac
 import {SpyChangeDetectorRef} from './spies';
 import {ConcreteType} from '../src/facade/lang';
 import {ApplicationRef_, ApplicationRef} from '@angular/core/src/application_ref';
-import {Type, NgModule, CompilerFactory, Injector, APP_INITIALIZER, Component, ReflectiveInjector, bootstrapModule, bootstrapModuleFactory, PlatformRef, disposePlatform, createPlatformFactory, ComponentResolver, ComponentFactoryResolver, ChangeDetectorRef, ApplicationModule} from '@angular/core';
-import {coreDynamicPlatform} from '@angular/compiler';
+import {Type, NgModule, CompilerFactory, Injector, APP_INITIALIZER, Component, ReflectiveInjector, PlatformRef, disposePlatform, createPlatformFactory, ComponentResolver, ComponentFactoryResolver, ChangeDetectorRef, ApplicationModule} from '@angular/core';
+import {platformCoreDynamic} from '@angular/compiler';
 import {Console} from '@angular/core/src/console';
 import {BaseException} from '../src/facade/exceptions';
 import {PromiseWrapper, PromiseCompleter, TimerWrapper} from '../src/facade/async';
@@ -28,7 +28,7 @@ export function main() {
     beforeEach(() => {
       errorLogger = new _ArrayLogger();
       disposePlatform();
-      defaultPlatform = createPlatformFactory(coreDynamicPlatform, 'test')();
+      defaultPlatform = createPlatformFactory(platformCoreDynamic, 'test')();
       someCompFactory =
           new _MockComponentFactory(new _MockComponentRef(ReflectiveInjector.resolveAndCreate([])));
       appProviders = [
@@ -53,7 +53,7 @@ export function main() {
       const compilerFactory: CompilerFactory = platform.injector.get(CompilerFactory);
       const compiler = compilerFactory.createCompiler();
       const appInjector =
-          bootstrapModuleFactory(compiler.compileModuleSync(createModule(providers)), platform)
+          platform.bootstrapModuleFactory(compiler.compileModuleSync(createModule(providers)))
               .injector;
       return appInjector.get(ApplicationRef);
     }
@@ -100,10 +100,9 @@ export function main() {
              initializerDone = true;
            }, 1);
 
-           bootstrapModule(
-               createModule(
-                   [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]),
-               defaultPlatform)
+           defaultPlatform
+               .bootstrapModule(createModule(
+                   [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]))
                .then(_ => {
                  expect(initializerDone).toBe(true);
                  async.done();

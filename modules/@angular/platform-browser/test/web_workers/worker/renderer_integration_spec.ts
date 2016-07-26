@@ -24,7 +24,7 @@ import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker
 import {ServiceMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
 import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
-import {browserDynamicTestingPlatform} from '@angular/platform-browser-dynamic/testing';
+import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 
 export function main() {
   function createWebWorkerBrokerFactory(
@@ -65,7 +65,7 @@ export function main() {
     beforeEach(() => {
       uiRenderStore = new RenderStore();
       var testUiInjector = new TestBed();
-      testUiInjector.platform = browserDynamicTestingPlatform();
+      testUiInjector.platform = platformBrowserDynamicTesting();
       testUiInjector.ngModule = BrowserTestingModule;
       testUiInjector.configureModule({
         providers: [

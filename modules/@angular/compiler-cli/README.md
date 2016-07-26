@@ -50,10 +50,9 @@ bootstrap.ts
 -------------
 
 import {MainModuleNgFactory} from './main_module.ngfactory';
-import {bootstrapModuleFactory} from '@angular/core';
 import {browserPlatform} from '@angular/platform-browser';
 
-bootstrapModuleFactory(MainModuleNgFactory, browserPlatform());
+browserPlatform().bootstrapModuleFactory(MainModuleNgFactory);
 ```
 
 ## Configuration

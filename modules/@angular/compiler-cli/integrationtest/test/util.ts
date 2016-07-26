@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory, NgModuleRef, bootstrapModuleFactory} from '@angular/core';
+import {NgModuleFactory, NgModuleRef} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {serverPlatform} from '@angular/platform-server';
 
@@ -14,7 +14,7 @@ import {MainModule} from '../src/module';
 import {MainModuleNgFactory} from '../src/module.ngfactory';
 
 export function createModule(): NgModuleRef<MainModule> {
-  return bootstrapModuleFactory(MainModuleNgFactory, serverPlatform());
+  return serverPlatform().bootstrapModuleFactory(MainModuleNgFactory);
 }
 
 export function createComponent<C>(comp: {new (...args: any[]): C}): ComponentFixture<C> {

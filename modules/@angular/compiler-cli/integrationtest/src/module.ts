@@ -14,7 +14,7 @@ import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
 import {CompWithProviders, CompWithReferences, ModuleUsingCustomElements} from './features';
-import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, someLibModuleWithProviders, SomePipeInRootModule, SomeService} from './module_fixtures';
+import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomePipeInRootModule, SomeService, someLibModuleWithProviders} from './module_fixtures';
 import {ProjectingComp} from './projection';
 import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
 

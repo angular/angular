@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, SchemaMetadata, CompilerFactory, CompilerOptions, ComponentStillLoadingError, Injector, NgModule, NgModuleFactory, NgModuleMetadata, NgModuleRef, PlatformRef, Provider, ReflectiveInjector, Type, assertPlatform, createPlatform, getPlatform} from '../index';
+import {Compiler, CompilerFactory, CompilerOptions, ComponentStillLoadingError, Injector, NgModule, NgModuleFactory, NgModuleMetadata, NgModuleRef, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type, assertPlatform, createPlatform, getPlatform} from '../index';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {ConcreteType, FunctionWrapper, isPresent, stringify} from '../src/facade/lang';

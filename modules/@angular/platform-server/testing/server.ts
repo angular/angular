@@ -7,13 +7,13 @@
  */
 
 import {analyzeAppProvidersForDeprecatedConfiguration} from '@angular/compiler';
-import {coreDynamicTestingPlatform} from '@angular/compiler/testing';
+import {platformCoreDynamicTesting} from '@angular/compiler/testing';
 import {CompilerFactory, CompilerOptions, NgModule, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
 import {initTestEnvironment} from '@angular/core/testing';
-import {BrowserDynamicTestingModule, TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS, browserDynamicTestingPlatform} from '@angular/platform-browser-dynamic/testing';
+import {BrowserDynamicTestingModule, TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS, platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 
 import {Console} from '../core_private';
-import {serverPlatform} from '../index';
+import {platformServer} from '../index';
 import {Parse5DomAdapter} from '../src/parse5_adapter';
 import {INTERNAL_SERVER_PLATFORM_PROVIDERS} from '../src/server';
 
@@ -22,8 +22,13 @@ import {INTERNAL_SERVER_PLATFORM_PROVIDERS} from '../src/server';
  *
  * @experimental API related to bootstrapping are still under review.
  */
-export const serverTestingPlatform = createPlatformFactory(
-    coreDynamicTestingPlatform, 'serverTesting', INTERNAL_SERVER_PLATFORM_PROVIDERS);
+export const platformServerTesting = createPlatformFactory(
+    platformCoreDynamicTesting, 'serverTesting', INTERNAL_SERVER_PLATFORM_PROVIDERS);
+
+/**
+ * @deprecated Use {@link platformServerTesting} instead
+ */
+export const serverTestingPlatform = platformServerTesting;
 
 /**
  * NgModule for testing.
@@ -37,15 +42,15 @@ export class ServerTestingModule {
 /**
  * Providers of the `serverTestingPlatform` to be used for creating own platform based on this.
  *
- * @deprecated Use `serverTestingPlatform()` or create a custom platform factory via
- * `createPlatformFactory(serverTestingPlatform, ...)`
+ * @deprecated Use `platformServerTesting()` or create a custom platform factory via
+ * `createPlatformFactory(platformServerTesting, ...)`
  */
 export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     // Note: This is not a real provider but a hack to still support the deprecated
     // `setBaseTestProviders` method!
     [(appProviders: any[]) => {
       const deprecatedConfiguration = analyzeAppProvidersForDeprecatedConfiguration(appProviders);
-      const platformRef = createPlatformFactory(serverTestingPlatform, 'serverTestingDeprecated', [{
+      const platformRef = createPlatformFactory(platformServerTesting, 'serverTestingDeprecated', [{
                                                   provide: CompilerOptions,
                                                   useValue: deprecatedConfiguration.compilerOptions,
                                                   multi: true

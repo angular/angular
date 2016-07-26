@@ -7,8 +7,8 @@
  */
 
 import {PlatformLocation} from '@angular/common';
-import {analyzeAppProvidersForDeprecatedConfiguration, coreDynamicPlatform} from '@angular/compiler';
-import {ApplicationRef, CompilerFactory, ComponentRef, NgModule, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, Type, assertPlatform, bootstrapModule, corePlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
+import {analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
+import {ApplicationRef, CompilerFactory, ComponentRef, NgModule, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, Type, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {Console, ReflectionCapabilities, reflector, wtfInit} from '../core_private';
@@ -43,8 +43,8 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | a
  * A set of providers to initialize the Angular platform in a server.
  *
  * Used automatically by `serverBootstrap`, or can be passed to `platform`.
- * @deprecated Use `serverPlatform()` or create a custom platform factory via
- * `createPlatformFactory(serverPlatform, ...)`
+ * @deprecated Use `platformServer()` or create a custom platform factory via
+ * `createPlatformFactory(platformServer, ...)`
  */
 export const SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     [PLATFORM_COMMON_PROVIDERS, INTERNAL_SERVER_PLATFORM_PROVIDERS];
@@ -57,16 +57,26 @@ function initParse5Adapter() {
 /**
  * @experimental
  */
-export const serverPlatform =
-    createPlatformFactory(corePlatform, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
+export const platformServer =
+    createPlatformFactory(platformCore, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
+
+/**
+ * @deprecated Use {@link platformServer} instead
+ */
+export const serverPlatform = platformServer;
 
 /**
  * The server platform that supports the runtime compiler.
  *
  * @experimental
  */
-export const serverDynamicPlatform =
-    createPlatformFactory(coreDynamicPlatform, 'serverDynamic', INTERNAL_SERVER_PLATFORM_PROVIDERS);
+export const platformDynamicServer =
+    createPlatformFactory(platformCoreDynamic, 'serverDynamic', INTERNAL_SERVER_PLATFORM_PROVIDERS);
+
+/**
+ * @deprecated Use {@link platformDynamicServer} instead
+ */
+export const serverDynamicPlatform = platformDynamicServer;
 
 /**
  * Used to bootstrap Angular in server environment (such as node).
@@ -105,8 +115,8 @@ export function serverBootstrap<T>(
   class DynamicModule {
   }
 
-  return bootstrapModule(
-             DynamicModule, serverDynamicPlatform(), deprecatedConfiguration.compilerOptions)
+  return platformDynamicServer()
+      .bootstrapModule(DynamicModule, deprecatedConfiguration.compilerOptions)
       .then((moduleRef) => {
         const console = moduleRef.injector.get(Console);
         deprecatedConfiguration.deprecationMessages.forEach((msg) => console.warn(msg));

@@ -7,13 +7,12 @@
  */
 
 import {CompilerConfig, DirectiveResolver, NgModuleResolver, ViewResolver, analyzeAppProvidersForDeprecatedConfiguration} from '@angular/compiler';
-import {OverridingTestComponentBuilder, coreDynamicTestingPlatform} from '@angular/compiler/testing';
+import {OverridingTestComponentBuilder, platformCoreDynamicTesting} from '@angular/compiler/testing';
 import {Compiler, CompilerFactory, CompilerOptions, NgModule, PlatformRef, Provider, ReflectiveInjector, Type, createPlatform, createPlatformFactory} from '@angular/core';
 import {TestComponentBuilder, TestComponentRenderer, initTestEnvironment} from '@angular/core/testing';
-import {BrowserTestingModule, browserTestingPlatform} from '@angular/platform-browser/testing';
+import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 
 import {Console} from './core_private';
-import {browserDynamicPlatform} from './index';
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_providers';
 import {DOMTestComponentRenderer} from './testing/dom_test_component_renderer';
 
@@ -22,9 +21,14 @@ export * from './private_export_testing'
 /**
  * @experimental API related to bootstrapping are still under review.
  */
-export const browserDynamicTestingPlatform = createPlatformFactory(
-    coreDynamicTestingPlatform, 'browserDynamicTesting',
+export const platformBrowserDynamicTesting = createPlatformFactory(
+    platformCoreDynamicTesting, 'browserDynamicTesting',
     INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
+
+/**
+ * @deprecated Use {@link platformBrowserDynamicTesting} instead
+ */
+export const browserDynamicTestingPlatform = platformBrowserDynamicTesting;
 
 /**
  * NgModule for testing.
@@ -50,7 +54,7 @@ export const TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: Array<any /*Type | Provide
     [(appProviders: any[]) => {
       const deprecatedConfiguration = analyzeAppProvidersForDeprecatedConfiguration(appProviders);
       const platformRef =
-          createPlatformFactory(browserDynamicTestingPlatform, 'browserDynamicTestingDeprecated', [{
+          createPlatformFactory(platformBrowserDynamicTesting, 'browserDynamicTestingDeprecated', [{
                                   provide: CompilerOptions,
                                   useValue: deprecatedConfiguration.compilerOptions,
                                   multi: true

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerFactory, CompilerOptions, Component, ComponentResolver, Inject, Injectable, NgModule, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, Type, ViewEncapsulation, corePlatform, createPlatformFactory, disposePlatform, isDevMode} from '@angular/core';
+import {Compiler, CompilerFactory, CompilerOptions, Component, ComponentResolver, Inject, Injectable, NgModule, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, Type, ViewEncapsulation, createPlatformFactory, disposePlatform, isDevMode, platformCore} from '@angular/core';
 
 export * from './template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser';
@@ -199,7 +199,7 @@ function _initReflector() {
  *
  * @experimental
  */
-export const coreDynamicPlatform = createPlatformFactory(corePlatform, 'coreDynamic', [
+export const platformCoreDynamic = createPlatformFactory(platformCore, 'coreDynamic', [
   {provide: CompilerOptions, useValue: {}, multi: true},
   {provide: CompilerFactory, useClass: RuntimeCompilerFactory},
   {provide: PLATFORM_INITIALIZER, useValue: _initReflector, multi: true},

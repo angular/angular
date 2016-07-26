@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, Compiler, CompilerFactory, ComponentFactory, ComponentResolver, Injector, NgModule, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, bootstrapModuleFactory, provide} from '@angular/core';
+import {ApplicationRef, Compiler, CompilerFactory, ComponentFactory, ComponentResolver, Injector, NgModule, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, provide} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {browserDynamicPlatform} from '@angular/platform-browser-dynamic';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from './angular_js';
 import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, NG2_COMPILER, NG2_COMPONENT_FACTORY_REF_MAP, NG2_INJECTOR, NG2_ZONE, REQUIRE_INJECTOR} from './constants';
@@ -278,7 +278,7 @@ export class UpgradeAdapter {
       UpgradeAdapterRef {
     var upgrade = new UpgradeAdapterRef();
     var ng1Injector: angular.IInjectorService = null;
-    var platformRef: PlatformRef = browserDynamicPlatform();
+    var platformRef: PlatformRef = platformBrowserDynamic();
     var providers = [
       {provide: NG1_INJECTOR, useFactory: () => ng1Injector},
       {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)}, this.providers
@@ -289,8 +289,8 @@ export class UpgradeAdapter {
     }
 
     const compilerFactory: CompilerFactory = platformRef.injector.get(CompilerFactory);
-    var moduleRef = bootstrapModuleFactory(
-        compilerFactory.createCompiler().compileModuleSync(DynamicModule), platformRef);
+    var moduleRef = platformRef.bootstrapModuleFactory(
+        compilerFactory.createCompiler().compileModuleSync(DynamicModule));
     const boundCompiler: Compiler = moduleRef.injector.get(Compiler);
     var applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
     var injector: Injector = applicationRef.injector;

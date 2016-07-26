@@ -8,7 +8,7 @@
 
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {XHR} from '@angular/compiler';
-import {APP_INITIALIZER, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, bootstrapModule, createPlatform, provide} from '@angular/core';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, createPlatform, createPlatformFactory, provide} from '@angular/core';
 import {ApplicationRef, disposePlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -16,7 +16,7 @@ import {Testability, TestabilityRegistry} from '@angular/core/src/testability/te
 import {ComponentFixture} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
-import {bootstrap, browserDynamicPlatform} from '@angular/platform-browser-dynamic';
+import {bootstrap, platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -258,7 +258,7 @@ export function main() {
 
     it('should run platform initializers',
        inject([Log, AsyncTestCompleter], (log: Log, async: AsyncTestCompleter) => {
-         let p = createPlatformFactory(browserDynamicPlatform, 'someName', [
+         let p = createPlatformFactory(platformBrowserDynamic, 'someName', [
            {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init1'), multi: true},
            {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init2'), multi: true}
          ])();
@@ -275,7 +275,7 @@ export function main() {
 
          expect(log.result()).toEqual('platform_init1; platform_init2');
          log.clear();
-         bootstrapModule(SomeModule, p).then(() => {
+         p.bootstrapModule(SomeModule).then(() => {
            expect(log.result()).toEqual('app_init1; app_init2');
            async.done();
          });

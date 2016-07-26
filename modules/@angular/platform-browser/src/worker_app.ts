@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, FORM_PROVIDERS} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ExceptionHandler, NgModule, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PlatformRef, ReflectiveInjector, RootRenderer, assertPlatform, corePlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
+import {APP_INITIALIZER, ApplicationModule, ExceptionHandler, NgModule, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PlatformRef, ReflectiveInjector, RootRenderer, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
 
 import {BROWSER_SANITIZATION_PROVIDERS} from './browser';
 import {isBlank, print} from './facade/lang';
@@ -29,8 +29,8 @@ class PrintLogger {
 }
 
 /**
- * @deprecated Use `workerAppPlatform()` or create a custom platform factory via
- * `createPlatformFactory(workerAppPlatform, ...)`
+ * @deprecated Use `platformWorkerApp()` or create a custom platform factory via
+ * `createPlatformFactory(platformWorkerApp, ...)`
  */
 export const WORKER_APP_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     PLATFORM_COMMON_PROVIDERS;
@@ -46,7 +46,12 @@ export const WORKER_APP_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any
 /**
  * @experimental
  */
-export const workerAppPlatform = createPlatformFactory(corePlatform, 'workerApp');
+export const platformWorkerApp = createPlatformFactory(platformCore, 'workerApp');
+
+/**
+ * @deprecated Use {@link platformWorkerApp} instead
+ */
+export const workerAppPlatform = platformWorkerApp;
 
 function _exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(new PrintLogger());

@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {APP_ID, NgModule, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, corePlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
+import {APP_ID, NgModule, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
 
 import {BrowserModule} from '../src/browser';
 import {BrowserDomAdapter} from '../src/browser/browser_adapter';
@@ -31,8 +31,8 @@ const _TEST_BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
 /**
  * Providers for the browser test platform
  *
- * @deprecated Use `browserTestingPlatform()` or create a custom platform factory via
- * `createPlatformFactory(browserTestingPlatform, ...)`
+ * @deprecated Use `platformBrowserTesting()` or create a custom platform factory via
+ * `createPlatformFactory(platformBrowserTesting, ...)`
  */
 export const TEST_BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     [PLATFORM_COMMON_PROVIDERS, _TEST_BROWSER_PLATFORM_PROVIDERS];
@@ -50,8 +50,13 @@ export const TEST_BROWSER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | a
  *
  * @experimental API related to bootstrapping are still under review.
  */
-export const browserTestingPlatform =
-    createPlatformFactory(corePlatform, 'browserTesting', _TEST_BROWSER_PLATFORM_PROVIDERS);
+export const platformBrowserTesting =
+    createPlatformFactory(platformCore, 'browserTesting', _TEST_BROWSER_PLATFORM_PROVIDERS);
+
+/**
+ * @deprecated Use {@link platformBrowserTesting} instead
+ */
+export const browserTestingPlatform = platformBrowserTesting;
 
 /**
  * NgModule for testing.

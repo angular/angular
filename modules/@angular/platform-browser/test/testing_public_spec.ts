@@ -285,7 +285,7 @@ export function main() {
              class ComponentUsingInvalidProperty {
              }
 
-             tcb.createSync(ComponentUsingInvalidProperty)
+             tcb.createSync(ComponentUsingInvalidProperty);
              expect(() => tcb.createSync(ComponentUsingInvalidProperty)).not.toThrow();
            }));
       });

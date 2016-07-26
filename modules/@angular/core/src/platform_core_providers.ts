@@ -32,7 +32,7 @@ const _CORE_PLATFORM_PROVIDERS: Array<any|Type|Provider|any[]> = [
  *
  * @experimental
  */
-export const corePlatform = createPlatformFactory(null, 'core', _CORE_PLATFORM_PROVIDERS);
+export const platformCore = createPlatformFactory(null, 'core', _CORE_PLATFORM_PROVIDERS);
 
 /**
  * A default set of providers which should be included in any Angular platform.
