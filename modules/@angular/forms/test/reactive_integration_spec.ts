@@ -1162,6 +1162,40 @@ export function main() {
                });
              }));
 
+      it('should throw if formControlName is used with NgForm',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form>
+                <input type="text" formControlName="login">
+               </form>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(
+                         `formControlName must be used with a parent formGroup directive.`));
+                 async.done();
+               });
+             }));
+
+      it('should throw if formControlName is used with NgModelGroup',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form>
+                <div ngModelGroup="parent">
+                  <input type="text" formControlName="login">
+                </div>
+               </form>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(
+                         new RegExp(`formControlName cannot be used with an ngModelGroup parent.`));
+                 async.done();
+               });
+             }));
+
       it('should throw if formGroupName is used without a control container',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
@@ -1174,6 +1208,24 @@ export function main() {
                  expect(() => fixture.detectChanges())
                      .toThrowError(new RegExp(
                          `formGroupName must be used with a parent formGroup directive`));
+                 async.done();
+               });
+             }));
+
+      it('should throw if formGroupName is used with NgForm',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<form>
+            <div formGroupName="person">
+              <input type="text" formControlName="login">
+            </div>
+          </form>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(
+                         `formGroupName must be used with a parent formGroup directive.`));
                  async.done();
                });
              }));
@@ -1194,57 +1246,81 @@ export function main() {
                });
              }));
 
-      it('should throw if formControlName is used with the wrong control container',
+      it('should throw if ngModel is used alone under formGroup',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               const t = `<form>
-                <input type="text" formControlName="login">
-               </form>`;
+               const t = `<div [formGroup]="myGroup">
+              <input type="text" [(ngModel)]="data">
+            </div>`;
 
                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 fixture.debugElement.componentInstance.myGroup = new FormGroup({});
+                 ;
                  expect(() => fixture.detectChanges())
                      .toThrowError(new RegExp(
-                         `formControlName must be used with a parent formGroup directive.`));
+                         `ngModel cannot be used to register form controls with a parent formGroup directive.`));
                  async.done();
                });
              }));
 
-      it('should throw if formGroupName is used with the wrong control container',
+      it('should not throw if ngModel is used alone under formGroup with standalone: true',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               const t = `<form>
-            <div formGroupName="person">
-              <input type="text" formControlName="login">
-            </div>
-          </form>`;
+               const t = `<div [formGroup]="myGroup">
+              <input type="text" [(ngModel)]="data" [ngModelOptions]="{standalone: true}">
+            </div>`;
 
                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-                 expect(() => fixture.detectChanges())
-                     .toThrowError(new RegExp(
-                         `formGroupName must be used with a parent formGroup directive.`));
+                 fixture.debugElement.componentInstance.myGroup = new FormGroup({});
+                 expect(() => fixture.detectChanges()).not.toThrowError();
                  async.done();
                });
              }));
 
-      it('should throw if formArrayName is used with the wrong control container',
+      it('should throw if ngModel is used alone with formGroupName',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               const t = `<form>
-            <div formArrayName="person">
-              <input type="text" formControlName="login">
-            </div>
-          </form>`;
+               const t = `<div [formGroup]="myGroup">
+              <div formGroupName="person">
+                <input type="text" [(ngModel)]="data">
+              </div>
+            </div>`;
+
+               const myGroup = new FormGroup({person: new FormGroup({})});
 
                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 fixture.debugElement.componentInstance.myGroup =
+                     new FormGroup({person: new FormGroup({})});
+
                  expect(() => fixture.detectChanges())
                      .toThrowError(new RegExp(
-                         `formArrayName must be used with a parent formGroup directive.`));
+                         `ngModel cannot be used to register form controls with a parent formGroupName or formArrayName directive.`));
                  async.done();
                });
              }));
+
+      it('should throw if ngModelGroup is used with formGroup',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const t = `<div [formGroup]="myGroup">
+              <div ngModelGroup="person">
+                <input type="text" [(ngModel)]="data">
+              </div>
+            </div>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 fixture.debugElement.componentInstance.myGroup = new FormGroup({});
+                 expect(() => fixture.detectChanges())
+                     .toThrowError(new RegExp(
+                         `ngModelGroup cannot be used with a parent formGroup directive`));
+                 async.done();
+               });
+             }));
+
 
       it('should throw if radio button name does not match formControlName attr',
          inject(

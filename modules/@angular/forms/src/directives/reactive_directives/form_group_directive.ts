@@ -17,6 +17,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {NgControl} from '../ng_control';
+import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from '../shared';
 
 import {FormArrayName} from './form_array_name';
@@ -199,9 +200,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   private _checkFormPresent() {
     if (isBlank(this.form)) {
-      throw new BaseException(`formGroup expects a FormGroup instance. Please pass one in.
-           Example: <form [formGroup]="myFormGroup">
-      `);
+      ReactiveErrors.missingFormException();
     }
   }
 }

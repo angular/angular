@@ -12,6 +12,7 @@ import {BaseException} from '../../facade/exceptions';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
+import {ReactiveErrors} from '../reactive_errors';
 
 import {FormGroupDirective} from './form_group_directive';
 
@@ -86,25 +87,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
   /** @internal */
   _checkParentType(): void {
     if (!(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective)) {
-      this._throwParentException();
+      ReactiveErrors.groupParentException();
     }
-  }
-
-  private _throwParentException() {
-    throw new BaseException(`formGroupName must be used with a parent formGroup directive.
-                You'll want to add a formGroup directive and pass it an existing FormGroup instance
-                (you can create one in your class).
-
-                Example:
-                <div [formGroup]="myGroup">
-                  <div formGroupName="person">
-                    <input formControlName="firstName">
-                  </div>
-                </div>
-
-                In your class:
-                this.myGroup = new FormGroup({
-                  person: new FormGroup({ firstName: new FormControl() })
-                });`);
   }
 }
