@@ -12,7 +12,7 @@
  * The http module provides services to perform http requests. To get started, see the {@link Http}
  * class.
  */
-import {provide} from '@angular/core';
+import {NgModule} from '@angular/core';
 
 import {BrowserJsonp} from './src/backends/browser_jsonp';
 import {BrowserXhr} from './src/backends/browser_xhr';
@@ -181,7 +181,7 @@ export {QueryEncoder, URLSearchParams} from './src/url_search_params';
  *   .catch(err => console.error(err));
  * ```
  *
- * @experimental
+ * @deprecated
  */
 export const HTTP_PROVIDERS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
@@ -191,9 +191,15 @@ export const HTTP_PROVIDERS: any[] = [
   {provide: RequestOptions, useClass: BaseRequestOptions},
   {provide: ResponseOptions, useClass: BaseResponseOptions},
   XHRBackend,
-  {provide: XSRFStrategy, useValue: new CookieXSRFStrategy()},
+  {provide: XSRFStrategy, useFactory: _createDefaultCookieXSRFStrategy},
 ];
 
+/**
+ * @experimental
+ */
+export function _createDefaultCookieXSRFStrategy() {
+  return new CookieXSRFStrategy();
+}
 
 /**
  * @experimental
@@ -339,3 +345,21 @@ function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: RequestOptions
  * @deprecated
  */
 export const JSON_BINDINGS = JSONP_PROVIDERS;
+
+/**
+ * The module that includes http's providers
+ *
+ * @experimental
+ */
+@NgModule({providers: HTTP_PROVIDERS})
+export class HttpModule {
+}
+
+/**
+ * The module that includes jsonp's providers
+ *
+ * @experimental
+ */
+@NgModule({providers: JSONP_PROVIDERS})
+export class JsonpModule {
+}
