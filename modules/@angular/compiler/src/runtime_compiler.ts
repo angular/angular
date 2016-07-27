@@ -44,13 +44,13 @@ export class RuntimeCompiler implements Compiler {
   private _compiledNgModuleCache = new Map<Type, NgModuleFactory<any>>();
 
   constructor(
-      private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
+      private __injector: Injector, private _metadataResolver: CompileMetadataResolver,
       private _templateNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
       private _ngModuleCompiler: NgModuleCompiler, private _compilerConfig: CompilerConfig,
       private _console: Console) {}
 
-  get injector(): Injector { return this._injector; }
+  get _injector(): Injector { return this.__injector; }
 
   compileModuleSync<T>(moduleType: ConcreteType<T>): NgModuleFactory<T> {
     return this._compileModuleAndComponents(moduleType, true).syncResult;
@@ -381,7 +381,7 @@ class ModuleBoundCompiler implements Compiler, ComponentResolver {
       private _delegate: RuntimeCompiler, private _ngModule: ConcreteType<any>,
       private _parentComponentResolver: ComponentResolver, private _console: Console) {}
 
-  get injector(): Injector { return this._delegate.injector; }
+  get _injector(): Injector { return this._delegate._injector; }
 
   resolveComponent(component: Type|string): Promise<ComponentFactory<any>> {
     if (isString(component)) {

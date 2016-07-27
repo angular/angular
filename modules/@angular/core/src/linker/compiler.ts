@@ -41,10 +41,8 @@ export class ComponentStillLoadingError extends BaseException {
 export class Compiler {
   /**
    * Returns the injector with which the compiler has been created.
-   *
-   * @internal
    */
-  get injector(): Injector {
+  get _injector(): Injector {
     throw new BaseException(`Runtime compiler is not loaded. Tried to read the injector.`);
   }
 
