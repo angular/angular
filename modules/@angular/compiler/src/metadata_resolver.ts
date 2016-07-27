@@ -210,18 +210,6 @@ export class CompileMetadataResolver {
       const entryComponents: cpl.CompileTypeMetadata[] = [];
       const schemas: SchemaMetadata[] = [];
 
-      if (meta.providers) {
-        providers.push(...this.getProvidersMetadata(meta.providers, entryComponents));
-      }
-      if (meta.entryComponents) {
-        entryComponents.push(
-            ...flattenArray(meta.entryComponents)
-                .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
-      }
-      if (meta.schemas) {
-        schemas.push(...flattenArray(meta.schemas));
-      }
-
       if (meta.imports) {
         flattenArray(meta.imports).forEach((importedType) => {
           let importedModuleType: Type;
@@ -293,6 +281,20 @@ export class CompileMetadataResolver {
                 `Unexpected value '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`);
           }
         });
+      }
+
+      // The providers of the module have to go last
+      // so that they overwrite any other provider we already added.
+      if (meta.providers) {
+        providers.push(...this.getProvidersMetadata(meta.providers, entryComponents));
+      }
+      if (meta.entryComponents) {
+        entryComponents.push(
+            ...flattenArray(meta.entryComponents)
+                .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
+      }
+      if (meta.schemas) {
+        schemas.push(...flattenArray(meta.schemas));
       }
 
       transitiveModule.entryComponents.push(...entryComponents);
