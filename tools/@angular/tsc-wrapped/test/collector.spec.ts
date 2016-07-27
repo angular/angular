@@ -16,7 +16,8 @@ describe('Collector', () => {
     host = new Host(FILES, [
       '/app/app.component.ts', '/app/cases-data.ts', '/app/error-cases.ts', '/promise.ts',
       '/unsupported-1.ts', '/unsupported-2.ts', 'import-star.ts', 'exported-functions.ts',
-      'exported-enum.ts', 'exported-consts.ts', 'static-method.ts', 'static-method-call.ts'
+      'exported-enum.ts', 'exported-consts.ts', 'static-method.ts', 'static-method-call.ts',
+      'static-field-reference.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
@@ -378,6 +379,37 @@ describe('Collector', () => {
       }]
     }]);
   });
+
+  it('should be able to collect a static field', () => {
+    let staticSource = program.getSourceFile('/static-field.ts');
+    let metadata = collector.getMetadata(staticSource);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['MyModule'];
+    expect(classData).toBeDefined();
+    expect(classData.statics).toEqual({VALUE: 'Some string'});
+  });
+
+  it('should be able to collect a reference to a static field', () => {
+    let staticSource = program.getSourceFile('/static-field-reference.ts');
+    let metadata = collector.getMetadata(staticSource);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['Foo'];
+    expect(classData).toBeDefined();
+    expect(classData.decorators).toEqual([{
+      __symbolic: 'call',
+      expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+      arguments: [{
+        providers: [{
+          provide: 'a',
+          useValue: {
+            __symbolic: 'select',
+            expression: {__symbolic: 'reference', module: './static-field.ts', name: 'MyModule'},
+            member: 'VALUE'
+          }
+        }]
+      }]
+    }]);
+  });
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -639,6 +671,23 @@ const FILES: Directory = {
 
     @Component({
       providers: MyModule.with('a')
+    })
+    export class Foo { }
+  `,
+  'static-field.ts': `
+    import {Injectable} from 'angular2/core';
+
+    @Injectable()
+    export class MyModule {
+      static VALUE = 'Some string';
+    }
+  `,
+  'static-field-reference.ts': `
+    import {Component} from 'angular2/core';
+    import {MyModule} from './static-field.ts';
+
+    @Component({
+      providers: [ { provide: 'a', useValue: MyModule.VALUE } ]
     })
     export class Foo { }
   `,
