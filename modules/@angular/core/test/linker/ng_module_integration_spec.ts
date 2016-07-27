@@ -164,16 +164,6 @@ function declareTests({useJit}: {useJit: boolean}) {
                 `Can't export pipe ${stringify(SomePipe)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
       });
 
-      it('should error when using an entryComponent that was neither declared nor imported', () => {
-        @NgModule({entryComponents: [SomeComp]})
-        class SomeModule {
-        }
-
-        expect(() => createModule(SomeModule))
-            .toThrowError(
-                `NgModule ${stringify(SomeModule)} uses ${stringify(SomeComp)} via "entryComponents" but it was neither declared nor imported!`);
-      });
-
       it('should error if a directive is declared in more than 1 module', () => {
         @NgModule({declarations: [SomeDirective]})
         class Module1 {
@@ -280,6 +270,21 @@ function declareTests({useJit}: {useJit: boolean}) {
                    .componentType)
             .toBe(SomeComp);
       });
+
+      it('should warn and auto declare when using an entryComponent that was neither declared nor imported',
+         () => {
+           @NgModule({entryComponents: [SomeComp]})
+           class SomeModule {
+           }
+
+           const ngModule = createModule(SomeModule);
+           expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
+               .toBe(SomeComp);
+
+           expect(console.warnings).toEqual([
+             `NgModule ${stringify(SomeModule)} uses ${stringify(SomeComp)} via "entryComponents" but it was neither declared nor imported! This warning will become an error after final.`
+           ]);
+         });
 
       it('should entryComponents ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
         @NgModule({

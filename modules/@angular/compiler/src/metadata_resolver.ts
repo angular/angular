@@ -351,17 +351,23 @@ export class CompileMetadataResolver {
       }
     });
     moduleMeta.declaredDirectives.forEach((dirMeta) => {
-      dirMeta.entryComponents.forEach((entryComponent) => {
-        if (!moduleMeta.transitiveModule.directivesSet.has(entryComponent.runtime)) {
-          throw new BaseException(
-              `Component ${stringify(dirMeta.type.runtime)} in NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponent.runtime)} via "entryComponents" but it was neither declared nor imported into the module!`);
+      dirMeta.entryComponents.forEach((entryComponentType) => {
+        if (!moduleMeta.transitiveModule.directivesSet.has(entryComponentType.runtime)) {
+          this._addDirectiveToModule(
+              this.getDirectiveMetadata(entryComponentType.runtime), moduleMeta.type.runtime,
+              moduleMeta.transitiveModule, moduleMeta.declaredDirectives);
+          this._console.warn(
+              `Component ${stringify(dirMeta.type.runtime)} in NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponentType.runtime)} via "entryComponents" but it was neither declared nor imported into the module! This warning will become an error after final.`);
         }
       });
     });
     moduleMeta.entryComponents.forEach((entryComponentType) => {
       if (!moduleMeta.transitiveModule.directivesSet.has(entryComponentType.runtime)) {
-        throw new BaseException(
-            `NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponentType.runtime)} via "entryComponents" but it was neither declared nor imported!`);
+        this._addDirectiveToModule(
+            this.getDirectiveMetadata(entryComponentType.runtime), moduleMeta.type.runtime,
+            moduleMeta.transitiveModule, moduleMeta.declaredDirectives);
+        this._console.warn(
+            `NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponentType.runtime)} via "entryComponents" but it was neither declared nor imported! This warning will become an error after final.`);
       }
     });
   }
