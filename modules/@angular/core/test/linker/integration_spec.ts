@@ -14,7 +14,7 @@ import {isPresent, stringify, isBlank,} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
 import {PromiseWrapper, EventEmitter, ObservableWrapper, PromiseCompleter,} from '../../src/facade/async';
 
-import {Injector, Injectable, forwardRef, OpaqueToken, Inject, Host, SkipSelf, SkipSelfMetadata, OnDestroy, ReflectiveInjector} from '@angular/core';
+import {Injector, Injectable, forwardRef, OpaqueToken, Inject, Host, SkipSelf, SkipSelfMetadata, OnDestroy, ReflectiveInjector, Compiler} from '@angular/core';
 
 import {NgIf, NgFor, AsyncPipe} from '@angular/common';
 
@@ -1477,6 +1477,34 @@ function declareTests({useJit}: {useJit: boolean}) {
                      async.done();
                    });
              }));
+
+      it('should throw when using directives without selector',
+         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           @Directive({})
+           class SomeDirective {
+           }
+
+           @Component({selector: 'comp', template: '', directives: [SomeDirective]})
+           class SomeComponent {
+           }
+
+           expect(() => tcb.createSync(SomeComponent))
+               .toThrowError(
+                   `Directive ${stringify(SomeDirective)} has no selector, please add it!`);
+         }));
+
+      it('should use a default element name for components without selectors',
+         inject([Compiler, Injector], (compiler: Compiler, injector: Injector) => {
+           @Component({template: ''})
+           class SomeComponent {
+           }
+
+           const compFactory = compiler.compileComponentSync(SomeComponent);
+           expect(compFactory.selector).toBe('ng-component');
+           expect(
+               getDOM().nodeName(compFactory.create(injector).location.nativeElement).toLowerCase())
+               .toEqual('ng-component');
+         }));
     });
 
     describe('error handling', () => {

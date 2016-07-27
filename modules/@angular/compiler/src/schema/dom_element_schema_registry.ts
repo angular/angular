@@ -313,4 +313,6 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     var mappedPropName = StringMapWrapper.get(attrToPropMap, propName);
     return isPresent(mappedPropName) ? mappedPropName : propName;
   }
+
+  getDefaultComponentElementName(): string { return 'ng-component'; }
 }

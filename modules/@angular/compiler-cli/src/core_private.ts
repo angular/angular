@@ -14,4 +14,7 @@ export var ReflectorReader: typeof t.ReflectorReader = r.ReflectorReader;
 export type ReflectionCapabilities = t.ReflectionCapabilities;
 export var ReflectionCapabilities: typeof t.ReflectionCapabilities = r.ReflectionCapabilities;
 
+export type Console = t.Console;
+export var Console: typeof t.Console = r.Console;
+
 export var reflector: typeof t.reflector = r.reflector;
