@@ -8,10 +8,13 @@
 
 import {Directive, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
 
+import {BaseException} from '../facade/exceptions';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
+import {NgForm} from './ng_form';
+import {TemplateDrivenErrors} from './template_driven_errors';
 
 export const modelGroupProvider: any =
     /*@ts2dart_const*/ /* @ts2dart_Provider */ {
@@ -68,5 +71,12 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
     this._parent = parent;
     this._validators = validators;
     this._asyncValidators = asyncValidators;
+  }
+
+  /** @internal */
+  _checkParentType(): void {
+    if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
+      TemplateDrivenErrors.modelGroupParentException();
+    }
   }
 }

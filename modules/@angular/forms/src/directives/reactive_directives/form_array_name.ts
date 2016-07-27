@@ -12,6 +12,7 @@ import {BaseException} from '../../facade/exceptions';
 import {FormArray} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
+import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, controlPath} from '../shared';
 import {AsyncValidatorFn, ValidatorFn} from '../validators';
 
@@ -101,28 +102,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
   private _checkParentType(): void {
     if (!(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective)) {
-      this._throwParentException();
+      ReactiveErrors.arrayParentException();
     }
-  }
-
-  private _throwParentException(): void {
-    throw new BaseException(`formArrayName must be used with a parent formGroup directive.
-                You'll want to add a formGroup directive and pass it an existing FormGroup instance
-                (you can create one in your class).
-
-                Example:
-                <div [formGroup]="myGroup">
-                  <div formArrayName="cities">
-                    <div *ngFor="let city of cityArray.controls; let i=index">
-                      <input [formControlName]="i">
-                    </div>
-                  </div>
-                </div>
-
-                In your class:
-                this.cityArray = new FormArray([new FormControl('SF')]);
-                this.myGroup = new FormGroup({
-                  cities: this.cityArray
-                });`);
   }
 }
