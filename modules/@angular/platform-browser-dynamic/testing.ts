@@ -26,11 +26,6 @@ export const platformBrowserDynamicTesting = createPlatformFactory(
     INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
 
 /**
- * @deprecated Use {@link platformBrowserDynamicTesting} instead
- */
-export const browserDynamicTestingPlatform = platformBrowserDynamicTesting;
-
-/**
  * NgModule for testing.
  *
  * @stable
@@ -46,7 +41,7 @@ export class BrowserDynamicTestingModule {
 }
 
 /**
- * @deprecated Use initTestEnvironment with browserDynamicTestingPlatform instead.
+ * @deprecated Use initTestEnvironment with platformBrowserDynamicTesting instead.
  */
 export const TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
     // Note: This is not a real provider but a hack to still support the deprecated

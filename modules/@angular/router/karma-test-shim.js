@@ -74,7 +74,7 @@ Promise.all([
 
   testing.initTestEnvironment(
     testingBrowser.BrowserDynamicTestingModule,
-    testingBrowser.browserDynamicTestingPlatform());
+    testingBrowser.platformBrowserDynamicTesting());
 
 }).then(function() {
   // Finally, load all spec files.
