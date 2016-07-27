@@ -7,7 +7,7 @@
  */
 
 import {Component, Injectable} from '@angular/core';
-import {ROUTER_DIRECTIVES, ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import * as db from './data';
 import {Location} from '@angular/common';
 import {PromiseWrapper, PromiseCompleter} from '@angular/core/src/facade/async';
@@ -89,7 +89,7 @@ export class DbService {
   }
 }
 
-@Component({selector: 'inbox', templateUrl: 'app/inbox.html', directives: ROUTER_DIRECTIVES})
+@Component({selector: 'inbox', templateUrl: 'app/inbox.html'})
 export class InboxCmp {
   private items: InboxRecord[] = [];
   private ready: boolean = false;
@@ -116,7 +116,7 @@ export class InboxCmp {
 }
 
 
-@Component({selector: 'drafts', templateUrl: 'app/drafts.html', directives: ROUTER_DIRECTIVES})
+@Component({selector: 'drafts', templateUrl: 'app/drafts.html'})
 export class DraftsCmp {
   private items: InboxRecord[] = [];
   private ready: boolean = false;
@@ -138,8 +138,6 @@ export const ROUTER_CONFIG = [
 
 @Component({
   selector: 'inbox-app',
-  viewProviders: [DbService],
-  templateUrl: 'app/inbox-app.html',
-  directives: ROUTER_DIRECTIVES
+  templateUrl: 'app/inbox-app.html'
 })
 export class InboxApp {}

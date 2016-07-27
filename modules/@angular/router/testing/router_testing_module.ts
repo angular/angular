@@ -12,7 +12,7 @@ import {Compiler, ComponentResolver, Injectable, Injector, NgModule, NgModuleFac
 
 import {Router, RouterOutletMap, Routes, UrlSerializer} from '../index';
 import {ROUTES} from '../src/router_config_loader';
-import {RouterModule} from '../src/router_module';
+import {ROUTER_PROVIDERS, RouterModule} from '../src/router_module';
 
 
 
@@ -64,6 +64,7 @@ function setupTestingRouter(
 @NgModule({
   exports: [RouterModule],
   providers: [
+    ROUTER_PROVIDERS,
     {provide: Location, useClass: SpyLocation},
     {provide: LocationStrategy, useClass: MockLocationStrategy},
     {provide: NgModuleFactoryLoader, useClass: SpyNgModuleFactoryLoader},

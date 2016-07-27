@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {ApplicationRef, ComponentResolver, Injector, NgModule, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
+import {HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
+import {ApplicationRef, ComponentResolver, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
 
-import {ROUTER_CONFIGURATION, rootRoute, setupRouter} from './common_router_providers';
+import {ExtraOptions, ROUTER_CONFIGURATION, provideRouterConfig, provideRoutes, rootRoute, setupRouter} from './common_router_providers';
+import {Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
@@ -26,9 +27,17 @@ import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
  */
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
 
+const pathLocationStrategy = {
+  provide: LocationStrategy,
+  useClass: PathLocationStrategy
+};
+const hashLocationStrategy = {
+  provide: LocationStrategy,
+  useClass: HashLocationStrategy
+};
+
 export const ROUTER_PROVIDERS: any[] = [
-  Location, {provide: LocationStrategy, useClass: PathLocationStrategy},
-  {provide: UrlSerializer, useClass: DefaultUrlSerializer}, {
+  Location, {provide: UrlSerializer, useClass: DefaultUrlSerializer}, {
     provide: Router,
     useFactory: setupRouter,
     deps: [
@@ -41,41 +50,36 @@ export const ROUTER_PROVIDERS: any[] = [
   {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}}
 ];
 
-
 /**
- * Router module to be used for lazy loaded parts.
+ * Router module.
+ *
+ * When registered at the root, it should be used as follows:
+ *
+ * ### Example
+ *
+ * ```
+ * bootstrap(AppCmp, {imports: [RouterModule.forRoot(ROUTES)]});
+ * ```
+ *
+ * For lazy loaded modules it should be used as follows:
  *
  * ### Example
  *
  * ```
  * @NgModule({
- *   imports: [RouterModuleWithoutProviders]
+ *   imports: [RouterModule.forChild(CHILD_ROUTES)]
  * })
- * class TeamsModule {}
- * ```
- *
- * @experimental We will soon have a way for the `RouterModule` to be imported with and without a
- * provider,
- * and then this module will be removed.
- */
-@NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
-export class RouterModuleWithoutProviders {
-}
-
-/**
- * Router module.
- *
- * ### Example
- *
- * ```
- * bootstrap(AppCmp, {modules: [RouterModule]});
+ * class Lazy {}
  * ```
  *
  * @experimental
  */
-@NgModule({exports: [RouterModuleWithoutProviders], providers: ROUTER_PROVIDERS})
+@NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
 export class RouterModule {
   constructor(private injector: Injector) {
+    // do the initialization only once
+    if ((<any>injector).parent.get(RouterModule, null)) return;
+
     setTimeout(() => {
       const appRef = injector.get(ApplicationRef);
       if (appRef.componentTypes.length == 0) {
@@ -84,5 +88,19 @@ export class RouterModule {
         injector.get(Router).initialNavigation();
       }
     }, 0);
+  }
+
+  static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
+    return {
+      ngModule: RouterModule,
+      providers: [
+        ROUTER_PROVIDERS, provideRoutes(routes), config ? provideRouterConfig(config) : [],
+        config.useHash ? hashLocationStrategy : pathLocationStrategy
+      ]
+    };
+  }
+
+  static forChild(routes: Routes): ModuleWithProviders {
+    return {ngModule: RouterModule, providers: [provideRoutes(routes)]};
   }
 }

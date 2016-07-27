@@ -130,9 +130,6 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   urlTree: UrlTree;
 
-  /**
-   * @internal
-   */
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {

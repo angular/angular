@@ -56,6 +56,7 @@ export declare type Event = NavigationStart | NavigationEnd | NavigationCancel |
 /** @experimental */
 export interface ExtraOptions {
     enableTracing?: boolean;
+    useHash?: boolean;
 }
 
 /** @stable */
@@ -112,10 +113,10 @@ export declare const PRIMARY_OUTLET: string;
 /** @experimental */
 export declare function provideRouter(config: Routes, opts?: ExtraOptions): any[];
 
-/** @experimental */
+/** @deprecated */
 export declare function provideRouterConfig(config: ExtraOptions): any;
 
-/** @experimental */
+/** @deprecated */
 export declare function provideRoutes(routes: Routes): any;
 
 /** @experimental */
@@ -198,6 +199,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     };
     target: string;
     urlTree: UrlTree;
+    constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
     ngOnChanges(changes: {}): any;
     ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
@@ -206,10 +208,8 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
 /** @experimental */
 export declare class RouterModule {
     constructor(injector: Injector);
-}
-
-/** @experimental */
-export declare class RouterModuleWithoutProviders {
+    static forChild(routes: Routes): ModuleWithProviders;
+    static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders;
 }
 
 /** @stable */

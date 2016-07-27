@@ -21,7 +21,10 @@ export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
 /**
  * @experimental
  */
-export interface ExtraOptions { enableTracing?: boolean; }
+export interface ExtraOptions {
+  enableTracing?: boolean;
+  useHash?: boolean;
+}
 
 export function setupRouter(
     ref: ApplicationRef, resolver: ComponentResolver, urlSerializer: UrlSerializer,
@@ -126,7 +129,7 @@ export function provideRouter(routes: Routes, config: ExtraOptions): any[] {
  * }
  * ```
  *
- * @experimental
+ * @deprecated
  */
 export function provideRoutes(routes: Routes): any {
   return [
@@ -149,7 +152,7 @@ export function provideRoutes(routes: Routes): any {
  * }
  * ```
  *
- * @experimental
+ * @deprecated
  */
 export function provideRouterConfig(config: ExtraOptions): any {
   return {provide: ROUTER_CONFIGURATION, useValue: config};

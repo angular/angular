@@ -15,7 +15,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterModuleWithoutProviders, RouterStateSnapshot, RoutesRecognized, provideRoutes} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, provideRoutes} from '../index';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
@@ -1202,8 +1202,8 @@ describe('Integration', () => {
 
                  @NgModule({
                    declarations: [LazyLoadedComponent],
-                   providers: [provideRoutes([{path: 'loaded', component: LazyLoadedComponent}])],
-                   imports: [RouterModuleWithoutProviders],
+                   imports:
+                       [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])],
                    entryComponents: [LazyLoadedComponent]
                  })
                  class LoadedModule {
@@ -1388,12 +1388,11 @@ describe('Integration', () => {
 
                       @NgModule({
                         declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent],
-                        providers: [provideRoutes([{
+                        imports: [RouterModule.forChild([{
                           path: 'loaded',
                           component: ParentLazyLoadedComponent,
                           children: [{path: 'child', component: ChildLazyLoadedComponent}]
                         }])],
-                        imports: [RouterModuleWithoutProviders],
                         entryComponents: [ParentLazyLoadedComponent, ChildLazyLoadedComponent]
                       })
                       class LoadedModule {
@@ -1429,15 +1428,12 @@ describe('Integration', () => {
              @NgModule({
                entryComponents: [LazyLoadedComponent],
                declarations: [LazyLoadedComponent],
-               imports: [RouterModuleWithoutProviders],
-               providers: [
-                 LazyLoadedService, provideRoutes([{
-                   path: '',
-                   canActivate: ['alwaysTrue'],
-                   children: [{path: 'loaded', component: LazyLoadedComponent}]
-                 }]),
-                 {provide: 'alwaysTrue', useValue: () => true}
-               ]
+               imports: [RouterModule.forChild([{
+                 path: '',
+                 canActivate: ['alwaysTrue'],
+                 children: [{path: 'loaded', component: LazyLoadedComponent}]
+               }])],
+               providers: [LazyLoadedService, {provide: 'alwaysTrue', useValue: () => true}]
              })
              class LoadedModule {
              }

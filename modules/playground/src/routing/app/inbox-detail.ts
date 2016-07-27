@@ -7,12 +7,12 @@
  */
 
 import {Component, NgModule} from '@angular/core';
-import {ROUTER_DIRECTIVES, ActivatedRoute, provideRoutes} from '@angular/router';
+import {ActivatedRoute, RouterModule} from '@angular/router';
 import {PromiseWrapper} from '@angular/core/src/facade/async';
 import {InboxRecord, DbService} from './inbox-app';
 
 @Component(
-    {selector: 'inbox-detail', directives: ROUTER_DIRECTIVES, templateUrl: 'app/inbox-detail.html'})
+    {selector: 'inbox-detail', templateUrl: 'app/inbox-detail.html'})
 export class InboxDetailCmp {
   private record: InboxRecord = new InboxRecord();
   private ready: boolean = false;
@@ -26,6 +26,6 @@ export class InboxDetailCmp {
 
 @NgModule({
   declarations: [InboxDetailCmp],
-  providers: [provideRoutes([{path: ':id', component: InboxDetailCmp}])]
+  imports: [RouterModule.forChild([{path: ':id', component: InboxDetailCmp}])]
 })
 export default class InboxDetailModule {}

@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InboxApp, InboxCmp, DraftsCmp, ROUTER_CONFIG} from './app/inbox-app';
+import {InboxApp, InboxCmp, DraftsCmp, DbService, ROUTER_CONFIG} from './app/inbox-app';
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
-import {provideRoutes, RouterModule} from '@angular/router';
+import {RouterModule} from '@angular/router';
 
 export function main() {
   bootstrap(InboxApp, {
     providers: [
-      provideRoutes(ROUTER_CONFIG),
-      {provide: LocationStrategy, useClass: HashLocationStrategy}
+      DbService
     ],
     declarations: [InboxCmp, DraftsCmp],
-    imports: [RouterModule]
+    imports: [RouterModule.forRoot(ROUTER_CONFIG, {useHash: true})]
   });
 }
