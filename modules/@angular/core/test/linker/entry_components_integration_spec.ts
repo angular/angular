@@ -7,20 +7,33 @@
  */
 
 import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, configureModule} from '@angular/core/testing';
+import {TestComponentBuilder, configureModule, configureCompiler} from '@angular/core/testing';
 import {Component, ComponentFactoryResolver, NoComponentFactoryError, forwardRef, ANALYZE_FOR_ENTRY_COMPONENTS, ViewMetadata} from '@angular/core';
 import {stringify} from '../../src/facade/lang';
+import {Console} from '../../src/console';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });
   describe('no jit', () => { declareTests({useJit: false}); });
 }
 
+class DummyConsole implements Console {
+  public warnings: string[] = [];
+
+  log(message: string) {}
+  warn(message: string) { this.warnings.push(message); }
+}
+
 function declareTests({useJit}: {useJit: boolean}) {
   describe('@Component.entryComponents', function() {
-    beforeEach(() => { configureModule({declarations: [MainComp, ChildComp, NestedChildComp]}); });
+    var console: DummyConsole;
+    beforeEach(() => {
+      console = new DummyConsole();
+      configureCompiler({useJit: useJit, providers: [{provide: Console, useValue: console}]});
+      configureModule({declarations: [MainComp, ChildComp, NestedChildComp]});
+    });
 
-    it('should error if the component was not declared nor imported by the module',
+    it('should warn and auto declare if the component was not declared nor imported by the module',
        inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
          @Component({selector: 'child', template: ''})
@@ -31,9 +44,14 @@ function declareTests({useJit}: {useJit: boolean}) {
          class SomeComp {
          }
 
-         expect(() => tcb.createSync(SomeComp))
-             .toThrowError(
-                 `Component ${stringify(SomeComp)} in NgModule DynamicTestModule uses ${stringify(ChildComp)} via "entryComponents" but it was neither declared nor imported into the module!`);
+         const compFixture = tcb.createSync(SomeComp);
+         const cf = compFixture.componentRef.injector.get(ComponentFactoryResolver)
+                        .resolveComponentFactory(ChildComp);
+         expect(cf.componentType).toBe(ChildComp);
+
+         expect(console.warnings).toEqual([
+           `Component ${stringify(SomeComp)} in NgModule DynamicTestModule uses ${stringify(ChildComp)} via "entryComponents" but it was neither declared nor imported into the module! This warning will become an error after final.`
+         ]);
        }));
 
 
