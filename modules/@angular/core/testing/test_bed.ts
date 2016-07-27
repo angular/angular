@@ -160,7 +160,7 @@ export class TestBed implements Injector {
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
     if (!this._instantiated) {
       throw new BaseException(
-          'Illegal state: The test bed\'s injector has not yet been created. Call initTestNgModule first!');
+          'Illegal state: The test bed\'s injector has not yet been created. Call initTestModule first!');
     }
     if (token === TestBed) {
       return this;
@@ -174,7 +174,7 @@ export class TestBed implements Injector {
   execute(tokens: any[], fn: Function): any {
     if (!this._instantiated) {
       throw new BaseException(
-          'Illegal state: The test bed\'s injector has not yet been created. Call initTestNgModule first!');
+          'Illegal state: The test bed\'s injector has not yet been created. Call initTestModule first!');
     }
     var params = tokens.map(t => this.get(t));
     return FunctionWrapper.apply(fn, params);
