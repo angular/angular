@@ -133,7 +133,9 @@ export function isStrictStringMap(obj: any): boolean {
 }
 
 export function isPromise(obj: any): boolean {
-  return obj instanceof (<any>_global).Promise;
+  // allow any Promise/A+ compliant thenable.
+  // It's up to the caller to ensure that obj.then conforms to the spec
+  return isPresent(obj) && isFunction(obj.then);
 }
 
 export function isArray(obj: any): boolean {
