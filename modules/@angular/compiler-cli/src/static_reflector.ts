@@ -94,7 +94,8 @@ export class StaticReflector implements ReflectorReader {
       let classMetadata = this.getTypeMetadata(type);
       let members = classMetadata ? classMetadata['members'] : {};
       propMetadata = mapStringMap(members, (propData, propName) => {
-        let prop = (<any[]>propData).find(a => a['__symbolic'] == 'property');
+        let prop = (<any[]>propData)
+                       .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
         if (prop && prop['decorators']) {
           return this.simplify(type, prop['decorators']);
         } else {

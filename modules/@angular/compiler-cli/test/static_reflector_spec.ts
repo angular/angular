@@ -7,12 +7,13 @@
  */
 
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler-cli/src/static_reflector';
-import {animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
+import {HostListenerMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import {ListWrapper} from '@angular/facade/src/collection';
 import {isBlank} from '@angular/facade/src/lang';
 import {MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
+
 
 
 // This matches .ts files but not .d.ts files.
@@ -94,6 +95,7 @@ describe('StaticReflector', () => {
         host.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
     let props = reflector.propMetadata(HeroDetailComponent);
     expect(props['hero']).toBeTruthy();
+    expect(props['onMouseOver']).toEqual([new HostListenerMetadata('mouseover', ['$event'])]);
   });
 
   it('should get an empty object from propMetadata for an unknown class', () => {
@@ -684,7 +686,28 @@ class MockReflectorHost implements StaticReflectorHost {
                     }
                   ]
                 }
-              ]
+              ],
+              'onMouseOver': [
+                    {
+                        '__symbolic': 'method',
+                        'decorators': [
+                            {
+                                '__symbolic': 'call',
+                                'expression': {
+                                    '__symbolic': 'reference',
+                                    'module': 'angular2/src/core/metadata',
+                                    'name': 'HostListener'
+                                },
+                                'arguments': [
+                                    'mouseover',
+                                    [
+                                        '$event'
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
           }
         }
