@@ -28,6 +28,9 @@ class ClassWithDecorators {
   @PropDecorator('p3')
   set c(value: any /** TODO #9100 */) {}
 
+  @PropDecorator('p4')
+  someMethod() {}
+
   constructor(@ParamDecorator('a') a: AType, @ParamDecorator('b') b: AType) {
     this.a = a;
     this.b = b;
@@ -178,6 +181,7 @@ export function main() {
         var p = reflector.propMetadata(ClassWithDecorators);
         expect(p['a']).toEqual([propDecorator('p1'), propDecorator('p2')]);
         expect(p['c']).toEqual([propDecorator('p3')]);
+        expect(p['someMethod']).toEqual([propDecorator('p4')]);
       });
 
       it('should return registered meta if available', () => {
