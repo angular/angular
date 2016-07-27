@@ -960,6 +960,24 @@ function declareTests({useJit}: {useJit: boolean}) {
           expect(injector.get('token1')).toBe('direct');
         });
 
+        it('should overwrite the providers of imported ModuleWithProviders', () => {
+          @NgModule()
+          class ImportedModule {
+          }
+
+          @NgModule({
+            providers: [{provide: 'token1', useValue: 'direct'}],
+            imports: [
+              {ngModule: ImportedModule, providers: [{provide: 'token1', useValue: 'imported'}]}
+            ]
+          })
+          class SomeModule {
+          }
+
+          const injector = createModule(SomeModule).injector;
+          expect(injector.get('token1')).toBe('direct');
+        });
+
         it('should overwrite the providers of imported modules on the second import level', () => {
           @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
           class ImportedModuleLevel2 {
