@@ -280,10 +280,6 @@ export class CompileMetadataResolver {
           if (declaredDirMeta = this.getDirectiveMetadata(declaredType, false)) {
             this._addDirectiveToModule(
                 declaredDirMeta, moduleType, transitiveModule, declaredDirectives, true);
-            // Collect @Component.directives/pipes/entryComponents into our declared
-            // directives/pipes.
-            this._getTransitiveViewDirectivesAndPipes(
-                declaredDirMeta, moduleType, transitiveModule, declaredDirectives, declaredPipes);
           } else if (declaredPipeMeta = this.getPipeMetadata(declaredType, false)) {
             this._addPipeToModule(
                 declaredPipeMeta, moduleType, transitiveModule, declaredPipes, true);
@@ -338,9 +334,6 @@ export class CompileMetadataResolver {
     this._addDirectiveToModule(
         compMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule,
         moduleMeta.declaredDirectives);
-    this._getTransitiveViewDirectivesAndPipes(
-        compMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule,
-        moduleMeta.declaredDirectives, moduleMeta.declaredPipes);
 
     moduleMeta.transitiveModule.entryComponents.push(compMeta.type);
     moduleMeta.entryComponents.push(compMeta.type);
@@ -361,17 +354,6 @@ export class CompileMetadataResolver {
             `Can't export pipe ${stringify(pipeMeta.type.runtime)} from ${stringify(moduleMeta.type.runtime)} as it was neither declared nor imported!`);
       }
     });
-    moduleMeta.declaredDirectives.forEach((dirMeta) => {
-      dirMeta.entryComponents.forEach((entryComponentType) => {
-        if (!moduleMeta.transitiveModule.directivesSet.has(entryComponentType.runtime)) {
-          this._addDirectiveToModule(
-              this.getDirectiveMetadata(entryComponentType.runtime), moduleMeta.type.runtime,
-              moduleMeta.transitiveModule, moduleMeta.declaredDirectives);
-          this._console.warn(
-              `Component ${stringify(dirMeta.type.runtime)} in NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponentType.runtime)} via "entryComponents" but it was neither declared nor imported into the module! This warning will become an error after final.`);
-        }
-      });
-    });
     moduleMeta.entryComponents.forEach((entryComponentType) => {
       if (!moduleMeta.transitiveModule.directivesSet.has(entryComponentType.runtime)) {
         this._addDirectiveToModule(
@@ -381,6 +363,11 @@ export class CompileMetadataResolver {
             `NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponentType.runtime)} via "entryComponents" but it was neither declared nor imported! This warning will become an error after final.`);
       }
     });
+    // Collect @Component.directives/pipes/entryComponents into our declared
+    // directives/pipes. Do this last so that directives added by previous steps
+    // are considered as well!
+    moduleMeta.declaredDirectives.forEach(
+        (dirMeta) => { this._getTransitiveViewDirectivesAndPipes(dirMeta, moduleMeta); });
   }
 
   private _addTypeToModule(type: Type, moduleType: Type) {
@@ -394,10 +381,7 @@ export class CompileMetadataResolver {
 
 
   private _getTransitiveViewDirectivesAndPipes(
-      compMeta: cpl.CompileDirectiveMetadata, moduleType: any,
-      transitiveModule: cpl.TransitiveCompileNgModuleMetadata,
-      declaredDirectives: cpl.CompileDirectiveMetadata[],
-      declaredPipes: cpl.CompilePipeMetadata[]) {
+      compMeta: cpl.CompileDirectiveMetadata, moduleMeta: cpl.CompileNgModuleMetadata) {
     if (!compMeta.isComponent) {
       return;
     }
@@ -407,7 +391,8 @@ export class CompileMetadataResolver {
             `Unexpected pipe value '${pipeType}' on the View of component '${stringify(compMeta.type.runtime)}'`);
       }
       const pipeMeta = this.getPipeMetadata(pipeType);
-      this._addPipeToModule(pipeMeta, moduleType, transitiveModule, declaredPipes);
+      this._addPipeToModule(
+          pipeMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule, moduleMeta.declaredPipes);
     };
 
     const addDirective = (dirType: Type) => {
@@ -416,9 +401,10 @@ export class CompileMetadataResolver {
             `Unexpected directive value '${dirType}' on the View of component '${stringify(compMeta.type.runtime)}'`);
       }
       const dirMeta = this.getDirectiveMetadata(dirType);
-      if (this._addDirectiveToModule(dirMeta, moduleType, transitiveModule, declaredDirectives)) {
-        this._getTransitiveViewDirectivesAndPipes(
-            dirMeta, moduleType, transitiveModule, declaredDirectives, declaredPipes);
+      if (this._addDirectiveToModule(
+              dirMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule,
+              moduleMeta.declaredDirectives)) {
+        this._getTransitiveViewDirectivesAndPipes(dirMeta, moduleMeta);
       }
     };
     const view = this._viewResolver.resolve(compMeta.type.runtime);
@@ -428,6 +414,13 @@ export class CompileMetadataResolver {
     if (view.directives) {
       flattenArray(view.directives).forEach(addDirective);
     }
+    compMeta.entryComponents.forEach((entryComponentType) => {
+      if (!moduleMeta.transitiveModule.directivesSet.has(entryComponentType.runtime)) {
+        this._console.warn(
+            `Component ${stringify(compMeta.type.runtime)} in NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponentType.runtime)} via "entryComponents" but it was neither declared nor imported into the module! This warning will become an error after final.`);
+        addDirective(entryComponentType.runtime);
+      }
+    });
   }
 
   private _getTransitiveNgModuleMetadata(
