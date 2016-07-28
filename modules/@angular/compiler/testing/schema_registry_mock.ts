@@ -29,4 +29,6 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
     var result = this.attrPropMapping[attrName];
     return isPresent(result) ? result : attrName;
   }
+
+  getDefaultComponentElementName(): string { return 'ng-component'; }
 }

@@ -21,6 +21,7 @@ import {DirectiveResolver} from './directive_resolver';
 import {Identifiers, identifierToken} from './identifiers';
 import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
+import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {getUrlScheme} from './url_resolver';
 import {MODULE_SUFFIX, ValueTransformer, sanitizeIdentifier, visitValue} from './util';
 import {ViewResolver} from './view_resolver';
@@ -38,6 +39,7 @@ export class CompileMetadataResolver {
       private _ngModuleResolver: NgModuleResolver, private _directiveResolver: DirectiveResolver,
       private _pipeResolver: PipeResolver, private _viewResolver: ViewResolver,
       private _config: CompilerConfig, private _console: Console,
+      private _schemaRegistry: ElementSchemaRegistry,
       private _reflector: ReflectorReader = reflector) {}
 
   private sanitizeTokenName(token: any): string {
@@ -124,6 +126,7 @@ export class CompileMetadataResolver {
       var viewProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
       var moduleUrl = staticTypeModuleUrl(directiveType);
       var entryComponentTypes: cpl.CompileTypeMetadata[] = [];
+      let selector = dirMeta.selector;
       if (dirMeta instanceof ComponentMetadata) {
         var cmpMeta = <ComponentMetadata>dirMeta;
         var viewMeta = this._viewResolver.resolve(directiveType);
@@ -155,6 +158,14 @@ export class CompileMetadataResolver {
               flattenArray(cmpMeta.entryComponents)
                   .map((cmp) => this.getTypeMetadata(cmp, staticTypeModuleUrl(cmp)));
         }
+        if (!selector) {
+          selector = this._schemaRegistry.getDefaultComponentElementName();
+        }
+      } else {
+        if (!selector) {
+          throw new BaseException(
+              `Directive ${stringify(directiveType)} has no selector, please add it!`);
+        }
       }
 
       var providers: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
@@ -170,7 +181,7 @@ export class CompileMetadataResolver {
         viewQueries = this.getQueriesMetadata(dirMeta.queries, true, directiveType);
       }
       meta = cpl.CompileDirectiveMetadata.create({
-        selector: dirMeta.selector,
+        selector: selector,
         exportAs: dirMeta.exportAs,
         isComponent: isPresent(templateMeta),
         type: this.getTypeMetadata(directiveType, moduleUrl),

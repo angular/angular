@@ -23,6 +23,7 @@ import {ViewEncapsulation} from '@angular/core';
 
 import {StaticReflector} from './static_reflector';
 import {CompileMetadataResolver, HtmlParser, DirectiveNormalizer, Lexer, Parser, DomElementSchemaRegistry, TypeScriptEmitter, MessageExtractor, removeDuplicates, ExtractionResult, Message, ParseError, serializeXmb,} from './compiler_private';
+import {Console} from './core_private';
 
 import {ReflectorHost} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
@@ -146,10 +147,13 @@ class Extractor {
     });
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const expressionParser = new Parser(new Lexer());
+    const elementSchemaRegistry = new DomElementSchemaRegistry();
+    const console = new Console();
     const resolver = new CompileMetadataResolver(
         new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        new compiler.ViewResolver(staticReflector), config, /*console*/ null, staticReflector);
+        new compiler.ViewResolver(staticReflector), config, console, elementSchemaRegistry,
+        staticReflector);
 
     // TODO(vicb): handle implicit
     const extractor = new MessageExtractor(htmlParser, expressionParser, [], {});

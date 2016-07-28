@@ -17,6 +17,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleCompiler, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './compiler_private';
+import {Console} from './core_private';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector, StaticSymbol} from './static_reflector';
@@ -135,13 +136,15 @@ export class CodeGenerator {
     });
     const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
     const expressionParser = new Parser(new Lexer());
-    const tmplParser = new TemplateParser(
-        expressionParser, new DomElementSchemaRegistry(), htmlParser,
-        /*console*/ null, []);
+    const elementSchemaRegistry = new DomElementSchemaRegistry();
+    const console = new Console();
+    const tmplParser =
+        new TemplateParser(expressionParser, elementSchemaRegistry, htmlParser, console, []);
     const resolver = new CompileMetadataResolver(
         new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        new compiler.ViewResolver(staticReflector), config, /*console*/ null, staticReflector);
+        new compiler.ViewResolver(staticReflector), config, console, elementSchemaRegistry,
+        staticReflector);
     const offlineCompiler = new compiler.OfflineCompiler(
         resolver, normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
         new NgModuleCompiler(), new TypeScriptEmitter(reflectorHost));
