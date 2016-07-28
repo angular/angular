@@ -20,8 +20,9 @@ import {Type, isArray, isPresent, stringify} from '../src/facade/lang';
  */
 @Injectable()
 export class MockDirectiveResolver extends DirectiveResolver {
+  private _directives = new Map<Type, DirectiveMetadata>();
   private _providerOverrides = new Map<Type, any[]>();
-  private viewProviderOverrides = new Map<Type, any[]>();
+  private _viewProviderOverrides = new Map<Type, any[]>();
   private _views = new Map<Type, ViewMetadata>();
   private _inlineTemplates = new Map<Type, string>();
   private _animations = new Map<Type, AnimationEntryMetadata[]>();
@@ -34,30 +35,33 @@ export class MockDirectiveResolver extends DirectiveResolver {
   private _clearCacheFor(component: Type) { this._compiler.clearCacheFor(component); }
 
   resolve(type: Type, throwIfNotFound = true): DirectiveMetadata {
-    const dm = super.resolve(type, throwIfNotFound);
-    if (!dm) {
+    let metadata = this._directives.get(type);
+    if (!metadata) {
+      metadata = super.resolve(type, throwIfNotFound);
+    }
+    if (!metadata) {
       return null;
     }
 
     const providerOverrides = this._providerOverrides.get(type);
-    const viewProviderOverrides = this.viewProviderOverrides.get(type);
+    const viewProviderOverrides = this._viewProviderOverrides.get(type);
 
-    let providers = dm.providers;
+    let providers = metadata.providers;
     if (isPresent(providerOverrides)) {
-      const originalViewProviders: any[] = isPresent(dm.providers) ? dm.providers : [];
+      const originalViewProviders: any[] = isPresent(metadata.providers) ? metadata.providers : [];
       providers = originalViewProviders.concat(providerOverrides);
     }
 
-    if (dm instanceof ComponentMetadata) {
-      let viewProviders = dm.viewProviders;
+    if (metadata instanceof ComponentMetadata) {
+      let viewProviders = metadata.viewProviders;
       if (isPresent(viewProviderOverrides)) {
-        const originalViewProviders: any[] = isPresent(dm.viewProviders) ? dm.viewProviders : [];
+        const originalViewProviders: any[] = isPresent(metadata.viewProviders) ? metadata.viewProviders : [];
         viewProviders = originalViewProviders.concat(viewProviderOverrides);
       }
 
       let view = this._views.get(type);
       if (!view) {
-        view = dm;
+        view = metadata;
       }
 
       const directives: any[] = [];
@@ -92,17 +96,17 @@ export class MockDirectiveResolver extends DirectiveResolver {
       }
 
       return new ComponentMetadata({
-        selector: dm.selector,
-        inputs: dm.inputs,
-        outputs: dm.outputs,
-        host: dm.host,
-        exportAs: dm.exportAs,
-        moduleId: dm.moduleId,
-        queries: dm.queries,
-        changeDetection: dm.changeDetection,
+        selector: metadata.selector,
+        inputs: metadata.inputs,
+        outputs: metadata.outputs,
+        host: metadata.host,
+        exportAs: metadata.exportAs,
+        moduleId: metadata.moduleId,
+        queries: metadata.queries,
+        changeDetection: metadata.changeDetection,
         providers: providers,
         viewProviders: viewProviders,
-        entryComponents: dm.entryComponents,
+        entryComponents: metadata.entryComponents,
         template: inlineTemplate,
         templateUrl: templateUrl,
         directives: directives.length > 0 ? directives : null,
@@ -116,14 +120,22 @@ export class MockDirectiveResolver extends DirectiveResolver {
     }
 
     return new DirectiveMetadata({
-      selector: dm.selector,
-      inputs: dm.inputs,
-      outputs: dm.outputs,
-      host: dm.host,
+      selector: metadata.selector,
+      inputs: metadata.inputs,
+      outputs: metadata.outputs,
+      host: metadata.host,
       providers: providers,
-      exportAs: dm.exportAs,
-      queries: dm.queries
+      exportAs: metadata.exportAs,
+      queries: metadata.queries
     });
+  }
+
+  /**
+   * Overrides the {@link DirectiveMetadata} for a directive.
+   */
+  setDirective(type: Type, metadata: DirectiveMetadata): void {
+    this._directives.set(type, metadata);
+    this._clearCacheFor(type);
   }
 
   setProvidersOverride(type: Type, providers: any[]): void {
@@ -132,7 +144,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
   }
 
   setViewProvidersOverride(type: Type, viewProviders: any[]): void {
-    this.viewProviderOverrides.set(type, viewProviders);
+    this._viewProviderOverrides.set(type, viewProviders);
     this._clearCacheFor(type);
   }
 
