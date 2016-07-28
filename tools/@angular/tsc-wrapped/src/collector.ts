@@ -150,9 +150,20 @@ export class MetadataCollector {
           case ts.SyntaxKind.GetAccessor:
           case ts.SyntaxKind.SetAccessor:
             const property = <ts.PropertyDeclaration>member;
+            if (property.flags & ts.NodeFlags.Static) {
+              const name = evaluator.nameOf(property.name);
+              if (!isMetadataError(name)) {
+                if (property.initializer) {
+                  const value = evaluator.evaluateNode(property.initializer);
+                  recordStaticMember(name, value);
+                } else {
+                  recordStaticMember(name, errorSym('Variable not initialized', property.name));
+                }
+              }
+            }
             const propertyDecorators = getDecorators(property.decorators);
             if (propertyDecorators) {
-              let name = evaluator.nameOf(property.name);
+              const name = evaluator.nameOf(property.name);
               if (!isMetadataError(name)) {
                 recordMember(name, {__symbolic: 'property', decorators: propertyDecorators});
               }

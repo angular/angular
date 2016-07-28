@@ -404,6 +404,13 @@ describe('StaticReflector', () => {
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers).toEqual({provider: 'a', useValue: 100});
   });
+
+  it('should be able to get metadata for a class containing a static field reference', () => {
+    const annotations =
+        reflector.annotations(host.getStaticSymbol('/tmp/src/static-field-reference.ts', 'Foo'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers).toEqual([{provider: 'a', useValue: 'Some string'}]);
+  });
 });
 
 class MockReflectorHost implements StaticReflectorHost {
@@ -963,6 +970,23 @@ class MockReflectorHost implements StaticReflectorHost {
           providers: MyModule.with(100)
         })
         export class MyComponent { }
+      `,
+      '/tmp/src/static-field.ts': `
+        import {Injectable} from 'angular2/core';
+
+        @Injectable()
+        export class MyModule {
+          static VALUE = 'Some string';
+        }
+      `,
+      '/tmp/src/static-field-reference.ts': `
+        import {Component} from 'angular2/src/core/metadata';
+        import {MyModule} from './static-field';
+
+        @Component({
+          providers: [ { provider: 'a', useValue: MyModule.VALUE } ]
+        })
+        export class Foo { }
       `
     };
 

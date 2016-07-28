@@ -438,8 +438,17 @@ export class StaticReflector implements ReflectorReader {
                 return null;
               case 'select':
                 let selectTarget = simplify(expression['expression']);
-                let member = simplify(expression['member']);
-                if (selectTarget && isPrimitive(member)) return selectTarget[member];
+                if (selectTarget instanceof StaticSymbol) {
+                  // Access to a static instance variable
+                  const declarationValue = resolveReferenceValue(selectTarget);
+                  if (declarationValue && declarationValue.statics) {
+                    selectTarget = declarationValue.statics;
+                  } else {
+                    return null;
+                  }
+                }
+                const member = simplify(expression['member']);
+                if (selectTarget && isPrimitive(member)) return simplify(selectTarget[member]);
                 return null;
               case 'reference':
                 if (!expression.module) {
