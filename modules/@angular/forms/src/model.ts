@@ -409,9 +409,9 @@ export class FormControl extends AbstractControl {
   }
 
   reset(value: any = null, {onlySelf}: {onlySelf?: boolean} = {}): void {
-    this.updateValue(value, {onlySelf: onlySelf});
     this.markAsPristine({onlySelf: onlySelf});
     this.markAsUntouched({onlySelf: onlySelf});
+    this.updateValue(value, {onlySelf: onlySelf});
   }
 
   /**

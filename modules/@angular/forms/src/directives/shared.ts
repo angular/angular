@@ -45,8 +45,8 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   // view -> model
   dir.valueAccessor.registerOnChange((newValue: any) => {
     dir.viewToModelUpdate(newValue);
-    control.updateValue(newValue, {emitModelToViewChange: false});
     control.markAsDirty();
+    control.updateValue(newValue, {emitModelToViewChange: false});
   });
 
   control.registerOnChange((newValue: any, emitModelEvent: boolean) => {

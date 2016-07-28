@@ -236,6 +236,33 @@ export function main() {
              });
            }));
 
+    it('should mark controls as dirty before emitting a value change event',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             const login = new FormControl('oldValue');
+             const form = new FormGroup({'login': login});
+
+             const t = `<div [formGroup]="form">
+                <input type="text" formControlName="login">
+               </div>`;
+
+             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.detectChanges();
+
+               login.valueChanges.subscribe(() => {
+                 expect(login.dirty).toBe(true);
+                 async.done();
+               });
+
+               const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+               loginEl.value = 'newValue';
+
+               dispatchEvent(loginEl, 'input');
+             });
+           }));
+
     it('should clear value in UI when form resets programmatically',
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
@@ -286,6 +313,37 @@ export function main() {
 
                expect(loginEl.value).toBe('oldValue');
                async.done();
+             });
+           }));
+
+    it('should mark control as pristine before emitting a value change event when resetting ',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             const login = new FormControl('oldValue');
+             const form = new FormGroup({'login': login});
+
+             const t = `<div [formGroup]="form">
+                <input type="text" formControlName="login">
+               </div>`;
+
+             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.detectChanges();
+
+               const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+               loginEl.value = 'newValue';
+
+               dispatchEvent(loginEl, 'input');
+
+               expect(login.pristine).toBe(false);
+
+               login.valueChanges.subscribe(() => {
+                 expect(login.pristine).toBe(true);
+                 async.done();
+               });
+
+               form.reset();
              });
            }));
 
