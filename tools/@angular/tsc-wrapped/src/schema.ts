@@ -79,7 +79,7 @@ export interface MetadataObject { [name: string]: MetadataValue; }
 export interface MetadataArray { [name: number]: MetadataValue; }
 
 export interface MetadataSymbolicExpression {
-  __symbolic: 'binary'|'call'|'index'|'new'|'pre'|'reference'|'select'|'spread'
+  __symbolic: 'binary'|'call'|'index'|'new'|'pre'|'reference'|'select'|'spread'|'if'
 }
 export function isMetadataSymbolicExpression(value: any): value is MetadataSymbolicExpression {
   if (value) {
@@ -92,6 +92,7 @@ export function isMetadataSymbolicExpression(value: any): value is MetadataSymbo
       case 'reference':
       case 'select':
       case 'spread':
+      case 'if':
         return true;
     }
   }
@@ -138,6 +139,16 @@ export interface MetadataSymbolicPrefixExpression extends MetadataSymbolicExpres
 export function isMetadataSymbolicPrefixExpression(value: any):
     value is MetadataSymbolicPrefixExpression {
   return value && value.__symbolic === 'pre';
+}
+
+export interface MetadataSymbolicIfExpression extends MetadataSymbolicExpression {
+  __symbolic: 'if';
+  condition: MetadataValue;
+  thenExpression: MetadataValue;
+  elseExpression: MetadataValue;
+}
+export function isMetadataSymbolicIfExpression(value: any): value is MetadataSymbolicIfExpression {
+  return value && value.__symbolic === 'if';
 }
 
 export interface MetadataGlobalReferenceExpression extends MetadataSymbolicExpression {

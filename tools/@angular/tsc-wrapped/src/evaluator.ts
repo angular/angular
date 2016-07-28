@@ -511,6 +511,15 @@ export class Evaluator {
           };
         }
         break;
+      case ts.SyntaxKind.ConditionalExpression:
+        const conditionalExpression = <ts.ConditionalExpression>node;
+        const condition = this.evaluateNode(conditionalExpression.condition);
+        const thenExpression = this.evaluateNode(conditionalExpression.whenTrue);
+        const elseExpression = this.evaluateNode(conditionalExpression.whenFalse);
+        if (isPrimitive(condition)) {
+          return condition ? thenExpression : elseExpression;
+        }
+        return {__symbolic: 'if', condition, thenExpression, elseExpression};
       case ts.SyntaxKind.FunctionExpression:
       case ts.SyntaxKind.ArrowFunction:
         return errorSymbol('Function call not supported', node);
