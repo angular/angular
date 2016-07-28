@@ -20,6 +20,21 @@ export function main() {
       dirResolver = new MockDirectiveResolver(injector);
     }));
 
+    describe('Directive overriding', () => {
+      it('should fallback to the default DirectiveResolver when templates are not overridden',
+         () => {
+           var ngModule = dirResolver.resolve(SomeComponent);
+           expect(ngModule.selector).toEqual('cmp');
+         });
+
+      it('should allow overriding the @NgModule', () => {
+        dirResolver.setDirective(
+            SomeComponent, new ComponentMetadata({selector: 'someOtherSelector'}));
+        var metadata = dirResolver.resolve(SomeComponent);
+        expect(metadata.selector).toEqual('someOtherSelector');
+      });
+    });
+
     describe('View overriding', () => {
       it('should fallback to the default ViewResolver when templates are not overridden', () => {
         var view = <ComponentMetadata>dirResolver.resolve(SomeComponent);
