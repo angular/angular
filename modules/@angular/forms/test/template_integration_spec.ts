@@ -369,6 +369,58 @@ export function main() {
              });
            }));
 
+    it('should mark controls as dirty before emitting a value change event',
+       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+
+         const t = `<form>
+                <input type="text" name="login" ngModel>
+               </form>`;
+
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+           fixture.detectChanges();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm).form;
+           fixture.detectChanges();
+           tick();
+
+           form.find('login').valueChanges.subscribe(
+               () => { expect(form.find('login').dirty).toBe(true); });
+
+           const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+           loginEl.value = 'newValue';
+
+           dispatchEvent(loginEl, 'input');
+         });
+       })));
+
+    it('should mark control as pristine before emitting a value change event when resetting ',
+       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+
+         const t = `<form>
+                <input type="text" name="login" ngModel>
+               </form>`;
+
+         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+           fixture.detectChanges();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm).form;
+           const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+           const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+           fixture.detectChanges();
+           tick();
+
+           loginEl.value = 'newValue';
+           dispatchEvent(loginEl, 'input');
+
+           expect(form.find('login').pristine).toBe(false);
+
+           form.find('login').valueChanges.subscribe(
+               () => { expect(form.find('login').pristine).toBe(true); });
+
+           dispatchEvent(formEl, 'reset');
+         });
+       })));
+
     describe('radio value accessor', () => {
       it('should support <type=radio>',
          fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
