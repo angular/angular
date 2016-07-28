@@ -29,7 +29,7 @@ export interface ExtraOptions {
 export function setupRouter(
     ref: ApplicationRef, resolver: ComponentResolver, urlSerializer: UrlSerializer,
     outletMap: RouterOutletMap, location: Location, injector: Injector,
-    loader: NgModuleFactoryLoader, config: Routes, opts: ExtraOptions) {
+    loader: NgModuleFactoryLoader, config: Routes, opts: ExtraOptions = {}) {
   if (ref.componentTypes.length == 0) {
     throw new Error('Bootstrap at least one component before injecting Router.');
   }
@@ -89,7 +89,7 @@ export function setupRouterInitializer(injector: Injector) {
  *
  * @deprecated use RouterModule instead
  */
-export function provideRouter(routes: Routes, config: ExtraOptions): any[] {
+export function provideRouter(routes: Routes, config: ExtraOptions = {}): any[] {
   return [
     {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
     {provide: ROUTES, useExisting: ROUTER_CONFIG}, {provide: ROUTER_CONFIG, useValue: routes},

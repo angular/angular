@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
+import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {ApplicationRef, ComponentResolver, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
 
 import {ExtraOptions, ROUTER_CONFIGURATION, provideRouterConfig, provideRoutes, rootRoute, setupRouter} from './common_router_providers';
@@ -94,8 +94,12 @@ export class RouterModule {
     return {
       ngModule: RouterModule,
       providers: [
-        ROUTER_PROVIDERS, provideRoutes(routes), config ? provideRouterConfig(config) : [],
-        config.useHash ? hashLocationStrategy : pathLocationStrategy
+        ROUTER_PROVIDERS, provideRoutes(routes), {provide: ROUTER_CONFIGURATION, useValue: config},
+        {
+          provide: LocationStrategy,
+          useFactory: provideLocationStrategy,
+          deps: [PlatformLocation, APP_BASE_HREF, ROUTER_CONFIGURATION]
+        }
       ]
     };
   }
@@ -103,4 +107,10 @@ export class RouterModule {
   static forChild(routes: Routes): ModuleWithProviders {
     return {ngModule: RouterModule, providers: [provideRoutes(routes)]};
   }
+}
+
+function provideLocationStrategy(
+    platformLocationStrategy: PlatformLocation, baseHref: string, options: ExtraOptions = {}) {
+  return options.useHash ? new HashLocationStrategy(platformLocationStrategy, baseHref) :
+                           new PathLocationStrategy(platformLocationStrategy, baseHref);
 }
