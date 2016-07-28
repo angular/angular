@@ -675,10 +675,12 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _createDirectiveAsts(
       isTemplateElement: boolean, elementName: string, directives: CompileDirectiveMetadata[],
       props: BoundElementOrDirectiveProperty[], elementOrDirectiveRefs: ElementOrDirectiveRef[],
-      sourceSpan: ParseSourceSpan, targetReferences: ReferenceAst[]): DirectiveAst[] {
+      elementSourceSpan: ParseSourceSpan, targetReferences: ReferenceAst[]): DirectiveAst[] {
     const matchedReferences = new Set<string>();
     let component: CompileDirectiveMetadata = null;
     const directiveAsts = directives.map((directive: CompileDirectiveMetadata) => {
+      const sourceSpan = new ParseSourceSpan(
+          elementSourceSpan.start, elementSourceSpan.end, `Directive ${directive.type.name}`);
       if (directive.isComponent) {
         component = directive;
       }

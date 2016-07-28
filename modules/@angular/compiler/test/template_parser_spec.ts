@@ -308,7 +308,7 @@ export function main() {
 
              expect(console.warnings).toEqual([[
                'Template parse warnings:',
-               `Assigning animation triggers within host data as attributes such as "@prop": "exp" is deprecated. Use "[@prop]": "exp" instead! ("[ERROR ->]<div></div>"): TestComp@0:0`
+               `Assigning animation triggers within host data as attributes such as "@prop": "exp" is deprecated. Use "[@prop]": "exp" instead! ("[ERROR ->]<div></div>"): TestComp@0:0, Directive DirA`
              ].join('\n')]);
            });
 
@@ -1233,6 +1233,16 @@ Can't have multiple template bindings on one element. Use only one attribute nam
       it('should report invalid property names', () => {
         expect(() => parse('<div [invalidProp]></div>', [])).toThrowError(`Template parse errors:
 Can't bind to 'invalidProp' since it isn't a known native property ("<div [ERROR ->][invalidProp]></div>"): TestComp@0:5`);
+      });
+
+      it('should report invalid host property names', () => {
+        var dirA = CompileDirectiveMetadata.create({
+          selector: 'div',
+          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+          host: {'[invalidProp]': 'someProp'}
+        });
+        expect(() => parse('<div></div>', [dirA])).toThrowError(`Template parse errors:
+Can't bind to 'invalidProp' since it isn't a known native property ("[ERROR ->]<div></div>"): TestComp@0:0, Directive DirA`);
       });
 
       it('should report errors in expressions', () => {
