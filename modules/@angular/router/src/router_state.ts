@@ -105,6 +105,8 @@ export class ActivatedRoute {
     this._futureSnapshot = futureSnapshot;
   }
 
+  get routeConfig(): Route { return this._futureSnapshot.routeConfig; }
+
   toString(): string {
     return this.snapshot ? this.snapshot.toString() : `Future(${this._futureSnapshot})`;
   }
@@ -178,6 +180,8 @@ export class ActivatedRouteSnapshot {
     this._lastPathIndex = lastPathIndex;
     this._resolve = resolve;
   }
+
+  get routeConfig(): Route { return this._routeConfig; }
 
   toString(): string {
     const url = this.url.map(s => s.toString()).join('/');
