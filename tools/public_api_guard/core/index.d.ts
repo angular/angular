@@ -237,6 +237,7 @@ export declare class CollectionChangeRecord {
 
 /** @stable */
 export declare class Compiler {
+    _injector: Injector;
     clearCache(): void;
     clearCacheFor(type: Type): void;
     compileComponentAsync<T>(component: ConcreteType<T>, ngModule?: Type): Promise<ComponentFactory<T>>;
