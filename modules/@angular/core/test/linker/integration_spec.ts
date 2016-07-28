@@ -1525,7 +1525,8 @@ function declareTests({useJit}: {useJit: boolean}) {
              tcb.createAsync(ComponentWithoutView);
              expect(true).toBe(false);
            } catch (e) {
-             expect(e.message).toContain(`must have either 'template' or 'templateUrl' set.`);
+             expect(e.message).toContain(
+                 `No template specified for component ${stringify(ComponentWithoutView)}`);
            }
          }));
 

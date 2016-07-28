@@ -17,7 +17,7 @@ import {AnimationEntryMetadata} from './animation/metadata';
 import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
 import {ModuleWithProviders, NgModuleMetadata, SchemaMetadata} from './metadata/ng_module';
-import {ViewEncapsulation, ViewMetadata} from './metadata/view';
+import {ViewEncapsulation} from './metadata/view';
 
 export {ANALYZE_FOR_ENTRY_COMPONENTS, AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 export {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
@@ -44,46 +44,7 @@ export interface DirectiveDecorator extends TypeDecorator {}
  *
  * @stable
  */
-export interface ComponentDecorator extends TypeDecorator {
-  /**
-   * Chain {@link ViewMetadata} annotation.
-   */
-  View(obj: {
-    templateUrl?: string,
-    template?: string,
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
-    renderer?: string,
-    styles?: string[],
-    styleUrls?: string[],
-    animations?: AnimationEntryMetadata[],
-    interpolation?: [string, string]
-  }): ViewDecorator;
-}
-
-/**
- * Interface for the {@link ViewMetadata} decorator function.
- *
- * See {@link ViewMetadataFactory}.
- *
- * @experimental
- */
-export interface ViewDecorator extends TypeDecorator {
-  /**
-   * Chain {@link ViewMetadata} annotation.
-   */
-  View(obj: {
-    templateUrl?: string,
-    template?: string,
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
-    renderer?: string,
-    styles?: string[],
-    styleUrls?: string[],
-    animations?: AnimationEntryMetadata[],
-    interpolation?: [string, string]
-  }): ViewDecorator;
-}
+export interface ComponentDecorator extends TypeDecorator {}
 
 /**
  * Interface for the {@link NgModuleMetadata} decorator function.
@@ -235,75 +196,6 @@ export interface ComponentMetadataFactory {
     interpolation?: [string, string],
     entryComponents?: Array<Type|any[]>
   }): ComponentMetadata;
-}
-
-/**
- * {@link ViewMetadata} factory for creating annotations, decorators or DSL.
- *
- * ### Example as TypeScript Decorator
- *
- * ```
- * import {Component, View} from '@angular/core';
- *
- * @Component({...})
- * class MyComponent {
- *   constructor() {
- *     ...
- *   }
- * }
- * ```
- *
- * ### Example as ES5 DSL
- *
- * ```
- * var MyComponent = ng
- *   .Component({...})
- *   .View({...})
- *   .Class({
- *     constructor: function() {
- *       ...
- *     }
- *   })
- * ```
- *
- * ### Example as ES5 annotation
- *
- * ```
- * var MyComponent = function() {
- *   ...
- * };
- *
- * MyComponent.annotations = [
- *   new ng.Component({...}),
- *   new ng.View({...})
- * ]
- * ```
- *
- * @experimental You should most likely use ComponentMetadataFactory instead
- */
-export interface ViewMetadataFactory {
-  (obj: {
-    templateUrl?: string,
-    template?: string,
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
-    encapsulation?: ViewEncapsulation,
-    styles?: string[],
-    styleUrls?: string[],
-    animations?: AnimationEntryMetadata[],
-    interpolation?: [string, string]
-  }): ViewDecorator;
-  new (obj: {
-    templateUrl?: string,
-    template?: string,
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
-    encapsulation?: ViewEncapsulation,
-    styles?: string[],
-    styleUrls?: string[],
-    animations?: AnimationEntryMetadata[],
-    interpolation?: [string, string]
-  }): ViewMetadata;
 }
 
 /**
@@ -541,7 +433,7 @@ export interface NgModuleMetadataFactory {
  * @Annotation
  */
 export var Component: ComponentMetadataFactory =
-    <ComponentMetadataFactory>makeDecorator(ComponentMetadata, (fn: any) => fn.View = View);
+    <ComponentMetadataFactory>makeDecorator(ComponentMetadata);
 
 // TODO(alexeagle): remove the duplication of this doc. It is copied from DirectiveMetadata.
 /**
@@ -580,7 +472,7 @@ export var Component: ComponentMetadataFactory =
  * current `ElementInjector` resolves the constructor dependencies for each directive.
  *
  * Angular then resolves dependencies as follows, according to the order in which they appear in the
- * {@link ViewMetadata}:
+ * {@link ComponentMetadata}:
  *
  * 1. Dependencies on the current element
  * 2. Dependencies on element injectors and their parents until it encounters a Shadow DOM boundary
@@ -829,7 +721,8 @@ export var Component: ComponentMetadataFactory =
  * location in the current view
  * where these actions are performed.
  *
- * Views are always created as children of the current {@link ViewMetadata}, and as siblings of the
+ * Views are always created as children of the current {@link ComponentMetadata}, and as siblings of
+ * the
  * `<template>` element. Thus a
  * directive in a child view cannot inject the directive that created it.
  *
@@ -927,41 +820,6 @@ export var Component: ComponentMetadataFactory =
  */
 export var Directive: DirectiveMetadataFactory =
     <DirectiveMetadataFactory>makeDecorator(DirectiveMetadata);
-
-// TODO(alexeagle): remove the duplication of this doc. It is copied from ViewMetadata.
-/**
- * Metadata properties available for configuring Views.
- *
- * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
- * `@View` annotation specifies the HTML template to use, and lists the directives that are active
- * within the template.
- *
- * When a component is instantiated, the template is loaded into the component's shadow root, and
- * the expressions and statements in the template are evaluated against the component.
- *
- * For details on the `@Component` annotation, see {@link ComponentMetadata}.
- *
- * ### Example
- *
- * ```
- * @Component({
- *   selector: 'greet',
- *   template: 'Hello {{name}}!',
- *   directives: [GreetUser, Bold]
- * })
- * class Greet {
- *   name: string;
- *
- *   constructor() {
- *     this.name = 'World';
- *   }
- * }
- * ```
- * @deprecated
- * @Annotation
- */
-var View: ViewMetadataFactory =
-    <ViewMetadataFactory>makeDecorator(ViewMetadata, (fn: any) => fn.View = View);
 
 /**
  * Specifies that a constant attribute value should be injected.

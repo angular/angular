@@ -11,8 +11,8 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Injectable, Component, Input, ViewMetadata, Compiler, ComponentFactory, Injector, NgModule, NgModuleFactory} from '@angular/core';
 import {ConcreteType, stringify} from '../src/facade/lang';
 import {fakeAsync, tick, TestComponentBuilder, ComponentFixture, configureCompiler} from '@angular/core/testing';
-import {XHR, ViewResolver} from '@angular/compiler';
-import {MockViewResolver} from '@angular/compiler/testing';
+import {XHR, DirectiveResolver} from '@angular/compiler';
+import {MockDirectiveResolver} from '@angular/compiler/testing';
 
 import {SpyXHR} from './spies';
 
@@ -33,19 +33,19 @@ export function main() {
     let compiler: Compiler;
     let xhr: SpyXHR;
     let tcb: TestComponentBuilder;
-    let viewResolver: MockViewResolver;
+    let dirResolver: MockDirectiveResolver;
     let injector: Injector;
 
     beforeEach(() => { configureCompiler({providers: [{provide: XHR, useClass: SpyXHR}]}); });
 
     beforeEach(inject(
-        [Compiler, TestComponentBuilder, XHR, ViewResolver, Injector],
+        [Compiler, TestComponentBuilder, XHR, DirectiveResolver, Injector],
         (_compiler: Compiler, _tcb: TestComponentBuilder, _xhr: SpyXHR,
-         _viewResolver: MockViewResolver, _injector: Injector) => {
+         _dirResolver: MockDirectiveResolver, _injector: Injector) => {
           compiler = _compiler;
           tcb = _tcb;
           xhr = _xhr;
-          viewResolver = _viewResolver;
+          dirResolver = _dirResolver;
           injector = _injector;
         }));
 
@@ -74,12 +74,12 @@ export function main() {
       });
 
       it('should not update existing compilation results', () => {
-        viewResolver.setView(
+        dirResolver.setView(
             SomeComp,
             new ViewMetadata({template: '<child-cmp></child-cmp>', directives: [ChildComp]}));
-        viewResolver.setInlineTemplate(ChildComp, 'oldChild');
+        dirResolver.setInlineTemplate(ChildComp, 'oldChild');
         let compFactory = compiler.compileComponentSync(SomeComp);
-        viewResolver.setInlineTemplate(ChildComp, 'newChild');
+        dirResolver.setInlineTemplate(ChildComp, 'newChild');
         compiler.compileComponentSync(SomeComp);
         let compRef = compFactory.create(injector);
         expect(compRef.location.nativeElement).toHaveText('oldChild');
@@ -151,9 +151,8 @@ export function main() {
            }
 
            xhr.spy('get').andCallFake(() => Promise.resolve(''));
-           viewResolver.setView(
-               SomeComp, new ViewMetadata({template: '', directives: [ChildComp]}));
-           viewResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
+           dirResolver.setView(SomeComp, new ViewMetadata({template: '', directives: [ChildComp]}));
+           dirResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
            expect(() => compiler.compileModuleSync(SomeModule))
                .toThrowError(
                    `Can't compile synchronously as ${stringify(ChildComp)} is still being loaded!`);

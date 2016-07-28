@@ -13,7 +13,7 @@ import {
   ViewMetadata
 } from '@angular/core';
 
-import {CompilerConfig, ViewResolver} from '@angular/compiler';
+import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
 
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
@@ -21,8 +21,8 @@ function _createBindings(): any[] {
   var multiplyTemplatesBy = getIntParameter('elements');
   return [
     {
-      provide: ViewResolver,
-      useFactory: () => new MultiplyViewResolver(
+      provide: DirectiveResolver,
+      useFactory: () => new MultiplyDirectiveResolver(
                               multiplyTemplatesBy,
                               [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
       deps: []
@@ -59,7 +59,7 @@ function measureWrapper(func, desc) {
 }
 
 
-class MultiplyViewResolver extends ViewResolver {
+class MultiplyDirectiveResolver extends DirectiveResolver {
   _multiplyBy: number;
   _cache = new Map<Type, ViewMetadata>();
 

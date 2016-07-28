@@ -7,8 +7,8 @@
  */
 
 import {LowerCasePipe, NgIf} from '@angular/common';
-import {CompilerConfig, NgModuleResolver, ViewResolver} from '@angular/compiler';
-import {MockNgModuleResolver, MockViewResolver} from '@angular/compiler/testing';
+import {CompilerConfig, NgModuleResolver} from '@angular/compiler';
+import {MockNgModuleResolver} from '@angular/compiler/testing';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, HostBinding, Inject, Injectable, Injector, Input, ModuleWithProviders, NgModule, NgModuleMetadata, NgModuleRef, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, ViewMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, configureCompiler} from '@angular/core/testing';
@@ -125,11 +125,10 @@ function declareTests({useJit}: {useJit: boolean}) {
       configureCompiler({useJit: useJit, providers: [{provide: Console, useValue: console}]});
     });
 
-    beforeEach(
-        inject([Compiler, Injector, ViewResolver], (_compiler: Compiler, _injector: Injector) => {
-          compiler = _compiler;
-          injector = _injector;
-        }));
+    beforeEach(inject([Compiler, Injector], (_compiler: Compiler, _injector: Injector) => {
+      compiler = _compiler;
+      injector = _injector;
+    }));
 
     function createModule<T>(
         moduleType: ConcreteType<T>, parentInjector: Injector = null): NgModuleRef<T> {

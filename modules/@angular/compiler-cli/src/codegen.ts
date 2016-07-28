@@ -143,8 +143,7 @@ export class CodeGenerator {
     const resolver = new CompileMetadataResolver(
         new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        new compiler.ViewResolver(staticReflector), config, console, elementSchemaRegistry,
-        staticReflector);
+        config, console, elementSchemaRegistry, staticReflector);
     const offlineCompiler = new compiler.OfflineCompiler(
         resolver, normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
         new NgModuleCompiler(), new TypeScriptEmitter(reflectorHost));

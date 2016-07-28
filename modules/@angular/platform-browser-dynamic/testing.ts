@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerConfig, DirectiveResolver, NgModuleResolver, ViewResolver, analyzeAppProvidersForDeprecatedConfiguration} from '@angular/compiler';
+import {CompilerConfig, DirectiveResolver, NgModuleResolver, analyzeAppProvidersForDeprecatedConfiguration} from '@angular/compiler';
 import {OverridingTestComponentBuilder, platformCoreDynamicTesting} from '@angular/compiler/testing';
 import {Compiler, CompilerFactory, CompilerOptions, NgModule, PlatformRef, Provider, ReflectiveInjector, Type, createPlatform, createPlatformFactory} from '@angular/core';
 import {TestComponentBuilder, TestComponentRenderer, initTestEnvironment} from '@angular/core/testing';

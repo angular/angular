@@ -50,7 +50,7 @@ import {ViewEncapsulation} from './view';
  * current `ElementInjector` resolves the constructor dependencies for each directive.
  *
  * Angular then resolves dependencies as follows, according to the order in which they appear in the
- * {@link ViewMetadata}:
+ * {@link ComponentMetadata}:
  *
  * 1. Dependencies on the current element
  * 2. Dependencies on element injectors and their parents until it encounters a Shadow DOM boundary
@@ -299,7 +299,8 @@ import {ViewEncapsulation} from './view';
  * location in the current view
  * where these actions are performed.
  *
- * Views are always created as children of the current {@link ViewMetadata}, and as siblings of the
+ * Views are always created as children of the current {@link ComponentMetadata}, and as siblings of
+ * the
  * `<template>` element. Thus a
  * directive in a child view cannot inject the directive that created it.
  *
@@ -787,8 +788,6 @@ export class DirectiveMetadata extends InjectableMetadata {
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
- * For details on the `@View` annotation, see {@link ViewMetadata}.
- *
  * ## Lifecycle hooks
  *
  * When the component class implements some {@linkDocs guide/lifecycle-hooks} the
@@ -877,12 +876,32 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   moduleId: string;
 
+  /**
+   * Specifies a template URL for an Angular component.
+   *
+   * NOTE: Only one of `templateUrl` or `template` can be defined per View.
+   *
+   * <!-- TODO: what's the url relative to? -->
+   */
   templateUrl: string;
 
+  /**
+   * Specifies an inline template for an Angular component.
+   *
+   * NOTE: Only one of `templateUrl` or `template` can be defined per View.
+   */
   template: string;
 
+  /**
+   * Specifies stylesheet URLs for an Angular component.
+   *
+   * <!-- TODO: what's the url relative to? -->
+   */
   styleUrls: string[];
 
+  /**
+   * Specifies an inline stylesheet for an Angular component.
+   */
   styles: string[];
 
   /**
@@ -962,6 +981,12 @@ export class ComponentMetadata extends DirectiveMetadata {
 
   pipes: Array<Type|any[]>;
 
+  /**
+   * Specify how the template and the styles should be encapsulated.
+   * The default is {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} if the view
+   * has styles,
+   * otherwise {@link ViewEncapsulation#None `ViewEncapsulation.None`}.
+   */
   encapsulation: ViewEncapsulation;
 
   interpolation: [string, string];

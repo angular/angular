@@ -143,7 +143,16 @@ export class DirectiveResolver {
         changeDetection: dm.changeDetection,
         providers: dm.providers,
         viewProviders: dm.viewProviders,
-        entryComponents: dm.entryComponents
+        entryComponents: dm.entryComponents,
+        directives: dm.directives,
+        pipes: dm.pipes,
+        template: dm.template,
+        templateUrl: dm.templateUrl,
+        styles: dm.styles,
+        styleUrls: dm.styleUrls,
+        encapsulation: dm.encapsulation,
+        animations: dm.animations,
+        interpolation: dm.interpolation
       });
 
     } else {

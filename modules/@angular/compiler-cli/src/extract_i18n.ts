@@ -152,8 +152,7 @@ class Extractor {
     const resolver = new CompileMetadataResolver(
         new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        new compiler.ViewResolver(staticReflector), config, console, elementSchemaRegistry,
-        staticReflector);
+        config, console, elementSchemaRegistry, staticReflector);
 
     // TODO(vicb): handle implicit
     const extractor = new MessageExtractor(htmlParser, expressionParser, [], {});

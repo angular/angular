@@ -19,15 +19,14 @@ export function main() {
     });
 
     it('should declare Component class', () => {
-      var MyComponent =
-          Component({}).View({}).View({}).Class({constructor: function() { this.works = true; }});
+      var MyComponent = Component({}).Class({constructor: function() { this.works = true; }});
       expect(new MyComponent().works).toEqual(true);
     });
 
     it('should create type in ES5', () => {
       function MyComponent(){};
       var as: any /** TODO #9100 */;
-      (<any>MyComponent).annotations = as = Component({}).View({});
+      (<any>MyComponent).annotations = as = Component({});
       expect(reflector.annotations(MyComponent)).toEqual(as.annotations);
     });
   });

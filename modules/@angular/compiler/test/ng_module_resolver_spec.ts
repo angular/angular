@@ -35,8 +35,8 @@ export function main() {
     beforeEach(() => { resolver = new NgModuleResolver(); });
 
     it('should read out the metadata from the class', () => {
-      var viewMetadata = resolver.resolve(SomeModule);
-      expect(viewMetadata).toEqual(new NgModuleMetadata({
+      var moduleMetadata = resolver.resolve(SomeModule);
+      expect(moduleMetadata).toEqual(new NgModuleMetadata({
         declarations: [SomeClass1],
         imports: [SomeClass2],
         exports: [SomeClass3],

@@ -406,7 +406,8 @@ export class CompileTemplateMetadata {
 export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   static create(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
-       lifecycleHooks, providers, viewProviders, queries, viewQueries, entryComponents, template}: {
+       lifecycleHooks, providers, viewProviders, queries, viewQueries, entryComponents,
+       viewDirectives, viewPipes, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -423,6 +424,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
         queries?: CompileQueryMetadata[],
         viewQueries?: CompileQueryMetadata[],
         entryComponents?: CompileTypeMetadata[],
+        viewDirectives?: CompileTypeMetadata[],
+        viewPipes?: CompileTypeMetadata[],
         template?: CompileTemplateMetadata
       } = {}): CompileDirectiveMetadata {
     var hostListeners: {[key: string]: string} = {};
@@ -472,6 +475,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
       queries,
       viewQueries,
       entryComponents,
+      viewDirectives,
+      viewPipes,
       template,
     });
   }
@@ -492,12 +497,17 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   viewQueries: CompileQueryMetadata[];
   // Note: Need to keep types here to prevent cycles!
   entryComponents: CompileTypeMetadata[];
+  // Note: Need to keep types here to prevent cycles!
+  viewDirectives: CompileTypeMetadata[];
+  // Note: Need to keep types here to prevent cycles!
+  viewPipes: CompileTypeMetadata[];
+
   template: CompileTemplateMetadata;
 
   constructor(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, hostListeners,
        hostProperties, hostAttributes, lifecycleHooks, providers, viewProviders, queries,
-       viewQueries, entryComponents, template}: {
+       viewQueries, entryComponents, viewDirectives, viewPipes, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -516,6 +526,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
         queries?: CompileQueryMetadata[],
         viewQueries?: CompileQueryMetadata[],
         entryComponents?: CompileTypeMetadata[],
+        viewDirectives?: CompileTypeMetadata[],
+        viewPipes?: CompileTypeMetadata[],
         template?: CompileTemplateMetadata,
       } = {}) {
     this.type = type;
@@ -534,6 +546,9 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
     this.queries = _normalizeArray(queries);
     this.viewQueries = _normalizeArray(viewQueries);
     this.entryComponents = _normalizeArray(entryComponents);
+    this.viewDirectives = _normalizeArray(viewDirectives);
+    this.viewPipes = _normalizeArray(viewPipes);
+
     this.template = template;
   }
 
