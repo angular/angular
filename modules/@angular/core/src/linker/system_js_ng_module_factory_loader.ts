@@ -25,10 +25,11 @@ const FACTORY_CLASS_SUFFIX = 'NgFactory';
  */
 @Injectable()
 export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
-  constructor(@Optional() private _compiler: Compiler) {}
+  constructor(private _compiler: Compiler) {}
 
   load(path: string): Promise<NgModuleFactory<any>> {
-    return this._compiler ? this.loadAndCompile(path) : this.loadFactory(path);
+    const offlineMode = this._compiler instanceof Compiler;
+    return offlineMode ? this.loadFactory(path) : this.loadAndCompile(path);
   }
 
   private loadAndCompile(path: string): Promise<NgModuleFactory<any>> {
