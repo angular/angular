@@ -131,9 +131,21 @@ export declare type ResolveData = {
 
 /** @stable */
 export interface Route {
+    canActivate?: any[];
+    canActivateChild?: any[];
+    canDeactivate?: any[];
+    canLoad?: any[];
+    children?: Route[];
+    component?: Type | string;
+    data?: Data;
+    loadChildren?: string;
+    outlet?: string;
     path?: string;
-    pathMatch?:
+    pathMatch?: string;
+    redirectTo?: string;
+    resolve?: ResolveData;
     /** @deprecated */ terminal?: boolean;
+}
 
 /** @stable */
 export declare class Router {

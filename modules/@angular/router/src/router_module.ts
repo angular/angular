@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ApplicationRef, ComponentResolver, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
+import {ApplicationRef, ComponentResolver, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, SystemJsNgModuleLoader} from '@angular/core';
 
 import {ExtraOptions, ROUTER_CONFIGURATION, provideRouterConfig, provideRoutes, rootRoute, setupRouter} from './common_router_providers';
 import {Routes} from './config';
@@ -98,7 +98,9 @@ export class RouterModule {
         {
           provide: LocationStrategy,
           useFactory: provideLocationStrategy,
-          deps: [PlatformLocation, APP_BASE_HREF, ROUTER_CONFIGURATION]
+          deps: [
+            PlatformLocation, [new Inject(APP_BASE_HREF), new Optional()], ROUTER_CONFIGURATION
+          ]
         }
       ]
     };
