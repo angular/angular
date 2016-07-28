@@ -36,7 +36,11 @@ function declareTests({useJit}: {useJit: boolean}) {
     it('should warn and auto declare if the component was not declared nor imported by the module',
        inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         @Component({selector: 'child', template: ''})
+         @Component({selector: 'nestedchild', template: ''})
+         class NestedChildComp {
+         }
+
+         @Component({selector: 'child', template: '', entryComponents: [NestedChildComp]})
          class ChildComp {
          }
 
@@ -50,7 +54,8 @@ function declareTests({useJit}: {useJit: boolean}) {
          expect(cf.componentType).toBe(ChildComp);
 
          expect(console.warnings).toEqual([
-           `Component ${stringify(SomeComp)} in NgModule DynamicTestModule uses ${stringify(ChildComp)} via "entryComponents" but it was neither declared nor imported into the module! This warning will become an error after final.`
+           `Component ${stringify(SomeComp)} in NgModule DynamicTestModule uses ${stringify(ChildComp)} via "entryComponents" but it was neither declared nor imported into the module! This warning will become an error after final.`,
+           `Component ${stringify(ChildComp)} in NgModule DynamicTestModule uses ${stringify(NestedChildComp)} via "entryComponents" but it was neither declared nor imported into the module! This warning will become an error after final.`
          ]);
        }));
 
