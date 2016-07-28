@@ -13,8 +13,7 @@ import {Map} from '../src/facade/collection';
 
 @Injectable()
 export class MockNgModuleResolver extends NgModuleResolver {
-  /** @internal */
-  _ngModules = new Map<Type, NgModuleMetadata>();
+  private _ngModules = new Map<Type, NgModuleMetadata>();
 
   constructor(private _injector: Injector) { super(); }
 
