@@ -17,7 +17,6 @@ export {RuntimeCompiler} from './runtime_compiler';
 export * from './url_resolver';
 export * from './xhr';
 
-export {ViewResolver} from './view_resolver';
 export {DirectiveResolver} from './directive_resolver';
 export {PipeResolver} from './pipe_resolver';
 export {NgModuleResolver} from './ng_module_resolver';
@@ -38,7 +37,6 @@ import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 import {UrlResolver, DEFAULT_PACKAGE_URL_PROVIDER} from './url_resolver';
 import {Parser} from './expression_parser/parser';
 import {Lexer} from './expression_parser/lexer';
-import {ViewResolver} from './view_resolver';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {NgModuleResolver} from './ng_module_resolver';
@@ -76,7 +74,6 @@ export const COMPILER_PROVIDERS: Array<any|Type|{[k: string]: any}|any[]> =
       DomElementSchemaRegistry,
       /*@ts2dart_Provider*/ {provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
       UrlResolver,
-      ViewResolver,
       DirectiveResolver,
       PipeResolver,
       NgModuleResolver

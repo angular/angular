@@ -9,7 +9,7 @@
 import {AnimationEntryMetadata, Compiler, ComponentFactory, Inject, Injectable, Injector, NgZone, ViewMetadata} from '@angular/core';
 import {ComponentFixture, ComponentFixtureNoNgZone, TestBed, TestComponentBuilder} from '@angular/core/testing';
 
-import {DirectiveResolver, ViewResolver} from '../index';
+import {DirectiveResolver} from '../index';
 import {MapWrapper} from '../src/facade/collection';
 import {ConcreteType, IS_DART, Type, isPresent} from '../src/facade/lang';
 
@@ -101,15 +101,14 @@ export class OverridingTestComponentBuilder extends TestComponentBuilder {
 
   private _applyMetadataOverrides() {
     let mockDirectiveResolver = this._injector.get(DirectiveResolver);
-    let mockViewResolver = this._injector.get(ViewResolver);
-    this._viewOverrides.forEach((view, type) => { mockViewResolver.setView(type, view); });
+    this._viewOverrides.forEach((view, type) => { mockDirectiveResolver.setView(type, view); });
     this._templateOverrides.forEach(
-        (template, type) => mockViewResolver.setInlineTemplate(type, template));
+        (template, type) => mockDirectiveResolver.setInlineTemplate(type, template));
     this._animationOverrides.forEach(
-        (animationsEntry, type) => mockViewResolver.setAnimations(type, animationsEntry));
+        (animationsEntry, type) => mockDirectiveResolver.setAnimations(type, animationsEntry));
     this._directiveOverrides.forEach((overrides, component) => {
       overrides.forEach(
-          (to, from) => { mockViewResolver.overrideViewDirective(component, from, to); });
+          (to, from) => { mockDirectiveResolver.overrideViewDirective(component, from, to); });
     });
     this._bindingsOverrides.forEach(
         (bindings, type) => mockDirectiveResolver.setProvidersOverride(type, bindings));

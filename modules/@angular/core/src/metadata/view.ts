@@ -73,7 +73,7 @@ export var VIEW_ENCAPSULATION_VALUES =
  * ```
  * @ts2dart_const
  *
- * @experimental You should most likely be using ComponentMetadata instead.
+ * @deprecated Use ComponentMetadata instead.
  */
 export class ViewMetadata {
   /**
