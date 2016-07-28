@@ -485,7 +485,7 @@ export interface Route {
    * @deprecated - use `pathMatch` instead
    */
   terminal?: boolean;
-  pathMatch?: 'full'|'prefix';
+  pathMatch?: string;
   component?: Type|string;
   redirectTo?: string;
   outlet?: string;
