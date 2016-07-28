@@ -72,7 +72,7 @@ Promise.all([
   var testing = providers[0];
   var testingBrowser = providers[1];
 
-  testing.initTestEnvironment(
+  testing.TestBed.initTestEnvironment(
     testingBrowser.BrowserDynamicTestingModule,
     testingBrowser.platformBrowserDynamicTesting());
 

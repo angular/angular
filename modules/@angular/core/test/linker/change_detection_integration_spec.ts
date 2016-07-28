@@ -12,7 +12,7 @@ import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/test/test_bindings';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef, ViewMetadata, WrappedValue, forwardRef} from '@angular/core';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
-import {ComponentFixture, TestComponentBuilder, configureCompiler, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -78,8 +78,8 @@ export function main() {
     if (!getDOM().supportsDOMEvents()) return;
 
     beforeEach(() => {
-      configureCompiler({providers: TEST_COMPILER_PROVIDERS});
-      configureModule({
+      TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
+      TestBed.configureTestingModule({
         providers:
             [RenderLog, DirectiveLog, {provide: RootRenderer, useClass: LoggingRootRenderer}]
       });

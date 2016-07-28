@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
-import {configureCompiler, TestComponentBuilder} from '@angular/core/testing';
+import {TestBed, TestComponentBuilder} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Component, Directive, AfterContentInit, AfterViewInit, QueryList, ContentChildren, ViewChildren, Input} from '@angular/core';
 import {NgIf} from '@angular/common';
@@ -21,7 +21,7 @@ export function main() {
 function declareTests({useJit}: {useJit: boolean}) {
   describe('<ng-container>', function() {
 
-    beforeEach(() => { configureCompiler({useJit: useJit}); });
+    beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
 
     it('should be rendered as comment with children as siblings',
        inject(

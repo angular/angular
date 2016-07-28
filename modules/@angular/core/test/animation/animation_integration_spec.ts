@@ -20,7 +20,7 @@ import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AUTO_STYLE, AnimationEntryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {isArray, isPresent} from '../../src/facade/lang';
-import {configureCompiler, configureModule, fakeAsync, flushMicrotasks, tick} from '../../testing';
+import {TestBed, fakeAsync, flushMicrotasks, tick} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
@@ -32,8 +32,9 @@ export function main() {
 function declareTests({useJit}: {useJit: boolean}) {
   describe('animation tests', function() {
     beforeEachProviders(() => {
-      configureCompiler({useJit: useJit});
-      configureModule({providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]});
+      TestBed.configureCompiler({useJit: useJit});
+      TestBed.configureTestingModule(
+          {providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]});
     });
 
     var makeAnimationCmp =

@@ -9,7 +9,7 @@
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation} from '@angular/core';
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
-import {configureCompiler} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {CompileNgModuleMetadata} from '../src/compile_metadata';
@@ -21,7 +21,7 @@ import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('CompileMetadataResolver', () => {
-    beforeEach(() => { configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
+    beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 
     describe('getDirectiveMetadata', () => {
       it('should read metadata',

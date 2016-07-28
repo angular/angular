@@ -55,7 +55,8 @@ export class MockDirectiveResolver extends DirectiveResolver {
     if (metadata instanceof ComponentMetadata) {
       let viewProviders = metadata.viewProviders;
       if (isPresent(viewProviderOverrides)) {
-        const originalViewProviders: any[] = isPresent(metadata.viewProviders) ? metadata.viewProviders : [];
+        const originalViewProviders: any[] =
+            isPresent(metadata.viewProviders) ? metadata.viewProviders : [];
         viewProviders = originalViewProviders.concat(viewProviderOverrides);
       }
 

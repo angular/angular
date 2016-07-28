@@ -61,7 +61,7 @@ class BeforeEachRunner {
 }
 
 // Reset the test providers before each test
-jsmBeforeEach(() => { testBed.reset(); });
+jsmBeforeEach(() => { testBed.resetTestingModule(); });
 
 function _describe(jsmFn: any /** TODO #9100 */, ...args: any[] /** TODO #9100 */) {
   var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
@@ -110,7 +110,7 @@ export function beforeEachProviders(fn: any /** TODO #9100 */): void {
   jsmBeforeEach(() => {
     var providers = fn();
     if (!providers) return;
-    testBed.configureModule({providers: providers});
+    testBed.configureTestingModule({providers: providers});
   });
 }
 
@@ -138,7 +138,7 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
         return new AsyncTestCompleter();
       }
     };
-    testBed.configureModule({providers: [completerProvider]});
+    testBed.configureTestingModule({providers: [completerProvider]});
     runner.run();
 
     inIt = true;

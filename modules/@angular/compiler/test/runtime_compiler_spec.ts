@@ -10,7 +10,7 @@ import {beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProvi
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Injectable, Component, Input, ViewMetadata, Compiler, ComponentFactory, Injector, NgModule, NgModuleFactory} from '@angular/core';
 import {ConcreteType, stringify} from '../src/facade/lang';
-import {fakeAsync, tick, TestComponentBuilder, ComponentFixture, configureCompiler} from '@angular/core/testing';
+import {fakeAsync, tick, TestComponentBuilder, ComponentFixture, TestBed} from '@angular/core/testing';
 import {XHR, DirectiveResolver} from '@angular/compiler';
 import {MockDirectiveResolver} from '@angular/compiler/testing';
 
@@ -36,7 +36,8 @@ export function main() {
     let dirResolver: MockDirectiveResolver;
     let injector: Injector;
 
-    beforeEach(() => { configureCompiler({providers: [{provide: XHR, useClass: SpyXHR}]}); });
+    beforeEach(
+        () => { TestBed.configureCompiler({providers: [{provide: XHR, useClass: SpyXHR}]}); });
 
     beforeEach(inject(
         [Compiler, TestComponentBuilder, XHR, DirectiveResolver, Injector],

@@ -27,7 +27,7 @@ export function main() {
            expect(ngModule.selector).toEqual('cmp');
          });
 
-      it('should allow overriding the @NgModule', () => {
+      it('should allow overriding the @Directive', () => {
         dirResolver.setDirective(
             SomeComponent, new ComponentMetadata({selector: 'someOtherSelector'}));
         var metadata = dirResolver.resolve(SomeComponent);

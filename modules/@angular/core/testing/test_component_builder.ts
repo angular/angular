@@ -13,32 +13,15 @@ import {ConcreteType, IS_DART, Type, isPresent} from '../src/facade/lang';
 import {ComponentFixture} from './component_fixture';
 import {tick} from './fake_async';
 
-
-
-/**
- * An abstract class for inserting the root test component element in a platform independent way.
- *
- * @experimental
- */
-export class TestComponentRenderer {
-  insertRootElement(rootElementId: string) {}
-}
-
-/**
- * @experimental
- */
-export var ComponentFixtureAutoDetect = new OpaqueToken('ComponentFixtureAutoDetect');
-
-/**
- * @experimental
- */
-export var ComponentFixtureNoNgZone = new OpaqueToken('ComponentFixtureNoNgZone');
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestComponentRenderer} from './test_bed';
 
 var _nextRootElementId = 0;
 
 /**
  * Builds a ComponentFixture for use in component level tests.
- * @stable
+ *
+ * @deprecated Use `TestBed.configureTestModule` / `TestBed.override...` / `TestBed.createComponent`
+ * instead.
  */
 @Injectable()
 export class TestComponentBuilder {
@@ -119,27 +102,25 @@ export class TestComponentBuilder {
   /**
    * Builds and returns a ComponentFixture.
    */
-  createAsync<T>(rootComponentType: ConcreteType<T>, ngModule: ConcreteType<any> = null):
-      Promise<ComponentFixture<T>> {
+  createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>> {
     let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
     let compiler: Compiler = this._injector.get(Compiler);
 
     let initComponent = () => {
       let promise: Promise<ComponentFactory<any>> =
-          compiler.compileComponentAsync(rootComponentType, ngModule);
+          compiler.compileComponentAsync(rootComponentType);
       return promise.then(componentFactory => this.createFromFactory(ngZone, componentFactory));
     };
 
     return ngZone == null ? initComponent() : ngZone.run(initComponent);
   }
 
-  createFakeAsync<T>(rootComponentType: ConcreteType<T>, ngModule: ConcreteType<any> = null):
-      ComponentFixture<T> {
+  createFakeAsync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
     let result: any /** TODO #9100 */;
     let error: any /** TODO #9100 */;
     PromiseWrapper.then(
-        this.createAsync(rootComponentType, ngModule), (_result) => { result = _result; },
+        this.createAsync(rootComponentType), (_result) => { result = _result; },
         (_error) => { error = _error; });
     tick();
     if (isPresent(error)) {
@@ -148,15 +129,13 @@ export class TestComponentBuilder {
     return result;
   }
 
-  createSync<T>(rootComponentType: ConcreteType<T>, ngModule: ConcreteType<any> = null):
-      ComponentFixture<T> {
+  createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
     let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
     let compiler: Compiler = this._injector.get(Compiler);
 
     let initComponent = () => {
-      return this.createFromFactory(
-          ngZone, compiler.compileComponentSync(rootComponentType, ngModule));
+      return this.createFromFactory(ngZone, compiler.compileComponentSync(rootComponentType));
     };
 
     return ngZone == null ? initComponent() : ngZone.run(initComponent);
