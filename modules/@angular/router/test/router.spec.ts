@@ -10,7 +10,7 @@ import 'rxjs/add/operator/map';
 
 import {Location} from '@angular/common';
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
-import {ComponentFixture, TestComponentBuilder, addProviders, configureModule, fakeAsync, inject, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, TestComponentBuilder, addProviders, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
@@ -20,7 +20,7 @@ import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
   beforeEach(() => {
-    configureModule({
+    TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [provideRoutes(
           [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])],

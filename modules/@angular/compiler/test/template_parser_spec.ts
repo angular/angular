@@ -14,7 +14,7 @@ import {TEMPLATE_TRANSFORMS, TemplateParser, splitClasses} from '@angular/compil
 import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {SchemaMetadata, SecurityContext} from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {configureCompiler} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 import {Identifiers, identifierToken} from '../src/identifiers';
@@ -40,7 +40,7 @@ export function main() {
   function commonBeforeEach() {
     beforeEach(() => {
       console = new ArrayConsole();
-      configureCompiler({providers: [{provide: Console, useValue: console}]});
+      TestBed.configureCompiler({providers: [{provide: Console, useValue: console}]});
     });
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
       var component = CompileDirectiveMetadata.create({
@@ -66,10 +66,10 @@ export function main() {
   }
 
   describe('TemplateParser template transform', () => {
-    beforeEach(() => { configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
+    beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 
     beforeEach(() => {
-      configureCompiler({
+      TestBed.configureCompiler({
         providers:
             [{provide: TEMPLATE_TRANSFORMS, useValue: new FooAstTransformer(), multi: true}]
       });
@@ -84,7 +84,7 @@ export function main() {
 
     describe('multiple', () => {
       beforeEach(() => {
-        configureCompiler({
+        TestBed.configureCompiler({
           providers:
               [{provide: TEMPLATE_TRANSFORMS, useValue: new BarAstTransformer(), multi: true}]
         });
@@ -101,7 +101,7 @@ export function main() {
     // Semi-integration test to make sure TemplateParser properly sets the security context.
     // Uses the actual DomElementSchemaRegistry.
     beforeEach(() => {
-      configureCompiler({
+      TestBed.configureCompiler({
         providers: [
           TEST_COMPILER_PROVIDERS,
           {provide: ElementSchemaRegistry, useClass: DomElementSchemaRegistry}
@@ -138,7 +138,7 @@ export function main() {
 
   describe('TemplateParser', () => {
     beforeEach(() => {
-      configureCompiler({providers: [TEST_COMPILER_PROVIDERS, MOCK_SCHEMA_REGISTRY]});
+      TestBed.configureCompiler({providers: [TEST_COMPILER_PROVIDERS, MOCK_SCHEMA_REGISTRY]});
     });
 
     commonBeforeEach();

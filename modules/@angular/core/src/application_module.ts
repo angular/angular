@@ -22,10 +22,6 @@ import {NgZone} from './zone/ng_zone';
 
 let __unused: Type;  // avoid unused import when Type union types are erased
 
-export function _componentFactoryResolverFactory() {
-  return ComponentFactoryResolver.NULL;
-}
-
 export function _iterableDiffersFactory() {
   return defaultIterableDiffers;
 }
@@ -72,7 +68,6 @@ export const APPLICATION_COMMON_PROVIDERS: Array<Type|{[k: string]: any}|any[]> 
     {provide: ApplicationRef, useExisting: ApplicationRef_},
     Compiler,
     {provide: ComponentResolver, useExisting: Compiler},
-    {provide: ComponentFactoryResolver, useFactory: _componentFactoryResolverFactory},
     APP_ID_RANDOM_PROVIDER,
     ViewUtils,
     {provide: IterableDiffers, useFactory: _iterableDiffersFactory},

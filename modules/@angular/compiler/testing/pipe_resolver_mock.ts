@@ -19,7 +19,7 @@ export class MockPipeResolver extends PipeResolver {
 
   private get _compiler(): Compiler { return this._injector.get(Compiler); }
 
-  private _clearCacheFor(component: Type) { this._compiler.clearCacheFor(component); }
+  private _clearCacheFor(pipe: Type) { this._compiler.clearCacheFor(pipe); }
 
   /**
    * Overrides the {@link PipeMetadata} for a pipe.

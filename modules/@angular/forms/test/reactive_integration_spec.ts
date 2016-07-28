@@ -8,7 +8,7 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {Component, Directive, EventEmitter, Input, Output, forwardRef} from '@angular/core';
-import {ComponentFixture, TestComponentBuilder, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {ControlValueAccessor, FormArray, FormControl, FormGroup, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -22,7 +22,9 @@ import {PromiseWrapper} from '../src/facade/promise';
 export function main() {
   describe('reactive forms integration tests', () => {
 
-    beforeEach(() => { configureModule({imports: [FormsModule, ReactiveFormsModule]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [FormsModule, ReactiveFormsModule]});
+    });
 
     it('should initialize DOM elements with the given form object',
        inject(

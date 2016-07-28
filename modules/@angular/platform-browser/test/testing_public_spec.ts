@@ -8,8 +8,8 @@
 
 import {NgIf} from '@angular/common';
 import {CompilerConfig, XHR} from '@angular/compiler';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, ComponentFactoryResolver, Directive, Injectable, Input, NgModule, Pipe, ViewMetadata, provide} from '@angular/core';
-import {TestComponentBuilder, addProviders, async, configureCompiler, configureModule, doAsyncEntryPointCompilation, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, ComponentFactoryResolver, ComponentMetadata, Directive, DirectiveMetadata, HostBinding, Injectable, Input, NgModule, NgModuleMetadata, Pipe, PipeMetadata, ViewMetadata, provide} from '@angular/core';
+import {TestBed, TestComponentBuilder, addProviders, async, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../../http/src/facade/lang';
@@ -229,26 +229,63 @@ export function main() {
   });
 
   describe('using the test injector with modules', () => {
-    let moduleConfig: any;
-    beforeEach(() => {
-      moduleConfig = {
-        providers: [FancyService],
-        imports: [SomeLibModule],
-        declarations: [SomeDirective, SomePipe, CompUsingModuleDirectiveAndPipe],
-        entryComponents: [CompUsingModuleDirectiveAndPipe]
-      };
-    });
+    let moduleConfig = {
+      providers: [FancyService],
+      imports: [SomeLibModule],
+      declarations: [SomeDirective, SomePipe, CompUsingModuleDirectiveAndPipe],
+    };
 
     describe('setting up a module', () => {
-      beforeEach(() => configureModule(moduleConfig));
+      beforeEach(() => TestBed.configureTestingModule(moduleConfig));
 
       it('should use set up providers', inject([FancyService], (service: FancyService) => {
            expect(service.value).toEqual('real value');
          }));
 
-      it('should use set up directives and pipes',
-         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           let compFixture = tcb.createSync(CompUsingModuleDirectiveAndPipe);
+      it('should be able to create any declared components', () => {
+        const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+        expect(compFixture.componentInstance).toBeAnInstanceOf(CompUsingModuleDirectiveAndPipe);
+      });
+
+      it('should use set up directives and pipes', () => {
+        const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+        let el = compFixture.debugElement;
+
+        compFixture.detectChanges();
+        expect(el.children[0].properties['title']).toBe('transformed someValue');
+      });
+
+      it('should use set up imported modules',
+         inject([SomeLibModule], (libModule: SomeLibModule) => {
+           expect(libModule).toBeAnInstanceOf(SomeLibModule);
+         }));
+
+      describe('provided schemas', () => {
+        @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+        class ComponentUsingInvalidProperty {
+        }
+
+        beforeEach(() => {
+          TestBed.configureTestingModule(
+              {schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: [ComponentUsingInvalidProperty]});
+        });
+
+        it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
+           () => {
+             expect(TestBed.createComponent(ComponentUsingInvalidProperty).componentInstance)
+                 .toBeAnInstanceOf(ComponentUsingInvalidProperty);
+           });
+      });
+    });
+
+    describe('per test modules', () => {
+      it('should use set up providers',
+         withModule(moduleConfig).inject([FancyService], (service: FancyService) => {
+           expect(service.value).toEqual('real value');
+         }));
+
+      it('should use set up directives and pipes', withModule(moduleConfig, () => {
+           let compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
            let el = compFixture.debugElement;
 
            compFixture.detectChanges();
@@ -256,83 +293,96 @@ export function main() {
          }));
 
       it('should use set up library modules',
-         inject([SomeLibModule], (libModule: SomeLibModule) => {
+         withModule(moduleConfig).inject([SomeLibModule], (libModule: SomeLibModule) => {
            expect(libModule).toBeAnInstanceOf(SomeLibModule);
          }));
-
-      it('should use set up entryComponents components',
-         inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
-           expect(resolver.resolveComponentFactory(CompUsingModuleDirectiveAndPipe).componentType)
-               .toBe(CompUsingModuleDirectiveAndPipe);
-         }));
-
-      it('should error on unknown bound properties on custom elements by default',
-         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
-           class ComponentUsingInvalidProperty {
-           }
-
-           expect(() => tcb.createSync(ComponentUsingInvalidProperty))
-               .toThrowError(/Can't bind to 'someUnknownProp'/);
-         }));
-
-      describe('provided schemas', () => {
-        beforeEach(() => { configureModule({schemas: [CUSTOM_ELEMENTS_SCHEMA]}); });
-
-        it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
-           inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
-             class ComponentUsingInvalidProperty {
-             }
-
-             tcb.createSync(ComponentUsingInvalidProperty);
-             expect(() => tcb.createSync(ComponentUsingInvalidProperty)).not.toThrow();
-           }));
-      });
     });
 
-    describe('per test modules', () => {
-      it('should use set up providers',
-         withModule(() => moduleConfig).inject([FancyService], (service: FancyService) => {
-           expect(service.value).toEqual('real value');
-         }));
-
-      it('should use set up directives and pipes',
-         withModule(() => moduleConfig)
-             .inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-               let compFixture = tcb.createSync(CompUsingModuleDirectiveAndPipe);
-               let el = compFixture.debugElement;
-
-               compFixture.detectChanges();
-               expect(el.children[0].properties['title']).toBe('transformed someValue');
-             }));
-
-      it('should use set up library modules',
-         withModule(() => moduleConfig).inject([SomeLibModule], (libModule: SomeLibModule) => {
-           expect(libModule).toBeAnInstanceOf(SomeLibModule);
-         }));
-
-      it('should use set up entryComponents components',
-         withModule(() => moduleConfig)
-             .inject([ComponentFactoryResolver], (resolver: ComponentFactoryResolver) => {
-               expect(
-                   resolver.resolveComponentFactory(CompUsingModuleDirectiveAndPipe).componentType)
-                   .toBe(CompUsingModuleDirectiveAndPipe);
-             }));
-    });
-
-    describe('entryComponents components with template url', () => {
+    describe('components with template url', () => {
       beforeEach(async(() => {
-        configureModule(
-            {declarations: [CompWithUrlTemplate], entryComponents: [CompWithUrlTemplate]});
-        doAsyncEntryPointCompilation();
+        TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
+        TestBed.compileComponents();
       }));
 
       it('should allow to createSync components with templateUrl after explicit async compilation',
-         inject([TestComponentBuilder], (builder: TestComponentBuilder) => {
-           let fixture = builder.createSync(CompWithUrlTemplate);
+         () => {
+           let fixture = TestBed.createComponent(CompWithUrlTemplate);
            expect(fixture.nativeElement).toHaveText('from external template\n');
-         }));
+         });
+    });
+
+    describe('overwrite metadata', () => {
+      @Pipe({name: 'undefined'})
+      class SomePipe {
+        transform(value: string): string { return `transformed ${value}`; }
+      }
+
+      @Directive({selector: '[undefined]'})
+      class SomeDirective {
+        someProp = 'hello';
+      }
+
+      @Component({selector: 'comp', template: 'someText'})
+      class SomeComponent {
+      }
+
+      @Component({selector: 'othercomp', template: 'someOtherText'})
+      class SomeOtherComponent {
+      }
+
+      @NgModule({declarations: [SomeComponent, SomeDirective, SomePipe]})
+      class SomeModule {
+      }
+
+      beforeEach(() => { TestBed.configureTestingModule({imports: [SomeModule]}); });
+
+      describe('module', () => {
+        beforeEach(() => {
+          TestBed.overrideModule(SomeModule, {set: {declarations: [SomeOtherComponent]}});
+        });
+        it('should work', () => {
+          expect(TestBed.createComponent(SomeOtherComponent).componentInstance)
+              .toBeAnInstanceOf(SomeOtherComponent);
+        });
+      });
+
+      describe('component', () => {
+        beforeEach(() => {
+          TestBed.overrideComponent(SomeComponent, {set: {selector: 'comp', template: 'newText'}});
+        });
+        it('should work', () => {
+          expect(TestBed.createComponent(SomeComponent).nativeElement).toHaveText('newText');
+        });
+      });
+
+      describe('directive', () => {
+        beforeEach(() => {
+          TestBed
+              .overrideComponent(
+                  SomeComponent, {set: {selector: 'comp', template: `<div someDir></div>`}})
+              .overrideDirective(
+                  SomeDirective, {set: {selector: '[someDir]', host: {'[title]': 'someProp'}}});
+        });
+        it('should work', () => {
+          const compFixture = TestBed.createComponent(SomeComponent);
+          compFixture.detectChanges();
+          expect(compFixture.debugElement.children[0].properties['title']).toEqual('hello');
+        });
+      });
+
+      describe('pipe', () => {
+        beforeEach(() => {
+          TestBed
+              .overrideComponent(
+                  SomeComponent, {set: {selector: 'comp', template: `{{'hello' | somePipe}}`}})
+              .overridePipe(SomePipe, {set: {name: 'somePipe'}});
+        });
+        it('should work', () => {
+          const compFixture = TestBed.createComponent(SomeComponent);
+          compFixture.detectChanges();
+          expect(compFixture.nativeElement).toHaveText('transformed hello');
+        });
+      });
     });
 
     describe('setting up the compiler', () => {
@@ -340,7 +390,7 @@ export function main() {
       describe('providers', () => {
         beforeEach(() => {
           let xhrGet = jasmine.createSpy('xhrGet').and.returnValue(Promise.resolve('Hello world!'));
-          configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
+          TestBed.configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
         });
 
         it('should use set up providers',
@@ -351,14 +401,14 @@ export function main() {
       });
 
       describe('useJit true', () => {
-        beforeEach(() => { configureCompiler({useJit: true}); });
+        beforeEach(() => { TestBed.configureCompiler({useJit: true}); });
         it('should set the value into CompilerConfig',
            inject([CompilerConfig], (config: CompilerConfig) => {
              expect(config.useJit).toBe(true);
            }));
       });
       describe('useJit false', () => {
-        beforeEach(() => { configureCompiler({useJit: false}); });
+        beforeEach(() => { TestBed.configureCompiler({useJit: false}); });
         it('should set the value into CompilerConfig',
            inject([CompilerConfig], (config: CompilerConfig) => {
              expect(config.useJit).toBe(false);
@@ -451,48 +501,54 @@ export function main() {
             beforeEach(() => addProviders([{provide: FancyService, useValue: new FancyService()}]));
           })
               .toThrowError(
-                  'addProviders can\'t be called after the injector has been already created for this test. ' +
-                  'This is most likely because you\'ve already used the injector to inject a beforeEach or the ' +
-                  'current `it` function.');
+                  `Cannot configure the test module when the test module has already been instantiated. ` +
+                  `Make sure you are not using \`inject\` before \`TestBed.configureTestingModule\`.`);
           restoreJasmineBeforeEach();
         });
       });
     });
 
-    describe('entryComponents', () => {
+    describe('components', () => {
       let xhrGet: jasmine.Spy;
       beforeEach(() => {
         xhrGet = jasmine.createSpy('xhrGet').and.returnValue(Promise.resolve('Hello world!'));
-        configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
+        TestBed.configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
       });
 
-      it('should report an error for entryComponents components with templateUrl which never call doAsyncEntryComponents',
+      it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
          () => {
            var itPromise = patchJasmineIt();
 
            expect(
                () =>
-                   it('should fail',
-                      withModule(() => {
-                        return {
-                          declarations: [CompWithUrlTemplate],
-                          entryComponents: [CompWithUrlTemplate]
-                        };
-                      })
-                          .inject(
-                              [ComponentFactoryResolver],
-                              (resolver: ComponentFactoryResolver) => {
-                                expect(resolver.resolveComponentFactory(CompWithUrlTemplate)
-                                           .componentType)
-                                    .toBe(CompWithUrlTemplate);
-                              })))
+                   it('should fail', withModule(
+                                         {declarations: [CompWithUrlTemplate]},
+                                         () => { TestBed.createComponent(CompWithUrlTemplate); })))
                .toThrowError(
-                   `This test module uses the entryComponents ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but they were never compiled. ` +
-                   `Please call "doAsyncEntryPointCompilation" before "inject".`);
+                   `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but they were never compiled. ` +
+                   `Please call "TestBed.compileComponents" before your test.`);
 
            restoreJasmineIt();
          });
 
+    });
+
+    it('should error on unknown bound properties on custom elements by default', () => {
+      @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+      class ComponentUsingInvalidProperty {
+      }
+
+      var itPromise = patchJasmineIt();
+
+      expect(
+          () =>
+              it('should fail',
+                 withModule(
+                     {declarations: [ComponentUsingInvalidProperty]},
+                     () => { TestBed.createComponent(ComponentUsingInvalidProperty); })))
+          .toThrowError(/Can't bind to 'someUnknownProp'/);
+
+      restoreJasmineIt();
     });
   });
 

@@ -7,7 +7,7 @@
  */
 
 import {AsyncTestCompleter, ddescribe, describe, expect, inject, beforeEachProviders, beforeEach, afterEach, it,} from '@angular/core/testing/testing_internal';
-import {configureCompiler, TestComponentBuilder} from '@angular/core/testing';
+import {TestBed, TestComponentBuilder} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Component} from '@angular/core/src/metadata';
 import {DomSanitizationService} from '@angular/platform-browser/src/security/dom_sanitization_service';
@@ -42,7 +42,7 @@ function itAsync(
 function declareTests({useJit}: {useJit: boolean}) {
   describe('security integration tests', function() {
 
-    beforeEach(() => { configureCompiler({useJit: useJit}); });
+    beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
 
     let originalLog: (msg: any) => any;
     beforeEach(() => {

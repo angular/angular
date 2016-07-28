@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
-import {fakeAsync, tick, ComponentFixture, configureCompiler, configureModule, TestComponentBuilder} from '@angular/core/testing';
+import {fakeAsync, tick, ComponentFixture, TestBed, TestComponentBuilder} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {isPresent, stringify, isBlank,} from '../../src/facade/lang';
 import {BaseException} from '../../src/facade/exceptions';
@@ -48,8 +48,9 @@ function declareTests({useJit}: {useJit: boolean}) {
   describe('integration tests', function() {
 
     beforeEach(() => {
-      configureCompiler({useJit: useJit});
-      configureModule({providers: [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]});
+      TestBed.configureCompiler({useJit: useJit});
+      TestBed.configureTestingModule(
+          {providers: [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}]});
     });
 
     describe('react to record changes', function() {

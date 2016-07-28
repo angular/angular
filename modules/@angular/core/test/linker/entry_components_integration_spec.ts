@@ -7,7 +7,7 @@
  */
 
 import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, configureModule, configureCompiler} from '@angular/core/testing';
+import {TestComponentBuilder, TestBed} from '@angular/core/testing';
 import {Component, ComponentFactoryResolver, NoComponentFactoryError, forwardRef, ANALYZE_FOR_ENTRY_COMPONENTS, ViewMetadata} from '@angular/core';
 import {stringify} from '../../src/facade/lang';
 import {Console} from '../../src/console';
@@ -29,8 +29,9 @@ function declareTests({useJit}: {useJit: boolean}) {
     var console: DummyConsole;
     beforeEach(() => {
       console = new DummyConsole();
-      configureCompiler({useJit: useJit, providers: [{provide: Console, useValue: console}]});
-      configureModule({declarations: [MainComp, ChildComp, NestedChildComp]});
+      TestBed.configureCompiler(
+          {useJit: useJit, providers: [{provide: Console, useValue: console}]});
+      TestBed.configureTestingModule({declarations: [MainComp, ChildComp, NestedChildComp]});
     });
 
     it('should warn and auto declare if the component was not declared nor imported by the module',

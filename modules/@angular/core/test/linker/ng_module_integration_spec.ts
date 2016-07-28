@@ -11,7 +11,7 @@ import {CompilerConfig, NgModuleResolver} from '@angular/compiler';
 import {MockNgModuleResolver} from '@angular/compiler/testing';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, HostBinding, Inject, Injectable, Injector, Input, ModuleWithProviders, NgModule, NgModuleMetadata, NgModuleRef, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, ViewMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {ComponentFixture, configureCompiler} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -122,7 +122,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     beforeEach(() => {
       console = new DummyConsole();
-      configureCompiler({useJit: useJit, providers: [{provide: Console, useValue: console}]});
+      TestBed.configureCompiler(
+          {useJit: useJit, providers: [{provide: Console, useValue: console}]});
     });
 
     beforeEach(inject([Compiler, Injector], (_compiler: Compiler, _injector: Injector) => {

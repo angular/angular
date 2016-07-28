@@ -327,27 +327,6 @@ export function main() {
          expect(componentFixture.nativeElement).toHaveText('Mock');
        }));
 
-    it('should create components synchronously with a custom module',
-       inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         @Pipe({name: 'somePipe'})
-         class SomePipe {
-           transform(value: any) { return `transformed ${value}`; }
-         }
-
-         @NgModule({declarations: [SomePipe]})
-         class SomeModule {
-         }
-
-         @Component({selector: 'comp', template: `{{'hello' | somePipe}}`})
-         class SomeComponent {
-         }
-
-
-         let componentFixture = tcb.createSync(SomeComponent, SomeModule);
-         componentFixture.detectChanges();
-         expect(componentFixture.nativeElement).toHaveText('transformed hello');
-       }));
-
     describe('ComponentFixture', () => {
       it('should auto detect changes if autoDetectChanges is called',
          inject(

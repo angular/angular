@@ -8,19 +8,20 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestComponentBuilder, configureModule, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {FormsModule, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
+
 import {ObservableWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 
 export function main() {
   describe('template-driven forms integration tests', () => {
 
-    beforeEach(() => { configureModule({imports: [FormsModule]}); });
+    beforeEach(() => { TestBed.configureTestingModule({imports: [FormsModule]}); });
 
     it('should support ngModel for single fields',
        fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
