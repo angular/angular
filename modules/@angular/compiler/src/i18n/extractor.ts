@@ -7,8 +7,14 @@
  */
 
 import * as html from '../html_parser/ast';
-import {I18nError, I18N_ATTR_PREFIX, getI18nAttr, meaning, description, isOpeningComment, isClosingComment,} from './shared';
+import {I18nError} from './parse_util';
 
+const _I18N_ATTR = 'i18n';
+const _I18N_ATTR_PREFIX = 'i18n-';
+
+/**
+ * Extract translatable message from an html AST as a list of html AST nodes
+ */
 export function extractAstMessages(
     sourceAst: html.Node[], implicitTags: string[],
     implicitAttrs: {[k: string]: string[]}): ExtractionResult {
@@ -79,14 +85,14 @@ class _ExtractVisitor implements html.Visitor {
   }
 
   visitComment(comment: html.Comment, messages: Message[]): any {
-    const isOpening = isOpeningComment(comment);
+    const isOpening = _isOpeningComment(comment);
 
     if (isOpening && (this._inI18nBlock || this._inI18nNode)) {
       this._reportError(comment, 'Could not start a block inside a translatable section');
       return;
     }
 
-    const isClosing = isClosingComment(comment);
+    const isClosing = _isClosingComment(comment);
 
     if (isClosing && !this._inI18nBlock) {
       this._reportError(comment, 'Trying to close an unopened block');
@@ -127,7 +133,7 @@ class _ExtractVisitor implements html.Visitor {
 
     // Extract only top level nodes with the (implicit) "i18n" attribute if not in a block or an ICU
     // message
-    const i18nAttr = getI18nAttr(el);
+    const i18nAttr = _getI18nAttr(el);
     const isImplicitI18n =
         this._implicitTags.some((tagName: string): boolean => el.name === tagName);
     if (!(this._inI18nNode || this._inIcu || this._inI18nBlock)) {
@@ -169,10 +175,10 @@ class _ExtractVisitor implements html.Visitor {
     const explicitAttrNameToValue: Map<string, string> = new Map();
     const implicitAttrNames: string[] = this._implicitAttrs[el.name] || [];
 
-    el.attrs.filter(attr => attr.name.startsWith(I18N_ATTR_PREFIX))
+    el.attrs.filter(attr => attr.name.startsWith(_I18N_ATTR_PREFIX))
         .forEach(
             attr => explicitAttrNameToValue.set(
-                attr.name.substring(I18N_ATTR_PREFIX.length), attr.value));
+                attr.name.substring(_I18N_ATTR_PREFIX.length), attr.value));
 
     el.attrs.forEach(attr => {
       if (explicitAttrNameToValue.has(attr.name)) {
@@ -189,7 +195,7 @@ class _ExtractVisitor implements html.Visitor {
       // Do not create empty messages
       return;
     }
-    messages.push(new Message(ast, meaning(meaningAndDesc), description(meaningAndDesc)));
+    messages.push(new Message(ast, _meaning(meaningAndDesc), _description(meaningAndDesc)));
   }
 
   /**
@@ -265,4 +271,27 @@ class _ExtractVisitor implements html.Visitor {
  */
 export class Message {
   constructor(public nodes: html.Node[], public meaning: string, public description: string) {}
+}
+
+function _isOpeningComment(n: html.Node): boolean {
+  return n instanceof html.Comment && n.value && n.value.startsWith('i18n');
+}
+
+function _isClosingComment(n: html.Node): boolean {
+  return n instanceof html.Comment && n.value && n.value === '/i18n';
+}
+
+function _getI18nAttr(p: html.Element): html.Attribute {
+  return p.attrs.find(attr => attr.name === _I18N_ATTR) || null;
+}
+
+function _meaning(i18n: string): string {
+  if (!i18n || i18n == '') return '';
+  return i18n.split('|', 2)[0];
+}
+
+function _description(i18n: string): string {
+  if (!i18n || i18n == '') return '';
+  const parts = i18n.split('|', 2);
+  return parts.length > 1 ? parts[1] : '';
 }

@@ -16,7 +16,6 @@ import {ParseSourceSpan} from '../parse_util';
 import {extractAstMessages} from './extractor';
 import * as i18n from './i18n_ast';
 import {PlaceholderRegistry} from './serializers/placeholder';
-import {extractPlaceholderName} from './shared';
 
 /**
  * Extract all the i18n messages from a component template.
@@ -133,7 +132,7 @@ class _I18nVisitor implements html.Visitor {
 
     for (let i = 0; i < splitInterpolation.strings.length - 1; i++) {
       const expression = splitInterpolation.expressions[i];
-      const baseName = extractPlaceholderName(expression) || 'INTERPOLATION';
+      const baseName = _extractPlaceholderName(expression) || 'INTERPOLATION';
       const phName = this._placeholderRegistry.getPlaceholderName(baseName, expression);
 
       if (splitInterpolation.strings[i].length) {
@@ -152,4 +151,10 @@ class _I18nVisitor implements html.Visitor {
     }
     return container;
   }
+}
+
+const _CUSTOM_PH_EXP = /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*"([\s\S]*?)"[\s\S]*\)/g;
+
+function _extractPlaceholderName(input: string): string {
+  return input.split(_CUSTOM_PH_EXP)[1];
 }

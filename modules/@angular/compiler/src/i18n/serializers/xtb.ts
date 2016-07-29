@@ -12,7 +12,7 @@ import {InterpolationConfig} from '../../html_parser/interpolation_config';
 import {XmlParser} from '../../html_parser/xml_parser';
 import {ParseError} from '../../parse_util';
 import * as i18n from '../i18n_ast';
-import {I18nError} from '../shared';
+import {I18nError} from '../parse_util';
 
 import {Serializer} from './serializer';
 
