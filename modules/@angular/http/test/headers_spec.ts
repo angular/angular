@@ -109,9 +109,9 @@ export function main() {
     it('should parse a response header string', () => {
 
       let responseHeaderString = `Date: Fri, 20 Nov 2015 01:45:26 GMT
-        Content-Type: application/json; charset=utf-8
-        Transfer-Encoding: chunked
-        Connection: keep-alive`;
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive`;
 
       let responseHeaders = Headers.fromResponseHeaderString(responseHeaderString);
 
