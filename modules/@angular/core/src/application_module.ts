@@ -13,13 +13,10 @@ import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
 import {OptionalMetadata, SkipSelfMetadata} from './di';
 import {Compiler} from './linker/compiler';
-import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {ComponentResolver} from './linker/component_resolver';
 import {DynamicComponentLoader, DynamicComponentLoader_} from './linker/dynamic_component_loader';
 import {ViewUtils} from './linker/view_utils';
 import {NgModule} from './metadata';
-
-let __unused: Type;  // avoid unused import when Type union types are erased
 
 export function _iterableDiffersFactory() {
   return defaultIterableDiffers;
