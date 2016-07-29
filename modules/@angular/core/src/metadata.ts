@@ -15,14 +15,14 @@ import {ChangeDetectionStrategy} from '../src/change_detection/change_detection'
 
 import {AnimationEntryMetadata} from './animation/metadata';
 import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
-import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
-import {ModuleWithProviders, NgModuleMetadata, SchemaMetadata} from './metadata/ng_module';
+import {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata, PipeMetadataType} from './metadata/directives';
+import {ModuleWithProviders, NgModuleMetadata, NgModuleMetadataType, SchemaMetadata} from './metadata/ng_module';
 import {ViewEncapsulation} from './metadata/view';
 
 export {ANALYZE_FOR_ENTRY_COMPONENTS, AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
-export {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata} from './metadata/directives';
+export {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata, PipeMetadataType} from './metadata/directives';
 export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from './metadata/lifecycle_hooks';
-export {CUSTOM_ELEMENTS_SCHEMA, ModuleWithProviders, NgModuleMetadata, SchemaMetadata} from './metadata/ng_module';
+export {CUSTOM_ELEMENTS_SCHEMA, ModuleWithProviders, NgModuleMetadata, NgModuleMetadataType, SchemaMetadata} from './metadata/ng_module';
 export {ViewEncapsulation, ViewMetadata} from './metadata/view';
 
 import {makeDecorator, makeParamDecorator, makePropDecorator, TypeDecorator,} from './util/decorators';
@@ -90,28 +90,8 @@ export interface NgModuleDecorator extends TypeDecorator {}
  * @stable
  */
 export interface DirectiveMetadataFactory {
-  (obj: {
-    selector?: string,
-    inputs?: string[],
-    outputs?: string[],
-    properties?: string[],
-    events?: string[],
-    host?: {[key: string]: string},
-    providers?: any[],
-    exportAs?: string,
-    queries?: {[key: string]: any}
-  }): DirectiveDecorator;
-  new (obj: {
-    selector?: string,
-    inputs?: string[],
-    outputs?: string[],
-    properties?: string[],
-    events?: string[],
-    host?: {[key: string]: string},
-    providers?: any[],
-    exportAs?: string,
-    queries?: {[key: string]: any}
-  }): DirectiveMetadata;
+  (obj: DirectiveMetadataType): DirectiveDecorator;
+  new (obj: DirectiveMetadataType): DirectiveMetadata;
 }
 
 /**
@@ -148,54 +128,8 @@ export interface DirectiveMetadataFactory {
  * @stable
  */
 export interface ComponentMetadataFactory {
-  (obj: {
-    selector?: string,
-    inputs?: string[],
-    outputs?: string[],
-    properties?: string[],
-    events?: string[],
-    host?: {[key: string]: string},
-    providers?: any[],
-    exportAs?: string,
-    moduleId?: string,
-    queries?: {[key: string]: any},
-    viewProviders?: any[],
-    changeDetection?: ChangeDetectionStrategy,
-    templateUrl?: string,
-    template?: string,
-    styleUrls?: string[],
-    styles?: string[],
-    animations?: AnimationEntryMetadata[],
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
-    encapsulation?: ViewEncapsulation,
-    interpolation?: [string, string],
-    entryComponents?: Array<Type|any[]>
-  }): ComponentDecorator;
-  new (obj: {
-    selector?: string,
-    inputs?: string[],
-    outputs?: string[],
-    properties?: string[],
-    events?: string[],
-    host?: {[key: string]: string},
-    providers?: any[],
-    exportAs?: string,
-    moduleId?: string,
-    queries?: {[key: string]: any},
-    viewProviders?: any[],
-    changeDetection?: ChangeDetectionStrategy,
-    templateUrl?: string,
-    template?: string,
-    styleUrls?: string[],
-    styles?: string[],
-    animations?: AnimationEntryMetadata[],
-    directives?: Array<Type|any[]>,
-    pipes?: Array<Type|any[]>,
-    encapsulation?: ViewEncapsulation,
-    interpolation?: [string, string],
-    entryComponents?: Array<Type|any[]>
-  }): ComponentMetadata;
+  (obj: ComponentMetadataType): ComponentDecorator;
+  new (obj: ComponentMetadataType): ComponentMetadata;
 }
 
 /**
@@ -337,8 +271,8 @@ export interface ViewChildMetadataFactory {
  * @stable
  */
 export interface PipeMetadataFactory {
-  (obj: {name: string, pure?: boolean}): any;
-  new (obj: {name: string, pure?: boolean}): any;
+  (obj: PipeMetadataType): any;
+  new (obj: PipeMetadataType): any;
 }
 
 /**
@@ -387,22 +321,8 @@ export interface HostListenerMetadataFactory {
  * @experimental
  */
 export interface NgModuleMetadataFactory {
-  (obj?: {
-    providers?: any[],
-    declarations?: Array<Type|any[]>,
-    imports?: Array<Type|ModuleWithProviders|any[]>,
-    exports?: Array<Type|any[]>,
-    entryComponents?: Array<Type|any[]>,
-    schemas?: Array<SchemaMetadata|any[]>
-  }): NgModuleDecorator;
-  new (obj?: {
-    providers?: any[],
-    declarations?: Array<Type|any[]>,
-    imports?: Array<Type|any[]>,
-    exports?: Array<Type|any[]>,
-    entryComponents?: Array<Type|any[]>,
-    schemas?: Array<SchemaMetadata|any[]>
-  }): NgModuleMetadata;
+  (obj?: NgModuleMetadataType): NgModuleDecorator;
+  new (obj?: NgModuleMetadataType): NgModuleMetadata;
 }
 
 // TODO(alexeagle): remove the duplication of this doc. It is copied from ComponentMetadata.

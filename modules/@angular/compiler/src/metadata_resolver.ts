@@ -37,7 +37,8 @@ export class CompileMetadataResolver {
   constructor(
       private _ngModuleResolver: NgModuleResolver, private _directiveResolver: DirectiveResolver,
       private _pipeResolver: PipeResolver, private _config: CompilerConfig,
-      private _console: Console, private _schemaRegistry: ElementSchemaRegistry, private _reflector: ReflectorReader = reflector) {}
+      private _console: Console, private _schemaRegistry: ElementSchemaRegistry,
+      private _reflector: ReflectorReader = reflector) {}
 
   private sanitizeTokenName(token: any): string {
     let identifier = stringify(token);
