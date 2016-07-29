@@ -237,11 +237,12 @@ export declare class CollectionChangeRecord {
 
 /** @stable */
 export declare class Compiler {
-    _injector: Injector;
     clearCache(): void;
     clearCacheFor(type: Type): void;
     compileComponentAsync<T>(component: ConcreteType<T>, ngModule?: Type): Promise<ComponentFactory<T>>;
     compileComponentSync<T>(component: ConcreteType<T>, ngModule?: Type): ComponentFactory<T>;
+    compileModuleAndAllComponentsAsync<T>(moduleType: ConcreteType<T>): Promise<ModuleWithComponentFactories<T>>;
+    compileModuleAndAllComponentsSync<T>(moduleType: ConcreteType<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: ConcreteType<T>): Promise<NgModuleFactory<T>>;
     compileModuleSync<T>(moduleType: ConcreteType<T>): NgModuleFactory<T>;
 }
@@ -259,17 +260,6 @@ export declare var Component: ComponentMetadataFactory;
 
 /** @stable */
 export interface ComponentDecorator extends TypeDecorator {
-    View(obj: {
-        templateUrl?: string;
-        template?: string;
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        renderer?: string;
-        styles?: string[];
-        styleUrls?: string[];
-        animations?: AnimationEntryMetadata[];
-        interpolation?: [string, string];
-    }): ViewDecorator;
 }
 
 /** @stable */
@@ -287,7 +277,7 @@ export declare abstract class ComponentFactoryResolver {
 }
 
 /** @stable */
-export declare class ComponentMetadata extends DirectiveMetadata {
+export declare class ComponentMetadata extends DirectiveMetadata implements ComponentMetadataType {
     animations: AnimationEntryMetadata[];
     changeDetection: ChangeDetectionStrategy;
     directives: Array<Type | any[]>;
@@ -301,93 +291,30 @@ export declare class ComponentMetadata extends DirectiveMetadata {
     template: string;
     templateUrl: string;
     viewProviders: any[];
-    constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, directives, pipes, encapsulation, interpolation, precompile, entryComponents}?: {
-        selector?: string;
-        inputs?: string[];
-        outputs?: string[]; properties?: string[]; events?: string[];
-        host?: {
-            [key: string]: string;
-        };
-        providers?: any[];
-        exportAs?: string;
-        moduleId?: string;
-        viewProviders?: any[];
-        queries?: {
-            [key: string]: any;
-        };
-        changeDetection?: ChangeDetectionStrategy;
-        templateUrl?: string;
-        template?: string;
-        styleUrls?: string[];
-        styles?: string[];
-        animations?: AnimationEntryMetadata[];
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        encapsulation?: ViewEncapsulation;
-        interpolation?: [string, string];
-        precompile?: Array<Type | any[]>;
-        entryComponents?: Array<Type | any[]>;
-    });
+    constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, directives, pipes, encapsulation, interpolation, entryComponents}?: ComponentMetadataType);
 }
 
 /** @stable */
 export interface ComponentMetadataFactory {
-    (obj: {
-        selector?: string;
-        inputs?: string[];
-        outputs?: string[];
-        properties?: string[];
-        events?: string[];
-        host?: {
-            [key: string]: string;
-        };
-        providers?: any[];
-        exportAs?: string;
-        moduleId?: string;
-        queries?: {
-            [key: string]: any;
-        };
-        viewProviders?: any[];
-        changeDetection?: ChangeDetectionStrategy;
-        templateUrl?: string;
-        template?: string;
-        styleUrls?: string[];
-        styles?: string[];
-        animations?: AnimationEntryMetadata[];
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        encapsulation?: ViewEncapsulation;
-        interpolation?: [string, string];
-        entryComponents?: Array<Type | any[]>;
-    }): ComponentDecorator;
-    new (obj: {
-        selector?: string;
-        inputs?: string[];
-        outputs?: string[];
-        properties?: string[];
-        events?: string[];
-        host?: {
-            [key: string]: string;
-        };
-        providers?: any[];
-        exportAs?: string;
-        moduleId?: string;
-        queries?: {
-            [key: string]: any;
-        };
-        viewProviders?: any[];
-        changeDetection?: ChangeDetectionStrategy;
-        templateUrl?: string;
-        template?: string;
-        styleUrls?: string[];
-        styles?: string[];
-        animations?: AnimationEntryMetadata[];
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        encapsulation?: ViewEncapsulation;
-        interpolation?: [string, string];
-        entryComponents?: Array<Type | any[]>;
-    }): ComponentMetadata;
+    (obj: ComponentMetadataType): ComponentDecorator;
+    new (obj: ComponentMetadataType): ComponentMetadata;
+}
+
+/** @experimental */
+export interface ComponentMetadataType extends DirectiveMetadataType {
+    animations?: AnimationEntryMetadata[];
+    changeDetection?: ChangeDetectionStrategy;
+    directives?: Array<Type | any[]>;
+    encapsulation?: ViewEncapsulation;
+    entryComponents?: Array<Type | any[]>;
+    interpolation?: [string, string];
+    moduleId?: string;
+    pipes?: Array<Type | any[]>;
+    styleUrls?: string[];
+    styles?: string[];
+    template?: string;
+    templateUrl?: string;
+    viewProviders?: any[];
 }
 
 /** @stable */
@@ -550,7 +477,7 @@ export interface DirectiveDecorator extends TypeDecorator {
 }
 
 /** @stable */
-export declare class DirectiveMetadata extends InjectableMetadata {
+export declare class DirectiveMetadata extends InjectableMetadata implements DirectiveMetadataType {
     /** @deprecated */ events: string[];
     exportAs: string;
     host: {
@@ -564,53 +491,30 @@ export declare class DirectiveMetadata extends InjectableMetadata {
         [key: string]: any;
     };
     selector: string;
-    constructor({selector, inputs, outputs, properties, events, host, providers, exportAs, queries}?: {
-        selector?: string;
-        inputs?: string[];
-        outputs?: string[]; properties?: string[]; events?: string[];
-        host?: {
-            [key: string]: string;
-        };
-        providers?: any[];
-        exportAs?: string;
-        queries?: {
-            [key: string]: any;
-        };
-    });
+    constructor({selector, inputs, outputs, properties, events, host, providers, exportAs, queries}?: DirectiveMetadataType);
 }
 
 /** @stable */
 export interface DirectiveMetadataFactory {
-    (obj: {
-        selector?: string;
-        inputs?: string[];
-        outputs?: string[];
-        properties?: string[];
-        events?: string[];
-        host?: {
-            [key: string]: string;
-        };
-        providers?: any[];
-        exportAs?: string;
-        queries?: {
-            [key: string]: any;
-        };
-    }): DirectiveDecorator;
-    new (obj: {
-        selector?: string;
-        inputs?: string[];
-        outputs?: string[];
-        properties?: string[];
-        events?: string[];
-        host?: {
-            [key: string]: string;
-        };
-        providers?: any[];
-        exportAs?: string;
-        queries?: {
-            [key: string]: any;
-        };
-    }): DirectiveMetadata;
+    (obj: DirectiveMetadataType): DirectiveDecorator;
+    new (obj: DirectiveMetadataType): DirectiveMetadata;
+}
+
+/** @experimental */
+export interface DirectiveMetadataType {
+    events?: string[];
+    exportAs?: string;
+    host?: {
+        [key: string]: string;
+    };
+    inputs?: string[];
+    outputs?: string[];
+    properties?: string[];
+    providers?: any[];
+    queries?: {
+        [key: string]: any;
+    };
+    selector?: string;
 }
 
 /** @experimental */
@@ -860,6 +764,13 @@ export declare class KeyValueDiffers {
 export declare function lockRunMode(): void;
 
 /** @experimental */
+export declare class ModuleWithComponentFactories<T> {
+    componentFactories: ComponentFactory<any>[];
+    ngModuleFactory: NgModuleFactory<T>;
+    constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
+}
+
+/** @experimental */
 export interface ModuleWithProviders {
     ngModule: Type;
     providers?: any[];
@@ -887,41 +798,30 @@ export declare abstract class NgModuleFactoryLoader {
 }
 
 /** @experimental */
-export declare class NgModuleMetadata extends InjectableMetadata {
+export declare class NgModuleMetadata extends InjectableMetadata implements NgModuleMetadataType {
     declarations: Array<Type | any[]>;
     entryComponents: Array<Type | any[]>;
     exports: Array<Type | any[]>;
     imports: Array<Type | ModuleWithProviders | any[]>;
     providers: any[];
     schemas: Array<SchemaMetadata | any[]>;
-    constructor({providers, declarations, imports, exports, entryComponents, schemas}?: {
-        providers?: any[];
-        declarations?: Array<Type | any[]>;
-        imports?: Array<Type | any[]>;
-        exports?: Array<Type | any[]>;
-        entryComponents?: Array<Type | any[]>;
-        schemas?: Array<SchemaMetadata | any[]>;
-    });
+    constructor({providers, declarations, imports, exports, entryComponents, schemas}?: NgModuleMetadataType);
 }
 
 /** @experimental */
 export interface NgModuleMetadataFactory {
-    (obj?: {
-        providers?: any[];
-        declarations?: Array<Type | any[]>;
-        imports?: Array<Type | ModuleWithProviders | any[]>;
-        exports?: Array<Type | any[]>;
-        entryComponents?: Array<Type | any[]>;
-        schemas?: Array<SchemaMetadata | any[]>;
-    }): NgModuleDecorator;
-    new (obj?: {
-        providers?: any[];
-        declarations?: Array<Type | any[]>;
-        imports?: Array<Type | any[]>;
-        exports?: Array<Type | any[]>;
-        entryComponents?: Array<Type | any[]>;
-        schemas?: Array<SchemaMetadata | any[]>;
-    }): NgModuleMetadata;
+    (obj?: NgModuleMetadataType): NgModuleDecorator;
+    new (obj?: NgModuleMetadataType): NgModuleMetadata;
+}
+
+/** @experimental */
+export interface NgModuleMetadataType {
+    declarations?: Array<Type | any[]>;
+    entryComponents?: Array<Type | any[]>;
+    exports?: Array<Type | any[]>;
+    imports?: Array<Type | ModuleWithProviders | any[]>;
+    providers?: any[];
+    schemas?: Array<SchemaMetadata | any[]>;
 }
 
 /** @experimental */
@@ -1036,25 +936,22 @@ export declare const PACKAGE_ROOT_URL: any;
 export declare var Pipe: PipeMetadataFactory;
 
 /** @stable */
-export declare class PipeMetadata extends InjectableMetadata {
+export declare class PipeMetadata extends InjectableMetadata implements PipeMetadataType {
     name: string;
     pure: boolean;
-    constructor({name, pure}: {
-        name: string;
-        pure?: boolean;
-    });
+    constructor({name, pure}: PipeMetadataType);
 }
 
 /** @stable */
 export interface PipeMetadataFactory {
-    (obj: {
-        name: string;
-        pure?: boolean;
-    }): any;
-    new (obj: {
-        name: string;
-        pure?: boolean;
-    }): any;
+    (obj: PipeMetadataType): any;
+    new (obj: PipeMetadataType): any;
+}
+
+/** @experimental */
+export interface PipeMetadataType {
+    name: string;
+    pure?: boolean;
 }
 
 /** @stable */
@@ -1476,21 +1373,6 @@ export declare abstract class ViewContainerRef {
     abstract remove(index?: number): void;
 }
 
-/** @experimental */
-export interface ViewDecorator extends TypeDecorator {
-    View(obj: {
-        templateUrl?: string;
-        template?: string;
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        renderer?: string;
-        styles?: string[];
-        styleUrls?: string[];
-        animations?: AnimationEntryMetadata[];
-        interpolation?: [string, string];
-    }): ViewDecorator;
-}
-
 /** @stable */
 export declare enum ViewEncapsulation {
     Emulated = 0,
@@ -1498,7 +1380,7 @@ export declare enum ViewEncapsulation {
     None = 2,
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class ViewMetadata {
     animations: AnimationEntryMetadata[];
     directives: Array<Type | any[]>;
@@ -1520,32 +1402,6 @@ export declare class ViewMetadata {
         animations?: AnimationEntryMetadata[];
         interpolation?: [string, string];
     });
-}
-
-/** @experimental */
-export interface ViewMetadataFactory {
-    (obj: {
-        templateUrl?: string;
-        template?: string;
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        encapsulation?: ViewEncapsulation;
-        styles?: string[];
-        styleUrls?: string[];
-        animations?: AnimationEntryMetadata[];
-        interpolation?: [string, string];
-    }): ViewDecorator;
-    new (obj: {
-        templateUrl?: string;
-        template?: string;
-        directives?: Array<Type | any[]>;
-        pipes?: Array<Type | any[]>;
-        encapsulation?: ViewEncapsulation;
-        styles?: string[];
-        styleUrls?: string[];
-        animations?: AnimationEntryMetadata[];
-        interpolation?: [string, string];
-    }): ViewMetadata;
 }
 
 /** @deprecated */
