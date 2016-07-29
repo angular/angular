@@ -30,4 +30,4 @@ If the current behavior is a bug or you can illustrate your feature request bett
  
 * **Browser:** [all | Chrome XX | Firefox XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ] 
  
-* **Language:** [all | TypeScript X.X | ES6/7 | ES5 | Dart] 
+* **Language:** [all | TypeScript X.X | ES6/7 | ES5] 
