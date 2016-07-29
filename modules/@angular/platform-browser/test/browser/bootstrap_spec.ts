@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LowerCasePipe, NgIf} from '@angular/common';
 import {XHR} from '@angular/compiler';
 import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, createPlatform, createPlatformFactory, provide} from '@angular/core';
 import {ApplicationRef, disposePlatform} from '@angular/core/src/application_ref';
