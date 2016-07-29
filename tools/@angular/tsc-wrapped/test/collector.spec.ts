@@ -28,6 +28,7 @@ describe('Collector', () => {
       'static-method.ts',
       'static-method-call.ts',
       'static-method-with-if.ts',
+      'static-method-with-default.ts',
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
@@ -445,6 +446,35 @@ describe('Collector', () => {
       }
     });
   });
+
+  it('should be able to collect a method with a default parameter', () => {
+    let source = program.getSourceFile('/static-method-with-default.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['MyModule'];
+    expect(classData).toBeDefined();
+    expect(classData.statics).toEqual({
+      with: {
+        __symbolic: 'function',
+        parameters: ['comp', 'foo', 'bar'],
+        defaults: [undefined, true, false],
+        value: [
+          {__symbolic: 'reference', name: 'MyModule'}, {
+            __symbolic: 'if',
+            condition: {__symbolic: 'reference', name: 'foo'},
+            thenExpression: {provider: 'a', useValue: {__symbolic: 'reference', name: 'comp'}},
+            elseExpression: {provider: 'b', useValue: {__symbolic: 'reference', name: 'comp'}}
+          },
+          {
+            __symbolic: 'if',
+            condition: {__symbolic: 'reference', name: 'bar'},
+            thenExpression: {provider: 'c', useValue: {__symbolic: 'reference', name: 'comp'}},
+            elseExpression: {provider: 'd', useValue: {__symbolic: 'reference', name: 'comp'}}
+          }
+        ]
+      }
+    });
+  });
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -696,6 +726,20 @@ const FILES: Directory = {
         return [
           MyModule,
           { provider: 'a', useValue: comp }
+        ];
+      }
+    }
+  `,
+  'static-method-with-default.ts': `
+    import {Injectable} from 'angular2/core';
+
+    @Injectable()
+    export class MyModule {
+      static with(comp: any, foo: boolean = true, bar: boolean = false): any[] {
+        return [
+          MyModule,
+          foo ? { provider: 'a', useValue: comp } : {provider: 'b', useValue: comp},
+          bar ? { provider: 'c', useValue: comp } : {provider: 'd', useValue: comp}
         ];
       }
     }
