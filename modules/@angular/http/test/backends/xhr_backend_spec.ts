@@ -571,9 +571,9 @@ export function main() {
                sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            let responseHeaderString = `Date: Fri, 20 Nov 2015 01:45:26 GMT
-               Content-Type: application/json; charset=utf-8
-               Transfer-Encoding: chunked
-               Connection: keep-alive`;
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive`;
 
            connection.response.subscribe((res: Response) => {
              expect(res.headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');

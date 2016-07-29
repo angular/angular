@@ -64,13 +64,18 @@ export class Headers {
    * Returns a new Headers instance from the given DOMString of Response Headers
    */
   static fromResponseHeaderString(headersString: string): Headers {
-    return headersString.trim()
-        .split('\n')
-        .map(val => val.split(':'))
-        .map(([key, ...parts]) => ([key.trim(), parts.join(':').trim()]))
-        .reduce(
-            (headers, [key, value]) => !headers.set(normalize(key), value) && headers,
-            new Headers());
+    let headers = new Headers();
+
+    headersString.split('\n').forEach(line => {
+      const index = line.indexOf(':');
+      if (index > 0) {
+        const key = line.substring(0, index);
+        const value = line.substring(index + 1).trim();
+        headers.set(key, value);
+      }
+    });
+
+    return headers;
   }
 
   /**
