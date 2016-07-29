@@ -684,7 +684,7 @@ export function main() {
           expect(elAst.providers[0].providers).toEqual([dirProvider]);
         });
 
-        it('should throw if mixing multi and non multi providers', () => {
+        it('if mixing multi and non multi providers', () => {
           var provider0 = createProvider('service0');
           var provider1 = createProvider('service0', {multi: true});
           var dirA = createDir('[dirA]', {providers: [provider0]});

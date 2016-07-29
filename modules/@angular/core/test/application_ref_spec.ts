@@ -141,6 +141,18 @@ export function main() {
                  expect(errorLogger.res).toEqual(['EXCEPTION: Test']);
                });
          }));
+
+      it('should throw useful error when ApplicationRef is not configured', async(() => {
+           @NgModule()
+           class EmptyModule {
+           }
+
+           return defaultPlatform.bootstrapModule(EmptyModule)
+               .then(() => fail('expecting error'), (error) => {
+                 expect(error.message)
+                     .toEqual('No ExceptionHandler. Is platform module (BrowserModule) included?');
+               });
+         }));
     });
 
     describe('bootstrapModuleFactory', () => {
