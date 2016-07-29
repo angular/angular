@@ -28,7 +28,8 @@ export class BrowserDetection {
 
   get isAndroid(): boolean {
     return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
-        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1;
+        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1 &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
@@ -36,11 +37,13 @@ export class BrowserDetection {
   get isIE(): boolean { return this._ua.indexOf('Trident') > -1; }
 
   get isWebkit(): boolean {
-    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1;
+    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1 &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isIOS7(): boolean {
-    return this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1;
+    return (this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1) &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }

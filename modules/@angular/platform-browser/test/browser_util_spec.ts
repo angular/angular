@@ -86,6 +86,18 @@ export function main() {
         isChromeDesktop: false
       },
       {
+        name: 'IEMobile',
+        ua: 'Mozilla/5.0 (Mobile; Windows Phone 8.1; Android 4.0; ARM; Trident/7.0; Touch; rv:11.0; IEMobile/11.0; NOKIA; Lumia 520) like iPhone OS 7_0_3 Mac OS X AppleWebKit/537 (KHTML, like Gecko) Mobile Safari/537',
+        isFirefox: false,
+        isAndroid: false,
+        isEdge: false,
+        isIE: true,
+        isWebkit: false,
+        isIOS7: false,
+        isSlow: true,
+        isChromeDesktop: false
+      },
+      {
         name: 'Edge',
         ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136',
         isFirefox: false,
