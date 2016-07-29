@@ -12,7 +12,7 @@ export const VERSION = 1;
 export interface ModuleMetadata {
   __symbolic: 'module';
   version: number;
-  metadata: {[name: string]: (ClassMetadata | MetadataValue)};
+  metadata: {[name: string]: (ClassMetadata | FunctionMetadata | MetadataValue)};
 }
 export function isModuleMetadata(value: any): value is ModuleMetadata {
   return value && value.__symbolic === 'module';
@@ -22,7 +22,7 @@ export interface ClassMetadata {
   __symbolic: 'class';
   decorators?: (MetadataSymbolicExpression|MetadataError)[];
   members?: MetadataMap;
-  statics?: MetadataObject;
+  statics?: {[name: string]: MetadataValue | FunctionMetadata};
 }
 export function isClassMetadata(value: any): value is ClassMetadata {
   return value && value.__symbolic === 'class';
@@ -65,7 +65,8 @@ export function isConstructorMetadata(value: any): value is ConstructorMetadata 
 export interface FunctionMetadata {
   __symbolic: 'function';
   parameters: string[];
-  result: MetadataValue;
+  defaults?: MetadataValue[];
+  value: MetadataValue;
 }
 export function isFunctionMetadata(value: any): value is FunctionMetadata {
   return value && value.__symbolic === 'function';

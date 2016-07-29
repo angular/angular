@@ -421,6 +421,14 @@ describe('StaticReflector', () => {
          [{provider: 'a', useValue: '1'}], [{provider: 'a', useValue: '2'}]
        ]);
      });
+
+  it('should be able to get the metadata for a class calling a method with default parameters',
+     () => {
+       const annotations = reflector.annotations(
+           host.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyDefaultsComponent'));
+       expect(annotations.length).toBe(1);
+       expect(annotations[0].providers).toEqual([['a', true, false]]);
+     });
 });
 
 class MockReflectorHost implements StaticReflectorHost {
@@ -973,6 +981,9 @@ class MockReflectorHost implements StaticReflectorHost {
           static condMethod(cond: boolean) {
             return [{ provider: 'a', useValue: cond ? '1' : '2'}];
           }
+          static defaultsMethod(a, b = true, c = false) {
+            return [a, b, c];
+          }
         }
       `,
       '/tmp/src/static-method-call.ts': `
@@ -988,6 +999,11 @@ class MockReflectorHost implements StaticReflectorHost {
           providers: [MyModule.condMethod(true), MyModule.condMethod(false)]
         })
         export class MyCondComponent { }
+
+        @Component({
+          providers: [MyModule.defaultsMethod('a')]
+        })
+        export class MyDefaultsComponent { }
       `,
       '/tmp/src/static-field.ts': `
         import {Injectable} from 'angular2/core';

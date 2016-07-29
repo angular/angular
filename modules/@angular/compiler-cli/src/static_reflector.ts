@@ -308,12 +308,17 @@ export class StaticReflector implements ReflectorReader {
             }
             calling.set(functionSymbol, true);
             try {
-              let value = targetFunction['value'];
+              const value = targetFunction['value'];
               if (value && (depth != 0 || value.__symbolic != 'error')) {
                 // Determine the arguments
-                let args = (expression['arguments'] || []).map((arg: any) => simplify(arg));
-                let parameters: string[] = targetFunction['parameters'];
-                let functionScope = BindingScope.build();
+                const args: any[] =
+                    (expression['arguments'] || []).map((arg: any) => simplify(arg));
+                const parameters: string[] = targetFunction['parameters'];
+                const defaults: any[] = targetFunction.defaults;
+                if (defaults && defaults.length > args.length) {
+                  args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
+                }
+                const functionScope = BindingScope.build();
                 for (let i = 0; i < parameters.length; i++) {
                   functionScope.define(parameters[i], args[i]);
                 }

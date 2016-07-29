@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 
 import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isMetadataError, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isMetadataError, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression} from './schema';
 import {Symbols} from './symbols';
 
 
@@ -19,7 +19,7 @@ export class MetadataCollector {
   public getMetadata(sourceFile: ts.SourceFile): ModuleMetadata {
     const locals = new Symbols(sourceFile);
     const evaluator = new Evaluator(locals);
-    let metadata: {[name: string]: MetadataValue | ClassMetadata}|undefined;
+    let metadata: {[name: string]: MetadataValue | ClassMetadata | FunctionMetadata}|undefined;
 
     function objFromDecorator(decoratorNode: ts.Decorator): MetadataSymbolicExpression {
       return <MetadataSymbolicExpression>evaluator.evaluateNode(decoratorNode.expression);
@@ -32,7 +32,7 @@ export class MetadataCollector {
 
     function maybeGetSimpleFunction(
         functionDeclaration: ts.FunctionDeclaration |
-        ts.MethodDeclaration): {func: MetadataValue, name: string}|undefined {
+        ts.MethodDeclaration): {func: FunctionMetadata, name: string}|undefined {
       if (functionDeclaration.name.kind == ts.SyntaxKind.Identifier) {
         const nameNode = <ts.Identifier>functionDeclaration.name;
         const functionName = nameNode.text;
@@ -42,13 +42,17 @@ export class MetadataCollector {
           if (statement.kind === ts.SyntaxKind.ReturnStatement) {
             const returnStatement = <ts.ReturnStatement>statement;
             if (returnStatement.expression) {
-              return {
-                name: functionName, func: {
-                  __symbolic: 'function',
-                  parameters: namesOf(functionDeclaration.parameters),
-                  value: evaluator.evaluateNode(returnStatement.expression)
-                }
+              const func: FunctionMetadata = {
+                __symbolic: 'function',
+                parameters: namesOf(functionDeclaration.parameters),
+                value: evaluator.evaluateNode(returnStatement.expression)
+              };
+              if (functionDeclaration.parameters.some(p => p.initializer != null)) {
+                const defaults: MetadataValue[] = [];
+                func.defaults = functionDeclaration.parameters.map(
+                    p => p.initializer && evaluator.evaluateNode(p.initializer));
               }
+              return { func, name: functionName }
             }
           }
         }
@@ -90,8 +94,8 @@ export class MetadataCollector {
       }
 
       // static member
-      let statics: MetadataObject = null;
-      function recordStaticMember(name: string, value: MetadataValue) {
+      let statics: {[name: string]: MetadataValue | FunctionMetadata} = null;
+      function recordStaticMember(name: string, value: MetadataValue | FunctionMetadata) {
         if (!statics) statics = {};
         statics[name] = value;
       }
