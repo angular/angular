@@ -979,7 +979,7 @@ export declare abstract class PlatformRef {
     disposed: boolean;
     injector: Injector;
     /** @stable */ bootstrapModule<M>(moduleType: ConcreteType<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
-    /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): NgModuleRef<M>;
+    /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
     abstract dispose(): void;
     abstract registerDisposeListener(dispose: () => void): void;
 }

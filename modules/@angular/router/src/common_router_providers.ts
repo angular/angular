@@ -54,19 +54,10 @@ export function rootRoute(router: Router): ActivatedRoute {
   return router.routerState.root;
 }
 
-export function setupRouterInitializer(injector: Injector) {
-  // https://github.com/angular/angular/issues/9101
-  // Delay the router instantiation to avoid circular dependency (ApplicationRef ->
-  // APP_INITIALIZER -> Router)
-  setTimeout(() => {
-    const appRef = injector.get(ApplicationRef);
-    if (appRef.componentTypes.length == 0) {
-      appRef.registerBootstrapListener(() => { injector.get(Router).initialNavigation(); });
-    } else {
-      injector.get(Router).initialNavigation();
-    }
-  }, 0);
-  return (): any => null;
+export function setupRouterInitializer(injector: Injector, appRef: ApplicationRef) {
+  return () => {
+    appRef.registerBootstrapListener(() => { injector.get(Router).initialNavigation(); });
+  };
 }
 
 /**

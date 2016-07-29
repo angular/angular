@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ObservableWrapper, PromiseWrapper} from '../src/facade/async';
+import {ObservableWrapper, PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
 import {ConcreteType, IS_DART, Type, isBlank, isPresent, isPromise} from '../src/facade/lang';
@@ -27,7 +27,6 @@ import {NgZone, NgZoneError} from './zone/ng_zone';
 var _devMode: boolean = true;
 var _runModeLocked: boolean = false;
 var _platform: PlatformRef;
-var _inPlatformCreate: boolean = false;
 
 /**
  * Disable Angular's development mode, which turns off assertions and other
@@ -78,19 +77,13 @@ export function isDevMode(): boolean {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatform(injector: Injector): PlatformRef {
-  if (_inPlatformCreate) {
-    throw new BaseException('Already creating a platform...');
-  }
   if (isPresent(_platform) && !_platform.disposed) {
     throw new BaseException(
         'There can be only one platform. Destroy the previous one to create a new one.');
   }
-  _inPlatformCreate = true;
-  try {
-    _platform = injector.get(PlatformRef);
-  } finally {
-    _inPlatformCreate = false;
-  }
+  _platform = injector.get(PlatformRef);
+  const inits: Function[] = <Function[]>injector.get(PLATFORM_INITIALIZER, null);
+  if (isPresent(inits)) inits.forEach(init => init());
   return _platform;
 }
 
@@ -218,7 +211,7 @@ export abstract class PlatformRef {
    *
    * @experimental APIs related to application bootstrap are currently under review.
    */
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): NgModuleRef<M> {
+  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>> {
     throw unimplemented();
   }
 
@@ -244,8 +237,8 @@ export abstract class PlatformRef {
   }
 
   /**
-*Register a listener to be called when the platform is disposed.
-*/
+   * Register a listener to be called when the platform is disposed.
+   */
   abstract registerDisposeListener(dispose: () => void): void;
 
   /**
@@ -262,6 +255,26 @@ export abstract class PlatformRef {
   get disposed(): boolean { throw unimplemented(); }
 }
 
+function _callAndReportToExceptionHandler(
+    exceptionHandler: ExceptionHandler, callback: () => any): any {
+  try {
+    const result = callback();
+    if (isPromise(result)) {
+      return result.catch((e: any) => {
+        exceptionHandler.call(e);
+        // rethrow as the exception handler might not do it
+        throw e;
+      });
+    } else {
+      return result;
+    }
+  } catch (e) {
+    exceptionHandler.call(e);
+    // rethrow as the exception handler might not do it
+    throw e;
+  }
+}
+
 @Injectable()
 export class PlatformRef_ extends PlatformRef {
   /** @internal */
@@ -271,22 +284,13 @@ export class PlatformRef_ extends PlatformRef {
 
   private _disposed: boolean = false;
 
-  constructor(private _injector: Injector) {
-    super();
-    if (!_inPlatformCreate) {
-      throw new BaseException('Platforms have to be created via `createPlatform`!');
-    }
-    let inits: Function[] = <Function[]>_injector.get(PLATFORM_INITIALIZER, null);
-    if (isPresent(inits)) inits.forEach(init => init());
-  }
+  constructor(private _injector: Injector) { super(); }
 
   registerDisposeListener(dispose: () => void): void { this._disposeListeners.push(dispose); }
 
   get injector(): Injector { return this._injector; }
 
   get disposed() { return this._disposed; }
-
-  addApplication(appRef: ApplicationRef) { this._applications.push(appRef); }
 
   dispose(): void {
     ListWrapper.clone(this._applications).forEach((app) => app.dispose());
@@ -297,15 +301,40 @@ export class PlatformRef_ extends PlatformRef {
   /** @internal */
   _applicationDisposed(app: ApplicationRef): void { ListWrapper.remove(this._applications, app); }
 
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): NgModuleRef<M> {
+  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>> {
     // Note: We need to create the NgZone _before_ we instantiate the module,
     // as instantiating the module creates some providers eagerly.
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
     const ngZone = new NgZone({enableLongStackTrace: isDevMode()});
-    const ngZoneInjector =
-        ReflectiveInjector.resolveAndCreate([{provide: NgZone, useValue: ngZone}], this.injector);
-    return ngZone.run(() => moduleFactory.create(ngZoneInjector));
+    // Attention: Don't use ApplicationRef.run here,
+    // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
+    return ngZone.run(() => {
+      const ngZoneInjector =
+          ReflectiveInjector.resolveAndCreate([{provide: NgZone, useValue: ngZone}], this.injector);
+      const moduleRef = moduleFactory.create(ngZoneInjector);
+      const exceptionHandler: ExceptionHandler = moduleRef.injector.get(ExceptionHandler);
+      ObservableWrapper.subscribe(ngZone.onError, (error: NgZoneError) => {
+        exceptionHandler.call(error.error, error.stackTrace);
+      });
+      return _callAndReportToExceptionHandler(exceptionHandler, () => {
+        const appInits = moduleRef.injector.get(APP_INITIALIZER, null);
+        const asyncInitPromises: Promise<any>[] = [];
+        if (isPresent(appInits)) {
+          for (let i = 0; i < appInits.length; i++) {
+            const initResult = appInits[i]();
+            if (isPromise(initResult)) {
+              asyncInitPromises.push(initResult);
+            }
+          }
+        }
+        const appRef: ApplicationRef_ = moduleRef.injector.get(ApplicationRef);
+        return Promise.all(asyncInitPromises).then(() => {
+          appRef.asyncInitDone();
+          return moduleRef;
+        });
+      });
+    });
   }
 
   bootstrapModule<M>(
@@ -315,11 +344,7 @@ export class PlatformRef_ extends PlatformRef {
     const compiler = compilerFactory.createCompiler(
         compilerOptions instanceof Array ? compilerOptions : [compilerOptions]);
     return compiler.compileModuleAsync(moduleType)
-        .then((moduleFactory) => this.bootstrapModuleFactory(moduleFactory))
-        .then((moduleRef) => {
-          const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-          return appRef.waitForAsyncInitializers().then(() => moduleRef);
-        });
+        .then((moduleFactory) => this.bootstrapModuleFactory(moduleFactory));
   }
 }
 
@@ -421,42 +446,17 @@ export class ApplicationRef_ extends ApplicationRef {
   /** @internal */
   private _enforceNoNewChanges: boolean = false;
 
-  private _asyncInitDonePromise: Promise<any>;
-  private _asyncInitDone: boolean;
+  /** @internal */
+  _asyncInitDonePromise: PromiseCompleter<any> = PromiseWrapper.completer();
 
   constructor(
       private _platform: PlatformRef_, private _zone: NgZone, private _console: Console,
       private _injector: Injector, private _exceptionHandler: ExceptionHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
       @Optional() private _testabilityRegistry: TestabilityRegistry,
-      @Optional() private _testability: Testability,
-      @Optional() @Inject(APP_INITIALIZER) inits: Function[]) {
+      @Optional() private _testability: Testability) {
     super();
     this._enforceNoNewChanges = isDevMode();
-    this._asyncInitDonePromise = this.run(() => {
-      var asyncInitResults: Promise<any>[] = [];
-      var asyncInitDonePromise: Promise<any>;
-      if (isPresent(inits)) {
-        for (var i = 0; i < inits.length; i++) {
-          var initResult = inits[i]();
-          if (isPromise(initResult)) {
-            asyncInitResults.push(initResult);
-          }
-        }
-      }
-      if (asyncInitResults.length > 0) {
-        asyncInitDonePromise =
-            PromiseWrapper.all(asyncInitResults).then((_) => this._asyncInitDone = true);
-        this._asyncInitDone = false;
-      } else {
-        this._asyncInitDone = true;
-        asyncInitDonePromise = PromiseWrapper.resolve(true);
-      }
-      return asyncInitDonePromise;
-    });
-    ObservableWrapper.subscribe(this._zone.onError, (error: NgZoneError) => {
-      this._exceptionHandler.call(error.error, error.stackTrace);
-    });
     ObservableWrapper.subscribe(
         this._zone.onMicrotaskEmpty, (_) => { this._zone.run(() => { this.tick(); }); });
   }
@@ -475,40 +475,19 @@ export class ApplicationRef_ extends ApplicationRef {
     ListWrapper.remove(this._changeDetectorRefs, changeDetector);
   }
 
-  waitForAsyncInitializers(): Promise<any> { return this._asyncInitDonePromise; }
+  /**
+   * @internal
+   */
+  asyncInitDone() { this._asyncInitDonePromise.resolve(null); }
+
+  waitForAsyncInitializers(): Promise<any> { return this._asyncInitDonePromise.promise; }
 
   run(callback: Function): any {
-    var result: any;
-    // Note: Don't use zone.runGuarded as we want to know about
-    // the thrown exception!
-    // Note: the completer needs to be created outside
-    // of `zone.run` as Dart swallows rejected promises
-    // via the onError callback of the promise.
-    var completer = PromiseWrapper.completer();
-    this._zone.run(() => {
-      try {
-        result = callback();
-        if (isPromise(result)) {
-          PromiseWrapper.then(
-              result, (ref) => { completer.resolve(ref); },
-              (err, stackTrace) => {
-                completer.reject(err, stackTrace);
-                this._exceptionHandler.call(err, stackTrace);
-              });
-        }
-      } catch (e) {
-        this._exceptionHandler.call(e, e.stack);
-        throw e;
-      }
-    });
-    return isPromise(result) ? completer.promise : result;
+    return this._zone.run(
+        () => _callAndReportToExceptionHandler(this._exceptionHandler, <any>callback));
   }
 
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|ConcreteType<C>): ComponentRef<C> {
-    if (!this._asyncInitDone) {
-      throw new BaseException(
-          'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using waitForAsyncInitializers().');
-    }
     return this.run(() => {
       let componentFactory: ComponentFactory<C>;
       if (componentOrFactory instanceof ComponentFactory) {
