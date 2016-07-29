@@ -43,8 +43,8 @@ export class Parser {
       input: string, location: any,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
-    var tokens = this._lexer.tokenize(this._stripComments(input));
-    var ast = new _ParseAST(input, location, tokens, true, this.errors).parseChain();
+    const tokens = this._lexer.tokenize(this._stripComments(input));
+    const ast = new _ParseAST(input, location, tokens, true, this.errors).parseChain();
     return new ASTWithSource(ast, input, location, this.errors);
   }
 
@@ -155,15 +155,15 @@ export class Parser {
   }
 
   private _stripComments(input: string): string {
-    let i = this._commentStart(input);
+    const i = this._commentStart(input);
     return isPresent(i) ? input.substring(0, i).trim() : input;
   }
 
   private _commentStart(input: string): number {
     var outerQuote: number = null;
-    for (var i = 0; i < input.length - 1; i++) {
-      let char = StringWrapper.charCodeAt(input, i);
-      let nextChar = StringWrapper.charCodeAt(input, i + 1);
+    for (let i = 0; i < input.length - 1; i++) {
+      const char = StringWrapper.charCodeAt(input, i);
+      const nextChar = StringWrapper.charCodeAt(input, i + 1);
 
       if (char === chars.$SLASH && nextChar == chars.$SLASH && isBlank(outerQuote)) return i;
 
