@@ -307,26 +307,29 @@ export class StaticReflector implements ReflectorReader {
               throw new Error('Recursion not supported');
             }
             calling.set(functionSymbol, true);
-            let value = targetFunction['value'];
-            if (value && (depth != 0 || value.__symbolic != 'error')) {
-              // Determine the arguments
-              let args = (expression['arguments'] || []).map((arg: any) => simplify(arg));
-              let parameters: string[] = targetFunction['parameters'];
-              let functionScope = BindingScope.build();
-              for (let i = 0; i < parameters.length; i++) {
-                functionScope.define(parameters[i], args[i]);
+            try {
+              let value = targetFunction['value'];
+              if (value && (depth != 0 || value.__symbolic != 'error')) {
+                // Determine the arguments
+                let args = (expression['arguments'] || []).map((arg: any) => simplify(arg));
+                let parameters: string[] = targetFunction['parameters'];
+                let functionScope = BindingScope.build();
+                for (let i = 0; i < parameters.length; i++) {
+                  functionScope.define(parameters[i], args[i]);
+                }
+                let oldScope = scope;
+                let result: any;
+                try {
+                  scope = functionScope.done();
+                  result = simplifyInContext(functionSymbol, value, depth + 1);
+                } finally {
+                  scope = oldScope;
+                }
+                return result;
               }
-              let oldScope = scope;
-              let result: any;
-              try {
-                scope = functionScope.done();
-                result = simplifyInContext(functionSymbol, value, depth + 1);
-              } finally {
-                scope = oldScope;
-              }
-              return result;
+            } finally {
+              calling.delete(functionSymbol);
             }
-            calling.delete(functionSymbol);
           }
         }
 
@@ -417,6 +420,10 @@ export class StaticReflector implements ReflectorReader {
                     return left % right;
                 }
                 return null;
+              case 'if':
+                let condition = simplify(expression['condition']);
+                return condition ? simplify(expression['thenExpression']) :
+                                   simplify(expression['elseExpression']);
               case 'pre':
                 let operand = simplify(expression['operand']);
                 if (shouldIgnore(operand)) return operand;

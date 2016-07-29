@@ -411,6 +411,16 @@ describe('StaticReflector', () => {
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers).toEqual([{provider: 'a', useValue: 'Some string'}]);
   });
+
+  it('should be able to get the metadata for a class calling a method with a conditional expression',
+     () => {
+       const annotations = reflector.annotations(
+           host.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyCondComponent'));
+       expect(annotations.length).toBe(1);
+       expect(annotations[0].providers).toEqual([
+         [{provider: 'a', useValue: '1'}], [{provider: 'a', useValue: '2'}]
+       ]);
+     });
 });
 
 class MockReflectorHost implements StaticReflectorHost {
@@ -960,6 +970,9 @@ class MockReflectorHost implements StaticReflectorHost {
           static with(data: any) {
             return { provider: 'a', useValue: data }
           }
+          static condMethod(cond: boolean) {
+            return [{ provider: 'a', useValue: cond ? '1' : '2'}];
+          }
         }
       `,
       '/tmp/src/static-method-call.ts': `
@@ -970,6 +983,11 @@ class MockReflectorHost implements StaticReflectorHost {
           providers: MyModule.with(100)
         })
         export class MyComponent { }
+
+        @Component({
+          providers: [MyModule.condMethod(true), MyModule.condMethod(false)]
+        })
+        export class MyCondComponent { }
       `,
       '/tmp/src/static-field.ts': `
         import {Injectable} from 'angular2/core';
