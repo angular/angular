@@ -31,7 +31,7 @@ import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
 import {PRIMARY_OUTLET, Params} from './shared';
-import {UrlSerializer, UrlTree, createEmptyUrlTree} from './url_tree';
+import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {andObservables, forEach, merge, shallowEqual, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
@@ -304,6 +304,18 @@ export class Router {
    * Parse a string into a {@link UrlTree}.
    */
   parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
+
+  /**
+   * Returns if the url is activated or not.
+   */
+  isActive(url: string|UrlTree, exact: boolean): boolean {
+    if (url instanceof UrlTree) {
+      return containsTree(this.currentUrlTree, url, exact);
+    } else {
+      const urlTree = this.urlSerializer.parse(url);
+      return containsTree(this.currentUrlTree, urlTree, exact);
+    }
+  }
 
   private scheduleNavigation(url: UrlTree, preventPushState: boolean): Promise<boolean> {
     const id = ++this.navigationId;

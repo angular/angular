@@ -4,6 +4,7 @@ export declare class ActivatedRoute {
     data: Observable<Data>;
     outlet: string;
     params: Observable<Params>;
+    routeConfig: Route;
     snapshot: ActivatedRouteSnapshot;
     url: Observable<UrlSegment[]>;
     toString(): string;
@@ -15,6 +16,7 @@ export declare class ActivatedRouteSnapshot {
     data: Data;
     outlet: string;
     params: Params;
+    routeConfig: Route;
     url: UrlSegment[];
     toString(): string;
 }
@@ -157,6 +159,7 @@ export declare class Router {
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
+    isActive(url: string | UrlTree, exact: boolean): boolean;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree): Promise<boolean>;
     parseUrl(url: string): UrlTree;
