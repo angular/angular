@@ -146,15 +146,15 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
 
   schemas: Array<SchemaMetadata|any[]>;
 
-  constructor(
-      {providers, declarations, imports, exports, entryComponents,
-       schemas}: NgModuleMetadataType = {}) {
+  constructor(options: NgModuleMetadataType = {}) {
+    // We cannot use destructuring of the constructor argument because `exports` is a
+    // protected symbol in CommonJS and closure tries to aggressively optimize it away.
     super();
-    this._providers = providers;
-    this.declarations = declarations;
-    this.imports = imports;
-    this.exports = exports;
-    this.entryComponents = entryComponents;
-    this.schemas = schemas;
+    this._providers = options.providers;
+    this.declarations = options.declarations;
+    this.imports = options.imports;
+    this.exports = options.exports;
+    this.entryComponents = options.entryComponents;
+    this.schemas = options.schemas;
   }
 }
