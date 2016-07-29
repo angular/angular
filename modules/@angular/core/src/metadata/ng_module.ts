@@ -37,10 +37,23 @@ export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
 };
 
 /**
+ * Interface for creating {@link NgModuleMetadata}
+ * @experimental
+ */
+export interface NgModuleMetadataType {
+  providers?: any[];
+  declarations?: Array<Type|any[]>;
+  imports?: Array<Type|ModuleWithProviders|any[]>;
+  exports?: Array<Type|any[]>;
+  entryComponents?: Array<Type|any[]>;
+  schemas?: Array<SchemaMetadata|any[]>;
+}
+
+/**
  * Declares an Angular Module.
  * @experimental
  */
-export class NgModuleMetadata extends InjectableMetadata {
+export class NgModuleMetadata extends InjectableMetadata implements NgModuleMetadataType {
   /**
    * Defines the set of injectable objects that are available in the injector
    * of this module.
@@ -133,14 +146,9 @@ export class NgModuleMetadata extends InjectableMetadata {
 
   schemas: Array<SchemaMetadata|any[]>;
 
-  constructor({providers, declarations, imports, exports, entryComponents, schemas}: {
-    providers?: any[],
-    declarations?: Array<Type|any[]>,
-    imports?: Array<Type|any[]>,
-    exports?: Array<Type|any[]>,
-    entryComponents?: Array<Type|any[]>,
-    schemas?: Array<SchemaMetadata|any[]>
-  } = {}) {
+  constructor(
+      {providers, declarations, imports, exports, entryComponents,
+       schemas}: NgModuleMetadataType = {}) {
     super();
     this._providers = providers;
     this.declarations = declarations;

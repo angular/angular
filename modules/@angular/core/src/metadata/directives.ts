@@ -13,6 +13,21 @@ import {Type, isPresent} from '../facade/lang';
 
 import {ViewEncapsulation} from './view';
 
+/**
+ * Interface for creating {@link DirectiveMetadata}
+ * @experimental
+ */
+export interface DirectiveMetadataType {
+  selector?: string;
+  properties?: string[];
+  inputs?: string[];
+  events?: string[];
+  outputs?: string[];
+  host?: {[key: string]: string};
+  providers?: any[];
+  exportAs?: string;
+  queries?: {[key: string]: any};
+}
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -396,7 +411,7 @@ import {ViewEncapsulation} from './view';
  * @ts2dart_const
  * @stable
  */
-export class DirectiveMetadata extends InjectableMetadata {
+export class DirectiveMetadata extends InjectableMetadata implements DirectiveMetadataType {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
@@ -749,17 +764,9 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   queries: {[key: string]: any};
 
-  constructor({selector, inputs, outputs, properties, events, host, providers, exportAs, queries}: {
-    selector?: string,
-    inputs?: string[],
-    outputs?: string[],
-    /** @deprecated */ properties?: string[],
-    /** @deprecated */ events?: string[],
-    host?: {[key: string]: string},
-    providers?: any[],
-    exportAs?: string,
-    queries?: {[key: string]: any}
-  } = {}) {
+  constructor(
+      {selector, inputs, outputs, properties, events, host, providers, exportAs,
+       queries}: DirectiveMetadataType = {}) {
     super();
     this.selector = selector;
     this._inputs = inputs;
@@ -771,6 +778,26 @@ export class DirectiveMetadata extends InjectableMetadata {
     this.queries = queries;
     this._providers = providers;
   }
+}
+
+/**
+ * Interface for creating {@link ComponentMetadataType}
+ * @experimental
+ */
+export interface ComponentMetadataType extends DirectiveMetadataType {
+  changeDetection?: ChangeDetectionStrategy;
+  viewProviders?: any[];
+  moduleId?: string;
+  templateUrl?: string;
+  template?: string;
+  styleUrls?: string[];
+  styles?: string[];
+  animations?: AnimationEntryMetadata[];
+  directives?: Array<Type|any[]>;
+  pipes?: Array<Type|any[]>;
+  encapsulation?: ViewEncapsulation;
+  interpolation?: [string, string];
+  entryComponents?: Array<Type|any[]>;
 }
 
 /**
@@ -800,7 +827,7 @@ export class DirectiveMetadata extends InjectableMetadata {
  * @ts2dart_const
  * @stable
  */
-export class ComponentMetadata extends DirectiveMetadata {
+export class ComponentMetadata extends DirectiveMetadata implements ComponentMetadataType {
   /**
    * Defines the used change detection strategy.
    *
@@ -999,36 +1026,28 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   entryComponents: Array<Type|any[]>;
 
-  constructor(
-      {selector, inputs, outputs, properties, events, host, exportAs, moduleId, providers,
-       viewProviders, changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl,
-       template, styleUrls, styles, animations, directives, pipes, encapsulation, interpolation,
-       /** @deprecated use entryComponents instead! */
-       precompile, entryComponents}: {
-        selector?: string,
-        inputs?: string[],
-        outputs?: string[],
-        /** @deprecated */ properties?: string[],
-        /** @deprecated */ events?: string[],
-        host?: {[key: string]: string},
-        providers?: any[],
-        exportAs?: string,
-        moduleId?: string,
-        viewProviders?: any[],
-        queries?: {[key: string]: any},
-        changeDetection?: ChangeDetectionStrategy,
-        templateUrl?: string,
-        template?: string,
-        styleUrls?: string[],
-        styles?: string[],
-        animations?: AnimationEntryMetadata[],
-        directives?: Array<Type|any[]>,
-        pipes?: Array<Type|any[]>,
-        encapsulation?: ViewEncapsulation,
-        interpolation?: [string, string],
-        precompile?: Array<Type|any[]>,
-        entryComponents?: Array<Type|any[]>
-      } = {}) {
+  constructor({selector,
+               inputs,
+               outputs,
+               properties,
+               events,
+               host,
+               exportAs,
+               moduleId,
+               providers,
+               viewProviders,
+               changeDetection = ChangeDetectionStrategy.Default,
+               queries,
+               templateUrl,
+               template,
+               styleUrls,
+               styles,
+               animations,
+               directives,
+               pipes,
+               encapsulation,
+               interpolation,
+               entryComponents}: ComponentMetadataType = {}) {
     super({
       selector: selector,
       inputs: inputs,
@@ -1053,8 +1072,17 @@ export class ComponentMetadata extends DirectiveMetadata {
     this.moduleId = moduleId;
     this.animations = animations;
     this.interpolation = interpolation;
-    this.entryComponents = precompile ? precompile : entryComponents;
+    this.entryComponents = entryComponents;
   }
+}
+
+/**
+ * Interface for creating {@link PipeMetadata}
+ * @experimental
+ */
+export interface PipeMetadataType {
+  name: string;
+  pure?: boolean;
 }
 
 /**
@@ -1070,12 +1098,12 @@ export class ComponentMetadata extends DirectiveMetadata {
  * @ts2dart_const
  * @stable
  */
-export class PipeMetadata extends InjectableMetadata {
+export class PipeMetadata extends InjectableMetadata implements PipeMetadataType {
   name: string;
   /** @internal */
   _pure: boolean;
 
-  constructor({name, pure}: {name: string, pure?: boolean}) {
+  constructor({name, pure}: PipeMetadataType) {
     super();
     this.name = name;
     this._pure = pure;
