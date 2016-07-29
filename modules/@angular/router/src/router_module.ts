@@ -76,18 +76,11 @@ export const ROUTER_PROVIDERS: any[] = [
  */
 @NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
 export class RouterModule {
-  constructor(private injector: Injector) {
+  constructor(private injector: Injector, appRef: ApplicationRef) {
     // do the initialization only once
     if ((<any>injector).parent.get(RouterModule, null)) return;
 
-    setTimeout(() => {
-      const appRef = injector.get(ApplicationRef);
-      if (appRef.componentTypes.length == 0) {
-        appRef.registerBootstrapListener(() => { injector.get(Router).initialNavigation(); });
-      } else {
-        injector.get(Router).initialNavigation();
-      }
-    }, 0);
+    appRef.registerBootstrapListener(() => { injector.get(Router).initialNavigation(); });
   }
 
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {

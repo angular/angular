@@ -219,7 +219,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
 
 /** @experimental */
 export declare class RouterModule {
-    constructor(injector: Injector);
+    constructor(injector: Injector, appRef: ApplicationRef);
     static forChild(routes: Routes): ModuleWithProviders;
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders;
 }

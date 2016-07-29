@@ -6,62 +6,63 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
-import {SpyChangeDetectorRef} from './spies';
-import {ConcreteType} from '../src/facade/lang';
-import {ApplicationRef_, ApplicationRef} from '@angular/core/src/application_ref';
-import {Type, NgModule, CompilerFactory, Injector, APP_INITIALIZER, Component, ReflectiveInjector, PlatformRef, disposePlatform, createPlatformFactory, ComponentResolver, ComponentFactoryResolver, ChangeDetectorRef, ApplicationModule} from '@angular/core';
-import {platformCoreDynamic} from '@angular/compiler';
+import {APP_INITIALIZER, ChangeDetectorRef, CompilerFactory, Component, Injector, NgModule, PlatformRef} from '@angular/core';
+import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
-import {BaseException} from '../src/facade/exceptions';
-import {PromiseWrapper, PromiseCompleter, TimerWrapper} from '../src/facade/async';
-import {ComponentFactory, ComponentRef_, ComponentRef} from '@angular/core/src/linker/component_factory';
+import {ComponentRef} from '@angular/core/src/linker/component_factory';
+import {BrowserModule} from '@angular/platform-browser';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {ExceptionHandler} from '../src/facade/exception_handler';
+import {BaseException} from '../src/facade/exceptions';
+import {ConcreteType} from '../src/facade/lang';
+import {TestBed, async, inject} from '../testing';
+
+import {SpyChangeDetectorRef} from './spies';
+
+@Component({selector: 'comp', template: 'hello'})
+class SomeComponent {
+}
 
 export function main() {
   describe('bootstrap', () => {
-    var defaultPlatform: PlatformRef;
     var errorLogger: _ArrayLogger;
-    var someCompFactory: ComponentFactory<any>;
-    var appProviders: any[];
+    var fakeDoc: Document;
 
     beforeEach(() => {
+      fakeDoc = getDOM().createHtmlDocument();
+      const el = getDOM().createElement('comp', fakeDoc);
+      getDOM().appendChild(fakeDoc.body, el);
       errorLogger = new _ArrayLogger();
-      disposePlatform();
-      defaultPlatform = createPlatformFactory(platformCoreDynamic, 'test')();
-      someCompFactory =
-          new _MockComponentFactory(new _MockComponentRef(ReflectiveInjector.resolveAndCreate([])));
-      appProviders = [
-        {provide: Console, useValue: new _MockConsole()},
-        {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
-        {provide: ComponentResolver, useValue: new _MockComponentResolver(someCompFactory)}
-      ];
     });
 
-    afterEach(() => { disposePlatform(); });
-
     function createModule(providers: any[] = []): ConcreteType<any> {
-      @NgModule({providers: [appProviders, providers], imports: [ApplicationModule]})
+      @NgModule({
+        providers: [
+          {provide: Console, useValue: new _MockConsole()},
+          {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
+          {provide: DOCUMENT, useValue: fakeDoc}, providers
+        ],
+        imports: [BrowserModule],
+        declarations: [SomeComponent],
+        entryComponents: [SomeComponent]
+      })
       class MyModule {
       }
 
       return MyModule;
     }
 
-    function createApplication(
-        providers: any[] = [], platform: PlatformRef = defaultPlatform): ApplicationRef_ {
-      const compilerFactory: CompilerFactory = platform.injector.get(CompilerFactory);
-      const compiler = compilerFactory.createCompiler();
-      const appInjector =
-          platform.bootstrapModuleFactory(compiler.compileModuleSync(createModule(providers)))
-              .injector;
-      return appInjector.get(ApplicationRef);
-    }
-
     describe('ApplicationRef', () => {
+      var ref: ApplicationRef_;
+      beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
+      beforeEach(inject([ApplicationRef], (_ref: ApplicationRef_) => { ref = _ref; }));
+
       it('should throw when reentering tick', () => {
         var cdRef = <any>new SpyChangeDetectorRef();
-        var ref = createApplication();
         try {
           ref.registerChangeDetector(cdRef);
           cdRef.spy('detectChanges').andCallFake(() => ref.tick());
@@ -73,29 +74,42 @@ export function main() {
 
       describe('run', () => {
         it('should rethrow errors even if the exceptionHandler is not rethrowing', () => {
-          var ref = createApplication();
           expect(() => ref.run(() => { throw new BaseException('Test'); })).toThrowError('Test');
         });
 
         it('should return a promise with rejected errors even if the exceptionHandler is not rethrowing',
-           inject(
-               [AsyncTestCompleter, Injector], (async: AsyncTestCompleter, injector: Injector) => {
-                 var ref = createApplication();
-                 var promise = ref.run(() => PromiseWrapper.reject('Test', null));
-                 PromiseWrapper.catchError(promise, (e) => {
-                   expect(e).toEqual('Test');
-                   async.done();
-                 });
-               }));
+           async(() => {
+             var promise: Promise<any> = ref.run(() => Promise.reject('Test'));
+             promise.then(() => expect(false).toBe(true), (e) => { expect(e).toEqual('Test'); });
+           }));
+      });
+
+      describe('registerBootstrapListener', () => {
+        it('should be called when a component is bootstrapped', () => {
+          const capturedCompRefs: ComponentRef<any>[] = [];
+          ref.registerBootstrapListener((compRef) => capturedCompRefs.push(compRef));
+          const compRef = ref.bootstrap(SomeComponent);
+          expect(capturedCompRefs).toEqual([compRef]);
+        });
+
+        it('should be called immediately when a component was bootstrapped before', () => {
+          ref.registerBootstrapListener((compRef) => capturedCompRefs.push(compRef));
+          const capturedCompRefs: ComponentRef<any>[] = [];
+          const compRef = ref.bootstrap(SomeComponent);
+          expect(capturedCompRefs).toEqual([compRef]);
+        });
       });
     });
 
     describe('bootstrapModule', () => {
-      it('should wait for asynchronous app initializers',
-         inject([AsyncTestCompleter, Injector], (async: AsyncTestCompleter, injector: Injector) => {
+      var defaultPlatform: PlatformRef;
+      beforeEach(
+          inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
+
+      it('should wait for asynchronous app initializers', async(() => {
            let completer: PromiseCompleter<any> = PromiseWrapper.completer();
            var initializerDone = false;
-           TimerWrapper.setTimeout(() => {
+           setTimeout(() => {
              completer.resolve(true);
              initializerDone = true;
            }, 1);
@@ -103,24 +117,73 @@ export function main() {
            defaultPlatform
                .bootstrapModule(createModule(
                    [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]))
-               .then(_ => {
-                 expect(initializerDone).toBe(true);
-                 async.done();
+               .then(_ => { expect(initializerDone).toBe(true); });
+         }));
+
+      it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
+           defaultPlatform
+               .bootstrapModule(createModule(
+                   [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]))
+               .then(() => expect(false).toBe(true), (e) => {
+                 expect(e).toBe('Test');
+                 expect(errorLogger.res).toEqual(['EXCEPTION: Test']);
+               });
+         }));
+
+      it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
+         async(() => {
+           defaultPlatform
+               .bootstrapModule(createModule([
+                 {provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}
+               ]))
+               .then(() => expect(false).toBe(true), (e) => {
+                 expect(e).toBe('Test');
+                 expect(errorLogger.res).toEqual(['EXCEPTION: Test']);
                });
          }));
     });
 
-    describe('ApplicationRef.bootstrap', () => {
-      it('should throw if an APP_INITIIALIZER is not yet resolved',
-         inject([Injector], (injector: Injector) => {
-           var app = createApplication([{
-             provide: APP_INITIALIZER,
-             useValue: () => PromiseWrapper.completer().promise,
-             multi: true
-           }]);
-           expect(() => app.bootstrap(someCompFactory))
-               .toThrowError(
-                   'Cannot bootstrap as there are still asynchronous initializers running. Wait for them using waitForAsyncInitializers().');
+    describe('bootstrapModuleFactory', () => {
+      var defaultPlatform: PlatformRef;
+      beforeEach(
+          inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
+      it('should wait for asynchronous app initializers', async(() => {
+           let completer: PromiseCompleter<any> = PromiseWrapper.completer();
+           var initializerDone = false;
+           setTimeout(() => {
+             completer.resolve(true);
+             initializerDone = true;
+           }, 1);
+
+           const compilerFactory: CompilerFactory =
+               defaultPlatform.injector.get(CompilerFactory, null);
+           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
+               [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]));
+           defaultPlatform.bootstrapModuleFactory(moduleFactory).then(_ => {
+             expect(initializerDone).toBe(true);
+           });
+         }));
+
+      it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
+           const compilerFactory: CompilerFactory =
+               defaultPlatform.injector.get(CompilerFactory, null);
+           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
+               [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]));
+           expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
+           expect(errorLogger.res).toEqual(['EXCEPTION: Test']);
+         }));
+
+      it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
+         async(() => {
+           const compilerFactory: CompilerFactory =
+               defaultPlatform.injector.get(CompilerFactory, null);
+           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
+               [{provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}]));
+           defaultPlatform.bootstrapModuleFactory(moduleFactory)
+               .then(() => expect(false).toBe(true), (e) => {
+                 expect(e).toBe('Test');
+                 expect(errorLogger.res).toEqual(['EXCEPTION: Test']);
+               });
          }));
     });
   });
@@ -136,31 +199,6 @@ class _ArrayLogger {
   logError(s: any): void { this.res.push(s); }
   logGroup(s: any): void { this.res.push(s); }
   logGroupEnd(){};
-}
-
-class _MockComponentFactory extends ComponentFactory<any> {
-  constructor(private _compRef: ComponentRef<any>) { super(null, null, null); }
-  create(
-      injector: Injector, projectableNodes: any[][] = null,
-      rootSelectorOrNode: string|any = null): ComponentRef<any> {
-    return this._compRef;
-  }
-}
-
-class _MockComponentResolver implements ComponentResolver {
-  constructor(private _compFactory: ComponentFactory<any>) {}
-
-  resolveComponent(type: Type): Promise<ComponentFactory<any>> {
-    return PromiseWrapper.resolve(this._compFactory);
-  }
-  clearCache() {}
-}
-
-class _MockComponentRef extends ComponentRef_<any> {
-  constructor(private _injector: Injector) { super(null, null); }
-  get injector(): Injector { return this._injector; }
-  get changeDetectorRef(): ChangeDetectorRef { return <any>new SpyChangeDetectorRef(); }
-  onDestroy(cb: Function) {}
 }
 
 class _MockConsole implements Console {

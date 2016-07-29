@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, Compiler, CompilerFactory, ComponentFactory, ComponentResolver, Injector, NgModule, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, provide} from '@angular/core';
+import {ApplicationRef, Compiler, CompilerFactory, ComponentFactory, ComponentResolver, Injector, NgModule, NgModuleRef, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, provide} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -288,10 +288,17 @@ export class UpgradeAdapter {
     class DynamicModule {
     }
 
-    const compilerFactory: CompilerFactory = platformRef.injector.get(CompilerFactory);
-    var moduleRef = platformRef.bootstrapModuleFactory(
-        compilerFactory.createCompiler().compileModuleSync(DynamicModule));
+    platformRef.bootstrapModule(DynamicModule).then((moduleRef) => {
+      ng1Injector = this._afterNg2ModuleBootstrap(moduleRef, upgrade, element, modules, config);
+    });
+    return upgrade;
+  }
+
+  private _afterNg2ModuleBootstrap(
+      moduleRef: NgModuleRef<any>, upgrade: UpgradeAdapterRef, element: Element, modules?: any[],
+      config?: angular.IAngularBootstrapConfig): angular.IInjectorService {
     const boundCompiler: Compiler = moduleRef.injector.get(Compiler);
+    var ng1Injector: angular.IInjectorService = null;
     var applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
     var injector: Injector = applicationRef.injector;
     var ngZone: NgZone = injector.get(NgZone);
@@ -398,7 +405,7 @@ export class UpgradeAdapter {
             }
           });
         }, onError);
-    return upgrade;
+    return ng1Injector;
   }
 
   /**

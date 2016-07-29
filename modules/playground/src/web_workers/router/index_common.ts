@@ -16,10 +16,6 @@ import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 
 @Component({selector: 'app', templateUrl: 'app.html'})
 export class App {
-  constructor(router: Router) {
-    // this should not be required once web worker bootstrap method can use modules
-    router.initialNavigation();
-  }
 }
 
 export const ROUTES = [
