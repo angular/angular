@@ -101,11 +101,12 @@ To build Angular run:
 To run tests:
 
 ```shell
-$ ./test.sh node
+$ ./test.sh node             # Run all angular tests on node
 
-$ ./test.sh browser
+$ ./test.sh browser          # Run all angular tests in browser
+$ ./test.sh browserNoRouter  # Optionally run all angular tests without router in browser
 
-$ ./test.sh tools
+$ ./test.sh tools            # Run angular tooling (not framework) tests
 ```
 
 You should execute the 3 test suites before submitting a PR to github.
