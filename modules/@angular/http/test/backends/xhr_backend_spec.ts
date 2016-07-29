@@ -298,11 +298,27 @@ export function main() {
       });
 
       if ((global as any /** TODO #9100 */)['Blob']) {
+        // `new Blob(...)` throws an 'Illegal constructor' exception in Android browser <= 4.3,
+        // but a BlobBuilder can be used instead
+        const createBlob = (data: Array<string>, datatype: string) => {
+          let newBlob: Blob;
+          try {
+            newBlob = new Blob(data || [], datatype ? {type: datatype} : {});
+          } catch (e) {
+            const BlobBuilder = (<any>global).BlobBuilder || (<any>global).WebKitBlobBuilder ||
+                (<any>global).MozBlobBuilder || (<any>global).MSBlobBuilder;
+            const builder = new BlobBuilder();
+            builder.append(data);
+            newBlob = builder.getBlob(datatype);
+          }
+          return newBlob;
+        };
+
         it('should use FormData body and detect content type header to the request', () => {
           var body = new FormData();
           body.append('test1', 'val1');
           body.append('test2', 123456);
-          var blob = new Blob(['body { color: red; }'], {type: 'text/css'});
+          var blob = createBlob(['body { color: red; }'], 'text/css');
           body.append('userfile', blob);
           var base = new BaseRequestOptions();
           var connection = new XHRConnection(
@@ -313,7 +329,7 @@ export function main() {
         });
 
         it('should use blob body and detect content type header to the request', () => {
-          var body = new Blob(['body { color: red; }'], {type: 'text/css'});
+          var body = createBlob(['body { color: red; }'], 'text/css');
           var base = new BaseRequestOptions();
           var connection = new XHRConnection(
               new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
@@ -323,7 +339,7 @@ export function main() {
         });
 
         it('should use blob body without type to the request', () => {
-          var body = new Blob(['body { color: red; }']);
+          var body = createBlob(['body { color: red; }'], null);
           var base = new BaseRequestOptions();
           var connection = new XHRConnection(
               new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
@@ -335,7 +351,7 @@ export function main() {
         it('should use blob body without type with custom content type header to the request',
            () => {
              var headers = new Headers({'Content-Type': 'text/css'});
-             var body = new Blob(['body { color: red; }']);
+             var body = createBlob(['body { color: red; }'], null);
              var base = new BaseRequestOptions();
              var connection = new XHRConnection(
                  new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
