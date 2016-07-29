@@ -18,11 +18,29 @@ const _MESSAGE_TAG = 'msg';
 const _PLACEHOLDER_TAG = 'ph';
 const _EXEMPLE_TAG = 'ex';
 
+const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
+<!ATTLIST messagebundle class CDATA #IMPLIED>
+
+<!ELEMENT msg (#PCDATA|ph|source)*>
+<!ATTLIST msg id CDATA #IMPLIED>
+<!ATTLIST msg seq CDATA #IMPLIED>
+<!ATTLIST msg name CDATA #IMPLIED>
+<!ATTLIST msg desc CDATA #IMPLIED>
+<!ATTLIST msg meaning CDATA #IMPLIED>
+<!ATTLIST msg obsolete (obsolete) #IMPLIED>
+<!ATTLIST msg xml:space (default|preserve) "default">
+<!ATTLIST msg is_hidden CDATA #IMPLIED>
+
+<!ELEMENT source (#PCDATA)>
+
+<!ELEMENT ph (#PCDATA|ex)*>
+<!ATTLIST ph name CDATA #REQUIRED>
+
+<!ELEMENT ex (#PCDATA)>`;
+
 export class Xmb implements Serializer {
-  // TODO(vicb): DOCTYPE
   write(messageMap: {[k: string]: i18n.Message}): string {
     const visitor = new _Visitor();
-    const declaration = new xml.Declaration({version: '1.0', encoding: 'UTF-8'});
     let rootNode = new xml.Tag(_MESSAGES_TAG);
     rootNode.children.push(new xml.Text('\n'));
 
@@ -44,7 +62,9 @@ export class Xmb implements Serializer {
     });
 
     return xml.serialize([
-      declaration,
+      new xml.Declaration({version: '1.0', encoding: 'UTF-8'}),
+      new xml.Text('\n'),
+      new xml.Doctype(_MESSAGES_TAG, _DOCTYPE),
       new xml.Text('\n'),
       rootNode,
     ]);

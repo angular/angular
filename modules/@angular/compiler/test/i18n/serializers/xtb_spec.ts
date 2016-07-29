@@ -32,9 +32,26 @@ export function main(): void {
 
 
     describe('load', () => {
+      it('should load XTB files with a doctype', () => {
+        const XTB = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE translationbundle [<!ELEMENT translationbundle (translation)*>
+<!ATTLIST translationbundle lang CDATA #REQUIRED>
+
+<!ELEMENT translation (#PCDATA|ph)*>
+<!ATTLIST translation id CDATA #REQUIRED>
+
+<!ELEMENT ph EMPTY>
+<!ATTLIST ph name CDATA #REQUIRED>
+]>
+<translationbundle>
+  <translation id="foo">bar</translation>
+</translationbundle>`;
+
+        expect(loadAsText(XTB, {})).toEqual({foo: 'bar'});
+      });
+
       it('should load XTB files without placeholders', () => {
-        const XTB = `
-<?xml version="1.0" encoding="UTF-8"?>
+        const XTB = `<?xml version="1.0" encoding="UTF-8"?>
 <translationbundle>
   <translation id="foo">bar</translation>
 </translationbundle>`;
@@ -43,8 +60,7 @@ export function main(): void {
       });
 
       it('should load XTB files with placeholders', () => {
-        const XTB = `
-<?xml version="1.0" encoding="UTF-8"?>
+        const XTB = `<?xml version="1.0" encoding="UTF-8"?>
 <translationbundle>
   <translation id="foo">bar<ph name="PLACEHOLDER"/><ph name="PLACEHOLDER"/></translation>
 </translationbundle>`;
@@ -53,8 +69,7 @@ export function main(): void {
       });
 
       it('should load complex XTB files', () => {
-        const XTB = `
-<? xml version="1.0" encoding="UTF-8" ?>
+        const XTB = `<? xml version="1.0" encoding="UTF-8" ?>
 <translationbundle>
   <translation id="a">translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> <ph name="INTERPOLATION"/></translation>
   <translation id="b">{ count, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>}}</translation>
@@ -98,8 +113,7 @@ export function main(): void {
       });
 
       it('should throw on nested <translation>', () => {
-        const XTB = `
-<translationbundle>
+        const XTB = `<translationbundle>
   <translation id="outer">
     <translation id="inner">
     </translation>
@@ -112,8 +126,7 @@ export function main(): void {
       });
 
       it('should throw when a <translation> has no id attribute', () => {
-        const XTB = `
-<translationbundle>
+        const XTB = `<translationbundle>
   <translation></translation>
 </translationbundle>`;
 
@@ -123,8 +136,7 @@ export function main(): void {
       });
 
       it('should throw when a placeholder has no name attribute', () => {
-        const XTB = `
-<translationbundle>
+        const XTB = `<translationbundle>
   <translation id="fail"><ph /></translation>
 </translationbundle>`;
 
@@ -134,8 +146,7 @@ export function main(): void {
       });
 
       it('should throw when a placeholder is not present in the source message', () => {
-        const XTB = `
-<translationbundle>
+        const XTB = `<translationbundle>
   <translation id="fail"><ph name="UNKNOWN"/></translation>
 </translationbundle>`;
 
@@ -146,8 +157,7 @@ export function main(): void {
     });
 
     it('should throw when the translation results in invalid html', () => {
-      const XTB = `
-<translationbundle>
+      const XTB = `<translationbundle>
   <translation id="fail">foo<ph name="CLOSE_P"/>bar</translation>
 </translationbundle>`;
 

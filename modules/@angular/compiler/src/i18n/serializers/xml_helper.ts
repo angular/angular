@@ -10,6 +10,7 @@ export interface IVisitor {
   visitTag(tag: Tag): any;
   visitText(text: Text): any;
   visitDeclaration(decl: Declaration): any;
+  visitDoctype(doctype: Doctype): any;
 }
 
 class _Visitor implements IVisitor {
@@ -36,6 +37,10 @@ class _Visitor implements IVisitor {
                          .join(' ');
     return strAttrs.length > 0 ? ' ' + strAttrs : '';
   }
+
+  visitDoctype(doctype: Doctype): any {
+    return `<!DOCTYPE ${doctype.rootTag} [\n${doctype.dtd}\n]>`;
+  }
 }
 
 const _visitor = new _Visitor();
@@ -56,6 +61,12 @@ export class Declaration implements Node {
   }
 
   visit(visitor: IVisitor): any { return visitor.visitDeclaration(this); }
+}
+
+export class Doctype implements Node {
+  constructor(public rootTag: string, public dtd: string){};
+
+  visit(visitor: IVisitor): any { return visitor.visitDoctype(this); }
 }
 
 export class Tag implements Node {
