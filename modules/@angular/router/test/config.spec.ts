@@ -74,6 +74,12 @@ describe('config', () => {
            validateConfig([<any>{path: '', redirectTo: 'b'}]);
          }).toThrowError(/Invalid route configuration of route '{path: "", redirectTo: "b"}'/);
        });
+
+    it('should throw when pathPatch is invalid', () => {
+      expect(() => { validateConfig([{path: 'a', pathMatch: 'invalid', component: 'b'}]); })
+          .toThrowError(
+              /Invalid configuration of route 'a': pathMatch can only be set to 'prefix' or 'full'/);
+    });
   });
 });
 
