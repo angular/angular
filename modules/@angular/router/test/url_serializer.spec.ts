@@ -142,12 +142,22 @@ describe('url serializer', () => {
 
   it('should parse key only query params', () => {
     const tree = url.parse('/one?a');
-    expect(tree.queryParams).toEqual({a: 'true'});
+    expect(tree.queryParams).toEqual({a: ''});
+  });
+
+  it('should parse a value-empty query param', () => {
+    const tree = url.parse('/one?a=');
+    expect(tree.queryParams).toEqual({a: ''});
+  });
+
+  it('should parse value-empty query params', () => {
+    const tree = url.parse('/one?a=&b=');
+    expect(tree.queryParams).toEqual({a: '', b: ''});
   });
 
   it('should serializer query params', () => {
     const tree = url.parse('/one?a');
-    expect(url.serialize(tree)).toEqual('/one?a=true');
+    expect(url.serialize(tree)).toEqual('/one?a=');
   });
 
   it('should parse fragment', () => {
