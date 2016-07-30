@@ -15,8 +15,8 @@ import {from} from 'rxjs/observable/from';
 import {of } from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {every} from 'rxjs/operator/every';
+import {first} from 'rxjs/operator/first';
 import {map} from 'rxjs/operator/map';
-import {mergeAll} from 'rxjs/operator/mergeAll';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
@@ -724,7 +724,7 @@ export class PreActivation {
   checkGuards(): Observable<boolean> {
     if (this.checks.length === 0) return of (true);
     const checks$ = from(this.checks);
-    const runningChecks$ = map.call(checks$, (s: any) => {
+    const runningChecks$ = mergeMap.call(checks$, (s: any) => {
       if (s instanceof CanActivate) {
         return andObservables(
             from([this.runCanActivateChild(s.path), this.runCanActivate(s.route)]));
@@ -736,8 +736,7 @@ export class PreActivation {
         throw new Error('Cannot be reached');
       }
     });
-    const mergedChecks$ = mergeAll.call(runningChecks$);
-    return every.call(mergedChecks$, (result: any) => result === true);
+    return every.call(runningChecks$, (result: any) => result === true);
   }
 
   resolveData(): Observable<any> {
@@ -828,11 +827,13 @@ export class PreActivation {
     if (!canActivate || canActivate.length === 0) return of (true);
     const obs = map.call(from(canActivate), (c: any) => {
       const guard = this.getToken(c, future);
+      let observable: Observable<boolean>;
       if (guard.canActivate) {
-        return wrapIntoObservable(guard.canActivate(future, this.future));
+        observable = wrapIntoObservable(guard.canActivate(future, this.future));
       } else {
-        return wrapIntoObservable(guard(future, this.future));
+        observable = wrapIntoObservable(guard(future, this.future));
       }
+      return first.call(observable);
     });
     return andObservables(obs);
   }
@@ -848,11 +849,13 @@ export class PreActivation {
     return andObservables(map.call(from(canActivateChildGuards), (d: any) => {
       const obs = map.call(from(d.guards), (c: any) => {
         const guard = this.getToken(c, c.node);
+        let observable: Observable<boolean>;
         if (guard.canActivateChild) {
-          return wrapIntoObservable(guard.canActivateChild(future, this.future));
+          observable = wrapIntoObservable(guard.canActivateChild(future, this.future));
         } else {
-          return wrapIntoObservable(guard(future, this.future));
+          observable = wrapIntoObservable(guard(future, this.future));
         }
+        return first.call(observable);
       });
       return andObservables(obs);
     }));
@@ -868,16 +871,17 @@ export class PreActivation {
   private runCanDeactivate(component: Object, curr: ActivatedRouteSnapshot): Observable<boolean> {
     const canDeactivate = curr && curr._routeConfig ? curr._routeConfig.canDeactivate : null;
     if (!canDeactivate || canDeactivate.length === 0) return of (true);
-    const canDeactivate$ = map.call(from(canDeactivate), (c: any) => {
+    const canDeactivate$ = mergeMap.call(from(canDeactivate), (c: any) => {
       const guard = this.getToken(c, curr);
+      let observable: Observable<boolean>;
       if (guard.canDeactivate) {
-        return wrapIntoObservable(guard.canDeactivate(component, curr, this.curr));
+        observable = wrapIntoObservable(guard.canDeactivate(component, curr, this.curr));
       } else {
-        return wrapIntoObservable(guard(component, curr, this.curr));
+        observable = wrapIntoObservable(guard(component, curr, this.curr));
       }
+      return first.call(observable);
     });
-    const merged$ = mergeAll.call(canDeactivate$);
-    return every.call(merged$, (result: any) => result === true);
+    return every.call(canDeactivate$, (result: any) => result === true);
   }
 
   private runResolve(future: ActivatedRouteSnapshot): Observable<any> {

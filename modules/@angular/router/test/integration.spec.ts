@@ -11,7 +11,6 @@ import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
-import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
@@ -1071,7 +1070,9 @@ describe('Integration', () => {
           TestBed.configureTestingModule({
             providers: [{
               provide: 'CanActivate',
-              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => of (false),
+              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return Observable.create((observer: any) => { observer.next(false); });
+              }
             }]
           });
         });
@@ -1310,7 +1311,7 @@ describe('Integration', () => {
             providers: [{
               provide: 'CanDeactivate',
               useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return of (false);
+                return Observable.create((observer: any) => { observer.next(false); });
               }
             }]
           });
