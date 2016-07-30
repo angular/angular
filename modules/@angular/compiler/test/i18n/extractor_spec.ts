@@ -16,8 +16,8 @@ export function main() {
   describe('MessageExtractor', () => {
     describe('elements', () => {
       it('should extract from elements', () => {
-        expect(extract('<div i18n="m|d">text<span>nested</span></div>')).toEqual([
-          [['text', '<span>nested</span>'], 'm', 'd'],
+        expect(extract('<div i18n="m|d|e">text<span>nested</span></div>')).toEqual([
+          [['text', '<span>nested</span>'], 'm', 'd|e'],
         ]);
       });
 
@@ -28,11 +28,11 @@ export function main() {
     describe('blocks', () => {
       it('should extract from blocks', () => {
         expect(extract(`<!-- i18n: meaning1|desc1 -->message1<!-- /i18n -->
-         <!-- i18n: meaning2 -->message2<!-- /i18n -->
+         <!-- i18n: desc2 -->message2<!-- /i18n -->
          <!-- i18n -->message3<!-- /i18n -->`))
             .toEqual([
               [['message1'], 'meaning1', 'desc1'],
-              [['message2'], 'meaning2', ''],
+              [['message2'], '', 'desc2'],
               [['message3'], '', ''],
             ]);
       });

@@ -195,7 +195,8 @@ class _ExtractVisitor implements html.Visitor {
       // Do not create empty messages
       return;
     }
-    messages.push(new Message(ast, _meaning(meaningAndDesc), _description(meaningAndDesc)));
+    const [meaning, description] = _splitMeaningAndDesc(meaningAndDesc);
+    messages.push(new Message(ast, meaning, description));
   }
 
   /**
@@ -285,13 +286,8 @@ function _getI18nAttr(p: html.Element): html.Attribute {
   return p.attrs.find(attr => attr.name === _I18N_ATTR) || null;
 }
 
-function _meaning(i18n: string): string {
-  if (!i18n || i18n == '') return '';
-  return i18n.split('|', 2)[0];
-}
-
-function _description(i18n: string): string {
-  if (!i18n || i18n == '') return '';
-  const parts = i18n.split('|', 2);
-  return parts.length > 1 ? parts[1] : '';
+function _splitMeaningAndDesc(i18n: string): [string, string] {
+  if (!i18n) return ['', ''];
+  const pipeIndex = i18n.indexOf('|');
+  return pipeIndex == -1 ? ['', i18n] : [i18n.slice(0, pipeIndex), i18n.slice(pipeIndex + 1)];
 }

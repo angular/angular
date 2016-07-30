@@ -443,13 +443,14 @@ function relativePath(url: any /** TODO #9100 */): string {
                                                        '/' + urlParsingNode.pathname;
 }
 
-export function parseCookieValue(cookie: string, name: string): string {
+export function parseCookieValue(cookieStr: string, name: string): string {
   name = encodeURIComponent(name);
-  let cookies = cookie.split(';');
-  for (let cookie of cookies) {
-    let [key, value] = cookie.split('=', 2);
-    if (key.trim() === name) {
-      return decodeURIComponent(value);
+  for (const cookie of cookieStr.split(';')) {
+    const eqIndex = cookie.indexOf('=');
+    const [cookieName, cookieValue]: string[] =
+        eqIndex == -1 ? [cookie, ''] : [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)];
+    if (cookieName.trim() === name) {
+      return decodeURIComponent(cookieValue);
     }
   }
   return null;

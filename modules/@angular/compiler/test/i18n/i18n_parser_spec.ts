@@ -133,11 +133,11 @@ export function main() {
     describe('blocks', () => {
       it('should extract from blocks', () => {
         expect(_humanizeMessages(`<!-- i18n: meaning1|desc1 -->message1<!-- /i18n -->
-         <!-- i18n: meaning2 -->message2<!-- /i18n -->
+         <!-- i18n: desc2 -->message2<!-- /i18n -->
          <!-- i18n -->message3<!-- /i18n -->`))
             .toEqual([
               [['message1'], 'meaning1', 'desc1'],
-              [['message2'], 'meaning2', ''],
+              [['message2'], '', 'desc2'],
               [['message3'], '', ''],
             ]);
       });

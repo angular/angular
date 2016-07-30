@@ -21,8 +21,9 @@ export function camelCaseToDashCase(input: string): string {
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
-  var parts = input.split(':', 2).map((s: string) => s.trim());
-  return parts.length > 1 ? parts : defaultValues;
+  const colonIndex = input.indexOf(':');
+  if (colonIndex == -1) return defaultValues;
+  return [input.slice(0, colonIndex).trim(), input.slice(colonIndex + 1).trim()];
 }
 
 export function sanitizeIdentifier(name: string): string {
