@@ -14,7 +14,7 @@ import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
 import {CompWithProviders, CompWithReferences, ModuleUsingCustomElements} from './features';
-import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomePipeInRootModule, SomeService, someLibModuleWithProviders} from './module_fixtures';
+import {CompUsingRootModuleDirectiveAndPipe, RouterUsingModule, SomeDirectiveInRootModule, SomePipeInRootModule, SomeService, someLibModuleWithProviders} from './module_fixtures';
 import {ProjectingComp} from './projection';
 import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
 
@@ -25,7 +25,10 @@ import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
     CompWithDirectiveChild, CompUsingRootModuleDirectiveAndPipe, CompWithProviders,
     CompWithReferences
   ],
-  imports: [BrowserModule, FormsModule, someLibModuleWithProviders(), ModuleUsingCustomElements],
+  imports: [
+    BrowserModule, FormsModule, someLibModuleWithProviders(), ModuleUsingCustomElements,
+    RouterUsingModule
+  ],
   providers: [SomeService],
   entryComponents: [
     AnimateCmp, BasicComp, CompWithEntryComponents, CompWithAnalyzeEntryComponentsProvider,

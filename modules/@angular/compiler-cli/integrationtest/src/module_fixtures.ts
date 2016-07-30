@@ -9,6 +9,7 @@
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Directive, Inject, Injectable, Input, ModuleWithProviders, NgModule, OpaqueToken, Pipe} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
+import {RouterModule, Routes} from '@angular/router';
 
 @Injectable()
 export class SomeService {
@@ -77,4 +78,10 @@ export function someLibModuleWithProviders(): ModuleWithProviders {
       provideValueWithEntryComponents([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
     ]
   };
+}
+
+export const SOME_ROUTES: Routes = [];
+
+@NgModule({imports: [RouterModule.forRoot(SOME_ROUTES)]})
+export class RouterUsingModule {
 }
