@@ -252,6 +252,17 @@ export function main() {
                   `Template parse errors:\nInvalid property name 'bar.foo' ("<p [ERROR ->][bar.foo]>"): TestComp@0:3`);
         });
 
+        describe('errors', () => {
+          it('should throw error when binding to an unkonown property', () => {
+            expect(() => parse('<my-component [invalidProp]="bar"></my-component>', []))
+                .toThrowError(`Template parse errors:
+Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
+1. If 'my-component' is an Angular component and it has 'invalidProp' input, then verify that it is part of this module.
+2. If 'my-component' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schema' of this component to suppress this message.
+ ("<my-component [ERROR ->][invalidProp]="bar"></my-component>"): TestComp@0:14`);
+          });
+        });
+
         it('should parse bound properties via [...] and not report them as attributes', () => {
           expect(humanizeTplAst(parse('<div [prop]="v">', []))).toEqual([
             [ElementAst, 'div'],
@@ -1240,7 +1251,7 @@ Can't have multiple template bindings on one element. Use only one attribute nam
 
       it('should report invalid property names', () => {
         expect(() => parse('<div [invalidProp]></div>', [])).toThrowError(`Template parse errors:
-Can't bind to 'invalidProp' since it isn't a known native property ("<div [ERROR ->][invalidProp]></div>"): TestComp@0:5`);
+Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("<div [ERROR ->][invalidProp]></div>"): TestComp@0:5`);
       });
 
       it('should report invalid host property names', () => {
@@ -1250,7 +1261,7 @@ Can't bind to 'invalidProp' since it isn't a known native property ("<div [ERROR
           host: {'[invalidProp]': 'someProp'}
         });
         expect(() => parse('<div></div>', [dirA])).toThrowError(`Template parse errors:
-Can't bind to 'invalidProp' since it isn't a known native property ("[ERROR ->]<div></div>"): TestComp@0:0, Directive DirA`);
+Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("[ERROR ->]<div></div>"): TestComp@0:0, Directive DirA`);
       });
 
       it('should report errors in expressions', () => {
