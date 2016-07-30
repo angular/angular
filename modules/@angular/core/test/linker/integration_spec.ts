@@ -1743,7 +1743,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
                PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
                  expect(e.message).toEqual(
-                     `Template parse errors:\nCan't bind to 'unknown' since it isn't a known native property ("<div [ERROR ->]unknown="{{ctxProp}}"></div>"): MyComp@0:5`);
+                     `Template parse errors:\nCan't bind to 'unknown' since it isn't a known property of 'div'. ("<div [ERROR ->]unknown="{{ctxProp}}"></div>"): MyComp@0:5`);
                  async.done();
                  return null;
                });

@@ -815,10 +815,11 @@ class TemplateParseVisitor implements html.Visitor {
         bindingType = PropertyBindingType.Property;
         if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName, this._schemas)) {
           let errorMsg =
-              `Can't bind to '${boundPropertyName}' since it isn't a known native property`;
+              `Can't bind to '${boundPropertyName}' since it isn't a known property of '${elementName}'.`;
           if (elementName.indexOf('-') !== -1) {
             errorMsg +=
-                `. To ignore this error on custom elements, add the "CUSTOM_ELEMENTS_SCHEMA" to the NgModule of this component`;
+                `\n1. If '${elementName}' is an Angular component and it has '${boundPropertyName}' input, then verify that it is part of this module.` +
+                `\n2. If '${elementName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schema' of this component to suppress this message.\n`;
           }
           this._reportError(errorMsg, sourceSpan);
         }
