@@ -16,7 +16,7 @@ import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {BaseException} from '../../src/facade/exceptions';
-import {ConcreteType, IS_DART, Type, stringify} from '../../src/facade/lang';
+import {ConcreteType, Type, stringify} from '../../src/facade/lang';
 
 class Engine {}
 
@@ -105,13 +105,9 @@ class DummyConsole implements Console {
 }
 
 export function main() {
-  if (IS_DART) {
-    declareTests({useJit: false});
-  } else {
-    describe('jit', () => { declareTests({useJit: true}); });
+  describe('jit', () => { declareTests({useJit: true}); });
 
-    describe('no jit', () => { declareTests({useJit: false}); });
-  }
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {

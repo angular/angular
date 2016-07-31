@@ -9,7 +9,7 @@
 import {ObservableWrapper} from '../facade/async';
 import {ListWrapper} from '../facade/collection';
 import {BaseException, unimplemented} from '../facade/exceptions';
-import {IS_DART, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 
 import {debugOutputAstAsDart} from './dart_emitter';
 import * as o from './output_ast';
@@ -89,9 +89,7 @@ function createDynamicClass(
 }
 
 class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
-  debugAst(ast: o.Expression|o.Statement|o.Type): string {
-    return IS_DART ? debugOutputAstAsDart(ast) : debugOutputAstAsTypeScript(ast);
-  }
+  debugAst(ast: o.Expression|o.Statement|o.Type): string { return debugOutputAstAsTypeScript(ast); }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: _ExecutionContext): any {
     ctx.vars.set(stmt.name, stmt.value.visitExpression(this, ctx));
@@ -163,11 +161,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
           result = ObservableWrapper.subscribe(receiver, args[0]);
           break;
         case o.BuiltinMethod.bind:
-          if (IS_DART) {
-            result = receiver;
-          } else {
-            result = receiver.bind(args[0]);
-          }
+          result = receiver.bind(args[0]);
           break;
         default:
           throw new BaseException(`Unknown builtin method ${expr.builtin}`);

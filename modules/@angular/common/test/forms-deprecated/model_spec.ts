@@ -9,7 +9,7 @@
 import {AsyncTestCompleter, ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {ControlGroup, Control, ControlArray, Validators} from '@angular/common/src/forms-deprecated';
-import {IS_DART, isPresent} from '../../src/facade/lang';
+import {isPresent} from '../../src/facade/lang';
 import {PromiseWrapper} from '../../src/facade/promise';
 import {TimerWrapper, ObservableWrapper, EventEmitter} from '../../src/facade/async';
 
@@ -251,17 +251,15 @@ export function main() {
            }));
 
         // TODO: remove the if statement after making observable delivery sync
-        if (!IS_DART) {
-          it('should update set errors and status before emitting an event',
-             inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-               c.valueChanges.subscribe((value: any /** TODO #9100 */) => {
-                 expect(c.valid).toEqual(false);
-                 expect(c.errors).toEqual({'required': true});
-                 async.done();
-               });
-               c.updateValue('');
-             }));
-        }
+        it('should update set errors and status before emitting an event',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             c.valueChanges.subscribe((value: any /** TODO #9100 */) => {
+               expect(c.valid).toEqual(false);
+               expect(c.errors).toEqual({'required': true});
+               async.done();
+             });
+             c.updateValue('');
+           }));
 
         it('should return a cold observable',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {

@@ -8,7 +8,7 @@
 
 import {AnimationEntryMetadata, Compiler, ComponentFactory, Injectable, Injector, NgZone, OpaqueToken, ViewMetadata} from '../index';
 import {PromiseWrapper} from '../src/facade/async';
-import {ConcreteType, IS_DART, Type, isPresent} from '../src/facade/lang';
+import {ConcreteType, Type, isPresent} from '../src/facade/lang';
 
 import {ComponentFixture} from './component_fixture';
 import {tick} from './fake_async';
@@ -103,7 +103,7 @@ export class TestComponentBuilder {
    * Builds and returns a ComponentFixture.
    */
   createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>> {
-    let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
+    let noNgZone = this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
     let compiler: Compiler = this._injector.get(Compiler);
 
@@ -130,7 +130,7 @@ export class TestComponentBuilder {
   }
 
   createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
-    let noNgZone = IS_DART || this._injector.get(ComponentFixtureNoNgZone, false);
+    let noNgZone = this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
     let compiler: Compiler = this._injector.get(Compiler);
 

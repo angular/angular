@@ -10,8 +10,6 @@
 import {Injector} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 
-import {IS_DART} from '../../src/facade/lang';
-
 export function main() {
   describe('Injector.NULL', () => {
     it('should throw if no arg is given', () => {

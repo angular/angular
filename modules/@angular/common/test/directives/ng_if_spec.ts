@@ -14,8 +14,6 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Component} from '@angular/core';
 import {NgIf} from '@angular/common';
 
-import {IS_DART} from '../../src/facade/lang';
-
 export function main() {
   describe('ngIf directive', () => {
     it('should work in a template attribute',
@@ -189,84 +187,58 @@ export function main() {
                  });
            }));
 
+    it('should not add the element twice if the condition goes from true to true (JS)',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
 
-    if (!IS_DART) {
-      it('should not add the element twice if the condition goes from true to true (JS)',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
+             tcb.overrideTemplate(TestComponent, html)
+                 .createAsync(TestComponent)
+                 .then((fixture) => {
+                   fixture.detectChanges();
+                   expect(getDOM()
+                              .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
+                              .length)
+                       .toEqual(1);
+                   expect(fixture.debugElement.nativeElement).toHaveText('hello');
 
-               tcb.overrideTemplate(TestComponent, html)
-                   .createAsync(TestComponent)
-                   .then((fixture) => {
-                     fixture.detectChanges();
-                     expect(getDOM()
-                                .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
-                                .length)
-                         .toEqual(1);
-                     expect(fixture.debugElement.nativeElement).toHaveText('hello');
+                   fixture.debugElement.componentInstance.numberCondition = 2;
+                   fixture.detectChanges();
+                   expect(getDOM()
+                              .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
+                              .length)
+                       .toEqual(1);
+                   expect(fixture.debugElement.nativeElement).toHaveText('hello');
 
-                     fixture.debugElement.componentInstance.numberCondition = 2;
-                     fixture.detectChanges();
-                     expect(getDOM()
-                                .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
-                                .length)
-                         .toEqual(1);
-                     expect(fixture.debugElement.nativeElement).toHaveText('hello');
+                   async.done();
+                 });
+           }));
 
-                     async.done();
-                   });
-             }));
+    it('should not recreate the element if the condition goes from true to true (JS)',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
 
-      it('should not recreate the element if the condition goes from true to true (JS)',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
+             tcb.overrideTemplate(TestComponent, html)
+                 .createAsync(TestComponent)
+                 .then((fixture) => {
+                   fixture.detectChanges();
+                   getDOM().addClass(
+                       getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'),
+                       'foo');
 
-               tcb.overrideTemplate(TestComponent, html)
-                   .createAsync(TestComponent)
-                   .then((fixture) => {
-                     fixture.detectChanges();
-                     getDOM().addClass(
-                         getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'),
-                         'foo');
+                   fixture.debugElement.componentInstance.numberCondition = 2;
+                   fixture.detectChanges();
+                   expect(getDOM().hasClass(
+                              getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'),
+                              'foo'))
+                       .toBe(true);
 
-                     fixture.debugElement.componentInstance.numberCondition = 2;
-                     fixture.detectChanges();
-                     expect(
-                         getDOM().hasClass(
-                             getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'),
-                             'foo'))
-                         .toBe(true);
-
-                     async.done();
-                   });
-             }));
-    }
-
-    if (IS_DART) {
-      it('should not create the element if the condition is not a boolean (DART)',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
-
-               tcb.overrideTemplate(TestComponent, html)
-                   .createAsync(TestComponent)
-                   .then((fixture) => {
-                     expect(() => fixture.detectChanges()).toThrowError();
-                     expect(getDOM()
-                                .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
-                                .length)
-                         .toEqual(0);
-                     expect(fixture.debugElement.nativeElement).toHaveText('');
-                     async.done();
-                   });
-             }));
-    }
-
+                   async.done();
+                 });
+           }));
   });
 }
 

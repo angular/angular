@@ -13,7 +13,7 @@ import {TestBed} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {CompileNgModuleMetadata} from '../src/compile_metadata';
-import {IS_DART, stringify} from '../src/facade/lang';
+import {stringify} from '../src/facade/lang';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
@@ -49,10 +49,9 @@ export function main() {
 
       it('should use the moduleUrl from the reflector if none is given',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-           var value: string =
+           const value: string =
                resolver.getDirectiveMetadata(ComponentWithoutModuleId).type.moduleUrl;
-           var expectedEndValue =
-               IS_DART ? 'test/compiler/metadata_resolver_spec.dart' : './ComponentWithoutModuleId';
+           const expectedEndValue = './ComponentWithoutModuleId';
            expect(value.endsWith(expectedEndValue)).toBe(true);
          }));
 

@@ -8,10 +8,10 @@
 
 import {CompileTokenMetadata} from './compile_metadata';
 import {StringMapWrapper} from './facade/collection';
-import {IS_DART, StringWrapper, isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
+import {StringWrapper, isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
 import * as o from './output/output_ast';
 
-export var MODULE_SUFFIX = IS_DART ? '.dart' : '';
+export const MODULE_SUFFIX = '';
 
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 
@@ -65,18 +65,10 @@ export class ValueTransformer implements ValueVisitor {
 }
 
 export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {
-  if (IS_DART) {
-    if (path == null) {
-      return `asset:angular2/${pkg}/${pkg}.dart`;
-    } else {
-      return `asset:angular2/lib/${pkg}/src/${path}.dart`;
-    }
+  if (path == null) {
+    return `asset:@angular/lib/${pkg}/index`;
   } else {
-    if (path == null) {
-      return `asset:@angular/lib/${pkg}/index`;
-    } else {
-      return `asset:@angular/lib/${pkg}/src/${path}`;
-    }
+    return `asset:@angular/lib/${pkg}/src/${path}`;
   }
 }
 

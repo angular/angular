@@ -9,7 +9,7 @@
 import {ObservableWrapper, PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
-import {ConcreteType, IS_DART, Type, isBlank, isPresent, isPromise} from '../src/facade/lang';
+import {ConcreteType, Type, isBlank, isPresent, isPromise} from '../src/facade/lang';
 
 import {APP_INITIALIZER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
@@ -507,9 +507,8 @@ export class ApplicationRef_ extends ApplicationRef {
 
       this._loadComponent(compRef);
       if (isDevMode()) {
-        let prodDescription = IS_DART ? 'Production mode is disabled in Dart.' :
-                                        'Call enableProdMode() to enable the production mode.';
-        this._console.log(`Angular 2 is running in the development mode. ${prodDescription}`);
+        this._console.log(
+            `Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.`);
       }
       return compRef;
     });

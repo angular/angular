@@ -11,7 +11,6 @@ import {OnInit} from '@angular/core';
 import {Reflector, ReflectionInfo} from '@angular/core/src/reflection/reflection';
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {ClassDecorator, ParamDecorator, PropDecorator, classDecorator, paramDecorator, propDecorator, HasGetterAndSetterDecorators} from './reflector_common';
-import {IS_DART} from '../../src/facade/lang';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
 class AType {
@@ -188,13 +187,6 @@ export function main() {
         reflector.registerType(TestObj, new ReflectionInfo(null, null, null, null, {'a': [1, 2]}));
         expect(reflector.propMetadata(TestObj)).toEqual({'a': [1, 2]});
       });
-
-      if (IS_DART) {
-        it('should merge metadata from getters and setters', () => {
-          var p = reflector.propMetadata(HasGetterAndSetterDecorators);
-          expect(p['a']).toEqual([propDecorator('get'), propDecorator('set')]);
-        });
-      }
     });
 
     describe('annotations', () => {
@@ -213,28 +205,6 @@ export function main() {
         expect(p).toEqual([]);
       });
     });
-
-    if (IS_DART) {
-      describe('interfaces', () => {
-        it('should return an array of interfaces for a type', () => {
-          var p = reflector.interfaces(ClassImplementingInterface);
-          expect(p).toEqual([Interface, Interface2]);
-        });
-
-        it('should return an empty array otherwise', () => {
-          var p = reflector.interfaces(ClassWithDecorators);
-          expect(p).toEqual([]);
-        });
-
-        it('should throw for undeclared lifecycle interfaces',
-           () => { expect(() => reflector.interfaces(ClassDoesNotDeclareOnInit)).toThrowError(); });
-
-        it('should throw for class inheriting a lifecycle impl and not declaring the interface',
-           () => {
-             expect(() => reflector.interfaces(SubClassDoesNotDeclareOnInit)).toThrowError();
-           });
-      });
-    }
 
     describe('getter', () => {
       it('returns a function reading a property', () => {
@@ -280,16 +250,6 @@ export function main() {
         expect(reflector.method('abc')('anything', ['fake'])).toEqual(['fake']);
       });
     });
-
-    if (IS_DART) {
-      describe('importUri', () => {
-        it('should return the importUri for a type', () => {
-          expect(reflector.importUri(TestObjWith00Args)
-                     .endsWith('test/core/reflection/reflector_spec.dart'))
-              .toBe(true);
-        });
-      });
-    }
   });
 }
 

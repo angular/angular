@@ -21,7 +21,7 @@ import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 import {EventEmitter} from '../../src/facade/async';
 import {StringMapWrapper} from '../../src/facade/collection';
 import {BaseException} from '../../src/facade/exceptions';
-import {ConcreteType, IS_DART, NumberWrapper, Type, isBlank} from '../../src/facade/lang';
+import {ConcreteType, NumberWrapper, Type, isBlank} from '../../src/facade/lang';
 
 export function main() {
   let tcb: TestComponentBuilder;
@@ -133,8 +133,7 @@ export function main() {
          }));
 
       it('should support == operations on coerceible', fakeAsync(() => {
-           var expectedValue = IS_DART ? 'false' : 'true';
-           expect(_bindAndCheckSimpleValue('1 == true')).toEqual([`someProp=${expectedValue}`]);
+           expect(_bindAndCheckSimpleValue('1 == true')).toEqual([`someProp=true`]);
          }));
 
       it('should support === operations on identical', fakeAsync(() => {
