@@ -32,7 +32,7 @@ import {UpperCasePipe} from './uppercase_pipe';
  *
  * @experimental Contains i18n pipes which are experimental
  */
-export const COMMON_PIPES = /*@ts2dart_const*/[
+export const COMMON_PIPES = [
   AsyncPipe,
   UpperCasePipe,
   LowerCasePipe,

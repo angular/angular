@@ -12,7 +12,7 @@ import {ElementRef} from './element_ref';
 import {AppView} from './view';
 import {EmbeddedViewRef} from './view_ref';
 
-const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
+const EMPTY_CONTEXT = new Object();
 
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.

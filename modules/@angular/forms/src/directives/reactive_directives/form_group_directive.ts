@@ -23,11 +23,10 @@ import {composeAsyncValidators, composeValidators, setUpControl, setUpFormContai
 import {FormArrayName} from './form_array_name';
 import {FormGroupName} from './form_group_name';
 
-export const formDirectiveProvider: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: ControlContainer,
-      useExisting: forwardRef(() => FormGroupDirective)
-    };
+export const formDirectiveProvider: any = {
+  provide: ControlContainer,
+  useExisting: forwardRef(() => FormGroupDirective)
+};
 
 /**
  * Binds an existing form group to a DOM element.

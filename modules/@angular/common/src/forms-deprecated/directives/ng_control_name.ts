@@ -19,11 +19,10 @@ import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdate
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
 
-export const controlNameBinding: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: NgControl,
-      useExisting: forwardRef(() => NgControlName)
-    };
+export const controlNameBinding: any = {
+  provide: NgControl,
+  useExisting: forwardRef(() => NgControlName)
+};
 
 /**
  * Creates and binds a control with a specified name to a DOM element.

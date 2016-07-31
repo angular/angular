@@ -21,11 +21,10 @@ import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
 import {composeAsyncValidators, composeValidators, setUpControl, setUpControlGroup} from './shared';
 
-export const formDirectiveProvider: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: ControlContainer,
-      useExisting: forwardRef(() => NgFormModel)
-    };
+export const formDirectiveProvider: any = {
+  provide: ControlContainer,
+  useExisting: forwardRef(() => NgFormModel)
+};
 
 let _formModelWarningDisplayed: boolean = false;
 

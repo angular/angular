@@ -16,11 +16,10 @@ import {ControlContainer} from './control_container';
 import {NgForm} from './ng_form';
 import {TemplateDrivenErrors} from './template_driven_errors';
 
-export const modelGroupProvider: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: ControlContainer,
-      useExisting: forwardRef(() => NgModelGroup)
-    };
+export const modelGroupProvider: any = {
+  provide: ControlContainer,
+  useExisting: forwardRef(() => NgModelGroup)
+};
 
 /**
  * Creates and binds a model group to a DOM element.

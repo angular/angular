@@ -30,7 +30,7 @@ export class ReflectiveDependency {
   }
 }
 
-const _EMPTY_LIST: any[] = /*@ts2dart_const*/[];
+const _EMPTY_LIST: any[] = [];
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.

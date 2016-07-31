@@ -63,7 +63,7 @@ const TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
  *
  * This is currently an internal-only feature and not meant for general use.
  */
-export const TEMPLATE_TRANSFORMS: any = /*@ts2dart_const*/ new OpaqueToken('TemplateTransforms');
+export const TEMPLATE_TRANSFORMS: any = new OpaqueToken('TemplateTransforms');
 
 export class TemplateParseError extends ParseError {
   constructor(message: string, span: ParseSourceSpan, level: ParseErrorLevel) {

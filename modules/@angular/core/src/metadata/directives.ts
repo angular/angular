@@ -408,7 +408,6 @@ export interface DirectiveMetadataType {
  * Note also that although the `<li></li>` template still exists inside the `<template></template>`,
  * the instantiated
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
- * @ts2dart_const
  * @stable
  */
 export class DirectiveMetadata extends InjectableMetadata implements DirectiveMetadataType {
@@ -824,7 +823,6 @@ export interface ComponentMetadataType extends DirectiveMetadataType {
  * ### Example
  *
  * {@example core/ts/metadata/metadata.ts region='component'}
- * @ts2dart_const
  * @stable
  */
 export class ComponentMetadata extends DirectiveMetadata implements ComponentMetadataType {
@@ -1095,7 +1093,6 @@ export interface PipeMetadataType {
  * ### Example
  *
  * {@example core/ts/metadata/metadata.ts region='pipe'}
- * @ts2dart_const
  * @stable
  */
 export class PipeMetadata extends InjectableMetadata implements PipeMetadataType {
@@ -1152,7 +1149,6 @@ export class PipeMetadata extends InjectableMetadata implements PipeMetadataType
  *
  * bootstrap(App);
  * ```
- * @ts2dart_const
  * @stable
  */
 export class InputMetadata {
@@ -1203,7 +1199,6 @@ export class InputMetadata {
  * }
  * bootstrap(App);
  * ```
- * @ts2dart_const
  * @stable
  */
 export class OutputMetadata {
@@ -1244,7 +1239,6 @@ export class OutputMetadata {
  *
  * bootstrap(App);
  * ```
- * @ts2dart_const
  * @stable
  */
 export class HostBindingMetadata {
@@ -1284,7 +1278,6 @@ export class HostBindingMetadata {
  *
  * bootstrap(App);
  * ```
- * @ts2dart_const
  * @stable
  */
 export class HostListenerMetadata {

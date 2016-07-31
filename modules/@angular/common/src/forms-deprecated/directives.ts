@@ -58,7 +58,7 @@ export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValida
  * ```
  * @experimental
  */
-export const FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
+export const FORM_DIRECTIVES: Type[] = [
   NgControlName,
   NgControlGroup,
 

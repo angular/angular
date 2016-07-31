@@ -47,7 +47,7 @@ function creditCardValidator(c: any /** TODO #9100 */): {[key: string]: boolean}
   }
 }
 
-const creditCardValidatorBinding = /** @ts2dart_const */ /** @ts2dart_Provider */ {
+const creditCardValidatorBinding =  {
   provide: NG_VALIDATORS,
   useValue: creditCardValidator,
   multi: true

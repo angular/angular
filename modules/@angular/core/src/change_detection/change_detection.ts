@@ -27,15 +27,13 @@ export {PipeTransform} from './pipe_transform';
 /**
  * Structural diffing for `Object`s and `Map`s.
  */
-export const keyValDiff: KeyValueDifferFactory[] =
-    /*@ts2dart_const*/[new DefaultKeyValueDifferFactory()];
+export const keyValDiff: KeyValueDifferFactory[] = [new DefaultKeyValueDifferFactory()];
 
 /**
  * Structural diffing for `Iterable` types such as `Array`s.
  */
-export const iterableDiff: IterableDifferFactory[] =
-    /*@ts2dart_const*/[new DefaultIterableDifferFactory()];
+export const iterableDiff: IterableDifferFactory[] = [new DefaultIterableDifferFactory()];
 
-export const defaultIterableDiffers = /*@ts2dart_const*/ new IterableDiffers(iterableDiff);
+export const defaultIterableDiffers = new IterableDiffers(iterableDiff);
 
-export const defaultKeyValueDiffers = /*@ts2dart_const*/ new KeyValueDiffers(keyValDiff);
+export const defaultKeyValueDiffers = new KeyValueDiffers(keyValDiff);

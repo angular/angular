@@ -1519,13 +1519,7 @@ function loginIsEmptyGroupValidator(c: ControlGroup) {
 
 @Directive({
   selector: '[login-is-empty-validator]',
-  providers: [
-    /* @ts2dart_Provider */ {
-      provide: NG_VALIDATORS,
-      useValue: loginIsEmptyGroupValidator,
-      multi: true
-    }
-  ]
+  providers: [{provide: NG_VALIDATORS, useValue: loginIsEmptyGroupValidator, multi: true}]
 })
 class LoginIsEmptyValidator {
 }

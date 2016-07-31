@@ -58,7 +58,7 @@ import {NgTemplateOutlet} from './ng_template_outlet';
  *
  * @stable
  */
-export const CORE_DIRECTIVES: Type[] = /*@ts2dart_const*/[
+export const CORE_DIRECTIVES: Type[] = [
   NgClass,
   NgFor,
   NgIf,

@@ -69,4 +69,4 @@ export abstract class LocationStrategy {
  * ```
  * @stable
  */
-export const APP_BASE_HREF: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('appBaseHref');
+export const APP_BASE_HREF: OpaqueToken = new OpaqueToken('appBaseHref');

@@ -58,8 +58,7 @@ var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
  * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
-export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
-    /*@ts2dart_const*/ new OpaqueToken('RouterPrimaryComponent');
+export const ROUTER_PRIMARY_COMPONENT: OpaqueToken = new OpaqueToken('RouterPrimaryComponent');
 
 
 /**

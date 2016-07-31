@@ -21,7 +21,7 @@ var __unused: Type;  // avoid unused import when Type union types are erased
 
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
-const UNDEFINED = /*@ts2dart_const*/ new Object();
+const UNDEFINED = new Object();
 
 export interface ReflectiveProtoInjectorStrategy {
   getProviderAtIndex(index: number): ResolvedReflectiveProvider;
@@ -629,7 +629,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
    */
   debugContext(): any { return this._debugContext(); }
 
-  get(token: any, notFoundValue: any = /*@ts2dart_const*/ THROW_IF_NOT_FOUND): any {
+  get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
     return this._getByKey(ReflectiveKey.get(token), null, null, notFoundValue);
   }
 

@@ -163,7 +163,7 @@ class ListDir1Alt {
 class ListDir2 {
 }
 
-const LIST_CHILDREN = /*@ts2dart_const*/[ListDir1, ListDir2];
+const LIST_CHILDREN = [ListDir1, ListDir2];
 
 @Component({
   selector: 'directive-list-comp',

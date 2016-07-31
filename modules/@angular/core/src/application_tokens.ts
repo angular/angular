@@ -21,7 +21,7 @@ import {OpaqueToken} from './di';
  * using this token.
  * @experimental
  */
-export const APP_ID: any = /*@ts2dart_const*/ new OpaqueToken('AppId');
+export const APP_ID: any = new OpaqueToken('AppId');
 
 export function _appIdRandomProviderFactory() {
   return `${_randomChar()}${_randomChar()}${_randomChar()}`;
@@ -31,12 +31,11 @@ export function _appIdRandomProviderFactory() {
  * Providers that will generate a random APP_ID_TOKEN.
  * @experimental
  */
-export const APP_ID_RANDOM_PROVIDER =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: APP_ID,
-      useFactory: _appIdRandomProviderFactory,
-      deps: <any[]>[]
-    };
+export const APP_ID_RANDOM_PROVIDER = {
+  provide: APP_ID,
+  useFactory: _appIdRandomProviderFactory,
+  deps: <any[]>[]
+};
 
 function _randomChar(): string {
   return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
@@ -46,19 +45,16 @@ function _randomChar(): string {
  * A function that will be executed when a platform is initialized.
  * @experimental
  */
-export const PLATFORM_INITIALIZER: any =
-    /*@ts2dart_const*/ new OpaqueToken('Platform Initializer');
+export const PLATFORM_INITIALIZER: any = new OpaqueToken('Platform Initializer');
 
 /**
  * A function that will be executed when an application is initialized.
  * @experimental
  */
-export const APP_INITIALIZER: any =
-    /*@ts2dart_const*/ new OpaqueToken('Application Initializer');
+export const APP_INITIALIZER: any = new OpaqueToken('Application Initializer');
 
 /**
  * A token which indicates the root directory of the application
  * @experimental
  */
-export const PACKAGE_ROOT_URL: any =
-    /*@ts2dart_const*/ new OpaqueToken('Application Packages Root URL');
+export const PACKAGE_ROOT_URL: any = new OpaqueToken('Application Packages Root URL');

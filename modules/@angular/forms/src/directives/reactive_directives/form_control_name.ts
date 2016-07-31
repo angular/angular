@@ -25,11 +25,10 @@ import {FormGroupDirective} from './form_group_directive';
 import {FormGroupName} from './form_group_name';
 
 
-export const controlNameBinding: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: NgControl,
-      useExisting: forwardRef(() => FormControlName)
-    };
+export const controlNameBinding: any = {
+  provide: NgControl,
+  useExisting: forwardRef(() => FormControlName)
+};
 
 /**
  * Syncs an existing form control with the specified name to a DOM element.

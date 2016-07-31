@@ -81,7 +81,6 @@ export class ComponentRef_<C> extends ComponentRef<C> {
 
 /**
  * @experimental
- * @ts2dart_const
  */
 const EMPTY_CONTEXT = new Object();
 

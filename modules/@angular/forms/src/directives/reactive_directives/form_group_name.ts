@@ -16,11 +16,10 @@ import {ReactiveErrors} from '../reactive_errors';
 
 import {FormGroupDirective} from './form_group_directive';
 
-export const formGroupNameProvider: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: ControlContainer,
-      useExisting: forwardRef(() => FormGroupName)
-    };
+export const formGroupNameProvider: any = {
+  provide: ControlContainer,
+  useExisting: forwardRef(() => FormGroupName)
+};
 
 /**
  * Syncs an existing form group to a DOM element.

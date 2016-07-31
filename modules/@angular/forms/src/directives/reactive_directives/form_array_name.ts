@@ -19,11 +19,10 @@ import {AsyncValidatorFn, ValidatorFn} from '../validators';
 import {FormGroupDirective} from './form_group_directive';
 import {FormGroupName} from './form_group_name';
 
-export const formArrayNameProvider: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: ControlContainer,
-      useExisting: forwardRef(() => FormArrayName)
-    };
+export const formArrayNameProvider: any = {
+  provide: ControlContainer,
+  useExisting: forwardRef(() => FormArrayName)
+};
 
 /**
  * Syncs an existing form array to a DOM element.

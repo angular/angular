@@ -14,7 +14,7 @@ import {Type, ViewContainerRef, TemplateRef, ElementRef, ChangeDetectorRef, Chan
 import {NgIf, NgFor} from '@angular/common';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-const ALL_DIRECTIVES = /*@ts2dart_const*/[
+const ALL_DIRECTIVES = [
   forwardRef(() => SimpleDirective),
   forwardRef(() => CycleDirective),
   forwardRef(() => SimpleComponent),
@@ -49,7 +49,7 @@ const ALL_DIRECTIVES = /*@ts2dart_const*/[
   NgFor
 ];
 
-const ALL_PIPES = /*@ts2dart_const*/[
+const ALL_PIPES = [
   forwardRef(() => PipeNeedsChangeDetectorRef),
   forwardRef(() => PipeNeedsService),
   forwardRef(() => PurePipe),

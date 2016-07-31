@@ -83,7 +83,7 @@ export class RouteParams {
  * ```
  */
 export class RouteData {
-  constructor(public data: {[key: string]: any} = /*@ts2dart_const*/ {}) {}
+  constructor(public data: {[key: string]: any} = {}) {}
 
   get(key: string): any { return normalizeBlank(StringMapWrapper.get(this.data, key)); }
 }
@@ -256,7 +256,7 @@ export class DefaultInstruction extends ResolvedInstruction {
 export class UnresolvedInstruction extends Instruction {
   constructor(
       private _resolver: () => Promise<Instruction>, private _urlPath: string = '',
-      private _urlParams: string[] = /*@ts2dart_const*/[]) {
+      private _urlParams: string[] = []) {
     super(null, null, {});
   }
 

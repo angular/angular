@@ -23,11 +23,10 @@ import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdate
 import {TemplateDrivenErrors} from './template_driven_errors';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
-export const formControlBinding: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: NgControl,
-      useExisting: forwardRef(() => NgModel)
-    };
+export const formControlBinding: any = {
+  provide: NgControl,
+  useExisting: forwardRef(() => NgModel)
+};
 
 /**
  * Binds a domain model to a form control.

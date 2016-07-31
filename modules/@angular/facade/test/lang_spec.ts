@@ -60,7 +60,7 @@ export function main() {
 
   describe('const', () => {
     it('should support const expressions both in TS and Dart', () => {
-      const numbers = /*@ts2dart_const*/[1, 2, 3];
+      const numbers = [1, 2, 3];
       expect(numbers).toEqual([1, 2, 3]);
     });
   });

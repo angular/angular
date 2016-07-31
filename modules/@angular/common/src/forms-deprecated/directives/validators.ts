@@ -35,9 +35,9 @@ import {NG_VALIDATORS, Validators} from '../validators';
  */
 export interface Validator { validate(c: AbstractControl): {[key: string]: any}; }
 
-const REQUIRED = /*@ts2dart_const*/ Validators.required;
+const REQUIRED = Validators.required;
 
-export const REQUIRED_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const REQUIRED_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useValue: REQUIRED,
   multi: true
@@ -74,7 +74,7 @@ export interface AsyncValidatorFn {
  *
  * {@example common/forms/ts/validators/validators.ts region='min'}
  */
-export const MIN_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const MIN_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MinLengthValidator),
   multi: true
@@ -107,7 +107,7 @@ export class MinLengthValidator implements Validator {
  *
  * {@example common/forms/ts/validators/validators.ts region='max'}
  */
-export const MAX_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const MAX_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MaxLengthValidator),
   multi: true
@@ -134,7 +134,7 @@ export class MaxLengthValidator implements Validator {
 }
 
 
-export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const PATTERN_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => PatternValidator),
   multi: true

@@ -1129,7 +1129,7 @@ export function main() {
   });
 }
 
-const ALL_DIRECTIVES = /*@ts2dart_const*/[
+const ALL_DIRECTIVES = [
   forwardRef(() => TestDirective),
   forwardRef(() => TestComponent),
   forwardRef(() => AnotherComponent),
@@ -1144,7 +1144,7 @@ const ALL_DIRECTIVES = /*@ts2dart_const*/[
   NgFor,
 ];
 
-const ALL_PIPES = /*@ts2dart_const*/[
+const ALL_PIPES = [
   forwardRef(() => CountingPipe),
   forwardRef(() => CountingImpurePipe),
   forwardRef(() => MultiArgPipe),

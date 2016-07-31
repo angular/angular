@@ -24,7 +24,7 @@ import {AbstractControl} from './model';
  * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
  * @experimental
  */
-export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('NgValidators');
+export const NG_VALIDATORS: OpaqueToken = new OpaqueToken('NgValidators');
 
 /**
  * Providers for asynchronous validators to be used for {@link FormControl}s
@@ -36,8 +36,7 @@ export const NG_VALIDATORS: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('Ng
  *
  * @experimental
  */
-export const NG_ASYNC_VALIDATORS: OpaqueToken =
-    /*@ts2dart_const*/ new OpaqueToken('NgAsyncValidators');
+export const NG_ASYNC_VALIDATORS: OpaqueToken = new OpaqueToken('NgAsyncValidators');
 
 /**
  * Provides a set of validators used by form controls.

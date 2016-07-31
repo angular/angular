@@ -71,7 +71,6 @@ export var VIEW_ENCAPSULATION_VALUES =
  *   }
  * }
  * ```
- * @ts2dart_const
  *
  * @deprecated Use ComponentMetadata instead.
  */

@@ -14,7 +14,7 @@ import {PromiseWrapper} from '../../src/facade/promise';
 import {TimerWrapper, ObservableWrapper, EventEmitter} from '../../src/facade/async';
 
 export function main() {
-  function asyncValidator(expected: any /** TODO #9100 */, timeouts = /*@ts2dart_const*/ {}) {
+  function asyncValidator(expected: any /** TODO #9100 */, timeouts = {}) {
     return (c: any /** TODO #9100 */) => {
       var completer = PromiseWrapper.completer();
       var t = isPresent((timeouts as any /** TODO #9100 */)[c.value]) ?

@@ -16,13 +16,11 @@ export {RouteDefinition} from '../route_definition';
  * The `RouteConfig` decorator defines routes for a given component.
  *
  * It takes an array of {@link RouteDefinition}s.
- * @ts2dart_const
  */
 export class RouteConfig {
   constructor(public configs: RouteDefinition[]) {}
 }
 
-/* @ts2dart_const */
 export abstract class AbstractRoute implements RouteDefinition {
   name: string;
   useAsDefault: boolean;
@@ -65,7 +63,6 @@ export abstract class AbstractRoute implements RouteDefinition {
  * ])
  * class MyApp {}
  * ```
- * @ts2dart_const
  */
 export class Route extends AbstractRoute {
   component: any;
@@ -105,7 +102,6 @@ export class Route extends AbstractRoute {
  * ])
  * class MyApp {}
  * ```
- * @ts2dart_const
  */
 export class AuxRoute extends AbstractRoute {
   component: any;
@@ -148,7 +144,6 @@ export class AuxRoute extends AbstractRoute {
  * ])
  * class MyApp {}
  * ```
- * @ts2dart_const
  */
 export class AsyncRoute extends AbstractRoute {
   loader: () => Promise<Type>;
@@ -189,7 +184,6 @@ export class AsyncRoute extends AbstractRoute {
  * ])
  * class MyApp {}
  * ```
- * @ts2dart_const
  */
 export class Redirect extends AbstractRoute {
   redirectTo: any[];

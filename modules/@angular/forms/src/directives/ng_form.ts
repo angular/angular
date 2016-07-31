@@ -21,8 +21,10 @@ import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
 import {composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from './shared';
 
-export const formDirectiveProvider: any =
-    /*@ts2dart_const*/ {provide: ControlContainer, useExisting: forwardRef(() => NgForm)};
+export const formDirectiveProvider: any = {
+  provide: ControlContainer,
+  useExisting: forwardRef(() => NgForm)
+};
 
 /**
  * If `NgForm` is bound in a component, `<form>` elements in that component will be

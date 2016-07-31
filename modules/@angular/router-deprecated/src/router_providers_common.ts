@@ -19,9 +19,8 @@ import {RootRouter, Router} from './router';
 /**
  * The Platform agnostic ROUTER PROVIDERS
  */
-export const ROUTER_PROVIDERS_COMMON: any[] = /*@ts2dart_const*/[
-  RouteRegistry,
-  /* @ts2dart_Provider */ {provide: LocationStrategy, useClass: PathLocationStrategy}, Location, {
+export const ROUTER_PROVIDERS_COMMON: any[] = [
+  RouteRegistry, {provide: LocationStrategy, useClass: PathLocationStrategy}, Location, {
     provide: Router,
     useFactory: routerFactory,
     deps: [RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT, ApplicationRef]
@@ -29,7 +28,7 @@ export const ROUTER_PROVIDERS_COMMON: any[] = /*@ts2dart_const*/[
   {
     provide: ROUTER_PRIMARY_COMPONENT,
     useFactory: routerPrimaryComponentFactory,
-    deps: /*@ts2dart_const*/ ([ApplicationRef])
+    deps: [ApplicationRef]
   }
 ];
 

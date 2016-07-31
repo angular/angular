@@ -36,8 +36,7 @@ import {OpaqueToken} from './di';
   * @deprecated Providing platform directives via a provider is deprecated. Provide platform
   * directives via an {@link NgModule} instead.
   */
-export const PLATFORM_DIRECTIVES: OpaqueToken =
-    /*@ts2dart_const*/ new OpaqueToken('Platform Directives');
+export const PLATFORM_DIRECTIVES: OpaqueToken = new OpaqueToken('Platform Directives');
 
 /**
   * A token that can be provided when bootstraping an application to make an array of pipes
@@ -65,4 +64,4 @@ export const PLATFORM_DIRECTIVES: OpaqueToken =
   * @deprecated Providing platform pipes via a provider is deprecated. Provide platform pipes via an
   * {@link NgModule} instead.
   */
-export const PLATFORM_PIPES: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('Platform Pipes');
+export const PLATFORM_PIPES: OpaqueToken = new OpaqueToken('Platform Pipes');

@@ -41,5 +41,4 @@ export interface ControlValueAccessor {
  * See {@link DefaultValueAccessor} for how to implement one.
  * @experimental
  */
-export const NG_VALUE_ACCESSOR: OpaqueToken =
-    /*@ts2dart_const*/ new OpaqueToken('NgValueAccessor');
+export const NG_VALUE_ACCESSOR: OpaqueToken = new OpaqueToken('NgValueAccessor');

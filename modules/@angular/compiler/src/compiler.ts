@@ -52,32 +52,31 @@ const _NO_XHR: XHR = {
  * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS: Array<any|Type|{[k: string]: any}|any[]> =
-    /*@ts2dart_const*/[
-      {provide: Reflector, useValue: reflector},
-      {provide: ReflectorReader, useExisting: Reflector},
-      {provide: XHR, useValue: _NO_XHR},
-      Console,
-      Lexer,
-      Parser,
-      HtmlParser,
-      TemplateParser,
-      DirectiveNormalizer,
-      CompileMetadataResolver,
-      DEFAULT_PACKAGE_URL_PROVIDER,
-      StyleCompiler,
-      ViewCompiler,
-      NgModuleCompiler,
-      /*@ts2dart_Provider*/ {provide: CompilerConfig, useValue: new CompilerConfig()},
-      RuntimeCompiler,
-      /*@ts2dart_Provider*/ {provide: Compiler, useExisting: RuntimeCompiler},
-      DomElementSchemaRegistry,
-      /*@ts2dart_Provider*/ {provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
-      UrlResolver,
-      DirectiveResolver,
-      PipeResolver,
-      NgModuleResolver
-    ];
+export const COMPILER_PROVIDERS: Array<any|Type|{[k: string]: any}|any[]> = [
+  {provide: Reflector, useValue: reflector},
+  {provide: ReflectorReader, useExisting: Reflector},
+  {provide: XHR, useValue: _NO_XHR},
+  Console,
+  Lexer,
+  Parser,
+  HtmlParser,
+  TemplateParser,
+  DirectiveNormalizer,
+  CompileMetadataResolver,
+  DEFAULT_PACKAGE_URL_PROVIDER,
+  StyleCompiler,
+  ViewCompiler,
+  NgModuleCompiler,
+  {provide: CompilerConfig, useValue: new CompilerConfig()},
+  RuntimeCompiler,
+  {provide: Compiler, useExisting: RuntimeCompiler},
+  DomElementSchemaRegistry,
+  {provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
+  UrlResolver,
+  DirectiveResolver,
+  PipeResolver,
+  NgModuleResolver
+];
 
 
 export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[] = []):

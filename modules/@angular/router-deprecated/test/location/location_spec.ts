@@ -17,8 +17,7 @@ export function main() {
 
     var locationStrategy: any /** TODO #9100 */, location: any /** TODO #9100 */;
 
-    function makeLocation(
-        baseHref: string = '/my/app', provider: any = /*@ts2dart_const*/[]): Location {
+    function makeLocation(baseHref: string = '/my/app', provider: any = []): Location {
       locationStrategy = new MockLocationStrategy();
       locationStrategy.internalBaseHref = baseHref;
       let injector = ReflectiveInjector.resolveAndCreate(

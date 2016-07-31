@@ -15,7 +15,6 @@ import {DebugAppView} from './view';
 import {ViewType} from './view_type';
 
 
-/* @ts2dart_const */
 export class StaticNodeDebugInfo {
   constructor(
       public providerTokens: any[], public componentToken: any,

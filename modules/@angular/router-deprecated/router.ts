@@ -52,4 +52,4 @@ import {RouterLink} from './src/directives/router_link';
  * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
-export const ROUTER_DIRECTIVES: any[] = /*@ts2dart_const*/[RouterOutlet, RouterLink];
+export const ROUTER_DIRECTIVES: any[] = [RouterOutlet, RouterLink];

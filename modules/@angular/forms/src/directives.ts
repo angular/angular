@@ -44,18 +44,17 @@ export {NgSelectOption, SelectControlValueAccessor} from './directives/select_co
 export {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator} from './directives/validators';
 
-export const SHARED_FORM_DIRECTIVES: Type[] = /*@ts2dart_const*/[
+export const SHARED_FORM_DIRECTIVES: Type[] = [
   NgSelectOption, NgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor,
   CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor,
   RadioControlValueAccessor, NgControlStatus, RequiredValidator, MinLengthValidator,
   MaxLengthValidator, PatternValidator
 ];
 
-export const TEMPLATE_DRIVEN_DIRECTIVES: Type[] = /*@ts2dart_const*/[NgModel, NgModelGroup, NgForm];
+export const TEMPLATE_DRIVEN_DIRECTIVES: Type[] = [NgModel, NgModelGroup, NgForm];
 
-export const REACTIVE_DRIVEN_DIRECTIVES: Type[] = /*@ts2dart_const*/[
-  FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName
-];
+export const REACTIVE_DRIVEN_DIRECTIVES: Type[] =
+    [FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName];
 
 /**
  *
@@ -74,15 +73,14 @@ export const REACTIVE_DRIVEN_DIRECTIVES: Type[] = /*@ts2dart_const*/[
  * ```
  * @experimental
  */
-export const FORM_DIRECTIVES: Type[][] =
-    /*@ts2dart_const*/[TEMPLATE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
+export const FORM_DIRECTIVES: Type[][] = [TEMPLATE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
 
 /**
  * @experimental
  */
 
 export const REACTIVE_FORM_DIRECTIVES: Type[][] =
-    /*@ts2dart_const*/[REACTIVE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
+    [REACTIVE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
 
 /**
  * Internal module used for sharing directives between FormsModule and ReactiveFormsModule

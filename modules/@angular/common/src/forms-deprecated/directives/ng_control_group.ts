@@ -16,11 +16,10 @@ import {Form} from './form_interface';
 import {composeAsyncValidators, composeValidators, controlPath} from './shared';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
-export const controlGroupProvider: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: ControlContainer,
-      useExisting: forwardRef(() => NgControlGroup)
-    };
+export const controlGroupProvider: any = {
+  provide: ControlContainer,
+  useExisting: forwardRef(() => NgControlGroup)
+};
 
 /**
  * Creates and binds a control group to a DOM element.

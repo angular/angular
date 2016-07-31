@@ -148,7 +148,6 @@ export interface GetTestability {
       Testability;
 }
 
-/* @ts2dart_const */
 class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
   findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
@@ -165,4 +164,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-var _testabilityGetter: GetTestability = /*@ts2dart_const*/ new _NoopGetTestability();
+var _testabilityGetter: GetTestability = new _NoopGetTestability();

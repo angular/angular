@@ -36,10 +36,9 @@ import {ROUTER_PROVIDERS_COMMON} from './router_providers_common';
  * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
-export const ROUTER_PROVIDERS: any[] = /*@ts2dart_const*/[
+export const ROUTER_PROVIDERS: any[] = [
   ROUTER_PROVIDERS_COMMON,
-  /*@ts2dart_const*/ (
-      /* @ts2dart_Provider */ {provide: PlatformLocation, useClass: BrowserPlatformLocation}),
+  ({provide: PlatformLocation, useClass: BrowserPlatformLocation}),
 ];
 
 /**
@@ -47,4 +46,4 @@ export const ROUTER_PROVIDERS: any[] = /*@ts2dart_const*/[
  *
  * @deprecated
  */
-export const ROUTER_BINDINGS = /*@ts2dart_const*/ ROUTER_PROVIDERS;
+export const ROUTER_BINDINGS = ROUTER_PROVIDERS;
