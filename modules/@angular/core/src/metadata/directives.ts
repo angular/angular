@@ -884,8 +884,6 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    * In CommonJS, this can always be set to `module.id`, similarly SystemJS exposes `__moduleName`
    * variable within each module.
    *
-   * In Dart, this can be determined automatically and does not need to be set.
-
    *
    * ## Simple Example
    *

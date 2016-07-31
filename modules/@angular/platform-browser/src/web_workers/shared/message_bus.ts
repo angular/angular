@@ -46,7 +46,7 @@ export abstract class MessageBus implements MessageBusSource, MessageBusSink {
 
   /**
    * Returns an {@link EventEmitter} for the given channel
-   * To publish methods to that channel just call next (or add in dart) on the returned emitter
+   * To publish methods to that channel just call next on the returned emitter
    */
   abstract to(channel: string): EventEmitter<any>;
 }
@@ -98,7 +98,7 @@ export interface MessageBusSink {
 
   /**
    * Returns an {@link EventEmitter} for the given channel
-   * To publish methods to that channel just call next (or add in dart) on the returned emitter
+   * To publish methods to that channel just call next on the returned emitter
    */
   to(channel: string): EventEmitter<any>;
 }

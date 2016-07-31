@@ -30,7 +30,7 @@ export function main() {
     // Our generator only works on node.js
     outputDefs.push({'getExpressions': () => typed.getExpressions, 'name': 'typed'});
   } else {
-    // Our generator only works on node.js and Dart...
+    // Our generator only works on node.js
     if (!getDOM().supportsDOMEvents()) {
       outputDefs.push({'getExpressions': () => untyped.getExpressions, 'name': 'untyped'});
     }

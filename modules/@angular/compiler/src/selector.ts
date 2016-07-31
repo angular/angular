@@ -12,9 +12,7 @@ import {RegExpMatcherWrapper, RegExpWrapper, StringWrapper, isBlank, isPresent} 
 
 const _EMPTY_ATTR_VALUE = '';
 
-// TODO: Can't use `const` here as
-// in Dart this is not transpiled into `final` yet...
-var _SELECTOR_REGEXP = RegExpWrapper.create(
+const _SELECTOR_REGEXP = RegExpWrapper.create(
     '(\\:not\\()|' +                          //":not("
     '([-\\w]+)|' +                            // "tag"
     '(?:\\.([-\\w]+))|' +                     // ".class"

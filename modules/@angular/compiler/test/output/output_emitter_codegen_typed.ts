@@ -7,8 +7,6 @@
  */
 
 // ATTENTION: This file will be overwritten with generated code by main()
-import {DartEmitter} from '@angular/compiler/src/output/dart_emitter';
-import {DartImportGenerator} from '@angular/compiler/src/output/dart_imports';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 

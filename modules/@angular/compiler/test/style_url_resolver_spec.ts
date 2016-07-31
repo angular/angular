@@ -109,7 +109,6 @@ export function main() {
   });
 }
 
-/// The real thing behaves differently between Dart and JS for package URIs.
 class FakeUrlResolver extends UrlResolver {
   constructor() { super(); }
 

@@ -83,10 +83,7 @@ export class HashLocationStrategy extends LocationStrategy {
     var path = this._platformLocation.hash;
     if (!isPresent(path)) path = '#';
 
-    // Dart will complain if a call to substring is
-    // executed with a position value that extends the
-    // length of string.
-    return (path.length > 0 ? path.substring(1) : path);
+    return path.length > 0 ? path.substring(1) : path;
   }
 
   prepareExternalUrl(internal: string): string {

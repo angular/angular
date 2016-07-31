@@ -24,7 +24,7 @@ var externalModuleIdentifier =
     new CompileIdentifierMetadata({name: 'someExternalId', moduleUrl: anotherModuleUrl});
 
 export function main() {
-  // Note supported features of our OutputAstin TS:
+  // Note supported features of our OutputAsti n TS:
   // - real `const` like in Dart
   // - final fields
 

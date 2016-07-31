@@ -17,7 +17,7 @@ import {createConnectedMessageBus} from './message_bus_util';
 
 export function main() {
   /**
-   * Tests the PostMessageBus in TypeScript and the IsolateMessageBus in Dart
+   * Tests the PostMessageBus
    */
   describe('MessageBus', () => {
     var bus: MessageBus;

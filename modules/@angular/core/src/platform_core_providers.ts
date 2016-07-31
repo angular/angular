@@ -19,8 +19,6 @@ function _reflector(): Reflector {
   return reflector;
 }
 
-var __unused: Type;  // prevent missing use Dart warning.
-
 const _CORE_PLATFORM_PROVIDERS: Array<any|Type|Provider|any[]> = [
   PlatformRef_, {provide: PlatformRef, useExisting: PlatformRef_},
   {provide: Reflector, useFactory: _reflector, deps: []},

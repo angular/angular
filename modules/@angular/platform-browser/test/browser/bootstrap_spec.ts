@@ -163,7 +163,6 @@ export function main() {
     if (getDOM().supportsDOMEvents()) {
       it('should forward the error to promise when bootstrap fails',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           // Skip for dart since it causes a confusing error message in console when test passes.
            var logger = new _ArrayLogger();
            var exceptionHandler = new ExceptionHandler(logger, false);
 
