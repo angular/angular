@@ -46,6 +46,21 @@ function mergeOptions(
   }
 }
 
+
+/**
+ * Generic HTTP interface
+ */
+ 
+export interface IHttp{
+  request(url: string|Request, options?: RequestOptionsArgs): Observable<Response>;
+  get(url: string, options?: RequestOptionsArgs): Observable<Response>;
+  post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
+  put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
+  delete (url: string, options?: RequestOptionsArgs): Observable<Response>;
+  patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
+  head(url: string, options?: RequestOptionsArgs): Observable<Response>;
+}
+
 /**
  * Performs http requests using `XMLHttpRequest` as the default backend.
  *
@@ -107,7 +122,7 @@ function mergeOptions(
  * @experimental
  */
 @Injectable()
-export class Http {
+export class Http implements IHttp{
   constructor(protected _backend: ConnectionBackend, protected _defaultOptions: RequestOptions) {}
 
   /**
