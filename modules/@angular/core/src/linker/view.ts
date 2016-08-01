@@ -288,6 +288,8 @@ export abstract class AppView<T> {
     }
   }
 
+  markContentChildAsMoved(renderAppElement: AppElement): void { this.dirtyParentQueriesInternal(); }
+
   addToContentChildren(renderAppElement: AppElement): void {
     renderAppElement.parentView.contentChildren.push(this);
     this.viewContainerElement = renderAppElement;
