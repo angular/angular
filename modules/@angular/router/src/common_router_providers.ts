@@ -54,9 +54,11 @@ export function rootRoute(router: Router): ActivatedRoute {
   return router.routerState.root;
 }
 
-export function setupRouterInitializer(injector: Injector, appRef: ApplicationRef) {
+export function setupRouterInitializer(injector: Injector) {
   return () => {
-    appRef.registerBootstrapListener(() => { injector.get(Router).initialNavigation(); });
+    injector.get(ApplicationRef).registerBootstrapListener(() => {
+      injector.get(Router).initialNavigation();
+    });
   };
 }
 
