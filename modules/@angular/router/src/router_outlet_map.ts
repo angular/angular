@@ -15,4 +15,6 @@ export class RouterOutletMap {
   /** @internal */
   _outlets: {[name: string]: RouterOutlet} = {};
   registerOutlet(name: string, outlet: RouterOutlet): void { this._outlets[name] = outlet; }
+
+  removeOutlet(name: string): void { this._outlets[name] = undefined; }
 }

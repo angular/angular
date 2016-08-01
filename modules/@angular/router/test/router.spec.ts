@@ -63,6 +63,38 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/child/simple');
          })));
 
+  it('should work when an outlet is in an ngIf (and is removed)',
+     fakeAsync(inject(
+         [Router, TestComponentBuilder, Location],
+         (router: Router, tcb: TestComponentBuilder, location: Location) => {
+           @Component({
+             selector: 'someRoot',
+             template: `<div *ngIf="cond"><router-outlet></router-outlet></div>`,
+             entryComponents: [BlankCmp, SimpleCmp]
+           })
+           class RootCmpWithLink {
+             cond: boolean = true;
+           }
+
+           const fixture = createRoot(tcb, router, RootCmpWithLink);
+
+           router.resetConfig(
+               [{path: 'simple', component: SimpleCmp}, {path: 'blank', component: BlankCmp}]);
+
+           router.navigateByUrl('/simple');
+           advance(fixture);
+           expect(location.path()).toEqual('/simple');
+
+           const instance = fixture.componentInstance;
+           instance.cond = false;
+           advance(fixture);
+
+           let recordedError: any = null;
+           router.navigateByUrl('/blank').catch(e => recordedError = e);
+           advance(fixture);
+           expect(recordedError.message).toEqual('Cannot find primary outlet to load \'BlankCmp\'');
+         })));
+
   it('should update location when navigating',
      fakeAsync(inject(
          [Router, TestComponentBuilder, Location],

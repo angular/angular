@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, NoComponentFactoryError, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
+import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, NoComponentFactoryError, OnDestroy, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
 
 import {RouterOutletMap} from '../router_outlet_map';
 import {ActivatedRoute} from '../router_state';
@@ -38,7 +38,7 @@ import {PRIMARY_OUTLET} from '../shared';
  * @stable
  */
 @Directive({selector: 'router-outlet'})
-export class RouterOutlet {
+export class RouterOutlet implements OnDestroy {
   private activated: ComponentRef<any>;
   private _activatedRoute: ActivatedRoute;
   public outletMap: RouterOutletMap;
@@ -47,10 +47,12 @@ export class RouterOutlet {
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
   constructor(
-      parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, @Attribute('name') name: string) {
+      private parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
+      private resolver: ComponentFactoryResolver, @Attribute('name') private name: string) {
     parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
   }
+
+  ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this.name ? this.name : PRIMARY_OUTLET); }
 
   get isActivated(): boolean { return !!this.activated; }
   get component(): Object {
