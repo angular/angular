@@ -222,6 +222,6 @@ function _lastDefined<T>(args: T[]): T {
 
 function _mergeArrays(parts: any[][]): any[] {
   let result: any[] = [];
-  parts.forEach((part) => result.push(...part));
+  parts.forEach((part) => part && result.push(...part));
   return result;
 }
