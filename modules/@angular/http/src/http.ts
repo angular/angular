@@ -50,7 +50,7 @@ function mergeOptions(
 /**
  * Generic HTTP interface
  */
- 
+
 export interface IHttp {
   request(url: string|Request, options?: RequestOptionsArgs): Observable<Response>;
   get(url: string, options?: RequestOptionsArgs): Observable<Response>;
