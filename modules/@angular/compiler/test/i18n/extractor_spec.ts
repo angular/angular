@@ -21,6 +21,22 @@ export function main() {
         ]);
       });
 
+      it('should extract from elements', () => {
+        expect(
+            extract(
+                '<div i18n="m|d">{count, plural, =0 { <p i18n-title i18n-desc title="title" desc="desc"></p>}}</div>'))
+            .toEqual([
+              [
+                [
+                  '{count, plural, =0 {<p i18n-title="" i18n-desc="" title="title" desc="desc"></p>}}'
+                ],
+                'm', 'd'
+              ],
+              [['title="title"'], '', ''],
+              [['desc="desc"'], '', ''],
+            ]);
+      });
+
       it('should not create a message for empty elements',
          () => { expect(extract('<div i18n="m|d"></div>')).toEqual([]); });
     });

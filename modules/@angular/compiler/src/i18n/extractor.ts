@@ -172,17 +172,17 @@ class _ExtractVisitor implements html.Visitor {
   }
 
   private _extractFromAttributes(el: html.Element, messages: Message[]): void {
-    const explicitAttrNameToValue: Map<string, string> = new Map();
+    const explicitAttrNameToValue: {[k: string]: string} = {};
     const implicitAttrNames: string[] = this._implicitAttrs[el.name] || [];
 
     el.attrs.filter(attr => attr.name.startsWith(_I18N_ATTR_PREFIX))
         .forEach(
-            attr => explicitAttrNameToValue.set(
-                attr.name.substring(_I18N_ATTR_PREFIX.length), attr.value));
+            attr => explicitAttrNameToValue[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
+                attr.value);
 
     el.attrs.forEach(attr => {
-      if (explicitAttrNameToValue.has(attr.name)) {
-        this._addMessage(messages, [attr], explicitAttrNameToValue.get(attr.name));
+      if (attr.name in explicitAttrNameToValue) {
+        this._addMessage(messages, [attr], explicitAttrNameToValue[attr.name]);
       } else if (implicitAttrNames.some(name => attr.name === name)) {
         this._addMessage(messages, [attr]);
       }
@@ -250,8 +250,8 @@ class _ExtractVisitor implements html.Visitor {
         0);
 
     if (significantChildren == 1) {
-      for (let i = startIndex; i < messages.length; i++) {
-        let ast = messages[i].nodes;
+      for (let i = messages.length - 1; i >= startIndex; i--) {
+        const ast = messages[i].nodes;
         if (!(ast.length == 1 && ast[0] instanceof html.Attribute)) {
           messages.splice(i, 1);
           break;
