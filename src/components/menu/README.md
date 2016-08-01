@@ -24,7 +24,7 @@ You'll also want to import the menu directives and add them to your component's 
 
 *my-comp.component.ts*
 ```ts
-import {MD_MENU_DIRECTIVES} fom '@angular2-material/menu';
+import {MD_MENU_DIRECTIVES} from '@angular2-material/menu';
 
 @Component({
   ...
