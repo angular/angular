@@ -117,24 +117,23 @@ export class NgFor implements DoCheck, OnChanges {
   }
 
   private _applyChanges(changes: DefaultIterableDiffer) {
-    // TODO(rado): check if change detection can produce a change record that is
-    // easier to consume than current.
-    const recordViewTuples: RecordViewTuple[] = [];
-    changes.forEachRemovedItem(
-        (removedRecord: CollectionChangeRecord) =>
-            recordViewTuples.push(new RecordViewTuple(removedRecord, null)));
-
-    changes.forEachMovedItem(
-        (movedRecord: CollectionChangeRecord) =>
-            recordViewTuples.push(new RecordViewTuple(movedRecord, null)));
-
-    const insertTuples = this._bulkRemove(recordViewTuples);
-
-    changes.forEachAddedItem(
-        (addedRecord: CollectionChangeRecord) =>
-            insertTuples.push(new RecordViewTuple(addedRecord, null)));
-
-    this._bulkInsert(insertTuples);
+    const insertTuples: RecordViewTuple[] = [];
+    changes.forEachOperation(
+        (item: CollectionChangeRecord, adjustedPreviousIndex: number, currentIndex: number) => {
+          if (item.previousIndex == null) {
+            let view = this._viewContainer.createEmbeddedView(
+                this._templateRef, new NgForRow(null, null, null), currentIndex);
+            let tuple = new RecordViewTuple(item, view);
+            insertTuples.push(tuple);
+          } else if (currentIndex == null) {
+            this._viewContainer.remove(adjustedPreviousIndex);
+          } else {
+            let view = this._viewContainer.get(adjustedPreviousIndex);
+            this._viewContainer.move(view, currentIndex);
+            let tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForRow>>view);
+            insertTuples.push(tuple);
+          }
+        });
 
     for (let i = 0; i < insertTuples.length; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
@@ -154,39 +153,6 @@ export class NgFor implements DoCheck, OnChanges {
 
   private _perViewChange(view: EmbeddedViewRef<NgForRow>, record: CollectionChangeRecord) {
     view.context.$implicit = record.item;
-  }
-
-  private _bulkRemove(tuples: RecordViewTuple[]): RecordViewTuple[] {
-    tuples.sort(
-        (a: RecordViewTuple, b: RecordViewTuple) =>
-            a.record.previousIndex - b.record.previousIndex);
-    const movedTuples: RecordViewTuple[] = [];
-    for (let i = tuples.length - 1; i >= 0; i--) {
-      const tuple = tuples[i];
-      // separate moved views from removed views.
-      if (isPresent(tuple.record.currentIndex)) {
-        tuple.view =
-            <EmbeddedViewRef<NgForRow>>this._viewContainer.detach(tuple.record.previousIndex);
-        movedTuples.push(tuple);
-      } else {
-        this._viewContainer.remove(tuple.record.previousIndex);
-      }
-    }
-    return movedTuples;
-  }
-
-  private _bulkInsert(tuples: RecordViewTuple[]): RecordViewTuple[] {
-    tuples.sort((a, b) => a.record.currentIndex - b.record.currentIndex);
-    for (let i = 0; i < tuples.length; i++) {
-      var tuple = tuples[i];
-      if (isPresent(tuple.view)) {
-        this._viewContainer.insert(tuple.view, tuple.record.currentIndex);
-      } else {
-        tuple.view = this._viewContainer.createEmbeddedView(
-            this._templateRef, new NgForRow(null, null, null), tuple.record.currentIndex);
-      }
-    }
-    return tuples;
   }
 }
 

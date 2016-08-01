@@ -463,6 +463,7 @@ export declare class DefaultIterableDiffer implements IterableDiffer {
     forEachIdentityChange(fn: Function): void;
     forEachItem(fn: Function): void;
     forEachMovedItem(fn: Function): void;
+    forEachOperation(fn: (item: CollectionChangeRecord, previousIndex: number, currentIndex: number) => void): void;
     forEachPreviousItem(fn: Function): void;
     forEachRemovedItem(fn: Function): void;
     onDestroy(): void;
@@ -1370,6 +1371,7 @@ export declare abstract class ViewContainerRef {
     abstract get(index: number): ViewRef;
     abstract indexOf(viewRef: ViewRef): number;
     abstract insert(viewRef: ViewRef, index?: number): ViewRef;
+    abstract move(viewRef: ViewRef, currentIndex: number): ViewRef;
     abstract remove(index?: number): void;
 }
 

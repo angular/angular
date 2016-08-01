@@ -298,6 +298,165 @@ export function main() {
         }));
       });
 
+      describe('forEachOperation', () => {
+        function stringifyItemChange(record: any, p: number, c: number, originalIndex: number) {
+          var suffix = originalIndex == null ? '' : ' [o=' + originalIndex + ']';
+          var value = record.item;
+          if (record.currentIndex == null) {
+            return `REMOVE ${value} (${p} -> VOID)${suffix}`;
+          } else if (record.previousIndex == null) {
+            return `INSERT ${value} (VOID -> ${c})${suffix}`;
+          } else {
+            return `MOVE ${value} (${p} -> ${c})${suffix}`;
+          }
+        }
+
+        function modifyArrayUsingOperation(
+            arr: number[], endData: any[], prev: number, next: number) {
+          var value: number = null;
+          if (prev == null) {
+            value = endData[next];
+            arr.splice(next, 0, value);
+          } else if (next == null) {
+            value = arr[prev];
+            arr.splice(prev, 1);
+          } else {
+            value = arr[prev];
+            arr.splice(prev, 1);
+            arr.splice(next, 0, value);
+          }
+          return value;
+        }
+
+        it('should trigger a series of insert/move/remove changes for inputs that have been diffed',
+           () => {
+             var startData = [0, 1, 2, 3, 4, 5];
+             var endData = [6, 2, 7, 0, 4, 8];
+
+             differ = differ.diff(startData);
+             differ = differ.diff(endData);
+
+             var operations: string[] = [];
+             differ.forEachOperation((item: any, prev: number, next: number) => {
+               var value = modifyArrayUsingOperation(startData, endData, prev, next);
+               operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
+             });
+
+             expect(operations).toEqual([
+               'INSERT 6 (VOID -> 0)', 'MOVE 2 (3 -> 1) [o=2]', 'INSERT 7 (VOID -> 2)',
+               'REMOVE 1 (4 -> VOID) [o=1]', 'REMOVE 3 (4 -> VOID) [o=3]',
+               'REMOVE 5 (5 -> VOID) [o=5]', 'INSERT 8 (VOID -> 5)'
+             ]);
+
+             expect(startData).toEqual(endData);
+           });
+
+        it('should consider inserting/removing/moving items with respect to items that have not moved at all',
+           () => {
+             var startData = [0, 1, 2, 3];
+             var endData = [2, 1];
+
+             differ = differ.diff(startData);
+             differ = differ.diff(endData);
+
+             var operations: string[] = [];
+             differ.forEachOperation((item: any, prev: number, next: number) => {
+               var value = modifyArrayUsingOperation(startData, endData, prev, next);
+               operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
+             });
+
+             expect(operations).toEqual([
+               'REMOVE 0 (0 -> VOID) [o=0]', 'MOVE 2 (1 -> 0) [o=2]', 'REMOVE 3 (2 -> VOID) [o=3]'
+             ]);
+
+             expect(startData).toEqual(endData);
+           });
+
+        it('should be able to manage operations within a criss/cross of move operations', () => {
+          var startData = [1, 2, 3, 4, 5, 6];
+          var endData = [3, 6, 4, 9, 1, 2];
+
+          differ = differ.diff(startData);
+          differ = differ.diff(endData);
+
+          var operations: string[] = [];
+          differ.forEachOperation((item: any, prev: number, next: number) => {
+            var value = modifyArrayUsingOperation(startData, endData, prev, next);
+            operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
+          });
+
+          expect(operations).toEqual([
+            'MOVE 3 (2 -> 0) [o=2]', 'MOVE 6 (5 -> 1) [o=5]', 'MOVE 4 (4 -> 2) [o=3]',
+            'INSERT 9 (VOID -> 3)', 'REMOVE 5 (6 -> VOID) [o=4]'
+          ]);
+
+          expect(startData).toEqual(endData);
+        });
+
+        it('should skip moves for multiple nodes that have not moved', () => {
+          var startData = [0, 1, 2, 3, 4];
+          var endData = [4, 1, 2, 3, 0, 5];
+
+          differ = differ.diff(startData);
+          differ = differ.diff(endData);
+
+          var operations: string[] = [];
+          differ.forEachOperation((item: any, prev: number, next: number) => {
+            var value = modifyArrayUsingOperation(startData, endData, prev, next);
+            operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
+          });
+
+          expect(operations).toEqual([
+            'MOVE 4 (4 -> 0) [o=4]', 'MOVE 1 (2 -> 1) [o=1]', 'MOVE 2 (3 -> 2) [o=2]',
+            'MOVE 3 (4 -> 3) [o=3]', 'INSERT 5 (VOID -> 5)'
+          ]);
+
+          expect(startData).toEqual(endData);
+        });
+
+        it('should not fail', () => {
+          var startData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+          var endData = [10, 11, 1, 5, 7, 8, 0, 5, 3, 6];
+
+          differ = differ.diff(startData);
+          differ = differ.diff(endData);
+
+          var operations: string[] = [];
+          differ.forEachOperation((item: any, prev: number, next: number) => {
+            var value = modifyArrayUsingOperation(startData, endData, prev, next);
+            operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
+          });
+
+          expect(operations).toEqual([
+            'MOVE 10 (10 -> 0) [o=10]', 'MOVE 11 (11 -> 1) [o=11]', 'MOVE 1 (3 -> 2) [o=1]',
+            'MOVE 5 (7 -> 3) [o=5]', 'MOVE 7 (9 -> 4) [o=7]', 'MOVE 8 (10 -> 5) [o=8]',
+            'REMOVE 2 (7 -> VOID) [o=2]', 'INSERT 5 (VOID -> 7)', 'REMOVE 4 (9 -> VOID) [o=4]',
+            'REMOVE 9 (10 -> VOID) [o=9]'
+          ]);
+
+          expect(startData).toEqual(endData);
+        });
+
+        it('should trigger nothing when the list is completely full of replaced items that are tracked by the index',
+           () => {
+             differ = new DefaultIterableDiffer((index: number) => index);
+
+             var startData = [1, 2, 3, 4];
+             var endData = [5, 6, 7, 8];
+
+             differ = differ.diff(startData);
+             differ = differ.diff(endData);
+
+             var operations: string[] = [];
+             differ.forEachOperation((item: any, prev: number, next: number) => {
+               var value = modifyArrayUsingOperation(startData, endData, prev, next);
+               operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
+             });
+
+             expect(operations).toEqual([]);
+           });
+      });
+
       describe('diff', () => {
         it('should return self when there is a change', () => {
           expect(differ.diff(['a', 'b'])).toBe(differ);

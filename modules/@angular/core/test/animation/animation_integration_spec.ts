@@ -749,6 +749,135 @@ function declareTests({useJit}: {useJit: boolean}) {
              })));
     });
 
+    describe('ng directives', () => {
+      describe('*ngFor', () => {
+        let tpl = '<div *ngFor="let item of items" @trigger>{{ item }}</div>';
+
+        let getText =
+            (node: any) => { return node.innerHTML ? node.innerHTML : node.children[0].data; };
+
+        let assertParentChildContents = (parent: any, content: string) => {
+          var values: string[] = [];
+          for (var i = 0; i < parent.childNodes.length; i++) {
+            let child = parent.childNodes[i];
+            if (child['nodeType'] == 1) {
+              values.push(getText(child).trim());
+            }
+          }
+          var value = values.join(' -> ');
+          expect(value).toEqual(content);
+        };
+
+        it('should animate when items are inserted into the list at different points',
+           inject(
+               [TestComponentBuilder, AnimationDriver],
+               fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
+                 makeAnimationCmp(
+                     tcb, tpl,
+                     [
+                       trigger('trigger', [transition('void => *', [animate(1000)])]),
+                     ],
+                     (fixture: any /** TODO #9100 */) => {
+                       var cmp = fixture.debugElement.componentInstance;
+                       var parent = fixture.debugElement.nativeElement;
+                       cmp.items = [0, 2, 4, 6, 8];
+                       fixture.detectChanges();
+                       flushMicrotasks();
+
+                       expect(driver.log.length).toEqual(5);
+                       assertParentChildContents(parent, '0 -> 2 -> 4 -> 6 -> 8');
+
+                       driver.log = [];
+                       cmp.items = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+                       fixture.detectChanges();
+                       flushMicrotasks();
+
+                       expect(driver.log.length).toEqual(4);
+                       assertParentChildContents(
+                           parent, '0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8');
+                     });
+               })));
+
+        it('should animate when items are removed + moved into the list at different points and retain DOM ordering during the animation',
+           inject(
+               [TestComponentBuilder, AnimationDriver],
+               fakeAsync((tcb: TestComponentBuilder, driver: MockAnimationDriver) => {
+                 makeAnimationCmp(
+                     tcb, tpl,
+                     [
+                       trigger('trigger', [transition('* => *', [animate(1000)])]),
+                     ],
+                     (fixture: any /** TODO #9100 */) => {
+                       var cmp = fixture.debugElement.componentInstance;
+                       var parent = fixture.debugElement.nativeElement;
+
+                       cmp.items = [0, 1, 2, 3, 4];
+                       fixture.detectChanges();
+                       flushMicrotasks();
+
+                       expect(driver.log.length).toEqual(5);
+                       driver.log = [];
+
+                       cmp.items = [3, 4, 0, 9];
+                       fixture.detectChanges();
+                       flushMicrotasks();
+
+                       // TODO (matsko): update comment below once move animations are a thing
+                       // there are only three animations since we do
+                       // not yet support move-based animations
+                       expect(driver.log.length).toEqual(3);
+
+                       // move(~), add(+), remove(-)
+                       // -1, -2, ~3, ~4, ~0, +9
+                       var rm0 = driver.log.shift();
+                       var rm1 = driver.log.shift();
+                       var in0 = driver.log.shift();
+
+                       // we want to assert that the DOM chain is still preserved
+                       // until the animations are closed
+                       assertParentChildContents(parent, '3 -> 4 -> 0 -> 9 -> 1 -> 2');
+
+                       rm0['player'].finish();
+                       assertParentChildContents(parent, '3 -> 4 -> 0 -> 9 -> 2');
+
+                       rm1['player'].finish();
+                       assertParentChildContents(parent, '3 -> 4 -> 0 -> 9');
+                     });
+               })));
+      });
+
+      describe('[ngClass]', () => {
+        it('should persist ngClass class values when a remove element animation is active',
+           inject(
+               [TestComponentBuilder, AnimationDriver],
+               fakeAsync(
+                   (tcb: TestComponentBuilder, driver: InnerContentTrackingAnimationDriver) => {
+                     makeAnimationCmp(
+                         tcb, `<div [ngClass]="exp2" *ngIf="exp" @trigger></div>`,
+                         [
+                           trigger('trigger', [transition('* => void', [animate(1000)])]),
+                         ],
+                         (fixture: any /** TODO #9100 */) => {
+                           var cmp = fixture.debugElement.componentInstance;
+                           cmp.exp = true;
+                           cmp.exp2 = 'blue';
+                           fixture.detectChanges();
+                           flushMicrotasks();
+
+                           expect(driver.log.length).toEqual(0);
+
+                           cmp.exp = false;
+                           fixture.detectChanges();
+                           flushMicrotasks();
+
+                           var animation = driver.log.pop();
+                           var element = animation['element'];
+                           (<any>expect(element)).toHaveCssClass('blue');
+                         });
+                   })));
+      });
+    });
+
     describe('DOM order tracking', () => {
       if (!getDOM().supportsDOMEvents()) return;
 
@@ -873,39 +1002,6 @@ function declareTests({useJit}: {useJit: boolean}) {
                      expect(player.playAttempts).toEqual(1);
                    });
              })));
-    });
-
-    describe('ng directives', () => {
-      describe('[ngClass]', () => {
-        it('should persist ngClass class values when a remove element animation is active',
-           inject(
-               [TestComponentBuilder, AnimationDriver],
-               fakeAsync(
-                   (tcb: TestComponentBuilder, driver: InnerContentTrackingAnimationDriver) => {
-                     makeAnimationCmp(
-                         tcb, `<div [ngClass]="exp2" *ngIf="exp" @trigger></div>`,
-                         [
-                           trigger('trigger', [transition('* => void', [animate(1000)])]),
-                         ],
-                         (fixture: any /** TODO #9100 */) => {
-                           var cmp = fixture.debugElement.componentInstance;
-                           cmp.exp = true;
-                           cmp.exp2 = 'blue';
-                           fixture.detectChanges();
-                           flushMicrotasks();
-
-                           expect(driver.log.length).toEqual(0);
-
-                           cmp.exp = false;
-                           fixture.detectChanges();
-                           flushMicrotasks();
-
-                           var animation = driver.log.pop();
-                           var element = animation['element'];
-                           (<any>expect(element)).toHaveCssClass('blue');
-                         });
-                   })));
-      });
     });
 
     describe('animation states', () => {
@@ -1273,6 +1369,7 @@ class InnerContentTrackingAnimationPlayer extends MockAnimationPlayer {
 class DummyIfCmp {
   exp = false;
   exp2 = false;
+  items = [0, 1, 2, 3, 4];
 }
 
 @Component({

@@ -29,14 +29,13 @@ import {
     <button (click)="state='active'">Active State</button>
     |
     <button (click)="state='void'">Void State</button>
+    <button (click)="reorderAndRemove()">Scramble!</button>
     <button (click)="state='default'">Unhandled (default) State</button>
     <button style="float:right" (click)="bgStatus='blur'">Blur Page (Host)</button>
     <hr />
-    <div *ngFor="let item of items" class="box" [@boxAnimation]="state">
-      {{ item }}
-      <div *ngIf="true">
-        something inside 
-      </div>
+    <div *ngFor="let item of items; let i=index" class="box" [@boxAnimation]="state">
+      {{ item }} - {{ i }}
+      <button (click)="remove(item)">x</button>
     </div>
   `,
   animations: [
@@ -76,6 +75,20 @@ export class AnimateApp {
   public _state: any /** TODO #9100 */;
 
   public bgStatus = 'focus';
+
+  remove(item: any) {
+    var index = this.items.indexOf(item);
+    if (index >= 0) {
+      this.items.splice(index, 1);
+    }
+  }
+
+  reorderAndRemove() {
+    this.items = this.items.sort((a: any,b: any) => Math.random() - 0.5);
+    this.items.splice(Math.floor(Math.random() * this.items.length), 1);
+    this.items.splice(Math.floor(Math.random() * this.items.length), 1);
+    this.items[Math.floor(Math.random() * this.items.length)] = 99;
+  }
 
   get state() { return this._state; }
   set state(s) {
