@@ -34,11 +34,11 @@ export function isControl(control: Object): boolean {
   return control instanceof AbstractControl;
 }
 
-function _find(control: AbstractControl, path: Array<string|number>| string) {
+function _find(control: AbstractControl, path: Array<string|number>| string, delimiter: string) {
   if (isBlank(path)) return null;
 
   if (!(path instanceof Array)) {
-    path = (<string>path).split('/');
+    path = (<string>path).split(delimiter);
   }
   if (path instanceof Array && ListWrapper.isEmpty(path)) return null;
 
@@ -251,7 +251,12 @@ export abstract class AbstractControl {
     this._updateControlsErrors(emitEvent);
   }
 
-  find(path: Array<string|number>|string): AbstractControl { return _find(this, path); }
+  /**
+   * @deprecated - use get() instead
+   */
+  find(path: Array<string|number>|string): AbstractControl { return _find(this, path, '/'); }
+
+  get(path: Array<string|number>|string): AbstractControl { return _find(this, path, '.'); }
 
   getError(errorCode: string, path: string[] = null): any {
     var control = isPresent(path) && !ListWrapper.isEmpty(path) ? this.find(path) : this;

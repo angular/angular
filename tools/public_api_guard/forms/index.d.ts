@@ -19,7 +19,8 @@ export declare abstract class AbstractControl {
     constructor(validator: ValidatorFn, asyncValidator: AsyncValidatorFn);
     clearAsyncValidators(): void;
     clearValidators(): void;
-    find(path: Array<string | number> | string): AbstractControl;
+    /** @deprecated */ find(path: Array<string | number> | string): AbstractControl;
+    get(path: Array<string | number> | string): AbstractControl;
     getError(errorCode: string, path?: string[]): any;
     hasError(errorCode: string, path?: string[]): boolean;
     markAsDirty({onlySelf}?: {

@@ -1626,6 +1626,42 @@ export function main() {
         });
       });
 
+      describe('get', () => {
+        it('should return null when path is null', () => {
+          var g = new FormGroup({});
+          expect(g.get(null)).toEqual(null);
+        });
+
+        it('should return null when path is empty', () => {
+          var g = new FormGroup({});
+          expect(g.get([])).toEqual(null);
+        });
+
+        it('should return null when path is invalid', () => {
+          var g = new FormGroup({});
+          expect(g.get('invalid')).toEqual(null);
+        });
+
+        it('should return a child of a control group', () => {
+          var g = new FormGroup({
+            'one': new FormControl('111'),
+            'nested': new FormGroup({'two': new FormControl('222')})
+          });
+
+          expect(g.get(['one']).value).toEqual('111');
+          expect(g.get('one').value).toEqual('111');
+          expect(g.get(['nested', 'two']).value).toEqual('222');
+          expect(g.get('nested.two').value).toEqual('222');
+        });
+
+        it('should return an element of an array', () => {
+          var g = new FormGroup({'array': new FormArray([new FormControl('111')])});
+
+          expect(g.get(['array', 0]).value).toEqual('111');
+        });
+      });
+
+
       describe('asyncValidator', () => {
         it('should run the async validator', fakeAsync(() => {
              var c = new FormControl('value');
