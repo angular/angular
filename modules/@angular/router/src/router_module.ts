@@ -87,8 +87,8 @@ export class RouterModule {
     return {
       ngModule: RouterModule,
       providers: [
-        ROUTER_PROVIDERS, provideRoutes(routes), {provide: ROUTER_CONFIGURATION, useValue: config},
-        {
+        ROUTER_PROVIDERS, provideRoutes(routes),
+        {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}}, {
           provide: LocationStrategy,
           useFactory: provideLocationStrategy,
           deps: [
@@ -104,7 +104,7 @@ export class RouterModule {
   }
 }
 
-function provideLocationStrategy(
+export function provideLocationStrategy(
     platformLocationStrategy: PlatformLocation, baseHref: string, options: ExtraOptions = {}) {
   return options.useHash ? new HashLocationStrategy(platformLocationStrategy, baseHref) :
                            new PathLocationStrategy(platformLocationStrategy, baseHref);
