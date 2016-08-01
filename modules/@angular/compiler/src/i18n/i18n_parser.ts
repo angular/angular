@@ -13,9 +13,11 @@ import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseSourceSpan} from '../parse_util';
 
-import {extractAstMessages} from './extractor';
+import {Message as HtmlMessage, extractAstMessages} from './extractor';
 import * as i18n from './i18n_ast';
 import {PlaceholderRegistry} from './serializers/placeholder';
+
+const _expParser = new ExpressionParser(new ExpressionLexer());
 
 /**
  * Extract all the i18n messages from a component template.
@@ -29,11 +31,19 @@ export function extractI18nMessages(
     return [];
   }
 
-  const expParser = new ExpressionParser(new ExpressionLexer());
-  const visitor = new _I18nVisitor(expParser, interpolationConfig);
+  const htmlToI18n = getHtmlToI18nConverter(interpolationConfig);
 
-  return extractionResult.messages.map(
-      (msg) => visitor.toI18nMessage(msg.nodes, msg.meaning, msg.description));
+  return extractionResult.messages.map(htmlToI18n);
+}
+
+/**
+ * Returns a function converting html Messages to i18n Messages given an interpolationConfig
+ */
+export function getHtmlToI18nConverter(interpolationConfig: InterpolationConfig):
+    (msg: HtmlMessage) => i18n.Message {
+  const visitor = new _I18nVisitor(_expParser, interpolationConfig);
+
+  return (msg: HtmlMessage) => visitor.toI18nMessage(msg.nodes, msg.meaning, msg.description);
 }
 
 class _I18nVisitor implements html.Visitor {

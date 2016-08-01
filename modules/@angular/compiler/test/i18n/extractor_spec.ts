@@ -10,7 +10,7 @@ import {ExtractionResult, extractAstMessages} from '@angular/compiler/src/i18n/e
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {serializeAst} from '../html_parser/ast_serializer_spec';
+import {serializeNodes} from '../html_parser/ast_serializer_spec';
 
 export function main() {
   describe('MessageExtractor', () => {
@@ -19,6 +19,24 @@ export function main() {
         expect(extract('<div i18n="m|d|e">text<span>nested</span></div>')).toEqual([
           [['text', '<span>nested</span>'], 'm', 'd|e'],
         ]);
+      });
+
+      it('should extract from elements', () => {
+        expect(
+            extract(
+                '<div i18n="m|d"><span i18n-title="m|d" title="single child">nested</span></div>'))
+            .toEqual([
+              [
+                ['<span i18n-title="m|d" title="single child">nested</span>'],
+                'm',
+                'd',
+              ],
+              [
+                ['title="single child"'],
+                'm',
+                'd',
+              ],
+            ]);
       });
 
       it('should extract from elements', () => {
@@ -85,6 +103,11 @@ export function main() {
         // single message when ICU is the only children
         expect(extract('<div i18n="m|d">{count, plural, =0 {text}}</div>')).toEqual([
           [['{count, plural, =0 {text}}'], 'm', 'd'],
+        ]);
+
+        // single message when ICU is the only (implicit) children
+        expect(extract('<div>{count, plural, =0 {text}}</div>', ['div'])).toEqual([
+          [['{count, plural, =0 {text}}'], '', ''],
         ]);
 
         // one message for the element content and one message for the ICU
@@ -184,18 +207,24 @@ export function main() {
         it('should report nested translatable elements', () => {
           expect(extractErrors(`<p i18n><b i18n></b></p>`)).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b i18n>'],
+            ['Unexpected section start', '<b i18n>'],
+            ['Unexpected section end', '<p i18n>'],
           ]);
         });
 
         it('should report translatable elements in implicit elements', () => {
           expect(extractErrors(`<p><b i18n></b></p>`, ['p'])).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b i18n>'],
+            ['Unexpected section start', '<b i18n>'],
+            ['Unexpected section end', '<p>'],
           ]);
         });
 
         it('should report translatable elements in translatable blocks', () => {
           expect(extractErrors(`<!-- i18n --><b i18n></b><!-- /i18n -->`)).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b i18n>'],
+            ['Unexpected section start', '<b i18n>'],
+            ['Unexpected section end', '<!--'],
           ]);
         });
       });
@@ -246,18 +275,24 @@ export function main() {
         it('should report nested implicit elements', () => {
           expect(extractErrors(`<p><b></b></p>`, ['p', 'b'])).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b>'],
+            ['Unexpected section start', '<b>'],
+            ['Unexpected section end', '<p>'],
           ]);
         });
 
         it('should report implicit element in translatable element', () => {
           expect(extractErrors(`<p i18n><b></b></p>`, ['b'])).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b>'],
+            ['Unexpected section start', '<b>'],
+            ['Unexpected section end', '<p i18n>'],
           ]);
         });
 
         it('should report implicit element in translatable blocks', () => {
           expect(extractErrors(`<!-- i18n --><b></b><!-- /i18n -->`, ['b'])).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b>'],
+            ['Unexpected section start', '<b>'],
+            ['Unexpected section end', '<!--'],
           ]);
         });
       });
@@ -285,7 +320,7 @@ function extract(
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
   return messages.map(
-    message => [serializeAst(message.nodes), message.meaning, message.description, ]) as [string[], string, string][];
+    message => [serializeNodes(message.nodes), message.meaning, message.description, ]) as [string[], string, string][];
   // clang-format on
 }
 

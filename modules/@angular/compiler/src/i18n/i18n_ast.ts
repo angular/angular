@@ -36,7 +36,7 @@ export class Icu implements Node {
   visit(visitor: Visitor, context?: any): any { return visitor.visitIcu(this, context); }
 }
 
-export class TagPlaceholder {
+export class TagPlaceholder implements Node {
   constructor(
       public tag: string, public attrs: {[k: string]: string}, public startName: string,
       public closeName: string, public children: Node[], public isVoid: boolean,
@@ -45,13 +45,13 @@ export class TagPlaceholder {
   visit(visitor: Visitor, context?: any): any { return visitor.visitTagPlaceholder(this, context); }
 }
 
-export class Placeholder {
+export class Placeholder implements Node {
   constructor(public value: string, public name: string = '', public sourceSpan: ParseSourceSpan) {}
 
   visit(visitor: Visitor, context?: any): any { return visitor.visitPlaceholder(this, context); }
 }
 
-export class IcuPlaceholder {
+export class IcuPlaceholder implements Node {
   constructor(public value: Icu, public name: string = '', public sourceSpan: ParseSourceSpan) {}
 
   visit(visitor: Visitor, context?: any): any { return visitor.visitIcuPlaceholder(this, context); }

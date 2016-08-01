@@ -37,12 +37,15 @@ export class MessageBundle {
         htmlParserResult.rootNodes, interpolationConfig, this._implicitTags, this._implicitAttrs);
 
     messages.forEach((message) => {
-      const id = strHash(serializeAst(message.nodes).join('') + `[${message.meaning}]`);
-      this._messageMap[id] = message;
+      this._messageMap[messageDigest(message.nodes, message.meaning)] = message;
     });
   }
 
   write(serializer: Serializer): string { return serializer.write(this._messageMap); }
+}
+
+export function messageDigest(nodes: i18n.Node[], meaning: string): string {
+  return strHash(serializeNodes(nodes).join('') + `[${meaning}]`);
 }
 
 /**
@@ -103,6 +106,6 @@ class _SerializerVisitor implements i18n.Visitor {
 
 const serializerVisitor = new _SerializerVisitor();
 
-export function serializeAst(ast: i18n.Node[]): string[] {
-  return ast.map(a => a.visit(serializerVisitor, null));
+export function serializeNodes(nodes: i18n.Node[]): string[] {
+  return nodes.map(a => a.visit(serializerVisitor, null));
 }

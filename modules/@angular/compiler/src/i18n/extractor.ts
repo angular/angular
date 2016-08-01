@@ -11,9 +11,10 @@ import {I18nError} from './parse_util';
 
 const _I18N_ATTR = 'i18n';
 const _I18N_ATTR_PREFIX = 'i18n-';
+const _I18N_COMMENT_PREFIX_REGEXP = /^i18n:?/;
 
 /**
- * Extract translatable message from an html AST as a list of html AST nodes
+ * Extract translatable messages from an html AST as a list of html AST nodes
  */
 export function extractAstMessages(
     sourceAst: html.Node[], implicitTags: string[],
@@ -40,19 +41,14 @@ class _ExtractVisitor implements html.Visitor {
   // {<icu message>}
   private _inIcu = false;
 
-  private _sectionStartIndex: number;
+  private _msgCountAtSectionStart: number;
   private _errors: I18nError[];
 
   constructor(private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
 
   extract(nodes: html.Node[]): ExtractionResult {
+    this._init();
     const messages: Message[] = [];
-    this._inI18nBlock = false;
-    this._inI18nNode = false;
-    this._depth = 0;
-    this._inIcu = false;
-    this._sectionStartIndex = void 0;
-    this._errors = [];
 
     nodes.forEach(node => node.visit(this, messages));
 
@@ -105,13 +101,13 @@ class _ExtractVisitor implements html.Visitor {
           this._inI18nBlock = true;
           this._blockStartDepth = this._depth;
           this._blockChildren = [];
-          this._blockMeaningAndDesc = comment.value.replace(/^i18n:?/, '').trim();
-          this._startSection(messages);
+          this._blockMeaningAndDesc = comment.value.replace(_I18N_COMMENT_PREFIX_REGEXP, '').trim();
+          this._openTranslatableSection(comment, messages);
         }
       } else {
         if (isClosing) {
           if (this._depth == this._blockStartDepth) {
-            this._endSection(messages, this._blockChildren);
+            this._closeTranslatableSection(comment, messages, this._blockChildren);
             this._inI18nBlock = false;
             this._addMessage(messages, this._blockChildren, this._blockMeaningAndDesc);
           } else {
@@ -129,18 +125,15 @@ class _ExtractVisitor implements html.Visitor {
     this._mayBeAddBlockChildren(el);
     this._depth++;
     const wasInI18nNode = this._inI18nNode;
-    let useSection = false;
 
     // Extract only top level nodes with the (implicit) "i18n" attribute if not in a block or an ICU
     // message
     const i18nAttr = _getI18nAttr(el);
-    const isImplicitI18n =
-        this._implicitTags.some((tagName: string): boolean => el.name === tagName);
+    const isImplicitI18n = this._implicitTags.some((tag: string): boolean => el.name === tag);
     if (!(this._inI18nNode || this._inIcu || this._inI18nBlock)) {
       if (i18nAttr) {
         this._inI18nNode = true;
         this._addMessage(messages, el.children, i18nAttr.value);
-        useSection = true;
       } else if (isImplicitI18n) {
         this._inI18nNode = true;
         this._addMessage(messages, el.children);
@@ -155,10 +148,11 @@ class _ExtractVisitor implements html.Visitor {
 
     this._extractFromAttributes(el, messages);
 
-    if (useSection) {
-      this._startSection(messages);
+    if (i18nAttr || isImplicitI18n) {
+      // Start a section when the content is translatable
+      this._openTranslatableSection(el, messages);
       html.visitAll(this, el.children, messages);
-      this._endSection(messages, el.children);
+      this._closeTranslatableSection(el, messages, el.children);
     } else {
       html.visitAll(this, el.children, messages);
     }
@@ -169,6 +163,15 @@ class _ExtractVisitor implements html.Visitor {
 
   visitAttribute(attribute: html.Attribute, messages: Message[]): any {
     throw new Error('unreachable code');
+  }
+
+  private _init(): void {
+    this._inI18nBlock = false;
+    this._inI18nNode = false;
+    this._depth = 0;
+    this._inIcu = false;
+    this._msgCountAtSectionStart = void 0;
+    this._errors = [];
   }
 
   private _extractFromAttributes(el: html.Element, messages: Message[]): void {
@@ -214,20 +217,19 @@ class _ExtractVisitor implements html.Visitor {
   /**
    * Marks the start of a section, see `_endSection`
    */
-  private _startSection(messages: Message[]): void {
-    if (this._sectionStartIndex !== void 0) {
-      throw new Error('Unexpected section start');
+  private _openTranslatableSection(node: html.Node, messages: Message[]): void {
+    if (this._msgCountAtSectionStart !== void 0) {
+      this._reportError(node, 'Unexpected section start');
+    } else {
+      this._msgCountAtSectionStart = messages.length;
     }
-
-    this._sectionStartIndex = messages.length;
   }
 
   /**
    * Terminates a section.
    *
    * If a section has only one significant children (comments not significant) then we should not
-   * keep the message
-   * from this children:
+   * keep the message from this children:
    *
    * `<p i18n="meaning|description">{ICU message}</p>` would produce two messages:
    * - one for the <p> content with meaning and description,
@@ -239,12 +241,14 @@ class _ExtractVisitor implements html.Visitor {
    * Note that we should still keep messages extracted from attributes inside the section (ie in the
    * ICU message here)
    */
-  private _endSection(messages: Message[], directChildren: html.Node[]): void {
-    if (this._sectionStartIndex === void 0) {
-      throw new Error('Unexpected section end');
+  private _closeTranslatableSection(
+      node: html.Node, messages: Message[], directChildren: html.Node[]): void {
+    if (this._msgCountAtSectionStart === void 0) {
+      this._reportError(node, 'Unexpected section end');
+      return;
     }
 
-    const startIndex = this._sectionStartIndex;
+    const startIndex = this._msgCountAtSectionStart;
     const significantChildren: number = directChildren.reduce(
         (count: number, node: html.Node): number => count + (node instanceof html.Comment ? 0 : 1),
         0);
@@ -259,7 +263,7 @@ class _ExtractVisitor implements html.Visitor {
       }
     }
 
-    this._sectionStartIndex = void 0;
+    this._msgCountAtSectionStart = void 0;
   }
 
   private _reportError(node: html.Node, msg: string): void {

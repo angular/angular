@@ -12,7 +12,7 @@ import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit
 
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
-import {serializeAst} from '../../ml_parser/ast_serializer_spec';
+import {serializeNodes} from '../../ml_parser/ast_serializer_spec';
 
 export function main(): void {
   describe('XTB serializer', () => {
@@ -22,7 +22,7 @@ export function main(): void {
         {[id: string]: string} {
       const asAst = serializer.load(content, 'url', placeholders);
       let asText: {[id: string]: string} = {};
-      Object.keys(asAst).forEach(id => { asText[id] = serializeAst(asAst[id]).join(''); });
+      Object.keys(asAst).forEach(id => { asText[id] = serializeNodes(asAst[id]).join(''); });
 
       return asText;
     }

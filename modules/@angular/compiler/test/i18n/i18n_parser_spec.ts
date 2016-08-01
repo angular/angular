@@ -8,9 +8,9 @@
 
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {extractI18nMessages} from '@angular/compiler/src/i18n/i18n_parser';
-import {ddescribe, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 
-import {serializeAst} from '../../src/i18n/message_bundle';
+import {serializeNodes} from '../../src/i18n/message_bundle';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 
@@ -289,7 +289,7 @@ function _humanizeMessages(
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
   return _extractMessages(html, implicitTags, implicitAttrs).map(
-    message => [serializeAst(message.nodes), message.meaning, message.description, ]) as [string[], string, string][];
+    message => [serializeNodes(message.nodes), message.meaning, message.description, ]) as [string[], string, string][];
   // clang-format on
 }
 

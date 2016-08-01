@@ -21,4 +21,8 @@ export class TranslationBundle {
       serializer: Serializer): TranslationBundle {
     return new TranslationBundle(serializer.load(content, 'url', placeholders));
   }
+
+  get(id: string): html.Node[] { return this._messageMap[id]; }
+
+  has(id: string): boolean { return id in this._messageMap; }
 }

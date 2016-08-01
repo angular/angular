@@ -10,7 +10,7 @@ import * as i18n from '@angular/compiler/src/i18n/i18n_ast';
 import {Serializer} from '@angular/compiler/src/i18n/serializers/serializer';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {MessageBundle, serializeAst, strHash} from '../../src/i18n/message_bundle';
+import {MessageBundle, serializeNodes, strHash} from '../../src/i18n/message_bundle';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 
@@ -59,7 +59,7 @@ export function main(): void {
 class _TestSerializer implements Serializer {
   write(messageMap: {[id: string]: i18n.Message}): string {
     return Object.keys(messageMap)
-        .map(id => `${id}=${serializeAst(messageMap[id].nodes)}`)
+        .map(id => `${id}=${serializeNodes(messageMap[id].nodes)}`)
         .join('//');
   }
 
