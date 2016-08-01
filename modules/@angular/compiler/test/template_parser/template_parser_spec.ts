@@ -328,8 +328,18 @@ export function main() {
       describe('events', () => {
 
         it('should parse bound events with a target', () => {
-          expect(humanizeTplAst(parse('<div (window:event)="v">', [
-          ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', 'window', 'v']]);
+          expect(humanizeTplAst(parse('<div (window:event)="v">', []))).toEqual([
+            [ElementAst, 'div'],
+            [BoundEventAst, 'event', 'window', 'v'],
+          ]);
+        });
+
+        it('should report an error on empty expression', () => {
+          expect(() => parse('<div (event)="">', []))
+              .toThrowError(/Empty expressions are not allowed/);
+
+          expect(() => parse('<div (event)="  ">', []))
+              .toThrowError(/Empty expressions are not allowed/);
         });
 
         it('should parse bound events via (...) and not report them as attributes', () => {
@@ -519,10 +529,10 @@ export function main() {
       });
 
       describe('providers', () => {
-        var nextProviderId: any /** TODO #9100 */;
+        var nextProviderId: number;
 
         function createToken(value: string): CompileTokenMetadata {
-          var token: any /** TODO #9100 */;
+          let token: CompileTokenMetadata;
           if (value.startsWith('type:')) {
             token = new CompileTokenMetadata({
               identifier:
@@ -555,8 +565,8 @@ export function main() {
         }
 
         function createProvider(
-            token: string, {multi = false, deps = /*@ts2dart_const*/[]}:
-                               {multi?: boolean, deps?: string[]} = {}): CompileProviderMetadata {
+            token: string, {multi = false, deps = []}: {multi?: boolean, deps?: string[]} = {}):
+            CompileProviderMetadata {
           return new CompileProviderMetadata({
             token: createToken(token),
             multi: multi,
@@ -566,8 +576,7 @@ export function main() {
         }
 
         function createDir(
-            selector: string, {providers = null, viewProviders = null, deps = /*@ts2dart_const*/[],
-                               queries = /*@ts2dart_const*/[]}: {
+            selector: string, {providers = null, viewProviders = null, deps = [], queries = []}: {
               providers?: CompileProviderMetadata[],
               viewProviders?: CompileProviderMetadata[],
               deps?: string[],

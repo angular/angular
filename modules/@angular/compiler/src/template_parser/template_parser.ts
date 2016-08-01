@@ -12,7 +12,7 @@ import {Console, MAX_INTERPOLATION_VALUES} from '../../core_private';
 import {ListWrapper, StringMapWrapper, SetWrapper,} from '../facade/collection';
 import {RegExpWrapper, isPresent, isBlank} from '../facade/lang';
 import {BaseException} from '../facade/exceptions';
-import {AST, Interpolation, ASTWithSource, TemplateBinding, RecursiveAstVisitor, BindingPipe, ParserError} from '../expression_parser/ast';
+import {EmptyExpr, AST, Interpolation, ASTWithSource, TemplateBinding, RecursiveAstVisitor, BindingPipe, ParserError} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {CompileDirectiveMetadata, CompilePipeMetadata, CompileTokenMetadata, removeIdentifierDuplicates,} from '../compile_metadata';
 import {HtmlParser, ParseTreeResult} from '../html_parser/html_parser';
@@ -209,7 +209,7 @@ class TemplateParseVisitor implements html.Visitor {
   }
 
   private _reportParserErors(errors: ParserError[], sourceSpan: ParseSourceSpan) {
-    for (let error of errors) {
+    for (const error of errors) {
       this._reportError(error.message, sourceSpan);
     }
   }
@@ -234,9 +234,16 @@ class TemplateParseVisitor implements html.Visitor {
 
   private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     const sourceInfo = sourceSpan.start.toString();
+
     try {
       const ast = this._exprParser.parseAction(value, sourceInfo, this._interpolationConfig);
-      if (ast) this._reportParserErors(ast.errors, sourceSpan);
+      if (ast) {
+        this._reportParserErors(ast.errors, sourceSpan);
+      }
+      if (!ast || ast.ast instanceof EmptyExpr) {
+        this._reportError(`Empty expressions are not allowed`, sourceSpan);
+        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+      }
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
