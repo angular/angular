@@ -212,7 +212,7 @@ export interface Resolve<T> {
  *
  * ```
  * @Injectable()
- * class CanLoadTeamSection implements CanActivate {
+ * class CanLoadTeamSection implements CanLoad {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
  *   canLoad(route: Route):Observable<boolean> {
