@@ -51,7 +51,7 @@ function mergeOptions(
  * Generic HTTP interface
  */
  
-export interface IHttp{
+export interface IHttp {
   request(url: string|Request, options?: RequestOptionsArgs): Observable<Response>;
   get(url: string, options?: RequestOptionsArgs): Observable<Response>;
   post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
@@ -122,7 +122,7 @@ export interface IHttp{
  * @experimental
  */
 @Injectable()
-export class Http implements IHttp{
+export class Http implements IHttp {
   constructor(protected _backend: ConnectionBackend, protected _defaultOptions: RequestOptions) {}
 
   /**
