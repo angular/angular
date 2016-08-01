@@ -27,6 +27,10 @@ export abstract class AbstractControlDirective {
 
   get valid(): boolean { return isPresent(this.control) ? this.control.valid : null; }
 
+  get invalid(): boolean { return isPresent(this.control) ? this.control.invalid : null; }
+
+  get pending(): boolean { return isPresent(this.control) ? this.control.pending : null; }
+
   get errors(): {[key: string]: any} {
     return isPresent(this.control) ? this.control.errors : null;
   }
