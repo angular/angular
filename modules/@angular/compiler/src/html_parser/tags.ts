@@ -33,13 +33,13 @@ export function splitNsName(elementName: string): [string, string] {
     return [null, elementName];
   }
 
-  const parts = elementName.substring(1).split(':', 2);
+  const colonIndex = elementName.indexOf(':', 1);
 
-  if (parts.length != 2) {
+  if (colonIndex == -1) {
     throw new Error(`Unsupported format "${elementName}" expecting ":namespace:name"`);
   }
 
-  return parts as[string, string];
+  return [elementName.slice(1, colonIndex), elementName.slice(colonIndex + 1)];
 }
 
 export function getNsPrefix(fullName: string): string {
