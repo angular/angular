@@ -7,9 +7,9 @@
  */
 
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
-import {getHtmlTagDefinition} from '../../src/html_parser/html_tags';
-import {InterpolationConfig} from '../../src/html_parser/interpolation_config';
-import * as lex from '../../src/html_parser/lexer';
+import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags';
+import {InterpolationConfig} from '../../src/ml_parser/interpolation_config';
+import * as lex from '../../src/ml_parser/lexer';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
 
 export function main() {

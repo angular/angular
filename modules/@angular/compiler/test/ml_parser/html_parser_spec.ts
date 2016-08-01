@@ -7,9 +7,9 @@
  */
 
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
-import * as html from '../../src/html_parser/ast';
-import {HtmlParser, ParseTreeResult, TreeError} from '../../src/html_parser/html_parser';
-import {TokenType} from '../../src/html_parser/lexer';
+import * as html from '../../src/ml_parser/ast';
+import {HtmlParser, ParseTreeResult, TreeError} from '../../src/ml_parser/html_parser';
+import {TokenType} from '../../src/ml_parser/lexer';
 import {ParseError} from '../../src/parse_util';
 
 import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spec_utils';

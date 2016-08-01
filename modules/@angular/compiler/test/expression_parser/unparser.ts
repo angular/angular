@@ -8,7 +8,7 @@
 
 import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '../../src/expression_parser/ast';
 import {StringWrapper, isPresent, isString} from '../../src/facade/lang';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/html_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 
 class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;

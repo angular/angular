@@ -9,9 +9,9 @@
 import * as directive_normalizer from './src/directive_normalizer';
 import * as lexer from './src/expression_parser/lexer';
 import * as parser from './src/expression_parser/parser';
-import * as html_parser from './src/html_parser/html_parser';
-import * as interpolation_config from './src/html_parser/interpolation_config';
 import * as metadata_resolver from './src/metadata_resolver';
+import * as html_parser from './src/ml_parser/html_parser';
+import * as interpolation_config from './src/ml_parser/interpolation_config';
 import * as ng_module_compiler from './src/ng_module_compiler';
 import * as path_util from './src/output/path_util';
 import * as ts_emitter from './src/output/ts_emitter';

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from '../html_parser/ast';
-import {splitNsName} from '../html_parser/tags';
+import * as html from '../ml_parser/ast';
+import {splitNsName} from '../ml_parser/tags';
 
 const NG_CONTENT_SELECT_ATTR = 'select';
 const NG_CONTENT_ELEMENT = 'ng-content';

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as xml from '../../html_parser/ast';
-import {HtmlParser} from '../../html_parser/html_parser';
-import {InterpolationConfig} from '../../html_parser/interpolation_config';
-import {XmlParser} from '../../html_parser/xml_parser';
+import * as ml from '../../ml_parser/ast';
+import {HtmlParser} from '../../ml_parser/html_parser';
+import {InterpolationConfig} from '../../ml_parser/interpolation_config';
+import {XmlParser} from '../../ml_parser/xml_parser';
 import {ParseError} from '../../parse_util';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
@@ -26,7 +26,7 @@ export class Xtb implements Serializer {
   write(messageMap: {[id: string]: i18n.Message}): string { throw new Error('Unsupported'); }
 
   load(content: string, url: string, placeholders: {[id: string]: {[name: string]: string}}):
-      {[id: string]: xml.Node[]} {
+      {[id: string]: ml.Node[]} {
     // Parse the xtb file into xml nodes
     const result = new XmlParser().parse(content, url);
 
@@ -43,7 +43,7 @@ export class Xtb implements Serializer {
 
     // Convert the string messages to html ast
     // TODO(vicb): map error message back to the original message in xtb
-    let messageMap: {[id: string]: xml.Node[]} = {};
+    let messageMap: {[id: string]: ml.Node[]} = {};
     let parseErrors: ParseError[] = [];
 
     Object.keys(messages).forEach((id) => {
@@ -60,7 +60,7 @@ export class Xtb implements Serializer {
   }
 }
 
-class _Serializer implements xml.Visitor {
+class _Serializer implements ml.Visitor {
   private _messages: {[id: string]: string};
   private _bundleDepth: number;
   private _translationDepth: number;
@@ -68,7 +68,7 @@ class _Serializer implements xml.Visitor {
   private _placeholders: {[id: string]: {[name: string]: string}};
   private _currentPlaceholders: {[name: string]: string};
 
-  parse(nodes: xml.Node[], _placeholders: {[id: string]: {[name: string]: string}}):
+  parse(nodes: ml.Node[], _placeholders: {[id: string]: {[name: string]: string}}):
       {messages: {[k: string]: string}, errors: I18nError[]} {
     this._messages = {};
     this._bundleDepth = 0;
@@ -76,19 +76,19 @@ class _Serializer implements xml.Visitor {
     this._errors = [];
     this._placeholders = _placeholders;
 
-    xml.visitAll(this, nodes, null);
+    ml.visitAll(this, nodes, null);
 
     return {messages: this._messages, errors: this._errors};
   }
 
-  visitElement(element: xml.Element, context: any): any {
+  visitElement(element: ml.Element, context: any): any {
     switch (element.name) {
       case _TRANSLATIONS_TAG:
         this._bundleDepth++;
         if (this._bundleDepth > 1) {
           this._addError(element, `<${_TRANSLATIONS_TAG}> elements can not be nested`);
         }
-        xml.visitAll(this, element.children, null);
+        ml.visitAll(this, element.children, null);
         this._bundleDepth--;
         break;
 
@@ -102,7 +102,7 @@ class _Serializer implements xml.Visitor {
           this._addError(element, `<${_TRANSLATION_TAG}> misses the "id" attribute`);
         } else {
           this._currentPlaceholders = this._placeholders[idAttr.value] || {};
-          this._messages[idAttr.value] = xml.visitAll(this, element.children).join('');
+          this._messages[idAttr.value] = ml.visitAll(this, element.children).join('');
         }
         this._translationDepth--;
         break;
@@ -125,25 +125,25 @@ class _Serializer implements xml.Visitor {
     }
   }
 
-  visitAttribute(attribute: xml.Attribute, context: any): any {
+  visitAttribute(attribute: ml.Attribute, context: any): any {
     throw new Error('unreachable code');
   }
 
-  visitText(text: xml.Text, context: any): any { return text.value; }
+  visitText(text: ml.Text, context: any): any { return text.value; }
 
-  visitComment(comment: xml.Comment, context: any): any { return ''; }
+  visitComment(comment: ml.Comment, context: any): any { return ''; }
 
-  visitExpansion(expansion: xml.Expansion, context: any): any {
+  visitExpansion(expansion: ml.Expansion, context: any): any {
     const strCases = expansion.cases.map(c => c.visit(this, null));
 
     return `{${expansion.switchValue}, ${expansion.type}, strCases.join(' ')}`;
   }
 
-  visitExpansionCase(expansionCase: xml.ExpansionCase, context: any): any {
-    return `${expansionCase.value} {${xml.visitAll(this, expansionCase.expression, null)}}`;
+  visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {
+    return `${expansionCase.value} {${ml.visitAll(this, expansionCase.expression, null)}}`;
   }
 
-  private _addError(node: xml.Node, message: string): void {
+  private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));
   }
 }

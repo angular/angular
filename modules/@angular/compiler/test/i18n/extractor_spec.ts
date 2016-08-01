@@ -9,7 +9,7 @@
 import {ExtractionResult, extractAstMessages} from '@angular/compiler/src/i18n/extractor';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {HtmlParser} from '../../src/html_parser/html_parser';
+import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {serializeAst} from '../html_parser/ast_serializer_spec';
 
 export function main() {

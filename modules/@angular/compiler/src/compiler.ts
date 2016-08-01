@@ -24,7 +24,7 @@ export {NgModuleResolver} from './ng_module_resolver';
 import {stringify} from './facade/lang';
 import {ListWrapper} from './facade/collection';
 import {TemplateParser} from './template_parser/template_parser';
-import {HtmlParser} from './html_parser/html_parser';
+import {HtmlParser} from './ml_parser/html_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {StyleCompiler} from './style_compiler';

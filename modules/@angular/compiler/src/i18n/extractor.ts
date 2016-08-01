@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from '../html_parser/ast';
+import * as html from '../ml_parser/ast';
 import {I18nError} from './parse_util';
 
 const _I18N_ATTR = 'i18n';
