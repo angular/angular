@@ -83,7 +83,6 @@ export abstract class AbstractControl {
   private _parent: FormGroup|FormArray;
   private _asyncValidationSubscription: any;
 
-
   constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn) {}
 
   get value(): any { return this._value; }
@@ -91,6 +90,8 @@ export abstract class AbstractControl {
   get status(): string { return this._status; }
 
   get valid(): boolean { return this._status === VALID; }
+
+  get invalid(): boolean { return this._status === INVALID; }
 
   /**
    * Returns the errors of this control.

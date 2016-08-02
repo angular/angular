@@ -151,6 +151,8 @@ export function main() {
         expect(form.control).toBe(formModel);
         expect(form.value).toBe(formModel.value);
         expect(form.valid).toBe(formModel.valid);
+        expect(form.invalid).toBe(formModel.invalid);
+        expect(form.pending).toBe(formModel.pending);
         expect(form.errors).toBe(formModel.errors);
         expect(form.pristine).toBe(formModel.pristine);
         expect(form.dirty).toBe(formModel.dirty);
@@ -318,6 +320,8 @@ export function main() {
         expect(form.control).toBe(formModel);
         expect(form.value).toBe(formModel.value);
         expect(form.valid).toBe(formModel.valid);
+        expect(form.invalid).toBe(formModel.invalid);
+        expect(form.pending).toBe(formModel.pending);
         expect(form.errors).toBe(formModel.errors);
         expect(form.pristine).toBe(formModel.pristine);
         expect(form.dirty).toBe(formModel.dirty);
@@ -392,6 +396,8 @@ export function main() {
         expect(controlGroupDir.control).toBe(formModel);
         expect(controlGroupDir.value).toBe(formModel.value);
         expect(controlGroupDir.valid).toBe(formModel.valid);
+        expect(controlGroupDir.invalid).toBe(formModel.invalid);
+        expect(controlGroupDir.pending).toBe(formModel.pending);
         expect(controlGroupDir.errors).toBe(formModel.errors);
         expect(controlGroupDir.pristine).toBe(formModel.pristine);
         expect(controlGroupDir.dirty).toBe(formModel.dirty);
@@ -418,6 +424,8 @@ export function main() {
         expect(formArrayDir.control).toBe(formModel);
         expect(formArrayDir.value).toBe(formModel.value);
         expect(formArrayDir.valid).toBe(formModel.valid);
+        expect(formArrayDir.invalid).toBe(formModel.invalid);
+        expect(formArrayDir.pending).toBe(formModel.pending);
         expect(formArrayDir.errors).toBe(formModel.errors);
         expect(formArrayDir.pristine).toBe(formModel.pristine);
         expect(formArrayDir.dirty).toBe(formModel.dirty);
@@ -433,6 +441,8 @@ export function main() {
         expect(controlDir.control).toBe(control);
         expect(controlDir.value).toBe(control.value);
         expect(controlDir.valid).toBe(control.valid);
+        expect(controlDir.invalid).toBe(control.invalid);
+        expect(controlDir.pending).toBe(control.pending);
         expect(controlDir.errors).toBe(control.errors);
         expect(controlDir.pristine).toBe(control.pristine);
         expect(controlDir.dirty).toBe(control.dirty);
@@ -484,6 +494,8 @@ export function main() {
         expect(ngModel.control).toBe(control);
         expect(ngModel.value).toBe(control.value);
         expect(ngModel.valid).toBe(control.valid);
+        expect(ngModel.invalid).toBe(control.invalid);
+        expect(ngModel.pending).toBe(control.pending);
         expect(ngModel.errors).toBe(control.errors);
         expect(ngModel.pristine).toBe(control.pristine);
         expect(ngModel.dirty).toBe(control.dirty);
@@ -540,6 +552,8 @@ export function main() {
         expect(controlNameDir.control).toBe(formModel);
         expect(controlNameDir.value).toBe(formModel.value);
         expect(controlNameDir.valid).toBe(formModel.valid);
+        expect(controlNameDir.invalid).toBe(formModel.invalid);
+        expect(controlNameDir.pending).toBe(formModel.pending);
         expect(controlNameDir.errors).toBe(formModel.errors);
         expect(controlNameDir.pristine).toBe(formModel.pristine);
         expect(controlNameDir.dirty).toBe(formModel.dirty);

@@ -5,6 +5,7 @@ export declare abstract class AbstractControl {
     errors: {
         [key: string]: any;
     };
+    invalid: boolean;
     pending: boolean;
     pristine: boolean;
     root: AbstractControl;
@@ -61,7 +62,9 @@ export declare abstract class AbstractControlDirective {
     errors: {
         [key: string]: any;
     };
+    invalid: boolean;
     path: string[];
+    pending: boolean;
     pristine: boolean;
     statusChanges: Observable<any>;
     touched: boolean;
