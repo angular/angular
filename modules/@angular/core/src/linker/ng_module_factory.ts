@@ -7,10 +7,12 @@
  */
 
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
-import {unimplemented} from '../facade/exceptions';
-import {ConcreteType} from '../facade/lang';
+import {BaseException, unimplemented} from '../facade/exceptions';
+import {ConcreteType, stringify} from '../facade/lang';
+
 import {ComponentFactory} from './component_factory';
 import {CodegenComponentFactoryResolver, ComponentFactoryResolver} from './component_factory_resolver';
+
 
 
 /**
@@ -37,6 +39,16 @@ export abstract class NgModuleRef<T> {
    * The NgModule instance.
    */
   get instance(): T { return unimplemented(); }
+
+  /**
+   * Destroys the module instance and all of the data structures associated with it.
+   */
+  abstract destroy(): void;
+
+  /**
+   * Allows to register a callback that will be called when the module is destroyed.
+   */
+  abstract onDestroy(callback: () => void): void;
 }
 
 /**
@@ -64,6 +76,9 @@ const _UNDEFINED = new Object();
 export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolver implements
     Injector,
     NgModuleRef<T> {
+  private _destroyListeners: (() => void)[] = [];
+  private _destroyed: boolean = false;
+
   public instance: T;
 
   constructor(public parent: Injector, factories: ComponentFactory<any>[]) {
@@ -87,4 +102,18 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
   get injector(): Injector { return this; }
 
   get componentFactoryResolver(): ComponentFactoryResolver { return this; }
+
+  destroy(): void {
+    if (this._destroyed) {
+      throw new BaseException(
+          `This module is already destroyed (${stringify(this.instance.constructor)})`);
+    }
+    this._destroyed = true;
+    this.destroyInternal();
+    this._destroyListeners.forEach((listener) => listener());
+  }
+
+  onDestroy(callback: () => void): void { this._destroyListeners.push(callback); }
+
+  abstract destroyInternal(): void;
 }

@@ -8,6 +8,8 @@
 
 import {Injectable} from '@angular/core';
 
+import {LifecycleHooks} from '../core_private';
+
 import {CompileDiDependencyMetadata, CompileIdentifierMap, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata} from './compile_metadata';
 import {isBlank, isPresent} from './facade/lang';
 import {Identifiers, identifierToken} from './identifiers';
@@ -71,6 +73,7 @@ class _InjectorBuilder {
   private _instances = new CompileIdentifierMap<CompileTokenMetadata, o.Expression>();
   private _fields: o.ClassField[] = [];
   private _createStmts: o.Statement[] = [];
+  private _destroyStmts: o.Statement[] = [];
   private _getters: o.ClassGetter[] = [];
 
   constructor(
@@ -85,6 +88,9 @@ class _InjectorBuilder {
     var instance = this._createProviderProperty(
         propName, resolvedProvider, providerValueExpressions, resolvedProvider.multiProvider,
         resolvedProvider.eager);
+    if (resolvedProvider.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
+      this._destroyStmts.push(instance.callMethod('ngOnDestroy', []).toStmt());
+    }
     this._instances.add(resolvedProvider.token, instance);
   }
 
@@ -108,7 +114,10 @@ class _InjectorBuilder {
             new o.FnParam(InjectMethodVars.notFoundResult.name, o.DYNAMIC_TYPE)
           ],
           getMethodStmts.concat([new o.ReturnStatement(InjectMethodVars.notFoundResult)]),
-          o.DYNAMIC_TYPE)
+          o.DYNAMIC_TYPE),
+      new o.ClassMethod(
+        'destroyInternal', [], this._destroyStmts
+      ),
     ];
 
     var ctor = new o.ClassMethod(
