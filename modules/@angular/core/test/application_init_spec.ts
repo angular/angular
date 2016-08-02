@@ -5,19 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {APP_INITIALIZER, AppInitStatus} from '../src/application_init';
+import {APP_INITIALIZER, ApplicationInitStatus} from '../src/application_init';
 import {PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {TestBed, async, inject, withModule} from '../testing';
 
 export function main() {
-  describe('AppInitStatus', () => {
+  describe('ApplicationInitStatus', () => {
     describe('no initializers', () => {
 
       it('should return true for `done`',
-         inject([AppInitStatus], (status: AppInitStatus) => { expect(status.done).toBe(true); }));
+         inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
+           expect(status.done).toBe(true);
+         }));
 
       it('should return a promise that resolves immediately for `donePromise`',
-         async(inject([AppInitStatus], (status: AppInitStatus) => {
+         async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
            status.donePromise.then(() => { expect(status.done).toBe(true); });
          })));
     });
@@ -32,7 +34,7 @@ export function main() {
       });
 
       it('should updat the status once all async initializers are done',
-         async(inject([AppInitStatus], (status: AppInitStatus) => {
+         async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
            let completerResolver = false;
            setTimeout(() => {
              completerResolver = true;

@@ -162,6 +162,7 @@ export declare class Router {
     isActive(url: string | UrlTree, exact: boolean): boolean;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree): Promise<boolean>;
+    ngOnDestroy(): void;
     parseUrl(url: string): UrlTree;
     resetConfig(config: Routes): void;
     serializeUrl(url: UrlTree): string;
@@ -222,7 +223,6 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
 
 /** @experimental */
 export declare class RouterModule {
-    constructor(injector: Injector, appRef: ApplicationRef);
     static forChild(routes: Routes): ModuleWithProviders;
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders;
 }

@@ -108,7 +108,7 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
   destroy(): void {
     if (this._destroyed) {
       throw new BaseException(
-          `This module is already destroyed (${stringify(this.instance.constructor)})`);
+          `The ng module ${stringify(this.instance.constructor)} has already been destroyed.`);
     }
     this._destroyed = true;
     this.destroyInternal();

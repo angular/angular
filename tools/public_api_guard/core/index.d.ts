@@ -119,6 +119,9 @@ export declare abstract class AnimationWithStepsMetadata extends AnimationMetada
 }
 
 /** @experimental */
+export declare const APP_BOOTSTRAP_LISTENER: OpaqueToken;
+
+/** @experimental */
 export declare const APP_ID: any;
 
 /** @experimental */
@@ -130,21 +133,29 @@ export declare const APPLICATION_COMMON_PROVIDERS: Array<Type | {
 } | any[]>;
 
 /** @experimental */
+export declare class ApplicationInitStatus {
+    done: boolean;
+    donePromise: Promise<any>;
+    constructor(appInits: (() => any)[]);
+}
+
+/** @experimental */
 export declare class ApplicationModule {
 }
 
 /** @experimental */
 export declare abstract class ApplicationRef {
     componentTypes: Type[];
-    injector: Injector;
-    zone: NgZone;
+    components: ComponentRef<any>[];
+    /** @deprecated */ injector: Injector;
+    /** @deprecated */ zone: NgZone;
     abstract bootstrap<C>(componentFactory: ComponentFactory<C> | ConcreteType<C>): ComponentRef<C>;
-    abstract dispose(): void;
-    abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
-    abstract registerDisposeListener(dispose: () => void): void;
-    abstract run(callback: Function): any;
+    /** @deprecated */ abstract dispose(): void;
+    /** @deprecated */ abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
+    /** @deprecated */ abstract registerDisposeListener(dispose: () => void): void;
+    /** @deprecated */ abstract run(callback: Function): any;
     abstract tick(): void;
-    abstract waitForAsyncInitializers(): Promise<any>;
+    /** @deprecated */ abstract waitForAsyncInitializers(): Promise<any>;
 }
 
 /** @experimental */
@@ -518,7 +529,7 @@ export interface DirectiveMetadataType {
     selector?: string;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare function disposePlatform(): void;
 
 /** @stable */
@@ -800,6 +811,7 @@ export declare abstract class NgModuleFactoryLoader {
 
 /** @experimental */
 export declare class NgModuleMetadata extends InjectableMetadata implements NgModuleMetadataType {
+    bootstrap: Array<Type | any[]>;
     declarations: Array<Type | any[]>;
     entryComponents: Array<Type | any[]>;
     exports: Array<Type | any[]>;
@@ -817,6 +829,7 @@ export interface NgModuleMetadataFactory {
 
 /** @experimental */
 export interface NgModuleMetadataType {
+    bootstrap?: Array<Type | any[]>;
     declarations?: Array<Type | any[]>;
     entryComponents?: Array<Type | any[]>;
     exports?: Array<Type | any[]>;
@@ -830,6 +843,8 @@ export declare abstract class NgModuleRef<T> {
     componentFactoryResolver: ComponentFactoryResolver;
     injector: Injector;
     instance: T;
+    abstract destroy(): void;
+    abstract onDestroy(callback: () => void): void;
 }
 
 /** @experimental */
@@ -977,12 +992,15 @@ export declare const platformCore: (extraProviders?: any[]) => PlatformRef;
 
 /** @experimental */
 export declare abstract class PlatformRef {
-    disposed: boolean;
+    destroyed: boolean;
+    /** @deprecated */ disposed: boolean;
     injector: Injector;
     /** @stable */ bootstrapModule<M>(moduleType: ConcreteType<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
     /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
-    abstract dispose(): void;
-    abstract registerDisposeListener(dispose: () => void): void;
+    abstract destroy(): void;
+    /** @deprecated */ abstract dispose(): void;
+    abstract onDestroy(callback: () => void): void;
+    /** @deprecated */ abstract registerDisposeListener(dispose: () => void): void;
 }
 
 /** @deprecated */

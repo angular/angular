@@ -11,7 +11,7 @@ import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
 import {ConcreteType, Type, isBlank, isPresent, isPromise, stringify} from '../src/facade/lang';
 
-import {AppInitStatus} from './application_init';
+import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 import {Console} from './console';
@@ -275,7 +275,7 @@ export abstract class PlatformRef {
   abstract destroy(): void;
 
   /**
-   * @deprecated Use `destroyd` instead
+   * @deprecated Use `destroyed` instead
    */
   get disposed(): boolean { throw unimplemented(); }
   get destroyed(): boolean { throw unimplemented(); }
@@ -327,7 +327,7 @@ export class PlatformRef_ extends PlatformRef {
 
   destroy() {
     if (this._destroyed) {
-      throw new BaseException('The platform is already destroyed!');
+      throw new BaseException('The platform has already been destroyed!');
     }
     ListWrapper.clone(this._modules).forEach((app) => app.destroy());
     this._destroyListeners.forEach((dispose) => dispose());
@@ -360,7 +360,7 @@ export class PlatformRef_ extends PlatformRef {
         exceptionHandler.call(error.error, error.stackTrace);
       });
       return _callAndReportToExceptionHandler(exceptionHandler, () => {
-        const initStatus: AppInitStatus = moduleRef.injector.get(AppInitStatus);
+        const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         return initStatus.donePromise.then(() => {
           this._moduleDoBootstrap(moduleRef);
           return moduleRef;
@@ -421,7 +421,7 @@ export abstract class ApplicationRef {
    * Returns a promise that resolves when all asynchronous application initializers
    * are done.
    *
-   * @deprecated Use the {@link AppInitStatus} class instead.
+   * @deprecated Use the {@link ApplicationInitStatus} class instead.
    */
   abstract waitForAsyncInitializers(): Promise<any>;
 
@@ -514,7 +514,7 @@ export class ApplicationRef_ extends ApplicationRef {
       private _zone: NgZone, private _console: Console, private _injector: Injector,
       private _exceptionHandler: ExceptionHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
-      private _initStatus: AppInitStatus,
+      private _initStatus: ApplicationInitStatus,
       @Optional() private _testabilityRegistry: TestabilityRegistry,
       @Optional() private _testability: Testability) {
     super();

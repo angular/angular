@@ -23,7 +23,7 @@ export const APP_INITIALIZER: any = new OpaqueToken('Application Initializer');
  * @experimental
  */
 @Injectable()
-export class AppInitStatus {
+export class ApplicationInitStatus {
   private _donePromise: Promise<any>;
   private _done = false;
 

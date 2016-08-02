@@ -150,9 +150,9 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * this module is bootstrapped. The components listed here
    * will automatically be added to `entryComponents`.
    */
-  bootstrap: Array<Type|any[]>
+  bootstrap: Array<Type|any[]>;
 
-      schemas: Array<SchemaMetadata|any[]>;
+  schemas: Array<SchemaMetadata|any[]>;
 
   constructor(options: NgModuleMetadataType = {}) {
     // We cannot use destructuring of the constructor argument because `exports` is a
