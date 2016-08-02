@@ -428,6 +428,8 @@ export abstract class ApplicationRef {
   /**
    * Runs the given callback in the zone and returns the result of the callback.
    * Exceptions will be forwarded to the ExceptionHandler and rethrown.
+   *
+   * @deprecated Use {@link NgZone}.run instead.
    */
   abstract run(callback: Function): any;
 
@@ -447,11 +449,16 @@ export abstract class ApplicationRef {
 
   /**
    * Retrieve the application {@link Injector}.
+   *
+   * @deprecated inject an {@link Injector} directly where needed or use {@link
+   * NgModuleRef}.injector.
    */
   get injector(): Injector { return <Injector>unimplemented(); };
 
   /**
    * Retrieve the application {@link NgZone}.
+   *
+   * @deprecated inject {@link NgZone} instead of calling this getter.
    */
   get zone(): NgZone { return <NgZone>unimplemented(); };
 
@@ -477,8 +484,10 @@ export abstract class ApplicationRef {
 
   /**
    * Get a list of component types registered to this application.
+   * This list is populated even before the component is created.
    */
   get componentTypes(): Type[] { return <Type[]>unimplemented(); };
+
   /**
    * Get a list of components registered to this application.
    */
@@ -539,6 +548,9 @@ export class ApplicationRef_ extends ApplicationRef {
    */
   waitForAsyncInitializers(): Promise<any> { return this._initStatus.donePromise; }
 
+  /**
+   * @deprecated
+   */
   run(callback: Function): any {
     return this._zone.run(
         () => _callAndReportToExceptionHandler(this._exceptionHandler, <any>callback));
@@ -593,8 +605,14 @@ export class ApplicationRef_ extends ApplicationRef {
     ListWrapper.remove(this._rootComponents, componentRef);
   }
 
+  /**
+   * @deprecated
+   */
   get injector(): Injector { return this._injector; }
 
+  /**
+   * @deprecated
+   */
   get zone(): NgZone { return this._zone; }
 
   tick(): void {
