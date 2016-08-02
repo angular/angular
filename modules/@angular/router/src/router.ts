@@ -649,7 +649,6 @@ class ActivateRoutes {
     const currRoot = this.currState ? this.currState._root : null;
     advanceActivatedRoute(this.futureState.root);
     this.activateChildRoutes(futureRoot, currRoot, parentOutletMap);
-    pushQueryParamsAndFragment(this.futureState);
   }
 
   private activateChildRoutes(
@@ -756,16 +755,6 @@ function closestLoadedConfig(
     return config && config._loadedConfig && s !== snapshot;
   });
   return b.length > 0 ? (<any>b[b.length - 1])._routeConfig._loadedConfig : null;
-}
-
-function pushQueryParamsAndFragment(state: RouterState): void {
-  if (!shallowEqual(state.snapshot.queryParams, (<any>state.queryParams).value)) {
-    (<any>state.queryParams).next(state.snapshot.queryParams);
-  }
-
-  if (state.snapshot.fragment !== (<any>state.fragment).value) {
-    (<any>state.fragment).next(state.snapshot.fragment);
-  }
 }
 
 function nodeChildrenAsMap(node: TreeNode<any>) {

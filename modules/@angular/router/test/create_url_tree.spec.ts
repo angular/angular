@@ -200,10 +200,11 @@ describe('createUrlTree', () => {
 
 function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragment?: string) {
   const s = new ActivatedRouteSnapshot(
-      [], <any>{}, <any>{}, PRIMARY_OUTLET, 'someComponent', null, tree.root, -1, <any>null);
+      [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, tree.root, -1,
+      <any>null);
   const a = new ActivatedRoute(
       new BehaviorSubject(null), new BehaviorSubject(null), new BehaviorSubject(null),
-      PRIMARY_OUTLET, 'someComponent', s);
+      new BehaviorSubject(null), new BehaviorSubject(null), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
   return createUrlTree(a, tree, commands, queryParams, fragment);
 }
@@ -215,11 +216,11 @@ function create(
     expect(segment).toBeDefined();
   }
   const s = new ActivatedRouteSnapshot(
-      [], <any>{}, <any>{}, PRIMARY_OUTLET, 'someComponent', null, <any>segment, startIndex,
-      <any>null);
+      [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, <any>segment,
+      startIndex, <any>null);
   const a = new ActivatedRoute(
       new BehaviorSubject(null), new BehaviorSubject(null), new BehaviorSubject(null),
-      PRIMARY_OUTLET, 'someComponent', s);
+      new BehaviorSubject(null), new BehaviorSubject(null), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
   return createUrlTree(a, tree, commands, queryParams, fragment);
 }

@@ -1,9 +1,15 @@
 /** @stable */
 export declare class ActivatedRoute {
+    children: ActivatedRoute[];
     component: Type | string;
     data: Observable<Data>;
+    firstChild: ActivatedRoute;
+    fragment: Observable<string>;
     outlet: string;
     params: Observable<Params>;
+    parent: ActivatedRoute;
+    pathFromRoot: ActivatedRoute[];
+    queryParams: Observable<Params>;
     routeConfig: Route;
     snapshot: ActivatedRouteSnapshot;
     url: Observable<UrlSegment[]>;
@@ -12,10 +18,16 @@ export declare class ActivatedRoute {
 
 /** @stable */
 export declare class ActivatedRouteSnapshot {
+    children: ActivatedRouteSnapshot[];
     component: Type | string;
     data: Data;
+    firstChild: ActivatedRouteSnapshot;
+    fragment: string;
     outlet: string;
     params: Params;
+    parent: ActivatedRouteSnapshot;
+    pathFromRoot: ActivatedRouteSnapshot[];
+    queryParams: Params;
     routeConfig: Route;
     url: UrlSegment[];
     toString(): string;
@@ -249,16 +261,16 @@ export declare class RouterOutletMap {
 
 /** @stable */
 export declare class RouterState extends Tree<ActivatedRoute> {
-    fragment: Observable<string>;
-    queryParams: Observable<Params>;
+    /** @deprecated */ fragment: Observable<string>;
+    /** @deprecated */ queryParams: Observable<Params>;
     snapshot: RouterStateSnapshot;
     toString(): string;
 }
 
 /** @stable */
 export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
-    fragment: string;
-    queryParams: Params;
+    /** @deprecated */ fragment: string;
+    /** @deprecated */ queryParams: Params;
     url: string;
     toString(): string;
 }
