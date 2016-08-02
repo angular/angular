@@ -38,6 +38,10 @@ export class CompWithProviders {
 export class CompWithReferences {
 }
 
+@Component({selector: 'cmp-pipes', template: `<div *ngIf>{{test | somePipe}}</div>`})
+export class CompUsingPipes {
+}
+
 @Component({
   selector: 'cmp-custom-els',
   template: `
