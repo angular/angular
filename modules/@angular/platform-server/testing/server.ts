@@ -8,7 +8,7 @@
 
 import {analyzeAppProvidersForDeprecatedConfiguration} from '@angular/compiler';
 import {platformCoreDynamicTesting} from '@angular/compiler/testing';
-import {CompilerFactory, CompilerOptions, NgModule, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
+import {COMPILER_OPTIONS, CompilerFactory, NgModule, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, createPlatform, createPlatformFactory, getPlatform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserDynamicTestingModule, TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS, platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 
@@ -16,6 +16,7 @@ import {Console} from '../core_private';
 import {platformServer} from '../index';
 import {Parse5DomAdapter} from '../src/parse5_adapter';
 import {INTERNAL_SERVER_PLATFORM_PROVIDERS} from '../src/server';
+
 
 /**
  * Platform for testing
@@ -51,7 +52,7 @@ export const TEST_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]
     [(appProviders: any[]) => {
       const deprecatedConfiguration = analyzeAppProvidersForDeprecatedConfiguration(appProviders);
       const platformRef = createPlatformFactory(platformServerTesting, 'serverTestingDeprecated', [{
-                                                  provide: CompilerOptions,
+                                                  provide: COMPILER_OPTIONS,
                                                   useValue: deprecatedConfiguration.compilerOptions,
                                                   multi: true
                                                 }])();

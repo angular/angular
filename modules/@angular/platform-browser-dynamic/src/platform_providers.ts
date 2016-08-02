@@ -7,7 +7,7 @@
  */
 
 import {XHR} from '@angular/compiler';
-import {CompilerOptions} from '@angular/core';
+import {COMPILER_OPTIONS} from '@angular/core';
 
 import {INTERNAL_BROWSER_PLATFORM_PROVIDERS} from '../platform_browser_private';
 
@@ -16,7 +16,7 @@ import {XHRImpl} from './xhr/xhr_impl';
 export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: any[] = [
   INTERNAL_BROWSER_PLATFORM_PROVIDERS,
   {
-    provide: CompilerOptions,
+    provide: COMPILER_OPTIONS,
     useValue: {providers: [{provide: XHR, useClass: XHRImpl}]},
     multi: true
   },

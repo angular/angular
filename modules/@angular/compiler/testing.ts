@@ -13,7 +13,7 @@ export * from './testing/ng_module_resolver_mock';
 export * from './testing/pipe_resolver_mock';
 
 import {ConcreteType, Type} from './src/facade/lang';
-import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, PlatformRef, CompilerFactory, ComponentFactory, NgModuleFactory, Injector, NgModuleMetadata, NgModuleMetadataType, ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, PipeMetadata, PipeMetadataType} from '@angular/core';
+import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, PlatformRef, CompilerFactory, ComponentFactory, NgModuleFactory, Injector, NgModuleMetadata, NgModuleMetadataType, ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, PipeMetadata, PipeMetadataType} from '@angular/core';
 import {MetadataOverride} from '@angular/core/testing';
 import {TestingCompilerFactory, TestingCompiler} from './core_private_testing';
 import {platformCoreDynamic, RuntimeCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from './index';
@@ -99,7 +99,7 @@ export class TestingCompilerImpl implements TestingCompiler {
 export const platformCoreDynamicTesting =
     createPlatformFactory(platformCoreDynamic, 'coreDynamicTesting', [
       {
-        provide: CompilerOptions,
+        provide: COMPILER_OPTIONS,
         useValue: {
           providers: [
             MockPipeResolver, {provide: PipeResolver, useExisting: MockPipeResolver},

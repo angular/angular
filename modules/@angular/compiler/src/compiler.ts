@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerFactory, CompilerOptions, Component, Inject, Injectable, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Component, Inject, Injectable, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 export * from './template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser/template_parser';
@@ -152,7 +152,7 @@ export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[
 @Injectable()
 export class RuntimeCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];
-  constructor(@Inject(CompilerOptions) defaultOptions: CompilerOptions[]) {
+  constructor(@Inject(COMPILER_OPTIONS) defaultOptions: CompilerOptions[]) {
     this._defaultOptions = [<CompilerOptions>{
                              useDebug: isDevMode(),
                              useJit: true,
@@ -196,7 +196,7 @@ function _initReflector() {
  * @experimental
  */
 export const platformCoreDynamic = createPlatformFactory(platformCore, 'coreDynamic', [
-  {provide: CompilerOptions, useValue: {}, multi: true},
+  {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
   {provide: CompilerFactory, useClass: RuntimeCompilerFactory},
   {provide: PLATFORM_INITIALIZER, useValue: _initReflector, multi: true},
 ]);

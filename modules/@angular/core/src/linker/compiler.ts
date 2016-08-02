@@ -126,7 +126,7 @@ export type CompilerOptions = {
  *
  * @experimental
  */
-export const CompilerOptions = new OpaqueToken('compilerOptions');
+export const COMPILER_OPTIONS = new OpaqueToken('compilerOptions');
 
 /**
  * A factory for creating a Compiler

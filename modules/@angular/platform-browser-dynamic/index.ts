@@ -7,7 +7,7 @@
  */
 
 import {XHR, analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
-import {ApplicationRef, Compiler, CompilerFactory, CompilerOptions, ComponentRef, ComponentResolver, ExceptionHandler, NgModule, NgModuleRef, OpaqueToken, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, SchemaMetadata, Type, assertPlatform, createPlatform, createPlatformFactory, getPlatform, isDevMode} from '@angular/core';
+import {ApplicationRef, COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, ComponentRef, ComponentResolver, ExceptionHandler, NgModule, NgModuleRef, OpaqueToken, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, SchemaMetadata, Type, assertPlatform, createPlatform, createPlatformFactory, getPlatform, isDevMode} from '@angular/core';
 import {BROWSER_PLATFORM_PROVIDERS, BrowserModule, WORKER_APP_PLATFORM_PROVIDERS, WORKER_SCRIPT, WorkerAppModule, platformBrowser, platformWorkerApp, platformWorkerUi} from '@angular/platform-browser';
 
 import {Console} from './core_private';
@@ -206,7 +206,7 @@ export function bootstrapWorkerUi(
  */
 export const platformWorkerAppDynamic =
     createPlatformFactory(platformCoreDynamic, 'workerAppDynamic', [{
-                            provide: CompilerOptions,
+                            provide: COMPILER_OPTIONS,
                             useValue: {providers: [{provide: XHR, useClass: XHRImpl}]},
                             multi: true
                           }]);
