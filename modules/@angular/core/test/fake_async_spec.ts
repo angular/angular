@@ -285,5 +285,21 @@ export function main() {
         }).toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
     });
+
+    describe('only one `fakeAsync` zone per test', () => {
+      let zoneInBeforeEach: Zone;
+      let zoneInTest1: Zone;
+      beforeEach(fakeAsync(() => { zoneInBeforeEach = Zone.current; }));
+
+      it('should use the same zone as in beforeEach', fakeAsync(() => {
+           zoneInTest1 = Zone.current;
+           expect(zoneInTest1).toBe(zoneInBeforeEach);
+         }));
+
+      it('should use a different zone between tests', fakeAsync(() => {
+           expect(Zone.current).toBe(zoneInBeforeEach);
+           expect(Zone.current).not.toBe(zoneInTest1);
+         }));
+    });
   });
 }
