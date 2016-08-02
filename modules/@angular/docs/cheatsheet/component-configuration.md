@@ -8,6 +8,12 @@ so the `ng.core.Directive` configuration applies to components as well{@endtarge
 so the `@Directive` configuration applies to components as well{@endtarget}
 
 @cheatsheetItem
+syntax(ts js):
+`moduleId: module.id`|`moduleId:`
+description:
+If set, the `templateUrl` and `styleUrl` is resolved relative to the component.
+
+@cheatsheetItem
 syntax(ts dart):
 `viewProviders: [MyService, { provide: ... }]`|`viewProviders:`
 syntax(js):
