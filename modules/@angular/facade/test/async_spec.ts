@@ -56,51 +56,47 @@ export function main() {
       expect(called).toBe(true);
     });
 
-    // Makes Edge to disconnect when running the full unit test campaign
-    // TODO: remove when issue is solved: https://github.com/angular/angular/issues/4756
-    if (!browserDetection.isEdge) {
-      it('delivers next and error events synchronously',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           let log: any[] /** TODO #9100 */ = [];
-           ObservableWrapper.subscribe(
-               emitter,
-               (x) => {
-                 log.push(x);
-                 expect(log).toEqual([1, 2]);
-               },
-               (err) => {
-                 log.push(err);
-                 expect(log).toEqual([1, 2, 3, 4]);
-                 async.done();
-               });
-           log.push(1);
-           ObservableWrapper.callEmit(emitter, 2);
-           log.push(3);
-           ObservableWrapper.callError(emitter, 4);
-           log.push(5);
-         }));
+    it('delivers next and error events synchronously',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         let log: any[] /** TODO #9100 */ = [];
+         ObservableWrapper.subscribe(
+             emitter,
+             (x) => {
+               log.push(x);
+               expect(log).toEqual([1, 2]);
+             },
+             (err) => {
+               log.push(err);
+               expect(log).toEqual([1, 2, 3, 4]);
+               async.done();
+             });
+         log.push(1);
+         ObservableWrapper.callEmit(emitter, 2);
+         log.push(3);
+         ObservableWrapper.callError(emitter, 4);
+         log.push(5);
+       }));
 
-      it('delivers next and complete events synchronously', () => {
-        let log: any[] /** TODO #9100 */ = [];
-        ObservableWrapper.subscribe(
-            emitter,
-            (x) => {
-              log.push(x);
-              expect(log).toEqual([1, 2]);
-            },
-            null,
-            () => {
-              log.push(4);
-              expect(log).toEqual([1, 2, 3, 4]);
-            });
-        log.push(1);
-        ObservableWrapper.callEmit(emitter, 2);
-        log.push(3);
-        ObservableWrapper.callComplete(emitter);
-        log.push(5);
-        expect(log).toEqual([1, 2, 3, 4, 5]);
-      });
-    }
+    it('delivers next and complete events synchronously', () => {
+      let log: any[] /** TODO #9100 */ = [];
+      ObservableWrapper.subscribe(
+          emitter,
+          (x) => {
+            log.push(x);
+            expect(log).toEqual([1, 2]);
+          },
+          null,
+          () => {
+            log.push(4);
+            expect(log).toEqual([1, 2, 3, 4]);
+          });
+      log.push(1);
+      ObservableWrapper.callEmit(emitter, 2);
+      log.push(3);
+      ObservableWrapper.callComplete(emitter);
+      log.push(5);
+      expect(log).toEqual([1, 2, 3, 4, 5]);
+    });
 
     it('delivers events asynchronously when forced to async mode',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
