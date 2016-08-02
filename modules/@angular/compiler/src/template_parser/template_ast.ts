@@ -12,6 +12,7 @@ import {isPresent} from '../facade/lang';
 import {CompileDirectiveMetadata, CompileTokenMetadata, CompileProviderMetadata,} from '../compile_metadata';
 import {ParseSourceSpan} from '../parse_util';
 import {SecurityContext} from '@angular/core';
+import {LifecycleHooks} from '../../core_private';
 
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.
@@ -174,7 +175,7 @@ export class ProviderAst implements TemplateAst {
   constructor(
       public token: CompileTokenMetadata, public multiProvider: boolean, public eager: boolean,
       public providers: CompileProviderMetadata[], public providerType: ProviderAstType,
-      public sourceSpan: ParseSourceSpan) {}
+      public lifecycleHooks: LifecycleHooks[], public sourceSpan: ParseSourceSpan) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
     // No visit method in the visitor for now...

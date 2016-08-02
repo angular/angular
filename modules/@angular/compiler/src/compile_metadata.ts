@@ -305,19 +305,22 @@ export class CompileIdentifierMap<KEY extends CompileMetadataWithIdentifier, VAL
 export class CompileTypeMetadata extends CompileIdentifierMetadata {
   isHost: boolean;
   diDeps: CompileDiDependencyMetadata[];
+  lifecycleHooks: LifecycleHooks[];
 
-  constructor({runtime, name, moduleUrl, prefix, isHost, value, diDeps}: {
+  constructor({runtime, name, moduleUrl, prefix, isHost, value, diDeps, lifecycleHooks}: {
     runtime?: Type,
     name?: string,
     moduleUrl?: string,
     prefix?: string,
     isHost?: boolean,
     value?: any,
-    diDeps?: CompileDiDependencyMetadata[]
+    diDeps?: CompileDiDependencyMetadata[],
+    lifecycleHooks?: LifecycleHooks[];
   } = {}) {
     super({runtime: runtime, name: name, moduleUrl: moduleUrl, prefix: prefix, value: value});
     this.isHost = normalizeBool(isHost);
     this.diDeps = _normalizeArray(diDeps);
+    this.lifecycleHooks = _normalizeArray(lifecycleHooks);
   }
 }
 
@@ -405,9 +408,8 @@ export class CompileTemplateMetadata {
  */
 export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   static create(
-      {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
-       lifecycleHooks, providers, viewProviders, queries, viewQueries, entryComponents,
-       viewDirectives, viewPipes, template}: {
+      {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host, providers,
+       viewProviders, queries, viewQueries, entryComponents, viewDirectives, viewPipes, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -416,7 +418,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
         inputs?: string[],
         outputs?: string[],
         host?: {[key: string]: string},
-        lifecycleHooks?: LifecycleHooks[],
         providers?:
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
         viewProviders?:
@@ -468,8 +469,10 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
       type,
       isComponent: normalizeBool(isComponent), selector, exportAs, changeDetection,
       inputs: inputsMap,
-      outputs: outputsMap, hostListeners, hostProperties, hostAttributes,
-      lifecycleHooks: isPresent(lifecycleHooks) ? lifecycleHooks : [],
+      outputs: outputsMap,
+      hostListeners,
+      hostProperties,
+      hostAttributes,
       providers,
       viewProviders,
       queries,
@@ -490,7 +493,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   hostListeners: {[key: string]: string};
   hostProperties: {[key: string]: string};
   hostAttributes: {[key: string]: string};
-  lifecycleHooks: LifecycleHooks[];
   providers: CompileProviderMetadata[];
   viewProviders: CompileProviderMetadata[];
   queries: CompileQueryMetadata[];
@@ -506,8 +508,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
 
   constructor(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, hostListeners,
-       hostProperties, hostAttributes, lifecycleHooks, providers, viewProviders, queries,
-       viewQueries, entryComponents, viewDirectives, viewPipes, template}: {
+       hostProperties, hostAttributes, providers, viewProviders, queries, viewQueries,
+       entryComponents, viewDirectives, viewPipes, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -518,7 +520,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
         hostListeners?: {[key: string]: string},
         hostProperties?: {[key: string]: string},
         hostAttributes?: {[key: string]: string},
-        lifecycleHooks?: LifecycleHooks[],
         providers?:
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
         viewProviders?:
@@ -540,7 +541,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
     this.hostListeners = hostListeners;
     this.hostProperties = hostProperties;
     this.hostAttributes = hostAttributes;
-    this.lifecycleHooks = _normalizeArray(lifecycleHooks);
     this.providers = _normalizeArray(providers);
     this.viewProviders = _normalizeArray(viewProviders);
     this.queries = _normalizeArray(queries);
@@ -588,7 +588,6 @@ export function createHostComponentMeta(compMeta: CompileDirectiveMetadata):
     inputs: [],
     outputs: [],
     host: {},
-    lifecycleHooks: [],
     isComponent: true,
     selector: '*',
     providers: [],
@@ -603,18 +602,15 @@ export class CompilePipeMetadata implements CompileMetadataWithIdentifier {
   type: CompileTypeMetadata;
   name: string;
   pure: boolean;
-  lifecycleHooks: LifecycleHooks[];
 
-  constructor({type, name, pure, lifecycleHooks}: {
+  constructor({type, name, pure}: {
     type?: CompileTypeMetadata,
     name?: string,
     pure?: boolean,
-    lifecycleHooks?: LifecycleHooks[]
   } = {}) {
     this.type = type;
     this.name = name;
     this.pure = normalizeBool(pure);
-    this.lifecycleHooks = _normalizeArray(lifecycleHooks);
   }
   get identifier(): CompileIdentifierMetadata { return this.type; }
   get runtimeCacheKey(): any { return this.type.runtimeCacheKey; }

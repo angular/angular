@@ -109,7 +109,7 @@ export class CompileElement extends CompileNode {
     // ProviderAstType.PrivateService as only the component and its view can see it,
     // but nobody else
     this._resolvedProvidersArray.unshift(new ProviderAst(
-        provider.token, false, true, [provider], ProviderAstType.PrivateService,
+        provider.token, false, true, [provider], ProviderAstType.PrivateService, [],
         this.sourceAst.sourceSpan));
   }
 
@@ -132,7 +132,7 @@ export class CompileElement extends CompileNode {
           {token: identifierToken(Identifiers.TemplateRef), useValue: createTemplateRefExpr});
       // Add TemplateRef as first provider as it does not have deps on other providers
       this._resolvedProvidersArray.unshift(new ProviderAst(
-          provider.token, false, true, [provider], ProviderAstType.Builtin,
+          provider.token, false, true, [provider], ProviderAstType.Builtin, [],
           this.sourceAst.sourceSpan));
     }
   }

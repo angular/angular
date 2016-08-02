@@ -405,7 +405,7 @@ function _transformProviderAst(
     {eager, providers}: {eager: boolean, providers: CompileProviderMetadata[]}): ProviderAst {
   return new ProviderAst(
       provider.token, provider.multiProvider, provider.eager || eager, providers,
-      provider.providerType, provider.sourceSpan);
+      provider.providerType, provider.lifecycleHooks, provider.sourceSpan);
 }
 
 function _normalizeProviders(
@@ -478,8 +478,10 @@ function _resolveProviders(
           sourceSpan));
     }
     if (isBlank(resolvedProvider)) {
+      const lifecycleHooks = provider.useClass ? provider.useClass.lifecycleHooks : [];
       resolvedProvider = new ProviderAst(
-          provider.token, provider.multi, eager, [provider], providerType, sourceSpan);
+          provider.token, provider.multi, eager, [provider], providerType, lifecycleHooks,
+          sourceSpan);
       targetProvidersByToken.add(provider.token, resolvedProvider);
     } else {
       if (!provider.multi) {
