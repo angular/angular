@@ -81,7 +81,9 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
 
   public instance: T;
 
-  constructor(public parent: Injector, factories: ComponentFactory<any>[]) {
+  constructor(
+      public parent: Injector, factories: ComponentFactory<any>[],
+      public bootstrapFactories: ComponentFactory<any>[]) {
     super(factories, parent.get(ComponentFactoryResolver, ComponentFactoryResolver.NULL));
   }
 

@@ -34,4 +34,6 @@ import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
 })
 export class MainModule {
   constructor(public appRef: ApplicationRef) {}
+
+  ngDoBootstrap() {}
 }

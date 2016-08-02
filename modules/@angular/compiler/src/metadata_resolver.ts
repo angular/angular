@@ -237,6 +237,7 @@ export class CompileMetadataResolver {
       const exportedModules: cpl.CompileNgModuleMetadata[] = [];
       const providers: any[] = [];
       const entryComponents: cpl.CompileTypeMetadata[] = [];
+      const bootstrapComponents: cpl.CompileTypeMetadata[] = [];
       const schemas: SchemaMetadata[] = [];
 
       if (meta.imports) {
@@ -318,6 +319,12 @@ export class CompileMetadataResolver {
             ...flattenArray(meta.entryComponents)
                 .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
       }
+      if (meta.bootstrap) {
+        bootstrapComponents.push(
+            ...flattenArray(meta.bootstrap)
+                .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
+      }
+      entryComponents.push(...bootstrapComponents);
       if (meta.schemas) {
         schemas.push(...flattenArray(meta.schemas));
       }
@@ -329,6 +336,7 @@ export class CompileMetadataResolver {
         type: this.getTypeMetadata(moduleType, staticTypeModuleUrl(moduleType)),
         providers: providers,
         entryComponents: entryComponents,
+        bootstrapComponents: bootstrapComponents,
         schemas: schemas,
         declaredDirectives: declaredDirectives,
         exportedDirectives: exportedDirectives,

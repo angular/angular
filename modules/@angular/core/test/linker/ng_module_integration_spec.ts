@@ -17,6 +17,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {BaseException} from '../../src/facade/exceptions';
 import {ConcreteType, Type, stringify} from '../../src/facade/lang';
+import {NgModuleInjector} from '../../src/linker/ng_module_factory';
 
 class Engine {}
 
@@ -253,7 +254,7 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
 
     describe('entryComponents', () => {
-      it('should entryComponents ComponentFactories in root modules', () => {
+      it('should create ComponentFactories in root modules', () => {
         @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
         class SomeModule {
         }
@@ -289,7 +290,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            ]);
          });
 
-      it('should entryComponents ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
+      it('should create ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
         @NgModule({
           declarations: [SomeComp],
           providers: [{
@@ -310,7 +311,7 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toBe(SomeComp);
       });
 
-      it('should entryComponents ComponentFactories in imported modules', () => {
+      it('should crate ComponentFactories in imported modules', () => {
         @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
         class SomeImportedModule {
         }
@@ -328,7 +329,7 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toBe(SomeComp);
       });
 
-      it('should entryComponents ComponentFactories if the component was imported', () => {
+      it('should create ComponentFactories if the component was imported', () => {
         @NgModule({declarations: [SomeComp], exports: [SomeComp]})
         class SomeImportedModule {
         }
@@ -344,6 +345,29 @@ function declareTests({useJit}: {useJit: boolean}) {
                    .resolveComponentFactory(SomeComp)
                    .componentType)
             .toBe(SomeComp);
+      });
+
+    });
+
+    describe('bootstrap components', () => {
+      it('should create ComponentFactories', () => {
+        @NgModule({declarations: [SomeComp], bootstrap: [SomeComp]})
+        class SomeModule {
+        }
+
+        const ngModule = createModule(SomeModule);
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType)
+            .toBe(SomeComp);
+      });
+
+      it('should store the ComponentFactories in the NgModuleInjector', () => {
+        @NgModule({declarations: [SomeComp], bootstrap: [SomeComp]})
+        class SomeModule {
+        }
+
+        const ngModule = <NgModuleInjector<any>>createModule(SomeModule);
+        expect(ngModule.bootstrapFactories.length).toBe(1);
+        expect(ngModule.bootstrapFactories[0].componentType).toBe(SomeComp);
       });
 
     });

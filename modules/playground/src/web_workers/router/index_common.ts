@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, NgModule, ApplicationRef} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {Start} from './components/start';
 import {About} from './components/about';
 import {Contact} from './components/contact';
@@ -27,13 +27,8 @@ export const ROUTES = [
 @NgModule({
   imports: [WorkerAppModule, RouterModule.forRoot(ROUTES, {useHash: true})],
   providers: [WORKER_APP_LOCATION_PROVIDERS],
-  entryComponents: [App],
+  bootstrap: [App],
   declarations: [App, Start, Contact, About]
 })
 export class AppModule {
-  constructor(appRef: ApplicationRef) {
-    appRef.waitForAsyncInitializers().then( () => {
-      appRef.bootstrap(App);
-    });
-  }
 }

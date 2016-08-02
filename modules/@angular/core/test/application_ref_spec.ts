@@ -39,20 +39,34 @@ export function main() {
       errorLogger = new _ArrayLogger();
     });
 
-    function createModule(providers: any[] = []): ConcreteType<any> {
+    type CreateModuleOptions = {providers?: any[], ngDoBootstrap?: any, bootstrap?: any[]};
+
+    function createModule(providers?: any[]): ConcreteType<any>;
+    function createModule(options: CreateModuleOptions): ConcreteType<any>;
+    function createModule(providersOrOptions: any[] | CreateModuleOptions): ConcreteType<any> {
+      let options: CreateModuleOptions = {};
+      if (providersOrOptions instanceof Array) {
+        options = {providers: providersOrOptions};
+      } else {
+        options = providersOrOptions || {};
+      }
+
       @NgModule({
         providers: [
           {provide: Console, useValue: new _MockConsole()},
           {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
-          {provide: DOCUMENT, useValue: fakeDoc}, providers
+          {provide: DOCUMENT, useValue: fakeDoc}, options.providers || []
         ],
         imports: [BrowserModule],
         declarations: [SomeComponent],
-        entryComponents: [SomeComponent]
+        entryComponents: [SomeComponent],
+        bootstrap: options.bootstrap || []
       })
       class MyModule {
       }
-
+      if (options.ngDoBootstrap !== false) {
+        (<any>MyModule.prototype).ngDoBootstrap = options.ngDoBootstrap || (() => {});
+      }
       return MyModule;
     }
 
@@ -174,6 +188,35 @@ export function main() {
                .then(() => fail('expecting error'), (error) => {
                  expect(error.message)
                      .toEqual('No ExceptionHandler. Is platform module (BrowserModule) included?');
+               });
+         }));
+
+      it('should call the `ngDoBootstrap` method with `ApplicationRef` on the main module',
+         async(() => {
+           const ngDoBootstrap = jasmine.createSpy('ngDoBootstrap');
+           defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: ngDoBootstrap}))
+               .then((moduleRef) => {
+                 const appRef = moduleRef.injector.get(ApplicationRef);
+                 expect(ngDoBootstrap).toHaveBeenCalledWith(appRef);
+               });
+         }));
+
+      it('should auto bootstrap components listed in @NgModule.bootstrap', async(() => {
+           defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
+               .then((moduleRef) => {
+                 const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+                 expect(appRef.componentTypes).toEqual([SomeComponent]);
+               });
+         }));
+
+      it('should error if neither `ngDoBootstrap` nor @NgModule.bootstrap was specified',
+         async(() => {
+           defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: false}))
+               .then(() => expect(false).toBe(true), (e) => {
+                 const expectedErrMsg =
+                     `The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
+                 expect(e.message).toEqual(expectedErrMsg);
+                 expect(errorLogger.res).toEqual(['EXCEPTION: ' + expectedErrMsg]);
                });
          }));
     });
