@@ -110,7 +110,7 @@ export function serverBootstrap<T>(
     providers: customProviders,
     declarations: declarations,
     imports: [BrowserModule],
-    entryComponents: [appComponentType]
+    bootstrap: [appComponentType]
   })
   class DynamicModule {
   }
@@ -121,6 +121,6 @@ export function serverBootstrap<T>(
         const console = moduleRef.injector.get(Console);
         deprecatedConfiguration.deprecationMessages.forEach((msg) => console.warn(msg));
         const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-        return appRef.bootstrap(appComponentType);
+        return appRef.components[0];
       });
 }

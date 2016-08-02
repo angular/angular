@@ -43,12 +43,18 @@ export class NgModuleCompiler {
         new ParseLocation(sourceFile, null, null, null),
         new ParseLocation(sourceFile, null, null, null));
     var deps: ComponentFactoryDependency[] = [];
-    var entryComponents = ngModuleMeta.transitiveModule.entryComponents.map((entryComponent) => {
-      var id = new CompileIdentifierMetadata({name: entryComponent.name});
-      deps.push(new ComponentFactoryDependency(entryComponent, id));
-      return id;
-    });
-    var builder = new _InjectorBuilder(ngModuleMeta, entryComponents, sourceSpan);
+    var bootstrapComponentFactories: CompileIdentifierMetadata[] = [];
+    var entryComponentFactories =
+        ngModuleMeta.transitiveModule.entryComponents.map((entryComponent) => {
+          var id = new CompileIdentifierMetadata({name: entryComponent.name});
+          if (ngModuleMeta.bootstrapComponents.indexOf(entryComponent) > -1) {
+            bootstrapComponentFactories.push(id);
+          }
+          deps.push(new ComponentFactoryDependency(entryComponent, id));
+          return id;
+        });
+    var builder = new _InjectorBuilder(
+        ngModuleMeta, entryComponentFactories, bootstrapComponentFactories, sourceSpan);
 
     var providerParser = new NgModuleProviderAnalyzer(ngModuleMeta, extraProviders, sourceSpan);
     providerParser.parse().forEach((provider) => builder.addProvider(provider));
@@ -78,8 +84,9 @@ class _InjectorBuilder {
 
   constructor(
       private _ngModuleMeta: CompileNgModuleMetadata,
-      private _entryComponents: CompileIdentifierMetadata[], private _sourceSpan: ParseSourceSpan) {
-  }
+      private _entryComponentFactories: CompileIdentifierMetadata[],
+      private _bootstrapComponentFactories: CompileIdentifierMetadata[],
+      private _sourceSpan: ParseSourceSpan) {}
 
   addProvider(resolvedProvider: ProviderAst) {
     var providerValueExpressions =
@@ -125,8 +132,10 @@ class _InjectorBuilder {
         [o.SUPER_EXPR
              .callFn([
                o.variable(InjectorProps.parent.name),
-               o.literalArr(
-                   this._entryComponents.map((entryComponent) => o.importExpr(entryComponent)))
+               o.literalArr(this._entryComponentFactories.map(
+                   (componentFactory) => o.importExpr(componentFactory))),
+               o.literalArr(this._bootstrapComponentFactories.map(
+                   (componentFactory) => o.importExpr(componentFactory)))
              ])
              .toStmt()]);
 

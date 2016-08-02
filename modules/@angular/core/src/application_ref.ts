@@ -9,7 +9,7 @@
 import {ObservableWrapper, PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
-import {ConcreteType, Type, isBlank, isPresent, isPromise} from '../src/facade/lang';
+import {ConcreteType, Type, isBlank, isPresent, isPromise, stringify} from '../src/facade/lang';
 
 import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
@@ -19,7 +19,7 @@ import {Compiler, CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {ComponentResolver} from './linker/component_resolver';
-import {NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
+import {NgModuleFactory, NgModuleInjector, NgModuleRef} from './linker/ng_module_factory';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {NgZone, NgZoneError} from './zone/ng_zone';
@@ -349,7 +349,7 @@ export class PlatformRef_ extends PlatformRef {
     return ngZone.run(() => {
       const ngZoneInjector =
           ReflectiveInjector.resolveAndCreate([{provide: NgZone, useValue: ngZone}], this.injector);
-      const moduleRef = moduleFactory.create(ngZoneInjector);
+      const moduleRef = <NgModuleInjector<M>>moduleFactory.create(ngZoneInjector);
       const exceptionHandler: ExceptionHandler = moduleRef.injector.get(ExceptionHandler, null);
       if (!exceptionHandler) {
         throw new Error('No ExceptionHandler. Is platform module (BrowserModule) included?');
@@ -372,6 +372,7 @@ export class PlatformRef_ extends PlatformRef {
         const appRef: ApplicationRef_ = moduleRef.injector.get(ApplicationRef);
         return Promise.all(asyncInitPromises).then(() => {
           appRef.asyncInitDone();
+          this._moduleDoBootstrap(moduleRef);
           return moduleRef;
         });
       });
@@ -386,6 +387,19 @@ export class PlatformRef_ extends PlatformRef {
         compilerOptions instanceof Array ? compilerOptions : [compilerOptions]);
     return compiler.compileModuleAsync(moduleType)
         .then((moduleFactory) => this.bootstrapModuleFactory(moduleFactory));
+  }
+
+  private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>) {
+    const appRef = moduleRef.injector.get(ApplicationRef);
+    if (moduleRef.bootstrapFactories.length > 0) {
+      moduleRef.bootstrapFactories.forEach((compFactory) => appRef.bootstrap(compFactory));
+    } else if (moduleRef.instance.ngDoBootstrap) {
+      moduleRef.instance.ngDoBootstrap(appRef);
+    } else {
+      throw new BaseException(
+          `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+          `Please define one of these.`);
+    }
   }
 }
 
@@ -473,6 +487,10 @@ export abstract class ApplicationRef {
    * Get a list of component types registered to this application.
    */
   get componentTypes(): Type[] { return <Type[]>unimplemented(); };
+  /**
+   * Get a list of components registered to this application.
+   */
+  get components(): ComponentRef<any>[] { return <ComponentRef<any>[]>unimplemented(); };
 }
 
 @Injectable()
@@ -620,4 +638,6 @@ export class ApplicationRef_ extends ApplicationRef {
   dispose(): void { this.ngOnDestroy(); }
 
   get componentTypes(): Type[] { return this._rootComponentTypes; }
+
+  get components(): ComponentRef<any>[] { return this._rootComponents; }
 }

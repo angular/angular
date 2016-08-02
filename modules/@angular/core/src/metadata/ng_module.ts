@@ -46,6 +46,7 @@ export interface NgModuleMetadataType {
   imports?: Array<Type|ModuleWithProviders|any[]>;
   exports?: Array<Type|any[]>;
   entryComponents?: Array<Type|any[]>;
+  bootstrap?: Array<Type|any[]>;
   schemas?: Array<SchemaMetadata|any[]>;
 }
 
@@ -144,7 +145,14 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    */
   entryComponents: Array<Type|any[]>;
 
-  schemas: Array<SchemaMetadata|any[]>;
+  /**
+   * Defines the components that should be bootstrapped when
+   * this module is bootstrapped. The components listed here
+   * will automatically be added to `entryComponents`.
+   */
+  bootstrap: Array<Type|any[]>
+
+      schemas: Array<SchemaMetadata|any[]>;
 
   constructor(options: NgModuleMetadataType = {}) {
     // We cannot use destructuring of the constructor argument because `exports` is a
@@ -155,6 +163,7 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
     this.imports = options.imports;
     this.exports = options.exports;
     this.entryComponents = options.entryComponents;
+    this.bootstrap = options.bootstrap;
     this.schemas = options.schemas;
   }
 }

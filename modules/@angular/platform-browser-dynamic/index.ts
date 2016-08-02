@@ -169,7 +169,8 @@ export function bootstrap<C>(
     providers: providers,
     declarations: declarations.concat([appComponentType]),
     imports: [BrowserModule, imports],
-    entryComponents: entryComponents.concat([appComponentType]),
+    entryComponents: entryComponents,
+    bootstrap: [appComponentType],
     schemas: schemas
   })
   class DynamicModule {
@@ -181,7 +182,7 @@ export function bootstrap<C>(
         const console = moduleRef.injector.get(Console);
         deprecationMessages.forEach((msg) => console.warn(msg));
         const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-        return appRef.bootstrap(appComponentType);
+        return appRef.components[0];
       });
 }
 
@@ -233,7 +234,7 @@ export function bootstrapWorkerApp<T>(
     providers: customProviders,
     declarations: declarations,
     imports: [WorkerAppModule],
-    entryComponents: [appComponentType]
+    bootstrap: [appComponentType]
   })
   class DynamicModule {
   }
@@ -244,7 +245,7 @@ export function bootstrapWorkerApp<T>(
         const console = moduleRef.injector.get(Console);
         deprecatedConfiguration.deprecationMessages.forEach((msg) => console.warn(msg));
         const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-        return appRef.bootstrap(appComponentType);
+        return appRef.components[0];
       });
 }
 

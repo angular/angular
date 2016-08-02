@@ -269,6 +269,7 @@ export function main() {
            ]
          })
          class SomeModule {
+           ngDoBootstrap() {}
          }
 
          expect(log.result()).toEqual('platform_init1; platform_init2');

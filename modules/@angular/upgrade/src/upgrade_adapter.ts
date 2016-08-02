@@ -286,6 +286,7 @@ export class UpgradeAdapter {
 
     @NgModule({providers: providers, imports: [BrowserModule]})
     class DynamicModule {
+      ngDoBootstrap() {}
     }
 
     platformRef.bootstrapModule(DynamicModule).then((moduleRef) => {

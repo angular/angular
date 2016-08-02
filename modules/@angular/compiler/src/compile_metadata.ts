@@ -633,6 +633,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
   exportedPipes: CompilePipeMetadata[];
   // Note: See CompileDirectiveMetadata.entryComponents why this has to be a type.
   entryComponents: CompileTypeMetadata[];
+  bootstrapComponents: CompileTypeMetadata[];
   providers: CompileProviderMetadata[];
 
   importedModules: CompileNgModuleMetadata[];
@@ -643,7 +644,8 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
 
   constructor(
       {type, providers, declaredDirectives, exportedDirectives, declaredPipes, exportedPipes,
-       entryComponents, importedModules, exportedModules, schemas, transitiveModule}: {
+       entryComponents, bootstrapComponents, importedModules, exportedModules, schemas,
+       transitiveModule}: {
         type?: CompileTypeMetadata,
         providers?:
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
@@ -652,6 +654,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
         declaredPipes?: CompilePipeMetadata[],
         exportedPipes?: CompilePipeMetadata[],
         entryComponents?: CompileTypeMetadata[],
+        bootstrapComponents?: CompileTypeMetadata[],
         importedModules?: CompileNgModuleMetadata[],
         exportedModules?: CompileNgModuleMetadata[],
         transitiveModule?: TransitiveCompileNgModuleMetadata,
@@ -664,6 +667,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
     this.exportedPipes = _normalizeArray(exportedPipes);
     this.providers = _normalizeArray(providers);
     this.entryComponents = _normalizeArray(entryComponents);
+    this.bootstrapComponents = _normalizeArray(bootstrapComponents);
     this.importedModules = _normalizeArray(importedModules);
     this.exportedModules = _normalizeArray(exportedModules);
     this.schemas = _normalizeArray(schemas);
