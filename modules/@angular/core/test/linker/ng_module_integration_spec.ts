@@ -917,6 +917,69 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
       });
 
+      describe('lifecycle', () => {
+        it('should instantiate modules eagerly', () => {
+          let created = false;
+
+          @NgModule()
+          class ImportedModule {
+            constructor() { created = true; }
+          }
+
+          @NgModule({imports: [ImportedModule]})
+          class SomeModule {
+          }
+
+          createModule(SomeModule);
+
+          expect(created).toBe(true);
+        });
+
+        it('should instantiate providers that are not used by a module lazily', () => {
+          let created = false;
+
+          createInjector([{
+            provide: 'someToken',
+            useFactory: () => {
+              created = true;
+              return true;
+            }
+          }]);
+
+          expect(created).toBe(false);
+        });
+
+        it('should support ngOnDestroy on any provider', () => {
+          let destroyed = false;
+
+          class SomeInjectable {
+            ngOnDestroy() { destroyed = true; }
+          }
+
+          @NgModule({providers: [SomeInjectable]})
+          class SomeModule {
+          }
+
+          const moduleRef = createModule(SomeModule);
+          expect(destroyed).toBe(false);
+          moduleRef.destroy();
+          expect(destroyed).toBe(true);
+        });
+
+        it('should instantiate providers with lifecycle eagerly', () => {
+          let created = false;
+
+          class SomeInjectable {
+            constructor() { created = true; }
+            ngOnDestroy() {}
+          }
+
+          createInjector([SomeInjectable]);
+
+          expect(created).toBe(true);
+        });
+      });
+
       describe('imported and exported modules', () => {
         it('should add the providers of imported modules', () => {
           @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
