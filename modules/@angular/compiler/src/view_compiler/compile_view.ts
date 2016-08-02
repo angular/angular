@@ -191,7 +191,6 @@ export class CompileView implements NameResolver {
   }
 
   afterNodes() {
-    this.pipes.forEach((pipe) => pipe.create());
     this.viewQueries.values().forEach(
         (queries) => queries.forEach(
             (query) => query.afterChildren(this.createMethod, this.updateViewQueriesMethod)));
