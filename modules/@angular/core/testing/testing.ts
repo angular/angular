@@ -14,15 +14,19 @@
 
 import {SchemaMetadata} from '../index';
 
+import {resetFakeAsyncZone} from './fake_async';
 import {TestBed, TestModuleMetadata, getTestBed} from './test_bed';
 
 declare var global: any;
 
 var _global = <any>(typeof window === 'undefined' ? global : window);
 
-// Reset the test providers before each test.
+// Reset the test providers and the fake async zone before each test.
 if (_global.beforeEach) {
-  _global.beforeEach(() => { TestBed.resetTestingModule(); });
+  _global.beforeEach(() => {
+    TestBed.resetTestingModule();
+    resetFakeAsyncZone();
+  });
 }
 
 /**

@@ -10,6 +10,22 @@ import {BaseException} from '../index';
 
 let _FakeAsyncTestZoneSpecType = (Zone as any /** TODO #9100 */)['FakeAsyncTestZoneSpec'];
 
+let _fakeAsyncZone: Zone = null;
+let _fakeAsyncTestZoneSpec: any = null;
+
+/**
+ * Clears out the shared fake async zone for a test.
+ * To be called in a global `beforeEach`.
+ *
+ * @experimental
+ */
+export function resetFakeAsyncZone() {
+  _fakeAsyncZone = null;
+  _fakeAsyncTestZoneSpec = null;
+}
+
+let _inFakeAsyncCall = false;
+
 /**
  * Wraps a function to be executed in the fakeAsync zone:
  * - microtasks are manually executed by calling `flushMicrotasks()`,
@@ -29,40 +45,49 @@ let _FakeAsyncTestZoneSpecType = (Zone as any /** TODO #9100 */)['FakeAsyncTestZ
  * @experimental
  */
 export function fakeAsync(fn: Function): (...args: any[]) => any {
-  if (Zone.current.get('FakeAsyncTestZoneSpec') != null) {
-    throw new BaseException('fakeAsync() calls can not be nested');
-  }
-
-  let fakeAsyncTestZoneSpec = new _FakeAsyncTestZoneSpecType();
-  let fakeAsyncZone = Zone.current.fork(fakeAsyncTestZoneSpec);
-
   return function(...args: any[] /** TODO #9100 */) {
-    let res = fakeAsyncZone.run(() => {
-      let res = fn(...args);
-      flushMicrotasks();
+    if (_inFakeAsyncCall) {
+      throw new BaseException('fakeAsync() calls can not be nested');
+    }
+    _inFakeAsyncCall = true;
+    try {
+      if (!_fakeAsyncZone) {
+        if (Zone.current.get('FakeAsyncTestZoneSpec') != null) {
+          throw new BaseException('fakeAsync() calls can not be nested');
+        }
+
+        _fakeAsyncTestZoneSpec = new _FakeAsyncTestZoneSpecType();
+        _fakeAsyncZone = Zone.current.fork(_fakeAsyncTestZoneSpec);
+      }
+
+      let res = _fakeAsyncZone.run(() => {
+        let res = fn(...args);
+        flushMicrotasks();
+        return res;
+      });
+
+      if (_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
+        throw new BaseException(
+            `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
+            `periodic timer(s) still in the queue.`);
+      }
+
+      if (_fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
+        throw new BaseException(
+            `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`);
+      }
       return res;
-    });
-
-    if (fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
-      throw new BaseException(
-          `${fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
-          `periodic timer(s) still in the queue.`);
+    } finally {
+      _inFakeAsyncCall = false;
     }
-
-    if (fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
-      throw new BaseException(
-          `${fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`);
-    }
-    return res;
   };
 }
 
 function _getFakeAsyncZoneSpec(): any {
-  let zoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
-  if (zoneSpec == null) {
+  if (_fakeAsyncTestZoneSpec == null) {
     throw new Error('The code should be running in the fakeAsync zone to call this function');
   }
-  return zoneSpec;
+  return _fakeAsyncTestZoneSpec;
 }
 
 /**
