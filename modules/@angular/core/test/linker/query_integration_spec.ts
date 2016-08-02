@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {NgFor, NgIf} from '@angular/common';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, Query, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ViewQuery, asNativeElements} from '@angular/core';
 import {TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {isPresent, stringify} from '../../src/facade/lang';
-import {ObservableWrapper} from '../../src/facade/async';
-
-import {asNativeElements, ViewContainerRef, Component, Directive, TemplateRef, Query, QueryList, ViewQuery, ContentChildren, ViewChildren, ContentChild, ViewChild, AfterContentInit, AfterViewInit, AfterContentChecked, AfterViewChecked} from '@angular/core';
-import {NgIf, NgFor} from '@angular/common';
 
 export function main() {
   describe('Query API', () => {
@@ -418,10 +416,12 @@ export function main() {
                  var q = view.debugElement.children[0].references['q'];
                  view.detectChanges();
 
-                 ObservableWrapper.subscribe(q.query.changes, (_) => {
-                   expect(q.query.first.text).toEqual('1');
-                   expect(q.query.last.text).toEqual('2');
-                   async.done();
+                 q.query.changes.subscribe({
+                   next: () => {
+                     expect(q.query.first.text).toEqual('1');
+                     expect(q.query.last.text).toEqual('2');
+                     async.done();
+                   }
                  });
 
                  view.debugElement.componentInstance.shouldShow = true;
@@ -445,10 +445,12 @@ export function main() {
 
                  var firedQ2 = false;
 
-                 ObservableWrapper.subscribe(q2.query.changes, (_) => { firedQ2 = true; });
-                 ObservableWrapper.subscribe(q1.query.changes, (_) => {
-                   expect(firedQ2).toBe(true);
-                   async.done();
+                 q2.query.changes.subscribe({next: () => { firedQ2 = true; }});
+                 q1.query.changes.subscribe({
+                   next: () => {
+                     expect(firedQ2).toBe(true);
+                     async.done();
+                   }
                  });
 
                  view.detectChanges();

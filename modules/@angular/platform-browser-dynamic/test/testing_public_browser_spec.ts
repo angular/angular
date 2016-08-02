@@ -11,7 +11,6 @@ import {Component, bind} from '@angular/core';
 import {TestComponentBuilder, addProviders, async, fakeAsync, flushMicrotasks, inject, tick} from '@angular/core/testing';
 import {ROUTER_DIRECTIVES, Route} from '@angular/router-deprecated';
 
-import {PromiseWrapper} from '../src/facade/promise';
 import {XHRImpl} from '../src/xhr/xhr_impl';
 
 
@@ -86,15 +85,20 @@ export function main() {
       var originalJasmineIt: any;
 
       var patchJasmineIt = () => {
-        var deferred = PromiseWrapper.completer();
+        var resolve: (result: any) => void;
+        var reject: (error: any) => void;
+        const promise = new Promise((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
         originalJasmineIt = jasmine.getEnv().it;
         jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
-          var done = () => { deferred.resolve(); };
-          (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err); };
+          var done = () => { resolve(null); };
+          (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
           fn(done);
           return null;
         };
-        return deferred.promise;
+        return promise;
       };
 
       var restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
@@ -109,7 +113,7 @@ export function main() {
 
         itPromise.then(
             () => { done.fail('Expected test to fail, but it did not'); },
-            (err) => {
+            (err: any) => {
               expect(err.message)
                   .toEqual('Uncaught (in promise): Failed to load non-existant.html');
               done();

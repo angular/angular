@@ -7,7 +7,6 @@
  */
 
 import {OpaqueToken} from '@angular/core/src/di';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {DateWrapper, Json, isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from '../common_options';
@@ -42,9 +41,7 @@ export class JsonFileReporter extends Reporter {
     this._now = now;
   }
 
-  reportMeasureValues(measureValues: MeasureValues): Promise<any> {
-    return PromiseWrapper.resolve(null);
-  }
+  reportMeasureValues(measureValues: MeasureValues): Promise<any> { return Promise.resolve(null); }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any> {
     var content = Json.stringify({

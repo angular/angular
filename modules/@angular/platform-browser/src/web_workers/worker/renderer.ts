@@ -9,7 +9,6 @@
 import {Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../../core_private';
-import {ObservableWrapper} from '../../facade/async';
 import {ListWrapper} from '../../facade/collection';
 import {isBlank, isPresent} from '../../facade/lang';
 import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
@@ -33,7 +32,7 @@ export class WebWorkerRootRenderer implements RootRenderer {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_CHANNEL);
     bus.initChannel(EVENT_CHANNEL);
     var source = bus.from(EVENT_CHANNEL);
-    ObservableWrapper.subscribe(source, (message) => this._dispatchEvent(message));
+    source.subscribe({next: (message: any) => this._dispatchEvent(message)});
   }
 
   private _dispatchEvent(message: {[key: string]: any}): void {

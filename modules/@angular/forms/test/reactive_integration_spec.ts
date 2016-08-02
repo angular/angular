@@ -15,9 +15,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 
-import {ObservableWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
-import {PromiseWrapper} from '../src/facade/promise';
 
 export function main() {
   describe('reactive forms integration tests', () => {
@@ -85,8 +83,8 @@ export function main() {
 
                input.nativeElement.value = 'updatedValue';
 
-               ObservableWrapper.subscribe(
-                   form.valueChanges, (value) => { throw 'Should not happen'; });
+
+               form.valueChanges.subscribe({next: (value) => { throw 'Should not happen'; }});
                dispatchEvent(input.nativeElement, 'change');
 
                async.done();
@@ -894,11 +892,13 @@ export function main() {
                  expect(input.componentInstance.value).toEqual('!aa!');
 
                  input.componentInstance.value = '!bb!';
-                 ObservableWrapper.subscribe(input.componentInstance.onInput, (value) => {
-                   expect(fixture.debugElement.componentInstance.form.value).toEqual({
-                     'name': 'bb'
-                   });
-                   async.done();
+                 input.componentInstance.onInput.subscribe({
+                   next: (value: any) => {
+                     expect(fixture.debugElement.componentInstance.form.value).toEqual({
+                       'name': 'bb'
+                     });
+                     async.done();
+                   }
                  });
                  input.componentInstance.dispatchChangeEvent();
                });
@@ -1360,7 +1360,6 @@ export function main() {
 
                tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
                  fixture.debugElement.componentInstance.myGroup = new FormGroup({});
-                 ;
                  expect(() => fixture.detectChanges())
                      .toThrowError(new RegExp(
                          `ngModel cannot be used to register form controls with a parent formGroup directive.`));
@@ -1475,21 +1474,20 @@ class MyInput implements ControlValueAccessor {
 
   writeValue(value: any /** TODO #9100 */) { this.value = `!${value}!`; }
 
-  registerOnChange(fn: any /** TODO #9100 */) { ObservableWrapper.subscribe(this.onInput, fn); }
+  registerOnChange(fn: any /** TODO #9100 */) { this.onInput.subscribe({next: fn}); }
 
   registerOnTouched(fn: any /** TODO #9100 */) {}
 
-  dispatchChangeEvent() {
-    ObservableWrapper.callEmit(this.onInput, this.value.substring(1, this.value.length - 1));
-  }
+  dispatchChangeEvent() { this.onInput.emit(this.value.substring(1, this.value.length - 1)); }
 }
 
 function uniqLoginAsyncValidator(expectedValue: string) {
   return (c: any /** TODO #9100 */) => {
-    var completer = PromiseWrapper.completer();
+    var resolve: (result: any) => void;
+    var promise = new Promise(res => { resolve = res; });
     var res = (c.value == expectedValue) ? null : {'uniqLogin': true};
-    completer.resolve(res);
-    return completer.promise;
+    resolve(res);
+    return promise;
   };
 }
 

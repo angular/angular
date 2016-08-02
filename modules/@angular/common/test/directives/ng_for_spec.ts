@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {ListWrapper} from '../../src/facade/collection';
-import {Component, TemplateRef, ContentChild} from '@angular/core';
 import {NgFor, NgIf} from '@angular/common';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {Component, ContentChild, TemplateRef} from '@angular/core';
+import {TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {ListWrapper} from '../../src/facade/collection';
 
 let thisArg: any;
 

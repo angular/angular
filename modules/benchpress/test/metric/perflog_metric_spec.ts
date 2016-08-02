@@ -7,7 +7,6 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {StringMapWrapper} from '@angular/facade/src/collection';
 import {isBlank, isPresent} from '@angular/facade/src/lang';
 import {Metric, Options, PerfLogFeatures, PerflogMetric, ReflectiveInjector, WebDriverExtension} from 'benchpress/common';
@@ -320,11 +319,11 @@ export function main() {
            }));
 
         it('should throw if no start event', inject([AsyncTestCompleter], (async) => {
-             PromiseWrapper.catchError(
-                 aggregate(
-                     [eventFactory.instant('frame', 4), eventFactory.markEnd('frameCapture', 5)],
-                     {captureFrames: true}),
-                 (err): any => {
+
+             aggregate(
+                 [eventFactory.instant('frame', 4), eventFactory.markEnd('frameCapture', 5)],
+                 {captureFrames: true})
+                 .catch((err): any => {
                    expect(() => {
                      throw err;
                    }).toThrowError('missing start event for frame capture');
@@ -333,25 +332,25 @@ export function main() {
            }));
 
         it('should throw if no end event', inject([AsyncTestCompleter], (async) => {
-             PromiseWrapper.catchError(
-                 aggregate(
-                     [eventFactory.markStart('frameCapture', 3), eventFactory.instant('frame', 4)],
-                     {captureFrames: true}),
-                 (err): any => {
+
+             aggregate(
+                 [eventFactory.markStart('frameCapture', 3), eventFactory.instant('frame', 4)],
+                 {captureFrames: true})
+                 .catch((err): any => {
                    expect(() => { throw err; }).toThrowError('missing end event for frame capture');
                    async.done();
                  });
            }));
 
         it('should throw if trying to capture twice', inject([AsyncTestCompleter], (async) => {
-             PromiseWrapper.catchError(
-                 aggregate(
-                     [
-                       eventFactory.markStart('frameCapture', 3),
-                       eventFactory.markStart('frameCapture', 4)
-                     ],
-                     {captureFrames: true}),
-                 (err): any => {
+
+             aggregate(
+                 [
+                   eventFactory.markStart('frameCapture', 3),
+                   eventFactory.markStart('frameCapture', 4)
+                 ],
+                 {captureFrames: true})
+                 .catch((err): any => {
                    expect(() => {
                      throw err;
                    }).toThrowError('can capture frames only once per benchmark run');
@@ -361,7 +360,7 @@ export function main() {
 
         it('should throw if trying to capture when frame capture is disabled',
            inject([AsyncTestCompleter], (async) => {
-             PromiseWrapper.catchError(aggregate([eventFactory.markStart('frameCapture', 3)]), (err) => {
+             aggregate([eventFactory.markStart('frameCapture', 3)]).catch((err) => {
                expect(() => { throw err; })
                    .toThrowError(
                        'found start event for frame capture, but frame capture was not requested in benchpress');
@@ -372,7 +371,7 @@ export function main() {
 
         it('should throw if frame capture is enabled, but nothing is captured',
            inject([AsyncTestCompleter], (async) => {
-             PromiseWrapper.catchError(aggregate([], {captureFrames: true}), (err): any => {
+             aggregate([], {captureFrames: true}).catch((err): any => {
                expect(() => { throw err; })
                    .toThrowError(
                        'frame capture requested in benchpress, but no start event was found');
@@ -638,12 +637,12 @@ class MockDriverExtension extends WebDriverExtension {
 
   timeBegin(name): Promise<any> {
     this._commandLog.push(['timeBegin', name]);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 
   timeEnd(name, restartName): Promise<any> {
     this._commandLog.push(['timeEnd', name, restartName]);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 
   perfLogFeatures(): PerfLogFeatures { return this._perfLogFeatures; }
@@ -653,14 +652,14 @@ class MockDriverExtension extends WebDriverExtension {
     if (this._perfLogs.length > 0) {
       var next = this._perfLogs[0];
       this._perfLogs.shift();
-      return PromiseWrapper.resolve(next);
+      return Promise.resolve(next);
     } else {
-      return PromiseWrapper.resolve([]);
+      return Promise.resolve([]);
     }
   }
 
   gc(): Promise<any> {
     this._commandLog.push(['gc']);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 }

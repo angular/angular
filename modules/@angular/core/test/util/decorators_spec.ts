@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-
-import {makeDecorator, makeParamDecorator, Class} from '@angular/core/src/util/decorators';
-import {global} from '../../src/facade/lang';
 import {Inject} from '@angular/core';
 import {reflector} from '@angular/core/src/reflection/reflection';
+import {Class, makeDecorator, makeParamDecorator} from '@angular/core/src/util/decorators';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+
+import {global} from '../../src/facade/lang';
 
 class TestAnnotation {
   constructor(public arg: any) {}

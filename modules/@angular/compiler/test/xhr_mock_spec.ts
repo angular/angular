@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it,} from '@angular/core/testing/testing_internal';
 import {MockXHR} from '@angular/compiler/testing/xhr_mock';
-import {PromiseWrapper} from '../src/facade/async';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {isPresent} from '../src/facade/lang';
 
 export function main() {
@@ -39,7 +38,7 @@ export function main() {
         return error;
       }
 
-      PromiseWrapper.then(request, onResponse, onError);
+      request.then(onResponse, onError);
     }
 
     it('should return a response from the definitions',

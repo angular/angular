@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, beforeEach, it, expect, ddescribe, iit,} from '@angular/core/testing/testing_internal';
-import {ShadowCss, processRules, CssRule} from '@angular/compiler/src/shadow_css';
+import {CssRule, ShadowCss, processRules} from '@angular/compiler/src/shadow_css';
+import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
+import {normalizeCSS} from '@angular/platform-browser/testing/browser_util';
 
 import {StringWrapper, isPresent} from '../src/facade/lang';
-import {normalizeCSS} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('ShadowCss', function() {

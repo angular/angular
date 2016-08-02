@@ -8,7 +8,7 @@
 
 import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../facade/async';
+import {EventEmitter} from '../facade/async';
 import {BaseException} from '../facade/exceptions';
 import {FormControl} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -27,6 +27,8 @@ export const formControlBinding: any = {
   provide: NgControl,
   useExisting: forwardRef(() => NgModel)
 };
+
+const resolvedPromise = Promise.resolve(null);
 
 /**
  * Binds a domain model to a form control.
@@ -105,7 +107,7 @@ export class NgModel extends NgControl implements OnChanges,
 
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
-                ObservableWrapper.callEmit(this.update, newValue);
+                this.update.emit(newValue);
               }
 
               private _setUpControl(): void {
@@ -149,7 +151,7 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _updateValue(value: any): void {
-                PromiseWrapper.scheduleMicrotask(
+                resolvedPromise.then(
                     () => { this.control.updateValue(value, {emitViewToModelChange: false}); });
               }
 }

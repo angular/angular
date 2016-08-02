@@ -7,19 +7,22 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {StringWrapper, isPresent} from '@angular/facade/src/lang';
 import {Options, ReflectiveInjector, WebDriverExtension} from 'benchpress/common';
 
 export function main() {
   function createExtension(ids: any[], caps) {
-    return PromiseWrapper.wrap(() => {
-      return ReflectiveInjector
-          .resolveAndCreate([
-            ids.map((id) => { return {provide: id, useValue: new MockExtension(id)}; }),
-            {provide: Options.CAPABILITIES, useValue: caps}, WebDriverExtension.bindTo(ids)
-          ])
-          .get(WebDriverExtension);
+    return new Promise<any>((res, rej) => {
+      try {
+        res(ReflectiveInjector
+                .resolveAndCreate([
+                  ids.map((id) => { return {provide: id, useValue: new MockExtension(id)}; }),
+                  {provide: Options.CAPABILITIES, useValue: caps}, WebDriverExtension.bindTo(ids)
+                ])
+                .get(WebDriverExtension));
+      } catch (e) {
+        rej(e);
+      }
     });
   }
 
@@ -34,7 +37,7 @@ export function main() {
        }));
 
     it('should throw if there is no match', inject([AsyncTestCompleter], (async) => {
-         PromiseWrapper.catchError(createExtension(['m1'], {'browser': 'm2'}), (err) => {
+         createExtension(['m1'], {'browser': 'm2'}).catch((err) => {
            expect(isPresent(err)).toBe(true);
            async.done();
          });

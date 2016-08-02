@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ObservableWrapper, PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
 import {ConcreteType, Type, isBlank, isPresent, isPromise, stringify} from '../src/facade/lang';
@@ -356,8 +355,8 @@ export class PlatformRef_ extends PlatformRef {
         throw new Error('No ExceptionHandler. Is platform module (BrowserModule) included?');
       }
       moduleRef.onDestroy(() => ListWrapper.remove(this._modules, moduleRef));
-      ObservableWrapper.subscribe(ngZone.onError, (error: NgZoneError) => {
-        exceptionHandler.call(error.error, error.stackTrace);
+      ngZone.onError.subscribe({
+        next: (error: NgZoneError) => { exceptionHandler.call(error.error, error.stackTrace); }
       });
       return _callAndReportToExceptionHandler(exceptionHandler, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
@@ -519,8 +518,9 @@ export class ApplicationRef_ extends ApplicationRef {
       @Optional() private _testability: Testability) {
     super();
     this._enforceNoNewChanges = isDevMode();
-    ObservableWrapper.subscribe(
-        this._zone.onMicrotaskEmpty, (_) => { this._zone.run(() => { this.tick(); }); });
+
+    this._zone.onMicrotaskEmpty.subscribe(
+        {next: () => { this._zone.run(() => { this.tick(); }); }});
   }
 
   /**

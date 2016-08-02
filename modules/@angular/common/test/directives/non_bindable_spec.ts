@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
+import {TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('non-bindable', () => {

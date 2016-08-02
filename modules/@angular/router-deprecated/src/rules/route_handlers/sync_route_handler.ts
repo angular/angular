@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PromiseWrapper} from '../../facade/async';
 import {Type, isPresent} from '../../facade/lang';
 import {BLANK_ROUTE_DATA, RouteData} from '../../instruction';
 
@@ -20,7 +19,7 @@ export class SyncRouteHandler implements RouteHandler {
   _resolvedComponent: Promise<any> = null;
 
   constructor(public componentType: Type, data?: {[key: string]: any}) {
-    this._resolvedComponent = PromiseWrapper.resolve(componentType);
+    this._resolvedComponent = Promise.resolve(componentType);
     this.data = isPresent(data) ? new RouteData(data) : BLANK_ROUTE_DATA;
   }
 

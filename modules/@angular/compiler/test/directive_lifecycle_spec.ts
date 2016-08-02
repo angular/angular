@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, xdescribe, ddescribe, describe, expect, iit, inject, it,} from '@angular/core/testing/testing_internal';
-
 import {hasLifecycleHook} from '@angular/compiler/src/lifecycle_reflector';
 import {LifecycleHooks} from '@angular/core/src/metadata/lifecycle_hooks';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('Create DirectiveMetadata', () => {

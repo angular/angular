@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {ListWrapper, Map} from '../../facade/collection';
 import {FunctionWrapper, Type, isPresent} from '../../facade/lang';
 import {MessageBus} from '../shared/message_bus';
@@ -63,7 +63,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     super();
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);
-    ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
+    source.subscribe({next: (message: any) => this._handleMessage(message)});
   }
 
   registerMethod(
@@ -93,9 +93,8 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
   }
 
   private _wrapWebWorkerPromise(id: string, promise: Promise<any>, type: Type): void {
-    PromiseWrapper.then(promise, (result: any) => {
-      ObservableWrapper.callEmit(
-          this._sink,
+    promise.then((result: any) => {
+      this._sink.emit(
           {'type': 'result', 'value': this._serializer.serialize(result, type), 'id': id});
     });
   }

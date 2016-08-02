@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, describe, it, iit, ddescribe, inject, beforeEach,} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
-import {RouteMatch, PathMatch, RedirectMatch} from '../../src/rules/rules';
-import {RuleSet} from '../../src/rules/rule_set';
+import {Redirect, Route} from '../../src/route_config/route_config_decorator';
 import {GeneratedUrl} from '../../src/rules/route_paths/route_path';
-import {Route, Redirect} from '../../src/route_config/route_config_decorator';
+import {RuleSet} from '../../src/rules/rule_set';
+import {PathMatch, RedirectMatch, RouteMatch} from '../../src/rules/rules';
 import {parser} from '../../src/url_parser';
-import {PromiseWrapper} from '../../src/facade/promise';
 
 
 export function main() {
@@ -248,7 +247,7 @@ export function main() {
 
 function recognize(recognizer: RuleSet, url: string): Promise<RouteMatch[]> {
   var parsedUrl = parser.parse(url);
-  return PromiseWrapper.all(recognizer.recognize(parsedUrl));
+  return Promise.all(recognizer.recognize(parsedUrl));
 }
 
 function getComponentType(routeMatch: RouteMatch): any {

@@ -9,8 +9,6 @@
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {ClientMessageBroker, ClientMessageBrokerFactory_, UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-browser/src/web_workers/shared/message_bus';
-
-import {PromiseWrapper} from '../../../src/facade/async';
 import {ListWrapper, StringMapWrapper} from '../../../src/facade/collection';
 import {BaseException} from '../../../src/facade/exceptions';
 import {Type, isPresent} from '../../../src/facade/lang';
@@ -63,7 +61,13 @@ export function expectBrokerCall(
       }
     }
     if (promise == null) {
-      promise = PromiseWrapper.wrap(() => {});
+      promise = new Promise((res, rej) => {
+        try {
+          res();
+        } catch (e) {
+          rej(e);
+        }
+      });
     }
     return promise;
   });

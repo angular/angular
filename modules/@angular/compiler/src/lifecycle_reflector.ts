@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OnInit, OnDestroy, DoCheck, OnChanges, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked,} from '@angular/core';
-import {reflector, LifecycleHooks} from '../core_private';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '@angular/core';
 
-import {Type} from './facade/lang';
+import {LifecycleHooks, reflector} from '../core_private';
+
 import {MapWrapper} from './facade/collection';
+import {Type} from './facade/lang';
 
 const LIFECYCLE_INTERFACES: Map<any, Type> = MapWrapper.createFromPairs([
   [LifecycleHooks.OnInit, OnInit],

@@ -7,7 +7,6 @@
  */
 
 import {OpaqueToken} from '@angular/core/src/di';
-import {PromiseWrapper, TimerWrapper} from '@angular/facade/src/async';
 import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
 import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 import {Math, NumberWrapper, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
@@ -110,7 +109,7 @@ export class PerflogMetric extends Metric {
   }
 
   beginMeasure(): Promise<any> {
-    var resultPromise = PromiseWrapper.resolve(null);
+    var resultPromise = Promise.resolve(null);
     if (this._forceGc) {
       resultPromise = resultPromise.then((_) => this._driverExtension.gc());
     }
@@ -167,10 +166,10 @@ export class PerflogMetric extends Metric {
         this._remainingEvents = events;
         return result;
       }
-      var completer = PromiseWrapper.completer();
-      this._setTimeout(
-          () => completer.resolve(this._readUntilEndMark(markName, loopCount + 1)), 100);
-      return completer.promise;
+      var resolve: (result: any) => void;
+      var promise = new Promise(res => { resolve = res; });
+      this._setTimeout(() => resolve(this._readUntilEndMark(markName, loopCount + 1)), 100);
+      return promise;
     });
   }
 
@@ -402,5 +401,5 @@ var _PROVIDERS = [
       Options.CAPTURE_FRAMES, Options.RECEIVED_DATA, Options.REQUEST_COUNT
     ]
   },
-  {provide: _SET_TIMEOUT, useValue: (fn, millis) => TimerWrapper.setTimeout(fn, millis)}
+  {provide: _SET_TIMEOUT, useValue: (fn, millis) => <any>setTimeout(fn, millis)}
 ];

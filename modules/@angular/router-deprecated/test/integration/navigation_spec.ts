@@ -13,7 +13,6 @@ import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {RouteData, RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';
 
-import {PromiseWrapper, TimerWrapper} from '../../src/facade/async';
 import {AsyncRoute, AuxRoute, Redirect, Route, RouteConfig} from '../../src/route_config/route_config_decorator';
 
 import {RootCmp, TEST_ROUTER_PROVIDERS, compile} from './util';
@@ -238,9 +237,7 @@ export function main() {
              .then((_) => rtr.navigateByUrl('/test'))
              .then((_) => {
                // Note: need a timeout so that all promises are flushed
-               var completer = PromiseWrapper.completer();
-               TimerWrapper.setTimeout(() => { completer.resolve(null); }, 0);
-               return completer.promise;
+               return new Promise(resolve => { setTimeout(() => { resolve(null); }, 0); });
              })
              .then((_) => {
                expect(fixture.componentInstance.activatedCmp).toBeAnInstanceOf(HelloCmp);
@@ -259,7 +256,7 @@ class HelloCmp {
 
 
 function asyncRouteDataCmp() {
-  return PromiseWrapper.resolve(RouteDataCmp);
+  return Promise.resolve(RouteDataCmp);
 }
 
 @Component({selector: 'data-cmp', template: `{{myData}}`})
@@ -279,7 +276,7 @@ class UserCmp {
 
 
 function parentLoader() {
-  return PromiseWrapper.resolve(ParentCmp);
+  return Promise.resolve(ParentCmp);
 }
 
 @Component({

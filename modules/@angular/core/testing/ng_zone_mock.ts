@@ -7,7 +7,7 @@
  */
 
 import {Injectable, NgZone} from '../index';
-import {EventEmitter, ObservableWrapper} from '../src/facade/async';
+import {EventEmitter} from '../src/facade/async';
 
 /**
  * A mock implementation of {@link NgZone}.
@@ -24,5 +24,5 @@ export class MockNgZone extends NgZone {
 
   runOutsideAngular(fn: Function): any { return fn(); }
 
-  simulateZoneExit(): void { ObservableWrapper.callNext(this.onStable, null); }
+  simulateZoneExit(): void { this.onStable.emit(null); }
 }

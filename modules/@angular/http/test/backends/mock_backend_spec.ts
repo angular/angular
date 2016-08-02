@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {MockConnection, MockBackend} from '../../testing/mock_backend';
 import {ReflectiveInjector} from '@angular/core';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
+
+import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
-import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {MockBackend, MockConnection} from '../../testing/mock_backend';
 
 export function main() {
   describe('MockBackend', () => {

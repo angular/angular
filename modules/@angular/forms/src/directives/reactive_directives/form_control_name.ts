@@ -8,7 +8,7 @@
 
 import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
@@ -134,7 +134,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
-                ObservableWrapper.callEmit(this.update, newValue);
+                this.update.emit(newValue);
               }
 
               get path(): string[] { return controlPath(this.name, this._parent); }

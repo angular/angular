@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
-
 import {ReplacePipe} from '@angular/common';
-import {StringJoiner} from '../../src/facade/lang';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('ReplacePipe', () => {

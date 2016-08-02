@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {NgClass, NgIf} from '@angular/common';
+import {Component, Injector, OpaqueToken, Pipe, PipeTransform, ViewMetadata, forwardRef} from '@angular/core';
 import {TestBed, TestComponentBuilder} from '@angular/core/testing';
-
-import {Component, Pipe, PipeTransform, ViewMetadata, OpaqueToken, Injector, forwardRef} from '@angular/core';
-import {NgIf, NgClass} from '@angular/common';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });

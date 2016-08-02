@@ -6,22 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PromiseWrapper} from '../src/facade/async';
-import {ListWrapper, Map, StringMapWrapper} from '../src/facade/collection';
+import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
-import {isPresent, isArray, isBlank, isType, isString, isStringMap, Type, StringWrapper, Math, getTypeNameForDebugging,} from '../src/facade/lang';
-import {BaseException} from '../src/facade/exceptions';
-import {Injectable, Inject, OpaqueToken} from '@angular/core';
-import {RouteConfig, Route, AuxRoute, RouteDefinition} from './route_config/route_config_impl';
-import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';
-import {RuleSet} from './rules/rule_set';
-import {Instruction, ResolvedInstruction, RedirectInstruction, UnresolvedInstruction, DefaultInstruction} from './instruction';
-import {normalizeRouteConfig, assertComponentExists} from './route_config/route_config_normalizer';
-import {parser, Url, convertUrlParamsToArray} from './url_parser';
-import {GeneratedUrl} from './rules/route_paths/route_path';
 import {reflector} from '../core_private';
+import {ListWrapper, Map, StringMapWrapper} from '../src/facade/collection';
+import {BaseException} from '../src/facade/exceptions';
+import {Math, StringWrapper, Type, getTypeNameForDebugging, isArray, isBlank, isPresent, isString, isStringMap, isType} from '../src/facade/lang';
 
-var _resolveToNull = PromiseWrapper.resolve<Instruction>(null);
+import {DefaultInstruction, Instruction, RedirectInstruction, ResolvedInstruction, UnresolvedInstruction} from './instruction';
+import {AuxRoute, Route, RouteConfig, RouteDefinition} from './route_config/route_config_impl';
+import {assertComponentExists, normalizeRouteConfig} from './route_config/route_config_normalizer';
+import {GeneratedUrl} from './rules/route_paths/route_path';
+import {RuleSet} from './rules/rule_set';
+import {PathMatch, RedirectMatch, RouteMatch} from './rules/rules';
+import {Url, convertUrlParamsToArray, parser} from './url_parser';
+
+var _resolveToNull = Promise.resolve(null);
 
 // A LinkItemArray is an array, which describes a set of routes
 // The items in the array are found in groups:
@@ -200,10 +200,10 @@ export class RouteRegistry {
         }));
 
     if ((isBlank(parsedUrl) || parsedUrl.path == '') && possibleMatches.length == 0) {
-      return PromiseWrapper.resolve(this.generateDefault(parentComponent));
+      return Promise.resolve(this.generateDefault(parentComponent));
     }
 
-    return PromiseWrapper.all<Instruction>(matchPromises).then(mostSpecific);
+    return Promise.all<Instruction>(matchPromises).then(mostSpecific);
   }
 
   private _auxRoutesToUnresolved(auxRoutes: Url[], parentInstructions: Instruction[]):

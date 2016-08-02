@@ -6,25 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, inject, ddescribe, describe, it, iit, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {TestBed, TestComponentBuilder} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {Injector, ViewMetadata, Component, Injectable, ComponentRef, ReflectiveInjector, getPlatform} from '@angular/core';
 import {NgIf} from '@angular/common';
-import {WebWorkerRootRenderer} from '@angular/platform-browser/src/web_workers/worker/renderer';
-import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
-import {Serializer} from '@angular/platform-browser/src/web_workers/shared/serializer';
-import {RootRenderer} from '@angular/core/src/render/api';
-import {DomRootRenderer, DomRootRenderer_} from '@angular/platform-browser/src/dom/dom_renderer';
+import {Component, ComponentRef, Injectable, Injector, ReflectiveInjector, ViewMetadata, getPlatform} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
-import {RenderStore} from '@angular/platform-browser/src/web_workers/shared/render_store';
-import {MessageBasedRenderer} from '@angular/platform-browser/src/web_workers/ui/renderer';
-import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
-import {ServiceMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
-import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
-import {BrowserTestingModule} from '@angular/platform-browser/testing';
+import {RootRenderer} from '@angular/core/src/render/api';
+import {TestBed, TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DomRootRenderer, DomRootRenderer_} from '@angular/platform-browser/src/dom/dom_renderer';
+import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
+import {RenderStore} from '@angular/platform-browser/src/web_workers/shared/render_store';
+import {Serializer} from '@angular/platform-browser/src/web_workers/shared/serializer';
+import {ServiceMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
+import {MessageBasedRenderer} from '@angular/platform-browser/src/web_workers/ui/renderer';
+import {WebWorkerRootRenderer} from '@angular/platform-browser/src/web_workers/worker/renderer';
+import {BrowserTestingModule} from '@angular/platform-browser/testing';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
+import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
 
 export function main() {
   function createWebWorkerBrokerFactory(

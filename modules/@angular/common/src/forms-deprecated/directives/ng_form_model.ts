@@ -8,7 +8,7 @@
 
 import {Directive, Inject, OnChanges, Optional, Self, SimpleChanges, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {ListWrapper, StringMapWrapper} from '../../facade/collection';
 import {BaseException} from '../../facade/exceptions';
 import {isBlank} from '../../facade/lang';
@@ -191,7 +191,7 @@ export class NgFormModel extends ControlContainer implements Form,
 
   onSubmit(): boolean {
     this._submitted = true;
-    ObservableWrapper.callEmit(this.ngSubmit, null);
+    this.ngSubmit.emit(null);
     return false;
   }
 

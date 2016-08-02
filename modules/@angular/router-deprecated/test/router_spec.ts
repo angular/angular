@@ -12,7 +12,6 @@ import {provide} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 import {RouterOutlet} from '../src/directives/router_outlet';
-import {ObservableWrapper, PromiseWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 import {Type} from '../src/facade/lang';
 import {AsyncRoute, Redirect, Route, RouteConfig} from '../src/route_config/route_config_decorator';
@@ -194,7 +193,7 @@ export function main() {
     it('should, when subscribed to, return a disposable subscription', () => {
       expect(() => {
         var subscription = router.subscribe((_) => {});
-        ObservableWrapper.dispose(subscription);
+        (<any>subscription).unsubscribe();
       }).not.toThrow();
     });
 
@@ -326,7 +325,7 @@ function stringifyInstruction(instruction: any /** TODO #9100 */): string {
 }
 
 function loader(): Promise<Type> {
-  return PromiseWrapper.resolve(DummyComponent);
+  return Promise.resolve(DummyComponent);
 }
 
 class DummyComponent {}
@@ -337,12 +336,10 @@ class DummyParentComp {
 
 function makeDummyOutlet(): RouterOutlet {
   var ref = new SpyRouterOutlet();
-  ref.spy('canActivate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
-  ref.spy('routerCanReuse')
-      .andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(false));
-  ref.spy('routerCanDeactivate')
-      .andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
-  ref.spy('activate').andCallFake((_: any /** TODO #9100 */) => PromiseWrapper.resolve(true));
+  ref.spy('canActivate').andCallFake((_: any /** TODO #9100 */) => Promise.resolve(true));
+  ref.spy('routerCanReuse').andCallFake((_: any /** TODO #9100 */) => Promise.resolve(false));
+  ref.spy('routerCanDeactivate').andCallFake((_: any /** TODO #9100 */) => Promise.resolve(true));
+  ref.spy('activate').andCallFake((_: any /** TODO #9100 */) => Promise.resolve(true));
   return <any>ref;
 }
 

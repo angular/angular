@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-
 import {Component, Directive} from '@angular/core';
 import {reflector} from '@angular/core/src/reflection/reflection';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('es5 decorators', () => {

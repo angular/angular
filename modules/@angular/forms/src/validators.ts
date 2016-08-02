@@ -7,12 +7,13 @@
  */
 
 import {OpaqueToken} from '@angular/core';
+import {toPromise} from 'rxjs/operator/toPromise';
+
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {ObservableWrapper} from './facade/async';
 import {StringMapWrapper} from './facade/collection';
 import {isBlank, isPresent, isPromise, isString} from './facade/lang';
-import {PromiseWrapper} from './facade/promise';
 import {AbstractControl} from './model';
+
 
 /**
  * Providers for validators to be used for {@link FormControl}s in a form.
@@ -127,13 +128,13 @@ export class Validators {
 
     return function(control: AbstractControl) {
       let promises = _executeAsyncValidators(control, presentValidators).map(_convertToPromise);
-      return PromiseWrapper.all(promises).then(_mergeErrors);
+      return Promise.all(promises).then(_mergeErrors);
     };
   }
 }
 
 function _convertToPromise(obj: any): Promise<any> {
-  return isPromise(obj) ? obj : ObservableWrapper.toPromise(obj);
+  return isPromise(obj) ? obj : toPromise.call(obj);
 }
 
 function _executeValidators(control: AbstractControl, validators: ValidatorFn[]): any[] {

@@ -9,7 +9,6 @@
 import {Map} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
 import {isBlank, isPresent} from '../facade/lang';
-import {PromiseWrapper} from '../facade/promise';
 import {ComponentInstruction} from '../instruction';
 import {Url, convertUrlParamsToArray} from '../url_parser';
 
@@ -58,7 +57,7 @@ export class RedirectRule implements AbstractRule {
     if (isPresent(this._pathRecognizer.matchUrl(beginningSegment))) {
       match = new RedirectMatch(this.redirectTo, this._pathRecognizer.specificity);
     }
-    return PromiseWrapper.resolve(match);
+    return Promise.resolve(match);
   }
 
   generate(params: {[key: string]: any}): ComponentInstruction {

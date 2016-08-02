@@ -9,12 +9,16 @@ import {XHR} from '@angular/compiler';
 import {Injectable} from '@angular/core';
 
 import {isPresent} from '../facade/lang';
-import {PromiseCompleter, PromiseWrapper} from '../facade/promise';
 
 @Injectable()
 export class XHRImpl extends XHR {
   get(url: string): Promise<string> {
-    var completer: PromiseCompleter<string> = PromiseWrapper.completer();
+    var resolve: (result: any) => void;
+    var reject: (error: any) => void;
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'text';
@@ -35,15 +39,15 @@ export class XHRImpl extends XHR {
       }
 
       if (200 <= status && status <= 300) {
-        completer.resolve(response);
+        resolve(response);
       } else {
-        completer.reject(`Failed to load ${url}`, null);
+        reject(`Failed to load ${url}`);
       }
     };
 
-    xhr.onerror = function() { completer.reject(`Failed to load ${url}`, null); };
+    xhr.onerror = function() { reject(`Failed to load ${url}`); };
 
     xhr.send();
-    return completer.promise;
+    return promise;
   }
 }

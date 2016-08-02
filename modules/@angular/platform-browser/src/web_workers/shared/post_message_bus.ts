@@ -8,7 +8,7 @@
 
 import {Injectable, NgZone} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
 import {BaseException} from '../../facade/exceptions';
 
@@ -29,9 +29,8 @@ export class PostMessageBusSink implements MessageBusSink {
 
   attachToZone(zone: NgZone): void {
     this._zone = zone;
-    this._zone.runOutsideAngular(() => {
-      ObservableWrapper.subscribe(this._zone.onStable, (_) => { this._handleOnEventDone(); });
-    });
+    this._zone.runOutsideAngular(
+        () => { this._zone.onStable.subscribe({next: () => { this._handleOnEventDone(); }}); });
   }
 
   initChannel(channel: string, runInZone: boolean = true): void {

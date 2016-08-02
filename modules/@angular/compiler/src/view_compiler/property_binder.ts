@@ -6,20 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SecurityContext} from '@angular/core';
+
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
 import * as cdAst from '../expression_parser/ast';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
-import {DetectChangesVars, ViewProperties} from './constants';
-import {BoundTextAst, BoundElementPropertyAst, DirectiveAst, PropertyBindingType,} from '../template_parser/template_ast';
-import {CompileView} from './compile_view';
+import {BoundElementPropertyAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
+import {camelCaseToDashCase} from '../util';
+
+import {CompileBinding} from './compile_binding';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
-import {camelCaseToDashCase} from '../util';
+import {CompileView} from './compile_view';
+import {DetectChangesVars, ViewProperties} from './constants';
 import {convertCdExpressionToIr} from './expression_converter';
-import {CompileBinding} from './compile_binding';
-import {SecurityContext} from '@angular/core';
 
 function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
   return o.THIS_EXPR.prop(`_expr_${exprIndex}`);

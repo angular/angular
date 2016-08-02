@@ -19,8 +19,6 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT, ROUTER_PROVIDERS, RouteParams, Router} from '@angular/router-deprecated';
-
-import {PromiseWrapper} from '../../src/facade/async';
 import {BaseException} from '../../src/facade/exceptions';
 import {AuxRoute, Route, RouteConfig} from '../../src/route_config/route_config_decorator';
 
@@ -74,7 +72,7 @@ export function main() {
              (async: AsyncTestCompleter, tcb: TestComponentBuilder) => {
                tcb.createAsync(AppCmp).then((fixture) => {
                  var router = fixture.debugElement.componentInstance.router;
-                 PromiseWrapper.catchError(router.navigateByUrl('/cause-error'), (error) => {
+                 router.navigateByUrl('/cause-error').catch((error: any) => {
                    expect(error).toContainError('oops!');
                    async.done();
                  });

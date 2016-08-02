@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TEST_ROUTER_PROVIDERS, ddescribeRouter, describeRouter, describeWith, describeWithAndWithout, describeWithout, itShouldRoute} from './util';
-
-import {beforeEachProviders, describe,} from '@angular/core/testing/testing_internal';
+import {beforeEachProviders, describe} from '@angular/core/testing/testing_internal';
 
 import {registerSpecs} from './impl/aux_route_spec_impl';
+import {TEST_ROUTER_PROVIDERS, ddescribeRouter, describeRouter, describeWith, describeWithAndWithout, describeWithout, itShouldRoute} from './util';
 
 export function main() {
   describe('auxiliary route spec', () => {

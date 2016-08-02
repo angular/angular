@@ -12,12 +12,14 @@
  */
 
 import {ChangeDetectionStrategy} from '../src/change_detection/change_detection';
+import {Type} from '../src/facade/lang';
 
 import {AnimationEntryMetadata} from './animation/metadata';
 import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 import {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata, PipeMetadataType} from './metadata/directives';
 import {ModuleWithProviders, NgModuleMetadata, NgModuleMetadataType, SchemaMetadata} from './metadata/ng_module';
 import {ViewEncapsulation} from './metadata/view';
+import {TypeDecorator, makeDecorator, makeParamDecorator, makePropDecorator} from './util/decorators';
 
 export {ANALYZE_FOR_ENTRY_COMPONENTS, AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 export {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata, PipeMetadataType} from './metadata/directives';
@@ -25,8 +27,6 @@ export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 export {CUSTOM_ELEMENTS_SCHEMA, ModuleWithProviders, NgModuleMetadata, NgModuleMetadataType, SchemaMetadata} from './metadata/ng_module';
 export {ViewEncapsulation, ViewMetadata} from './metadata/view';
 
-import {makeDecorator, makeParamDecorator, makePropDecorator, TypeDecorator,} from './util/decorators';
-import {Type} from '../src/facade/lang';
 
 /**
  * Interface for the {@link DirectiveMetadata} decorator function.

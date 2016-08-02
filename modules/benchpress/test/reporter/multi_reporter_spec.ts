@@ -7,7 +7,6 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {DateWrapper} from '@angular/facade/src/lang';
 import {MeasureValues, MultiReporter, ReflectiveInjector, Reporter} from 'benchpress/common';
 
@@ -19,7 +18,7 @@ export function main() {
                   MultiReporter.createBindings(ids)
                 ])
                 .get(MultiReporter);
-    return PromiseWrapper.resolve(r);
+    return Promise.resolve(r);
   }
 
   describe('multi reporter', () => {
@@ -58,12 +57,12 @@ class MockReporter extends Reporter {
   constructor(private _id: string) { super(); }
 
   reportMeasureValues(values: MeasureValues): Promise<{[key: string]: any}> {
-    return PromiseWrapper.resolve({'id': this._id, 'values': values});
+    return Promise.resolve({'id': this._id, 'values': values});
   }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]):
       Promise<{[key: string]: any}> {
-    return PromiseWrapper.resolve(
+    return Promise.resolve(
         {'id': this._id, 'completeSample': completeSample, 'validSample': validSample});
   }
 }

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, it, inject,} from '@angular/core/testing/testing_internal';
+import {Injector, Pipe, PipeMetadata} from '@angular/core';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
-import {stringify, isBlank} from '../src/facade/lang';
+import {isBlank, stringify} from '../src/facade/lang';
 import {MockPipeResolver} from '../testing';
-import {Pipe, PipeMetadata, Injector} from '@angular/core';
 
 export function main() {
   describe('MockPipeResolver', () => {

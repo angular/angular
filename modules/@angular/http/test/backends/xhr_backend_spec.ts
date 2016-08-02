@@ -6,20 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {BrowserXhr} from '../../src/backends/browser_xhr';
-import {Json} from '../../src/facade/lang';
-import {XSRFStrategy} from '../../src/interfaces';
-import {XHRConnection, XHRBackend, CookieXSRFStrategy} from '../../src/backends/xhr_backend';
-import {Injectable,} from '@angular/core';
+import {Injectable} from '@angular/core';
+import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {__platform_browser_private__} from '@angular/platform-browser';
+
+import {BrowserXhr} from '../../src/backends/browser_xhr';
+import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/xhr_backend';
+import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
+import {ResponseContentType, ResponseType} from '../../src/enums';
+import {Map} from '../../src/facade/collection';
+import {Json} from '../../src/facade/lang';
+import {Headers} from '../../src/headers';
+import {XSRFStrategy} from '../../src/interfaces';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
-import {Headers} from '../../src/headers';
-import {Map} from '../../src/facade/collection';
-import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
-import {ResponseType, ResponseContentType} from '../../src/enums';
 import {URLSearchParams} from '../../src/url_search_params';
 
 var abortSpy: any;

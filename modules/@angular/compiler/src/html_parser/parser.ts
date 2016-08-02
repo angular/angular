@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent, isBlank,} from '../facade/lang';
 import {ListWrapper} from '../facade/collection';
+import {isBlank, isPresent} from '../facade/lang';
+import {ParseError, ParseSourceSpan} from '../parse_util';
+
 import * as html from './ast';
-import * as lex from './lexer';
-import {ParseSourceSpan, ParseError} from '../parse_util';
-import {TagDefinition, getNsPrefix, mergeNsAndName} from './tags';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
+import * as lex from './lexer';
+import {TagDefinition, getNsPrefix, mergeNsAndName} from './tags';
 
 export class TreeError extends ParseError {
   static create(elementName: string, span: ParseSourceSpan, msg: string): TreeError {

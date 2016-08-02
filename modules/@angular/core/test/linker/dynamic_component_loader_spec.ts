@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {Predicate} from '../../src/facade/collection';
-import {Injector, DebugElement, Type, ViewContainerRef, ViewChild} from '@angular/core';
-import {Component} from '@angular/core/src/metadata';
+import {DebugElement, Injector, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {DynamicComponentLoader} from '@angular/core/src/linker/dynamic_component_loader';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
-import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+import {Component} from '@angular/core/src/metadata';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {BaseException} from '../../src/facade/exceptions';
-import {PromiseWrapper} from '../../src/facade/promise';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {el} from '@angular/platform-browser/testing/browser_util';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {Predicate} from '../../src/facade/collection';
+import {BaseException} from '../../src/facade/exceptions';
 
 export function main() {
   describe('DynamicComponentLoader', function() {
@@ -98,10 +98,11 @@ export function main() {
               async: AsyncTestCompleter) => {
                tcb.createAsync(MyComp3).then((tc: ComponentFixture<any>) => {
                  tc.detectChanges();
-                 PromiseWrapper.catchError(
-                     loader.loadNextToLocation(
-                         DynamicallyLoadedThrows, tc.componentInstance.viewContainerRef),
-                     (error) => {
+
+                 loader
+                     .loadNextToLocation(
+                         DynamicallyLoadedThrows, tc.componentInstance.viewContainerRef)
+                     .catch((error) => {
                        expect(error.message).toContain('ThrownInConstructor');
                        expect(() => tc.detectChanges()).not.toThrow();
                        async.done();

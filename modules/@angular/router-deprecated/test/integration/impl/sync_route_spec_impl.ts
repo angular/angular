@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-
-import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
 import {Location} from '@angular/common';
-import {Router, Route} from '@angular/router-deprecated';
-import {HelloCmp, UserCmp, TeamCmp, ParentCmp, ParentWithDefaultCmp, DynamicLoaderCmp} from './fixture_components';
-import {PromiseWrapper} from '../../../src/facade/async';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {expect} from '@angular/platform-browser/testing/matchers';
+import {Route, Router} from '@angular/router-deprecated';
+import {TEST_ROUTER_PROVIDERS, clickOnElement, compile, getHref, specs} from '../util';
+
+import {DynamicLoaderCmp, HelloCmp, ParentCmp, ParentWithDefaultCmp, TeamCmp, UserCmp} from './fixture_components';
 
 
 function getLinkElement(rtc: ComponentFixture<any>) {
@@ -497,7 +496,7 @@ function syncRoutesWithDynamicComponents() {
              // something
              // similar basically the assertion needs to run when the world is
              // stable and we don't know when that is, only zones know.
-             PromiseWrapper.resolve(null).then((_) => {
+             Promise.resolve(null).then((_) => {
                fixture.detectChanges();
                expect(fixture.debugElement.nativeElement).toHaveText('[ hello ]');
                async.done();

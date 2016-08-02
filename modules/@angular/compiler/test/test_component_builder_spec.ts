@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {TestComponentBuilder, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, withProviders} from '@angular/core/testing';
-import {Injectable, Component, Input, ViewMetadata, Pipe, NgModule} from '@angular/core';
 import {NgIf} from '@angular/common';
-import {TimerWrapper} from '../src/facade/async';
-import {PromiseWrapper} from '../src/facade/promise';
+import {Component, Injectable, Input, NgModule, Pipe, ViewMetadata} from '@angular/core';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestComponentBuilder, withProviders} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 @Component(
     {selector: 'child-comp', template: `<span>Original {{childBinding}}</span>`, directives: []})
@@ -80,7 +78,7 @@ class AsyncComp {
   text: string = '1';
 
   click() {
-    PromiseWrapper.resolve(null).then((_) => { this.text += '1'; });
+    Promise.resolve(null).then((_) => { this.text += '1'; });
   }
 }
 
@@ -90,7 +88,7 @@ class AsyncChildComp {
 
   @Input()
   set text(value: string) {
-    PromiseWrapper.resolve(null).then((_) => { this.localText = value; });
+    Promise.resolve(null).then((_) => { this.localText = value; });
   }
 }
 
@@ -110,7 +108,7 @@ class AsyncTimeoutComp {
   text: string = '1';
 
   click() {
-    TimerWrapper.setTimeout(() => { this.text += '1'; }, 10);
+    setTimeout(() => { this.text += '1'; }, 10);
   }
 }
 
@@ -120,8 +118,7 @@ class NestedAsyncTimeoutComp {
   text: string = '1';
 
   click() {
-    TimerWrapper.setTimeout(
-        () => { TimerWrapper.setTimeout(() => { this.text += '1'; }, 10); }, 10);
+    setTimeout(() => { setTimeout(() => { this.text += '1'; }, 10); }, 10);
   }
 }
 

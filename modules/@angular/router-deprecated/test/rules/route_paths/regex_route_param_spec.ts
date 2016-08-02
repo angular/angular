@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, it, iit, ddescribe, expect, inject, beforeEach,} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
-import {GeneratedUrl} from '../../../src/rules/route_paths/route_path';
 import {RegexRoutePath} from '../../../src/rules/route_paths/regex_route_path';
+import {GeneratedUrl} from '../../../src/rules/route_paths/route_path';
 import {parser} from '../../../src/url_parser';
 
 function emptySerializer(params: any /** TODO #9100 */) {

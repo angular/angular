@@ -7,7 +7,6 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {DateWrapper, Json, isPresent} from '@angular/facade/src/lang';
 import {MeasureValues, Options, ReflectiveInjector, SampleDescription} from 'benchpress/common';
 import {JsonFileReporter} from 'benchpress/src/reporter/json_file_reporter';
@@ -27,7 +26,7 @@ export function main() {
           provide: Options.WRITE_FILE,
           useValue: (filename, content) => {
             loggedFile = {'filename': filename, 'content': content};
-            return PromiseWrapper.resolve(null);
+            return Promise.resolve(null);
           }
         }
       ];

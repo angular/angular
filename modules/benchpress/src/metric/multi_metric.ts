@@ -7,7 +7,6 @@
  */
 
 import {Injector, OpaqueToken} from '@angular/core/src/di';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {StringMapWrapper} from '@angular/facade/src/collection';
 
 import {Metric} from '../metric';
@@ -30,7 +29,7 @@ export class MultiMetric extends Metric {
    * Starts measuring
    */
   beginMeasure(): Promise<any> {
-    return PromiseWrapper.all(this._metrics.map(metric => metric.beginMeasure()));
+    return Promise.all(this._metrics.map(metric => metric.beginMeasure()));
   }
 
   /**
@@ -39,8 +38,8 @@ export class MultiMetric extends Metric {
    * @param restart: Whether to restart right after this.
    */
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
-    return PromiseWrapper.all(this._metrics.map(metric => metric.endMeasure(restart)))
-        .then(values => mergeStringMaps(values));
+    return Promise.all(this._metrics.map(metric => metric.endMeasure(restart)))
+        .then(values => mergeStringMaps(<any>values));
   }
 
   /**
@@ -52,7 +51,7 @@ export class MultiMetric extends Metric {
   }
 }
 
-function mergeStringMaps(maps: {[key: string]: string}[]): Object {
+function mergeStringMaps(maps: {[key: string]: string}[]): {[key: string]: string} {
   var result = {};
   maps.forEach(
       map => { StringMapWrapper.forEach(map, (value, prop) => { result[prop] = value; }); });

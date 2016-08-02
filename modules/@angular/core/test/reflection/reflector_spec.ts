@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, it, iit, ddescribe, expect, beforeEach,} from '@angular/core/testing/testing_internal';
 import {OnInit} from '@angular/core';
-import {Reflector, ReflectionInfo} from '@angular/core/src/reflection/reflection';
+import {ReflectionInfo, Reflector} from '@angular/core/src/reflection/reflection';
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
-import {ClassDecorator, ParamDecorator, PropDecorator, classDecorator, paramDecorator, propDecorator, HasGetterAndSetterDecorators} from './reflector_common';
+import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+
+import {ClassDecorator, HasGetterAndSetterDecorators, ParamDecorator, PropDecorator, classDecorator, paramDecorator, propDecorator} from './reflector_common';
 
 class AType {
   value: any /** TODO #9100 */;

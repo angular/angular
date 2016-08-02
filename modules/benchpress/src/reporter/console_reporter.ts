@@ -7,7 +7,6 @@
  */
 
 import {OpaqueToken} from '@angular/core/src/di';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
 import {NumberWrapper, isBlank, isPresent, print} from '@angular/facade/src/lang';
 import {Math} from '@angular/facade/src/math';
@@ -80,7 +79,7 @@ export class ConsoleReporter extends Reporter {
       return ConsoleReporter._formatNum(value);
     });
     this._printStringRow(formattedValues);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 
   reportSample(completeSample: MeasureValues[], validSamples: MeasureValues[]): Promise<any> {
@@ -94,7 +93,7 @@ export class ConsoleReporter extends Reporter {
       // hickups for consoles...
       return NumberWrapper.isNaN(cv) ? formattedMean : `${formattedMean}+-${Math.floor(cv)}%`;
     }));
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 
   /** @internal */

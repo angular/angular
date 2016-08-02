@@ -8,7 +8,6 @@
 
 import {Location} from '@angular/common';
 import {Component, Injectable} from '@angular/core';
-import {PromiseCompleter, PromiseWrapper} from '@angular/core/src/facade/async';
 import {DateWrapper, isPresent} from '@angular/core/src/facade/lang';
 import {ActivatedRoute, Router} from '@angular/router';
 
@@ -60,11 +59,7 @@ export class InboxRecord {
 
 @Injectable()
 export class DbService {
-  getData(): Promise<any[]> {
-    var p = new PromiseCompleter<any[]>();
-    p.resolve(db.data);
-    return p.promise;
-  }
+  getData(): Promise<any[]> { return Promise.resolve(db.data); }
 
   drafts(): Promise<any[]> {
     return this.getData().then(
@@ -78,7 +73,7 @@ export class DbService {
   }
 
   email(id: any /** TODO #9100 */): Promise<any> {
-    return PromiseWrapper.then(this.getData(), (data: any[]) => {
+    return this.getData().then((data: any[]) => {
       for (var i = 0; i < data.length; i++) {
         var entry = data[i];
         if (entry['id'] == id) {
@@ -100,7 +95,7 @@ export class InboxCmp {
       const sortType = p['sort'];
       const sortEmailsByDate = isPresent(sortType) && sortType == 'date';
 
-      PromiseWrapper.then(db.emails(), (emails: any[]) => {
+      db.emails().then((emails: any[]) => {
         this.ready = true;
         this.items = emails.map(data => new InboxRecord(data));
 
@@ -124,7 +119,7 @@ export class DraftsCmp {
   private ready: boolean = false;
 
   constructor(private router: Router, db: DbService) {
-    PromiseWrapper.then(db.drafts(), (drafts: any[]) => {
+    db.drafts().then((drafts: any[]) => {
       this.ready = true;
       this.items = drafts.map(data => new InboxRecord(data));
     });

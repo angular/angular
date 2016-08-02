@@ -11,7 +11,6 @@ import {ApplicationRef, COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOpt
 import {BROWSER_PLATFORM_PROVIDERS, BrowserModule, WORKER_APP_PLATFORM_PROVIDERS, WORKER_SCRIPT, WorkerAppModule, platformBrowser, platformWorkerApp, platformWorkerUi} from '@angular/platform-browser';
 
 import {Console} from './core_private';
-import {PromiseWrapper} from './src/facade/async';
 import {ConcreteType, isPresent, stringify} from './src/facade/lang';
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_providers';
 import {CachedXHR} from './src/xhr/xhr_cache';

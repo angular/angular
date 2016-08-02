@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, it, inject,} from '@angular/core/testing/testing_internal';
+import {Injector, NgModule, NgModuleMetadata} from '@angular/core';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
-import {stringify, isBlank} from '../src/facade/lang';
+import {isBlank, stringify} from '../src/facade/lang';
 import {MockNgModuleResolver} from '../testing';
-import {NgModule, NgModuleMetadata, Injector} from '@angular/core';
 
 export function main() {
   describe('MockNgModuleResolver', () => {

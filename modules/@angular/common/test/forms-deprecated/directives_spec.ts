@@ -6,19 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CheckboxControlValueAccessor, Control, ControlGroup, ControlValueAccessor, DefaultValueAccessor, NgControl, NgControlGroup, NgControlName, NgForm, NgFormControl, NgFormModel, NgModel, SelectControlValueAccessor, Validator, Validators} from '@angular/common/src/forms-deprecated';
+import {composeValidators, selectValueAccessor} from '@angular/common/src/forms-deprecated/directives/shared';
+import {SimpleChange} from '@angular/core/src/change_detection';
+import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
-
 import {SpyNgControl, SpyValueAccessor} from '../spies';
-
-import {ControlGroup, Control, NgControlName, NgControlGroup, NgFormModel, ControlValueAccessor, Validators, NgForm, NgModel, NgFormControl, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, Validator} from '@angular/common/src/forms-deprecated';
-
-
-import {selectValueAccessor, composeValidators} from '@angular/common/src/forms-deprecated/directives/shared';
-import {TimerWrapper} from '../../src/facade/async';
-import {PromiseWrapper} from '../../src/facade/promise';
-import {SimpleChange} from '@angular/core/src/change_detection';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue: any /** TODO #9100 */;
@@ -35,14 +29,14 @@ class CustomValidatorDirective implements Validator {
 
 function asyncValidator(expected: any /** TODO #9100 */, timeout = 0) {
   return (c: any /** TODO #9100 */) => {
-    var completer = PromiseWrapper.completer();
-    var res = c.value != expected ? {'async': true} : null;
-    if (timeout == 0) {
-      completer.resolve(res);
-    } else {
-      TimerWrapper.setTimeout(() => { completer.resolve(res); }, timeout);
-    }
-    return completer.promise;
+    return new Promise((resolve) => {
+      var res = c.value != expected ? {'async': true} : null;
+      if (timeout == 0) {
+        resolve(res);
+      } else {
+        setTimeout(() => { resolve(res); }, timeout);
+      }
+    });
   };
 }
 

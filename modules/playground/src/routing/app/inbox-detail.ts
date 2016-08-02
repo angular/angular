@@ -7,7 +7,6 @@
  */
 
 import {Component, NgModule} from '@angular/core';
-import {PromiseWrapper} from '@angular/core/src/facade/async';
 import {ActivatedRoute, RouterModule} from '@angular/router';
 
 import {DbService, InboxRecord} from './inbox-app';
@@ -19,7 +18,7 @@ export class InboxDetailCmp {
 
   constructor(db: DbService, route: ActivatedRoute) {
     route.params.forEach(
-        p => { PromiseWrapper.then(db.email(p['id']), (data) => { this.record.setData(data); }); });
+        p => { db.email(p['id']).then((data) => { this.record.setData(data); }); });
   }
 }
 

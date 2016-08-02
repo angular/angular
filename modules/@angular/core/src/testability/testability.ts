@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '../di/decorators';
-import {ObservableWrapper} from '../facade/async';
 import {Map, MapWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
 import {scheduleMicroTask} from '../facade/lang';
@@ -40,18 +39,22 @@ export class Testability {
 
   /** @internal */
   _watchAngularEvents(): void {
-    ObservableWrapper.subscribe(this._ngZone.onUnstable, (_) => {
-      this._didWork = true;
-      this._isZoneStable = false;
+    this._ngZone.onUnstable.subscribe({
+      next: () => {
+        this._didWork = true;
+        this._isZoneStable = false;
+      }
     });
 
     this._ngZone.runOutsideAngular(() => {
-      ObservableWrapper.subscribe(this._ngZone.onStable, (_) => {
-        NgZone.assertNotInAngularZone();
-        scheduleMicroTask(() => {
-          this._isZoneStable = true;
-          this._runCallbacksIfReady();
-        });
+      this._ngZone.onStable.subscribe({
+        next: () => {
+          NgZone.assertNotInAngularZone();
+          scheduleMicroTask(() => {
+            this._isZoneStable = true;
+            this._runCallbacksIfReady();
+          });
+        }
       });
     });
   }

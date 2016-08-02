@@ -8,7 +8,7 @@
 
 import {Directive, Inject, OnChanges, Optional, Self, SimpleChanges, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {Control} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
@@ -94,6 +94,6 @@ export class NgModel extends NgControl implements OnChanges {
 
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
-                ObservableWrapper.callEmit(this.update, newValue);
+                this.update.emit(newValue);
               }
 }

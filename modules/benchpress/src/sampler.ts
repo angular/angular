@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {Date, DateWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from './common_options';
@@ -82,7 +81,7 @@ export class Sampler {
     if (isPresent(this._prepare)) {
       resultPromise = this._driver.waitFor(this._prepare);
     } else {
-      resultPromise = PromiseWrapper.resolve(null);
+      resultPromise = Promise.resolve(null);
     }
     if (isPresent(this._prepare) || lastState.completeSample.length === 0) {
       resultPromise = resultPromise.then((_) => this._metric.beginMeasure());
