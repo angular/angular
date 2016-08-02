@@ -350,11 +350,13 @@ export function main() {
            }));
 
     it('should support form arrays',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
-         const form = new FormGroup({cities: cityArray});
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+             const form = new FormGroup({cities: cityArray});
 
-         const t = `<div [formGroup]="form">
+             const t = `<div [formGroup]="form">
                 <div formArrayName="cities">
                   <div *ngFor="let city of cityArray.controls; let i=index">
                     <input [formControlName]="i">
@@ -362,27 +364,71 @@ export function main() {
                 </div>
                </div>`;
 
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           fixture.debugElement.componentInstance.form = form;
-           fixture.debugElement.componentInstance.cityArray = cityArray;
-           fixture.detectChanges();
-           tick();
+             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.debugElement.componentInstance.cityArray = cityArray;
+               fixture.detectChanges();
 
-           const inputs = fixture.debugElement.queryAll(By.css('input'));
-           expect(inputs[0].nativeElement.value).toEqual('SF');
-           expect(inputs[1].nativeElement.value).toEqual('NY');
-           expect(fixture.componentInstance.form.value).toEqual({cities: ['SF', 'NY']});
+               const inputs = fixture.debugElement.queryAll(By.css('input'));
+               expect(inputs[0].nativeElement.value).toEqual('SF');
+               expect(inputs[1].nativeElement.value).toEqual('NY');
+               expect(fixture.componentInstance.form.value).toEqual({cities: ['SF', 'NY']});
 
-           inputs[0].nativeElement.value = 'LA';
-           dispatchEvent(inputs[0].nativeElement, 'input');
+               inputs[0].nativeElement.value = 'LA';
+               dispatchEvent(inputs[0].nativeElement, 'input');
 
-           fixture.detectChanges();
-           tick();
+               fixture.detectChanges();
 
-           expect(fixture.componentInstance.form.value).toEqual({cities: ['LA', 'NY']});
+               expect(fixture.componentInstance.form.value).toEqual({cities: ['LA', 'NY']});
+               async.done();
+             });
+           }));
 
-         });
-       })));
+    it('should support form groups nested in form arrays',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             const cityArray = new FormArray([
+               new FormGroup({town: new FormControl('SF'), state: new FormControl('CA')}),
+               new FormGroup({town: new FormControl('NY'), state: new FormControl('NY')})
+             ]);
+             const form = new FormGroup({cities: cityArray});
+
+             const t = `<div [formGroup]="form">
+                <div formArrayName="cities">
+                  <div *ngFor="let city of cityArray.controls; let i=index" [formGroupName]="i">
+                    <input formControlName="town">
+                    <input formControlName="state">
+                  </div>
+                </div>
+               </div>`;
+
+             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+               fixture.debugElement.componentInstance.form = form;
+               fixture.debugElement.componentInstance.cityArray = cityArray;
+               fixture.detectChanges();
+
+               const inputs = fixture.debugElement.queryAll(By.css('input'));
+               expect(inputs[0].nativeElement.value).toEqual('SF');
+               expect(inputs[1].nativeElement.value).toEqual('CA');
+               expect(inputs[2].nativeElement.value).toEqual('NY');
+               expect(inputs[3].nativeElement.value).toEqual('NY');
+               expect(fixture.componentInstance.form.value).toEqual({
+                 cities: [{town: 'SF', state: 'CA'}, {town: 'NY', state: 'NY'}]
+               });
+
+               inputs[0].nativeElement.value = 'LA';
+               dispatchEvent(inputs[0].nativeElement, 'input');
+
+               fixture.detectChanges();
+
+               expect(fixture.componentInstance.form.value).toEqual({
+                 cities: [{town: 'LA', state: 'CA'}, {town: 'NY', state: 'NY'}]
+               });
+
+               async.done();
+             });
+           }));
 
     it('should support pushing new controls to form arrays',
        fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {

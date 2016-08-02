@@ -20,8 +20,7 @@ import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from '../shared';
 
-import {FormArrayName} from './form_array_name';
-import {FormGroupName} from './form_group_name';
+import {FormArrayName, FormGroupName} from './form_group_name';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
