@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 
 import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isMetadataError, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isMetadataError, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression} from './schema';
 import {Symbols} from './symbols';
 
 
@@ -20,6 +20,7 @@ export class MetadataCollector {
     const locals = new Symbols(sourceFile);
     const evaluator = new Evaluator(locals);
     let metadata: {[name: string]: MetadataValue | ClassMetadata | FunctionMetadata}|undefined;
+    let exports: ModuleExportMetadata[];
 
     function objFromDecorator(decoratorNode: ts.Decorator): MetadataSymbolicExpression {
       return <MetadataSymbolicExpression>evaluator.evaluateNode(decoratorNode.expression);
@@ -202,6 +203,25 @@ export class MetadataCollector {
     });
     ts.forEachChild(sourceFile, node => {
       switch (node.kind) {
+        case ts.SyntaxKind.ExportDeclaration:
+          // Record export declarations
+          const exportDeclaration = <ts.ExportDeclaration>node;
+          const moduleSpecifier = exportDeclaration.moduleSpecifier;
+          if (moduleSpecifier && moduleSpecifier.kind == ts.SyntaxKind.StringLiteral) {
+            // Ignore exports that don't have string literals as exports.
+            // This is allowed by the syntax but will be flagged as an error by the type checker.
+            const from = (<ts.StringLiteral>moduleSpecifier).text;
+            const moduleExport: ModuleExportMetadata = {from};
+            if (exportDeclaration.exportClause) {
+              moduleExport.export = exportDeclaration.exportClause.elements.map(
+                  element => element.propertyName ?
+                      {name: element.propertyName.text, as: element.name.text} :
+                      element.name.text)
+            }
+            if (!exports) exports = [];
+            exports.push(moduleExport);
+          }
+          break;
         case ts.SyntaxKind.ClassDeclaration:
           const classDeclaration = <ts.ClassDeclaration>node;
           const className = classDeclaration.name.text;
@@ -320,7 +340,12 @@ export class MetadataCollector {
       }
     });
 
-    return metadata && {__symbolic: 'module', version: VERSION, metadata};
+    if (metadata || exports) {
+      if (!metadata) metadata = {};
+      const result: ModuleMetadata = {__symbolic: 'module', version: VERSION, metadata};
+      if (exports) result.exports = exports;
+      return result;
+    }
   }
 }
 
