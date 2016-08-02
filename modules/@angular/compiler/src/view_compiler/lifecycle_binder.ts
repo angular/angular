@@ -78,11 +78,11 @@ export function bindDirectiveAfterViewLifecycleCallbacks(
 }
 
 export function bindInjectableDestroyLifecycleCallbacks(
-    provider: ProviderAst, directiveInstance: o.Expression, compileElement: CompileElement) {
+    provider: ProviderAst, providerInstance: o.Expression, compileElement: CompileElement) {
   var onDestroyMethod = compileElement.view.destroyMethod;
   onDestroyMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
   if (provider.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
-    onDestroyMethod.addStmt(directiveInstance.callMethod('ngOnDestroy', []).toStmt());
+    onDestroyMethod.addStmt(providerInstance.callMethod('ngOnDestroy', []).toStmt());
   }
 }
 

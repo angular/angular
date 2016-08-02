@@ -311,7 +311,7 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toBe(SomeComp);
       });
 
-      it('should crate ComponentFactories in imported modules', () => {
+      it('should create ComponentFactories in imported modules', () => {
         @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
         class SomeImportedModule {
         }

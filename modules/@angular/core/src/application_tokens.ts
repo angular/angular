@@ -48,7 +48,10 @@ function _randomChar(): string {
 export const PLATFORM_INITIALIZER: any = new OpaqueToken('Platform Initializer');
 
 /**
- * All callbacks provided via this token will be called when a component has been bootstrapped.
+ * All callbacks provided via this token will be called for every component that is bootstrapped.
+ * Signature of the callback:
+ *
+ * `(componentRef: ComponentRef) => void`.
  *
  * @experimental
  */

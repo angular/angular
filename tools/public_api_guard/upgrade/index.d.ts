@@ -14,8 +14,8 @@ export declare class UpgradeAdapter {
 export declare class UpgradeAdapterRef {
     ng1Injector: angular.IInjectorService;
     ng1RootScope: angular.IRootScopeService;
-    ng2ApplicationRef: ApplicationRef;
     ng2Injector: Injector;
+    ng2ModuleRef: NgModuleRef<any>;
     dispose(): void;
     ready(fn: (upgradeAdapterRef?: UpgradeAdapterRef) => void): void;
 }

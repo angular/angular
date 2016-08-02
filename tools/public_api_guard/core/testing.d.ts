@@ -62,6 +62,9 @@ export declare type MetadataOverride<T> = {
 /** @deprecated */
 export declare function resetBaseTestProviders(): void;
 
+/** @experimental */
+export declare function resetFakeAsyncZone(): void;
+
 /** @deprecated */
 export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
 

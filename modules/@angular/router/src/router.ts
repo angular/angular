@@ -196,9 +196,6 @@ export class Router {
     this.config = config;
   }
 
-  /**
-   * @internal
-   */
   ngOnDestroy() { this.dispose(); }
 
   /**

@@ -548,9 +548,6 @@ export class RootRouter extends Router {
     return promise;
   }
 
-  /**
-   * @internal
-   */
   ngOnDestroy() { this.dispose(); }
 
   dispose(): void {
