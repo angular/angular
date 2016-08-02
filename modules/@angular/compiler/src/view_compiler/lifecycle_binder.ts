@@ -9,7 +9,7 @@
 import {LifecycleHooks} from '../../core_private';
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
 import * as o from '../output/output_ast';
-import {DirectiveAst} from '../template_parser/template_ast';
+import {DirectiveAst, ProviderAst} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
@@ -77,12 +77,11 @@ export function bindDirectiveAfterViewLifecycleCallbacks(
   }
 }
 
-export function bindDirectiveDestroyLifecycleCallbacks(
-    directiveMeta: CompileDirectiveMetadata, directiveInstance: o.Expression,
-    compileElement: CompileElement) {
+export function bindInjectableDestroyLifecycleCallbacks(
+    provider: ProviderAst, directiveInstance: o.Expression, compileElement: CompileElement) {
   var onDestroyMethod = compileElement.view.destroyMethod;
   onDestroyMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
-  if (directiveMeta.type.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
+  if (provider.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
     onDestroyMethod.addStmt(directiveInstance.callMethod('ngOnDestroy', []).toStmt());
   }
 }

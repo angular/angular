@@ -1026,6 +1026,20 @@ export function main() {
                'pipeWithOnDestroy.ngOnDestroy'
              ]);
            }));
+
+        it('should call ngOnDestroy on an injectable class', fakeAsync(() => {
+             var ctx = createCompFixture(
+                 '<div testDirective="dir"></div>', TestComponent,
+                 tcb.overrideProviders(TestDirective, [InjectableWithLifecycle]));
+             ctx.debugElement.children[0].injector.get(InjectableWithLifecycle);
+             ctx.detectChanges(false);
+
+             ctx.destroy();
+
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'dir.ngOnDestroy', 'injectable.ngOnDestroy'
+             ]);
+           }));
       });
 
     });
@@ -1384,6 +1398,14 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
       throw new BaseException('Boom!');
     }
   }
+}
+
+@Injectable()
+class InjectableWithLifecycle {
+  name = 'injectable';
+  constructor(public log: DirectiveLog) {}
+
+  ngOnDestroy() { this.log.add(this.name, 'ngOnDestroy'); }
 }
 
 @Directive({selector: '[orderCheck0]'})

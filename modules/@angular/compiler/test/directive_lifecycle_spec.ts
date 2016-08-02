@@ -8,7 +8,7 @@
 
 import {beforeEach, xdescribe, ddescribe, describe, expect, iit, inject, it,} from '@angular/core/testing/testing_internal';
 
-import {hasLifecycleHook} from '@angular/compiler/src/directive_lifecycle_reflector';
+import {hasLifecycleHook} from '@angular/compiler/src/lifecycle_reflector';
 import {LifecycleHooks} from '@angular/core/src/metadata/lifecycle_hooks';
 
 export function main() {
