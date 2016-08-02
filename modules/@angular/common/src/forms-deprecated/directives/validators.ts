@@ -35,7 +35,7 @@ import {NG_VALIDATORS, Validators} from '../validators';
  */
 export interface Validator { validate(c: AbstractControl): {[key: string]: any}; }
 
-const REQUIRED = Validators.required;
+export const REQUIRED = Validators.required;
 
 export const REQUIRED_VALIDATOR: any = {
   provide: NG_VALIDATORS,

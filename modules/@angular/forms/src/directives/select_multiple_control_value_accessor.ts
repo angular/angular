@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Host, Input, OnDestroy, OpaqueToken, Optional, Renderer, Type, forwardRef} from '@angular/core';
 
 import {MapWrapper} from '../facade/collection';
 import {StringWrapper, isBlank, isPresent, isPrimitive, isString, looseIdentical} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-const SELECT_MULTIPLE_VALUE_ACCESSOR = {
+export const SELECT_MULTIPLE_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectMultipleControlValueAccessor),
   multi: true

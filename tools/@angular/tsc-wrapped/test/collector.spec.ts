@@ -24,6 +24,7 @@ describe('Collector', () => {
       'exported-functions.ts',
       'exported-enum.ts',
       'exported-consts.ts',
+      'local-symbol-ref.ts',
       're-exports.ts',
       'static-field-reference.ts',
       'static-method.ts',
@@ -486,6 +487,28 @@ describe('Collector', () => {
       {from: 'angular2/core'}
     ]);
   });
+
+  it('should collect an error symbol if collecting a reference to a non-exported symbol', () => {
+    let source = program.getSourceFile('/local-symbol-ref.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({
+      REQUIRED_VALIDATOR: {
+        __symbolic: 'error',
+        message: 'Reference to a local symbol',
+        line: 3,
+        character: 9,
+        context: {name: 'REQUIRED'}
+      },
+      SomeComponent: {
+        __symbolic: 'class',
+        decorators: [{
+          __symbolic: 'call',
+          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+          arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
+        }]
+      }
+    });
+  });
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -799,6 +822,22 @@ const FILES: Directory = {
     export {Foo as OtherModule} from './static-field-reference.ts';
     export * from 'angular2/core';
   `,
+  'local-symbol-ref.ts': `
+    import {Component, Validators} from 'angular2/core';
+
+    const REQUIRED = Validators.required;
+
+    export const REQUIRED_VALIDATOR: any = {
+      provide: 'SomeToken',
+      useValue: REQUIRED,
+      multi: true
+    };
+
+    @Component({
+      providers: [REQUIRED_VALIDATOR]
+    })
+    export class SomeComponent {}
+  `,
   'node_modules': {
     'angular2': {
       'core.d.ts': `
@@ -848,6 +887,9 @@ const FILES: Directory = {
           export declare var Injectable: InjectableFactory;
           export interface OnInit {
               ngOnInit(): any;
+          }
+          export class Validators {
+            static required(): void;
           }
       `,
       'common.d.ts': `

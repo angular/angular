@@ -594,6 +594,10 @@ function expandedMessage(error: any): string {
           error.context && error.context.name ? `Calling function '${error.context.name}', f` : 'F';
       return prefix +
           'unction calls are not supported. Consider replacing the function or lambda with a reference to an exported function';
+    case 'Reference to a local symbol':
+      if (error.context && error.context.name) {
+        return `Reference to a local (non-exported) symbol '${error.context.name}'. Consider exporting the symbol`;
+      }
   }
   return error.message;
 }

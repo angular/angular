@@ -297,13 +297,19 @@ export class MetadataCollector {
               } else {
                 varValue = errorSym('Variable not initialized', nameNode);
               }
+              let exported = false;
               if (variableStatement.flags & ts.NodeFlags.Export ||
                   variableDeclaration.flags & ts.NodeFlags.Export) {
                 if (!metadata) metadata = {};
                 metadata[nameNode.text] = varValue;
+                exported = true;
               }
               if (isPrimitive(varValue)) {
                 locals.define(nameNode.text, varValue);
+              } else if (!exported) {
+                locals.define(
+                    nameNode.text,
+                    errorSym('Reference to a local symbol', nameNode, {name: nameNode.text}));
               }
             } else {
               // Destructuring (or binding) declarations are not supported,
