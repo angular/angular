@@ -549,30 +549,27 @@ export class ApplicationRef_ extends ApplicationRef {
       throw new BaseException(
           'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
     }
-    return this.run(() => {
-      let componentFactory: ComponentFactory<C>;
-      if (componentOrFactory instanceof ComponentFactory) {
-        componentFactory = componentOrFactory;
-      } else {
-        componentFactory =
-            this._componentFactoryResolver.resolveComponentFactory(componentOrFactory);
-      }
-      this._rootComponentTypes.push(componentFactory.componentType);
-      var compRef = componentFactory.create(this._injector, [], componentFactory.selector);
-      compRef.onDestroy(() => { this._unloadComponent(compRef); });
-      var testability = compRef.injector.get(Testability, null);
-      if (isPresent(testability)) {
-        compRef.injector.get(TestabilityRegistry)
-            .registerApplication(compRef.location.nativeElement, testability);
-      }
+    let componentFactory: ComponentFactory<C>;
+    if (componentOrFactory instanceof ComponentFactory) {
+      componentFactory = componentOrFactory;
+    } else {
+      componentFactory = this._componentFactoryResolver.resolveComponentFactory(componentOrFactory);
+    }
+    this._rootComponentTypes.push(componentFactory.componentType);
+    var compRef = componentFactory.create(this._injector, [], componentFactory.selector);
+    compRef.onDestroy(() => { this._unloadComponent(compRef); });
+    var testability = compRef.injector.get(Testability, null);
+    if (isPresent(testability)) {
+      compRef.injector.get(TestabilityRegistry)
+          .registerApplication(compRef.location.nativeElement, testability);
+    }
 
-      this._loadComponent(compRef);
-      if (isDevMode()) {
-        this._console.log(
-            `Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.`);
-      }
-      return compRef;
-    });
+    this._loadComponent(compRef);
+    if (isDevMode()) {
+      this._console.log(
+          `Angular 2 is running in the development mode. Call enableProdMode() to enable the production mode.`);
+    }
+    return compRef;
   }
 
   /** @internal */
