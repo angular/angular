@@ -9,8 +9,6 @@
 import {Component, ComponentRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {DynamicComponentLoader} from '@angular/core/src/linker/dynamic_component_loader';
 import {AsyncRoute, ROUTER_DIRECTIVES, Redirect, Route, RouteConfig, RouteData, RouteParams} from '@angular/router-deprecated';
-
-import {PromiseWrapper} from '../../../src/facade/async';
 import {isPresent} from '../../../src/facade/lang';
 
 @Component({selector: 'goodbye-cmp', template: `{{farewell}}`})
@@ -26,7 +24,7 @@ export class HelloCmp {
 }
 
 export function helloCmpLoader() {
-  return PromiseWrapper.resolve(HelloCmp);
+  return Promise.resolve(HelloCmp);
 }
 
 
@@ -37,7 +35,7 @@ export class UserCmp {
 }
 
 export function userCmpLoader() {
-  return PromiseWrapper.resolve(UserCmp);
+  return Promise.resolve(UserCmp);
 }
 
 
@@ -51,7 +49,7 @@ export class ParentCmp {
 }
 
 export function parentCmpLoader() {
-  return PromiseWrapper.resolve(ParentCmp);
+  return Promise.resolve(ParentCmp);
 }
 
 
@@ -65,7 +63,7 @@ export class AsyncParentCmp {
 }
 
 export function asyncParentCmpLoader() {
-  return PromiseWrapper.resolve(AsyncParentCmp);
+  return Promise.resolve(AsyncParentCmp);
 }
 
 @Component({
@@ -79,7 +77,7 @@ export class AsyncDefaultParentCmp {
 }
 
 export function asyncDefaultParentCmpLoader() {
-  return PromiseWrapper.resolve(AsyncDefaultParentCmp);
+  return Promise.resolve(AsyncDefaultParentCmp);
 }
 
 
@@ -93,7 +91,7 @@ export class ParentWithDefaultCmp {
 }
 
 export function parentWithDefaultCmpLoader() {
-  return PromiseWrapper.resolve(ParentWithDefaultCmp);
+  return Promise.resolve(ParentWithDefaultCmp);
 }
 
 
@@ -120,7 +118,7 @@ export class AsyncTeamCmp {
 }
 
 export function asyncTeamLoader() {
-  return PromiseWrapper.resolve(AsyncTeamCmp);
+  return Promise.resolve(AsyncTeamCmp);
 }
 
 
@@ -131,7 +129,7 @@ export class RouteDataCmp {
 }
 
 export function asyncRouteDataCmp() {
-  return PromiseWrapper.resolve(RouteDataCmp);
+  return Promise.resolve(RouteDataCmp);
 }
 
 @Component({selector: 'redirect-to-parent-cmp', template: 'redirect-to-parent'})

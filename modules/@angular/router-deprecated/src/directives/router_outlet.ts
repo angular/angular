@@ -8,7 +8,7 @@
 
 import {Attribute, ComponentRef, Directive, DynamicComponentLoader, OnDestroy, Output, ReflectiveInjector, ViewContainerRef, provide} from '@angular/core';
 
-import {EventEmitter, PromiseWrapper} from '../facade/async';
+import {EventEmitter} from '../facade/async';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {ComponentInstruction, RouteData, RouteParams} from '../instruction';
@@ -17,7 +17,7 @@ import * as hookMod from '../lifecycle/lifecycle_annotations';
 import {hasLifecycleHook} from '../lifecycle/route_lifecycle_reflector';
 import * as routerMod from '../router';
 
-let _resolveToTrue = PromiseWrapper.resolve(true);
+let _resolveToTrue = Promise.resolve(true);
 
 /**
  * A router outlet is a placeholder that Angular dynamically fills based on the application's route.
@@ -91,7 +91,7 @@ export class RouterOutlet implements OnDestroy {
     if (isBlank(this._componentRef)) {
       return this.activate(nextInstruction);
     } else {
-      return PromiseWrapper.resolve(
+      return Promise.resolve(
           hasLifecycleHook(hookMod.routerOnReuse, this._currentInstruction.componentType) ?
               this._componentRef.then(
                   (ref: ComponentRef<any>) =>
@@ -169,7 +169,7 @@ export class RouterOutlet implements OnDestroy {
           (isPresent(nextInstruction.params) && isPresent(this._currentInstruction.params) &&
            StringMapWrapper.equals(nextInstruction.params, this._currentInstruction.params));
     }
-    return <Promise<boolean>>PromiseWrapper.resolve(result);
+    return <Promise<boolean>>Promise.resolve(result);
   }
 
   ngOnDestroy(): void { this._parentRouter.unregisterPrimaryOutlet(this); }

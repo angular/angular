@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-
-import {Component} from '@angular/core';
 import {NgIf} from '@angular/common';
+import {Component} from '@angular/core';
+import {TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('ngIf directive', () => {

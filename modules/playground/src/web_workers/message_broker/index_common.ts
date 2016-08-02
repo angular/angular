@@ -7,7 +7,6 @@
  */
 
 import {Component} from '@angular/core';
-import {PromiseWrapper} from '@angular/core/src/facade/async';
 import {PRIMITIVE, ServiceMessageBrokerFactory} from '@angular/platform-browser';
 
 const ECHO_CHANNEL = 'ECHO';
@@ -20,6 +19,12 @@ export class App {
   }
 
   private _echo(val: string) {
-    return PromiseWrapper.wrap(() => { return val; });
+    return new Promise((res, rej) => {
+      try {
+        res(val);
+      } catch (e) {
+        rej(e);
+      }
+    });
   }
 }

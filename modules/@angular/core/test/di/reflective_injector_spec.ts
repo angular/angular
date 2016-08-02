@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Inject, InjectMetadata, Injectable, Injector, Optional, ReflectiveInjector, ReflectiveKey, SelfMetadata, forwardRef} from '@angular/core';
+import {DependencyMetadata} from '@angular/core/src/di/metadata';
+import {ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, ReflectiveInjector_, ReflectiveProtoInjector} from '@angular/core/src/di/reflective_injector';
+import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {BaseException} from '../../src/facade/exceptions';
 import {isBlank, isPresent, stringify} from '../../src/facade/lang';
-
-import {ReflectiveKey, ReflectiveInjector, Injector, forwardRef, Injectable, InjectMetadata, SelfMetadata, Optional, Inject,} from '@angular/core';
-import {ReflectiveInjector_, ReflectiveInjectorInlineStrategy, ReflectiveInjectorDynamicStrategy, ReflectiveProtoInjector} from '@angular/core/src/di/reflective_injector';
-import {DependencyMetadata} from '@angular/core/src/di/metadata';
-import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 
 class CustomDependencyMetadata extends DependencyMetadata {}
 

@@ -7,7 +7,6 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {Json, isBlank} from '@angular/facade/src/lang';
 import {ChromeDriverExtension, Options, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from 'benchpress/common';
 
@@ -433,13 +432,12 @@ export function main() {
 
         it('should throw when ImplThreadRenderingStats contains more than one frame',
            inject([AsyncTestCompleter], (async) => {
-             PromiseWrapper.catchError(
-                 createExtension([
-                   benchmarkEvents.instant(
-                       'BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
-                       {'data': {'frame_count': 2}})
-                 ]).readPerfLog(),
-                 (err): any => {
+
+             createExtension([benchmarkEvents.instant(
+                                 'BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
+                                 {'data': {'frame_count': 2}})])
+                 .readPerfLog()
+                 .catch((err): any => {
                    expect(() => {
                      throw err;
                    }).toThrowError('multi-frame render stats not supported');
@@ -468,14 +466,14 @@ export function main() {
          }));
 
       it('should throw an error on buffer overflow', inject([AsyncTestCompleter], (async) => {
-           PromiseWrapper.catchError(
-               createExtension(
-                   [
-                     chromeTimelineEvents.start('FunctionCall', 1234),
-                   ],
-                   CHROME45_USER_AGENT, 'Tracing.bufferUsage')
-                   .readPerfLog(),
-               (err): any => {
+
+           createExtension(
+               [
+                 chromeTimelineEvents.start('FunctionCall', 1234),
+               ],
+               CHROME45_USER_AGENT, 'Tracing.bufferUsage')
+               .readPerfLog()
+               .catch((err): any => {
                  expect(() => {
                    throw err;
                  }).toThrowError('The DevTools trace buffer filled during the test!');
@@ -501,13 +499,13 @@ class MockDriverAdapter extends WebDriverAdapter {
 
   executeScript(script) {
     this._log.push(['executeScript', script]);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 
   logs(type) {
     this._log.push(['logs', type]);
     if (type === 'performance') {
-      return PromiseWrapper.resolve(this._events.map((event) => {
+      return Promise.resolve(this._events.map((event) => {
         return {
           'message': Json.stringify({'message': {'method': this._messageMethod, 'params': event}})
         };

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PromiseWrapper} from '../facade/async';
 import {Map} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
 import {isBlank, isFunction, isPresent} from '../facade/lang';
@@ -120,7 +119,7 @@ export class RuleSet {
 
     // handle cases where we are routing just to an aux route
     if (solutions.length == 0 && isPresent(urlParse) && urlParse.auxiliary.length > 0) {
-      return [PromiseWrapper.resolve(new PathMatch(null, null, urlParse.auxiliary))];
+      return [Promise.resolve(new PathMatch(null, null, urlParse.auxiliary))];
     }
 
     return solutions;
@@ -132,7 +131,7 @@ export class RuleSet {
       return [routeRecognizer.recognize(urlParse)];
     }
 
-    return [PromiseWrapper.resolve(null)];
+    return [Promise.resolve(null)];
   }
 
   hasRoute(name: string): boolean { return this.rulesByName.has(name); }

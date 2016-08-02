@@ -12,8 +12,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, Component, ComponentFactoryResolver, ComponentMe
 import {TestBed, TestComponentBuilder, addProviders, async, fakeAsync, inject, tick, withModule, withProviders} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {stringify} from '../../http/src/facade/lang';
-import {PromiseWrapper} from '../../http/src/facade/promise';
+import {stringify} from '../src/facade/lang';
 
 // Services, and components for the tests.
 
@@ -422,29 +421,39 @@ export function main() {
     var originalJasmineBeforeEach: any;
 
     var patchJasmineIt = () => {
-      var deferred = PromiseWrapper.completer();
+      var resolve: (result: any) => void;
+      var reject: (error: any) => void;
+      var promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
       originalJasmineIt = jasmine.getEnv().it;
       jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
-        var done = () => { deferred.resolve(); };
-        (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err); };
+        var done = () => { resolve(null); };
+        (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
         fn(done);
         return null;
       };
-      return deferred.promise;
+      return promise;
     };
 
     var restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
     var patchJasmineBeforeEach = () => {
-      var deferred = PromiseWrapper.completer();
+      var resolve: (result: any) => void;
+      var reject: (error: any) => void;
+      var promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
       originalJasmineBeforeEach = jasmine.getEnv().beforeEach;
       jasmine.getEnv().beforeEach = (fn: any) => {
-        var done = () => { deferred.resolve(); };
-        (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err); };
+        var done = () => { resolve(null); };
+        (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
         fn(done);
         return null;
       };
-      return deferred.promise;
+      return promise;
     };
 
     var restoreJasmineBeforeEach =
@@ -470,10 +479,11 @@ export function main() {
       var itPromise = patchJasmineIt();
 
       it('should fail with an error from a promise', async(inject([], () => {
-           var deferred = PromiseWrapper.completer();
-           var p = deferred.promise.then(() => { expect(1).toEqual(2); });
+           var reject: (error: any) => void;
+           var promise = new Promise((_, rej) => { reject = rej; });
+           var p = promise.then(() => { expect(1).toEqual(2); });
 
-           deferred.reject('baz');
+           reject('baz');
            return p;
          })));
 

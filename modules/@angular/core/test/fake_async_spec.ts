@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {discardPeriodicTasks, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {Log, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
-import {fakeAsync, flushMicrotasks, tick, discardPeriodicTasks,} from '@angular/core/testing';
-import {TimerWrapper, PromiseWrapper} from '../../router-deprecated/src/facade/async';
-import {BaseException} from '../../router-deprecated/src/facade/exceptions';
+
 import {Parser} from '../../compiler/src/expression_parser/parser';
+import {BaseException} from '../../router-deprecated/src/facade/exceptions';
+
+const resolvedPromise = Promise.resolve(null);
 
 export function main() {
   describe('fake async', () => {
@@ -42,7 +44,7 @@ export function main() {
     it('should flush microtasks before returning', () => {
       var thenRan = false;
 
-      fakeAsync(() => { PromiseWrapper.resolve(null).then(_ => { thenRan = true; }); })();
+      fakeAsync(() => { resolvedPromise.then(_ => { thenRan = true; }); })();
 
       expect(thenRan).toEqual(true);
     });
@@ -54,7 +56,7 @@ export function main() {
     describe('Promise', () => {
       it('should run asynchronous code', fakeAsync(() => {
            var thenRan = false;
-           PromiseWrapper.resolve(null).then((_) => { thenRan = true; });
+           resolvedPromise.then((_) => { thenRan = true; });
 
            expect(thenRan).toEqual(false);
 
@@ -65,7 +67,7 @@ export function main() {
       it('should run chained thens', fakeAsync(() => {
            var log = new Log();
 
-           PromiseWrapper.resolve(null).then((_) => log.add(1)).then((_) => log.add(2));
+           resolvedPromise.then((_) => log.add(1)).then((_) => log.add(2));
 
            expect(log.result()).toEqual('');
 
@@ -76,9 +78,9 @@ export function main() {
       it('should run Promise created in Promise', fakeAsync(() => {
            var log = new Log();
 
-           PromiseWrapper.resolve(null).then((_) => {
+           resolvedPromise.then((_) => {
              log.add(1);
-             PromiseWrapper.resolve(null).then((_) => log.add(2));
+             resolvedPromise.then((_) => log.add(2));
            });
 
            expect(log.result()).toEqual('');
@@ -90,7 +92,7 @@ export function main() {
       it('should complain if the test throws an exception during async calls', () => {
         expect(() => {
           fakeAsync(() => {
-            PromiseWrapper.resolve(null).then((_) => { throw new BaseException('async'); });
+            resolvedPromise.then((_) => { throw new BaseException('async'); });
             flushMicrotasks();
           })();
         }).toThrowError('Uncaught (in promise): async');
@@ -107,7 +109,7 @@ export function main() {
     describe('timers', () => {
       it('should run queued zero duration timer on zero tick', fakeAsync(() => {
            var ran = false;
-           TimerWrapper.setTimeout(() => { ran = true; }, 0);
+           setTimeout(() => { ran = true; }, 0);
 
            expect(ran).toEqual(false);
 
@@ -118,7 +120,7 @@ export function main() {
 
       it('should run queued timer after sufficient clock ticks', fakeAsync(() => {
            var ran = false;
-           TimerWrapper.setTimeout(() => { ran = true; }, 10);
+           setTimeout(() => { ran = true; }, 10);
 
            tick(6);
            expect(ran).toEqual(false);
@@ -129,7 +131,7 @@ export function main() {
 
       it('should run queued timer only once', fakeAsync(() => {
            var cycles = 0;
-           TimerWrapper.setTimeout(() => { cycles++; }, 10);
+           setTimeout(() => { cycles++; }, 10);
 
            tick(10);
            expect(cycles).toEqual(1);
@@ -143,8 +145,8 @@ export function main() {
 
       it('should not run cancelled timer', fakeAsync(() => {
            var ran = false;
-           var id = TimerWrapper.setTimeout(() => { ran = true; }, 10);
-           TimerWrapper.clearTimeout(id);
+           var id = setTimeout(() => { ran = true; }, 10);
+           clearTimeout(id);
 
            tick(10);
            expect(ran).toEqual(false);
@@ -152,19 +154,19 @@ export function main() {
 
       it('should throw an error on dangling timers', () => {
         expect(() => {
-          fakeAsync(() => { TimerWrapper.setTimeout(() => {}, 10); })();
+          fakeAsync(() => { setTimeout(() => {}, 10); })();
         }).toThrowError('1 timer(s) still in the queue.');
       });
 
       it('should throw an error on dangling periodic timers', () => {
         expect(() => {
-          fakeAsync(() => { TimerWrapper.setInterval(() => {}, 10); })();
+          fakeAsync(() => { setInterval(() => {}, 10); })();
         }).toThrowError('1 periodic timer(s) still in the queue.');
       });
 
       it('should run periodic timers', fakeAsync(() => {
            var cycles = 0;
-           var id = TimerWrapper.setInterval(() => { cycles++; }, 10);
+           var id = setInterval(() => { cycles++; }, 10);
 
            tick(10);
            expect(cycles).toEqual(1);
@@ -174,14 +176,13 @@ export function main() {
 
            tick(10);
            expect(cycles).toEqual(3);
-
-           TimerWrapper.clearInterval(id);
+           clearInterval(id);
          }));
 
       it('should not run cancelled periodic timer', fakeAsync(() => {
            var ran = false;
-           var id = TimerWrapper.setInterval(() => { ran = true; }, 10);
-           TimerWrapper.clearInterval(id);
+           var id = setInterval(() => { ran = true; }, 10);
+           clearInterval(id);
 
            tick(10);
            expect(ran).toEqual(false);
@@ -191,9 +192,9 @@ export function main() {
            var cycles = 0;
            var id: any /** TODO #9100 */;
 
-           id = TimerWrapper.setInterval(() => {
+           id = setInterval(() => {
              cycles++;
-             TimerWrapper.clearInterval(id);
+             clearInterval(id);
            }, 10);
 
            tick(10);
@@ -205,7 +206,7 @@ export function main() {
 
       it('should clear periodic timers', fakeAsync(() => {
            var cycles = 0;
-           var id = TimerWrapper.setInterval(() => { cycles++; }, 10);
+           var id = setInterval(() => { cycles++; }, 10);
 
            tick(10);
            expect(cycles).toEqual(1);
@@ -224,33 +225,32 @@ export function main() {
       it('should process microtasks before timers', fakeAsync(() => {
            var log = new Log();
 
-           PromiseWrapper.resolve(null).then((_) => log.add('microtask'));
+           resolvedPromise.then((_) => log.add('microtask'));
 
-           TimerWrapper.setTimeout(() => log.add('timer'), 9);
+           setTimeout(() => log.add('timer'), 9);
 
-           var id = TimerWrapper.setInterval(() => log.add('periodic timer'), 10);
+           var id = setInterval(() => log.add('periodic timer'), 10);
 
            expect(log.result()).toEqual('');
 
            tick(10);
            expect(log.result()).toEqual('microtask; timer; periodic timer');
-
-           TimerWrapper.clearInterval(id);
+           clearInterval(id);
          }));
 
       it('should process micro-tasks created in timers before next timers', fakeAsync(() => {
            var log = new Log();
 
-           PromiseWrapper.resolve(null).then((_) => log.add('microtask'));
+           resolvedPromise.then((_) => log.add('microtask'));
 
-           TimerWrapper.setTimeout(() => {
+           setTimeout(() => {
              log.add('timer');
-             PromiseWrapper.resolve(null).then((_) => log.add('t microtask'));
+             resolvedPromise.then((_) => log.add('t microtask'));
            }, 9);
 
-           var id = TimerWrapper.setInterval(() => {
+           var id = setInterval(() => {
              log.add('periodic timer');
-             PromiseWrapper.resolve(null).then((_) => log.add('pt microtask'));
+             resolvedPromise.then((_) => log.add('pt microtask'));
            }, 10);
 
            tick(10);
@@ -261,8 +261,7 @@ export function main() {
            expect(log.result())
                .toEqual(
                    'microtask; timer; t microtask; periodic timer; pt microtask; periodic timer; pt microtask');
-
-           TimerWrapper.clearInterval(id);
+           clearInterval(id);
          }));
     });
 

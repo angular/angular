@@ -15,7 +15,6 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {ExceptionHandler} from '../src/facade/exception_handler';
 import {BaseException} from '../src/facade/exceptions';
 import {ConcreteType} from '../src/facade/lang';
@@ -143,11 +142,9 @@ export function main() {
         it('should throw if an APP_INITIIALIZER is not yet resolved',
            withModule(
                {
-                 providers: [{
-                   provide: APP_INITIALIZER,
-                   useValue: () => PromiseWrapper.completer().promise,
-                   multi: true
-                 }]
+                 providers: [
+                   {provide: APP_INITIALIZER, useValue: () => new Promise(() => {}), multi: true}
+                 ]
                },
                inject([ApplicationRef], (ref: ApplicationRef_) => {
                  expect(() => ref.bootstrap(SomeComponent))
@@ -164,16 +161,17 @@ export function main() {
           inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
 
       it('should wait for asynchronous app initializers', async(() => {
-           let completer: PromiseCompleter<any> = PromiseWrapper.completer();
+           let resolve: (result: any) => void;
+           let promise: Promise<any> = new Promise((res) => { resolve = res; });
            var initializerDone = false;
            setTimeout(() => {
-             completer.resolve(true);
+             resolve(true);
              initializerDone = true;
            }, 1);
 
            defaultPlatform
-               .bootstrapModule(createModule(
-                   [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]))
+               .bootstrapModule(
+                   createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]))
                .then(_ => { expect(initializerDone).toBe(true); });
          }));
 
@@ -250,17 +248,18 @@ export function main() {
       beforeEach(
           inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
       it('should wait for asynchronous app initializers', async(() => {
-           let completer: PromiseCompleter<any> = PromiseWrapper.completer();
+           let resolve: (result: any) => void;
+           let promise: Promise<any> = new Promise((res) => { resolve = res; });
            var initializerDone = false;
            setTimeout(() => {
-             completer.resolve(true);
+             resolve(true);
              initializerDone = true;
            }, 1);
 
            const compilerFactory: CompilerFactory =
                defaultPlatform.injector.get(CompilerFactory, null);
-           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
-               [{provide: APP_INITIALIZER, useValue: () => completer.promise, multi: true}]));
+           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(
+               createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]));
            defaultPlatform.bootstrapModuleFactory(moduleFactory).then(_ => {
              expect(initializerDone).toBe(true);
            });

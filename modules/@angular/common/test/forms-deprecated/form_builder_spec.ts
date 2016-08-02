@@ -9,11 +9,9 @@
 import {Control, FormBuilder} from '@angular/common/src/forms-deprecated';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
-import {PromiseWrapper} from '../../src/facade/promise';
-
 export function main() {
   function syncValidator(_: any): any { return null; }
-  function asyncValidator(_: any) { return PromiseWrapper.resolve(null); }
+  function asyncValidator(_: any) { return Promise.resolve(null); }
 
   describe('Form Builder', () => {
     var b: any /** TODO #9100 */;

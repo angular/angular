@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {BaseException} from '../../facade/exceptions';
 import {RenderStoreObject, Serializer} from '../shared/serializer';
 
@@ -98,7 +98,7 @@ export class EventDispatcher {
       default:
         throw new BaseException(eventName + ' not supported on WebWorkers');
     }
-    ObservableWrapper.callEmit(this._sink, {
+    this._sink.emit({
       'element': this._serializer.serialize(element, RenderStoreObject),
       'eventName': eventName,
       'eventTarget': eventTarget,

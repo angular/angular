@@ -9,7 +9,6 @@
 import {BaseException} from '@angular/core';
 
 import {XHR} from '../index';
-import {PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {ListWrapper, Map} from '../src/facade/collection';
 import {isBlank, normalizeBlank} from '../src/facade/lang';
 
@@ -103,19 +102,26 @@ export class MockXHR extends XHR {
 }
 
 class _PendingRequest {
-  completer: PromiseCompleter<string>;
+  resolve: (result: string) => void;
+  reject: (error: any) => void;
+  promise: Promise<string>;
 
-  constructor(public url: string) { this.completer = PromiseWrapper.completer(); }
+  constructor(public url: string) {
+    this.promise = new Promise((res, rej) => {
+      this.resolve = res;
+      this.reject = rej;
+    });
+  }
 
   complete(response: string) {
     if (isBlank(response)) {
-      this.completer.reject(`Failed to load ${this.url}`, null);
+      this.reject(`Failed to load ${this.url}`);
     } else {
-      this.completer.resolve(response);
+      this.resolve(response);
     }
   }
 
-  getPromise(): Promise<string> { return this.completer.promise; }
+  getPromise(): Promise<string> { return this.promise; }
 }
 
 class _Expectation {

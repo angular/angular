@@ -6,18 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-
 import {Location} from '@angular/common';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
+import {AsyncRoute, Route, Router} from '@angular/router-deprecated';
 
-import {specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref} from '../util';
-
-import {Router, AsyncRoute, Route} from '@angular/router-deprecated';
-
-import {HelloCmp, helloCmpLoader, UserCmp, userCmpLoader, TeamCmp, asyncTeamLoader, ParentCmp, parentCmpLoader, asyncParentCmpLoader, asyncDefaultParentCmpLoader, ParentWithDefaultCmp, parentWithDefaultCmpLoader, asyncRouteDataCmp} from './fixture_components';
 import {By} from '../../../../platform-browser/src/dom/debug/by';
+import {TEST_ROUTER_PROVIDERS, clickOnElement, compile, getHref, specs} from '../util';
+
+import {HelloCmp, ParentCmp, ParentWithDefaultCmp, TeamCmp, UserCmp, asyncDefaultParentCmpLoader, asyncParentCmpLoader, asyncRouteDataCmp, asyncTeamLoader, helloCmpLoader, parentCmpLoader, parentWithDefaultCmpLoader, userCmpLoader} from './fixture_components';
 
 function getLinkElement(rtc: ComponentFixture<any>) {
   return rtc.debugElement.query(By.css('a')).nativeElement;

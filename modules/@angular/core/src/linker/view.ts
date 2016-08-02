@@ -6,23 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ObservableWrapper} from '../facade/async';
+import {AnimationGroupPlayer} from '../animation/animation_group_player';
+import {AnimationPlayer} from '../animation/animation_player';
+import {ViewAnimationMap} from '../animation/view_animation_map';
+import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
+import {Injector} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
+import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 import {RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
+
+import {DebugContext, StaticNodeDebugInfo} from './debug_context';
 import {AppElement} from './element';
+import {ElementInjector} from './element_injector';
+import {ExpressionChangedAfterItHasBeenCheckedException, ViewDestroyedException, ViewWrappedException} from './exceptions';
 import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
 import {ViewUtils, ensureSlotCount, flattenNestedViewRenderNodes} from './view_utils';
-import {ChangeDetectorRef, ChangeDetectorStatus,} from '../change_detection/change_detection';
-import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
-import {ExpressionChangedAfterItHasBeenCheckedException, ViewDestroyedException, ViewWrappedException} from './exceptions';
-import {StaticNodeDebugInfo, DebugContext} from './debug_context';
-import {ElementInjector} from './element_injector';
-import {Injector} from '../di/injector';
-import {AnimationPlayer} from '../animation/animation_player';
-import {AnimationGroupPlayer} from '../animation/animation_group_player';
-import {ViewAnimationMap} from '../animation/view_animation_map';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
@@ -196,7 +196,7 @@ export abstract class AppView<T> {
       this.disposables[i]();
     }
     for (var i = 0; i < this.subscriptions.length; i++) {
-      ObservableWrapper.dispose(this.subscriptions[i]);
+      this.subscriptions[i].unsubscribe();
     }
     this.destroyInternal();
     this.dirtyParentQueriesInternal();

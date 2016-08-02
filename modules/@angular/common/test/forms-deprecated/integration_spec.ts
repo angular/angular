@@ -15,9 +15,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 
-import {ObservableWrapper, TimerWrapper} from '../../src/facade/async';
 import {ListWrapper} from '../../src/facade/collection';
-import {PromiseWrapper} from '../../src/facade/promise';
 
 export function main() {
   describe('integration tests', () => {
@@ -98,8 +96,8 @@ export function main() {
 
                input.nativeElement.value = 'updatedValue';
 
-               ObservableWrapper.subscribe(
-                   form.valueChanges, (value) => { throw 'Should not happen'; });
+
+               form.valueChanges.subscribe({next: (value: any) => { throw 'Should not happen'; }});
                dispatchEvent(input.nativeElement, 'change');
 
                async.done();
@@ -606,7 +604,7 @@ export function main() {
                    select.nativeElement.value = '2: Object';
                    dispatchEvent(select.nativeElement, 'change');
                    fixture.detectChanges();
-                   TimerWrapper.setTimeout(() => {
+                   setTimeout(() => {
                      expect(testComp.selectedCity['name']).toEqual('Buffalo');
                      async.done();
                    }, 0);
@@ -831,11 +829,13 @@ export function main() {
                  expect(input.componentInstance.value).toEqual('!aa!');
 
                  input.componentInstance.value = '!bb!';
-                 ObservableWrapper.subscribe(input.componentInstance.onInput, (value) => {
-                   expect(fixture.debugElement.componentInstance.form.value).toEqual({
-                     'name': 'bb'
-                   });
-                   async.done();
+                 input.componentInstance.onInput.subscribe({
+                   next: (value: any) => {
+                     expect(fixture.debugElement.componentInstance.form.value).toEqual({
+                       'name': 'bb'
+                     });
+                     async.done();
+                   }
                  });
                  input.componentInstance.dispatchChangeEvent();
                });
@@ -1491,21 +1491,16 @@ class MyInput implements ControlValueAccessor {
 
   writeValue(value: any /** TODO #9100 */) { this.value = `!${value}!`; }
 
-  registerOnChange(fn: any /** TODO #9100 */) { ObservableWrapper.subscribe(this.onInput, fn); }
+  registerOnChange(fn: any /** TODO #9100 */) { this.onInput.subscribe({next: fn}); }
 
   registerOnTouched(fn: any /** TODO #9100 */) {}
 
-  dispatchChangeEvent() {
-    ObservableWrapper.callEmit(this.onInput, this.value.substring(1, this.value.length - 1));
-  }
+  dispatchChangeEvent() { this.onInput.emit(this.value.substring(1, this.value.length - 1)); }
 }
 
 function uniqLoginAsyncValidator(expectedValue: string) {
   return (c: any /** TODO #9100 */) => {
-    var completer = PromiseWrapper.completer();
-    var res = (c.value == expectedValue) ? null : {'uniqLogin': true};
-    completer.resolve(res);
-    return completer.promise;
+    return Promise.resolve((c.value == expectedValue) ? null : {'uniqLogin': true});
   };
 }
 

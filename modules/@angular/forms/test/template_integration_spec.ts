@@ -14,8 +14,6 @@ import {FormsModule, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
-
-import {ObservableWrapper} from '../src/facade/async';
 import {ListWrapper} from '../src/facade/collection';
 
 export function main() {
@@ -170,10 +168,10 @@ export function main() {
          let formValidity: string;
          let formValue: Object;
 
-         ObservableWrapper.subscribe(
-             form.statusChanges, (status: string) => { formValidity = status; });
 
-         ObservableWrapper.subscribe(form.valueChanges, (value: string) => { formValue = value; });
+         form.statusChanges.subscribe({next: (status: string) => { formValidity = status; }});
+
+         form.valueChanges.subscribe({next: (value: string) => { formValue = value; }});
 
          tick();
 

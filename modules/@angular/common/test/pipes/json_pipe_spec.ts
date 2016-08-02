@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, ddescribe, describe, it, iit, xit, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {Json, StringWrapper} from '../../src/facade/lang';
-
-import {Component} from '@angular/core';
 import {JsonPipe} from '@angular/common';
+import {Component} from '@angular/core';
+import {TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {Json, StringWrapper} from '../../src/facade/lang';
 
 export function main() {
   describe('JsonPipe', () => {

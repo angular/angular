@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isBlank, isPresent, isArray,} from '../facade/lang';
-import {MapWrapper, ListWrapper} from '../facade/collection';
+import {ListWrapper, MapWrapper} from '../facade/collection';
+import {Type, isArray, isBlank, isPresent} from '../facade/lang';
 import {reflector} from '../reflection/reflection';
-import {ReflectiveKey} from './reflective_key';
-import {InjectMetadata, OptionalMetadata, SelfMetadata, HostMetadata, SkipSelfMetadata, DependencyMetadata} from './metadata';
-import {NoAnnotationError, MixingMultiProvidersWithRegularProvidersError, InvalidProviderError} from './reflective_exceptions';
+
 import {resolveForwardRef} from './forward_ref';
+import {DependencyMetadata, HostMetadata, InjectMetadata, OptionalMetadata, SelfMetadata, SkipSelfMetadata} from './metadata';
 import {Provider, ProviderBuilder, provide} from './provider';
-import {isProviderLiteral, createProvider} from './provider_util';
+import {createProvider, isProviderLiteral} from './provider_util';
+import {InvalidProviderError, MixingMultiProvidersWithRegularProvidersError, NoAnnotationError} from './reflective_exceptions';
+import {ReflectiveKey} from './reflective_key';
+
 
 /**
  * `Dependency` is used by the framework to extend DI.

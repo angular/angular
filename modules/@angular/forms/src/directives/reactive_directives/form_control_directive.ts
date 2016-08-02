@@ -8,7 +8,7 @@
 
 import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -110,7 +110,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
-                ObservableWrapper.callEmit(this.update, newValue);
+                this.update.emit(newValue);
               }
 
               private _isControlChanged(changes: {[key: string]: any}): boolean {

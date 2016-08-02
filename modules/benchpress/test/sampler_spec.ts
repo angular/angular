@@ -7,7 +7,6 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {Date, DateWrapper, isBlank, isPresent, stringify} from '@angular/facade/src/lang';
 import {MeasureValues, Metric, Options, ReflectiveInjector, Reporter, Sampler, Validator, WebDriverAdapter} from 'benchpress/common';
 
@@ -55,7 +54,7 @@ export function main() {
          var driver = new MockDriverAdapter([], (callback) => {
            var result = callback();
            log.push(result);
-           return PromiseWrapper.resolve(result);
+           return Promise.resolve(result);
          });
          createSampler({
            driver: driver,
@@ -127,7 +126,7 @@ export function main() {
            metric: new MockMetric(
                [],
                () => {
-                 var result = PromiseWrapper.resolve({'script': scriptTime});
+                 var result = Promise.resolve({'script': scriptTime});
                  scriptTime = 0;
                  return result;
                }),
@@ -238,7 +237,7 @@ class MockDriverAdapter extends WebDriverAdapter {
     if (isPresent(this._waitFor)) {
       return this._waitFor(callback);
     } else {
-      return PromiseWrapper.resolve(callback());
+      return Promise.resolve(callback());
     }
   }
 }
@@ -273,12 +272,12 @@ class MockMetric extends Metric {
   }
   beginMeasure() {
     this._log.push(['beginMeasure']);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
   endMeasure(restart) {
     var measureValues = isPresent(this._endMeasure) ? this._endMeasure() : {};
     this._log.push(['endMeasure', restart, measureValues]);
-    return PromiseWrapper.resolve(measureValues);
+    return Promise.resolve(measureValues);
   }
 }
 
@@ -294,10 +293,10 @@ class MockReporter extends Reporter {
   }
   reportMeasureValues(values): Promise<any> {
     this._log.push(['reportMeasureValues', values]);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
   reportSample(completeSample, validSample): Promise<any> {
     this._log.push(['reportSample', completeSample, validSample]);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 }

@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {Component, Directive, ElementRef, Input, QueryList, ViewChild, ViewChildren, ViewMetadata} from '@angular/core';
 import {TestComponentBuilder} from '@angular/core/testing';
-
-import {Component, ViewMetadata, Input, Directive, ViewChild, ViewChildren, QueryList, ElementRef} from '@angular/core';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('ViewChild', () => {

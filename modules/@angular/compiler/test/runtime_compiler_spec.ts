@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {Injectable, Component, Input, ViewMetadata, Compiler, ComponentFactory, Injector, NgModule, NgModuleFactory} from '@angular/core';
-import {ConcreteType, stringify} from '../src/facade/lang';
-import {fakeAsync, tick, TestComponentBuilder, ComponentFixture, TestBed} from '@angular/core/testing';
-import {XHR, DirectiveResolver} from '@angular/compiler';
+import {DirectiveResolver, XHR} from '@angular/compiler';
 import {MockDirectiveResolver} from '@angular/compiler/testing';
+import {Compiler, Component, ComponentFactory, Injectable, Injector, Input, NgModule, NgModuleFactory, ViewMetadata} from '@angular/core';
+import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, tick} from '@angular/core/testing';
+import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {ConcreteType, stringify} from '../src/facade/lang';
 
 import {SpyXHR} from './spies';
 

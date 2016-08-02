@@ -7,7 +7,6 @@
  */
 
 import {Injector, OpaqueToken} from '@angular/core/src/di';
-import {PromiseWrapper} from '@angular/facade/src/async';
 
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
@@ -37,12 +36,11 @@ export class MultiReporter extends Reporter {
   }
 
   reportMeasureValues(values: MeasureValues): Promise<any[]> {
-    return PromiseWrapper.all(
-        this._reporters.map(reporter => reporter.reportMeasureValues(values)));
+    return Promise.all(this._reporters.map(reporter => reporter.reportMeasureValues(values)));
   }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any[]> {
-    return PromiseWrapper.all(
+    return Promise.all(
         this._reporters.map(reporter => reporter.reportSample(completeSample, validSample)));
   }
 }

@@ -7,7 +7,6 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {isBlank} from '@angular/facade/src/lang';
 import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from 'benchpress/common';
 
@@ -115,7 +114,7 @@ export function main() {
 }
 
 class MockWebDriverAdapter extends WebDriverAdapter {
-  executeScript(script): Promise<string> { return PromiseWrapper.resolve('someUserAgent'); }
+  executeScript(script): Promise<string> { return Promise.resolve('someUserAgent'); }
   capabilities() { return null; }
 }
 
@@ -131,5 +130,5 @@ class MockMetric extends Metric {
 
 class MockSampler extends Sampler {
   constructor() { super(); }
-  sample(): Promise<SampleState> { return PromiseWrapper.resolve(new SampleState([], [])); }
+  sample(): Promise<SampleState> { return Promise.resolve(new SampleState([], [])); }
 }

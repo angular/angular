@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, describe, it, iit, ddescribe, expect, inject, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
-
-import {ReflectiveInjector} from '@angular/core';
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
+import {ReflectiveInjector} from '@angular/core';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('Location', () => {

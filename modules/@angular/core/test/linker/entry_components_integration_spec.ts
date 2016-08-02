@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, TestBed} from '@angular/core/testing';
-import {Component, ComponentFactoryResolver, NoComponentFactoryError, forwardRef, ANALYZE_FOR_ENTRY_COMPONENTS, ViewMetadata} from '@angular/core';
-import {stringify} from '../../src/facade/lang';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, NoComponentFactoryError, ViewMetadata, forwardRef} from '@angular/core';
+import {TestBed, TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+
 import {Console} from '../../src/console';
+import {stringify} from '../../src/facade/lang';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });

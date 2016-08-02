@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 import {Component} from '@angular/core';
 import {TestComponentBuilder} from '@angular/core/testing';
-
-import {NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('switch', () => {

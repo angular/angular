@@ -6,18 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChange} from '@angular/core/src/change_detection';
+import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {Log, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-
-import {fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
+import {CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, Validator, Validators} from '@angular/forms';
+import {composeValidators, selectValueAccessor} from '@angular/forms/src/directives/shared';
 
 import {SpyNgControl, SpyValueAccessor} from './spies';
-
-import {FormGroup, FormControl, FormArray, FormArrayName, FormControlName, FormGroupName, NgModelGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor, Validator} from '@angular/forms';
-
-import {selectValueAccessor, composeValidators} from '@angular/forms/src/directives/shared';
-import {TimerWrapper} from '../src/facade/async';
-import {PromiseWrapper} from '../src/facade/promise';
-import {SimpleChange} from '@angular/core/src/change_detection';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue: any;
@@ -34,14 +29,15 @@ class CustomValidatorDirective implements Validator {
 
 function asyncValidator(expected: any /** TODO #9100 */, timeout = 0) {
   return (c: any /** TODO #9100 */) => {
-    var completer = PromiseWrapper.completer();
+    var resolve: (result: any) => void;
+    var promise = new Promise(res => { resolve = res; });
     var res = c.value != expected ? {'async': true} : null;
     if (timeout == 0) {
-      completer.resolve(res);
+      resolve(res);
     } else {
-      TimerWrapper.setTimeout(() => { completer.resolve(res); }, timeout);
+      setTimeout(() => { resolve(res); }, timeout);
     }
-    return completer.promise;
+    return promise;
   };
 }
 

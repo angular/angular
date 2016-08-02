@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, ddescribe, it, iit, xit, xdescribe, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {fakeAsync, flushMicrotasks, tick, ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {isBlank, ConcreteType} from '../../src/facade/lang';
-import {Type, ViewContainerRef, TemplateRef, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, Directive, Component, DebugElement, forwardRef, Input, PipeTransform, Attribute, ViewMetadata, provide, Optional, Inject, Self, InjectMetadata, Pipe, Host, SkipSelfMetadata} from '@angular/core';
-import {NgIf, NgFor} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, InjectMetadata, Input, Optional, Pipe, PipeTransform, Self, SkipSelfMetadata, TemplateRef, Type, ViewContainerRef, ViewMetadata, forwardRef, provide} from '@angular/core';
+import {ComponentFixture, TestComponentBuilder, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {ConcreteType, isBlank} from '../../src/facade/lang';
 
 const ALL_DIRECTIVES = [
   forwardRef(() => SimpleDirective),

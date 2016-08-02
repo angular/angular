@@ -19,8 +19,6 @@ import {bootstrap, platformBrowserDynamic} from '@angular/platform-browser-dynam
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
-
-import {PromiseWrapper} from '../../src/facade/async';
 import {stringify} from '../../src/facade/lang';
 
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
@@ -153,7 +151,7 @@ export function main() {
 
          var refPromise =
              bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
-         PromiseWrapper.then(refPromise, null, (reason) => {
+         refPromise.then(null, (reason) => {
            expect(reason.message).toContain('The selector "hello-app" did not match any elements');
            async.done();
            return null;
@@ -168,7 +166,7 @@ export function main() {
 
            var refPromise =
                bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
-           PromiseWrapper.then(refPromise, null, (reason: any) => {
+           refPromise.then(null, (reason: any) => {
              expect(reason.message)
                  .toContain('The selector "hello-app" did not match any elements');
              async.done();
@@ -182,7 +180,7 @@ export function main() {
 
            var refPromise =
                bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
-           PromiseWrapper.then(refPromise, null, (reason) => {
+           refPromise.then(null, (reason) => {
              expect(logger.res.join(''))
                  .toContain('The selector "hello-app" did not match any elements');
              async.done();
@@ -208,7 +206,7 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var refPromise1 = bootstrap(HelloRootCmp, testProviders);
          var refPromise2 = bootstrap(HelloRootCmp2, testProviders);
-         PromiseWrapper.all([refPromise1, refPromise2]).then((refs) => {
+         Promise.all([refPromise1, refPromise2]).then((refs) => {
            expect(el).toHaveText('hello world!');
            expect(el2).toHaveText('hello world, again!');
            async.done();
@@ -285,11 +283,11 @@ export function main() {
          var refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
          var refPromise2: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp2, testProviders);
 
-         PromiseWrapper.all([refPromise1, refPromise2]).then((refs: ComponentRef<any>[]) => {
+         Promise.all([refPromise1, refPromise2]).then((refs: ComponentRef<any>[]) => {
            var registry = refs[0].injector.get(TestabilityRegistry);
            var testabilities =
                [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
-           PromiseWrapper.all(testabilities).then((testabilities: Testability[]) => {
+           Promise.all(testabilities).then((testabilities: Testability[]) => {
              expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
              expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
              async.done();

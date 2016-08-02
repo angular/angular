@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-
-import {bootstrap} from '@angular/platform-browser-dynamic';
 import {LocationStrategy} from '@angular/common';
-import {Component, Directive} from '@angular/core/src/metadata';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {Console} from '@angular/core/src/console';
-import {ExceptionHandler, disposePlatform} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
-import {ROUTER_PROVIDERS, Router, RouteConfig, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
 import {MockLocationStrategy} from '@angular/common/testing/mock_location_strategy';
+import {ExceptionHandler, disposePlatform} from '@angular/core';
+import {Console} from '@angular/core/src/console';
+import {Component, Directive} from '@angular/core/src/metadata';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+import {expect} from '@angular/platform-browser/testing/matchers';
+import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig, Router} from '@angular/router-deprecated';
 
 class _ArrayLogger {
   res: any[] = [];

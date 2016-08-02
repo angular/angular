@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, describe, it, iit, ddescribe, expect, inject, beforeEach,} from '@angular/core/testing/testing_internal';
-
-import {PromiseWrapper} from '../src/facade/async';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {Type} from '../src/facade/lang';
-
+import {AsyncRoute, AuxRoute, Redirect, Route, RouteConfig} from '../src/route_config/route_config_decorator';
 import {RouteRegistry} from '../src/route_registry';
-import {RouteConfig, Route, Redirect, AuxRoute, AsyncRoute} from '../src/route_config/route_config_decorator';
 
 
 export function main() {
@@ -322,11 +319,11 @@ function stringifyInstruction(instruction: any /** TODO #9100 */): string {
 
 
 function asyncParentLoader() {
-  return PromiseWrapper.resolve(DummyParentCmp);
+  return Promise.resolve(DummyParentCmp);
 }
 
 function asyncChildLoader() {
-  return PromiseWrapper.resolve(DummyCmpB);
+  return Promise.resolve(DummyCmpB);
 }
 
 class RootHostCmp {}

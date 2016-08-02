@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {Component, Directive, TemplateRef, ContentChildren, QueryList} from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
+import {Component, ContentChildren, Directive, QueryList, TemplateRef} from '@angular/core';
+import {TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('insert', () => {

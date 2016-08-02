@@ -8,21 +8,20 @@
 
 import {BaseException} from '@angular/core';
 
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMap, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers, identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst} from '../template_parser/template_ast';
+import {createDiTokenExpression} from '../util';
 
+import {CompileMethod} from './compile_method';
+import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
 import {CompileView} from './compile_view';
 import {InjectMethodVars} from './constants';
-
-import {CompileIdentifierMap, CompileDirectiveMetadata, CompileTokenMetadata, CompileQueryMetadata, CompileProviderMetadata, CompileDiDependencyMetadata, CompileIdentifierMetadata,} from '../compile_metadata';
 import {getPropertyInView, injectFromViewParentInjector} from './util';
-import {CompileQuery, createQueryList, addQueryToTokenMap} from './compile_query';
-import {CompileMethod} from './compile_method';
-import {createDiTokenExpression} from '../util';
 
 export class CompileNode {
   constructor(

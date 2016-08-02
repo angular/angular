@@ -9,7 +9,7 @@
 import {Location} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../src/facade/async';
+import {EventEmitter} from '../src/facade/async';
 import {Map, StringMapWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {Type, isBlank, isPresent} from '../src/facade/lang';
@@ -20,8 +20,8 @@ import {getCanActivateHook} from './lifecycle/route_lifecycle_reflector';
 import {RouteDefinition} from './route_config/route_config_impl';
 import {ROUTER_PRIMARY_COMPONENT, RouteRegistry} from './route_registry';
 
-let _resolveToTrue = PromiseWrapper.resolve(true);
-let _resolveToFalse = PromiseWrapper.resolve(false);
+let _resolveToTrue = Promise.resolve(true);
+let _resolveToFalse = Promise.resolve(false);
 
 /**
  * The `Router` is responsible for mapping URLs to components.
@@ -271,7 +271,7 @@ export class Router {
           instruction.auxInstruction, (instruction: Instruction, _: any /** TODO #9100 */) => {
             unsettledInstructions.push(this._settleInstruction(instruction));
           });
-      return PromiseWrapper.all(unsettledInstructions);
+      return Promise.all(unsettledInstructions);
     });
   }
 
@@ -296,15 +296,13 @@ export class Router {
   }
 
   private _emitNavigationFinish(instruction: ComponentInstruction): void {
-    ObservableWrapper.callEmit(this._subject, {status: 'success', instruction});
+    this._subject.emit({status: 'success', instruction});
   }
   /** @internal */
-  _emitNavigationFail(url: string): void {
-    ObservableWrapper.callEmit(this._subject, {status: 'fail', url});
-  }
+  _emitNavigationFail(url: string): void { this._subject.emit({status: 'fail', url}); }
 
   private _afterPromiseFinishNavigating(promise: Promise<any>): Promise<any> {
-    return PromiseWrapper.catchError(promise.then((_) => this._finishNavigating()), (err) => {
+    return promise.then(() => this._finishNavigating()).catch((err) => {
       this._finishNavigating();
       throw err;
     });
@@ -396,7 +394,7 @@ export class Router {
       }
     });
 
-    return next.then((_) => PromiseWrapper.all(promises));
+    return next.then((_) => Promise.all(promises));
   }
 
 
@@ -411,7 +409,7 @@ export class Router {
    * Subscribe to URL updates from the router
    */
   subscribe(onNext: (value: any) => void, onError?: (value: any) => void): Object {
-    return ObservableWrapper.subscribe(this._subject, onNext, onError);
+    return this._subject.subscribe({next: onNext, error: onError});
   }
 
 
@@ -552,7 +550,7 @@ export class RootRouter extends Router {
 
   dispose(): void {
     if (isPresent(this._locationSub)) {
-      ObservableWrapper.dispose(this._locationSub);
+      (<any>this._locationSub).unsubscribe();
       this._locationSub = null;
     }
   }

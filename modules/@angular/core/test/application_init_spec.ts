@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {APP_INITIALIZER, ApplicationInitStatus} from '../src/application_init';
-import {PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {TestBed, async, inject, withModule} from '../testing';
 
 export function main() {
@@ -25,12 +24,12 @@ export function main() {
     });
 
     describe('with async initializers', () => {
-      let completer: PromiseCompleter<any>;
+      let resolve: (result: any) => void;
+      let promise: Promise<any>;
       beforeEach(() => {
-        completer = PromiseWrapper.completer();
-        TestBed.configureTestingModule({
-          providers: [{provide: APP_INITIALIZER, multi: true, useValue: () => completer.promise}]
-        });
+        promise = new Promise((res) => { resolve = res; });
+        TestBed.configureTestingModule(
+            {providers: [{provide: APP_INITIALIZER, multi: true, useValue: () => promise}]});
       });
 
       it('should updat the status once all async initializers are done',
@@ -38,7 +37,7 @@ export function main() {
            let completerResolver = false;
            setTimeout(() => {
              completerResolver = true;
-             completer.resolve();
+             resolve(null);
            });
 
            expect(status.done).toBe(false);

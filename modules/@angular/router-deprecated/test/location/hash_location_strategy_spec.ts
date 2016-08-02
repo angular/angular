@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, it, iit, ddescribe, expect, inject, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
-
+import {APP_BASE_HREF, HashLocationStrategy, PlatformLocation} from '@angular/common';
 import {Injector, provide} from '@angular/core';
+import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
-import {PlatformLocation, APP_BASE_HREF, HashLocationStrategy} from '@angular/common';
 import {SpyPlatformLocation} from '../spies';
 
 export function main() {

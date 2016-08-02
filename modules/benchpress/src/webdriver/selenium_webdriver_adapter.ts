@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PromiseWrapper} from '@angular/facade/src/async';
 import * as webdriver from 'selenium-webdriver';
 
 import {WebDriverAdapter} from '../web_driver_adapter';
+
 
 
 /**
@@ -22,13 +22,18 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
 
   /** @internal */
   private _convertPromise(thenable) {
-    var completer = PromiseWrapper.completer();
+    var resolve: (result: any) => void;
+    var reject: (error: any) => void;
+    var promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
     thenable.then(
         // selenium-webdriver uses an own Node.js context,
         // so we need to convert data into objects of this context.
         // Previously needed for rtts_asserts.
-        (data) => completer.resolve(convertToLocalProcess(data)), completer.reject);
-    return completer.promise;
+        (data) => resolve(convertToLocalProcess(data)), reject);
+    return promise;
   }
 
   waitFor(callback): Promise<any> {

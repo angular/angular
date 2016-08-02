@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, it, iit, ddescribe, expect, inject, beforeEach,} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
 import {ParamRoutePath} from '../../../src/rules/route_paths/param_route_path';
-import {parser, Url} from '../../../src/url_parser';
+import {Url, parser} from '../../../src/url_parser';
 
 export function main() {
   describe('PathRecognizer', () => {

@@ -6,10 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Observable, ObservableWrapper} from '../facade/async';
+import {PromiseObservable} from 'rxjs/observable/PromiseObservable';
+
+import {EventEmitter, Observable} from '../facade/async';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent, isPromise, normalizeBool} from '../facade/lang';
+
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
+
 
 /**
  * Indicates that a Control is valid, i.e. that no errors exist in the input value.
@@ -52,7 +56,7 @@ function _find(control: AbstractControl, path: Array<string|number>| string) {
 }
 
 function toObservable(r: any): Observable<any> {
-  return isPromise(r) ? ObservableWrapper.fromPromise(r) : r;
+  return isPromise(r) ? PromiseObservable.create(r) : r;
 }
 
 /**
@@ -135,8 +139,8 @@ export abstract class AbstractControl {
     }
 
     if (emitEvent) {
-      ObservableWrapper.callEmit(this._valueChanges, this._value);
-      ObservableWrapper.callEmit(this._statusChanges, this._status);
+      this._valueChanges.emit(this._value);
+      this._statusChanges.emit(this._status);
     }
 
     if (isPresent(this._parent) && !onlySelf) {
@@ -153,14 +157,14 @@ export abstract class AbstractControl {
       this._status = PENDING;
       this._cancelExistingSubscription();
       var obs = toObservable(this.asyncValidator(this));
-      this._asyncValidationSubscription = ObservableWrapper.subscribe(
-          obs, (res: {[key: string]: any}) => this.setErrors(res, {emitEvent: emitEvent}));
+      this._asyncValidationSubscription = obs.subscribe(
+          {next: (res: {[key: string]: any}) => this.setErrors(res, {emitEvent: emitEvent})});
     }
   }
 
   private _cancelExistingSubscription(): void {
     if (isPresent(this._asyncValidationSubscription)) {
-      ObservableWrapper.dispose(this._asyncValidationSubscription);
+      this._asyncValidationSubscription.unsubscribe();
     }
   }
 
@@ -194,7 +198,7 @@ export abstract class AbstractControl {
     this._status = this._calculateStatus();
 
     if (emitEvent) {
-      ObservableWrapper.callEmit(this._statusChanges, this._status);
+      this._statusChanges.emit(this._status);
     }
 
     if (isPresent(this._parent)) {

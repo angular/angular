@@ -8,7 +8,6 @@
 
 import {ReflectiveInjector} from '@angular/core';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {PromiseWrapper, TimerWrapper} from '@angular/facade/src/async';
 import {StringMapWrapper} from '@angular/facade/src/collection';
 import {Json, isBlank, isPresent} from '@angular/facade/src/lang';
 import {Injector, Metric, MultiMetric, Options, PerfLogFeatures, PerflogMetric, UserMetric, WebDriverAdapter, WebDriverExtension, bind, provide} from 'benchpress/common';
@@ -60,7 +59,7 @@ export function main() {
 
            wdAdapter.data['loadTime'] = 25;
            // Wait before setting 2nd property.
-           TimerWrapper.setTimeout(() => { wdAdapter.data['content'] = 250; }, 50);
+           setTimeout(() => { wdAdapter.data['content'] = 250; }, 50);
 
          }), 600);
     });
@@ -74,11 +73,11 @@ class MockDriverAdapter extends WebDriverAdapter {
     // Just handles `return window.propName` ignores `delete window.propName`.
     if (script.indexOf('return window.') == 0) {
       let metricName = script.substring('return window.'.length);
-      return PromiseWrapper.resolve(this.data[metricName]);
+      return Promise.resolve(this.data[metricName]);
     } else if (script.indexOf('delete window.') == 0) {
-      return PromiseWrapper.resolve(null);
+      return Promise.resolve(null);
     } else {
-      return PromiseWrapper.reject(`Unexpected syntax: ${script}`, null);
+      return Promise.reject(`Unexpected syntax: ${script}`);
     }
   }
 }

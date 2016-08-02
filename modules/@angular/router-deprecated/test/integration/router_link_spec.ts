@@ -6,19 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {Location} from '@angular/common';
-import {NumberWrapper, escapeRegExp} from '../../src/facade/lang';
-import {PromiseWrapper} from '../../src/facade/async';
-import {ListWrapper} from '../../src/facade/collection';
-import {Component} from '@angular/core';
-import {Router, RouteRegistry, RouterLink, AsyncRoute, AuxRoute, Route, RouteParams, RouteConfig, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT} from '@angular/router-deprecated';
-import {RootRouter} from '@angular/router-deprecated/src/router';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {SpyLocation} from '@angular/common/testing';
+import {Component} from '@angular/core';
+import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {expect} from '@angular/platform-browser/testing/matchers';
+import {AsyncRoute, AuxRoute, ROUTER_DIRECTIVES, ROUTER_PRIMARY_COMPONENT, Route, RouteConfig, RouteParams, RouteRegistry, Router, RouterLink} from '@angular/router-deprecated';
+import {RootRouter} from '@angular/router-deprecated/src/router';
+import {ListWrapper} from '../../src/facade/collection';
+import {NumberWrapper, escapeRegExp} from '../../src/facade/lang';
 
 export function main() {
   describe('routerLink directive', function() {
@@ -435,7 +434,7 @@ class Hello2Cmp {
 }
 
 function parentCmpLoader() {
-  return PromiseWrapper.resolve(ParentCmp);
+  return Promise.resolve(ParentCmp);
 }
 
 @Component({

@@ -7,10 +7,8 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {Json, isBlank, isPresent} from '@angular/facade/src/lang';
-
-import {WebDriverExtension, IOsDriverExtension, WebDriverAdapter, ReflectiveInjector,} from 'benchpress/common';
+import {IOsDriverExtension, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from 'benchpress/common';
 
 import {TraceEventFactory} from '../trace_event_factory';
 
@@ -172,13 +170,13 @@ class MockDriverAdapter extends WebDriverAdapter {
 
   executeScript(script) {
     this._log.push(['executeScript', script]);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 
   logs(type) {
     this._log.push(['logs', type]);
     if (type === 'performance') {
-      return PromiseWrapper.resolve(this._perfRecords.map(function(record) {
+      return Promise.resolve(this._perfRecords.map(function(record) {
         return {
           'message': Json.stringify(
               {'message': {'method': 'Timeline.eventRecorded', 'params': {'record': record}}})

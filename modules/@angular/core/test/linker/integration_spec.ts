@@ -6,35 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, xdescribe, describe, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {fakeAsync, tick, ComponentFixture, TestBed, TestComponentBuilder} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {isPresent, stringify, isBlank,} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
-import {PromiseWrapper, EventEmitter, ObservableWrapper, PromiseCompleter,} from '../../src/facade/async';
-
-import {Injector, Injectable, forwardRef, OpaqueToken, Inject, Host, SkipSelf, SkipSelfMetadata, OnDestroy, ReflectiveInjector, Compiler} from '@angular/core';
-
-import {NgIf, NgFor, AsyncPipe} from '@angular/common';
-
-import {PipeTransform, ChangeDetectorRef, ChangeDetectionStrategy} from '@angular/core/src/change_detection/change_detection';
-
+import {AsyncPipe, NgFor, NgIf} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
-
-import {Directive, Component, ViewMetadata, Attribute, Query, Pipe, Input, Output, HostBinding, HostListener} from '@angular/core/src/metadata';
-
-import {QueryList} from '@angular/core/src/linker/query_list';
-
-import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
-import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
-
+import {Compiler, Host, Inject, Injectable, Injector, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf, SkipSelfMetadata, forwardRef} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {ComponentResolver} from '@angular/core/src/linker/component_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
+import {QueryList} from '@angular/core/src/linker/query_list';
 import {TemplateRef, TemplateRef_} from '@angular/core/src/linker/template_ref';
-
+import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
+import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
+import {Attribute, Component, Directive, HostBinding, HostListener, Input, Output, Pipe, Query, ViewMetadata} from '@angular/core/src/metadata';
 import {Renderer} from '@angular/core/src/render';
-import {el, dispatchEvent} from '@angular/platform-browser/testing/browser_util';
+import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, tick} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {EventEmitter} from '../../src/facade/async';
+import {BaseException} from '../../src/facade/exceptions';
+import {isBlank, isPresent, stringify} from '../../src/facade/lang';
 
 const ANCHOR_ELEMENT = new OpaqueToken('AnchorElement');
 
@@ -991,15 +983,17 @@ function declareTests({useJit}: {useJit: boolean}) {
                      expect(listener.msg).toEqual('');
                      var eventCount = 0;
 
-                     ObservableWrapper.subscribe(emitter.event, (_) => {
-                       eventCount++;
-                       if (eventCount === 1) {
-                         expect(listener.msg).toEqual('fired !');
-                         fixture.destroy();
-                         emitter.fireEvent('fired again !');
-                       } else {
-                         expect(listener.msg).toEqual('fired !');
-                         async.done();
+                     emitter.event.subscribe({
+                       next: () => {
+                         eventCount++;
+                         if (eventCount === 1) {
+                           expect(listener.msg).toEqual('fired !');
+                           fixture.destroy();
+                           emitter.fireEvent('fired again !');
+                         } else {
+                           expect(listener.msg).toEqual('fired !');
+                           async.done();
+                         }
                        }
                      });
 
@@ -1029,10 +1023,12 @@ function declareTests({useJit}: {useJit: boolean}) {
                      myComp.ctxProp = '';
                      expect(listener.msg).toEqual('');
 
-                     ObservableWrapper.subscribe(emitter.event, (_) => {
-                       expect(listener.msg).toEqual('fired !');
-                       expect(myComp.ctxProp).toEqual('fired !');
-                       async.done();
+                     emitter.event.subscribe({
+                       next: () => {
+                         expect(listener.msg).toEqual('fired !');
+                         expect(myComp.ctxProp).toEqual('fired !');
+                         async.done();
+                       }
                      });
 
                      emitter.fireEvent('fired !');
@@ -1057,9 +1053,11 @@ function declareTests({useJit}: {useJit: boolean}) {
 
                      expect(dir.control).toEqual('one');
 
-                     ObservableWrapper.subscribe(dir.controlChange, (_) => {
-                       expect(fixture.debugElement.componentInstance.ctxProp).toEqual('two');
-                       async.done();
+                     dir.controlChange.subscribe({
+                       next: () => {
+                         expect(fixture.debugElement.componentInstance.ctxProp).toEqual('two');
+                         async.done();
+                       }
                      });
 
                      dir.triggerChange('two');
@@ -1551,7 +1549,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                      template: `<directive-throwing-error></directive-throwing-error>`
                    }));
 
-               PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
+               tcb.createAsync(MyComp).catch((e) => {
                  var c = e.context;
                  expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
                  expect((<Injector>c.injector).get).toBeTruthy();
@@ -1741,7 +1739,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                tcb = tcb.overrideView(
                    MyComp, new ViewMetadata({template: '<div unknown="{{ctxProp}}"></div>'}));
 
-               PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
+               tcb.createAsync(MyComp).catch((e) => {
                  expect(e.message).toEqual(
                      `Template parse errors:\nCan't bind to 'unknown' since it isn't a known property of 'div'. ("<div [ERROR ->]unknown="{{ctxProp}}"></div>"): MyComp@0:5`);
                  async.done();
@@ -2211,20 +2209,17 @@ class PushCmpWithHostEvent {
 })
 class PushCmpWithAsyncPipe {
   numberOfChecks: number = 0;
+  resolve: (result: any) => void;
   promise: Promise<any>;
-  completer: PromiseCompleter<any>;
 
   constructor() {
-    this.completer = PromiseWrapper.completer();
-    this.promise = this.completer.promise;
+    this.promise = new Promise((resolve) => { this.resolve = resolve; });
   }
 
   get field() {
     this.numberOfChecks++;
     return this.promise;
   }
-
-  resolve(value: any) { this.completer.resolve(value); }
 }
 
 @Component({selector: 'my-comp', directives: []})
@@ -2324,7 +2319,7 @@ class DirectiveEmittingEvent {
     this.event = new EventEmitter();
   }
 
-  fireEvent(msg: string) { ObservableWrapper.callEmit(this.event, msg); }
+  fireEvent(msg: string) { this.event.emit(msg); }
 }
 
 @Directive({selector: '[update-host-attributes]', host: {'role': 'button'}})
@@ -2466,7 +2461,7 @@ class DirectiveWithTwoWayBinding {
   controlChange = new EventEmitter();
   control: any = null;
 
-  triggerChange(value: any) { ObservableWrapper.callEmit(this.controlChange, value); }
+  triggerChange(value: any) { this.controlChange.emit(value); }
 }
 
 @Injectable()
@@ -2661,7 +2656,7 @@ class DirectiveWithPropDecorators {
   @HostListener('click', ['$event.target'])
   onClick(target: any) { this.target = target; }
 
-  fireEvent(msg: any) { ObservableWrapper.callEmit(this.event, msg); }
+  fireEvent(msg: any) { this.event.emit(msg); }
 }
 
 @Component({selector: 'some-cmp'})

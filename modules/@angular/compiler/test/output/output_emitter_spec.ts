@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {interpretStatements} from '@angular/compiler/src/output/output_interpreter';
+import {jitStatements} from '@angular/compiler/src/output/output_jit';
+import {BaseException, EventEmitter} from '@angular/core';
+import {ViewType} from '@angular/core/src/linker/view_type';
+import {beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import * as typed from './output_emitter_codegen_typed';
 import * as untyped from './output_emitter_codegen_untyped';
-import {jitStatements} from '@angular/compiler/src/output/output_jit';
-import {interpretStatements} from '@angular/compiler/src/output/output_interpreter';
-import {codegenStmts, ExternalClass} from './output_emitter_util';
-import {BaseException, EventEmitter} from '@angular/core';
-import {ViewType} from '@angular/core/src/linker/view_type';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+import {ExternalClass, codegenStmts} from './output_emitter_util';
 
 export function main() {
   var outputDefs: any[] /** TODO #9100 */ = [];

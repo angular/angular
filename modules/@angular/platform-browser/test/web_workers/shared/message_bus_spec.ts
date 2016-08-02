@@ -11,8 +11,6 @@ import {withProviders} from '@angular/core/testing/test_bed';
 import {AsyncTestCompleter, MockNgZone, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 
-import {ObservableWrapper, TimerWrapper} from '../../../src/facade/async';
-
 import {createConnectedMessageBus} from './message_bus_util';
 
 export function main() {
@@ -31,12 +29,14 @@ export function main() {
          bus.initChannel(CHANNEL, false);
 
          var fromEmitter = bus.from(CHANNEL);
-         ObservableWrapper.subscribe(fromEmitter, (message: any) => {
-           expect(message).toEqual(MESSAGE);
-           async.done();
+         fromEmitter.subscribe({
+           next: (message: any) => {
+             expect(message).toEqual(MESSAGE);
+             async.done();
+           }
          });
          var toEmitter = bus.to(CHANNEL);
-         ObservableWrapper.callEmit(toEmitter, MESSAGE);
+         toEmitter.emit(MESSAGE);
        }));
 
     it('should broadcast', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -56,11 +56,11 @@ export function main() {
 
          for (var i = 0; i < NUM_LISTENERS; i++) {
            var emitter = bus.from(CHANNEL);
-           ObservableWrapper.subscribe(emitter, emitHandler);
+           emitter.subscribe({next: emitHandler});
          }
 
          var toEmitter = bus.to(CHANNEL);
-         ObservableWrapper.callEmit(toEmitter, MESSAGE);
+         toEmitter.emit(MESSAGE);
        }));
 
     it('should keep channels independent',
@@ -74,27 +74,31 @@ export function main() {
          bus.initChannel(CHANNEL_TWO, false);
 
          var firstFromEmitter = bus.from(CHANNEL_ONE);
-         ObservableWrapper.subscribe(firstFromEmitter, (message) => {
-           expect(message).toEqual(MESSAGE_ONE);
-           callCount++;
-           if (callCount == 2) {
-             async.done();
+         firstFromEmitter.subscribe({
+           next: (message: any) => {
+             expect(message).toEqual(MESSAGE_ONE);
+             callCount++;
+             if (callCount == 2) {
+               async.done();
+             }
            }
          });
          var secondFromEmitter = bus.from(CHANNEL_TWO);
-         ObservableWrapper.subscribe(secondFromEmitter, (message) => {
-           expect(message).toEqual(MESSAGE_TWO);
-           callCount++;
-           if (callCount == 2) {
-             async.done();
+         secondFromEmitter.subscribe({
+           next: (message: any) => {
+             expect(message).toEqual(MESSAGE_TWO);
+             callCount++;
+             if (callCount == 2) {
+               async.done();
+             }
            }
          });
 
          var firstToEmitter = bus.to(CHANNEL_ONE);
-         ObservableWrapper.callEmit(firstToEmitter, MESSAGE_ONE);
+         firstToEmitter.emit(MESSAGE_ONE);
 
          var secondToEmitter = bus.to(CHANNEL_TWO);
-         ObservableWrapper.callEmit(secondToEmitter, MESSAGE_TWO);
+         secondToEmitter.emit(MESSAGE_TWO);
        }));
   });
 
@@ -111,7 +115,7 @@ export function main() {
      * Flushes pending messages and then runs the given function.
      */
     // TODO(mlaval): timeout is fragile, test to be rewritten
-    function flushMessages(fn: () => void) { TimerWrapper.setTimeout(fn, 50); }
+    function flushMessages(fn: () => void) { setTimeout(fn, 50); }
 
     it('should buffer messages and wait for the zone to exit before sending',
        withProviders(() => [{provide: NgZone, useClass: MockNgZone}])
@@ -122,8 +126,8 @@ export function main() {
                  setup(true, zone);
 
                  var wasCalled = false;
-                 ObservableWrapper.subscribe(bus.from(CHANNEL), (message) => { wasCalled = true; });
-                 ObservableWrapper.callEmit(bus.to(CHANNEL), 'hi');
+                 bus.from(CHANNEL).subscribe({next: (message: any) => { wasCalled = true; }});
+                 bus.to(CHANNEL).emit('hi');
 
 
                  flushMessages(() => {
@@ -144,8 +148,8 @@ export function main() {
          setup(false, zone);
 
          var wasCalled = false;
-         ObservableWrapper.subscribe(bus.from(CHANNEL), (message) => { wasCalled = true; });
-         ObservableWrapper.callEmit(bus.to(CHANNEL), 'hi');
+         bus.from(CHANNEL).subscribe({next: (message: any) => { wasCalled = true; }});
+         bus.to(CHANNEL).emit('hi');
 
          flushMessages(() => {
            expect(wasCalled).toBeTruthy();

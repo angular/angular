@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component,} from '@angular/core';
+import {Component} from '@angular/core';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';
 
-import {EventEmitter, ObservableWrapper, PromiseCompleter, PromiseWrapper} from '../../src/facade/async';
+import {EventEmitter} from '../../src/facade/async';
 import {isPresent} from '../../src/facade/lang';
 import {ComponentInstruction} from '../../src/instruction';
 import {CanDeactivate, CanReuse, OnActivate, OnDeactivate, OnReuse} from '../../src/interfaces';
@@ -24,7 +24,9 @@ import {TEST_ROUTER_PROVIDERS, compile} from './util';
 var cmpInstanceCount: any /** TODO #9100 */;
 var log: string[];
 var eventBus: EventEmitter<any>;
-var completer: PromiseCompleter<any>;
+var resolve: (result: any) => void;
+var reject: (error: any) => void;
+var promise: Promise<any>;
 
 export function main() {
   describe('Router lifecycle hooks', () => {
@@ -64,9 +66,11 @@ export function main() {
              .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => {
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('parent activate')) {
-                   completer.resolve(true);
+               eventBus.subscribe({
+                 next: (ev: any) => {
+                   if (ev.startsWith('parent activate')) {
+                     resolve(true);
+                   }
                  }
                });
                rtr.navigateByUrl('/parent-activate/child-activate').then((_) => {
@@ -102,11 +106,14 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/parent-deactivate/child-deactivate'))
              .then((_) => {
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('deactivate')) {
-                   completer.resolve(true);
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('parent [deactivate cmp]');
+               eventBus.subscribe({
+                 next: (ev: any) => {
+                   if (ev.startsWith('deactivate')) {
+                     resolve(true);
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement)
+                         .toHaveText('parent [deactivate cmp]');
+                   }
                  }
                });
                rtr.navigateByUrl('/a').then((_) => {
@@ -173,9 +180,11 @@ export function main() {
              .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => {
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('routerCanActivate')) {
-                   completer.resolve(true);
+               eventBus.subscribe({
+                 next: (ev: any) => {
+                   if (ev.startsWith('routerCanActivate')) {
+                     resolve(true);
+                   }
                  }
                });
                rtr.navigateByUrl('/can-activate/a').then((_) => {
@@ -193,9 +202,11 @@ export function main() {
              .then((rtc) => { fixture = rtc; })
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => {
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('routerCanActivate')) {
-                   completer.resolve(false);
+               eventBus.subscribe({
+                 next: (ev: any) => {
+                   if (ev.startsWith('routerCanActivate')) {
+                     resolve(false);
+                   }
                  }
                });
                rtr.navigateByUrl('/can-activate/a').then((_) => {
@@ -218,9 +229,11 @@ export function main() {
                expect(fixture.debugElement.nativeElement).toHaveText('routerCanDeactivate [A]');
                expect(log).toEqual([]);
 
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('routerCanDeactivate')) {
-                   completer.resolve(true);
+               eventBus.subscribe({
+                 next: (ev: any) => {
+                   if (ev.startsWith('routerCanDeactivate')) {
+                     resolve(true);
+                   }
                  }
                });
 
@@ -244,9 +257,11 @@ export function main() {
                expect(fixture.debugElement.nativeElement).toHaveText('routerCanDeactivate [A]');
                expect(log).toEqual([]);
 
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('routerCanDeactivate')) {
-                   completer.resolve(false);
+               eventBus.subscribe({
+                 next: (ev: any) => {
+                   if (ev.startsWith('routerCanDeactivate')) {
+                     resolve(false);
+                   }
                  }
                });
 
@@ -300,9 +315,11 @@ export function main() {
                  'routerOnActivate: null -> /reuse-hooks/1'
                ]);
 
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('routerCanReuse')) {
-                   completer.resolve(true);
+               eventBus.subscribe({
+                 next: (ev: any) => {
+                   if (ev.startsWith('routerCanReuse')) {
+                     resolve(true);
+                   }
                  }
                });
 
@@ -330,9 +347,11 @@ export function main() {
                  'routerOnActivate: null -> /reuse-hooks/1'
                ]);
 
-               ObservableWrapper.subscribe<string>(eventBus, (ev) => {
-                 if (ev.startsWith('routerCanReuse')) {
-                   completer.resolve(false);
+               eventBus.subscribe({
+                 next: (ev: any) => {
+                   if (ev.startsWith('routerCanReuse')) {
+                     resolve(false);
+                   }
                  }
                });
 
@@ -368,7 +387,7 @@ function logHook(name: string, next: ComponentInstruction, prev: ComponentInstru
   var message = name + ': ' + (isPresent(prev) ? ('/' + prev.urlPath) : 'null') + ' -> ' +
       (isPresent(next) ? ('/' + next.urlPath) : 'null');
   log.push(message);
-  ObservableWrapper.callEmit(eventBus, message);
+  eventBus.emit(message);
 }
 
 @Component({selector: 'activate-cmp', template: 'activate cmp'})
@@ -386,9 +405,12 @@ class ActivateCmp implements OnActivate {
 @RouteConfig([new Route({path: '/child-activate', component: ActivateCmp})])
 class ParentActivateCmp implements OnActivate {
   routerOnActivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
-    completer = PromiseWrapper.completer();
+    promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
     logHook('parent activate', next, prev);
-    return completer.promise;
+    return promise;
   }
 }
 
@@ -402,9 +424,12 @@ class DeactivateCmp implements OnDeactivate {
 @Component({selector: 'deactivate-cmp', template: 'deactivate cmp'})
 class WaitDeactivateCmp implements OnDeactivate {
   routerOnDeactivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
-    completer = PromiseWrapper.completer();
+    promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
     logHook('deactivate', next, prev);
-    return completer.promise;
+    return promise;
   }
 }
 
@@ -460,9 +485,12 @@ class NeverReuseCmp implements OnReuse,
 class CanActivateCmp {
   static routerCanActivate(next: ComponentInstruction, prev: ComponentInstruction):
       Promise<boolean> {
-    completer = PromiseWrapper.completer();
+    promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
     logHook('routerCanActivate', next, prev);
-    return completer.promise;
+    return promise;
   }
 }
 
@@ -474,9 +502,12 @@ class CanActivateCmp {
 @RouteConfig([new Route({path: '/a', component: A}), new Route({path: '/b', component: B})])
 class CanDeactivateCmp implements CanDeactivate {
   routerCanDeactivate(next: ComponentInstruction, prev: ComponentInstruction): Promise<boolean> {
-    completer = PromiseWrapper.completer();
+    promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
     logHook('routerCanDeactivate', next, prev);
-    return completer.promise;
+    return promise;
   }
 }
 
@@ -534,9 +565,12 @@ class AllHooksParentCmp implements CanDeactivate,
 @CanActivate(ReuseHooksCmp.routerCanActivate)
 class ReuseHooksCmp implements OnActivate, OnReuse, OnDeactivate, CanReuse, CanDeactivate {
   routerCanReuse(next: ComponentInstruction, prev: ComponentInstruction): Promise<any> {
-    completer = PromiseWrapper.completer();
+    promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
     logHook('routerCanReuse', next, prev);
-    return completer.promise;
+    return promise;
   }
 
   routerOnReuse(next: ComponentInstruction, prev: ComponentInstruction) {

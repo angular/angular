@@ -8,7 +8,6 @@
 
 import {Location} from '@angular/common';
 import {Component, Injectable} from '@angular/core';
-import {PromiseCompleter, PromiseWrapper} from '@angular/core/src/facade/async';
 import {DateWrapper, isPresent} from '@angular/core/src/facade/lang';
 import {Route, RouteConfig, RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';
 
@@ -60,11 +59,7 @@ class InboxRecord {
 
 @Injectable()
 class DbService {
-  getData(): Promise<any[]> {
-    var p = new PromiseCompleter<any[]>();
-    p.resolve(db.data);
-    return p.promise;
-  }
+  getData(): Promise<any[]> { return Promise.resolve(db.data); }
 
   drafts(): Promise<any[]> {
     return this.getData().then(
@@ -78,7 +73,7 @@ class DbService {
   }
 
   email(id: any /** TODO #9100 */): Promise<any> {
-    return PromiseWrapper.then(this.getData(), (data: any[]) => {
+    return this.getData().then((data: any[]) => {
       for (var i = 0; i < data.length; i++) {
         var entry = data[i];
         if (entry['id'] == id) {
@@ -98,7 +93,7 @@ class InboxDetailCmp {
 
   constructor(db: DbService, params: RouteParams) {
     var id = params.get('id');
-    PromiseWrapper.then(db.email(id), (data) => { this.record.setData(data); });
+    db.email(id).then((data) => { this.record.setData(data); });
   }
 }
 
@@ -111,7 +106,7 @@ class InboxCmp {
     var sortType = params.get('sort');
     var sortEmailsByDate = isPresent(sortType) && sortType == 'date';
 
-    PromiseWrapper.then(db.emails(), (emails: any[]) => {
+    db.emails().then((emails: any[]) => {
       this.ready = true;
       this.items = emails.map(data => new InboxRecord(data));
 
@@ -134,7 +129,7 @@ class DraftsCmp {
   ready: boolean = false;
 
   constructor(public router: Router, db: DbService) {
-    PromiseWrapper.then(db.drafts(), (drafts: any[]) => {
+    db.drafts().then((drafts: any[]) => {
       this.ready = true;
       this.items = drafts.map(data => new InboxRecord(data));
     });

@@ -11,8 +11,6 @@ import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/clie
 import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 import {LocationType} from '@angular/platform-browser/src/web_workers/shared/serialized_types';
 import {WebWorkerPlatformLocation} from '@angular/platform-browser/src/web_workers/worker/platform_location';
-
-import {PromiseWrapper} from '../../../src/facade/async';
 import {Type} from '../../../src/facade/lang';
 import {MockMessageBrokerFactory, createPairedMessageBuses, expectBrokerCall} from '../shared/web_worker_test_util';
 
@@ -31,7 +29,7 @@ export function main() {
     function createWebWorkerPlatformLocation(loc: LocationType): WebWorkerPlatformLocation {
       broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type) => {
         if (args.method === 'getLocation') {
-          return PromiseWrapper.resolve(loc);
+          return Promise.resolve(loc);
         }
       });
       var factory = new MockMessageBrokerFactory(broker);

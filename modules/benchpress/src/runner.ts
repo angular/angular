@@ -7,7 +7,6 @@
  */
 
 import {ReflectiveInjector} from '@angular/core';
-import {PromiseWrapper} from '@angular/facade/src/async';
 import {isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from './common_options';
@@ -71,7 +70,7 @@ export class Runner {
     var inj = ReflectiveInjector.resolveAndCreate(sampleProviders);
     var adapter = inj.get(WebDriverAdapter);
 
-    return PromiseWrapper
+    return Promise
         .all([adapter.capabilities(), adapter.executeScript('return window.navigator.userAgent;')])
         .then((args) => {
           var capabilities = args[0];

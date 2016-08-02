@@ -7,7 +7,6 @@
  */
 
 import {AnimationEntryMetadata, Compiler, ComponentFactory, Injectable, Injector, NgZone, OpaqueToken, ViewMetadata} from '../index';
-import {PromiseWrapper} from '../src/facade/async';
 import {ConcreteType, Type, isPresent} from '../src/facade/lang';
 
 import {ComponentFixture} from './component_fixture';
@@ -119,9 +118,9 @@ export class TestComponentBuilder {
   createFakeAsync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
     let result: any /** TODO #9100 */;
     let error: any /** TODO #9100 */;
-    PromiseWrapper.then(
-        this.createAsync(rootComponentType), (_result) => { result = _result; },
-        (_error) => { error = _error; });
+
+    this.createAsync(rootComponentType)
+        .then((_result) => { result = _result; }, (_error) => { error = _error; });
     tick();
     if (isPresent(error)) {
       throw error;

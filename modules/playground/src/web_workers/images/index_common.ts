@@ -7,7 +7,6 @@
  */
 
 import {Component} from '@angular/core';
-import {TimerWrapper} from '@angular/core/src/facade/async';
 import {EventListener} from '@angular/core/src/facade/browser';
 
 import {FileReader, Uint8ArrayWrapper} from './file_api';
@@ -44,7 +43,7 @@ export class ImageDemo {
     for (var i = 0; i < this.images.length; i++) {
       this.images[i].filtering = true;
 
-      TimerWrapper.setTimeout(this._filter(i), 0);
+      setTimeout(this._filter(i), 0);
     }
   }
 
