@@ -85,7 +85,7 @@ export function main() {
       });
     });
 
-    beforeEach(inject(
+    beforeEach(fakeAsync(inject(
         [TestComponentBuilder, ElementSchemaRegistry, RenderLog, DirectiveLog],
         (_tcb: TestComponentBuilder, _elSchema: MockSchemaRegistry, _renderLog: RenderLog,
          _directiveLog: DirectiveLog) => {
@@ -94,7 +94,7 @@ export function main() {
           renderLog = _renderLog;
           directiveLog = _directiveLog;
           elSchema.existingProperties['someProp'] = true;
-        }));
+        })));
 
     describe('expressions', () => {
 

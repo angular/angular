@@ -36,7 +36,6 @@ export function setupRouter(
   const componentType = ref.componentTypes[0];
   const r = new Router(
       componentType, resolver, urlSerializer, outletMap, location, injector, loader, config);
-  ref.registerDisposeListener(() => r.dispose());
 
   if (opts.enableTracing) {
     r.events.subscribe(e => {

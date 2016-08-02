@@ -23,7 +23,7 @@ export const ROUTER_PROVIDERS_COMMON: any[] = [
   RouteRegistry, {provide: LocationStrategy, useClass: PathLocationStrategy}, Location, {
     provide: Router,
     useFactory: routerFactory,
-    deps: [RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT, ApplicationRef]
+    deps: [RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT]
   },
   {
     provide: ROUTER_PRIMARY_COMPONENT,
@@ -33,11 +33,8 @@ export const ROUTER_PROVIDERS_COMMON: any[] = [
 ];
 
 function routerFactory(
-    registry: RouteRegistry, location: Location, primaryComponent: Type,
-    appRef: ApplicationRef): RootRouter {
-  var rootRouter = new RootRouter(registry, location, primaryComponent);
-  appRef.registerDisposeListener(() => rootRouter.dispose());
-  return rootRouter;
+    registry: RouteRegistry, location: Location, primaryComponent: Type): RootRouter {
+  return new RootRouter(registry, location, primaryComponent);
 }
 
 function routerPrimaryComponentFactory(app: ApplicationRef): Type {
