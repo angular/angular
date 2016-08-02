@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, Compiler, CompilerFactory, ComponentFactory, ComponentResolver, Injector, NgModule, NgModuleRef, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, provide} from '@angular/core';
+import {Compiler, CompilerFactory, ComponentFactory, ComponentResolver, Injector, NgModule, NgModuleRef, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, provide} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -299,8 +299,7 @@ export class UpgradeAdapter {
       config?: angular.IAngularBootstrapConfig): angular.IInjectorService {
     const boundCompiler: Compiler = moduleRef.injector.get(Compiler);
     var ng1Injector: angular.IInjectorService = null;
-    var applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-    var injector: Injector = applicationRef.injector;
+    var injector: Injector = moduleRef.injector;
     var ngZone: NgZone = injector.get(NgZone);
     var delayApplyExps: Function[] = [];
     var original$applyFn: Function;
@@ -400,7 +399,7 @@ export class UpgradeAdapter {
               while (delayApplyExps.length) {
                 rootScope.$apply(delayApplyExps.shift());
               }
-              (<any>upgrade)._bootstrapDone(applicationRef, ng1Injector);
+              (<any>upgrade)._bootstrapDone(moduleRef, ng1Injector);
               rootScopePrototype = null;
             }
           });
@@ -583,13 +582,13 @@ export class UpgradeAdapterRef {
 
   public ng1RootScope: angular.IRootScopeService = null;
   public ng1Injector: angular.IInjectorService = null;
-  public ng2ApplicationRef: ApplicationRef = null;
+  public ng2ModuleRef: NgModuleRef<any> = null;
   public ng2Injector: Injector = null;
 
   /* @internal */
-  private _bootstrapDone(applicationRef: ApplicationRef, ng1Injector: angular.IInjectorService) {
-    this.ng2ApplicationRef = applicationRef;
-    this.ng2Injector = applicationRef.injector;
+  private _bootstrapDone(ngModuleRef: NgModuleRef<any>, ng1Injector: angular.IInjectorService) {
+    this.ng2ModuleRef = ngModuleRef;
+    this.ng2Injector = ngModuleRef.injector;
     this.ng1Injector = ng1Injector;
     this.ng1RootScope = ng1Injector.get(NG1_ROOT_SCOPE);
     this._readyFn && this._readyFn(this);
@@ -609,6 +608,6 @@ export class UpgradeAdapterRef {
    */
   public dispose() {
     this.ng1Injector.get(NG1_ROOT_SCOPE).$destroy();
-    this.ng2ApplicationRef.dispose();
+    this.ng2ModuleRef.destroy();
   }
 }

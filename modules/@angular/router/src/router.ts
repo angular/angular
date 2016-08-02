@@ -197,6 +197,11 @@ export class Router {
   }
 
   /**
+   * @internal
+   */
+  ngOnDestroy() { this.dispose(); }
+
+  /**
    * Disposes of the router.
    */
   dispose(): void { this.locationSubscription.unsubscribe(); }

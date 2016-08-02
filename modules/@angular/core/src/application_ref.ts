@@ -137,11 +137,20 @@ export function assertPlatform(requiredToken: any): PlatformRef {
 /**
  * Dispose the existing platform.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @deprecated Use `destroyPlatform` instead
  */
 export function disposePlatform(): void {
-  if (isPresent(_platform) && !_platform.disposed) {
-    _platform.dispose();
+  destroyPlatform();
+}
+
+/**
+ * Destroy the existing platform.
+ *
+ * @experimental APIs related to application bootstrap are currently under review.
+ */
+export function destroyPlatform(): void {
+  if (isPresent(_platform) && !_platform.destroyed) {
+    _platform.destroy();
   }
 }
 
@@ -238,8 +247,14 @@ export abstract class PlatformRef {
 
   /**
    * Register a listener to be called when the platform is disposed.
+   * @deprecated Use `OnDestroy` instead
    */
   abstract registerDisposeListener(dispose: () => void): void;
+
+  /**
+   * Register a listener to be called when the platform is disposed.
+   */
+  abstract onDestroy(callback: () => void): void;
 
   /**
    * Retrieve the platform {@link Injector}, which is the parent injector for
@@ -249,10 +264,20 @@ export abstract class PlatformRef {
 
   /**
    * Destroy the Angular platform and all Angular applications on the page.
+   * @deprecated Use `destroy` instead
    */
   abstract dispose(): void;
 
+  /**
+   * Destroy the Angular platform and all Angular applications on the page.
+   */
+  abstract destroy(): void;
+
+  /**
+   * @deprecated Use `destroyd` instead
+   */
   get disposed(): boolean { throw unimplemented(); }
+  get destroyed(): boolean { throw unimplemented(); }
 }
 
 function _callAndReportToExceptionHandler(
@@ -277,29 +302,41 @@ function _callAndReportToExceptionHandler(
 
 @Injectable()
 export class PlatformRef_ extends PlatformRef {
-  /** @internal */
-  _applications: ApplicationRef[] = [];
-  /** @internal */
-  _disposeListeners: Function[] = [];
+  private _modules: NgModuleRef<any>[] = [];
+  private _destroyListeners: Function[] = [];
 
-  private _disposed: boolean = false;
+  private _destroyed: boolean = false;
 
   constructor(private _injector: Injector) { super(); }
 
-  registerDisposeListener(dispose: () => void): void { this._disposeListeners.push(dispose); }
+  /**
+   * @deprecated
+   */
+  registerDisposeListener(dispose: () => void): void { this.onDestroy(dispose); }
+
+  onDestroy(callback: () => void): void { this._destroyListeners.push(callback); }
 
   get injector(): Injector { return this._injector; }
 
-  get disposed() { return this._disposed; }
+  /**
+   * @deprecated
+   */
+  get disposed() { return this.destroyed; }
+  get destroyed() { return this._destroyed; }
 
-  dispose(): void {
-    ListWrapper.clone(this._applications).forEach((app) => app.dispose());
-    this._disposeListeners.forEach((dispose) => dispose());
-    this._disposed = true;
+  destroy() {
+    if (this._destroyed) {
+      throw new BaseException('The platform is already destroyed!');
+    }
+    ListWrapper.clone(this._modules).forEach((app) => app.destroy());
+    this._destroyListeners.forEach((dispose) => dispose());
+    this._destroyed = true;
   }
 
-  /** @internal */
-  _applicationDisposed(app: ApplicationRef): void { ListWrapper.remove(this._applications, app); }
+  /**
+   * @deprecated
+   */
+  dispose(): void { this.destroy(); }
 
   bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>> {
     // Note: We need to create the NgZone _before_ we instantiate the module,
@@ -317,6 +354,7 @@ export class PlatformRef_ extends PlatformRef {
       if (!exceptionHandler) {
         throw new Error('No ExceptionHandler. Is platform module (BrowserModule) included?');
       }
+      moduleRef.onDestroy(() => ListWrapper.remove(this._modules, moduleRef));
       ObservableWrapper.subscribe(ngZone.onError, (error: NgZoneError) => {
         exceptionHandler.call(error.error, error.stackTrace);
       });
@@ -367,6 +405,8 @@ export abstract class ApplicationRef {
 
   /**
    * Register a listener to be called when the application is disposed.
+   *
+   * @deprecated Use `ngOnDestroy` lifecycle hook or {@link NgModuleRef}.onDestroy.
    */
   abstract registerDisposeListener(dispose: () => void): void;
 
@@ -408,6 +448,9 @@ export abstract class ApplicationRef {
 
   /**
    * Dispose of this application and all of its components.
+   *
+   * @deprecated Destroy the module that was created during bootstrap instead by calling
+   * {@link NgModuleRef}.destroy.
    */
   abstract dispose(): void;
 
@@ -434,27 +477,23 @@ export class ApplicationRef_ extends ApplicationRef {
   /** @internal */
   static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
 
-  /** @internal */
   private _bootstrapListeners: Function[] = [];
-  /** @internal */
+  /**
+   * @deprecated
+   */
   private _disposeListeners: Function[] = [];
-  /** @internal */
   private _rootComponents: ComponentRef<any>[] = [];
-  /** @internal */
   private _rootComponentTypes: Type[] = [];
-  /** @internal */
   private _changeDetectorRefs: ChangeDetectorRef[] = [];
-  /** @internal */
   private _runningTick: boolean = false;
-  /** @internal */
   private _enforceNoNewChanges: boolean = false;
 
   /** @internal */
   _asyncInitDonePromise: PromiseCompleter<any> = PromiseWrapper.completer();
 
   constructor(
-      private _platform: PlatformRef_, private _zone: NgZone, private _console: Console,
-      private _injector: Injector, private _exceptionHandler: ExceptionHandler,
+      private _zone: NgZone, private _console: Console, private _injector: Injector,
+      private _exceptionHandler: ExceptionHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
       @Optional() private _testabilityRegistry: TestabilityRegistry,
       @Optional() private _testability: Testability) {
@@ -468,6 +507,9 @@ export class ApplicationRef_ extends ApplicationRef {
     this._bootstrapListeners.push(listener);
   }
 
+  /**
+   * @deprecated
+   */
   registerDisposeListener(dispose: () => void): void { this._disposeListeners.push(dispose); }
 
   registerChangeDetector(changeDetector: ChangeDetectorRef): void {
@@ -556,12 +598,16 @@ export class ApplicationRef_ extends ApplicationRef {
     }
   }
 
-  dispose(): void {
+  ngOnDestroy() {
     // TODO(alxhub): Dispose of the NgZone.
     ListWrapper.clone(this._rootComponents).forEach((ref) => ref.destroy());
     this._disposeListeners.forEach((dispose) => dispose());
-    this._platform._applicationDisposed(this);
   }
+
+  /**
+   * @deprecated
+   */
+  dispose(): void { this.ngOnDestroy(); }
 
   get componentTypes(): Type[] { return this._rootComponentTypes; }
 }

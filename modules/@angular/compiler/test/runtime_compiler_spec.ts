@@ -39,7 +39,7 @@ export function main() {
     beforeEach(
         () => { TestBed.configureCompiler({providers: [{provide: XHR, useClass: SpyXHR}]}); });
 
-    beforeEach(inject(
+    beforeEach(fakeAsync(inject(
         [Compiler, TestComponentBuilder, XHR, DirectiveResolver, Injector],
         (_compiler: Compiler, _tcb: TestComponentBuilder, _xhr: SpyXHR,
          _dirResolver: MockDirectiveResolver, _injector: Injector) => {
@@ -48,7 +48,7 @@ export function main() {
           xhr = _xhr;
           dirResolver = _dirResolver;
           injector = _injector;
-        }));
+        })));
 
     describe('clearCacheFor', () => {
       it('should support changing the content of a template referenced via templateUrl',

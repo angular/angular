@@ -268,7 +268,8 @@ export function main() {
 
     beforeEachProviders(() => [{provide: 'appService', useValue: 'appService'}]);
 
-    beforeEach(inject([TestComponentBuilder], (_tcb: TestComponentBuilder) => { tcb = _tcb; }));
+    beforeEach(
+        fakeAsync(inject([TestComponentBuilder], (_tcb: TestComponentBuilder) => { tcb = _tcb; })));
 
     describe('injection', () => {
       it('should instantiate directives that have no dependencies', fakeAsync(() => {
