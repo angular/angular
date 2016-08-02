@@ -42,6 +42,7 @@ export class RouterState extends Tree<ActivatedRoute> {
       root: TreeNode<ActivatedRoute>, public queryParams: Observable<Params>,
       public fragment: Observable<string>, public snapshot: RouterStateSnapshot) {
     super(root);
+    setRouterStateSnapshot<RouterState, ActivatedRoute>(this, root);
   }
 
   toString(): string { return this.snapshot.toString(); }
@@ -95,6 +96,9 @@ export class ActivatedRoute {
   _futureSnapshot: ActivatedRouteSnapshot;
   snapshot: ActivatedRouteSnapshot;
 
+  /** @internal */
+  _routerState: RouterState;
+
   /**
    * @internal
    */
@@ -106,6 +110,14 @@ export class ActivatedRoute {
   }
 
   get routeConfig(): Route { return this._futureSnapshot.routeConfig; }
+
+  get parent(): ActivatedRoute { return this._routerState.parent(this); }
+
+  get firstChild(): ActivatedRoute { return this._routerState.firstChild(this); }
+
+  get children(): ActivatedRoute[] { return this._routerState.children(this); }
+
+  get pathFromRoot(): ActivatedRoute[] { return this._routerState.pathFromRoot(this); }
 
   toString(): string {
     return this.snapshot ? this.snapshot.toString() : `Future(${this._futureSnapshot})`;
@@ -168,6 +180,9 @@ export class ActivatedRouteSnapshot {
   /** @internal */
   _resolve: InheritedResolve;
 
+  /** @internal */
+  _routerState: RouterStateSnapshot;
+
   /**
    * @internal
    */
@@ -182,6 +197,14 @@ export class ActivatedRouteSnapshot {
   }
 
   get routeConfig(): Route { return this._routeConfig; }
+
+  get parent(): ActivatedRouteSnapshot { return this._routerState.parent(this); }
+
+  get firstChild(): ActivatedRouteSnapshot { return this._routerState.firstChild(this); }
+
+  get children(): ActivatedRouteSnapshot[] { return this._routerState.children(this); }
+
+  get pathFromRoot(): ActivatedRouteSnapshot[] { return this._routerState.pathFromRoot(this); }
 
   toString(): string {
     const url = this.url.map(s => s.toString()).join('/');
@@ -213,16 +236,21 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
       public url: string, root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params,
       public fragment: string) {
     super(root);
+    setRouterStateSnapshot<RouterStateSnapshot, ActivatedRouteSnapshot>(this, root);
   }
 
   toString(): string { return serializeNode(this._root); }
+}
+
+function setRouterStateSnapshot<U, T extends{_routerState: U}>(state: U, node: TreeNode<T>): void {
+  node.value._routerState = state;
+  node.children.forEach(c => setRouterStateSnapshot(state, c));
 }
 
 function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
   const c = node.children.length > 0 ? ` { ${node.children.map(serializeNode).join(", ")} } ` : '';
   return `${node.value}${c}`;
 }
-
 
 /**
  * The expectation is that the activate route is created with the right set of parameters.
