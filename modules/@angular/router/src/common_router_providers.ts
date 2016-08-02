@@ -7,7 +7,7 @@
  */
 
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_INITIALIZER, ApplicationRef, ComponentResolver, Injector, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentResolver, Injector, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
 
 import {Routes} from './config';
 import {Router} from './router';
@@ -53,12 +53,8 @@ export function rootRoute(router: Router): ActivatedRoute {
   return router.routerState.root;
 }
 
-export function setupRouterInitializer(injector: Injector) {
-  return () => {
-    injector.get(ApplicationRef).registerBootstrapListener(() => {
-      injector.get(Router).initialNavigation();
-    });
-  };
+export function initialRouterNavigation(router: Router) {
+  return () => { router.initialNavigation(); };
 }
 
 /**
@@ -102,9 +98,17 @@ export function provideRouter(routes: Routes, config: ExtraOptions = {}): any[] 
     RouterOutletMap, {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
 
     // Trigger initial navigation
-    {provide: APP_INITIALIZER, multi: true, useFactory: setupRouterInitializer, deps: [Injector]},
-    {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader}
+    provideRouterInitializer(), {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader}
   ];
+}
+
+export function provideRouterInitializer() {
+  return {
+    provide: APP_BOOTSTRAP_LISTENER,
+    multi: true,
+    useFactory: initialRouterNavigation,
+    deps: [Router]
+  };
 }
 
 /**

@@ -54,6 +54,13 @@ export const PLATFORM_INITIALIZER: any = new OpaqueToken('Platform Initializer')
 export const APP_INITIALIZER: any = new OpaqueToken('Application Initializer');
 
 /**
+ * All callbacks provided via this token will be called when a component has been bootstrapped.
+ *
+ * @experimental
+ */
+export const APP_BOOTSTRAP_LISTENER = new OpaqueToken('appBootstrapListener');
+
+/**
  * A token which indicates the root directory of the application
  * @experimental
  */

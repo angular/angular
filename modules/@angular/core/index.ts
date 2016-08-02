@@ -15,7 +15,7 @@ export * from './src/metadata';
 export * from './src/util';
 export * from './src/di';
 export {createPlatform, assertPlatform, disposePlatform, getPlatform, coreBootstrap, coreLoadAndBootstrap, PlatformRef, ApplicationRef, enableProdMode, lockRunMode, isDevMode, createPlatformFactory} from './src/application_ref';
-export {APP_ID, APP_INITIALIZER, PACKAGE_ROOT_URL, PLATFORM_INITIALIZER} from './src/application_tokens';
+export {APP_ID, APP_INITIALIZER, PACKAGE_ROOT_URL, PLATFORM_INITIALIZER, APP_BOOTSTRAP_LISTENER} from './src/application_tokens';
 export * from './src/zone';
 export * from './src/render';
 export * from './src/linker';

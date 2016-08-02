@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ChangeDetectorRef, CompilerFactory, Component, Injector, NgModule, PlatformRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ChangeDetectorRef, CompilerFactory, Component, Injector, NgModule, PlatformRef} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -57,48 +57,71 @@ export function main() {
     }
 
     describe('ApplicationRef', () => {
-      var ref: ApplicationRef_;
       beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
-      beforeEach(inject([ApplicationRef], (_ref: ApplicationRef_) => { ref = _ref; }));
 
-      it('should throw when reentering tick', () => {
-        var cdRef = <any>new SpyChangeDetectorRef();
-        try {
-          ref.registerChangeDetector(cdRef);
-          cdRef.spy('detectChanges').andCallFake(() => ref.tick());
-          expect(() => ref.tick()).toThrowError('ApplicationRef.tick is called recursively');
-        } finally {
-          ref.unregisterChangeDetector(cdRef);
-        }
-      });
+      it('should throw when reentering tick', inject([ApplicationRef], (ref: ApplicationRef_) => {
+           var cdRef = <any>new SpyChangeDetectorRef();
+           try {
+             ref.registerChangeDetector(cdRef);
+             cdRef.spy('detectChanges').andCallFake(() => ref.tick());
+             expect(() => ref.tick()).toThrowError('ApplicationRef.tick is called recursively');
+           } finally {
+             ref.unregisterChangeDetector(cdRef);
+           }
+         }));
 
       describe('run', () => {
-        it('should rethrow errors even if the exceptionHandler is not rethrowing', () => {
-          expect(() => ref.run(() => { throw new BaseException('Test'); })).toThrowError('Test');
-        });
+        it('should rethrow errors even if the exceptionHandler is not rethrowing',
+           inject([ApplicationRef], (ref: ApplicationRef_) => {
+             expect(() => ref.run(() => { throw new BaseException('Test'); })).toThrowError('Test');
+           }));
 
         it('should return a promise with rejected errors even if the exceptionHandler is not rethrowing',
-           async(() => {
+           async(inject([ApplicationRef], (ref: ApplicationRef_) => {
              var promise: Promise<any> = ref.run(() => Promise.reject('Test'));
              promise.then(() => expect(false).toBe(true), (e) => { expect(e).toEqual('Test'); });
-           }));
+           })));
       });
 
       describe('registerBootstrapListener', () => {
-        it('should be called when a component is bootstrapped', () => {
-          const capturedCompRefs: ComponentRef<any>[] = [];
-          ref.registerBootstrapListener((compRef) => capturedCompRefs.push(compRef));
-          const compRef = ref.bootstrap(SomeComponent);
-          expect(capturedCompRefs).toEqual([compRef]);
+        it('should be called when a component is bootstrapped',
+           inject([ApplicationRef], (ref: ApplicationRef_) => {
+             const capturedCompRefs: ComponentRef<any>[] = [];
+             ref.registerBootstrapListener((compRef) => capturedCompRefs.push(compRef));
+             const compRef = ref.bootstrap(SomeComponent);
+             expect(capturedCompRefs).toEqual([compRef]);
+           }));
+
+        it('should be called immediately when a component was bootstrapped before',
+           inject([ApplicationRef], (ref: ApplicationRef_) => {
+             ref.registerBootstrapListener((compRef) => capturedCompRefs.push(compRef));
+             const capturedCompRefs: ComponentRef<any>[] = [];
+             const compRef = ref.bootstrap(SomeComponent);
+             expect(capturedCompRefs).toEqual([compRef]);
+           }));
+      });
+
+      describe('APP_BOOTSTRAP_LISTENER', () => {
+        let capturedCompRefs: ComponentRef<any>[];
+        beforeEach(() => {
+          capturedCompRefs = [];
+          TestBed.configureTestingModule({
+            providers: [{
+              provide: APP_BOOTSTRAP_LISTENER,
+              multi: true,
+              useValue: (compRef: any) => { capturedCompRefs.push(compRef); }
+            }]
+          });
         });
 
-        it('should be called immediately when a component was bootstrapped before', () => {
-          ref.registerBootstrapListener((compRef) => capturedCompRefs.push(compRef));
-          const capturedCompRefs: ComponentRef<any>[] = [];
-          const compRef = ref.bootstrap(SomeComponent);
-          expect(capturedCompRefs).toEqual([compRef]);
-        });
+        it('should be called when a component is bootstrapped',
+           inject([ApplicationRef], (ref: ApplicationRef_) => {
+             const compRef = ref.bootstrap(SomeComponent);
+             expect(capturedCompRefs).toEqual([compRef]);
+           }));
+
       });
+
     });
 
     describe('bootstrapModule', () => {
