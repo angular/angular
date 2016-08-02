@@ -1445,6 +1445,57 @@ describe('Integration', () => {
                           .toHaveText('lazy-loaded-parent [lazy-loaded-child]');
                     })));
 
+    it('should combine routes from multiple modules into a single configuration',
+       fakeAsync(inject(
+           [Router, TestComponentBuilder, Location, NgModuleFactoryLoader],
+           (router: Router, tcb: TestComponentBuilder, location: Location,
+            loader: SpyNgModuleFactoryLoader) => {
+             @Component({selector: 'lazy', template: 'lazy-loaded-2'})
+             class LazyComponent2 {
+             }
+
+             @NgModule({
+               declarations: [LazyComponent2],
+               imports: [RouterModule.forChild([{path: 'loaded', component: LazyComponent2}])],
+               entryComponents: [LazyComponent2]
+             })
+             class SiblingOfLoadedModule {
+             }
+
+             @Component(
+                 {selector: 'lazy', template: 'lazy-loaded-1', directives: ROUTER_DIRECTIVES})
+             class LazyComponent1 {
+             }
+
+             @NgModule({
+               declarations: [LazyComponent1],
+               imports: [
+                 RouterModule.forChild([{path: 'loaded', component: LazyComponent1}]),
+                 SiblingOfLoadedModule
+               ],
+               entryComponents: [LazyComponent1]
+             })
+             class LoadedModule {
+             }
+
+             loader.stubbedModules = {expected1: LoadedModule, expected2: SiblingOfLoadedModule};
+
+             const fixture = createRoot(tcb, router, RootCmp);
+
+             router.resetConfig([
+               {path: 'lazy1', loadChildren: 'expected1'},
+               {path: 'lazy2', loadChildren: 'expected2'}
+             ]);
+
+             router.navigateByUrl('/lazy1/loaded');
+             advance(fixture);
+             expect(location.path()).toEqual('/lazy1/loaded');
+
+             router.navigateByUrl('/lazy2/loaded');
+             advance(fixture);
+             expect(location.path()).toEqual('/lazy2/loaded');
+           })));
+
     it('should use the injector of the lazily-loaded configuration',
        fakeAsync(inject(
            [Router, TestComponentBuilder, Location, NgModuleFactoryLoader],

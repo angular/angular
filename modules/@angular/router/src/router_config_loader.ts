@@ -11,7 +11,7 @@ import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 
 import {Route} from './config';
-
+import {flatten} from './utils/collection';
 
 
 /**
@@ -33,7 +33,7 @@ export class RouterConfigLoader {
     return fromPromise(this.loader.load(path).then(r => {
       const ref = r.create(parentInjector);
       return new LoadedRouterConfig(
-          ref.injector.get(ROUTES), ref.injector, ref.componentFactoryResolver);
+          flatten(ref.injector.get(ROUTES)), ref.injector, ref.componentFactoryResolver);
     }));
   }
 }

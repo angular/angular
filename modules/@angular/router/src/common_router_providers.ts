@@ -9,12 +9,13 @@
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentResolver, Injector, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
 
-import {Routes} from './config';
+import {Route, Routes} from './config';
 import {Router} from './router';
 import {ROUTER_CONFIG, ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
+import {flatten} from './utils/collection';
 
 export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
 
@@ -29,13 +30,14 @@ export interface ExtraOptions {
 export function setupRouter(
     ref: ApplicationRef, resolver: ComponentResolver, urlSerializer: UrlSerializer,
     outletMap: RouterOutletMap, location: Location, injector: Injector,
-    loader: NgModuleFactoryLoader, config: Routes, opts: ExtraOptions = {}) {
+    loader: NgModuleFactoryLoader, config: Route[][], opts: ExtraOptions = {}) {
   if (ref.componentTypes.length == 0) {
     throw new Error('Bootstrap at least one component before injecting Router.');
   }
   const componentType = ref.componentTypes[0];
   const r = new Router(
-      componentType, resolver, urlSerializer, outletMap, location, injector, loader, config);
+      componentType, resolver, urlSerializer, outletMap, location, injector, loader,
+      flatten(config));
 
   if (opts.enableTracing) {
     r.events.subscribe(e => {
@@ -130,7 +132,7 @@ export function provideRouterInitializer() {
 export function provideRoutes(routes: Routes): any {
   return [
     {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
-    {provide: ROUTES, useValue: routes}
+    {provide: ROUTES, multi: true, useValue: routes}
   ];
 }
 

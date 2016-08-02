@@ -10,9 +10,10 @@ import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, ComponentResolver, Injectable, Injector, NgModule, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
 
-import {Router, RouterOutletMap, Routes, UrlSerializer} from '../index';
+import {Route, Router, RouterOutletMap, UrlSerializer} from '../index';
 import {ROUTES} from '../src/router_config_loader';
 import {ROUTER_PROVIDERS, RouterModule} from '../src/router_module';
+import {flatten} from '../src/utils/collection';
 
 
 
@@ -39,8 +40,9 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
 
 function setupTestingRouter(
     resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap,
-    location: Location, loader: NgModuleFactoryLoader, injector: Injector, routes: Routes) {
-  return new Router(null, resolver, urlSerializer, outletMap, location, injector, loader, routes);
+    location: Location, loader: NgModuleFactoryLoader, injector: Injector, routes: Route[][]) {
+  return new Router(
+      null, resolver, urlSerializer, outletMap, location, injector, loader, flatten(routes));
 }
 
 /**
