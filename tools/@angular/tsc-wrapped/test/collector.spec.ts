@@ -24,6 +24,7 @@ describe('Collector', () => {
       'exported-functions.ts',
       'exported-enum.ts',
       'exported-consts.ts',
+      're-exports.ts',
       'static-field-reference.ts',
       'static-method.ts',
       'static-method-call.ts',
@@ -475,6 +476,16 @@ describe('Collector', () => {
       }
     });
   });
+
+  it('should be able to collect re-exported symbols', () => {
+    let source = program.getSourceFile('/re-exports.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata.exports).toEqual([
+      {from: './static-field', export: ['MyModule']},
+      {from: './static-field-reference.ts', export: [{name: 'Foo', as: 'OtherModule'}]},
+      {from: 'angular2/core'}
+    ]);
+  });
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -782,6 +793,11 @@ const FILES: Directory = {
         ];
       }
     }
+  `,
+  're-exports.ts': `
+    export {MyModule} from './static-field';
+    export {Foo as OtherModule} from './static-field-reference.ts';
+    export * from 'angular2/core';
   `,
   'node_modules': {
     'angular2': {

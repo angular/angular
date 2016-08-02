@@ -12,10 +12,16 @@ export const VERSION = 1;
 export interface ModuleMetadata {
   __symbolic: 'module';
   version: number;
+  exports?: ModuleExportMetadata[];
   metadata: {[name: string]: (ClassMetadata | FunctionMetadata | MetadataValue)};
 }
 export function isModuleMetadata(value: any): value is ModuleMetadata {
   return value && value.__symbolic === 'module';
+}
+
+export interface ModuleExportMetadata {
+  export?: (string|{name: string, as: string})[];
+  from: string;
 }
 
 export interface ClassMetadata {

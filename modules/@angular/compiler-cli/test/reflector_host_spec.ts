@@ -105,6 +105,34 @@ describe('reflector_host', () => {
   it('should return undefined for missing modules', () => {
     expect(reflectorHost.getMetadataFor('node_modules/@angular/missing.d.ts')).toBeUndefined();
   });
+
+  it('should be able to trace a named export', () => {
+    const symbol =
+        reflectorHost.findDeclaration('./reexport/reexport.d.ts', 'One', '/tmp/src/main.ts');
+    expect(symbol.name).toEqual('One');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
+  });
+
+  it('should be able to trace a renamed export', () => {
+    const symbol =
+        reflectorHost.findDeclaration('./reexport/reexport.d.ts', 'Four', '/tmp/src/main.ts');
+    expect(symbol.name).toEqual('Three');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
+  });
+
+  it('should be able to trace an export * export', () => {
+    const symbol =
+        reflectorHost.findDeclaration('./reexport/reexport.d.ts', 'Five', '/tmp/src/main.ts');
+    expect(symbol.name).toEqual('Five');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin5.d.ts');
+  });
+
+  it('should be able to trace a multi-level re-export', () => {
+    const symbol =
+        reflectorHost.findDeclaration('./reexport/reexport.d.ts', 'Thirty', '/tmp/src/main.ts');
+    expect(symbol.name).toEqual('Thirty');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin30.d.ts');
+  });
 });
 
 const dummyModule = 'export let foo: any[];';
@@ -124,6 +152,69 @@ const FILES: Entry = {
         'collections.ts': dummyModule,
       },
       'lib2': {'utils2.ts': dummyModule},
+      'reexport': {
+        'reexport.d.ts': `
+          import * as c from '@angular/core';
+        `,
+        'reexport.metadata.json': JSON.stringify({
+          __symbolic: 'module',
+          version: 1,
+          metadata: {},
+          exports: [
+            {from: './src/origin1', export: ['One', 'Two', {name: 'Three', as: 'Four'}]},
+            {from: './src/origin5'}, {from: './src/reexport2'}
+          ]
+        }),
+        'src': {
+          'origin1.d.ts': `
+            export class One {}
+            export class Two {}
+            export class Three {}
+          `,
+          'origin1.metadata.json': JSON.stringify({
+            __symbolic: 'module',
+            version: 1,
+            metadata: {
+              One: {__symbolic: 'class'},
+              Two: {__symbolic: 'class'},
+              Three: {__symbolic: 'class'},
+            },
+          }),
+          'origin5.d.ts': `
+            export class Five {}
+          `,
+          'origin5.metadata.json': JSON.stringify({
+            __symbolic: 'module',
+            version: 1,
+            metadata: {
+              Five: {__symbolic: 'class'},
+            },
+          }),
+          'origin30.d.ts': `
+            export class Thirty {}
+          `,
+          'origin30.metadata.json': JSON.stringify({
+            __symbolic: 'module',
+            version: 1,
+            metadata: {
+              Thirty: {__symbolic: 'class'},
+            },
+          }),
+          'originNone.d.ts': dummyModule,
+          'originNone.metadata.json': JSON.stringify({
+            __symbolic: 'module',
+            version: 1,
+            metadata: {},
+          }),
+          'reexport2.d.ts': dummyModule,
+          'reexport2.metadata.json': JSON.stringify({
+            __symbolic: 'module',
+            version: 1,
+            metadata: {},
+            exports: [{from: './originNone'}, {from: './origin30'}]
+          })
+        }
+      },
       'node_modules': {
         '@angular': {
           'core.d.ts': dummyModule,
