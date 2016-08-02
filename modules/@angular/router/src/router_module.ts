@@ -9,7 +9,7 @@
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {ApplicationRef, ComponentResolver, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, SystemJsNgModuleLoader} from '@angular/core';
 
-import {ExtraOptions, ROUTER_CONFIGURATION, provideRouterConfig, provideRoutes, rootRoute, setupRouter} from './common_router_providers';
+import {ExtraOptions, ROUTER_CONFIGURATION, provideRouterConfig, provideRouterInitializer, provideRoutes, rootRoute, setupRouter} from './common_router_providers';
 import {Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
@@ -76,13 +76,6 @@ export const ROUTER_PROVIDERS: any[] = [
  */
 @NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
 export class RouterModule {
-  constructor(private injector: Injector, appRef: ApplicationRef) {
-    // do the initialization only once
-    if ((<any>injector).parent.get(RouterModule, null)) return;
-
-    appRef.registerBootstrapListener(() => { injector.get(Router).initialNavigation(); });
-  }
-
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
     return {
       ngModule: RouterModule,
@@ -94,7 +87,8 @@ export class RouterModule {
           deps: [
             PlatformLocation, [new Inject(APP_BASE_HREF), new Optional()], ROUTER_CONFIGURATION
           ]
-        }
+        },
+        provideRouterInitializer()
       ]
     };
   }

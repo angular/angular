@@ -11,7 +11,7 @@ import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
 import {ConcreteType, Type, isBlank, isPresent, isPromise} from '../src/facade/lang';
 
-import {APP_INITIALIZER, PLATFORM_INITIALIZER} from './application_tokens';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 import {Console} from './console';
 import {Inject, Injectable, Injector, OpaqueToken, Optional, ReflectiveInjector, SkipSelf, forwardRef} from './di';
@@ -400,6 +400,9 @@ export abstract class ApplicationRef {
   /**
    * Register a listener to be called each time `bootstrap()` is called to bootstrap
    * a new root component.
+   *
+   * @deprecated Provide a callback via a multi provider for {@link APP_BOOTSTRAP_LISTENER}
+   * instead.
    */
   abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
 
@@ -503,6 +506,9 @@ export class ApplicationRef_ extends ApplicationRef {
         this._zone.onMicrotaskEmpty, (_) => { this._zone.run(() => { this.tick(); }); });
   }
 
+  /**
+   * @deprecated
+   */
   registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void {
     this._bootstrapListeners.push(listener);
   }
@@ -564,7 +570,11 @@ export class ApplicationRef_ extends ApplicationRef {
     this._changeDetectorRefs.push(componentRef.changeDetectorRef);
     this.tick();
     this._rootComponents.push(componentRef);
-    this._bootstrapListeners.forEach((listener) => listener(componentRef));
+    // Get the listeners lazily to prevent DI cycles.
+    const listeners =
+        <((compRef: ComponentRef<any>) => void)[]>this._injector.get(APP_BOOTSTRAP_LISTENER, [])
+            .concat(this._bootstrapListeners);
+    listeners.forEach((listener) => listener(componentRef));
   }
 
   /** @internal */
