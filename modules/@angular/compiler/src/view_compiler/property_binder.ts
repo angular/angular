@@ -234,7 +234,7 @@ export function bindDirectiveInputs(
   var detectChangesInInputsMethod = view.detectChangesInInputsMethod;
   detectChangesInInputsMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
 
-  var lifecycleHooks = directiveAst.directive.lifecycleHooks;
+  var lifecycleHooks = directiveAst.directive.type.lifecycleHooks;
   var calcChangesMap = lifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1;
   var isOnPushComp = directiveAst.directive.isComponent &&
       !isDefaultChangeDetectionStrategy(directiveAst.directive.changeDetection);

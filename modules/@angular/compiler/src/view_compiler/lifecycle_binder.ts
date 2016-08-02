@@ -24,7 +24,7 @@ export function bindDirectiveDetectChangesLifecycleCallbacks(
     directiveAst: DirectiveAst, directiveInstance: o.Expression, compileElement: CompileElement) {
   var view = compileElement.view;
   var detectChangesInInputsMethod = view.detectChangesInInputsMethod;
-  var lifecycleHooks = directiveAst.directive.lifecycleHooks;
+  var lifecycleHooks = directiveAst.directive.type.lifecycleHooks;
   if (lifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1 && directiveAst.inputs.length > 0) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(
         DetectChangesVars.changes.notIdentical(o.NULL_EXPR),
@@ -45,7 +45,7 @@ export function bindDirectiveAfterContentLifecycleCallbacks(
     directiveMeta: CompileDirectiveMetadata, directiveInstance: o.Expression,
     compileElement: CompileElement) {
   var view = compileElement.view;
-  var lifecycleHooks = directiveMeta.lifecycleHooks;
+  var lifecycleHooks = directiveMeta.type.lifecycleHooks;
   var afterContentLifecycleCallbacksMethod = view.afterContentLifecycleCallbacksMethod;
   afterContentLifecycleCallbacksMethod.resetDebugInfo(
       compileElement.nodeIndex, compileElement.sourceAst);
@@ -63,7 +63,7 @@ export function bindDirectiveAfterViewLifecycleCallbacks(
     directiveMeta: CompileDirectiveMetadata, directiveInstance: o.Expression,
     compileElement: CompileElement) {
   var view = compileElement.view;
-  var lifecycleHooks = directiveMeta.lifecycleHooks;
+  var lifecycleHooks = directiveMeta.type.lifecycleHooks;
   var afterViewLifecycleCallbacksMethod = view.afterViewLifecycleCallbacksMethod;
   afterViewLifecycleCallbacksMethod.resetDebugInfo(
       compileElement.nodeIndex, compileElement.sourceAst);
@@ -82,7 +82,7 @@ export function bindDirectiveDestroyLifecycleCallbacks(
     compileElement: CompileElement) {
   var onDestroyMethod = compileElement.view.destroyMethod;
   onDestroyMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
-  if (directiveMeta.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
+  if (directiveMeta.type.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
     onDestroyMethod.addStmt(directiveInstance.callMethod('ngOnDestroy', []).toStmt());
   }
 }
@@ -90,7 +90,7 @@ export function bindDirectiveDestroyLifecycleCallbacks(
 export function bindPipeDestroyLifecycleCallbacks(
     pipeMeta: CompilePipeMetadata, pipeInstance: o.Expression, view: CompileView) {
   var onDestroyMethod = view.destroyMethod;
-  if (pipeMeta.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
+  if (pipeMeta.type.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
     onDestroyMethod.addStmt(pipeInstance.callMethod('ngOnDestroy', []).toStmt());
   }
 }

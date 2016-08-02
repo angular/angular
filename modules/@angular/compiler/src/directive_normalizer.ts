@@ -248,7 +248,6 @@ function _cloneDirectiveWithTemplate(
     hostListeners: directive.hostListeners,
     hostProperties: directive.hostProperties,
     hostAttributes: directive.hostAttributes,
-    lifecycleHooks: directive.lifecycleHooks,
     providers: directive.providers,
     viewProviders: directive.viewProviders,
     queries: directive.queries,

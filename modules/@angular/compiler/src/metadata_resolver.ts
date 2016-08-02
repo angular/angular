@@ -208,8 +208,6 @@ export class CompileMetadataResolver {
         inputs: dirMeta.inputs,
         outputs: dirMeta.outputs,
         host: dirMeta.host,
-        lifecycleHooks:
-            LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, directiveType)),
         providers: providers,
         viewProviders: viewProviders,
         queries: queries,
@@ -486,7 +484,8 @@ export class CompileMetadataResolver {
       name: this.sanitizeTokenName(type),
       moduleUrl: moduleUrl,
       runtime: type,
-      diDeps: this.getDependenciesMetadata(type, dependencies)
+      diDeps: this.getDependenciesMetadata(type, dependencies),
+      lifecycleHooks: LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, type)),
     });
   }
 
@@ -512,8 +511,7 @@ export class CompileMetadataResolver {
       meta = new cpl.CompilePipeMetadata({
         type: this.getTypeMetadata(pipeType, staticTypeModuleUrl(pipeType)),
         name: pipeMeta.name,
-        pure: pipeMeta.pure,
-        lifecycleHooks: LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, pipeType)),
+        pure: pipeMeta.pure
       });
       this._pipeCache.set(pipeType, meta);
     }

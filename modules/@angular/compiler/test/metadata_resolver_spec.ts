@@ -32,7 +32,7 @@ export function main() {
            expect(meta.isComponent).toBe(true);
            expect(meta.type.runtime).toBe(ComponentWithEverything);
            expect(meta.type.name).toEqual(stringify(ComponentWithEverything));
-           expect(meta.lifecycleHooks).toEqual(LIFECYCLE_HOOKS_VALUES);
+           expect(meta.type.lifecycleHooks).toEqual(LIFECYCLE_HOOKS_VALUES);
            expect(meta.changeDetection).toBe(ChangeDetectionStrategy.Default);
            expect(meta.inputs).toEqual({'someProp': 'someProp'});
            expect(meta.outputs).toEqual({'someEvent': 'someEvent'});
