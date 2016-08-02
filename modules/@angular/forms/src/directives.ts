@@ -19,8 +19,7 @@ import {RadioControlValueAccessor} from './directives/radio_control_value_access
 import {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 import {FormControlName} from './directives/reactive_directives/form_control_name';
 import {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
-import {FormArrayName} from './directives/reactive_directives/form_group_name';
-import {FormGroupName} from './directives/reactive_directives/form_group_name';
+import {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
 import {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
 import {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 import {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator} from './directives/validators';
@@ -38,8 +37,7 @@ export {RadioControlValueAccessor} from './directives/radio_control_value_access
 export {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 export {FormControlName} from './directives/reactive_directives/form_control_name';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
-export {FormArrayName} from './directives/reactive_directives/form_group_name';
-export {FormGroupName} from './directives/reactive_directives/form_group_name';
+export {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
 export {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
 export {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator} from './directives/validators';
