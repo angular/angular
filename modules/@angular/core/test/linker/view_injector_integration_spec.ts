@@ -384,6 +384,20 @@ export function main() {
            expect(created).toBe(true);
          }));
 
+      it('should instantiate providers with a lifecycle hook eagerly', fakeAsync(() => {
+           var created = false;
+           class SomeInjectable {
+             constructor() { created = true; }
+             ngOnDestroy() {}
+           }
+
+           var el = createComp(
+               '<div simpleDirective></div>',
+               tcb.overrideProviders(SimpleDirective, [SomeInjectable]));
+
+           expect(created).toBe(true);
+         }));
+
       it('should instantiate view providers lazily', fakeAsync(() => {
            var created = false;
            var el = createComp(

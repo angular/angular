@@ -478,10 +478,13 @@ function _resolveProviders(
           sourceSpan));
     }
     if (isBlank(resolvedProvider)) {
-      const lifecycleHooks = provider.useClass ? provider.useClass.lifecycleHooks : [];
+      const lifecycleHooks =
+          provider.token.identifier && provider.token.identifier instanceof CompileTypeMetadata ?
+          provider.token.identifier.lifecycleHooks :
+          [];
       resolvedProvider = new ProviderAst(
-          provider.token, provider.multi, eager, [provider], providerType, lifecycleHooks,
-          sourceSpan);
+          provider.token, provider.multi, eager || lifecycleHooks.length > 0, [provider],
+          providerType, lifecycleHooks, sourceSpan);
       targetProvidersByToken.add(provider.token, resolvedProvider);
     } else {
       if (!provider.multi) {
