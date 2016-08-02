@@ -38,8 +38,6 @@ export class Tree<T> {
   }
 
   pathFromRoot(t: T): T[] { return findPath(t, this._root, []).map(s => s.value); }
-
-  contains(tree: Tree<T>): boolean { return contains(this._root, tree._root); }
 }
 
 function findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
@@ -62,18 +60,6 @@ function findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tre
   }
 
   return [];
-}
-
-function contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {
-  if (tree.value !== subtree.value) return false;
-
-  for (let subtreeNode of subtree.children) {
-    const s = tree.children.filter(child => child.value === subtreeNode.value);
-    if (s.length === 0) return false;
-    if (!contains(s[0], subtreeNode)) return false;
-  }
-
-  return true;
 }
 
 export class TreeNode<T> {
