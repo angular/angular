@@ -9,7 +9,6 @@
 import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf, forwardRef} from '@angular/core';
 
 import {EventEmitter, ObservableWrapper} from '../../facade/async';
-import {BaseException} from '../../facade/exceptions';
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
@@ -20,7 +19,6 @@ import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
 import {AsyncValidatorFn, ValidatorFn} from '../validators';
 
-import {FormArrayName} from './form_array_name';
 import {FormGroupDirective} from './form_group_directive';
 import {FormGroupName} from './form_group_name';
 
@@ -156,10 +154,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
                 if (!(this._parent instanceof FormGroupName) &&
                     this._parent instanceof AbstractFormGroupDirective) {
                   ReactiveErrors.ngModelGroupException();
-                } else if (
-                    !(this._parent instanceof FormGroupName) &&
-                    !(this._parent instanceof FormGroupDirective) &&
-                    !(this._parent instanceof FormArrayName)) {
+                } else if (ReactiveErrors.hasInvalidParent(this._parent)) {
                   ReactiveErrors.controlParentException();
                 }
               }

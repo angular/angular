@@ -8,7 +8,6 @@
 
 import {Directive, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
 
-import {BaseException} from '../../facade/exceptions';
 import {FormArray} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
@@ -17,7 +16,6 @@ import {composeAsyncValidators, composeValidators, controlPath} from '../shared'
 import {AsyncValidatorFn, ValidatorFn} from '../validators';
 
 import {FormGroupDirective} from './form_group_directive';
-import {FormGroupName} from './form_group_name';
 
 export const formArrayNameProvider: any = {
   provide: ControlContainer,
@@ -100,7 +98,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
 
   private _checkParentType(): void {
-    if (!(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective)) {
+    if (ReactiveErrors.hasInvalidParent(this._parent)) {
       ReactiveErrors.arrayParentException();
     }
   }

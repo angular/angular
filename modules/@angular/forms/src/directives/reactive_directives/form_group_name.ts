@@ -8,7 +8,6 @@
 
 import {Directive, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
 
-import {BaseException} from '../../facade/exceptions';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
@@ -85,7 +84,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
 
   /** @internal */
   _checkParentType(): void {
-    if (!(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective)) {
+    if (ReactiveErrors.hasInvalidParent(this._parent)) {
       ReactiveErrors.groupParentException();
     }
   }
