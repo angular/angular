@@ -23,7 +23,7 @@ describe('RouterState & Snapshot', () => {
 
       const root = new TreeNode(a, [new TreeNode(b, []), new TreeNode(c, [])]);
 
-      state = new RouterStateSnapshot('url', root, {}, '');
+      state = new RouterStateSnapshot('url', root);
     });
 
     it('should return first child', () => { expect(state.root.firstChild).toBe(b); });
@@ -60,7 +60,7 @@ describe('RouterState & Snapshot', () => {
 
       const root = new TreeNode(a, [new TreeNode(b, []), new TreeNode(c, [])]);
 
-      state = new RouterState(root, <any>null, <any>null, <any>null);
+      state = new RouterState(root, <any>null);
     });
 
     it('should return first child', () => { expect(state.root.firstChild).toBe(b); });
@@ -87,9 +87,11 @@ describe('RouterState & Snapshot', () => {
 
 function createActivatedRouteSnapshot(cmp: string) {
   return new ActivatedRouteSnapshot(
-      <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null, <any>null, -1, null);
+      <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null,
+      <any>null, -1, null);
 }
 
 function createActivatedRoute(cmp: string) {
-  return new ActivatedRoute(<any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null);
+  return new ActivatedRoute(
+      <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null);
 }

@@ -28,7 +28,7 @@ describe('Integration', () => {
         BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
         RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
         QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp, LinkInNgIf,
-        ComponentRecordingQueryParams, ComponentRecordingRoutePathAndUrl, RouteCmp
+        ComponentRecordingRoutePathAndUrl, RouteCmp
       ]
     });
   });
@@ -287,29 +287,6 @@ describe('Integration', () => {
            router.navigateByUrl('/query?name=2#fragment2');
            advance(fixture);
            expect(fixture.debugElement.nativeElement).toHaveText('query: 2 fragment: fragment2');
-         })));
-
-  it('should not push query params into components that will be deactivated',
-     fakeAsync(
-         inject([Router, TestComponentBuilder], (router: Router, tcb: TestComponentBuilder) => {
-
-           router.resetConfig([
-             {path: '', component: ComponentRecordingQueryParams},
-             {path: 'simple', component: SimpleCmp}
-           ]);
-
-           const fixture = createRoot(tcb, router, RootCmp);
-           router.navigateByUrl('/?a=v1');
-           advance(fixture);
-
-           const c = fixture.debugElement.children[1].componentInstance;
-
-           expect(c.recordedQueryParams).toEqual([{}, {a: 'v1'}]);
-
-           router.navigateByUrl('/simple?a=v2');
-           advance(fixture);
-
-           expect(c.recordedQueryParams).toEqual([{}, {a: 'v1'}]);
          })));
 
   it('should push params only when they change',
@@ -1733,18 +1710,6 @@ class DummyLinkWithParentCmp {
   constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
 }
 
-
-@Component({template: ''})
-class ComponentRecordingQueryParams {
-  recordedQueryParams: any[] = [];
-  subscription: any;
-  constructor(r: Router) {
-    this.subscription = r.routerState.queryParams.subscribe(r => this.recordedQueryParams.push(r));
-  }
-
-  ngOnDestroy() { this.subscription.unsubscribe(); }
-}
-
 @Component({selector: 'cmp', template: ''})
 class ComponentRecordingRoutePathAndUrl {
   private path: any;
@@ -1764,7 +1729,7 @@ class ComponentRecordingRoutePathAndUrl {
     BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
     RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
     QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp, LinkInNgIf,
-    ComponentRecordingQueryParams, ComponentRecordingRoutePathAndUrl
+    ComponentRecordingRoutePathAndUrl
   ]
 })
 class RootCmp {

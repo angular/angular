@@ -38,12 +38,20 @@ export class RouterState extends Tree<ActivatedRoute> {
   /**
    * @internal
    */
-  constructor(
-      root: TreeNode<ActivatedRoute>, public queryParams: Observable<Params>,
-      public fragment: Observable<string>, public snapshot: RouterStateSnapshot) {
+  constructor(root: TreeNode<ActivatedRoute>, public snapshot: RouterStateSnapshot) {
     super(root);
     setRouterStateSnapshot<RouterState, ActivatedRoute>(this, root);
   }
+
+  /**
+    * @deprecated (Use root.queryParams)
+    */
+  get queryParams(): Observable<Params> { return this.root.queryParams; }
+
+  /**
+   * @deprecated (Use root.fragment)
+   */
+  get fragment(): Observable<string> { return this.root.fragment; }
 
   toString(): string { return this.snapshot.toString(); }
 }
@@ -56,10 +64,10 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type): RouterS
   const emptyQueryParams = new BehaviorSubject({});
   const fragment = new BehaviorSubject('');
   const activated = new ActivatedRoute(
-      emptyUrl, emptyParams, emptyData, PRIMARY_OUTLET, rootComponent, snapshot.root);
+      emptyUrl, emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent,
+      snapshot.root);
   activated.snapshot = snapshot.root;
-  return new RouterState(
-      new TreeNode<ActivatedRoute>(activated, []), emptyQueryParams, fragment, snapshot);
+  return new RouterState(new TreeNode<ActivatedRoute>(activated, []), snapshot);
 }
 
 function createEmptyStateSnapshot(urlTree: UrlTree, rootComponent: Type): RouterStateSnapshot {
@@ -68,10 +76,9 @@ function createEmptyStateSnapshot(urlTree: UrlTree, rootComponent: Type): Router
   const emptyQueryParams = {};
   const fragment = '';
   const activated = new ActivatedRouteSnapshot(
-      [], emptyParams, emptyData, PRIMARY_OUTLET, rootComponent, null, urlTree.root, -1,
-      InheritedResolve.empty);
-  return new RouterStateSnapshot(
-      '', new TreeNode<ActivatedRouteSnapshot>(activated, []), emptyQueryParams, fragment);
+      [], emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent, null,
+      urlTree.root, -1, InheritedResolve.empty);
+  return new RouterStateSnapshot('', new TreeNode<ActivatedRouteSnapshot>(activated, []));
 }
 
 /**
@@ -104,6 +111,7 @@ export class ActivatedRoute {
    */
   constructor(
       public url: Observable<UrlSegment[]>, public params: Observable<Params>,
+      public queryParams: Observable<Params>, public fragment: Observable<string>,
       public data: Observable<Data>, public outlet: string, public component: Type|string,
       futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
@@ -187,7 +195,8 @@ export class ActivatedRouteSnapshot {
    * @internal
    */
   constructor(
-      public url: UrlSegment[], public params: Params, public data: Data, public outlet: string,
+      public url: UrlSegment[], public params: Params, public queryParams: Params,
+      public fragment: string, public data: Data, public outlet: string,
       public component: Type|string, routeConfig: Route, urlSegment: UrlSegmentGroup,
       lastPathIndex: number, resolve: InheritedResolve) {
     this._routeConfig = routeConfig;
@@ -232,12 +241,20 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   /**
    * @internal
    */
-  constructor(
-      public url: string, root: TreeNode<ActivatedRouteSnapshot>, public queryParams: Params,
-      public fragment: string) {
+  constructor(public url: string, root: TreeNode<ActivatedRouteSnapshot>) {
     super(root);
     setRouterStateSnapshot<RouterStateSnapshot, ActivatedRouteSnapshot>(this, root);
   }
+
+  /**
+   * @deprecated (Use root.queryParams)
+   */
+  get queryParams(): Params { return this.root.queryParams; }
+
+  /**
+   * @deprecated (Use root.fragment)
+   */
+  get fragment(): string { return this.root.fragment; }
 
   toString(): string { return serializeNode(this._root); }
 }
@@ -259,6 +276,12 @@ function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
  */
 export function advanceActivatedRoute(route: ActivatedRoute): void {
   if (route.snapshot) {
+    if (!shallowEqual(route.snapshot.queryParams, route._futureSnapshot.queryParams)) {
+      (<any>route.queryParams).next(route._futureSnapshot.queryParams);
+    }
+    if (route.snapshot.fragment !== route._futureSnapshot.fragment) {
+      (<any>route.fragment).next(route._futureSnapshot.fragment);
+    }
     if (!shallowEqual(route.snapshot.params, route._futureSnapshot.params)) {
       (<any>route.params).next(route._futureSnapshot.params);
       (<any>route.data).next(route._futureSnapshot.data);
@@ -269,6 +292,8 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
     route.snapshot = route._futureSnapshot;
   } else {
     route.snapshot = route._futureSnapshot;
+
+    // this is for resolved data
     (<any>route.data).next(route._futureSnapshot.data);
   }
 }
