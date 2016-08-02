@@ -11,7 +11,8 @@ import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
 import {ConcreteType, Type, isBlank, isPresent, isPromise, stringify} from '../src/facade/lang';
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, PLATFORM_INITIALIZER} from './application_tokens';
+import {AppInitStatus} from './application_init';
+import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 import {Console} from './console';
 import {Inject, Injectable, Injector, OpaqueToken, Optional, ReflectiveInjector, SkipSelf, forwardRef} from './di';
@@ -359,19 +360,8 @@ export class PlatformRef_ extends PlatformRef {
         exceptionHandler.call(error.error, error.stackTrace);
       });
       return _callAndReportToExceptionHandler(exceptionHandler, () => {
-        const appInits = moduleRef.injector.get(APP_INITIALIZER, null);
-        const asyncInitPromises: Promise<any>[] = [];
-        if (isPresent(appInits)) {
-          for (let i = 0; i < appInits.length; i++) {
-            const initResult = appInits[i]();
-            if (isPromise(initResult)) {
-              asyncInitPromises.push(initResult);
-            }
-          }
-        }
-        const appRef: ApplicationRef_ = moduleRef.injector.get(ApplicationRef);
-        return Promise.all(asyncInitPromises).then(() => {
-          appRef.asyncInitDone();
+        const initStatus: AppInitStatus = moduleRef.injector.get(AppInitStatus);
+        return initStatus.donePromise.then(() => {
           this._moduleDoBootstrap(moduleRef);
           return moduleRef;
         });
@@ -430,6 +420,8 @@ export abstract class ApplicationRef {
   /**
    * Returns a promise that resolves when all asynchronous application initializers
    * are done.
+   *
+   * @deprecated Use the {@link AppInitStatus} class instead.
    */
   abstract waitForAsyncInitializers(): Promise<any>;
 
@@ -509,13 +501,11 @@ export class ApplicationRef_ extends ApplicationRef {
   private _runningTick: boolean = false;
   private _enforceNoNewChanges: boolean = false;
 
-  /** @internal */
-  _asyncInitDonePromise: PromiseCompleter<any> = PromiseWrapper.completer();
-
   constructor(
       private _zone: NgZone, private _console: Console, private _injector: Injector,
       private _exceptionHandler: ExceptionHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
+      private _initStatus: AppInitStatus,
       @Optional() private _testabilityRegistry: TestabilityRegistry,
       @Optional() private _testability: Testability) {
     super();
@@ -545,11 +535,9 @@ export class ApplicationRef_ extends ApplicationRef {
   }
 
   /**
-   * @internal
+   * @deprecated
    */
-  asyncInitDone() { this._asyncInitDonePromise.resolve(null); }
-
-  waitForAsyncInitializers(): Promise<any> { return this._asyncInitDonePromise.promise; }
+  waitForAsyncInitializers(): Promise<any> { return this._initStatus.donePromise; }
 
   run(callback: Function): any {
     return this._zone.run(
@@ -557,6 +545,10 @@ export class ApplicationRef_ extends ApplicationRef {
   }
 
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|ConcreteType<C>): ComponentRef<C> {
+    if (!this._initStatus.done) {
+      throw new BaseException(
+          'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
+    }
     return this.run(() => {
       let componentFactory: ComponentFactory<C>;
       if (componentOrFactory instanceof ComponentFactory) {

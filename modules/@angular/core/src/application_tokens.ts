@@ -48,12 +48,6 @@ function _randomChar(): string {
 export const PLATFORM_INITIALIZER: any = new OpaqueToken('Platform Initializer');
 
 /**
- * A function that will be executed when an application is initialized.
- * @experimental
- */
-export const APP_INITIALIZER: any = new OpaqueToken('Application Initializer');
-
-/**
  * All callbacks provided via this token will be called when a component has been bootstrapped.
  *
  * @experimental

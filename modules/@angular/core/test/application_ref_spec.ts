@@ -19,7 +19,7 @@ import {PromiseCompleter, PromiseWrapper} from '../src/facade/async';
 import {ExceptionHandler} from '../src/facade/exception_handler';
 import {BaseException} from '../src/facade/exceptions';
 import {ConcreteType} from '../src/facade/lang';
-import {TestBed, async, inject} from '../testing';
+import {TestBed, async, inject, withModule} from '../testing';
 
 import {SpyChangeDetectorRef} from './spies';
 
@@ -133,7 +133,27 @@ export function main() {
              const compRef = ref.bootstrap(SomeComponent);
              expect(capturedCompRefs).toEqual([compRef]);
            }));
+      });
 
+      describe('bootstrap', () => {
+        beforeEach(
+            () => {
+
+            });
+        it('should throw if an APP_INITIIALIZER is not yet resolved',
+           withModule(
+               {
+                 providers: [{
+                   provide: APP_INITIALIZER,
+                   useValue: () => PromiseWrapper.completer().promise,
+                   multi: true
+                 }]
+               },
+               inject([ApplicationRef], (ref: ApplicationRef_) => {
+                 expect(() => ref.bootstrap(SomeComponent))
+                     .toThrowError(
+                         'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
+               })));
       });
 
     });
@@ -163,7 +183,11 @@ export function main() {
                    [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]))
                .then(() => expect(false).toBe(true), (e) => {
                  expect(e).toBe('Test');
-                 expect(errorLogger.res).toEqual(['EXCEPTION: Test']);
+                 // Note: if the modules throws an error during construction,
+                 // we don't have an injector and therefore no way of
+                 // getting the exception handler. So
+                 // the error is only rethrown but not logged via the exception handler.
+                 expect(errorLogger.res).toEqual([]);
                });
          }));
 
@@ -248,7 +272,11 @@ export function main() {
            const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
                [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]));
            expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
-           expect(errorLogger.res).toEqual(['EXCEPTION: Test']);
+           // Note: if the modules throws an error during construction,
+           // we don't have an injector and therefore no way of
+           // getting the exception handler. So
+           // the error is only rethrown but not logged via the exception handler.
+           expect(errorLogger.res).toEqual([]);
          }));
 
       it('should rethrow promise errors even if the exceptionHandler is not rethrowing',

@@ -8,6 +8,7 @@
 
 import {Type} from '../src/facade/lang';
 
+import {AppInitStatus} from './application_init';
 import {ApplicationRef, ApplicationRef_, isDevMode} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
@@ -44,6 +45,7 @@ export const APPLICATION_COMMON_PROVIDERS: Array<Type|{[k: string]: any}|any[]> 
   providers: [
     ApplicationRef_,
     {provide: ApplicationRef, useExisting: ApplicationRef_},
+    AppInitStatus,
     Compiler,
     {provide: ComponentResolver, useExisting: Compiler},
     APP_ID_RANDOM_PROVIDER,
