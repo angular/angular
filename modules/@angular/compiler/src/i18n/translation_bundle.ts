@@ -19,7 +19,7 @@ export class TranslationBundle {
   static load(
       content: string, url: string, placeholders: {[id: string]: {[name: string]: string}},
       serializer: Serializer): TranslationBundle {
-    return new TranslationBundle(serializer.load(content, 'url', placeholders));
+    return new TranslationBundle(serializer.load(content, url, placeholders));
   }
 
   get(id: string): html.Node[] { return this._messageMap[id]; }

@@ -11,7 +11,7 @@ import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseError} from '../parse_util';
 
 import * as i18n from './i18n_ast';
-import {extractI18nMessages} from './i18n_parser';
+import * as i18nParser from './i18n_parser';
 import {Serializer} from './serializers/serializer';
 
 
@@ -33,18 +33,18 @@ export class MessageBundle {
       return htmlParserResult.errors;
     }
 
-    const messages = extractI18nMessages(
+    const messages = i18nParser.extractI18nMessages(
         htmlParserResult.rootNodes, interpolationConfig, this._implicitTags, this._implicitAttrs);
 
     messages.forEach((message) => {
-      this._messageMap[messageDigest(message.nodes, message.meaning)] = message;
+      this._messageMap[digestMessage(message.nodes, message.meaning)] = message;
     });
   }
 
   write(serializer: Serializer): string { return serializer.write(this._messageMap); }
 }
 
-export function messageDigest(nodes: i18n.Node[], meaning: string): string {
+export function digestMessage(nodes: i18n.Node[], meaning: string): string {
   return strHash(serializeNodes(nodes).join('') + `[${meaning}]`);
 }
 

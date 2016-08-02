@@ -6,14 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExtractionResult, extractAstMessages} from '@angular/compiler/src/i18n/extractor';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
+import {ExtractionResult, Message as HtmlMessage, extractAstMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
+import {getHtmlToI18nConverter} from '../../src/i18n/i18n_parser';
+import {digestMessage} from '../../src/i18n/message_bundle';
+import {TranslationBundle} from '../../src/i18n/translation_bundle';
+import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {serializeNodes} from '../html_parser/ast_serializer_spec';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
+import {serializeNodes} from '../ml_parser/ast_serializer_spec';
 
 export function main() {
-  describe('MessageExtractor', () => {
+  describe('Extractor', () => {
     describe('elements', () => {
       it('should extract from elements', () => {
         expect(extract('<div i18n="m|d|e">text<span>nested</span></div>')).toEqual([
@@ -143,20 +148,20 @@ export function main() {
     });
 
     describe('attributes', () => {
-      it('should extract from attributes outside of translatable section', () => {
+      it('should extract from attributes outside of translatable sections', () => {
         expect(extract('<div i18n-title="m|d" title="msg"></div>')).toEqual([
           [['title="msg"'], 'm', 'd'],
         ]);
       });
 
-      it('should extract from attributes in translatable element', () => {
+      it('should extract from attributes in translatable elements', () => {
         expect(extract('<div i18n><p><b i18n-title="m|d" title="msg"></b></p></div>')).toEqual([
           [['<p><b i18n-title="m|d" title="msg"></b></p>'], '', ''],
           [['title="msg"'], 'm', 'd'],
         ]);
       });
 
-      it('should extract from attributes in translatable block', () => {
+      it('should extract from attributes in translatable blocks', () => {
         expect(extract('<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->'))
             .toEqual([
               [['title="msg"'], 'm', 'd'],
@@ -164,7 +169,7 @@ export function main() {
             ]);
       });
 
-      it('should extract from attributes in translatable ICU', () => {
+      it('should extract from attributes in translatable ICUs', () => {
         expect(
             extract(
                 '<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}<!-- /i18n -->'))
@@ -174,7 +179,7 @@ export function main() {
             ]);
       });
 
-      it('should extract from attributes in non translatable ICU', () => {
+      it('should extract from attributes in non translatable ICUs', () => {
         expect(extract('{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}'))
             .toEqual([
               [['title="msg"'], 'm', 'd'],
@@ -207,24 +212,18 @@ export function main() {
         it('should report nested translatable elements', () => {
           expect(extractErrors(`<p i18n><b i18n></b></p>`)).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b i18n>'],
-            ['Unexpected section start', '<b i18n>'],
-            ['Unexpected section end', '<p i18n>'],
           ]);
         });
 
         it('should report translatable elements in implicit elements', () => {
           expect(extractErrors(`<p><b i18n></b></p>`, ['p'])).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b i18n>'],
-            ['Unexpected section start', '<b i18n>'],
-            ['Unexpected section end', '<p>'],
           ]);
         });
 
         it('should report translatable elements in translatable blocks', () => {
           expect(extractErrors(`<!-- i18n --><b i18n></b><!-- /i18n -->`)).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b i18n>'],
-            ['Unexpected section start', '<b i18n>'],
-            ['Unexpected section end', '<!--'],
           ]);
         });
       });
@@ -275,47 +274,106 @@ export function main() {
         it('should report nested implicit elements', () => {
           expect(extractErrors(`<p><b></b></p>`, ['p', 'b'])).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b>'],
-            ['Unexpected section start', '<b>'],
-            ['Unexpected section end', '<p>'],
           ]);
         });
 
         it('should report implicit element in translatable element', () => {
           expect(extractErrors(`<p i18n><b></b></p>`, ['b'])).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b>'],
-            ['Unexpected section start', '<b>'],
-            ['Unexpected section end', '<p i18n>'],
           ]);
         });
 
         it('should report implicit element in translatable blocks', () => {
           expect(extractErrors(`<!-- i18n --><b></b><!-- /i18n -->`, ['b'])).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b>'],
-            ['Unexpected section start', '<b>'],
-            ['Unexpected section end', '<!--'],
           ]);
         });
       });
     });
   });
+
+  describe('Merger', () => {
+    describe('elements', () => {
+      it('should merge elements', () => {
+        const HTML = `<p i18n="m|d">foo</p>`;
+        expect(fakeTranslate(HTML)).toEqual('<p>-*foo*-</p>');
+      });
+
+      it('should merge nested elements', () => {
+        const HTML = `<div>before<p i18n="m|d">foo</p><!-- comment --></div>`;
+        expect(fakeTranslate(HTML)).toEqual('<div>before<p>-*foo*-</p></div>');
+      });
+    });
+
+    describe('blocks', () => {
+      it('should merge blocks', () => {
+        const HTML = `before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after`;
+        expect(fakeTranslate(HTML)).toEqual('before-*<p>foo</p><span><i>bar</i></span>*-after');
+      });
+
+      it('should merge nested blocks', () => {
+        const HTML =
+            `<div>before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after</div>`;
+        expect(fakeTranslate(HTML))
+            .toEqual('<div>before-*<p>foo</p><span><i>bar</i></span>*-after</div>');
+      });
+    });
+
+    describe('attributes', () => {
+      it('should merge attributes', () => {
+        const HTML = `<p i18n-title="m|d" title="foo"></p>`;
+        expect(fakeTranslate(HTML)).toEqual('<p title="-*"></p>');
+      });
+
+      it('should merge attributes', () => {
+        const HTML = `<div>{count, plural, =0 {<p i18n-title title="foo"></p>}}</div>`;
+        expect(fakeTranslate(HTML)).toEqual('<div>{count, plural, =0 {<p title="-*"></p>}}</div>');
+      });
+    });
+  });
 }
 
-function getExtractionResult(
-    html: string, implicitTags: string[],
-    implicitAttrs: {[k: string]: string[]}): ExtractionResult {
+function parseHtml(html: string): html.Node[] {
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(html, 'extractor spec', true);
   if (parseResult.errors.length > 1) {
     throw Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
   }
+  return parseResult.rootNodes;
+}
 
-  return extractAstMessages(parseResult.rootNodes, implicitTags, implicitAttrs);
+function fakeTranslate(
+    content: string, implicitTags: string[] = [],
+    implicitAttrs: {[k: string]: string[]} = {}): string {
+  const htmlNodes: html.Node[] = parseHtml(content);
+  const htmlMsgs: HtmlMessage[] =
+      extractAstMessages(htmlNodes, implicitTags, implicitAttrs).messages;
+
+  const i18nMsgMap: {[id: string]: html.Node[]} = {};
+  const converter = getHtmlToI18nConverter(DEFAULT_INTERPOLATION_CONFIG);
+
+  htmlMsgs.forEach(msg => {
+    const i18nMsg = converter(msg);
+
+    i18nMsgMap[digestMessage(i18nMsg.nodes, i18nMsg.meaning)] = [
+      new html.Text('-*', null),
+      ...msg.nodes,
+      new html.Text('*-', null),
+    ];
+  });
+
+  const translations = new TranslationBundle(i18nMsgMap);
+
+  const translateNodes = mergeTranslations(
+      htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
+
+  return serializeNodes(translateNodes).join('');
 }
 
 function extract(
     html: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
-  const messages = getExtractionResult(html, implicitTags, implicitAttrs).messages;
+  const messages = extractAstMessages(parseHtml(html), implicitTags, implicitAttrs).messages;
 
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
@@ -326,7 +384,7 @@ function extract(
 
 function extractErrors(
     html: string, implicitTags: string[] = [], implicitAttrs: {[k: string]: string[]} = {}): any[] {
-  const errors = getExtractionResult(html, implicitTags, implicitAttrs).errors;
+  const errors = extractAstMessages(parseHtml(html), implicitTags, implicitAttrs).errors;
 
   return errors.map((e): [string, string] => [e.msg, e.span.toString()]);
 }
