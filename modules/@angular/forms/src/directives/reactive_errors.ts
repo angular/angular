@@ -8,18 +8,9 @@
 
 import {BaseException} from '../facade/exceptions';
 
-import {AbstractControlDirective} from './abstract_control_directive';
 import {FormErrorExamples as Examples} from './error_examples';
-import {FormArrayName} from './reactive_directives/form_array_name';
-import {FormGroupDirective} from './reactive_directives/form_group_directive';
-import {FormGroupName} from './reactive_directives/form_group_name';
 
 export class ReactiveErrors {
-  static hasInvalidParent(parent: AbstractControlDirective): boolean {
-    return !(parent instanceof FormGroupName) && !(parent instanceof FormGroupDirective) &&
-        !(parent instanceof FormArrayName);
-  }
-
   static controlParentException(): void {
     throw new BaseException(
         `formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup

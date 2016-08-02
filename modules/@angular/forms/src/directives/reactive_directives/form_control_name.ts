@@ -20,8 +20,7 @@ import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdate
 import {AsyncValidatorFn, ValidatorFn} from '../validators';
 
 import {FormGroupDirective} from './form_group_directive';
-import {FormGroupName} from './form_group_name';
-
+import {FormArrayName, FormGroupName} from './form_group_name';
 
 export const controlNameBinding: any = {
   provide: NgControl,
@@ -154,7 +153,10 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
                 if (!(this._parent instanceof FormGroupName) &&
                     this._parent instanceof AbstractFormGroupDirective) {
                   ReactiveErrors.ngModelGroupException();
-                } else if (ReactiveErrors.hasInvalidParent(this._parent)) {
+                } else if (
+                    !(this._parent instanceof FormGroupName) &&
+                    !(this._parent instanceof FormGroupDirective) &&
+                    !(this._parent instanceof FormArrayName)) {
                   ReactiveErrors.controlParentException();
                 }
               }
