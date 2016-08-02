@@ -14,21 +14,33 @@ export class Tree<T> {
 
   get root(): T { return this._root.value; }
 
+  /**
+   * @deprecated (use ActivatedRoute.parent instead)
+   */
   parent(t: T): T {
     const p = this.pathFromRoot(t);
     return p.length > 1 ? p[p.length - 2] : null;
   }
 
+  /**
+   * @deprecated (use ActivatedRoute.children instead)
+   */
   children(t: T): T[] {
     const n = findNode(t, this._root);
     return n ? n.children.map(t => t.value) : [];
   }
 
+  /**
+   * @deprecated (use ActivatedRoute.firstChild instead)
+   */
   firstChild(t: T): T {
     const n = findNode(t, this._root);
     return n && n.children.length > 0 ? n.children[0].value : null;
   }
 
+  /**
+   * @deprecated
+   */
   siblings(t: T): T[] {
     const p = findPath(t, this._root, []);
     if (p.length < 2) return [];
@@ -37,6 +49,9 @@ export class Tree<T> {
     return c.filter(cc => cc !== t);
   }
 
+  /**
+   * @deprecated (use ActivatedRoute.pathFromRoot instead)
+   */
   pathFromRoot(t: T): T[] { return findPath(t, this._root, []).map(s => s.value); }
 }
 
