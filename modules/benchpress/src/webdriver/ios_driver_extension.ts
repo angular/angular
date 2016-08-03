@@ -1,8 +1,16 @@
-import {Json, isPresent, isBlank, RegExpWrapper, StringWrapper} from '@angular/facade/src/lang';
-import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
+import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
+import {Json, RegExpWrapper, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
+
 import {WebDriverAdapter} from '../web_driver_adapter';
+import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
 export class IOsDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
@@ -19,7 +27,7 @@ export class IOsDriverExtension extends WebDriverExtension {
   timeEnd(name: string, restartName: string = null): Promise<any> {
     var script = `console.timeEnd('${name}');`;
     if (isPresent(restartName)) {
-      script += `console.time('${restartName}');`
+      script += `console.time('${restartName}');`;
     }
     return this._driver.executeScript(script);
   }
@@ -42,7 +50,8 @@ export class IOsDriverExtension extends WebDriverExtension {
         });
   }
 
-  _convertPerfRecordsToEvents(records: any[], events: any[] = null) {
+  /** @internal */
+  private _convertPerfRecordsToEvents(records: any[], events: any[] = null) {
     if (isBlank(events)) {
       events = [];
     }
@@ -61,11 +70,11 @@ export class IOsDriverExtension extends WebDriverExtension {
         events.push(createMarkStartEvent(data['message'], startTime));
       } else if (StringWrapper.equals(type, 'TimeEnd')) {
         events.push(createMarkEndEvent(data['message'], startTime));
-      } else if (StringWrapper.equals(type, 'RecalculateStyles') ||
-                 StringWrapper.equals(type, 'Layout') ||
-                 StringWrapper.equals(type, 'UpdateLayerTree') ||
-                 StringWrapper.equals(type, 'Paint') || StringWrapper.equals(type, 'Rasterize') ||
-                 StringWrapper.equals(type, 'CompositeLayers')) {
+      } else if (
+          StringWrapper.equals(type, 'RecalculateStyles') || StringWrapper.equals(type, 'Layout') ||
+          StringWrapper.equals(type, 'UpdateLayerTree') || StringWrapper.equals(type, 'Paint') ||
+          StringWrapper.equals(type, 'Rasterize') ||
+          StringWrapper.equals(type, 'CompositeLayers')) {
         events.push(createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
       }
@@ -119,6 +128,8 @@ function createMarkEndEvent(name, time) {
   return createEvent('e', name, time);
 }
 
-var _PROVIDERS = [
-  {provide: IOsDriverExtension, useFactory: (driver) => new IOsDriverExtension(driver), deps: [WebDriverAdapter]}
-];
+var _PROVIDERS = [{
+  provide: IOsDriverExtension,
+  useFactory: (driver) => new IOsDriverExtension(driver),
+  deps: [WebDriverAdapter]
+}];

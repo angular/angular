@@ -1,7 +1,16 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {PromiseWrapper} from '@angular/facade/src/async';
+import * as webdriver from 'selenium-webdriver';
+
 import {WebDriverAdapter} from '../web_driver_adapter';
 
-import * as webdriver from 'selenium-webdriver';
 
 /**
  * Adapter for the selenium-webdriver.
@@ -11,7 +20,8 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
 
   constructor(private _driver: any) { super(); }
 
-  _convertPromise(thenable) {
+  /** @internal */
+  private _convertPromise(thenable) {
     var completer = PromiseWrapper.completer();
     thenable.then(
         // selenium-webdriver uses an own Node.js context,
@@ -55,6 +65,8 @@ function convertToLocalProcess(data): Object {
   return JSON.parse(serialized);
 }
 
-var _PROTRACTOR_BINDINGS = [
-  {provide: WebDriverAdapter, useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser), deps: []}
-];
+var _PROTRACTOR_BINDINGS = [{
+  provide: WebDriverAdapter,
+  useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser),
+  deps: []
+}];

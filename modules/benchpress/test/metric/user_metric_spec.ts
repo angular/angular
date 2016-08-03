@@ -1,30 +1,24 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {ReflectiveInjector} from '@angular/core';
-import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-
-import {TimerWrapper} from '@angular/facade/src/async';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {PromiseWrapper, TimerWrapper} from '@angular/facade/src/async';
 import {StringMapWrapper} from '@angular/facade/src/collection';
-import {PromiseWrapper} from '@angular/facade/src/async';
-import {isPresent, isBlank, Json} from '@angular/facade/src/lang';
-
-import {
-  Metric,
-  MultiMetric,
-  PerflogMetric,
-  UserMetric,
-  WebDriverAdapter,
-  WebDriverExtension,
-  PerfLogFeatures,
-  bind,
-  provide,
-  Injector,
-  Options
-} from 'benchpress/common';
+import {Json, isBlank, isPresent} from '@angular/facade/src/lang';
+import {Injector, Metric, MultiMetric, Options, PerfLogFeatures, PerflogMetric, UserMetric, WebDriverAdapter, WebDriverExtension, bind, provide} from 'benchpress/common';
 
 export function main() {
   var wdAdapter: MockDriverAdapter;
 
-  function createMetric(perfLogs, perfLogFeatures,
-                        {userMetrics}: {userMetrics?: {[key: string]: string}} = {}): UserMetric {
+  function createMetric(
+      perfLogs, perfLogFeatures,
+      {userMetrics}: {userMetrics?: {[key: string]: string}} = {}): UserMetric {
     if (isBlank(perfLogFeatures)) {
       perfLogFeatures =
           new PerfLogFeatures({render: true, gc: true, frameCapture: true, userTiming: true});
@@ -34,8 +28,7 @@ export function main() {
     }
     wdAdapter = new MockDriverAdapter();
     var bindings = [
-      Options.DEFAULT_PROVIDERS,
-      UserMetric.PROVIDERS,
+      Options.DEFAULT_PROVIDERS, UserMetric.PROVIDERS,
       bind(Options.USER_METRICS).toValue(userMetrics),
       provide(WebDriverAdapter, {useValue: wdAdapter})
     ];
@@ -45,8 +38,9 @@ export function main() {
   describe('user metric', () => {
 
     it('should describe itself based on userMetrics', () => {
-      expect(createMetric([[]], new PerfLogFeatures(), {userMetrics: {'loadTime': 'time to load'}})
-                 .describe())
+      expect(createMetric([[]], new PerfLogFeatures(), {
+               userMetrics: {'loadTime': 'time to load'}
+             }).describe())
           .toEqual({'loadTime': 'time to load'});
     });
 

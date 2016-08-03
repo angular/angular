@@ -1,24 +1,26 @@
-import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {Date, DateWrapper} from '@angular/facade/src/lang';
-import {ListWrapper} from '@angular/facade/src/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {
-  Validator,
-  SizeValidator,
-  ReflectiveInjector,
-  MeasureValues
-} from 'benchpress/common';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {ListWrapper} from '@angular/facade/src/collection';
+import {Date, DateWrapper} from '@angular/facade/src/lang';
+import {MeasureValues, ReflectiveInjector, SizeValidator, Validator} from 'benchpress/common';
 
 export function main() {
   describe('size validator', () => {
     var validator;
 
     function createValidator(size) {
-      validator = ReflectiveInjector.resolveAndCreate([
-                                      SizeValidator.PROVIDERS,
-                                      {provide: SizeValidator.SAMPLE_SIZE, useValue: size}
-                                    ])
-                      .get(SizeValidator);
+      validator =
+          ReflectiveInjector
+              .resolveAndCreate(
+                  [SizeValidator.PROVIDERS, {provide: SizeValidator.SAMPLE_SIZE, useValue: size}])
+              .get(SizeValidator);
     }
 
     it('should return sampleSize as description', () => {

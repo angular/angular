@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 var {Cc, Ci, Cu} = require('chrome');
 var os = Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService);
 var ParserUtil = require('./parser_util');
@@ -25,7 +33,8 @@ class Profiler {
     return perfEvents;
   }
 
-  _mergeMarkerEvents(perfEvents: any[]): any[] {
+  /** @internal */
+  private _mergeMarkerEvents(perfEvents: any[]): any[] {
     this._markerEvents.forEach(function(markerEvent) { perfEvents.push(markerEvent); });
     return perfEvents;
   }
@@ -51,12 +60,13 @@ mod.PageMod({
   include: ['*'],
   contentScriptFile: data.url('installed_script.js'),
   onAttach: worker => {
-    worker.port.on('startProfiler',
-                   (timeStarted) => profiler.start(/* = profiler memory */ 3000000, 0.1,
-                                                   ['leaf', 'js', 'stackwalk', 'gc'], timeStarted));
+    worker.port.on(
+        'startProfiler',
+        (timeStarted) => profiler.start(
+            /* = profiler memory */ 3000000, 0.1, ['leaf', 'js', 'stackwalk', 'gc'], timeStarted));
     worker.port.on('stopProfiler', () => profiler.stop());
-    worker.port.on('getProfile',
-                   () => worker.port.emit('perfProfile', profiler.getProfilePerfEvents()));
+    worker.port.on(
+        'getProfile', () => worker.port.emit('perfProfile', profiler.getProfilePerfEvents()));
     worker.port.on('forceGC', forceGC);
     worker.port.on('markStart', (name, timeStarted) => profiler.addStartEvent(name, timeStarted));
     worker.port.on('markEnd', (name, timeEnded) => profiler.addEndEvent(name, timeEnded));
