@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Injector, OpaqueToken} from '@angular/core/src/di';
 import {PromiseWrapper} from '@angular/facade/src/async';
 
@@ -12,11 +20,16 @@ export class MultiReporter extends Reporter {
         useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
         deps: [Injector],
       },
-      {provide: MultiReporter, useFactory: children => new MultiReporter(children), deps: [_CHILDREN]}
+      {
+        provide: MultiReporter,
+        useFactory: children => new MultiReporter(children),
+        deps: [_CHILDREN]
+      }
     ];
   }
 
-  _reporters: Reporter[];
+  /** @internal */
+  private _reporters: Reporter[];
 
   constructor(reporters) {
     super();

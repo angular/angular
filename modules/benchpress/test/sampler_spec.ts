@@ -1,18 +1,15 @@
-import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {isBlank, isPresent, stringify, Date, DateWrapper} from '@angular/facade/src/lang';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {PromiseWrapper} from '@angular/facade/src/async';
-
-import {
-  Sampler,
-  WebDriverAdapter,
-  Validator,
-  Metric,
-  Reporter,
-  ReflectiveInjector,
-  Options,
-  MeasureValues
-} from 'benchpress/common';
+import {Date, DateWrapper, isBlank, isPresent, stringify} from '@angular/facade/src/lang';
+import {MeasureValues, Metric, Options, ReflectiveInjector, Reporter, Sampler, Validator, WebDriverAdapter} from 'benchpress/common';
 
 export function main() {
   var EMPTY_EXECUTE = () => {};
@@ -39,13 +36,9 @@ export function main() {
         driver = new MockDriverAdapter([]);
       }
       var providers = [
-        Options.DEFAULT_PROVIDERS,
-        Sampler.PROVIDERS,
-        {provide: Metric, useValue: metric},
-        {provide: Reporter, useValue: reporter},
-        {provide: WebDriverAdapter, useValue: driver},
-        {provide: Options.EXECUTE, useValue: execute},
-        {provide: Validator, useValue: validator},
+        Options.DEFAULT_PROVIDERS, Sampler.PROVIDERS, {provide: Metric, useValue: metric},
+        {provide: Reporter, useValue: reporter}, {provide: WebDriverAdapter, useValue: driver},
+        {provide: Options.EXECUTE, useValue: execute}, {provide: Validator, useValue: validator},
         {provide: Options.NOW, useValue: () => DateWrapper.fromMillis(time++)}
       ];
       if (isPresent(prepare)) {
@@ -131,12 +124,13 @@ export function main() {
          var iterationCount = 1;
          createSampler({
            validator: createCountingValidator(2),
-           metric: new MockMetric([],
-                                  () => {
-                                    var result = PromiseWrapper.resolve({'script': scriptTime});
-                                    scriptTime = 0;
-                                    return result;
-                                  }),
+           metric: new MockMetric(
+               [],
+               () => {
+                 var result = PromiseWrapper.resolve({'script': scriptTime});
+                 scriptTime = 0;
+                 return result;
+               }),
            prepare: () => { scriptTime = 1 * iterationCount; },
            execute: () => {
              scriptTime = 10 * iterationCount;
@@ -198,9 +192,7 @@ export function main() {
            expect(log[0]).toEqual(['reportMeasureValues', mv(0, 1000, {'script': 0})]);
            expect(log[1]).toEqual(['reportMeasureValues', mv(1, 1001, {'script': 1})]);
            expect(log[2]).toEqual([
-             'reportSample',
-             [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})],
-             validSample
+             'reportSample', [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})], validSample
            ]);
 
            async.done();
@@ -231,6 +223,7 @@ function createCountingMetric(log = null) {
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
+  /** @internal */
   private _log: any[];
   private _waitFor: Function;
   constructor(log = null, waitFor = null) {
@@ -252,6 +245,7 @@ class MockDriverAdapter extends WebDriverAdapter {
 
 
 class MockValidator extends Validator {
+  /** @internal */
   private _log: any[];
   constructor(log = null, private _validate: Function = null) {
     super();
@@ -268,6 +262,7 @@ class MockValidator extends Validator {
 }
 
 class MockMetric extends Metric {
+  /** @internal */
   private _log: any[];
   constructor(log = null, private _endMeasure: Function = null) {
     super();
@@ -288,7 +283,8 @@ class MockMetric extends Metric {
 }
 
 class MockReporter extends Reporter {
-  _log: any[];
+  /** @internal */
+  private _log: any[];
   constructor(log = null) {
     super();
     if (isBlank(log)) {

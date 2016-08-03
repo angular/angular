@@ -1,9 +1,17 @@
-import {Injector, OpaqueToken} from '@angular/core/src/di';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {isBlank, isPresent} from '@angular/facade/src/lang';
+import {Injector, OpaqueToken} from '@angular/core/src/di';
 import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
+import {isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from './common_options';
+
 
 /**
  * A WebDriverExtension implements extended commands of the webdriver protocol
@@ -20,7 +28,7 @@ export abstract class WebDriverExtension {
       },
       {
         provide: WebDriverExtension,
-        useFactory: (children:WebDriverExtension[], capabilities) => {
+        useFactory: (children: WebDriverExtension[], capabilities) => {
           var delegate;
           children.forEach(extension => {
             if (extension.supports(capabilities)) {

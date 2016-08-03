@@ -1,9 +1,18 @@
-import {ListWrapper} from '@angular/facade/src/collection';
-import {OpaqueToken} from '@angular/core/src/di';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {Validator} from '../validator';
-import {Statistic} from '../statistic';
+import {OpaqueToken} from '@angular/core/src/di';
+import {ListWrapper} from '@angular/facade/src/collection';
+
 import {MeasureValues} from '../measure_values';
+import {Statistic} from '../statistic';
+import {Validator} from '../validator';
+
 
 /**
  * A validator that checks the regression slope of a specific metric.
@@ -17,8 +26,10 @@ export class RegressionSlopeValidator extends Validator {
   // TODO(tbosch): use static values when our transpiler supports them
   static get PROVIDERS(): any[] { return _PROVIDERS; }
 
-  _sampleSize: number;
-  _metric: string;
+  /** @internal */
+  private _sampleSize: number;
+  /** @internal */
+  private _metric: string;
 
   constructor(sampleSize, metric) {
     super();
@@ -32,8 +43,8 @@ export class RegressionSlopeValidator extends Validator {
 
   validate(completeSample: MeasureValues[]): MeasureValues[] {
     if (completeSample.length >= this._sampleSize) {
-      var latestSample = ListWrapper.slice(completeSample, completeSample.length - this._sampleSize,
-                                           completeSample.length);
+      var latestSample = ListWrapper.slice(
+          completeSample, completeSample.length - this._sampleSize, completeSample.length);
       var xValues = [];
       var yValues = [];
       for (var i = 0; i < latestSample.length; i++) {
@@ -59,6 +70,5 @@ var _PROVIDERS = [
     useFactory: (sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
     deps: [_SAMPLE_SIZE, _METRIC]
   },
-  {provide: _SAMPLE_SIZE, useValue: 10},
-  {provide: _METRIC, useValue: 'scriptTime'}
+  {provide: _SAMPLE_SIZE, useValue: 10}, {provide: _METRIC, useValue: 'scriptTime'}
 ];

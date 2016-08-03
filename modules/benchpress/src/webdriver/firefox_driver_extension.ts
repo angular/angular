@@ -1,6 +1,15 @@
-import {isPresent, StringWrapper} from '@angular/facade/src/lang';
-import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {StringWrapper, isPresent} from '@angular/facade/src/lang';
+
 import {WebDriverAdapter} from '../web_driver_adapter';
+import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
 export class FirefoxDriverExtension extends WebDriverExtension {
   static get PROVIDERS(): any[] { return _PROVIDERS; }
@@ -41,10 +50,8 @@ export class FirefoxDriverExtension extends WebDriverExtension {
   }
 }
 
-var _PROVIDERS = [
-  {
-    provide: FirefoxDriverExtension,
-    useFactory: (driver) => new FirefoxDriverExtension(driver),
-    deps: [WebDriverAdapter]
-  }
-];
+var _PROVIDERS = [{
+  provide: FirefoxDriverExtension,
+  useFactory: (driver) => new FirefoxDriverExtension(driver),
+  deps: [WebDriverAdapter]
+}];

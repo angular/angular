@@ -11,7 +11,8 @@ const path = require('path');
 const os = require('os');
 
 const srcsToFmt =
-    ['tools/**/*.ts', 'modules/@angular/**/*.ts', '!tools/public_api_guard/**/*.d.ts'];
+    ['tools/**/*.ts', 'modules/@angular/**/*.ts', '!tools/public_api_guard/**/*.d.ts',
+    'modules/benchpress/**/*.ts'];
 
 gulp.task('format:enforce', () => {
   const format = require('gulp-clang-format');
@@ -97,7 +98,7 @@ gulp.task('lint', ['format:enforce', 'tools:build'], () => {
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules
   const tslintConfig = require('./tslint.json');
-  return gulp.src(['modules/@angular/**/*.ts'])
+  return gulp.src(['modules/@angular/**/*.ts', 'modules/benchpress/**/*.ts'])
     .pipe(tslint({
       tslint: require('tslint').default,
       configuration: tslintConfig,

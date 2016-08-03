@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 var benchpress = require('../../index.js');
 var runner = new benchpress.Runner([
   // use protractor as Webdriver client
@@ -21,12 +29,12 @@ describe('deep tree baseline', function() {
      * Benchpress will log the collected metrics after each sample is collected, and will stop
      * sampling as soon as the calculated regression slope for last 20 samples is stable.
      */
-    runner.sample({
-            id: 'baseline',
-            execute: function() { $('button')
-                                      .click(); },
-            providers: [benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue({depth: 9})]
-          })
+    runner
+        .sample({
+          id: 'baseline',
+          execute: function() { $('button').click(); },
+          providers: [benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue({depth: 9})]
+        })
         .then(done, done.fail);
   });
 });

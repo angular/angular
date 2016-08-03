@@ -1,12 +1,20 @@
-import {DateWrapper, isPresent, isBlank, Json} from '@angular/facade/src/lang';
-import {PromiseWrapper} from '@angular/facade/src/async';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {OpaqueToken} from '@angular/core/src/di';
+import {PromiseWrapper} from '@angular/facade/src/async';
+import {DateWrapper, Json, isBlank, isPresent} from '@angular/facade/src/lang';
 
+import {Options} from '../common_options';
+import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
-import {MeasureValues} from '../measure_values';
-import {Options} from '../common_options';
+
 
 /**
  * A reporter that writes results into a json file.
@@ -17,10 +25,14 @@ export class JsonFileReporter extends Reporter {
   // TODO(tbosch): use static values when our transpiler supports them
   static get PROVIDERS(): any[] { return _PROVIDERS; }
 
-  _writeFile: Function;
-  _path: string;
-  _description: SampleDescription;
-  _now: Function;
+  /** @internal */
+  private _writeFile: Function;
+  /** @internal */
+  private _path: string;
+  /** @internal */
+  private _description: SampleDescription;
+  /** @internal */
+  private _now: Function;
 
   constructor(sampleDescription, path, writeFile, now) {
     super();
@@ -51,7 +63,7 @@ var _PROVIDERS = [
   {
     provide: JsonFileReporter,
     useFactory: (sampleDescription, path, writeFile, now) =>
-                     new JsonFileReporter(sampleDescription, path, writeFile, now),
+                    new JsonFileReporter(sampleDescription, path, writeFile, now),
     deps: [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]
   },
   {provide: _PATH, useValue: '.'}

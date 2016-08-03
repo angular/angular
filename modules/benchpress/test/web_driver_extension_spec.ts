@@ -1,18 +1,24 @@
-import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {isPresent, StringWrapper} from '@angular/facade/src/lang';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {PromiseWrapper} from '@angular/facade/src/async';
-
-import {WebDriverExtension, ReflectiveInjector, Options} from 'benchpress/common';
+import {StringWrapper, isPresent} from '@angular/facade/src/lang';
+import {Options, ReflectiveInjector, WebDriverExtension} from 'benchpress/common';
 
 export function main() {
   function createExtension(ids: any[], caps) {
     return PromiseWrapper.wrap(() => {
-      return ReflectiveInjector.resolveAndCreate([
-                                 ids.map((id) => { return {provide: id, useValue: new MockExtension(id)}}),
-                                 {provide: Options.CAPABILITIES, useValue: caps},
-                                 WebDriverExtension.bindTo(ids)
-                               ])
+      return ReflectiveInjector
+          .resolveAndCreate([
+            ids.map((id) => { return {provide: id, useValue: new MockExtension(id)}; }),
+            {provide: Options.CAPABILITIES, useValue: caps}, WebDriverExtension.bindTo(ids)
+          ])
           .get(WebDriverExtension);
     });
   }
@@ -21,11 +27,10 @@ export function main() {
 
     it('should bind the extension that matches the capabilities',
        inject([AsyncTestCompleter], (async) => {
-         createExtension(['m1', 'm2', 'm3'], {'browser': 'm2'})
-             .then((m) => {
-               expect(m.id).toEqual('m2');
-               async.done();
-             });
+         createExtension(['m1', 'm2', 'm3'], {'browser': 'm2'}).then((m) => {
+           expect(m.id).toEqual('m2');
+           async.done();
+         });
        }));
 
     it('should throw if there is no match', inject([AsyncTestCompleter], (async) => {

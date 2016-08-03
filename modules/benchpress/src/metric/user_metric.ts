@@ -1,10 +1,18 @@
-import {bind, Provider, OpaqueToken} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {OpaqueToken, Provider, bind} from '@angular/core';
 import {PromiseWrapper, TimerWrapper} from '@angular/facade/src/async';
 import {StringMapWrapper} from '@angular/facade/src/collection';
 import {isNumber} from '@angular/facade/src/lang';
 
-import {Metric} from '../metric';
 import {Options} from '../common_options';
+import {Metric} from '../metric';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
 export class UserMetric extends Metric {
@@ -56,8 +64,7 @@ export class UserMetric extends Metric {
   describe(): {[key: string]: any} { return this._userMetrics; }
 }
 
-var _PROVIDERS = [
-  bind(UserMetric)
-      .toFactory((userMetrics, wdAdapter) => new UserMetric(userMetrics, wdAdapter),
-                 [Options.USER_METRICS, WebDriverAdapter])
-];
+var _PROVIDERS = [bind(UserMetric)
+                      .toFactory(
+                          (userMetrics, wdAdapter) => new UserMetric(userMetrics, wdAdapter),
+                          [Options.USER_METRICS, WebDriverAdapter])];
