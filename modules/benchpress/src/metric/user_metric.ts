@@ -1,7 +1,7 @@
-import {bind, Provider, OpaqueToken} from 'angular2/src/core/di';
-import {PromiseWrapper, TimerWrapper} from 'angular2/src/facade/async';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {isNumber} from 'angular2/src/facade/lang';
+import {bind, Provider, OpaqueToken} from '@angular/core';
+import {PromiseWrapper, TimerWrapper} from '@angular/facade/src/async';
+import {StringMapWrapper} from '@angular/facade/src/collection';
+import {isNumber} from '@angular/facade/src/lang';
 
 import {Metric} from '../metric';
 import {Options} from '../common_options';

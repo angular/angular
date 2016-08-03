@@ -1,19 +1,8 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {StringMapWrapper} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
-import {isPresent, isBlank} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade/src/collection';
+import {PromiseWrapper} from '@angular/facade/src/async';
+import {isPresent, isBlank} from '@angular/facade/src/lang';
 
 import {
   Metric,
@@ -46,7 +35,7 @@ export function main() {
     if (isBlank(microMetrics)) {
       microMetrics = StringMapWrapper.create();
     }
-    var providers = [
+    var providers: any[] = [
       Options.DEFAULT_PROVIDERS,
       PerflogMetric.PROVIDERS,
       {provide: Options.MICRO_METRICS, useValue: microMetrics},
@@ -63,7 +52,7 @@ export function main() {
       }
     ];
     if (isPresent(forceGc)) {
-      providers.push({provide: Options.FORCE_GC, useValue(forceGc)};
+      providers.push({provide: Options.FORCE_GC, useValue: forceGc});
     }
     if (isPresent(captureFrames)) {
       providers.push({provide: Options.CAPTURE_FRAMES, useValue: captureFrames});

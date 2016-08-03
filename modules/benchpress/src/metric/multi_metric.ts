@@ -1,6 +1,6 @@
 import {Injector, OpaqueToken} from '@angular/core/src/di';
-import {StringMapWrapper} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade/src/collection';
+import {PromiseWrapper} from '@angular/facade/src/async';
 
 import {Metric} from '../metric';
 

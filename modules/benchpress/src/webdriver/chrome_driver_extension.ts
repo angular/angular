@@ -1,4 +1,4 @@
-import {ListWrapper, StringMapWrapper} from '@angular/facade';
+import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
 import {
   Json,
   isPresent,
@@ -6,8 +6,8 @@ import {
   RegExpWrapper,
   StringWrapper,
   NumberWrapper
-} from '@angular/facade';
-import {BaseException, WrappedException} from '@angular/facade';
+} from '@angular/facade/src/lang';
+import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';

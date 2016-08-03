@@ -1,4 +1,4 @@
-import {BaseException, WrappedException} from '@angular/facade';
+import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 
 import {MeasureValues} from './measure_values';
 

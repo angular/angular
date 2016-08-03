@@ -1,9 +1,9 @@
 import {bootstrap} from '@angular/platform-browser';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {PromiseWrapper} from '@angular/facade';
-import {ListWrapper, Map, MapWrapper} from '@angular/facade';
-import {DateWrapper, Type, print, isPresent} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade/src/async';
+import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
+import {DateWrapper, Type, print, isPresent} from '@angular/facade/src/lang';
 
 import {
   ComponentResolver,

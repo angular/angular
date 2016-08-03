@@ -7,8 +7,8 @@ import {NgIf} from '@angular/common';
 
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {isPresent} from '@angular/facade';
-import {window, document, gc} from '@angular/facade';
+import {isPresent} from '@angular/facade/src/lang';
+import {window, document, gc} from '@angular/facade/src/browser';
 import {
   getIntParameter,
   getStringParameter,

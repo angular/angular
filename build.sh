@@ -116,3 +116,6 @@ do
     $(npm bin)/uglifyjs -c --screw-ie8 -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_PATH}
   fi
 done
+
+echo "======      COMPILING: \$(npm bin)/tsc -p benchpress/tsconfig.json ====="
+$(npm bin)/tsc -p ./modules/benchpress/tsconfig.json

@@ -1,18 +1,7 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {isPresent, StringWrapper} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+import {isPresent, StringWrapper} from '@angular/facade/src/lang';
+import {PromiseWrapper} from '@angular/facade/src/async';
 
 import {WebDriverExtension, ReflectiveInjector, Options} from 'benchpress/common';
 

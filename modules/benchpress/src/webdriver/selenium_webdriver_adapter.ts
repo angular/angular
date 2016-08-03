@@ -1,4 +1,4 @@
-import {PromiseWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade/src/async';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
 import * as webdriver from 'selenium-webdriver';

@@ -1,5 +1,5 @@
-import {BaseException, WrappedException} from '@angular/facade';
-import {Map} from '@angular/facade';
+import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
+import {Map} from '@angular/facade/src/collection';
 
 /**
  * A WebDriverAdapter bridges API differences between different WebDriver clients,

@@ -5,7 +5,7 @@ import {ApplicationRef} from '@angular/core/src/application_ref';
 import {reflector} from '@angular/core/src/reflection/reflection';
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {window, document, gc} from '@angular/facade';
+import {window, document, gc} from '@angular/facade/src/browser';
 import {
   getIntParameter,
   getStringParameter,
