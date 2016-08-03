@@ -1,7 +1,7 @@
 import {Injector, OpaqueToken} from '@angular/core/src/di';
 
-import {isBlank, isPresent} from '@angular/facade';
-import {BaseException, WrappedException} from '@angular/facade';
+import {isBlank, isPresent} from '@angular/facade/src/lang';
+import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 
 import {Options} from './common_options';
 

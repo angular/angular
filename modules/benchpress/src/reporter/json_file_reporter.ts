@@ -1,5 +1,5 @@
-import {DateWrapper, isPresent, isBlank, Json} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+import {DateWrapper, isPresent, isBlank, Json} from '@angular/facade/src/lang';
+import {PromiseWrapper} from '@angular/facade/src/async';
 
 import {OpaqueToken} from '@angular/core/src/di';
 

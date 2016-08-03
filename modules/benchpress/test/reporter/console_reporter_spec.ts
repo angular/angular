@@ -1,15 +1,6 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from '@angular/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {isBlank, isPresent, Date, DateWrapper} from '@angular/facade';
+import {isBlank, isPresent, Date, DateWrapper} from '@angular/facade/src/lang';
 
 import {
   SampleState,
@@ -40,7 +31,7 @@ export function main() {
         {provide: ConsoleReporter.PRINT, useValue: (line) => log.push(line)}
       ];
       if (isPresent(columnWidth)) {
-        bindings.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue(columnWidth)};
+        bindings.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue: columnWidth});
       }
       reporter = ReflectiveInjector.resolveAndCreate(bindings).get(ConsoleReporter);
     }

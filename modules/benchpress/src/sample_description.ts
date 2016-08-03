@@ -1,4 +1,4 @@
-import {StringMapWrapper} from '@angular/facade';
+import {StringMapWrapper} from '@angular/facade/src/collection';
 import {Validator} from './validator';
 import {Metric} from './metric';
 import {Options} from './common_options';

@@ -1,15 +1,4 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {
   Runner,
   Sampler,
@@ -22,8 +11,8 @@ import {
   WebDriverAdapter,
   SampleState
 } from 'benchpress/common';
-import {isBlank} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+import {isBlank} from '@angular/facade/src/lang';
+import {PromiseWrapper} from '@angular/facade/src/async';
 
 export function main() {
   describe('runner', () => {

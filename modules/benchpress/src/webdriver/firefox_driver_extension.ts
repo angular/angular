@@ -1,4 +1,4 @@
-import {isPresent, StringWrapper} from '@angular/facade';
+import {isPresent, StringWrapper} from '@angular/facade/src/lang';
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';
 

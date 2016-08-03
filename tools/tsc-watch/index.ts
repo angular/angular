@@ -71,7 +71,7 @@ if (platform == 'node') {
         onChangeCmds: [
           processOutputEmitterCodeGen,
           [
-            'node', 'dist/tools/cjs-jasmine', '--', '{@angular,benchpress}/**/*_spec.js',
+            'node', 'dist/tools/cjs-jasmine', '--', '@angular/**/*_spec.js',
             '@angular/compiler-cli/test/**/*_spec.js'
           ]
         ]

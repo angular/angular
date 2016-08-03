@@ -1,4 +1,4 @@
-import {BaseException, WrappedException} from '@angular/facade';
+import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 
 /**
  * A metric is measures values

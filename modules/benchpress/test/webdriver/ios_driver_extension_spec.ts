@@ -1,18 +1,7 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {PromiseWrapper} from '@angular/facade';
-import {Json, isBlank, isPresent} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade/src/async';
+import {Json, isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {
   WebDriverExtension,

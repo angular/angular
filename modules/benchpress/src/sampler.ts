@@ -1,5 +1,5 @@
-import {isPresent, isBlank, Date, DateWrapper} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+import {isPresent, isBlank, Date, DateWrapper} from '@angular/facade/src/lang';
+import {PromiseWrapper} from '@angular/facade/src/async';
 
 import {Metric} from './metric';
 import {Validator} from './validator';

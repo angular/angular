@@ -1,5 +1,5 @@
 import {OpaqueToken} from '@angular/core/src/di';
-import {DateWrapper} from '@angular/facade';
+import {DateWrapper} from '@angular/facade/src/lang';
 
 export class Options {
   static get DEFAULT_PROVIDERS(): any[] { return _DEFAULT_PROVIDERS; }

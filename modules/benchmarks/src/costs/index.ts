@@ -2,7 +2,7 @@ import {bootstrap} from '@angular/platform-browser';
 import {Component, Directive, DynamicComponentLoader, ViewContainerRef} from '@angular/core';
 import {NgIf, NgFor} from '@angular/common';
 import {ApplicationRef} from '@angular/core/src/application_ref';
-import {ListWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade/src/lang';
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
 var testList = null;

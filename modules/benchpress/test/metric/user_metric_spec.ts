@@ -1,21 +1,10 @@
-import {ReflectiveInjector} from "angular2/core";
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from 'angular2/testing_internal';
+import {ReflectiveInjector} from '@angular/core';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {TimerWrapper} from 'angular2/src/facade/async';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {isPresent, isBlank, Json} from 'angular2/src/facade/lang';
+import {TimerWrapper} from '@angular/facade/src/async';
+import {StringMapWrapper} from '@angular/facade/src/collection';
+import {PromiseWrapper} from '@angular/facade/src/async';
+import {isPresent, isBlank, Json} from '@angular/facade/src/lang';
 
 import {
   Metric,
@@ -46,7 +35,7 @@ export function main() {
     wdAdapter = new MockDriverAdapter();
     var bindings = [
       Options.DEFAULT_PROVIDERS,
-      UserMetric.BINDINGS,
+      UserMetric.PROVIDERS,
       bind(Options.USER_METRICS).toValue(userMetrics),
       provide(WebDriverAdapter, {useValue: wdAdapter})
     ];

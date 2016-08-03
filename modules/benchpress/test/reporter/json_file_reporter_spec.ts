@@ -1,18 +1,7 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {DateWrapper, Json, RegExpWrapper, isPresent} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+import {DateWrapper, Json, RegExpWrapper, isPresent} from '@angular/facade/src/lang';
+import {PromiseWrapper} from '@angular/facade/src/async';
 
 import {
   ReflectiveInjector,
@@ -32,7 +21,7 @@ export function main() {
       var bindings = [
         JsonFileReporter.PROVIDERS,
         {provide: SampleDescription, useValue: new SampleDescription(sampleId, descriptions, metrics)},
-        {provide: JsonFileReporter.PATH, useValue(path)},
+        {provide: JsonFileReporter.PATH, useValue: path},
         {provide: Options.NOW, useValue: () => DateWrapper.fromMillis(1234)},
         {
           provide: Options.WRITE_FILE,

@@ -1,4 +1,4 @@
-import {ListWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade/src/collection';
 import {OpaqueToken} from '@angular/core/src/di';
 
 import {Validator} from '../validator';
@@ -55,7 +55,7 @@ var _SAMPLE_SIZE = new OpaqueToken('RegressionSlopeValidator.sampleSize');
 var _METRIC = new OpaqueToken('RegressionSlopeValidator.metric');
 var _PROVIDERS = [
   {
-    provide: RegressionSlopeValidator
+    provide: RegressionSlopeValidator,
     useFactory: (sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
     deps: [_SAMPLE_SIZE, _METRIC]
   },

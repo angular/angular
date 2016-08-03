@@ -1,5 +1,5 @@
 import {Injector, OpaqueToken} from '@angular/core/src/di';
-import {PromiseWrapper} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade/src/async';
 
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';

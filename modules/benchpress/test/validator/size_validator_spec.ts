@@ -1,15 +1,6 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from '@angular/testing/testing_internal';
-import {Date, DateWrapper} from '@angular/facade';
-import {ListWrapper} from '@angular/facade';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {Date, DateWrapper} from '@angular/facade/src/lang';
+import {ListWrapper} from '@angular/facade/src/collection';
 
 import {
   Validator,

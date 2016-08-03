@@ -1,6 +1,6 @@
 import {ReflectiveInjector} from '@angular/core';
-import {isPresent, isBlank} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+import {isPresent, isBlank} from '@angular/facade/src/lang';
+import {PromiseWrapper} from '@angular/facade/src/async';
 
 import {Sampler, SampleState} from './sampler';
 import {ConsoleReporter} from './reporter/console_reporter';
@@ -93,7 +93,7 @@ var _DEFAULT_PROVIDERS = [
   FirefoxDriverExtension.PROVIDERS,
   IOsDriverExtension.PROVIDERS,
   PerflogMetric.PROVIDERS,
-  UserMetric.BINDINGS,
+  UserMetric.PROVIDERS,
   SampleDescription.PROVIDERS,
   MultiReporter.createBindings([ConsoleReporter]),
   MultiMetric.createBindings([PerflogMetric, UserMetric]),

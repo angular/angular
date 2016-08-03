@@ -1,7 +1,7 @@
-import {print, isPresent, isBlank, NumberWrapper} from '@angular/facade';
-import {StringMapWrapper, ListWrapper} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
-import {Math} from '@angular/facade';
+import {print, isPresent, isBlank, NumberWrapper} from '@angular/facade/src/lang';
+import {StringMapWrapper, ListWrapper} from '@angular/facade/src/collection';
+import {PromiseWrapper} from '@angular/facade/src/async';
+import {Math} from '@angular/facade/src/math';
 import {OpaqueToken} from '@angular/core/src/di';
 
 import {Statistic} from '../statistic';

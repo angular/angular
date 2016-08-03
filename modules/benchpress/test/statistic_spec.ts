@@ -1,17 +1,6 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from '@angular/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 import {Statistic} from 'benchpress/src/statistic';
-
-import {NaN} from '@angular/facade';
 
 export function main() {
   describe('statistic', () => {
