@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injectable} from './decorators';
+
 /**
  * Creates a token that can be used in a DI Provider.
  *
@@ -28,6 +30,7 @@
  * error messages.
  * @stable
  */
+@Injectable()  // so that metadata is gathered for this class
 export class OpaqueToken {
   constructor(private _desc: string) {}
 
