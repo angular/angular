@@ -8,7 +8,6 @@
 
 
 import {Injectable, Optional} from '../di';
-import {global} from '../facade/lang';
 
 import {Compiler} from './compiler';
 import {NgModuleFactory} from './ng_module_factory';
@@ -36,8 +35,8 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     let [module, exportName] = path.split(_SEPARATOR);
     if (exportName === undefined) exportName = 'default';
 
-    return (<any>global)
-        .System.import(module)
+    return (<any>System)
+        .import(module)
         .then((module: any) => module[exportName])
         .then((type: any) => checkNotEmpty(type, module, exportName))
         .then((type: any) => this._compiler.compileModuleAsync(type));
@@ -47,8 +46,8 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     let [module, exportName] = path.split(_SEPARATOR);
     if (exportName === undefined) exportName = 'default';
 
-    return (<any>global)
-        .System.import(module + FACTORY_MODULE_SUFFIX)
+    return (<any>System)
+        .import(module + FACTORY_MODULE_SUFFIX)
         .then((module: any) => module[exportName + FACTORY_CLASS_SUFFIX])
         .then((factory: any) => checkNotEmpty(factory, module, exportName));
   }
