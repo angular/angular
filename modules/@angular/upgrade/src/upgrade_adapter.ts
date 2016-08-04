@@ -560,7 +560,6 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
           if (!componentFactory)
             throw new Error('Expecting ComponentFactory for: ' + info.selector);
 
-          var domElement = <any>element[0];
           if (parentInjector === null) {
             parentInjector = ng1Injector.get(NG2_INJECTOR);
           }
@@ -580,7 +579,7 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
 }
 
 /**
- * Use `UgradeAdapterRef` to control a hybrid AngularJS v1 / Angular v2 application.
+ * Use `UpgradeAdapterRef` to control a hybrid AngularJS v1 / Angular v2 application.
  *
  * @experimental
  */
