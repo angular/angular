@@ -158,9 +158,8 @@ export class MdProgressCircle implements OnDestroy {
     if (animateTo === animateFrom) {
       this.currentPath = getSvgArc(animateTo, rotation);
     } else {
-      let animation = (currentTime: number) => {
-        let elapsedTime = Math.max(
-          0, Math.min((currentTime || Date.now()) - startTime, duration));
+      let animation = () => {
+        let elapsedTime = Math.max(0, Math.min(Date.now() - startTime, duration));
 
         this.currentPath = getSvgArc(
           ease(elapsedTime, animateFrom, changeInValue, duration),
