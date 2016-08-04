@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '@angular/core';
-import {isPresent} from '../facade/lang';
+import {Directive, EmbeddedViewRef, Input, OnChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
 /**
  * Creates and inserts an embedded view based on a prepared `TemplateRef`.
@@ -28,7 +27,7 @@ import {isPresent} from '../facade/lang';
  * @experimental
  */
 @Directive({selector: '[ngTemplateOutlet]'})
-export class NgTemplateOutlet {
+export class NgTemplateOutlet implements OnChanges {
   private _viewRef: EmbeddedViewRef<any>;
   private _context: Object;
   private _templateRef: TemplateRef<any>;
@@ -36,29 +35,17 @@ export class NgTemplateOutlet {
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
   @Input()
-  set ngOutletContext(context: Object) {
-    if (this._context !== context) {
-      this._context = context;
-      if (isPresent(this._viewRef)) {
-        this.createView();
-      }
-    }
-  }
+  set ngOutletContext(context: Object) { this._context = context; }
 
   @Input()
-  set ngTemplateOutlet(templateRef: TemplateRef<Object>) {
-    if (this._templateRef !== templateRef) {
-      this._templateRef = templateRef;
-      this.createView();
-    }
-  }
+  set ngTemplateOutlet(templateRef: TemplateRef<Object>) { this._templateRef = templateRef; }
 
-  private createView() {
-    if (isPresent(this._viewRef)) {
+  ngOnChanges() {
+    if (this._viewRef) {
       this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._viewRef));
     }
 
-    if (isPresent(this._templateRef)) {
+    if (this._templateRef) {
       this._viewRef = this._viewContainerRef.createEmbeddedView(this._templateRef, this._context);
     }
   }
