@@ -283,7 +283,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: any): any;
 
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): any {
-    var opStr: any /** TODO #9100 */;
+    var opStr: string;
     switch (ast.operator) {
       case o.BinaryOperator.Equals:
         opStr = '==';

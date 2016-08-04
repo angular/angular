@@ -523,6 +523,10 @@ export class _ParseAST {
       this.advance();
       return new LiteralPrimitive(this.span(start), false);
 
+    } else if (this.next.isKeywordThis()) {
+      this.advance();
+      return new ImplicitReceiver(this.span(start));
+
     } else if (this.optionalCharacter(chars.$LBRACKET)) {
       this.rbracketsExpected++;
       const elements = this.parseExpressionList(chars.$RBRACKET);
@@ -780,13 +784,7 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitKeyedWrite(ast: KeyedWrite, context: any) { this.simple = false; }
 
-  visitAll(asts: any[]): any[] {
-    var res = ListWrapper.createFixedSize(asts.length);
-    for (var i = 0; i < asts.length; ++i) {
-      res[i] = asts[i].visit(this);
-    }
-    return res;
-  }
+  visitAll(asts: any[]): any[] { return asts.map(node => node.visit(this)); }
 
   visitChain(ast: Chain, context: any) { this.simple = false; }
 

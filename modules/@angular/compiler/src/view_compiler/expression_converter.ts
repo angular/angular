@@ -12,8 +12,6 @@ import {isArray, isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 
-var IMPLICIT_RECEIVER = o.variable('#implicit');
-
 export interface NameResolver {
   callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression;
   getLocal(name: string): o.Expression;
@@ -132,10 +130,12 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         new o.BinaryOperatorExpr(
             op, this.visit(ast.left, _Mode.Expression), this.visit(ast.right, _Mode.Expression)));
   }
+
   visitChain(ast: cdAst.Chain, mode: _Mode): any {
     ensureStatementMode(mode, ast);
     return this.visitAll(ast.expressions, mode);
   }
+
   visitConditional(ast: cdAst.Conditional, mode: _Mode): any {
     const value: o.Expression = this.visit(ast.condition, _Mode.Expression);
     return convertToStatementIfNeeded(
@@ -143,6 +143,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         value.conditional(
             this.visit(ast.trueExp, _Mode.Expression), this.visit(ast.falseExp, _Mode.Expression)));
   }
+
   visitPipe(ast: cdAst.BindingPipe, mode: _Mode): any {
     const input = this.visit(ast.exp, _Mode.Expression);
     const args = this.visitAll(ast.args, _Mode.Expression);
@@ -150,15 +151,18 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     this.needsValueUnwrapper = true;
     return convertToStatementIfNeeded(mode, this._valueUnwrapper.callMethod('unwrap', [value]));
   }
+
   visitFunctionCall(ast: cdAst.FunctionCall, mode: _Mode): any {
     return convertToStatementIfNeeded(
         mode,
         this.visit(ast.target, _Mode.Expression).callFn(this.visitAll(ast.args, _Mode.Expression)));
   }
+
   visitImplicitReceiver(ast: cdAst.ImplicitReceiver, mode: _Mode): any {
     ensureExpressionMode(mode, ast);
-    return IMPLICIT_RECEIVER;
+    return this._implicitReceiver;
   }
+
   visitInterpolation(ast: cdAst.Interpolation, mode: _Mode): any {
     ensureExpressionMode(mode, ast);
     const args = [o.literal(ast.expressions.length)];
@@ -169,20 +173,24 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     args.push(o.literal(ast.strings[ast.strings.length - 1]));
     return o.importExpr(Identifiers.interpolate).callFn(args);
   }
+
   visitKeyedRead(ast: cdAst.KeyedRead, mode: _Mode): any {
     return convertToStatementIfNeeded(
         mode, this.visit(ast.obj, _Mode.Expression).key(this.visit(ast.key, _Mode.Expression)));
   }
+
   visitKeyedWrite(ast: cdAst.KeyedWrite, mode: _Mode): any {
     const obj: o.Expression = this.visit(ast.obj, _Mode.Expression);
     const key: o.Expression = this.visit(ast.key, _Mode.Expression);
     const value: o.Expression = this.visit(ast.value, _Mode.Expression);
     return convertToStatementIfNeeded(mode, obj.key(key).set(value));
   }
+
   visitLiteralArray(ast: cdAst.LiteralArray, mode: _Mode): any {
     return convertToStatementIfNeeded(
         mode, this._nameResolver.createLiteralArray(this.visitAll(ast.expressions, mode)));
   }
+
   visitLiteralMap(ast: cdAst.LiteralMap, mode: _Mode): any {
     let parts: any[] = [];
     for (let i = 0; i < ast.keys.length; i++) {
@@ -190,9 +198,11 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
     return convertToStatementIfNeeded(mode, this._nameResolver.createLiteralMap(parts));
   }
+
   visitLiteralPrimitive(ast: cdAst.LiteralPrimitive, mode: _Mode): any {
     return convertToStatementIfNeeded(mode, o.literal(ast.value));
   }
+
   visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
     const leftMostSafe = this.leftMostSafeNode(ast);
     if (leftMostSafe) {
@@ -201,12 +211,10 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       const args = this.visitAll(ast.args, _Mode.Expression);
       let result: any = null;
       let receiver = this.visit(ast.receiver, _Mode.Expression);
-      if (receiver === IMPLICIT_RECEIVER) {
+      if (receiver === this._implicitReceiver) {
         var varExpr = this._nameResolver.getLocal(ast.name);
         if (isPresent(varExpr)) {
           result = varExpr.callFn(args);
-        } else {
-          receiver = this._implicitReceiver;
         }
       }
       if (isBlank(result)) {
@@ -215,9 +223,11 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return convertToStatementIfNeeded(mode, result);
     }
   }
+
   visitPrefixNot(ast: cdAst.PrefixNot, mode: _Mode): any {
     return convertToStatementIfNeeded(mode, o.not(this.visit(ast.expression, _Mode.Expression)));
   }
+
   visitPropertyRead(ast: cdAst.PropertyRead, mode: _Mode): any {
     const leftMostSafe = this.leftMostSafeNode(ast);
     if (leftMostSafe) {
@@ -225,11 +235,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     } else {
       let result: any = null;
       var receiver = this.visit(ast.receiver, _Mode.Expression);
-      if (receiver === IMPLICIT_RECEIVER) {
+      if (receiver === this._implicitReceiver) {
         result = this._nameResolver.getLocal(ast.name);
-        if (isBlank(result)) {
-          receiver = this._implicitReceiver;
-        }
       }
       if (isBlank(result)) {
         result = receiver.prop(ast.name);
@@ -237,25 +244,29 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return convertToStatementIfNeeded(mode, result);
     }
   }
+
   visitPropertyWrite(ast: cdAst.PropertyWrite, mode: _Mode): any {
     let receiver: o.Expression = this.visit(ast.receiver, _Mode.Expression);
-    if (receiver === IMPLICIT_RECEIVER) {
+    if (receiver === this._implicitReceiver) {
       var varExpr = this._nameResolver.getLocal(ast.name);
       if (isPresent(varExpr)) {
         throw new BaseException('Cannot assign to a reference or variable!');
       }
-      receiver = this._implicitReceiver;
     }
     return convertToStatementIfNeeded(
         mode, receiver.prop(ast.name).set(this.visit(ast.value, _Mode.Expression)));
   }
+
   visitSafePropertyRead(ast: cdAst.SafePropertyRead, mode: _Mode): any {
     return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
   }
+
   visitSafeMethodCall(ast: cdAst.SafeMethodCall, mode: _Mode): any {
     return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
   }
+
   visitAll(asts: cdAst.AST[], mode: _Mode): any { return asts.map(ast => this.visit(ast, mode)); }
+
   visitQuote(ast: cdAst.Quote, mode: _Mode): any {
     throw new BaseException('Quotes are not supported for evaluation!');
   }

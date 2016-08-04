@@ -14,6 +14,8 @@ import {NgFor, NgIf} from '@angular/common';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 
+let thisArg: any;
+
 export function main() {
   describe('ngFor', () => {
     const TEMPLATE =
@@ -460,6 +462,22 @@ export function main() {
            }));
 
     describe('track by', () => {
+      it('should set the context to the component instance',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const template =
+                   `<template ngFor let-item [ngForOf]="items" [ngForTrackBy]="trackByContext.bind(this)"></template>`;
+               tcb.overrideTemplate(TestComponent, template)
+                   .createAsync(TestComponent)
+                   .then((fixture) => {
+                     thisArg = null;
+                     fixture.detectChanges();
+                     expect(thisArg).toBe(fixture.debugElement.componentInstance);
+                     async.done();
+                   });
+             }));
+
       it('should not replace tracked items',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
@@ -557,6 +575,7 @@ class TestComponent {
   constructor() { this.items = [1, 2]; }
   trackById(index: number, item: any): string { return item['id']; }
   trackByIndex(index: number, item: any): number { return index; }
+  trackByContext(): void { thisArg = this; }
 }
 
 @Component({selector: 'outer-cmp', directives: [TestComponent], template: ''})
