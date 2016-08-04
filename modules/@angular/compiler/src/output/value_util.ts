@@ -21,6 +21,7 @@ class _ValueOutputAstTransformer implements ValueTransformer {
   visitArray(arr: any[], type: o.Type): o.Expression {
     return o.literalArr(arr.map(value => visitValue(value, this, null)), type);
   }
+
   visitStringMap(map: {[key: string]: any}, type: o.MapType): o.Expression {
     var entries: Array<string|o.Expression>[] = [];
     StringMapWrapper.forEach(map, (value: any, key: string) => {
@@ -28,7 +29,9 @@ class _ValueOutputAstTransformer implements ValueTransformer {
     });
     return o.literalMap(entries, type);
   }
+
   visitPrimitive(value: any, type: o.Type): o.Expression { return o.literal(value, type); }
+
   visitOther(value: any, type: o.Type): o.Expression {
     if (value instanceof CompileIdentifierMetadata) {
       return o.importExpr(value);

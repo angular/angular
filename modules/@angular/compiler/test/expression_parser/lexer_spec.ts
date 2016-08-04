@@ -67,6 +67,12 @@ export function main() {
         expectIdentifierToken(tokens[0], 0, 'j');
       });
 
+      it('should tokenize "this"', () => {
+        var tokens: number[] = lex('this');
+        expect(tokens.length).toEqual(1);
+        expectKeywordToken(tokens[0], 0, 'this');
+      });
+
       it('should tokenize a dotted identifier', () => {
         var tokens: number[] = lex('j.k');
         expect(tokens.length).toEqual(3);

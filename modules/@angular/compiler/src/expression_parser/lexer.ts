@@ -8,7 +8,6 @@
 
 import {Injectable} from '@angular/core';
 import * as chars from '../chars';
-import {BaseException} from '../facade/exceptions';
 import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from '../facade/lang';
 
 export enum TokenType {
@@ -21,7 +20,7 @@ export enum TokenType {
   Error
 }
 
-const KEYWORDS = ['var', 'let', 'null', 'undefined', 'true', 'false', 'if', 'else'];
+const KEYWORDS = ['var', 'let', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
 
 @Injectable()
 export class Lexer {
@@ -73,6 +72,8 @@ export class Token {
   isKeywordTrue(): boolean { return this.type == TokenType.Keyword && this.strValue == 'true'; }
 
   isKeywordFalse(): boolean { return this.type == TokenType.Keyword && this.strValue == 'false'; }
+
+  isKeywordThis(): boolean { return this.type == TokenType.Keyword && this.strValue == 'this'; }
 
   isError(): boolean { return this.type == TokenType.Error; }
 

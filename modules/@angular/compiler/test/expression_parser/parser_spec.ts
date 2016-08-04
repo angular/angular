@@ -163,6 +163,7 @@ export function main() {
       describe('member access', () => {
         it('should parse field access', () => {
           checkAction('a');
+          checkAction('this.a', 'a');
           checkAction('a.a');
         });
 
