@@ -100,6 +100,10 @@ export class UpgradeAdapter {
   /* @internal */
   private providers: Array<Type|Provider|any[]|any> = [];
 
+  // the ng2AppModule param should be required once the deprecated @Component.directives prop is
+  // removed
+  constructor(private ng2AppModule?: Type) {}
+
   /**
    * Allows Angular v2 Component to be used from AngularJS v1.
    *
@@ -289,7 +293,7 @@ export class UpgradeAdapter {
       ngDoBootstrap() {}
     }
 
-    platformRef.bootstrapModule(DynamicModule).then((moduleRef) => {
+    platformRef.bootstrapModule(<any>this.ng2AppModule || DynamicModule).then((moduleRef) => {
       ng1Injector = this._afterNg2ModuleBootstrap(moduleRef, upgrade, element, modules, config);
     });
     return upgrade;
@@ -443,6 +447,9 @@ export class UpgradeAdapter {
    * document.body.innerHTML = '<app></app>'
    * adapter.bootstrap(document.body, ['myExample']);
    *```
+   *
+   * @deprecated Use NgModules and `new UpgradeAdapter(ng2AppModule)` to configure top-level
+   *providers
    */
   public addProvider(provider: Type|Provider|any[]|any): void { this.providers.push(provider); }
 
