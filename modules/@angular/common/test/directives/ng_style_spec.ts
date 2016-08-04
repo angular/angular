@@ -65,6 +65,58 @@ export function main() {
                  });
            }));
 
+    it('should add and remove styles specified using style.unit notation',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             var template = `<div [ngStyle]="{'max-width.px': expr}"></div>`;
+
+             tcb.overrideTemplate(TestComponent, template)
+                 .createAsync(TestComponent)
+                 .then((fixture) => {
+
+                   fixture.debugElement.componentInstance.expr = '40';
+                   fixture.detectChanges();
+                   expect(getDOM().getStyle(
+                              fixture.debugElement.children[0].nativeElement, 'max-width'))
+                       .toEqual('40px');
+
+                   fixture.debugElement.componentInstance.expr = null;
+                   fixture.detectChanges();
+                   expect(getDOM().getStyle(
+                              fixture.debugElement.children[0].nativeElement, 'max-width'))
+                       .toEqual('');
+
+                   async.done();
+                 });
+           }));
+
+    it('should update styles using style.unit notation when unit changes',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             var template = `<div [ngStyle]="expr"></div>`;
+
+             tcb.overrideTemplate(TestComponent, template)
+                 .createAsync(TestComponent)
+                 .then((fixture) => {
+
+                   fixture.debugElement.componentInstance.expr = {'max-width.px': '40'};
+                   fixture.detectChanges();
+                   expect(getDOM().getStyle(
+                              fixture.debugElement.children[0].nativeElement, 'max-width'))
+                       .toEqual('40px');
+
+                   fixture.debugElement.componentInstance.expr = {'max-width.em': '40'};
+                   fixture.detectChanges();
+                   expect(getDOM().getStyle(
+                              fixture.debugElement.children[0].nativeElement, 'max-width'))
+                       .toEqual('40em');
+
+                   async.done();
+                 });
+           }));
+
     // keyValueDiffer is sensitive to key order #9115
     it('should change styles specified in an object expression',
        inject(
