@@ -22,8 +22,7 @@ export function main(): void {
         {[id: string]: string} {
       const asAst = serializer.load(content, 'url', placeholders);
       let asText: {[id: string]: string} = {};
-      Object.getOwnPropertyNames(asAst).forEach(
-          id => { asText[id] = serializeAst(asAst[id]).join(''); });
+      Object.keys(asAst).forEach(id => { asText[id] = serializeAst(asAst[id]).join(''); });
 
       return asText;
     }

@@ -46,7 +46,7 @@ export class Xtb implements Serializer {
     let messageMap: {[id: string]: xml.Node[]} = {};
     let parseErrors: ParseError[] = [];
 
-    Object.getOwnPropertyNames(messages).forEach((id) => {
+    Object.keys(messages).forEach((id) => {
       const res = this._htmlParser.parse(messages[id], url, true, this._interpolationConfig);
       parseErrors.push(...res.errors);
       messageMap[id] = res.rootNodes;

@@ -87,8 +87,8 @@ export class NgPlural {
   _updateView(): void {
     this._clearViews();
 
-    var key = getPluralCategory(
-        this._switchValue, Object.getOwnPropertyNames(this._caseViews), this._localization);
+    var key =
+        getPluralCategory(this._switchValue, Object.keys(this._caseViews), this._localization);
     this._activateView(this._caseViews[key]);
   }
 

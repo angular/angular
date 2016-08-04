@@ -32,9 +32,7 @@ class _Visitor implements IVisitor {
   }
 
   private _serializeAttributes(attrs: {[k: string]: string}) {
-    const strAttrs = Object.getOwnPropertyNames(attrs)
-                         .map((name: string) => `${name}="${attrs[name]}"`)
-                         .join(' ');
+    const strAttrs = Object.keys(attrs).map((name: string) => `${name}="${attrs[name]}"`).join(' ');
     return strAttrs.length > 0 ? ' ' + strAttrs : '';
   }
 
@@ -55,7 +53,7 @@ export class Declaration implements Node {
   public attrs: {[k: string]: string} = {};
 
   constructor(unescapedAttrs: {[k: string]: string}) {
-    Object.getOwnPropertyNames(unescapedAttrs).forEach((k: string) => {
+    Object.keys(unescapedAttrs).forEach((k: string) => {
       this.attrs[k] = _escapeXml(unescapedAttrs[k]);
     });
   }
@@ -75,7 +73,7 @@ export class Tag implements Node {
   constructor(
       public name: string, unescapedAttrs: {[k: string]: string} = {},
       public children: Node[] = []) {
-    Object.getOwnPropertyNames(unescapedAttrs).forEach((k: string) => {
+    Object.keys(unescapedAttrs).forEach((k: string) => {
       this.attrs[k] = _escapeXml(unescapedAttrs[k]);
     });
   }
