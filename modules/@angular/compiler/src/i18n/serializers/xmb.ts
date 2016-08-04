@@ -44,7 +44,7 @@ export class Xmb implements Serializer {
     let rootNode = new xml.Tag(_MESSAGES_TAG);
     rootNode.children.push(new xml.Text('\n'));
 
-    Object.getOwnPropertyNames(messageMap).forEach((id) => {
+    Object.keys(messageMap).forEach((id) => {
       const message = messageMap[id];
       let attrs: {[k: string]: string} = {id};
 
@@ -88,7 +88,7 @@ class _Visitor implements i18n.Visitor {
   visitIcu(icu: i18n.Icu, context?: any): xml.Node[] {
     const nodes = [new xml.Text(`{${icu.expression}, ${icu.type}, `)];
 
-    Object.getOwnPropertyNames(icu.cases).forEach((c: string) => {
+    Object.keys(icu.cases).forEach((c: string) => {
       nodes.push(new xml.Text(`${c} {`), ...icu.cases[c].visit(this), new xml.Text(`}`));
     });
 

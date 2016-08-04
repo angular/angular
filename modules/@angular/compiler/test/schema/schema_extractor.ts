@@ -55,7 +55,7 @@ export function extractSchema(): Map<string, string[]> {
   extractProperties(
       SVGTextPositioningElement, svgText, visited, descMap, SVG_PREFIX + 'textPositioning',
       SVG_PREFIX + 'textContent');
-  var keys = Object.getOwnPropertyNames(window).filter(
+  var keys = Object.keys(window).filter(
       k => k.endsWith('Element') && (k.startsWith('HTML') || k.startsWith('SVG')));
   keys.sort();
   keys.forEach(
@@ -97,7 +97,7 @@ function extractProperties(
   const fullName = name + (superName ? '^' + superName : '');
   let props: string[] = descMap.has(fullName) ? descMap.get(fullName) : [];
   var prototype = type.prototype;
-  var keys = Object.getOwnPropertyNames(prototype);
+  var keys = Object.keys(prototype);
   keys.sort();
   keys.forEach((n) => {
     if (n.startsWith('on')) {

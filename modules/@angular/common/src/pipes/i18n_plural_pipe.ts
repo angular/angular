@@ -68,7 +68,7 @@ export class I18nPluralPipe implements PipeTransform {
       throw new InvalidPipeArgumentException(I18nPluralPipe, pluralMap);
     }
 
-    const key = getPluralCategory(value, Object.getOwnPropertyNames(pluralMap), this._localization);
+    const key = getPluralCategory(value, Object.keys(pluralMap), this._localization);
 
     return StringWrapper.replaceAll(pluralMap[key], _INTERPOLATION_REGEXP, value.toString());
   }

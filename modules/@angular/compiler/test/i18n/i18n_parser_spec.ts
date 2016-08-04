@@ -299,7 +299,7 @@ function _humanizePlaceholders(
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
   return _extractMessages(html, implicitTags, implicitAttrs).map(
-    msg => Object.getOwnPropertyNames(msg.placeholders).map((name) => `${name}=${msg.placeholders[name]}`).join(', '));
+    msg => Object.keys(msg.placeholders).map((name) => `${name}=${msg.placeholders[name]}`).join(', '));
   // clang-format on
 }
 
