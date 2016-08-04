@@ -259,12 +259,20 @@ export declare class Compiler {
 }
 
 /** @experimental */
+export declare const COMPILER_OPTIONS: OpaqueToken;
+
+/** @experimental */
 export declare abstract class CompilerFactory {
     abstract createCompiler(options?: CompilerOptions[]): Compiler;
 }
 
 /** @experimental */
-export declare const CompilerOptions: OpaqueToken;
+export declare type CompilerOptions = {
+    useDebug?: boolean;
+    useJit?: boolean;
+    defaultEncapsulation?: ViewEncapsulation;
+    providers?: any[];
+};
 
 /** @stable */
 export declare var Component: ComponentMetadataFactory;

@@ -8,7 +8,7 @@
 
 import {CompilerConfig, DirectiveResolver, NgModuleResolver, analyzeAppProvidersForDeprecatedConfiguration} from '@angular/compiler';
 import {OverridingTestComponentBuilder, platformCoreDynamicTesting} from '@angular/compiler/testing';
-import {Compiler, CompilerFactory, CompilerOptions, NgModule, PlatformRef, Provider, ReflectiveInjector, Type, createPlatform, createPlatformFactory} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, NgModule, PlatformRef, Provider, ReflectiveInjector, Type, createPlatform, createPlatformFactory} from '@angular/core';
 import {TestBed, TestComponentBuilder, TestComponentRenderer} from '@angular/core/testing';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 
@@ -50,7 +50,7 @@ export const TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: Array<any /*Type | Provide
       const deprecatedConfiguration = analyzeAppProvidersForDeprecatedConfiguration(appProviders);
       const platformRef =
           createPlatformFactory(platformBrowserDynamicTesting, 'browserDynamicTestingDeprecated', [{
-                                  provide: CompilerOptions,
+                                  provide: COMPILER_OPTIONS,
                                   useValue: deprecatedConfiguration.compilerOptions,
                                   multi: true
                                 }])();
