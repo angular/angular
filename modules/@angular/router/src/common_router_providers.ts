@@ -81,8 +81,7 @@ export function initialRouterNavigation(router: Router) {
  */
 export function provideRouter(routes: Routes, config: ExtraOptions = {}): any[] {
   return [
-    {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
-    {provide: ROUTES, useExisting: ROUTER_CONFIG}, {provide: ROUTER_CONFIG, useValue: routes},
+    provideRoutes(routes),
 
     {provide: ROUTER_CONFIGURATION, useValue: config}, Location,
     {provide: LocationStrategy, useClass: PathLocationStrategy},
