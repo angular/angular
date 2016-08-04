@@ -80,7 +80,14 @@ export class CodeGenerator {
       }
     }
 
-    return path.join(this.options.genDir, path.relative(root, filePath));
+    // transplant the codegen path to be inside the `genDir`
+    var relativePath: string = path.relative(root, filePath);
+    while (relativePath.startsWith('..' + path.sep)) {
+      // Strip out any `..` path such as: `../node_modules/@foo` as we want to put everything
+      // into `genDir`.
+      relativePath = relativePath.substr(3);
+    }
+    return path.join(this.options.genDir, relativePath);
   }
 
   codegen(): Promise<any> {

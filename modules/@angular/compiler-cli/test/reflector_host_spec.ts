@@ -17,7 +17,8 @@ describe('reflector_host', () => {
   var context: MockContext;
   var host: ts.CompilerHost;
   var program: ts.Program;
-  var reflectorHost: ReflectorHost;
+  var reflectorNestedGenDir: ReflectorHost;
+  var reflectorSiblingGenDir: ReflectorHost;
 
   beforeEach(() => {
     context = new MockContext('/tmp/src', clone(FILES));
@@ -32,10 +33,19 @@ describe('reflector_host', () => {
     if (errors && errors.length) {
       throw new Error('Expected no errors');
     }
-    reflectorHost = new ReflectorHost(
+    reflectorNestedGenDir = new ReflectorHost(
         program, host, {
-          genDir: '/tmp/dist',
-          basePath: '/tmp/src',
+          genDir: '/tmp/project/src/gen',
+          basePath: '/tmp/project/src',
+          skipMetadataEmit: false,
+          skipTemplateCodegen: false,
+          trace: false
+        },
+        context);
+    reflectorSiblingGenDir = new ReflectorHost(
+        program, host, {
+          genDir: '/tmp/project/gen',
+          basePath: '/tmp/project/src',
           skipMetadataEmit: false,
           skipTemplateCodegen: false,
           trace: false
@@ -43,9 +53,75 @@ describe('reflector_host', () => {
         context);
   });
 
+  describe('nestedGenDir', () => {
+    it('should import node_module from factory', () => {
+      expect(reflectorNestedGenDir.getImportPath(
+                 '/tmp/project/src/gen/my.ngfactory.ts',
+                 '/tmp/project/node_modules/@angular/core.d.ts'))
+          .toEqual('@angular/core');
+    });
+
+    it('should import factory from factory', () => {
+      expect(reflectorNestedGenDir.getImportPath(
+                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/my.other.ngfactory.ts'))
+          .toEqual('./my.other.ngfactory');
+      expect(reflectorNestedGenDir.getImportPath(
+                 '/tmp/project/src/a/my.ngfactory.ts', '/tmp/project/src/my.other.css.ts'))
+          .toEqual('../my.other.css');
+      expect(reflectorNestedGenDir.getImportPath(
+                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/a/my.other.css.shim.ts'))
+          .toEqual('./a/my.other.css.shim');
+    });
+
+    it('should import application from factory', () => {
+      expect(reflectorNestedGenDir.getImportPath(
+                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/my.other.ts'))
+          .toEqual('../my.other');
+      expect(reflectorNestedGenDir.getImportPath(
+                 '/tmp/project/src/a/my.ngfactory.ts', '/tmp/project/src/my.other.ts'))
+          .toEqual('../../my.other');
+      expect(reflectorNestedGenDir.getImportPath(
+                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/a/my.other.ts'))
+          .toEqual('../a/my.other');
+    });
+  });
+
+  describe('nestedGenDir', () => {
+    it('should import node_module from factory', () => {
+      expect(reflectorSiblingGenDir.getImportPath(
+                 '/tmp/project/src/gen/my.ngfactory.ts',
+                 '/tmp/project/node_modules/@angular/core.d.ts'))
+          .toEqual('@angular/core');
+    });
+
+    it('should import factory from factory', () => {
+      expect(reflectorSiblingGenDir.getImportPath(
+                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/my.other.ngfactory.ts'))
+          .toEqual('./my.other.ngfactory');
+      expect(reflectorSiblingGenDir.getImportPath(
+                 '/tmp/project/src/a/my.ngfactory.ts', '/tmp/project/src/my.other.css.ts'))
+          .toEqual('../my.other.css');
+      expect(reflectorSiblingGenDir.getImportPath(
+                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/a/my.other.css.shim.ts'))
+          .toEqual('./a/my.other.css.shim');
+    });
+
+    it('should import application from factory', () => {
+      expect(reflectorSiblingGenDir.getImportPath(
+                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/my.other.ts'))
+          .toEqual('./my.other');
+      expect(reflectorSiblingGenDir.getImportPath(
+                 '/tmp/project/src/a/my.ngfactory.ts', '/tmp/project/src/my.other.ts'))
+          .toEqual('../my.other');
+      expect(reflectorSiblingGenDir.getImportPath(
+                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/a/my.other.ts'))
+          .toEqual('./a/my.other');
+    });
+  });
+
   it('should provide the import locations for angular', () => {
     let {coreDecorators, diDecorators, diMetadata, animationMetadata, provider} =
-        reflectorHost.angularImportLocations();
+        reflectorNestedGenDir.angularImportLocations();
     expect(coreDecorators).toEqual('@angular/core/src/metadata');
     expect(diDecorators).toEqual('@angular/core/src/di/decorators');
     expect(diMetadata).toEqual('@angular/core/src/di/metadata');
@@ -54,82 +130,86 @@ describe('reflector_host', () => {
   });
 
   it('should be able to produce an import from main @angular/core', () => {
-    expect(reflectorHost.getImportPath('main.ts', 'node_modules/@angular/core.d.ts'))
+    expect(reflectorNestedGenDir.getImportPath(
+               '/tmp/project/src/main.ts', '/tmp/project/node_modules/@angular/core.d.ts'))
         .toEqual('@angular/core');
   });
 
-  it('should be ble to produce an import from main to a sub-directory', () => {
-    expect(reflectorHost.getImportPath('main.ts', 'lib/utils.ts')).toEqual('./lib/utils');
+  it('should be able to produce an import from main to a sub-directory', () => {
+    expect(reflectorNestedGenDir.getImportPath('main.ts', 'lib/utils.ts')).toEqual('./lib/utils');
   });
 
   it('should be able to produce an import from to a peer file', () => {
-    expect(reflectorHost.getImportPath('lib/utils.ts', 'lib/collections.ts'))
+    expect(reflectorNestedGenDir.getImportPath('lib/utils.ts', 'lib/collections.ts'))
         .toEqual('./collections');
   });
 
   it('should be able to produce an import from to a sibling directory', () => {
-    expect(reflectorHost.getImportPath('lib2/utils2.ts', 'lib/utils.ts')).toEqual('../lib/utils');
+    expect(reflectorNestedGenDir.getImportPath('lib2/utils2.ts', 'lib/utils.ts'))
+        .toEqual('../lib/utils');
   });
 
   it('should be able to produce a symbol for an exported symbol', () => {
-    expect(reflectorHost.findDeclaration('@angular/router-deprecated', 'foo', 'main.ts'))
+    expect(reflectorNestedGenDir.findDeclaration('@angular/router-deprecated', 'foo', 'main.ts'))
         .toBeDefined();
   });
 
   it('should be able to produce a symbol for values space only reference', () => {
-    expect(
-        reflectorHost.findDeclaration('@angular/router-deprecated/src/providers', 'foo', 'main.ts'))
+    expect(reflectorNestedGenDir.findDeclaration(
+               '@angular/router-deprecated/src/providers', 'foo', 'main.ts'))
         .toBeDefined();
   });
 
 
   it('should be produce the same symbol if asked twice', () => {
-    let foo1 = reflectorHost.getStaticSymbol('main.ts', 'foo');
-    let foo2 = reflectorHost.getStaticSymbol('main.ts', 'foo');
+    let foo1 = reflectorNestedGenDir.getStaticSymbol('main.ts', 'foo');
+    let foo2 = reflectorNestedGenDir.getStaticSymbol('main.ts', 'foo');
     expect(foo1).toBe(foo2);
   });
 
   it('should be able to produce a symbol for a module with no file', () => {
-    expect(reflectorHost.getStaticSymbol('angularjs', 'SomeAngularSymbol')).toBeDefined();
+    expect(reflectorNestedGenDir.getStaticSymbol('angularjs', 'SomeAngularSymbol')).toBeDefined();
   });
 
   it('should be able to read a metadata file', () => {
-    expect(reflectorHost.getMetadataFor('node_modules/@angular/core.d.ts'))
+    expect(reflectorNestedGenDir.getMetadataFor('node_modules/@angular/core.d.ts'))
         .toEqual({__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}});
   });
 
   it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
-    expect(reflectorHost.getMetadataFor('node_modules/@angular/unused.d.ts')).toBeUndefined();
+    expect(reflectorNestedGenDir.getMetadataFor('node_modules/@angular/unused.d.ts'))
+        .toBeUndefined();
   });
 
   it('should return undefined for missing modules', () => {
-    expect(reflectorHost.getMetadataFor('node_modules/@angular/missing.d.ts')).toBeUndefined();
+    expect(reflectorNestedGenDir.getMetadataFor('node_modules/@angular/missing.d.ts'))
+        .toBeUndefined();
   });
 
   it('should be able to trace a named export', () => {
-    const symbol =
-        reflectorHost.findDeclaration('./reexport/reexport.d.ts', 'One', '/tmp/src/main.ts');
+    const symbol = reflectorNestedGenDir.findDeclaration(
+        './reexport/reexport.d.ts', 'One', '/tmp/src/main.ts');
     expect(symbol.name).toEqual('One');
     expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
   });
 
   it('should be able to trace a renamed export', () => {
-    const symbol =
-        reflectorHost.findDeclaration('./reexport/reexport.d.ts', 'Four', '/tmp/src/main.ts');
+    const symbol = reflectorNestedGenDir.findDeclaration(
+        './reexport/reexport.d.ts', 'Four', '/tmp/src/main.ts');
     expect(symbol.name).toEqual('Three');
     expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
   });
 
   it('should be able to trace an export * export', () => {
-    const symbol =
-        reflectorHost.findDeclaration('./reexport/reexport.d.ts', 'Five', '/tmp/src/main.ts');
+    const symbol = reflectorNestedGenDir.findDeclaration(
+        './reexport/reexport.d.ts', 'Five', '/tmp/src/main.ts');
     expect(symbol.name).toEqual('Five');
     expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin5.d.ts');
   });
 
   it('should be able to trace a multi-level re-export', () => {
-    const symbol =
-        reflectorHost.findDeclaration('./reexport/reexport.d.ts', 'Thirty', '/tmp/src/main.ts');
+    const symbol = reflectorNestedGenDir.findDeclaration(
+        './reexport/reexport.d.ts', 'Thirty', '/tmp/src/main.ts');
     expect(symbol.name).toEqual('Thirty');
     expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin30.d.ts');
   });

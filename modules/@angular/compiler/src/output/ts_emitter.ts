@@ -254,7 +254,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   getBuiltinMethodName(method: o.BuiltinMethod): string {
-    var name: any /** TODO #9100 */;
+    var name: string;
     switch (method) {
       case o.BuiltinMethod.ConcatArray:
         name = 'concat';
