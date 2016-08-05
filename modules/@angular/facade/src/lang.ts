@@ -312,50 +312,6 @@ export class NumberWrapper {
 
 export var RegExp = _global.RegExp;
 
-export class RegExpWrapper {
-  static create(regExpStr: string, flags: string = ''): RegExp {
-    flags = flags.replace(/g/g, '');
-    return new _global.RegExp(regExpStr, flags + 'g');
-  }
-  static firstMatch(regExp: RegExp, input: string): RegExpExecArray {
-    // Reset multimatch regex state
-    regExp.lastIndex = 0;
-    return regExp.exec(input);
-  }
-  static test(regExp: RegExp, input: string): boolean {
-    regExp.lastIndex = 0;
-    return regExp.test(input);
-  }
-  static matcher(regExp: RegExp, input: string): {re: RegExp; input: string} {
-    // Reset regex state for the case
-    // someone did not loop over all matches
-    // last time.
-    regExp.lastIndex = 0;
-    return {re: regExp, input: input};
-  }
-  static replaceAll(regExp: RegExp, input: string, replace: Function): string {
-    let c = regExp.exec(input);
-    let res = '';
-    regExp.lastIndex = 0;
-    let prev = 0;
-    while (c) {
-      res += input.substring(prev, c.index);
-      res += replace(c);
-      prev = c.index + c[0].length;
-      regExp.lastIndex = prev;
-      c = regExp.exec(input);
-    }
-    res += input.substring(prev);
-    return res;
-  }
-}
-
-export class RegExpMatcherWrapper {
-  static next(matcher: {re: RegExp; input: string}): RegExpExecArray {
-    return matcher.re.exec(matcher.input);
-  }
-}
-
 export class FunctionWrapper {
   static apply(fn: Function, posArgs: any): any { return fn.apply(null, posArgs); }
 

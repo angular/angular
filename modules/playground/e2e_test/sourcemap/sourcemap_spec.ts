@@ -23,10 +23,10 @@ describe('sourcemaps', function() {
     // so that the browser logs can be read out!
     browser.executeScript('1+1');
     browser.manage().logs().get('browser').then(function(logs) {
-      var errorLine: any /** TODO #9100 */ = null;
-      var errorColumn: any /** TODO #9100 */ = null;
+      var errorLine: number = null;
+      var errorColumn: number = null;
       logs.forEach(function(log) {
-        var match = /\.createError\s+\(.+:(\d+):(\d+)/m.exec(log.message);
+        const match = log.message.match(/\.createError\s+\(.+:(\d+):(\d+)/m);
         if (match) {
           errorLine = parseInt(match[1]);
           errorColumn = parseInt(match[2]);

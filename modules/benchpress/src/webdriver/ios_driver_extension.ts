@@ -7,7 +7,7 @@
  */
 
 import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
-import {Json, RegExpWrapper, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
+import {Json, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {WebDriverAdapter} from '../web_driver_adapter';
 import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';

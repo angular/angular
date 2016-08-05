@@ -8,7 +8,7 @@
 
 import {StringMapWrapper} from '../../facade/collection';
 import {BaseException} from '../../facade/exceptions';
-import {RegExpWrapper, StringWrapper, isBlank, isPresent} from '../../facade/lang';
+import {StringWrapper, isBlank, isPresent} from '../../facade/lang';
 import {RootUrl, Url, convertUrlParamsToArray} from '../../url_parser';
 import {TouchMap, normalizeString} from '../../utils';
 
@@ -60,7 +60,7 @@ class StaticPathSegment implements PathSegment {
  * a matching `Instruction`.
  */
 class DynamicPathSegment implements PathSegment {
-  static paramMatcher = /^:([^\/]+)$/g;
+  static paramMatcher = /^:([^\/]+)$/;
   specificity = '1';
   hash = ':';
   constructor(public name: string) {}
@@ -80,7 +80,7 @@ class DynamicPathSegment implements PathSegment {
  * be provided to a matching `Instruction`.
  */
 class StarPathSegment implements PathSegment {
-  static wildcardMatcher = /^\*([^\/]+)$/g;
+  static wildcardMatcher = /^\*([^\/]+)$/;
   specificity = '0';
   hash = '*';
   constructor(public name: string) {}
@@ -211,12 +211,11 @@ export class ParamRoutePath implements RoutePath {
 
     var limit = segmentStrings.length - 1;
     for (var i = 0; i <= limit; i++) {
-      var segment = segmentStrings[i], match: any /** TODO #9100 */;
+      var segment = segmentStrings[i], match: RegExpMatchArray;
 
-      if (isPresent(match = RegExpWrapper.firstMatch(DynamicPathSegment.paramMatcher, segment))) {
+      if (isPresent(match = segment.match(DynamicPathSegment.paramMatcher))) {
         this._segments.push(new DynamicPathSegment(match[1]));
-      } else if (isPresent(
-                     match = RegExpWrapper.firstMatch(StarPathSegment.wildcardMatcher, segment))) {
+      } else if (isPresent(match = segment.match(StarPathSegment.wildcardMatcher))) {
         this._segments.push(new StarPathSegment(match[1]));
       } else if (segment == '...') {
         if (i < limit) {
@@ -272,13 +271,13 @@ export class ParamRoutePath implements RoutePath {
       throw new BaseException(
           `Path "${path}" should not include "#". Use "HashLocationStrategy" instead.`);
     }
-    var illegalCharacter = RegExpWrapper.firstMatch(ParamRoutePath.RESERVED_CHARS, path);
+    const illegalCharacter = path.match(ParamRoutePath.RESERVED_CHARS);
     if (isPresent(illegalCharacter)) {
       throw new BaseException(
           `Path "${path}" contains "${illegalCharacter[0]}" which is not allowed in a route config.`);
     }
   }
-  static RESERVED_CHARS = RegExpWrapper.create('//|\\(|\\)|;|\\?|=');
+  static RESERVED_CHARS = new RegExp('//|\\(|\\)|;|\\?|=');
 }
 
 let REGEXP_PERCENT = /%/g;

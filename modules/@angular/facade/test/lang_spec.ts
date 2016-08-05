@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberWrapper, RegExpMatcherWrapper, RegExpWrapper, StringWrapper, escapeRegExp, hasConstructor, isPresent, isPromise, resolveEnumToken} from '../src/lang';
+import {NumberWrapper, StringWrapper, escapeRegExp, hasConstructor, isPresent, isPromise, resolveEnumToken} from '../src/lang';
 
 enum UsefulEnum {
   MyToken,
@@ -18,42 +18,11 @@ class MySubclass extends MySuperclass {}
 
 export function main() {
   describe('RegExp', () => {
-    it('should expose the index for each match', () => {
-      var re = /(!)/g;
-      var matcher = RegExpWrapper.matcher(re, '0!23!567!!');
-      var indexes: number[] = [];
-      var m: any /** TODO #9100 */;
-
-      while (isPresent(m = RegExpMatcherWrapper.next(matcher))) {
-        indexes.push(m.index);
-        expect(m[0]).toEqual('!');
-        expect(m[1]).toEqual('!');
-        expect(m.length).toBe(2);
-      }
-
-      expect(indexes).toEqual([1, 4, 8, 9]);
-    });
-
-    it('should reset before it is reused', () => {
-      var re = /^['"]/g;
-      var str = '\'';
-      expect(RegExpWrapper.test(re, str)).toEqual(true);
-      // If not reset, the second attempt to test results in false
-      expect(RegExpWrapper.test(re, str)).toEqual(true);
-    });
-
-    it('should implement replace all', () => {
-      let re = /(\d)+/g;
-      let m =
-          RegExpWrapper.replaceAll(re, 'a1b2c', (match: any /** TODO #9100 */) => `!${match[1]}!`);
-      expect(m).toEqual('a!1!b!2!c');
-    });
-
     it('should escape regexp', () => {
-      expect(RegExpWrapper.firstMatch(new RegExp(escapeRegExp('b')), 'abc')).toBeTruthy();
-      expect(RegExpWrapper.firstMatch(new RegExp(escapeRegExp('b')), 'adc')).toBeFalsy();
-      expect(RegExpWrapper.firstMatch(new RegExp(escapeRegExp('a.b')), 'a.b')).toBeTruthy();
-      expect(RegExpWrapper.firstMatch(new RegExp(escapeRegExp('axb')), 'a.b')).toBeFalsy();
+      expect(new RegExp(escapeRegExp('b')).exec('abc')).toBeTruthy();
+      expect(new RegExp(escapeRegExp('b')).exec('adc')).toBeFalsy();
+      expect(new RegExp(escapeRegExp('a.b')).exec('a.b')).toBeTruthy();
+      expect(new RegExp(escapeRegExp('a.b')).exec('axb')).toBeFalsy();
     });
 
   });

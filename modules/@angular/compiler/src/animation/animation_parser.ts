@@ -9,7 +9,7 @@
 import {ANY_STATE, FILL_STYLE_FLAG} from '../../core_private';
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {NumberWrapper, RegExpWrapper, isArray, isBlank, isPresent, isString, isStringMap} from '../facade/lang';
+import {NumberWrapper, isArray, isBlank, isPresent, isString, isStringMap} from '../facade/lang';
 import {Math} from '../facade/math';
 import {ParseError} from '../parse_util';
 
@@ -465,13 +465,13 @@ function _fillAnimationAstStartingKeyframes(
 
 function _parseTimeExpression(
     exp: string | number, errors: AnimationParseError[]): _AnimationTimings {
-  var regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/gi;
+  var regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/i;
   var duration: number;
   var delay: number = 0;
   var easing: string = null;
   if (isString(exp)) {
-    var matches = RegExpWrapper.firstMatch(regex, <string>exp);
-    if (!isPresent(matches)) {
+    const matches = exp.match(regex);
+    if (matches === null) {
       errors.push(new AnimationParseError(`The provided timing value "${exp}" is invalid.`));
       return new _AnimationTimings(0, 0, null);
     }

@@ -257,21 +257,21 @@ function pairs<T>(obj: {[key: string]: T}): Pair<string, T>[] {
 const SEGMENT_RE = /^[^\/\(\)\?;=&#]+/;
 function matchSegments(str: string): string {
   SEGMENT_RE.lastIndex = 0;
-  const match = SEGMENT_RE.exec(str);
+  const match = str.match(SEGMENT_RE);
   return match ? match[0] : '';
 }
 
 const QUERY_PARAM_RE = /^[^=\?&#]+/;
 function matchQueryParams(str: string): string {
   QUERY_PARAM_RE.lastIndex = 0;
-  const match = SEGMENT_RE.exec(str);
+  const match = str.match(SEGMENT_RE);
   return match ? match[0] : '';
 }
 
 const QUERY_PARAM_VALUE_RE = /^[^\?&#]+/;
 function matchUrlQueryParamValue(str: string): string {
   QUERY_PARAM_VALUE_RE.lastIndex = 0;
-  const match = QUERY_PARAM_VALUE_RE.exec(str);
+  const match = str.match(QUERY_PARAM_VALUE_RE);
   return match ? match[0] : '';
 }
 

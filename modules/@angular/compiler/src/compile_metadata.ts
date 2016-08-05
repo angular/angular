@@ -11,7 +11,7 @@ import {ChangeDetectionStrategy, SchemaMetadata, ViewEncapsulation} from '@angul
 import {LifecycleHooks, reflector} from '../core_private';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
 import {BaseException, unimplemented} from './facade/exceptions';
-import {RegExpWrapper, Type, isBlank, isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
+import {Type, isBlank, isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
 
 import {CssSelector} from './selector';
 import {getUrlScheme} from './url_resolver';
@@ -23,7 +23,7 @@ import {sanitizeIdentifier, splitAtColon} from './util';
 // group 1: "prop" from "[prop]"
 // group 2: "event" from "(event)"
 // group 3: "@trigger" from "@trigger"
-const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/g;
+const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
 const UNDEFINED = new Object();
 
 export abstract class CompileMetadataWithIdentifier {
@@ -434,8 +434,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
     var hostAttributes: {[key: string]: string} = {};
     if (isPresent(host)) {
       StringMapWrapper.forEach(host, (value: string, key: string) => {
-        var matches = RegExpWrapper.firstMatch(HOST_REG_EXP, key);
-        if (isBlank(matches)) {
+        const matches = key.match(HOST_REG_EXP);
+        if (matches === null) {
           hostAttributes[key] = value;
         } else if (isPresent(matches[1])) {
           hostProperties[matches[1]] = value;

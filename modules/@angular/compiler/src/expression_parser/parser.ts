@@ -11,7 +11,7 @@ import {Injectable} from '@angular/core';
 import * as chars from '../chars';
 import {ListWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
-import {RegExpWrapper, StringWrapper, escapeRegExp, isBlank, isPresent} from '../facade/lang';
+import {StringWrapper, escapeRegExp, isBlank, isPresent} from '../facade/lang';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../html_parser/interpolation_config';
 
 import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
@@ -29,8 +29,8 @@ export class TemplateBindingParseResult {
 }
 
 function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
-  const regexp = escapeRegExp(config.start) + '([\\s\\S]*?)' + escapeRegExp(config.end);
-  return RegExpWrapper.create(regexp, 'g');
+  const pattern = escapeRegExp(config.start) + '([\\s\\S]*?)' + escapeRegExp(config.end);
+  return new RegExp(pattern, 'g');
 }
 
 @Injectable()
