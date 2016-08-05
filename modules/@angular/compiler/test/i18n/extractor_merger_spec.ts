@@ -54,6 +54,12 @@ export function main() {
 
       it('should not create a message for empty elements',
          () => { expect(extract('<div i18n="m|d"></div>')).toEqual([]); });
+
+      it('should ignore implicit elements in translatable elements', () => {
+        expect(extract('<div i18n="m|d"><p></p></div>', ['p'])).toEqual([
+          [['<ph tag name="START_PARAGRAPH"></ph name="CLOSE_PARAGRAPH">'], 'm', 'd']
+        ]);
+      });
     });
 
     describe('blocks', () => {
@@ -67,6 +73,13 @@ export function main() {
               [['message3'], '', ''],
             ]);
       });
+
+      it('should ignore implicit elements in blocks', () => {
+        expect(extract('<!-- i18n:m|d --><p></p><!-- /i18n -->', ['p'])).toEqual([
+          [['<ph tag name="START_PARAGRAPH"></ph name="CLOSE_PARAGRAPH">'], 'm', 'd']
+        ]);
+      });
+
 
       it('should extract siblings', () => {
         expect(
@@ -141,11 +154,29 @@ export function main() {
       it('should not extract ICU messages outside of i18n sections',
          () => { expect(extract('{count, plural, =0 {text}}')).toEqual([]); });
 
-      it('should not extract nested ICU messages', () => {
+      it('should ignore nested ICU messages', () => {
         expect(extract('<div i18n="m|d">{count, plural, =0 { {sex, gender, =m {m}} }}</div>'))
             .toEqual([
               [['{count, plural, =0 {[{sex, gender, =m {[m]}},  ]}}'], 'm', 'd'],
             ]);
+      });
+
+      it('should ignore implicit elements in non translatable ICU messages', () => {
+        expect(
+            extract(
+                '<div i18n="m|d">{count, plural, =0 { {sex, gender, =m {<p>ignore</p>}} }}</div>',
+                ['p']))
+            .toEqual([[
+              [
+                '{count, plural, =0 {[{sex, gender, =m {[<ph tag name="START_PARAGRAPH">ignore</ph name="CLOSE_PARAGRAPH">]}},  ]}}'
+              ],
+              'm', 'd'
+            ]]);
+      });
+
+      it('should ignore implicit elements in non translatable ICU messages', () => {
+        expect(extract('{count, plural, =0 { {sex, gender, =m {<p>ignore</p>}} }}', ['p']))
+            .toEqual([]);
       });
     });
 
@@ -294,20 +325,6 @@ export function main() {
           expect(extractErrors(`<p><!-- i18n --></p><!-- /i18n -->`)).toEqual([
             ['I18N blocks should not cross element boundaries', '<!--'],
             ['Unclosed block', '<!--'],
-          ]);
-        });
-      });
-
-      describe('implicit elements', () => {
-        it('should report implicit element in translatable element', () => {
-          expect(extractErrors(`<p i18n><b></b></p>`, ['b'])).toEqual([
-            ['Could not mark an element as translatable inside a translatable section', '<b>'],
-          ]);
-        });
-
-        it('should report implicit element in translatable blocks', () => {
-          expect(extractErrors(`<!-- i18n --><b></b><!-- /i18n -->`, ['b'])).toEqual([
-            ['Could not mark an element as translatable inside a translatable section', '<b>'],
           ]);
         });
       });
