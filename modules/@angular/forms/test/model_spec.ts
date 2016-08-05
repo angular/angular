@@ -56,16 +56,16 @@ export function main() {
 
         it('should rerun the validator when the value changes', () => {
           var c = new FormControl('value', Validators.required);
-          c.updateValue(null);
+          c.setValue(null);
           expect(c.valid).toEqual(false);
         });
 
         it('should support arrays of validator functions if passed', () => {
           const c = new FormControl('value', [Validators.required, Validators.minLength(3)]);
-          c.updateValue('a');
+          c.setValue('a');
           expect(c.valid).toEqual(false);
 
-          c.updateValue('aaa');
+          c.setValue('aaa');
           expect(c.valid).toEqual(true);
         });
 
@@ -80,10 +80,10 @@ export function main() {
 
           c.setValidators(Validators.required);
 
-          c.updateValue(null);
+          c.setValue(null);
           expect(c.valid).toEqual(false);
 
-          c.updateValue('abc');
+          c.setValue('abc');
           expect(c.valid).toEqual(true);
         });
 
@@ -93,13 +93,13 @@ export function main() {
 
           c.setValidators([Validators.minLength(5), Validators.required]);
 
-          c.updateValue('');
+          c.setValue('');
           expect(c.valid).toEqual(false);
 
-          c.updateValue('abc');
+          c.setValue('abc');
           expect(c.valid).toEqual(false);
 
-          c.updateValue('abcde');
+          c.setValue('abcde');
           expect(c.valid).toEqual(true);
         });
 
@@ -110,7 +110,7 @@ export function main() {
           c.clearValidators();
           expect(c.validator).toEqual(null);
 
-          c.updateValue('');
+          c.setValue('');
           expect(c.valid).toEqual(true);
         });
 
@@ -146,7 +146,7 @@ export function main() {
         it('should rerun the validator when the value changes', fakeAsync(() => {
              var c = new FormControl('value', null, asyncValidator('expected'));
 
-             c.updateValue('expected');
+             c.setValue('expected');
              tick();
 
              expect(c.valid).toEqual(true);
@@ -158,7 +158,7 @@ export function main() {
 
              expect(c.errors).toEqual({'required': true});
 
-             c.updateValue('some value');
+             c.setValue('some value');
              tick();
 
              expect(c.errors).toEqual({'async': true});
@@ -179,8 +179,8 @@ export function main() {
              var c = new FormControl(
                  '', null, asyncValidator('expected', {'long': 200, 'expected': 100}));
 
-             c.updateValue('long');
-             c.updateValue('expected');
+             c.setValue('long');
+             c.setValue('expected');
 
              tick(300);
 
@@ -201,7 +201,7 @@ export function main() {
              c.setAsyncValidators(asyncValidator('expected'));
              expect(c.asyncValidator).not.toEqual(null);
 
-             c.updateValue('expected');
+             c.setValue('expected');
              tick();
 
              expect(c.valid).toEqual(true);
@@ -213,7 +213,7 @@ export function main() {
              c.setAsyncValidators([asyncValidator('expected')]);
              expect(c.asyncValidator).not.toEqual(null);
 
-             c.updateValue('expected');
+             c.setValue('expected');
              tick();
 
              expect(c.valid).toEqual(true);
@@ -254,6 +254,119 @@ export function main() {
         });
       });
 
+      describe('setValue', () => {
+        let g: FormGroup, c: FormControl;
+        beforeEach(() => {
+          c = new FormControl('oldValue');
+          g = new FormGroup({'one': c});
+        });
+
+        it('should set the value of the control', () => {
+          c.setValue('newValue');
+          expect(c.value).toEqual('newValue');
+        });
+
+        it('should invoke ngOnChanges if it is present', () => {
+          let ngOnChanges: any;
+          c.registerOnChange((v: any) => ngOnChanges = ['invoked', v]);
+
+          c.setValue('newValue');
+
+          expect(ngOnChanges).toEqual(['invoked', 'newValue']);
+        });
+
+        it('should not invoke on change when explicitly specified', () => {
+          let onChange: any = null;
+          c.registerOnChange((v: any) => onChange = ['invoked', v]);
+
+          c.setValue('newValue', {emitModelToViewChange: false});
+
+          expect(onChange).toBeNull();
+        });
+
+        it('should set the parent', () => {
+          c.setValue('newValue');
+          expect(g.value).toEqual({'one': 'newValue'});
+        });
+
+        it('should not set the parent when explicitly specified', () => {
+          c.setValue('newValue', {onlySelf: true});
+          expect(g.value).toEqual({'one': 'oldValue'});
+        });
+
+        it('should fire an event', fakeAsync(() => {
+             c.valueChanges.subscribe((value) => { expect(value).toEqual('newValue'); });
+
+             c.setValue('newValue');
+             tick();
+           }));
+
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             c.setValue('newValue', {emitEvent: false});
+             tick();
+           }));
+      });
+
+      describe('patchValue', () => {
+        let g: FormGroup, c: FormControl;
+        beforeEach(() => {
+          c = new FormControl('oldValue');
+          g = new FormGroup({'one': c});
+        });
+
+        it('should set the value of the control', () => {
+          c.patchValue('newValue');
+          expect(c.value).toEqual('newValue');
+        });
+
+        it('should invoke ngOnChanges if it is present', () => {
+          let ngOnChanges: any;
+          c.registerOnChange((v: any) => ngOnChanges = ['invoked', v]);
+
+          c.patchValue('newValue');
+
+          expect(ngOnChanges).toEqual(['invoked', 'newValue']);
+        });
+
+        it('should not invoke on change when explicitly specified', () => {
+          let onChange: any = null;
+          c.registerOnChange((v: any) => onChange = ['invoked', v]);
+
+          c.patchValue('newValue', {emitModelToViewChange: false});
+
+          expect(onChange).toBeNull();
+        });
+
+        it('should set the parent', () => {
+          c.patchValue('newValue');
+          expect(g.value).toEqual({'one': 'newValue'});
+        });
+
+        it('should not set the parent when explicitly specified', () => {
+          c.patchValue('newValue', {onlySelf: true});
+          expect(g.value).toEqual({'one': 'oldValue'});
+        });
+
+        it('should fire an event', fakeAsync(() => {
+             c.valueChanges.subscribe((value) => { expect(value).toEqual('newValue'); });
+
+             c.patchValue('newValue');
+             tick();
+           }));
+
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             c.patchValue('newValue', {emitEvent: false});
+
+             tick();
+           }));
+      });
+
+      // deprecated function
+      // TODO(kara): remove these tests when updateValue is removed
       describe('updateValue', () => {
         var g: any /** TODO #9100 */, c: any /** TODO #9100 */;
         beforeEach(() => {
@@ -318,7 +431,7 @@ export function main() {
         beforeEach(() => { c = new FormControl('initial value'); });
 
         it('should restore the initial value of the control if passed', () => {
-          c.updateValue('new value');
+          c.setValue('new value');
           expect(c.value).toBe('new value');
 
           c.reset('initial value');
@@ -326,7 +439,7 @@ export function main() {
         });
 
         it('should clear the control value if no value is passed', () => {
-          c.updateValue('new value');
+          c.setValue('new value');
           expect(c.value).toBe('new value');
 
           c.reset();
@@ -335,7 +448,7 @@ export function main() {
 
         it('should update the value of any parent controls with passed value', () => {
           const g = new FormGroup({'one': c});
-          c.updateValue('new value');
+          c.setValue('new value');
           expect(g.value).toEqual({'one': 'new value'});
 
           c.reset('initial value');
@@ -344,7 +457,7 @@ export function main() {
 
         it('should update the value of any parent controls with null value', () => {
           const g = new FormGroup({'one': c});
-          c.updateValue('new value');
+          c.setValue('new value');
           expect(g.value).toEqual({'one': 'new value'});
 
           c.reset();
@@ -450,7 +563,7 @@ export function main() {
                  async.done();
                }
              });
-             c.updateValue('new');
+             c.setValue('new');
            }));
 
         it('should fire an event after the status has been updated to invalid', fakeAsync(() => {
@@ -461,7 +574,7 @@ export function main() {
                }
              });
 
-             c.updateValue('');
+             c.setValue('');
              tick();
            }));
 
@@ -473,13 +586,13 @@ export function main() {
 
              c.statusChanges.subscribe({next: (status: any) => log.push(`status: '${status}'`)});
 
-             c.updateValue('');
+             c.setValue('');
              tick();
 
-             c.updateValue('nonEmpty');
+             c.setValue('nonEmpty');
              tick();
 
-             c.updateValue('expected');
+             c.setValue('expected');
              tick();
 
              expect(log).toEqual([
@@ -503,19 +616,19 @@ export function main() {
                expect(c.errors).toEqual({'required': true});
                async.done();
              });
-             c.updateValue('');
+             c.setValue('');
            }));
 
         it('should return a cold observable',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             c.updateValue('will be ignored');
+             c.setValue('will be ignored');
              c.valueChanges.subscribe({
                next: (value: any) => {
                  expect(value).toEqual('new');
                  async.done();
                }
              });
-             c.updateValue('new');
+             c.setValue('new');
            }));
       });
 
@@ -533,7 +646,7 @@ export function main() {
           var c = new FormControl('someValue', Validators.required);
 
           c.setErrors({'someError': true});
-          c.updateValue('');
+          c.setValue('');
 
           expect(c.errors).toEqual({'required': true});
         });
@@ -566,7 +679,7 @@ export function main() {
           g.setErrors({'someGroupError': true});
           c.setErrors({'someError': true});
 
-          c.updateValue('newValue');
+          c.setValue('newValue');
 
           expect(c.errors).toEqual(null);
           expect(g.errors).toEqual(null);
@@ -593,7 +706,7 @@ export function main() {
           });
           expect(g.value).toEqual({'one': '111', 'nested': {'two': '222'}});
 
-          (<FormControl>(g.controls['nested'].find('two'))).updateValue('333');
+          (<FormControl>(g.get('nested.two'))).setValue('333');
 
           expect(g.value).toEqual({'one': '111', 'nested': {'two': '333'}});
         });
@@ -632,12 +745,12 @@ export function main() {
           var c = new FormControl(null);
           var g = new FormGroup({'one': c}, null, simpleValidator);
 
-          c.updateValue('correct');
+          c.setValue('correct');
 
           expect(g.valid).toEqual(true);
           expect(g.errors).toEqual(null);
 
-          c.updateValue('incorrect');
+          c.setValue('incorrect');
 
           expect(g.valid).toEqual(false);
           expect(g.errors).toEqual({'broken': true});
@@ -679,7 +792,7 @@ export function main() {
         });
       });
 
-      describe('updateValue', () => {
+      describe('setValue', () => {
         let c: FormControl, c2: FormControl, g: FormGroup;
 
         beforeEach(() => {
@@ -688,40 +801,42 @@ export function main() {
           g = new FormGroup({'one': c, 'two': c2});
         });
 
-        it('should update its own value', () => {
-          g.updateValue({'one': 'one', 'two': 'two'});
+        it('should set its own value', () => {
+          g.setValue({'one': 'one', 'two': 'two'});
           expect(g.value).toEqual({'one': 'one', 'two': 'two'});
         });
 
-        it('should update child values', () => {
-          g.updateValue({'one': 'one', 'two': 'two'});
+        it('should set child values', () => {
+          g.setValue({'one': 'one', 'two': 'two'});
           expect(c.value).toEqual('one');
           expect(c2.value).toEqual('two');
         });
 
-        it('should update parent values', () => {
+        it('should set parent values', () => {
           const form = new FormGroup({'parent': g});
-          g.updateValue({'one': 'one', 'two': 'two'});
+          g.setValue({'one': 'one', 'two': 'two'});
           expect(form.value).toEqual({'parent': {'one': 'one', 'two': 'two'}});
         });
 
-        it('should ignore fields that are missing from supplied value', () => {
-          g.updateValue({'one': 'one'});
-          expect(g.value).toEqual({'one': 'one', 'two': ''});
+        it('should throw if fields are missing from supplied value (subset)', () => {
+          expect(() => g.setValue({
+            'one': 'one'
+          })).toThrowError(new RegExp(`Must supply a value for form control with name: 'two'`));
         });
 
-        it('should not ignore fields that are null', () => {
-          g.updateValue({'one': null});
-          expect(g.value).toEqual({'one': null, 'two': ''});
+        it('should throw if a value is provided for a missing control (superset)', () => {
+          expect(() => g.setValue({'one': 'one', 'two': 'two', 'three': 'three'}))
+              .toThrowError(new RegExp(`Cannot find form control with name: three`));
         });
 
-        it('should throw if a value is provided for a missing control', () => {
-          expect(() => g.updateValue({
-            'three': 'three'
-          })).toThrowError(new RegExp(`Cannot find form control with name: three`));
+        it('should throw if no controls are set yet', () => {
+          const empty = new FormGroup({});
+          expect(() => empty.setValue({
+            'one': 'one'
+          })).toThrowError(new RegExp(`no form controls registered with this group`));
         });
 
-        describe('updateValue() events', () => {
+        describe('setValue() events', () => {
           let form: FormGroup;
           let logger: any[];
 
@@ -736,7 +851,79 @@ export function main() {
             c.valueChanges.subscribe(() => logger.push('control1'));
             c2.valueChanges.subscribe(() => logger.push('control2'));
 
-            g.updateValue({'one': 'one', 'two': 'two'});
+            g.setValue({'one': 'one', 'two': 'two'});
+            expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
+          });
+
+          it('should emit one statusChange event per control', () => {
+            form.statusChanges.subscribe(() => logger.push('form'));
+            g.statusChanges.subscribe(() => logger.push('group'));
+            c.statusChanges.subscribe(() => logger.push('control1'));
+            c2.statusChanges.subscribe(() => logger.push('control2'));
+
+            g.setValue({'one': 'one', 'two': 'two'});
+            expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
+          });
+        });
+      });
+
+      describe('patchValue', () => {
+        let c: FormControl, c2: FormControl, g: FormGroup;
+
+        beforeEach(() => {
+          c = new FormControl('');
+          c2 = new FormControl('');
+          g = new FormGroup({'one': c, 'two': c2});
+        });
+
+        it('should set its own value', () => {
+          g.patchValue({'one': 'one', 'two': 'two'});
+          expect(g.value).toEqual({'one': 'one', 'two': 'two'});
+        });
+
+        it('should set child values', () => {
+          g.patchValue({'one': 'one', 'two': 'two'});
+          expect(c.value).toEqual('one');
+          expect(c2.value).toEqual('two');
+        });
+
+        it('should set parent values', () => {
+          const form = new FormGroup({'parent': g});
+          g.patchValue({'one': 'one', 'two': 'two'});
+          expect(form.value).toEqual({'parent': {'one': 'one', 'two': 'two'}});
+        });
+
+        it('should ignore fields that are missing from supplied value (subset)', () => {
+          g.patchValue({'one': 'one'});
+          expect(g.value).toEqual({'one': 'one', 'two': ''});
+        });
+
+        it('should not ignore fields that are null', () => {
+          g.patchValue({'one': null});
+          expect(g.value).toEqual({'one': null, 'two': ''});
+        });
+
+        it('should ignore any value provided for a missing control (superset)', () => {
+          g.patchValue({'three': 'three'});
+          expect(g.value).toEqual({'one': '', 'two': ''});
+        });
+
+        describe('patchValue() events', () => {
+          let form: FormGroup;
+          let logger: any[];
+
+          beforeEach(() => {
+            form = new FormGroup({'parent': g});
+            logger = [];
+          });
+
+          it('should emit one valueChange event per control', () => {
+            form.valueChanges.subscribe(() => logger.push('form'));
+            g.valueChanges.subscribe(() => logger.push('group'));
+            c.valueChanges.subscribe(() => logger.push('control1'));
+            c2.valueChanges.subscribe(() => logger.push('control2'));
+
+            g.patchValue({'one': 'one', 'two': 'two'});
             expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
           });
 
@@ -746,7 +933,7 @@ export function main() {
             c.valueChanges.subscribe(() => logger.push('control1'));
             c2.valueChanges.subscribe(() => logger.push('control2'));
 
-            g.updateValue({'one': 'one'});
+            g.patchValue({'one': 'one'});
             expect(logger).toEqual(['control1', 'group', 'form']);
           });
 
@@ -756,7 +943,7 @@ export function main() {
             c.statusChanges.subscribe(() => logger.push('control1'));
             c2.statusChanges.subscribe(() => logger.push('control2'));
 
-            g.updateValue({'one': 'one', 'two': 'two'});
+            g.patchValue({'one': 'one', 'two': 'two'});
             expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
           });
         });
@@ -772,21 +959,21 @@ export function main() {
         });
 
         it('should set its own value if value passed', () => {
-          g.updateValue({'one': 'new value', 'two': 'new value'});
+          g.setValue({'one': 'new value', 'two': 'new value'});
 
           g.reset({'one': 'initial value', 'two': ''});
           expect(g.value).toEqual({'one': 'initial value', 'two': ''});
         });
 
         it('should clear its own value if no value passed', () => {
-          g.updateValue({'one': 'new value', 'two': 'new value'});
+          g.setValue({'one': 'new value', 'two': 'new value'});
 
           g.reset();
           expect(g.value).toEqual({'one': null, 'two': null});
         });
 
         it('should set the value of each of its child controls if value passed', () => {
-          g.updateValue({'one': 'new value', 'two': 'new value'});
+          g.setValue({'one': 'new value', 'two': 'new value'});
 
           g.reset({'one': 'initial value', 'two': ''});
           expect(c.value).toBe('initial value');
@@ -794,7 +981,7 @@ export function main() {
         });
 
         it('should clear the value of each of its child controls if no value passed', () => {
-          g.updateValue({'one': 'new value', 'two': 'new value'});
+          g.setValue({'one': 'new value', 'two': 'new value'});
 
           g.reset();
           expect(c.value).toBe(null);
@@ -803,7 +990,7 @@ export function main() {
 
         it('should set the value of its parent if value passed', () => {
           const form = new FormGroup({'g': g});
-          g.updateValue({'one': 'new value', 'two': 'new value'});
+          g.setValue({'one': 'new value', 'two': 'new value'});
 
           g.reset({'one': 'initial value', 'two': ''});
           expect(form.value).toEqual({'g': {'one': 'initial value', 'two': ''}});
@@ -811,7 +998,7 @@ export function main() {
 
         it('should clear the value of its parent if no value passed', () => {
           const form = new FormGroup({'g': g});
-          g.updateValue({'one': 'new value', 'two': 'new value'});
+          g.setValue({'one': 'new value', 'two': 'new value'});
 
           g.reset();
           expect(form.value).toEqual({'g': {'one': null, 'two': null}});
@@ -1013,7 +1200,7 @@ export function main() {
                  async.done();
                }
              });
-             c1.updateValue('new1');
+             c1.setValue('new1');
            }));
 
         it('should fire an event after the control\'s observable fired an event',
@@ -1030,7 +1217,7 @@ export function main() {
                }
              });
 
-             c1.updateValue('new1');
+             c1.setValue('new1');
            }));
 
         it('should fire an event when a control is excluded',
@@ -1076,8 +1263,8 @@ export function main() {
                }
              });
 
-             c1.updateValue('new1');
-             c2.updateValue('new2');
+             c1.setValue('new1');
+             c2.setValue('new2');
            }));
 
         // hard to test without hacking zones
@@ -1101,7 +1288,7 @@ export function main() {
                  async.done();
                }
              });
-             control.updateValue('');
+             control.setValue('');
            }));
       });
 
@@ -1154,7 +1341,7 @@ export function main() {
              tick(1);
 
              expect(g.errors).toEqual({'async': true});
-             expect(g.find(['one']).errors).toEqual({'async': true});
+             expect(g.get('one').errors).toEqual({'async': true});
            }));
       });
     });
@@ -1209,7 +1396,7 @@ export function main() {
         });
       });
 
-      describe('updateValue', () => {
+      describe('setValue', () => {
         let c: FormControl, c2: FormControl, a: FormArray;
 
         beforeEach(() => {
@@ -1218,40 +1405,41 @@ export function main() {
           a = new FormArray([c, c2]);
         });
 
-        it('should update its own value', () => {
-          a.updateValue(['one', 'two']);
+        it('should set its own value', () => {
+          a.setValue(['one', 'two']);
           expect(a.value).toEqual(['one', 'two']);
         });
 
-        it('should update child values', () => {
-          a.updateValue(['one', 'two']);
+        it('should set child values', () => {
+          a.setValue(['one', 'two']);
           expect(c.value).toEqual('one');
           expect(c2.value).toEqual('two');
         });
 
-        it('should update parent values', () => {
+        it('should set parent values', () => {
           const form = new FormGroup({'parent': a});
-          a.updateValue(['one', 'two']);
+          a.setValue(['one', 'two']);
           expect(form.value).toEqual({'parent': ['one', 'two']});
         });
 
-        it('should ignore fields that are missing from supplied value', () => {
-          a.updateValue([, 'two']);
-          expect(a.value).toEqual(['', 'two']);
+        it('should throw if fields are missing from supplied value (subset)', () => {
+          expect(() => a.setValue([, 'two']))
+              .toThrowError(new RegExp(`Must supply a value for form control at index: 0`));
         });
 
-        it('should not ignore fields that are null', () => {
-          a.updateValue([null]);
-          expect(a.value).toEqual([null, '']);
-        });
-
-        it('should throw if a value is provided for a missing control', () => {
-          expect(() => a.updateValue([
-            , , 'three'
+        it('should throw if a value is provided for a missing control (superset)', () => {
+          expect(() => a.setValue([
+            'one', 'two', 'three'
           ])).toThrowError(new RegExp(`Cannot find form control at index 2`));
         });
 
-        describe('updateValue() events', () => {
+        it('should throw if no controls are set yet', () => {
+          const empty = new FormArray([]);
+          expect(() => empty.setValue(['one']))
+              .toThrowError(new RegExp(`no form controls registered with this array`));
+        });
+
+        describe('setValue() events', () => {
           let form: FormGroup;
           let logger: any[];
 
@@ -1266,7 +1454,79 @@ export function main() {
             c.valueChanges.subscribe(() => logger.push('control1'));
             c2.valueChanges.subscribe(() => logger.push('control2'));
 
-            a.updateValue(['one', 'two']);
+            a.setValue(['one', 'two']);
+            expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
+          });
+
+          it('should emit one statusChange event per control', () => {
+            form.statusChanges.subscribe(() => logger.push('form'));
+            a.statusChanges.subscribe(() => logger.push('array'));
+            c.statusChanges.subscribe(() => logger.push('control1'));
+            c2.statusChanges.subscribe(() => logger.push('control2'));
+
+            a.setValue(['one', 'two']);
+            expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
+          });
+        });
+      });
+
+      describe('patchValue', () => {
+        let c: FormControl, c2: FormControl, a: FormArray;
+
+        beforeEach(() => {
+          c = new FormControl('');
+          c2 = new FormControl('');
+          a = new FormArray([c, c2]);
+        });
+
+        it('should set its own value', () => {
+          a.patchValue(['one', 'two']);
+          expect(a.value).toEqual(['one', 'two']);
+        });
+
+        it('should set child values', () => {
+          a.patchValue(['one', 'two']);
+          expect(c.value).toEqual('one');
+          expect(c2.value).toEqual('two');
+        });
+
+        it('should set parent values', () => {
+          const form = new FormGroup({'parent': a});
+          a.patchValue(['one', 'two']);
+          expect(form.value).toEqual({'parent': ['one', 'two']});
+        });
+
+        it('should ignore fields that are missing from supplied value (subset)', () => {
+          a.patchValue([, 'two']);
+          expect(a.value).toEqual(['', 'two']);
+        });
+
+        it('should not ignore fields that are null', () => {
+          a.patchValue([null]);
+          expect(a.value).toEqual([null, '']);
+        });
+
+        it('should ignore any value provided for a missing control (superset)', () => {
+          a.patchValue([, , 'three']);
+          expect(a.value).toEqual(['', '']);
+        });
+
+        describe('patchValue() events', () => {
+          let form: FormGroup;
+          let logger: any[];
+
+          beforeEach(() => {
+            form = new FormGroup({'parent': a});
+            logger = [];
+          });
+
+          it('should emit one valueChange event per control', () => {
+            form.valueChanges.subscribe(() => logger.push('form'));
+            a.valueChanges.subscribe(() => logger.push('array'));
+            c.valueChanges.subscribe(() => logger.push('control1'));
+            c2.valueChanges.subscribe(() => logger.push('control2'));
+
+            a.patchValue(['one', 'two']);
             expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
           });
 
@@ -1276,7 +1536,7 @@ export function main() {
             c.valueChanges.subscribe(() => logger.push('control1'));
             c2.valueChanges.subscribe(() => logger.push('control2'));
 
-            a.updateValue(['one']);
+            a.patchValue(['one']);
             expect(logger).toEqual(['control1', 'array', 'form']);
           });
 
@@ -1286,7 +1546,7 @@ export function main() {
             c.statusChanges.subscribe(() => logger.push('control1'));
             c2.statusChanges.subscribe(() => logger.push('control2'));
 
-            a.updateValue(['one', 'two']);
+            a.patchValue(['one', 'two']);
             expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
           });
         });
@@ -1302,7 +1562,7 @@ export function main() {
         });
 
         it('should set its own value if value passed', () => {
-          a.updateValue(['new value', 'new value']);
+          a.setValue(['new value', 'new value']);
 
           a.reset(['initial value', '']);
           expect(a.value).toEqual(['initial value', '']);
@@ -1310,14 +1570,14 @@ export function main() {
 
 
         it('should clear its own value if no value passed', () => {
-          a.updateValue(['new value', 'new value']);
+          a.setValue(['new value', 'new value']);
 
           a.reset();
           expect(a.value).toEqual([null, null]);
         });
 
         it('should set the value of each of its child controls if value passed', () => {
-          a.updateValue(['new value', 'new value']);
+          a.setValue(['new value', 'new value']);
 
           a.reset(['initial value', '']);
           expect(c.value).toBe('initial value');
@@ -1325,7 +1585,7 @@ export function main() {
         });
 
         it('should clear the value of each of its child controls if no value', () => {
-          a.updateValue(['new value', 'new value']);
+          a.setValue(['new value', 'new value']);
 
           a.reset();
           expect(c.value).toBe(null);
@@ -1334,7 +1594,7 @@ export function main() {
 
         it('should set the value of its parent if value passed', () => {
           const form = new FormGroup({'a': a});
-          a.updateValue(['new value', 'new value']);
+          a.setValue(['new value', 'new value']);
 
           a.reset(['initial value', '']);
           expect(form.value).toEqual({'a': ['initial value', '']});
@@ -1342,7 +1602,7 @@ export function main() {
 
         it('should clear the value of its parent if no value passed', () => {
           const form = new FormGroup({'a': a});
-          a.updateValue(['new value', 'new value']);
+          a.setValue(['new value', 'new value']);
 
           a.reset();
           expect(form.value).toEqual({'a': [null, null]});
@@ -1473,12 +1733,12 @@ export function main() {
           var c = new FormControl(null);
           var g = new FormArray([c], simpleValidator);
 
-          c.updateValue('correct');
+          c.setValue('correct');
 
           expect(g.valid).toEqual(true);
           expect(g.errors).toEqual(null);
 
-          c.updateValue('incorrect');
+          c.setValue('incorrect');
 
           expect(g.valid).toEqual(false);
           expect(g.errors).toEqual({'broken': true});
@@ -1571,7 +1831,7 @@ export function main() {
                  async.done();
                }
              });
-             c1.updateValue('new1');
+             c1.setValue('new1');
            }));
 
         it('should fire an event after the control\'s observable fired an event',
@@ -1588,7 +1848,7 @@ export function main() {
                }
              });
 
-             c1.updateValue('new1');
+             c1.setValue('new1');
            }));
 
         it('should fire an event when a control is removed',

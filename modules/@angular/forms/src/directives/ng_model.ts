@@ -152,6 +152,6 @@ export class NgModel extends NgControl implements OnChanges,
 
               private _updateValue(value: any): void {
                 resolvedPromise.then(
-                    () => { this.control.updateValue(value, {emitViewToModelChange: false}); });
+                    () => { this.control.setValue(value, {emitViewToModelChange: false}); });
               }
 }
