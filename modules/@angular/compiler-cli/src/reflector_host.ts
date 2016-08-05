@@ -30,11 +30,17 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   private metadataCollector = new MetadataCollector();
   private context: ReflectorHostContext;
   private isGenDirChildOfRootDir: boolean;
+  private basePath: string;
+  private genDir: string;
   constructor(
       private program: ts.Program, private compilerHost: ts.CompilerHost,
       private options: AngularCompilerOptions, context?: ReflectorHostContext) {
+    // normalize the path so that it never ends with '/'.
+    this.basePath = path.normalize(path.join(this.options.basePath, '.'));
+    this.genDir = path.normalize(path.join(this.options.genDir, '.'));
+
     this.context = context || new NodeReflectorHostContext();
-    var genPath: string = path.relative(options.basePath, options.genDir);
+    var genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
   }
 
@@ -108,7 +114,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       // rewrite to genDir path
       if (importModule) {
         // it is generated, therefore we do a relative path to the factory
-        return this.dotRelative(containingDir, this.options.genDir + NODE_MODULES + importModule);
+        return this.dotRelative(containingDir, this.genDir + NODE_MODULES + importModule);
       } else {
         // assume that import is also in `genDir`
         importedFile = this.rewriteGenDirPath(importedFile);
@@ -121,7 +127,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       } else {
         if (!this.isGenDirChildOfRootDir) {
           // assume that they are on top of each other.
-          importedFile = importedFile.replace(this.options.basePath, this.options.genDir);
+          importedFile = importedFile.replace(this.basePath, this.genDir);
         }
         return this.dotRelative(containingDir, importedFile);
       }
@@ -140,11 +146,11 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     var nodeModulesIndex = filepath.indexOf(NODE_MODULES);
     if (nodeModulesIndex !== -1) {
       // If we are in node_modulse, transplant them into `genDir`.
-      return path.join(this.options.genDir, filepath.substring(nodeModulesIndex));
+      return path.join(this.genDir, filepath.substring(nodeModulesIndex));
     } else {
       // pretend that containing file is on top of the `genDir` to normalize the paths.
       // we apply the `genDir` => `rootDir` delta through `rootDirPrefix` later.
-      return filepath.replace(this.options.basePath, this.options.genDir);
+      return filepath.replace(this.basePath, this.genDir);
     }
   }
 
@@ -156,7 +162,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
         throw new Error('Resolution of relative paths requires a containing file.');
       }
       // Any containing file gives the same result for absolute imports
-      containingFile = path.join(this.options.basePath, 'index.ts');
+      containingFile = path.join(this.basePath, 'index.ts');
     }
 
     try {

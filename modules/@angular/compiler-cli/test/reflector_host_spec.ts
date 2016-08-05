@@ -35,7 +35,7 @@ describe('reflector_host', () => {
     }
     reflectorNestedGenDir = new ReflectorHost(
         program, host, {
-          genDir: '/tmp/project/src/gen',
+          genDir: '/tmp/project/src/gen/',
           basePath: '/tmp/project/src',
           skipMetadataEmit: false,
           skipTemplateCodegen: false,
@@ -45,7 +45,7 @@ describe('reflector_host', () => {
     reflectorSiblingGenDir = new ReflectorHost(
         program, host, {
           genDir: '/tmp/project/gen',
-          basePath: '/tmp/project/src',
+          basePath: '/tmp/project/src/',
           skipMetadataEmit: false,
           skipTemplateCodegen: false,
           trace: false
