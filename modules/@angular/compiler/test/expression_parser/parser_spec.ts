@@ -92,6 +92,8 @@ export function main() {
 
       it('should parse null', () => { checkAction('null'); });
 
+      it('should parse undefined', () => { checkAction('undefined'); });
+
       it('should parse unary - expressions', () => {
         checkAction('-1', '0 - 1');
         checkAction('+1', '1');
