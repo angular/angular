@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
 import {Component} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 
 @Component({selector: '[svg-group]', template: `<svg:text x="20" y="20">Hello</svg:text>`})
 class SvgGroup {

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FORM_DIRECTIVES, NgFor} from '@angular/common';
 import {Component} from '@angular/core';
-import {NgFor, FORM_DIRECTIVES} from '@angular/common';
+
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
 @Component({
@@ -27,7 +28,7 @@ export class TodoApp {
 
   enterTodo(): void {
     this.addTodo(this.inputValue);
-    this.inputValue = "";
+    this.inputValue = '';
   }
 
   doneEditing($event: any /** TODO #9100 */, todo: Todo): void {

@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InboxApp} from './app/inbox-app';
-import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 import {ROUTER_PROVIDERS} from '@angular/router-deprecated';
 
+import {InboxApp} from './app/inbox-app';
+
 export function main() {
-  bootstrap(InboxApp,
-            [ROUTER_PROVIDERS, {provide: LocationStrategy, useClass: HashLocationStrategy}]);
+  bootstrap(
+      InboxApp, [ROUTER_PROVIDERS, {provide: LocationStrategy, useClass: HashLocationStrategy}]);
 }

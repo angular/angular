@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HTTP_PROVIDERS} from '@angular/http';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+
 import {HttpCmp} from './app/http_comp';
 
 export function main() {

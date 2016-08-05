@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {Component} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser-dynamic';
-import {RouteConfig, Route, ROUTER_PROVIDERS, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
-import {HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Route, RouteConfig} from '@angular/router-deprecated';
 
 
 @Component({selector: 'hello-cmp', template: `hello`})
@@ -46,6 +46,6 @@ class AppCmp {
 
 
 export function main() {
-  bootstrap(AppCmp,
-            [ROUTER_PROVIDERS, {provide: LocationStrategy, useClass: HashLocationStrategy}]);
+  bootstrap(
+      AppCmp, [ROUTER_PROVIDERS, {provide: LocationStrategy, useClass: HashLocationStrategy}]);
 }

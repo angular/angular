@@ -6,20 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {
-  FORM_DIRECTIVES,
-  ControlGroup,
-  Validators,
-  NgFormModel,
-  FormBuilder,
-  NgIf,
-  NgFor
-} from '@angular/common';
-import {Component, Directive, Host} from '@angular/core';
-
-import {print, isPresent} from '@angular/core/src/facade/lang';
+import {ControlGroup, FORM_DIRECTIVES, FormBuilder, NgFor, NgFormModel, NgIf, Validators} from '@angular/common';
 import {AbstractControl} from '@angular/common';
+import {Component, Directive, Host} from '@angular/core';
+import {isPresent, print} from '@angular/core/src/facade/lang';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+
 
 /**
  * Custom validator.
@@ -28,7 +20,7 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   if (isPresent(c.value) && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
-    return {"invalidCreditCard": true};
+    return {'invalidCreditCard': true};
   }
 }
 
@@ -148,19 +140,19 @@ class ModelDrivenForms {
 
   constructor(fb: FormBuilder) {
     this.form = fb.group({
-      "firstName": ["", Validators.required],
-      "middleName": [""],
-      "lastName": ["", Validators.required],
-      "country": ["Canada", Validators.required],
-      "creditCard": ["", Validators.compose([Validators.required, creditCardValidator])],
-      "amount": [0, Validators.required],
-      "email": ["", Validators.required],
-      "comments": [""]
+      'firstName': ['', Validators.required],
+      'middleName': [''],
+      'lastName': ['', Validators.required],
+      'country': ['Canada', Validators.required],
+      'creditCard': ['', Validators.compose([Validators.required, creditCardValidator])],
+      'amount': [0, Validators.required],
+      'email': ['', Validators.required],
+      'comments': ['']
     });
   }
 
   onSubmit(): void {
-    print("Submitting:");
+    print('Submitting:');
     print(this.form.value);
   }
 }

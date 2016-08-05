@@ -6,20 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {ControlGroup, FORM_DIRECTIVES, NG_VALIDATORS, NgControl, NgFor, NgForm, NgIf, Validators} from '@angular/common';
 import {Component, Directive, Host} from '@angular/core';
-import {
-  ControlGroup,
-  NgIf,
-  NgFor,
-  NG_VALIDATORS,
-  FORM_DIRECTIVES,
-  NgControl,
-  Validators,
-  NgForm
-} from '@angular/common';
+import {isPresent, print} from '@angular/core/src/facade/lang';
+import {bootstrap} from '@angular/platform-browser-dynamic';
 
-import {print, isPresent} from '@angular/core/src/facade/lang';
 
 /**
  * A domain model we are binding the form controls to.
@@ -28,7 +19,7 @@ class CheckoutModel {
   firstName: string;
   middleName: string;
   lastName: string;
-  country: string = "Canada";
+  country: string = 'Canada';
 
   creditCard: string;
   amount: number;
@@ -43,11 +34,11 @@ function creditCardValidator(c: any /** TODO #9100 */): {[key: string]: boolean}
   if (isPresent(c.value) && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
-    return {"invalidCreditCard": true};
+    return {'invalidCreditCard': true};
   }
 }
 
-const creditCardValidatorBinding =  {
+const creditCardValidatorBinding = {
   provide: NG_VALIDATORS,
   useValue: creditCardValidator,
   multi: true
@@ -171,7 +162,7 @@ class TemplateDrivenForms {
   countries = ['US', 'Canada'];
 
   onSubmit(): void {
-    print("Submitting:");
+    print('Submitting:');
     print(this.model);
   }
 }

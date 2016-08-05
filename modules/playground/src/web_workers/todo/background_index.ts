@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TodoApp} from './index_common';
 import {bootstrapWorkerApp} from '@angular/platform-browser-dynamic';
+
+import {TodoApp} from './index_common';
 
 export function main() {
   bootstrapWorkerApp(TodoApp);

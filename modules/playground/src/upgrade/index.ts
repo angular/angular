@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {UpgradeAdapter} from '@angular/upgrade';
 
 declare var angular: any;
 
 
-var styles = [
-  `
+var styles = [`
     .border {
       border: solid 2px DodgerBlue;
     }
@@ -25,8 +24,7 @@ var styles = [
     .content {
       padding: 1em;
     }
-  `
-];
+  `];
 
 var adapter: UpgradeAdapter = new UpgradeAdapter();
 

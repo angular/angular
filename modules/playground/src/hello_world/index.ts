@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Component, Directive, ElementRef, Injectable, Renderer} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Renderer, ElementRef, Component, Directive, Injectable} from '@angular/core';
 
 export function main() {
   // Bootstrapping only requires specifying a root component.

@@ -7,10 +7,11 @@
  */
 
 import {Component} from '@angular/core';
-import {EventListener} from '@angular/core/src/facade/browser';
 import {TimerWrapper} from '@angular/core/src/facade/async';
-import {BitmapService} from './services/bitmap';
+import {EventListener} from '@angular/core/src/facade/browser';
+
 import {FileReader, Uint8ArrayWrapper} from './file_api';
+import {BitmapService} from './services/bitmap';
 
 
 @Component({selector: 'image-demo', viewProviders: [BitmapService], templateUrl: 'image_demo.html'})
@@ -23,7 +24,7 @@ export class ImageDemo {
   uploadFiles(files: any /** TODO #9100 */) {
     for (var i = 0; i < files.length; i++) {
       var reader = new FileReader();
-      reader.addEventListener("load", this.handleReaderLoad(reader));
+      reader.addEventListener('load', this.handleReaderLoad(reader));
       reader.readAsArrayBuffer(files[i]);
     }
   }
