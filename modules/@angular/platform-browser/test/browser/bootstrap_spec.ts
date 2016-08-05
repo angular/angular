@@ -333,10 +333,7 @@ export function main() {
        }));
 
     it('should allow to pass schemas', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         bootstrap(HelloCmpUsingCustomElement, {
-           providers: testProviders,
-           schemas: [CUSTOM_ELEMENTS_SCHEMA]
-         }).then((compRef) => {
+         bootstrap(HelloCmpUsingCustomElement, testProviders).then((compRef) => {
            expect(el).toHaveText('hello world!');
            async.done();
          });

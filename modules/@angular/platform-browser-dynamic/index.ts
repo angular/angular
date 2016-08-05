@@ -7,7 +7,7 @@
  */
 
 import {XHR, analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
-import {ApplicationRef, COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, ComponentRef, ComponentResolver, ExceptionHandler, NgModule, NgModuleRef, OpaqueToken, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, SchemaMetadata, Type, assertPlatform, createPlatform, createPlatformFactory, getPlatform, isDevMode} from '@angular/core';
+import {ApplicationRef, COMPILER_OPTIONS, CUSTOM_ELEMENTS_SCHEMA, Compiler, CompilerFactory, CompilerOptions, ComponentRef, ComponentResolver, ExceptionHandler, NgModule, NgModuleRef, OpaqueToken, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, SchemaMetadata, Type, assertPlatform, createPlatform, createPlatformFactory, getPlatform, isDevMode} from '@angular/core';
 import {BROWSER_PLATFORM_PROVIDERS, BrowserModule, WORKER_APP_PLATFORM_PROVIDERS, WORKER_SCRIPT, WorkerAppModule, platformBrowser, platformWorkerApp, platformWorkerUi} from '@angular/platform-browser';
 
 import {Console} from './core_private';
@@ -116,61 +116,29 @@ export const browserDynamicPlatform = platformBrowserDynamic;
  *
  * Returns a `Promise` of {@link ComponentRef}.
  *
- * @experimental This api cannot be used with the offline compiler and thus is still subject to
- * change.
+ * @deprecated This api cannot be used with the offline compiler. Use
+ * `PlatformRef.boostrapModule()` instead.
  */
 // Note: We are using typescript overloads here to have 2 function signatures!
 export function bootstrap<C>(
     appComponentType: ConcreteType<C>,
-    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<C>>;
-export function bootstrap<C>(
-    appComponentType: ConcreteType<C>,
-    {providers, imports, declarations, entryComponents, schemas, compilerOptions}?: {
-      providers?: Array<any /*Type | Provider | any[]*/>,
-      declarations?: any[],
-      imports?: any[],
-      entryComponents?: any[],
-      schemas?: Array<SchemaMetadata|any[]>,
-      compilerOptions?: CompilerOptions
-    }): Promise<ComponentRef<C>>;
-export function bootstrap<C>(
-    appComponentType: ConcreteType<C>,
-    customProvidersOrDynamicModule?: Array<any /*Type | Provider | any[]*/>| {
-      providers: Array<any /*Type | Provider | any[]*/>,
-      declarations?: any[],
-      imports: any[],
-      entryComponents: any[], schemas?: Array<SchemaMetadata|any[]>,
-      compilerOptions: CompilerOptions
-    }): Promise<ComponentRef<C>> {
+    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<C>> {
   let compilerOptions: CompilerOptions;
-  let providers: any[] = [];
   let declarations: any[] = [];
-  let imports: any[] = [];
   let entryComponents: any[] = [];
   let deprecationMessages: string[] = [];
-  let schemas: any[] = [];
-  if (customProvidersOrDynamicModule instanceof Array) {
-    providers = customProvidersOrDynamicModule;
-    const deprecatedConfiguration = analyzeAppProvidersForDeprecatedConfiguration(providers);
-    declarations = deprecatedConfiguration.moduleDeclarations.concat(declarations);
-    compilerOptions = deprecatedConfiguration.compilerOptions;
-    deprecationMessages = deprecatedConfiguration.deprecationMessages;
-  } else if (customProvidersOrDynamicModule) {
-    providers = normalizeArray(customProvidersOrDynamicModule.providers);
-    declarations = normalizeArray(customProvidersOrDynamicModule.declarations);
-    imports = normalizeArray(customProvidersOrDynamicModule.imports);
-    entryComponents = normalizeArray(customProvidersOrDynamicModule.entryComponents);
-    schemas = normalizeArray(customProvidersOrDynamicModule.schemas);
-    compilerOptions = customProvidersOrDynamicModule.compilerOptions;
-  }
+  const deprecatedConfiguration = analyzeAppProvidersForDeprecatedConfiguration(customProviders);
+  declarations = deprecatedConfiguration.moduleDeclarations.concat(declarations);
+  compilerOptions = deprecatedConfiguration.compilerOptions;
+  deprecationMessages = deprecatedConfiguration.deprecationMessages;
 
   @NgModule({
-    providers: providers,
+    providers: customProviders,
     declarations: declarations.concat([appComponentType]),
-    imports: [BrowserModule, imports],
+    imports: [BrowserModule],
     entryComponents: entryComponents,
     bootstrap: [appComponentType],
-    schemas: schemas
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
   })
   class DynamicModule {
   }
