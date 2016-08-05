@@ -511,9 +511,14 @@ export class _ParseAST {
       this.rparensExpected--;
       this.expectCharacter(chars.$RPAREN);
       return result;
-    } else if (this.next.isKeywordNull() || this.next.isKeywordUndefined()) {
+
+    } else if (this.next.isKeywordNull()) {
       this.advance();
       return new LiteralPrimitive(this.span(start), null);
+
+    } else if (this.next.isKeywordUndefined()) {
+      this.advance();
+      return new LiteralPrimitive(this.span(start), void 0);
 
     } else if (this.next.isKeywordTrue()) {
       this.advance();
