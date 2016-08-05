@@ -145,39 +145,39 @@ export class FormGroupDirective extends ControlContainer implements Form,
   get path(): string[] { return []; }
 
   addControl(dir: NgControl): void {
-    const ctrl: any = this.form.find(dir.path);
+    const ctrl: any = this.form.get(dir.path);
     setUpControl(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
   }
 
-  getControl(dir: NgControl): FormControl { return <FormControl>this.form.find(dir.path); }
+  getControl(dir: NgControl): FormControl { return <FormControl>this.form.get(dir.path); }
 
   removeControl(dir: NgControl): void { ListWrapper.remove(this.directives, dir); }
 
   addFormGroup(dir: FormGroupName): void {
-    var ctrl: any = this.form.find(dir.path);
+    var ctrl: any = this.form.get(dir.path);
     setUpFormContainer(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
   removeFormGroup(dir: FormGroupName): void {}
 
-  getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.find(dir.path); }
+  getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.get(dir.path); }
 
   addFormArray(dir: FormArrayName): void {
-    var ctrl: any = this.form.find(dir.path);
+    var ctrl: any = this.form.get(dir.path);
     setUpFormContainer(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
   removeFormArray(dir: FormArrayName): void {}
 
-  getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form.find(dir.path); }
+  getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form.get(dir.path); }
 
   updateModel(dir: NgControl, value: any): void {
-    var ctrl  = <FormControl>this.form.find(dir.path);
-    ctrl.updateValue(value);
+    var ctrl  = <FormControl>this.form.get(dir.path);
+    ctrl.setValue(value);
   }
 
   onSubmit(): boolean {
@@ -191,7 +191,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   /** @internal */
   _updateDomValue() {
     this.directives.forEach(dir => {
-      var ctrl: any = this.form.find(dir.path);
+      var ctrl: any = this.form.get(dir.path);
       dir.valueAccessor.writeValue(ctrl.value);
     });
   }

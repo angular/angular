@@ -127,7 +127,7 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
-  getControl(dir: NgModel): FormControl { return <FormControl>this.form.find(dir.path); }
+  getControl(dir: NgModel): FormControl { return <FormControl>this.form.get(dir.path); }
 
   removeControl(dir: NgModel): void {
     resolvedPromise.then(() => {
@@ -157,16 +157,16 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
-  getFormGroup(dir: NgModelGroup): FormGroup { return <FormGroup>this.form.find(dir.path); }
+  getFormGroup(dir: NgModelGroup): FormGroup { return <FormGroup>this.form.get(dir.path); }
 
   updateModel(dir: NgControl, value: any): void {
     resolvedPromise.then(() => {
-      var ctrl = <FormControl>this.form.find(dir.path);
-      ctrl.updateValue(value);
+      var ctrl = <FormControl>this.form.get(dir.path);
+      ctrl.setValue(value);
     });
   }
 
-  updateValue(value: {[key: string]: any}): void { this.control.updateValue(value); }
+  setValue(value: {[key: string]: any}): void { this.control.setValue(value); }
 
   onSubmit(): boolean {
     this._submitted = true;
@@ -179,6 +179,6 @@ export class NgForm extends ControlContainer implements Form {
   /** @internal */
   _findContainer(path: string[]): FormGroup {
     path.pop();
-    return ListWrapper.isEmpty(path) ? this.form : <FormGroup>this.form.find(path);
+    return ListWrapper.isEmpty(path) ? this.form : <FormGroup>this.form.get(path);
   }
 }

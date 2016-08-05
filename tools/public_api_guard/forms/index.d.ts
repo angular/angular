@@ -39,6 +39,7 @@ export declare abstract class AbstractControl {
     markAsUntouched({onlySelf}?: {
         onlySelf?: boolean;
     }): void;
+    abstract patchValue(value: any, options?: Object): void;
     abstract reset(value?: any, options?: Object): void;
     setAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[]): void;
     setErrors(errors: {
@@ -48,7 +49,7 @@ export declare abstract class AbstractControl {
     }): void;
     setParent(parent: FormGroup | FormArray): void;
     setValidators(newValidator: ValidatorFn | ValidatorFn[]): void;
-    abstract updateValue(value: any, options?: Object): void;
+    abstract setValue(value: any, options?: Object): void;
     updateValueAndValidity({onlySelf, emitEvent}?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -152,12 +153,15 @@ export declare class FormArray extends AbstractControl {
     constructor(controls: AbstractControl[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     at(index: number): AbstractControl;
     insert(index: number, control: AbstractControl): void;
+    patchValue(value: any[], {onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
     push(control: AbstractControl): void;
     removeAt(index: number): void;
     reset(value?: any, {onlySelf}?: {
         onlySelf?: boolean;
     }): void;
-    updateValue(value: any[], {onlySelf}?: {
+    setValue(value: any[], {onlySelf}?: {
         onlySelf?: boolean;
     }): void;
 }
@@ -189,11 +193,23 @@ export declare class FormBuilder {
 /** @experimental */
 export declare class FormControl extends AbstractControl {
     constructor(value?: any, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]);
+    patchValue(value: any, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+        emitModelToViewChange?: boolean;
+        emitViewToModelChange?: boolean;
+    }): void;
     registerOnChange(fn: Function): void;
     reset(value?: any, {onlySelf}?: {
         onlySelf?: boolean;
     }): void;
-    updateValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange}?: {
+    setValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange}?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+        emitModelToViewChange?: boolean;
+        emitViewToModelChange?: boolean;
+    }): void;
+    /** @deprecated */ updateValue(value: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
         emitModelToViewChange?: boolean;
@@ -246,12 +262,17 @@ export declare class FormGroup extends AbstractControl {
     contains(controlName: string): boolean;
     exclude(controlName: string): void;
     include(controlName: string): void;
+    patchValue(value: {
+        [key: string]: any;
+    }, {onlySelf}?: {
+        onlySelf?: boolean;
+    }): void;
     registerControl(name: string, control: AbstractControl): AbstractControl;
     removeControl(name: string): void;
     reset(value?: any, {onlySelf}?: {
         onlySelf?: boolean;
     }): void;
-    updateValue(value: {
+    setValue(value: {
         [key: string]: any;
     }, {onlySelf}?: {
         onlySelf?: boolean;
@@ -358,10 +379,10 @@ export declare class NgForm extends ControlContainer implements Form {
     onSubmit(): boolean;
     removeControl(dir: NgModel): void;
     removeFormGroup(dir: NgModelGroup): void;
-    updateModel(dir: NgControl, value: any): void;
-    updateValue(value: {
+    setValue(value: {
         [key: string]: any;
     }): void;
+    updateModel(dir: NgControl, value: any): void;
 }
 
 /** @experimental */

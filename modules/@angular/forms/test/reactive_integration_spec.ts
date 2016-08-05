@@ -198,7 +198,7 @@ export function main() {
                fixture.debugElement.componentInstance.form = form;
                fixture.detectChanges();
 
-               login.updateValue('newValue');
+               login.setValue('newValue');
 
                fixture.detectChanges();
 
@@ -276,7 +276,7 @@ export function main() {
                fixture.debugElement.componentInstance.form = form;
                fixture.detectChanges();
 
-               login.updateValue('new value');
+               login.setValue('new value');
 
                const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
                expect(loginEl.value).toBe('new value');
@@ -302,7 +302,7 @@ export function main() {
                fixture.debugElement.componentInstance.form = form;
                fixture.detectChanges();
 
-               login.updateValue('new value');
+               login.setValue('new value');
 
                const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
                expect(loginEl.value).toBe('new value');
@@ -654,7 +654,7 @@ export function main() {
                  expect(value.food).toEqual('chicken');
                  expect(inputs[1].nativeElement.checked).toEqual(false);
 
-                 ctrl.updateValue('fish');
+                 ctrl.setValue('fish');
                  fixture.detectChanges();
 
                  expect(inputs[0].nativeElement.checked).toEqual(false);
@@ -698,7 +698,7 @@ export function main() {
                  expect(inputs[2].nativeElement.checked).toEqual(false);
                  expect(inputs[3].nativeElement.checked).toEqual(true);
 
-                 drinkCtrl.updateValue('cola');
+                 drinkCtrl.setValue('cola');
                  fixture.detectChanges();
 
                  expect(inputs[0].nativeElement.checked).toEqual(true);

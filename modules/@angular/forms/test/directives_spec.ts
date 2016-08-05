@@ -193,7 +193,7 @@ export function main() {
              expect(formModel.hasError('required', ['login'])).toBe(true);
              expect(formModel.hasError('async', ['login'])).toBe(false);
 
-             (<FormControl>formModel.find(['login'])).updateValue('invalid value');
+             (<FormControl>formModel.get('login')).setValue('invalid value');
 
              // sync validator passes, running async validators
              expect(formModel.pending).toBe(true);
@@ -205,7 +205,7 @@ export function main() {
            }));
 
         it('should write value to the DOM', () => {
-          (<FormControl>formModel.find(['login'])).updateValue('initValue');
+          (<FormControl>formModel.get(['login'])).setValue('initValue');
 
           form.addControl(loginControlDir);
 
@@ -233,17 +233,17 @@ export function main() {
              group.name = 'passwords';
              form.addFormGroup(group);
 
-             (<FormControl>formModel.find(['passwords', 'password'])).updateValue('somePassword');
-             (<FormControl>formModel.find([
+             (<FormControl>formModel.get(['passwords', 'password'])).setValue('somePassword');
+             (<FormControl>formModel.get([
                'passwords', 'passwordConfirm'
-             ])).updateValue('someOtherPassword');
+             ])).setValue('someOtherPassword');
 
              // sync validators are set
              expect(formModel.hasError('differentPasswords', ['passwords'])).toEqual(true);
 
-             (<FormControl>formModel.find([
+             (<FormControl>formModel.get([
                'passwords', 'passwordConfirm'
-             ])).updateValue('somePassword');
+             ])).setValue('somePassword');
 
              // sync validators pass, running async validators
              expect(formModel.pending).toBe(true);
@@ -266,7 +266,7 @@ export function main() {
         it('should update dom values of all the directives', () => {
           form.addControl(loginControlDir);
 
-          (<FormControl>formModel.find(['login'])).updateValue('new value');
+          (<FormControl>formModel.get(['login'])).setValue('new value');
 
           form.ngOnChanges({});
 
@@ -334,7 +334,7 @@ export function main() {
 
              flushMicrotasks();
 
-             expect(formModel.find(['person', 'login'])).not.toBeNull;
+             expect(formModel.get(['person', 'login'])).not.toBeNull;
            }));
 
         // should update the form's value and validity
@@ -350,8 +350,8 @@ export function main() {
 
              flushMicrotasks();
 
-             expect(formModel.find(['person'])).toBeNull();
-             expect(formModel.find(['person', 'login'])).toBeNull();
+             expect(formModel.get(['person'])).toBeNull();
+             expect(formModel.get(['person', 'login'])).toBeNull();
            }));
 
         // should update the form's value and validity
@@ -524,7 +524,7 @@ export function main() {
 
            expect(ngModel.control.errors).toEqual({'required': true});
 
-           ngModel.control.updateValue('someValue');
+           ngModel.control.setValue('someValue');
            tick();
 
            expect(ngModel.control.errors).toEqual({'async': true});
