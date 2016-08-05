@@ -604,8 +604,6 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
-  requestAnimationFrame(callback: any /** TODO #9100 */): number { return setTimeout(callback, 0); }
-  cancelAnimationFrame(id: number) { clearTimeout(id); }
   supportsWebAnimation(): boolean { return false; }
   performanceNow(): number { return DateWrapper.toMillis(DateWrapper.now()); }
   getAnimationPrefix(): string { return ''; }
