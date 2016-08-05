@@ -8,7 +8,7 @@
 
 import {getDOM} from '../src/dom/dom_adapter';
 import {ListWrapper} from '../src/facade/collection';
-import {RegExp, RegExpWrapper, StringWrapper, global, isPresent, isString} from '../src/facade/lang';
+import {RegExp, StringWrapper, global, isPresent, isString} from '../src/facade/lang';
 
 export class BrowserDetection {
   private _overrideUa: string;

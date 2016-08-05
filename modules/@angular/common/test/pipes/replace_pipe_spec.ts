@@ -9,7 +9,7 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
 
 import {ReplacePipe} from '@angular/common';
-import {RegExpWrapper, StringJoiner} from '../../src/facade/lang';
+import {StringJoiner} from '../../src/facade/lang';
 
 export function main() {
   describe('ReplacePipe', () => {
@@ -45,9 +45,9 @@ export function main() {
       it('should return a new string with the pattern replaced', () => {
         var result1 = pipe.transform(str, 'Douglas', 'Hugh');
 
-        var result2 = pipe.transform(str, RegExpWrapper.create('a'), '_');
+        var result2 = pipe.transform(str, /a/g, '_');
 
-        var result3 = pipe.transform(str, RegExpWrapper.create('a', 'i'), '_');
+        var result3 = pipe.transform(str, /a/gi, '_');
 
         var f = ((x: any) => { return 'Adams!'; });
 

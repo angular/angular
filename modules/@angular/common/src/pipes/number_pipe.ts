@@ -9,12 +9,12 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 import {NumberFormatStyle, NumberFormatter} from '../facade/intl';
-import {NumberWrapper, RegExpWrapper, Type, isBlank, isNumber, isPresent, isString} from '../facade/lang';
+import {NumberWrapper, Type, isBlank, isNumber, isPresent, isString} from '../facade/lang';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 var defaultLocale: string = 'en-US';
-const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/g;
+const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/;
 
 function formatNumber(
     pipe: Type, value: number | string, style: NumberFormatStyle, digits: string,
@@ -36,8 +36,8 @@ function formatNumber(
   }
 
   if (isPresent(digits)) {
-    var parts = RegExpWrapper.firstMatch(_NUMBER_FORMAT_REGEXP, digits);
-    if (!parts) {
+    var parts = digits.match(_NUMBER_FORMAT_REGEXP);
+    if (parts === null) {
       throw new Error(`${digits} is not a valid digit info for number pipes`);
     }
     if (isPresent(parts[1])) {  // min integer digits

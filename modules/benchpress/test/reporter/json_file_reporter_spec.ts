@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {PromiseWrapper} from '@angular/facade/src/async';
-import {DateWrapper, Json, RegExpWrapper, isPresent} from '@angular/facade/src/lang';
+import {DateWrapper, Json, isPresent} from '@angular/facade/src/lang';
 import {MeasureValues, Options, ReflectiveInjector, SampleDescription} from 'benchpress/common';
 import {JsonFileReporter} from 'benchpress/src/reporter/json_file_reporter';
 
@@ -44,8 +44,8 @@ export function main() {
              .reportSample(
                  [mv(0, 0, {'a': 3, 'b': 6})],
                  [mv(0, 0, {'a': 3, 'b': 6}), mv(1, 1, {'a': 5, 'b': 9})]);
-         var regExp = /somePath\/someId_\d+\.json/g;
-         expect(isPresent(RegExpWrapper.firstMatch(regExp, loggedFile['filename']))).toBe(true);
+         var regExp = /somePath\/someId_\d+\.json/;
+         expect(isPresent(loggedFile['filename'].match(regExp))).toBe(true);
          var parsedContent = Json.parse(loggedFile['content']);
          expect(parsedContent).toEqual({
            'description':

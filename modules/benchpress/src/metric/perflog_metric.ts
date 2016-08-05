@@ -10,7 +10,7 @@ import {OpaqueToken} from '@angular/core/src/di';
 import {PromiseWrapper, TimerWrapper} from '@angular/facade/src/async';
 import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
 import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
-import {Math, NumberWrapper, RegExpWrapper, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
+import {Math, NumberWrapper, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from '../common_options';
 import {Metric} from '../metric';
@@ -245,7 +245,7 @@ export class PerflogMetric extends Metric {
       var ph = event['ph'];
       var name = event['name'];
       var microIterations = 1;
-      var microIterationsMatch = RegExpWrapper.firstMatch(_MICRO_ITERATIONS_REGEX, name);
+      var microIterationsMatch = name.match(_MICRO_ITERATIONS_REGEX);
       if (isPresent(microIterationsMatch)) {
         name = microIterationsMatch[1];
         microIterations = NumberWrapper.parseInt(microIterationsMatch[2], 10);
@@ -379,7 +379,7 @@ export class PerflogMetric extends Metric {
   private _markName(index) { return `${_MARK_NAME_PREFIX}${index}`; }
 }
 
-var _MICRO_ITERATIONS_REGEX = /(.+)\*(\d+)$/g;
+var _MICRO_ITERATIONS_REGEX = /(.+)\*(\d+)$/;
 
 var _MAX_RETRY_COUNT = 20;
 var _MARK_NAME_PREFIX = 'benchpress';

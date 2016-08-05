@@ -7,7 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {RegExpWrapper, StringWrapper, isBlank, isFunction, isNumber, isString} from '../facade/lang';
+import {StringWrapper, isBlank, isFunction, isNumber, isString} from '../facade/lang';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 /**
@@ -61,7 +61,7 @@ export class ReplacePipe implements PipeTransform {
     }
 
     if (isFunction(replacement)) {
-      const rgxPattern = isString(pattern) ? RegExpWrapper.create(pattern) : pattern;
+      const rgxPattern = isString(pattern) ? new RegExp(pattern, 'g') : pattern;
 
       return StringWrapper.replaceAllMapped(
           input, rgxPattern, <(m: string[]) => string>replacement);

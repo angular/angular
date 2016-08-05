@@ -18,14 +18,14 @@ import {
 } from '@angular/common';
 import {Component, Directive, Host} from '@angular/core';
 
-import {RegExpWrapper, print, isPresent} from '@angular/core/src/facade/lang';
+import {print, isPresent} from '@angular/core/src/facade/lang';
 import {AbstractControl} from '@angular/common';
 
 /**
  * Custom validator.
  */
 function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
-  if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
+  if (isPresent(c.value) && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
     return {"invalidCreditCard": true};

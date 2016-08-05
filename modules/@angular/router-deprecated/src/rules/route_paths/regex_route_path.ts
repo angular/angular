@@ -8,7 +8,7 @@
 
 import {BaseException} from '@angular/core';
 
-import {RegExpMatcherWrapper, RegExpWrapper, isBlank} from '../../facade/lang';
+import {isBlank} from '../../facade/lang';
 import {Url} from '../../url_parser';
 
 import {GeneratedUrl, MatchedUrl, RoutePath} from './route_path';
@@ -20,10 +20,8 @@ function computeNumberOfRegexGroups(regex: string): number {
   // cleverly compute regex groups by appending an alternative empty matching
   // pattern and match against an empty string, the resulting match still
   // receives all the other groups
-  var test_regex = RegExpWrapper.create(regex + '|');
-  var matcher = RegExpWrapper.matcher(test_regex, '');
-  var match = RegExpMatcherWrapper.next(matcher);
-  return match.length;
+  var testRegex = new RegExp(regex + '|');
+  return testRegex.exec('').length;
 }
 
 export class RegexRoutePath implements RoutePath {
@@ -37,7 +35,7 @@ export class RegexRoutePath implements RoutePath {
       private _reString: string, private _serializer: RegexSerializer,
       private _groupNames?: Array<string>) {
     this.hash = this._reString;
-    this._regex = RegExpWrapper.create(this._reString);
+    this._regex = new RegExp(this._reString);
     if (this._groupNames != null) {
       var groups = computeNumberOfRegexGroups(this._reString);
       if (groups != _groupNames.length) {
@@ -52,8 +50,7 @@ each matching group and a name for the complete match as its first element of re
   matchUrl(url: Url): MatchedUrl {
     var urlPath = url.toString();
     var params: {[key: string]: string} = {};
-    var matcher = RegExpWrapper.matcher(this._regex, urlPath);
-    var match = RegExpMatcherWrapper.next(matcher);
+    var match = urlPath.match(this._regex);
 
     if (isBlank(match)) {
       return null;

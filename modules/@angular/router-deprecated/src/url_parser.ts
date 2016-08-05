@@ -8,7 +8,7 @@
 
 import {StringMapWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
-import {RegExpWrapper, isBlank, isPresent} from '../src/facade/lang';
+import {isBlank, isPresent} from '../src/facade/lang';
 
 export function convertUrlParamsToArray(urlParams: {[key: string]: any}): string[] {
   var paramsArray: any[] /** TODO #9100 */ = [];
@@ -89,15 +89,15 @@ export function pathSegmentsToUrl(pathSegments: string[]): Url {
   return url;
 }
 
-var SEGMENT_RE = RegExpWrapper.create('^[^\\/\\(\\)\\?;=&#]+');
+const SEGMENT_RE = /^[^\/\(\)\?;=&#]+/;
 function matchUrlSegment(str: string): string {
-  var match = RegExpWrapper.firstMatch(SEGMENT_RE, str);
-  return isPresent(match) ? match[0] : '';
+  const match = str.match(SEGMENT_RE);
+  return match !== null ? match[0] : '';
 }
-var QUERY_PARAM_VALUE_RE = RegExpWrapper.create('^[^\\(\\)\\?;&#]+');
+const QUERY_PARAM_VALUE_RE = /^[^\(\)\?;&#]+/;
 function matchUrlQueryParamValue(str: string): string {
-  var match = RegExpWrapper.firstMatch(QUERY_PARAM_VALUE_RE, str);
-  return isPresent(match) ? match[0] : '';
+  var match = str.match(QUERY_PARAM_VALUE_RE);
+  return match !== null ? match[0] : '';
 }
 
 export class UrlParser {

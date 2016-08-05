@@ -19,7 +19,7 @@ import {
   NgForm
 } from '@angular/common';
 
-import {RegExpWrapper, print, isPresent} from '@angular/core/src/facade/lang';
+import {print, isPresent} from '@angular/core/src/facade/lang';
 
 /**
  * A domain model we are binding the form controls to.
@@ -40,7 +40,7 @@ class CheckoutModel {
  * Custom validator.
  */
 function creditCardValidator(c: any /** TODO #9100 */): {[key: string]: boolean} {
-  if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
+  if (isPresent(c.value) && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
     return {"invalidCreditCard": true};
