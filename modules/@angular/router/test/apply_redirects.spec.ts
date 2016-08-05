@@ -251,6 +251,21 @@ describe('applyRedirects', () => {
               (r) => { compareTrees(r, tree('/a/b')); }, (e) => { throw 'Should not reach'; });
 
     });
+
+    it('should work with absolute redirects', () => {
+      const loadedConfig = new LoadedRouterConfig(
+          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+
+      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+
+      const config =
+          [{path: '', pathMatch: 'full', redirectTo: '/a'}, {path: 'a', loadChildren: 'children'}];
+
+      applyRedirects(<any>'providedInjector', <any>loader, tree(''), config).forEach(r => {
+        compareTrees(r, tree('a'));
+        expect((<any>config[1])._loadedConfig).toBe(loadedConfig);
+      });
+    });
   });
 
   describe('empty paths', () => {

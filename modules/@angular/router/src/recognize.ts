@@ -18,9 +18,7 @@ import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_
 import {last, merge} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
-class NoMatch {
-  constructor(public segmentGroup: UrlSegmentGroup = null) {}
-}
+class NoMatch {}
 
 class InheritedFromParent {
   constructor(
@@ -65,14 +63,8 @@ class Recognizer {
       return of (new RouterStateSnapshot(this.url, rootNode));
 
     } catch (e) {
-      if (e instanceof NoMatch) {
-        return new Observable<RouterStateSnapshot>(
-            (obs: Observer<RouterStateSnapshot>) =>
-                obs.error(new Error(`Cannot match any routes: '${e.segmentGroup}'`)));
-      } else {
-        return new Observable<RouterStateSnapshot>(
-            (obs: Observer<RouterStateSnapshot>) => obs.error(e));
-      }
+      return new Observable<RouterStateSnapshot>(
+          (obs: Observer<RouterStateSnapshot>) => obs.error(e));
     }
   }
 
@@ -108,7 +100,7 @@ class Recognizer {
         if (!(e instanceof NoMatch)) throw e;
       }
     }
-    throw new NoMatch(segmentGroup);
+    throw new NoMatch();
   }
 
   processSegmentAgainstRoute(
