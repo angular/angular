@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerFactory, ComponentFactory, ComponentResolver, Injector, NgModule, NgModuleRef, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, provide} from '@angular/core';
+import {
+  Compiler, CompilerFactory, ComponentFactory, ComponentResolver, Injector, NgModule,
+  NgModuleRef, NgZone, PlatformRef, Provider, ReflectiveInjector, Testability, Type, provide,
+  BaseException, resolveForwardRef
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -102,7 +106,11 @@ export class UpgradeAdapter {
 
   // the ng2AppModule param should be required once the deprecated @Component.directives prop is
   // removed
-  constructor(private ng2AppModule?: Type) {}
+  constructor(private ng2AppModule?: Type) {
+    if (arguments.length && !ng2AppModule) {
+      throw new BaseException("UpgradeAdapter constructor called with undefined instead of a ng module type");
+    }
+  }
 
   /**
    * Allows Angular v2 Component to be used from AngularJS v1.
@@ -288,12 +296,17 @@ export class UpgradeAdapter {
       {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)}, this.providers
     ];
 
-    @NgModule({providers: providers, imports: [BrowserModule]})
-    class DynamicModule {
+    const importedModules: Type[] = [BrowserModule];
+    if (this.ng2AppModule) {
+      importedModules.push(this.ng2AppModule);
+    }
+
+    @NgModule({providers: providers, imports: importedModules})
+    class DynamicNgUpgradeModule {
       ngDoBootstrap() {}
     }
 
-    platformRef.bootstrapModule(<any>this.ng2AppModule || DynamicModule).then((moduleRef) => {
+    platformRef.bootstrapModule(DynamicNgUpgradeModule).then((moduleRef) => {
       ng1Injector = this._afterNg2ModuleBootstrap(moduleRef, upgrade, element, modules, config);
     });
     return upgrade;
@@ -528,7 +541,7 @@ export class UpgradeAdapter {
     var promises: Array<Promise<ComponentFactory<any>>> = [];
     var types = this.upgradedComponents;
     for (var i = 0; i < types.length; i++) {
-      promises.push(compiler.compileComponentAsync(<any>types[i]));
+      promises.push(compiler.compileComponentAsync(<any>types[i], this.ng2AppModule));
     }
     return Promise.all(promises).then((componentFactories: Array<ComponentFactory<any>>) => {
       var types = this.upgradedComponents;

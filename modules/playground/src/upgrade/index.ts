@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input, Output, EventEmitter, NgModule} from '@angular/core';
+import {Component, Input, Output, EventEmitter, NgModule, forwardRef, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {UpgradeAdapter} from '@angular/upgrade';
+import {BrowserModule} from "@angular/platform-browser";
 
 declare var angular: any;
 
@@ -28,13 +29,12 @@ var styles = [
   `
 ];
 
-var adapter: UpgradeAdapter = new UpgradeAdapter(Ng2AppModule);
-
+var adapter = new UpgradeAdapter(forwardRef(() => Ng2AppModule));
 var ng1module = angular.module('myExample', []);
 
 ng1module.controller('Index', function($scope: any /** TODO #9100 */) { $scope.name = 'World'; });
 
-ng1module.directive('user', function() {
+ng1module.directive('ng1User', function() {
   return {
     scope: {handle: '@', reset: '&'},
     template: `
@@ -64,13 +64,12 @@ class Pane {
         <table cellpadding="3">
           <tr>
             <td><ng-content></ng-content></td>
-            <td><user [handle]="user" (reset)="reset.emit()"></user></td>
+            <td><ng1-user [handle]="user" (reset)="reset.emit()"></ng1-user></td>
           </tr>
         </table>
       </pane>
     </div>`,
-  styles: styles,
-  directives: [Pane, adapter.upgradeNg1Component('user')]
+  styles: styles
 })
 class UpgradeApp {
   @Input() user: string;
@@ -79,10 +78,12 @@ class UpgradeApp {
 }
 
 @NgModule({
-  declarations: [Pane, UpgradeApp],
-  entryComponents: [UpgradeApp]
+  declarations: [Pane, UpgradeApp, adapter.upgradeNg1Component('ng1User')],
+  imports: [BrowserModule]
 })
 class Ng2AppModule {}
+
+
 
 ng1module.directive('upgradeApp', adapter.downgradeNg2Component(UpgradeApp));
 

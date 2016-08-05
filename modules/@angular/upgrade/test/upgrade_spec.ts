@@ -6,13 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Class, Component, EventEmitter, Testability, disposePlatform, provide} from '@angular/core';
+import {
+  Class, Component, EventEmitter, Inject, Testability, disposePlatform, NgModule,
+  OpaqueToken
+} from '@angular/core';
 import {AsyncTestCompleter, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {BrowserModule} from '@angular/platform-browser';
+import {async} from '@angular/core/testing';
 import {UpgradeAdapter} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
 
 export function main() {
-  describe('adapter: ng1 to ng2', () => {
+  ddescribe('adapter: ng1 to ng2', () => {
     beforeEach(() => disposePlatform());
     afterEach(() => disposePlatform());
 
@@ -269,6 +274,34 @@ export function main() {
              async.done();
            });
          }));
+
+
+      // this test should be removed ones the deprecated @Components.directives prop is removed
+      // we should rewrite all of the tests in this file to use modules instead.
+      iit('should downgrade ng2 component that is part of a module', async(() => {
+        const ng1Module = angular.module('ng1', []);
+
+        ng1Module.component('ng1Component', {
+          template: '<ng2-component></ng2-component>'
+        });
+
+        const SpecialValue = new OpaqueToken('special test value');
+
+        const Ng2Component =
+          Component({selector: 'ng2-component', template: '<span>test: {{value}}</span>'}).
+          Class({constructor: [Inject(SpecialValue), function Ng2Component(value: number) { this.value = value; }]});
+        const Ng2AppModule =
+          NgModule({declarations: [Ng2Component], imports: [BrowserModule], providers: [{provide: SpecialValue, useValue: 23}]}).
+          Class({constructor: function Ng2AppModule() {}});
+
+        const adapter = new UpgradeAdapter(Ng2AppModule);
+        ng1Module.directive('ng2Component', adapter.downgradeNg2Component(Ng2Component));
+        var element = html('<ng1-component></ng1-component>');
+        adapter.bootstrap(element, ['ng1']).ready((ref) => {
+          expect(multiTrim(document.body.getElementsByTagName('ng2-component')[0].innerHTML)).toEqual('<span>test: 23</span>');
+          ref.dispose();
+        });
+      }));
     });
 
     describe('upgrade ng1 component', () => {
