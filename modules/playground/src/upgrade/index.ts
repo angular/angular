@@ -78,10 +78,14 @@ class UpgradeApp {
 }
 
 @NgModule({
-  declarations: [Pane, UpgradeApp, adapter.upgradeNg1Component('ng1User')],
+  declarations: [Pane, UpgradeApp],
   imports: [BrowserModule]
 })
-class Ng2AppModule {}
+class Ng2AppModule {
+  ngDoBoostrap() {}
+}
+
+adapter.upgradeNg1Component('ng1User');
 
 
 

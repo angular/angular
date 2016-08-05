@@ -296,17 +296,12 @@ export class UpgradeAdapter {
       {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)}, this.providers
     ];
 
-    const importedModules: Type[] = [BrowserModule];
-    if (this.ng2AppModule) {
-      importedModules.push(this.ng2AppModule);
-    }
-
-    @NgModule({providers: providers, imports: importedModules})
+    @NgModule({providers: providers, imports: [BrowserModule]})
     class DynamicNgUpgradeModule {
       ngDoBootstrap() {}
     }
 
-    platformRef.bootstrapModule(DynamicNgUpgradeModule).then((moduleRef) => {
+    platformRef.bootstrapModule(this.ng2AppModule as any || DynamicNgUpgradeModule).then((moduleRef) => {
       ng1Injector = this._afterNg2ModuleBootstrap(moduleRef, upgrade, element, modules, config);
     });
     return upgrade;

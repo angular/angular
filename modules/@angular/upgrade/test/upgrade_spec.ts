@@ -292,7 +292,7 @@ export function main() {
           Class({constructor: [Inject(SpecialValue), function Ng2Component(value: number) { this.value = value; }]});
         const Ng2AppModule =
           NgModule({declarations: [Ng2Component], imports: [BrowserModule], providers: [{provide: SpecialValue, useValue: 23}]}).
-          Class({constructor: function Ng2AppModule() {}});
+          Class({constructor: function Ng2AppModule() {}, ngDoBootstrap: function() {}});
 
         const adapter = new UpgradeAdapter(Ng2AppModule);
         ng1Module.directive('ng2Component', adapter.downgradeNg2Component(Ng2Component));
