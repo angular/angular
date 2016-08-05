@@ -10,7 +10,7 @@ import {extractMessages} from '@angular/compiler/src/i18n/extractor_merger';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 
-import {serializeNodes} from '../../src/i18n/message_bundle';
+import {serializeNodes} from '../../src/i18n/digest';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 

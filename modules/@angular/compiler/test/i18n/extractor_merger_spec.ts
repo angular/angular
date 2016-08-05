@@ -8,9 +8,9 @@
 
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
+import {digestMessage, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
 import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
 import * as i18n from '../../src/i18n/i18n_ast';
-import {digestMessage, serializeNodes as serializeI18nNodes} from '../../src/i18n/message_bundle';
 import {TranslationBundle} from '../../src/i18n/translation_bundle';
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';

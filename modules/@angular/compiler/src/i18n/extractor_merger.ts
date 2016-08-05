@@ -9,9 +9,9 @@
 import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 
+import {digestMessage} from './digest';
 import * as i18n from './i18n_ast';
-import * as i18nParser from './i18n_parser';
-import * as msgBundle from './message_bundle';
+import {createI18nMessageFactory} from './i18n_parser';
 import {I18nError} from './parse_util';
 import {TranslationBundle} from './translation_bundle';
 
@@ -299,7 +299,7 @@ class _Visitor implements html.Visitor {
     this._msgCountAtSectionStart = void 0;
     this._errors = [];
     this._messages = [];
-    this._createI18nMessage = i18nParser.createI18nMessageFactory(interpolationConfig);
+    this._createI18nMessage = createI18nMessageFactory(interpolationConfig);
   }
 
   // looks for translatable attributes
@@ -338,7 +338,7 @@ class _Visitor implements html.Visitor {
   // translate the given message given the `TranslationBundle`
   private _translateMessage(el: html.Node, message: i18n.Message): html.Node[] {
     if (message && this._mode === _VisitorMode.Merge) {
-      const id = msgBundle.digestMessage(message);
+      const id = digestMessage(message);
       const nodes = this._translations.get(id);
 
       if (nodes) {
@@ -374,15 +374,19 @@ class _Visitor implements html.Visitor {
       if (i18nAttributeMeanings.hasOwnProperty(attr.name)) {
         const meaning = i18nAttributeMeanings[attr.name];
         const message: i18n.Message = this._createI18nMessage([attr], meaning, '');
-        const id = msgBundle.digestMessage(message);
+        const id = digestMessage(message);
         const nodes = this._translations.get(id);
-        if (!nodes) {
+        if (nodes) {
+          if (nodes[0] instanceof html.Text) {
+            const value = (nodes[0] as html.Text).value;
+            translatedAttributes.push(new html.Attribute(attr.name, value, attr.sourceSpan));
+          } else {
+            this._reportError(
+                el, `Unexpected translation for attribute "${attr.name}" (id="${id}")`);
+          }
+        } else {
           this._reportError(
               el, `Translation unavailable for attribute "${attr.name}" (id="${id}")`);
-        }
-        if (nodes[0] instanceof html.Text) {
-          const value = (nodes[0] as html.Text).value;
-          translatedAttributes.push(new html.Attribute(attr.name, value, attr.sourceSpan));
         }
       } else {
         translatedAttributes.push(attr);
