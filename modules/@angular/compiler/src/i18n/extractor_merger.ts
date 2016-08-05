@@ -211,7 +211,8 @@ class _Visitor implements html.Visitor {
     // Extract only top level nodes with the (implicit) "i18n" attribute if not in a block or an ICU
     // message
     const i18nAttr = _getI18nAttr(el);
-    const isImplicit = this._implicitTags.some((tag: string): boolean => el.name === tag);
+    const isImplicit = this._implicitTags.some((tag: string): boolean => el.name === tag) &&
+        !this._inIcu && !this._isInTranslatableSection;
     const isTopLevelImplicit = !wasInImplicitNode && isImplicit;
     this._inImplicitNode = this._inImplicitNode || isImplicit;
 
