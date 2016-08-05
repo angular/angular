@@ -310,6 +310,19 @@ export function main() {
       });
 
 
+      describe('.options()', () => {
+        it('should perform an options request for given url',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.connections.subscribe((c: MockConnection) => {
+               expect(c.request.method).toBe(RequestMethod.Options);
+               backend.resolveAllConnections();
+               async.done();
+             });
+             http.options(url).subscribe((res: Response) => {});
+           }));
+      });
+
+
       describe('searchParams', () => {
         it('should append search params to url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {

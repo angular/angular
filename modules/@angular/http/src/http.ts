@@ -186,6 +186,15 @@ export class Http {
         this._backend,
         new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Head, url)));
   }
+
+  /**
+   * Performs a request with `options` http method.
+   */
+  options(url: string, options?: RequestOptionsArgs): Observable<Response> {
+    return httpRequest(
+        this._backend,
+        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Options, url)));
+  }
 }
 
 
