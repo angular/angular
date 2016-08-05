@@ -39,16 +39,15 @@ export class MessageBundle {
       return i18nParserResult.errors;
     }
 
-    i18nParserResult.messages.forEach((message) => {
-      this._messageMap[digestMessage(message.nodes, message.meaning)] = message;
-    });
+    i18nParserResult.messages.forEach(
+        (message) => { this._messageMap[digestMessage(message)] = message; });
   }
 
   write(serializer: Serializer): string { return serializer.write(this._messageMap); }
 }
 
-export function digestMessage(nodes: i18n.Node[], meaning: string): string {
-  return strHash(serializeNodes(nodes).join('') + `[${meaning}]`);
+export function digestMessage(message: i18n.Message): string {
+  return strHash(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
 }
 
 /**

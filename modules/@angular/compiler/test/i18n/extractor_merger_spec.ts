@@ -373,9 +373,9 @@ function fakeTranslate(
 
   const i18nMsgMap: {[id: string]: html.Node[]} = {};
 
-  messages.forEach(msg => {
-    const id = digestMessage(msg.nodes, msg.meaning);
-    const text = serializeI18nNodes(msg.nodes).join('');
+  messages.forEach(message => {
+    const id = digestMessage(message);
+    const text = serializeI18nNodes(message.nodes).join('');
     i18nMsgMap[id] = [new html.Text(`**${text}**`, null)];
   });
 

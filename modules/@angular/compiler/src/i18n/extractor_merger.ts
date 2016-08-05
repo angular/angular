@@ -338,7 +338,7 @@ class _Visitor implements html.Visitor {
   // translate the given message given the `TranslationBundle`
   private _translateMessage(el: html.Node, message: i18n.Message): html.Node[] {
     if (message && this._mode === _VisitorMode.Merge) {
-      const id = msgBundle.digestMessage(message.nodes, message.meaning);
+      const id = msgBundle.digestMessage(message);
       const nodes = this._translations.get(id);
 
       if (nodes) {
@@ -374,7 +374,7 @@ class _Visitor implements html.Visitor {
       if (i18nAttributeMeanings.hasOwnProperty(attr.name)) {
         const meaning = i18nAttributeMeanings[attr.name];
         const message: i18n.Message = this._createI18nMessage([attr], meaning, '');
-        const id = msgBundle.digestMessage(message.nodes, message.meaning);
+        const id = msgBundle.digestMessage(message);
         const nodes = this._translations.get(id);
         if (!nodes) {
           this._reportError(
