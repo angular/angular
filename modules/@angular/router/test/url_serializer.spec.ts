@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, serializePath} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, decode, encode, serializePath} from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
@@ -181,7 +181,7 @@ describe('url serializer', () => {
   describe('encoding/decoding', () => {
     it('should encode/decode path segments and parameters', () => {
       const u =
-          `/${encodeURIComponent("one two")};${encodeURIComponent("p 1")}=${encodeURIComponent("v 1")};${encodeURIComponent("p 2")}=${encodeURIComponent("v 2")}`;
+          `/${encode("one two")};${encode("p 1")}=${encode("v 1")};${encode("p 2")}=${encode("v 2")}`;
       const tree = url.parse(u);
 
       expect(tree.root.children[PRIMARY_OUTLET].segments[0].path).toEqual('one two');
@@ -190,9 +190,16 @@ describe('url serializer', () => {
       expect(url.serialize(tree)).toEqual(u);
     });
 
+    it('should encode/decode "slash" in path segments and parameters', () => {
+      const u = `/${encode("one/two")};${encode("p/1")}=${encode("v/1")}/three`;
+      const tree = url.parse(u);
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].path).toEqual('one/two');
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({['p/1']: 'v/1'});
+      expect(url.serialize(tree)).toEqual(u);
+    });
+
     it('should encode/decode query params', () => {
-      const u =
-          `/one?${encodeURIComponent("p 1")}=${encodeURIComponent("v 1")}&${encodeURIComponent("p 2")}=${encodeURIComponent("v 2")}`;
+      const u = `/one?${encode("p 1")}=${encode("v 1")}&${encode("p 2")}=${encode("v 2")}`;
       const tree = url.parse(u);
 
       expect(tree.queryParams).toEqual({['p 1']: 'v 1', ['p 2']: 'v 2'});
@@ -200,7 +207,7 @@ describe('url serializer', () => {
     });
 
     it('should encode/decode fragment', () => {
-      const u = `/one#${encodeURIComponent("one two")}`;
+      const u = `/one#${encode("one two")}`;
       const tree = url.parse(u);
 
       expect(tree.fragment).toEqual('one two');

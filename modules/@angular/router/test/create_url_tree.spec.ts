@@ -13,7 +13,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../
 import {PRIMARY_OUTLET, Params} from '../src/shared';
 import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
-describe('createUrlTree', () => {
+fdescribe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
 
   it('should navigate to the root', () => {
@@ -40,6 +40,12 @@ describe('createUrlTree', () => {
     const params = t.root.children[PRIMARY_OUTLET].segments;
     expect(params[0].path).toEqual('one');
     expect(params[1].path).toEqual('11');
+  });
+
+  it('should support first segments contaings slashes', () => {
+    const p = serializer.parse('/');
+    const t = createRoot(p, [{segmentPath: '/one'}, 'two/three']);
+    expect(serializer.serialize(t)).toEqual('/%2Fone/two%2Fthree');
   });
 
   it('should preserve secondary segments', () => {
@@ -98,7 +104,7 @@ describe('createUrlTree', () => {
 
   it('should create matrix parameters together with other segments', () => {
     const p = serializer.parse('/a');
-    const t = createRoot(p, ['/a', '/b', {aa: 22, bb: 33}]);
+    const t = createRoot(p, ['/a', 'b', {aa: 22, bb: 33}]);
     expect(serializer.serialize(t)).toEqual('/a/b;aa=22;bb=33');
   });
 

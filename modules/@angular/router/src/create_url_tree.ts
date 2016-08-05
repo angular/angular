@@ -101,17 +101,21 @@ function normalizeCommands(commands: any[]): NormalizedNavigationCommands {
       continue;
     }
 
+    if (typeof c === 'object' && c.segmentPath !== undefined) {
+      res.push(c.segmentPath);
+      continue;
+    }
+
     if (!(typeof c === 'string')) {
       res.push(c);
       continue;
     }
 
-    const parts = c.split('/');
-    for (let j = 0; j < parts.length; ++j) {
-      let cc = parts[j];
+    if (i === 0) {
+      const parts = c.split('/');
+      for (let j = 0; j < parts.length; ++j) {
+        let cc = parts[j];
 
-      // first exp is treated in a special way
-      if (i == 0) {
         if (j == 0 && cc == '.') {  //  './a'
           // skip it
         } else if (j == 0 && cc == '') {  //  '/a'
@@ -121,12 +125,9 @@ function normalizeCommands(commands: any[]): NormalizedNavigationCommands {
         } else if (cc != '') {
           res.push(cc);
         }
-
-      } else {
-        if (cc != '') {
-          res.push(cc);
-        }
       }
+    } else {
+      res.push(c);
     }
   }
 
