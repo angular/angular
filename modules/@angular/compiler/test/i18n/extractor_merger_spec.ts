@@ -213,6 +213,17 @@ export function main() {
           [['bold'], '', ''],
         ]);
       });
+
+      it('should allow nested implicit elements', () => {
+        let result: any[];
+
+        expect(() => {result = extract('<div>outer<div>inner</div></div>', ['div'])}).not.toThrow();
+
+        expect(result).toEqual([
+          [['outer', '<ph tag name="START_TAG_DIV">inner</ph name="CLOSE_TAG_DIV">'], '', ''],
+        ]);
+      });
+
     });
 
     describe('implicit attributes', () => {
@@ -288,12 +299,6 @@ export function main() {
       });
 
       describe('implicit elements', () => {
-        it('should report nested implicit elements', () => {
-          expect(extractErrors(`<p><b></b></p>`, ['p', 'b'])).toEqual([
-            ['Could not mark an element as translatable inside a translatable section', '<b>'],
-          ]);
-        });
-
         it('should report implicit element in translatable element', () => {
           expect(extractErrors(`<p i18n><b></b></p>`, ['b'])).toEqual([
             ['Could not mark an element as translatable inside a translatable section', '<b>'],
@@ -358,7 +363,7 @@ function parseHtml(html: string): html.Node[] {
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(html, 'extractor spec', true);
   if (parseResult.errors.length > 1) {
-    throw Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
+    throw new Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
   }
   return parseResult.rootNodes;
 }
@@ -390,13 +395,16 @@ function fakeTranslate(
 function extract(
     html: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
-  const messages =
-      extractMessages(parseHtml(html), DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs)
-          .messages;
+  const result =
+      extractMessages(parseHtml(html), DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
+
+  if (result.errors.length > 0) {
+    throw new Error(`unexpected errors: ${result.errors.join('\n')}`);
+  }
 
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
-  return messages.map(
+  return result.messages.map(
     message => [serializeI18nNodes(message.nodes), message.meaning, message.description, ]) as [string[], string, string][];
   // clang-format on
 }

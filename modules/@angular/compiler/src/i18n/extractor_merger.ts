@@ -54,8 +54,9 @@ enum _VisitorMode {
  */
 class _Visitor implements html.Visitor {
   // <el i18n>...</el>
-  private _inI18nNode = false;
-  private _depth: number = 0;
+  private _inI18nNode: boolean;
+  private _depth: number;
+  private _inImplicitNode: boolean;
 
   // <!--i18n-->...<!--/i18n-->
   private _blockMeaningAndDesc: string;
@@ -64,7 +65,7 @@ class _Visitor implements html.Visitor {
   private _inI18nBlock: boolean;
 
   // {<icu message>}
-  private _inIcu = false;
+  private _inIcu: boolean;
 
   private _msgCountAtSectionStart: number;
   private _errors: I18nError[];
@@ -204,12 +205,15 @@ class _Visitor implements html.Visitor {
     this._mayBeAddBlockChildren(el);
     this._depth++;
     const wasInI18nNode = this._inI18nNode;
+    const wasInImplicitNode = this._inImplicitNode;
     let childNodes: html.Node[];
 
     // Extract only top level nodes with the (implicit) "i18n" attribute if not in a block or an ICU
     // message
     const i18nAttr = _getI18nAttr(el);
-    const isImplicitI18n = this._implicitTags.some((tag: string): boolean => el.name === tag);
+    const isImplicit = this._implicitTags.some((tag: string): boolean => el.name === tag);
+    const isTopLevelImplicit = !wasInImplicitNode && isImplicit;
+    this._inImplicitNode = this._inImplicitNode || isImplicit;
 
     if (!this._isInTranslatableSection && !this._inIcu) {
       if (i18nAttr) {
@@ -217,7 +221,7 @@ class _Visitor implements html.Visitor {
         this._inI18nNode = true;
         const message = this._addMessage(el.children, i18nAttr.value);
         childNodes = this._translateMessage(el, message);
-      } else if (isImplicitI18n) {
+      } else if (isTopLevelImplicit) {
         // implicit translation
         this._inI18nNode = true;
         const message = this._addMessage(el.children);
@@ -225,7 +229,7 @@ class _Visitor implements html.Visitor {
       }
 
       if (this._mode == _VisitorMode.Extract) {
-        const isTranslatable = i18nAttr || isImplicitI18n;
+        const isTranslatable = i18nAttr || isTopLevelImplicit;
         if (isTranslatable) {
           this._openTranslatableSection(el);
         }
@@ -235,7 +239,7 @@ class _Visitor implements html.Visitor {
         }
       }
 
-      if (this._mode === _VisitorMode.Merge && !i18nAttr && !isImplicitI18n) {
+      if (this._mode === _VisitorMode.Merge && !i18nAttr && !isTopLevelImplicit) {
         childNodes = [];
         el.children.forEach(child => {
           const visited = child.visit(this, context);
@@ -247,8 +251,7 @@ class _Visitor implements html.Visitor {
         });
       }
     } else {
-      if (i18nAttr || isImplicitI18n) {
-        // TODO(vicb): we should probably allow nested implicit element (ie <div>)
+      if (i18nAttr || isTopLevelImplicit) {
         this._reportError(
             el, 'Could not mark an element as translatable inside a translatable section');
       }
@@ -276,6 +279,7 @@ class _Visitor implements html.Visitor {
 
     this._depth--;
     this._inI18nNode = wasInI18nNode;
+    this._inImplicitNode = wasInImplicitNode;
 
     if (this._mode === _VisitorMode.Merge) {
       // There are no childNodes in translatable sections - those nodes will be replace anyway
@@ -299,6 +303,7 @@ class _Visitor implements html.Visitor {
     this._msgCountAtSectionStart = void 0;
     this._errors = [];
     this._messages = [];
+    this._inImplicitNode = false;
     this._createI18nMessage = createI18nMessageFactory(interpolationConfig);
   }
 
