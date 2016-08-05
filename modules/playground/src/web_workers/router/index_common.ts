@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {Component, NgModule} from '@angular/core';
-import {Start} from './components/start';
+import {WORKER_APP_LOCATION_PROVIDERS, WorkerAppModule} from '@angular/platform-browser';
+import {Router, RouterModule, provideRoutes} from '@angular/router';
+
 import {About} from './components/about';
 import {Contact} from './components/contact';
-import {Router, RouterModule, provideRoutes} from '@angular/router';
-import {WorkerAppModule, WORKER_APP_LOCATION_PROVIDERS} from '@angular/platform-browser';
-import {HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {Start} from './components/start';
 
 @Component({selector: 'app', templateUrl: 'app.html'})
 export class App {
 }
 
 export const ROUTES = [
-  {path: '', component: Start},
-  {path: 'contact', component: Contact},
+  {path: '', component: Start}, {path: 'contact', component: Contact},
   {path: 'about', component: About}
 ];
 

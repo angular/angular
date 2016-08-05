@@ -23,6 +23,7 @@ describe('jsonp', function() {
 });
 
 function getComponentText(selector: any /** TODO #9100 */, innerSelector: any /** TODO #9100 */) {
-  return browser.executeScript('return document.querySelector("' + selector + '").querySelector("' +
-                               innerSelector + '").textContent.trim()');
+  return browser.executeScript(
+      'return document.querySelector("' + selector + '").querySelector("' + innerSelector +
+      '").textContent.trim()');
 }

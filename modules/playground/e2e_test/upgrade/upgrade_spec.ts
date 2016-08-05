@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from "e2e_util/e2e_util";
+import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 // TODO(i): reenable once we are using a version of protractor containing the
 // change in https://github.com/angular/protractor/pull/3403

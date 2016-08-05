@@ -29,11 +29,14 @@ declare var System: any;
           '@angular/core': '/packages-dist/core/bundles/core.umd.js',
           '@angular/common': '/packages-dist/common/bundles/common.umd.js',
           '@angular/compiler': '/packages-dist/compiler/bundles/compiler.umd.js',
-          '@angular/platform-browser': '/packages-dist/platform-browser/bundles/platform-browser.umd.js',
-          '@angular/platform-browser-dynamic': '/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
+          '@angular/platform-browser':
+              '/packages-dist/platform-browser/bundles/platform-browser.umd.js',
+          '@angular/platform-browser-dynamic':
+              '/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
           '@angular/http': '/packages-dist/http/bundles/http.umd.js',
           '@angular/upgrade': '/packages-dist/upgrade/bundles/upgrade.umd.js',
-          '@angular/router-deprecated': '/packages-dist/router-deprecated/bundles/router-deprecated.umd.js',
+          '@angular/router-deprecated':
+              '/packages-dist/router-deprecated/bundles/router-deprecated.umd.js',
           '@angular/router': '/packages-dist/router/bundles/router.umd.js',
           '@angular/core/src/facade': '/all/@angular/core/src/facade',
           'rxjs': location.pathname.replace(/\w+\.html$/i, '') + 'rxjs'
@@ -45,12 +48,12 @@ declare var System: any;
       });
     } else {
       console.warn(
-          "Not using the Angular bundles. Don't use this configuration for e2e/performance tests!");
+          'Not using the Angular bundles. Don\'t use this configuration for e2e/performance tests!');
 
       System.config({
         map: {'index': 'index.js', '@angular': '/all/@angular'},
         packages: {
-          'app': { defaultExtension: 'js' },
+          'app': {defaultExtension: 'js'},
           '@angular/core': {main: 'index.js', defaultExtension: 'js'},
           '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
           '@angular/router': {main: 'index.js', defaultExtension: 'js'},
@@ -66,7 +69,9 @@ declare var System: any;
 
 
     // BOOTSTRAP the app!
-    System.import('index').then(function(m: any /** TODO #9100 */) { m.main(); }, console.error.bind(console));
+    System.import('index').then(function(m: any /** TODO #9100 */) {
+      m.main();
+    }, console.error.bind(console));
   }
 
 

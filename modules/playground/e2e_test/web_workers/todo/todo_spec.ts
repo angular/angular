@@ -22,11 +22,11 @@ describe('WebWorkers Todo', function() {
     browser.get(URL);
 
     waitForBootstrap();
-    expect(element(by.css("#todoapp header")).getText()).toEqual("todos");
+    expect(element(by.css('#todoapp header')).getText()).toEqual('todos');
   });
 
 });
 
 function waitForBootstrap(): void {
-  browser.wait(protractor.until.elementLocated(by.css("todo-app #todoapp")), 15000);
+  browser.wait(protractor.until.elementLocated(by.css('todo-app #todoapp')), 15000);
 }

@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import * as db from './data';
 import {Location} from '@angular/common';
-import {PromiseWrapper, PromiseCompleter} from '@angular/core/src/facade/async';
-import {isPresent, DateWrapper} from '@angular/core/src/facade/lang';
+import {Component, Injectable} from '@angular/core';
+import {PromiseCompleter, PromiseWrapper} from '@angular/core/src/facade/async';
+import {DateWrapper, isPresent} from '@angular/core/src/facade/lang';
+import {ActivatedRoute, Router} from '@angular/router';
+
+import * as db from './data';
 
 export class InboxRecord {
   id: string = '';
@@ -72,8 +73,8 @@ export class DbService {
   }
 
   emails(): Promise<any[]> {
-    return this.getData().then((data: any[]): any[] =>
-                                   data.filter(record => !isPresent(record['draft'])));
+    return this.getData().then(
+        (data: any[]): any[] => data.filter(record => !isPresent(record['draft'])));
   }
 
   email(id: any /** TODO #9100 */): Promise<any> {
@@ -97,18 +98,19 @@ export class InboxCmp {
   constructor(public router: Router, db: DbService, route: ActivatedRoute) {
     route.params.forEach(p => {
       const sortType = p['sort'];
-      const sortEmailsByDate = isPresent(sortType) && sortType == "date";
+      const sortEmailsByDate = isPresent(sortType) && sortType == 'date';
 
       PromiseWrapper.then(db.emails(), (emails: any[]) => {
         this.ready = true;
         this.items = emails.map(data => new InboxRecord(data));
 
         if (sortEmailsByDate) {
-          this.items.sort((a: InboxRecord, b: InboxRecord) =>
-            DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
-            DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
-              -1 :
-              1);
+          this.items.sort(
+              (a: InboxRecord, b: InboxRecord) =>
+                  DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
+                      DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
+                  -1 :
+                  1);
         }
       });
     });
@@ -130,14 +132,10 @@ export class DraftsCmp {
 }
 
 export const ROUTER_CONFIG = [
-  {path: '', terminal: true, redirectTo: 'inbox'},
-  {path: 'inbox', component: InboxCmp},
-  {path: 'drafts', component: DraftsCmp},
-  {path: 'detail', loadChildren: 'app/inbox-detail.js' }
+  {path: '', terminal: true, redirectTo: 'inbox'}, {path: 'inbox', component: InboxCmp},
+  {path: 'drafts', component: DraftsCmp}, {path: 'detail', loadChildren: 'app/inbox-detail.js'}
 ];
 
-@Component({
-  selector: 'inbox-app',
-  templateUrl: 'app/inbox-app.html'
-})
-export class InboxApp {}
+@Component({selector: 'inbox-app', templateUrl: 'app/inbox-app.html'})
+export class InboxApp {
+}

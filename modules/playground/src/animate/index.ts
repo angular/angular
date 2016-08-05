@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimateApp} from './app/animate-app';
 import {bootstrap} from '@angular/platform-browser-dynamic';
+
+import {AnimateApp} from './app/animate-app';
 
 export function main() {
   bootstrap(AnimateApp);

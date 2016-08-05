@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component} from '@angular/core';
 import {NgFor} from '@angular/common';
+import {Component} from '@angular/core';
+import {bootstrap} from '@angular/platform-browser-dynamic';
+
 import {Store, Todo, TodoFactory} from './app/TodoStore';
 
 @Component({

@@ -6,19 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable} from '@angular/core';
-import {
-  RouterLink,
-  RouteConfig,
-  Router,
-  Route,
-  RouterOutlet,
-  RouteParams
-} from '@angular/router-deprecated';
-import * as db from './data';
 import {Location} from '@angular/common';
-import {PromiseWrapper, PromiseCompleter} from '@angular/core/src/facade/async';
-import {isPresent, DateWrapper} from '@angular/core/src/facade/lang';
+import {Component, Injectable} from '@angular/core';
+import {PromiseCompleter, PromiseWrapper} from '@angular/core/src/facade/async';
+import {DateWrapper, isPresent} from '@angular/core/src/facade/lang';
+import {Route, RouteConfig, RouteParams, Router, RouterLink, RouterOutlet} from '@angular/router-deprecated';
+
+import * as db from './data';
 
 class InboxRecord {
   id: string = '';
@@ -79,8 +73,8 @@ class DbService {
   }
 
   emails(): Promise<any[]> {
-    return this.getData().then((data: any[]): any[] =>
-                                   data.filter(record => !isPresent(record['draft'])));
+    return this.getData().then(
+        (data: any[]): any[] => data.filter(record => !isPresent(record['draft'])));
   }
 
   email(id: any /** TODO #9100 */): Promise<any> {
@@ -115,18 +109,19 @@ class InboxCmp {
 
   constructor(public router: Router, db: DbService, params: RouteParams) {
     var sortType = params.get('sort');
-    var sortEmailsByDate = isPresent(sortType) && sortType == "date";
+    var sortEmailsByDate = isPresent(sortType) && sortType == 'date';
 
     PromiseWrapper.then(db.emails(), (emails: any[]) => {
       this.ready = true;
       this.items = emails.map(data => new InboxRecord(data));
 
       if (sortEmailsByDate) {
-        this.items.sort((a: InboxRecord, b: InboxRecord) =>
-                            DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
-                                    DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
-                                -1 :
-                                1);
+        this.items.sort(
+            (a: InboxRecord, b: InboxRecord) =>
+                DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
+                    DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
+                -1 :
+                1);
       }
     });
   }

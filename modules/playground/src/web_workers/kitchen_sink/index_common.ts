@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Renderer, ElementRef, Component, Directive, Injectable} from '@angular/core';
+import {Component, Directive, ElementRef, Injectable, Renderer} from '@angular/core';
 import {StringWrapper} from '@angular/core/src/facade/lang';
+
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
@@ -60,5 +61,7 @@ export class HelloCmp {
 
   changeGreeting(): void { this.greeting = 'howdy'; }
 
-  onKeyDown(event: any /** TODO #9100 */): void { this.lastKey = StringWrapper.fromCharCode(event.keyCode); }
+  onKeyDown(event: any /** TODO #9100 */): void {
+    this.lastKey = StringWrapper.fromCharCode(event.keyCode);
+  }
 }
