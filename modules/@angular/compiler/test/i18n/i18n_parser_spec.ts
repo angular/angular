@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {extractMessages} from '@angular/compiler/src/i18n/extractor_merger';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
-import {extractI18nMessages} from '@angular/compiler/src/i18n/i18n_parser';
 import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 
 import {serializeNodes} from '../../src/i18n/message_bundle';
@@ -312,6 +312,7 @@ function _extractMessages(
     throw Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
   }
 
-  return extractI18nMessages(
-      parseResult.rootNodes, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
+  return extractMessages(
+             parseResult.rootNodes, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs)
+      .messages;
 }

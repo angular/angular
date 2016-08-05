@@ -10,10 +10,9 @@ import {HtmlParser} from '../ml_parser/html_parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseError} from '../parse_util';
 
+import * as extractor from './extractor_merger';
 import * as i18n from './i18n_ast';
-import * as i18nParser from './i18n_parser';
 import {Serializer} from './serializers/serializer';
-
 
 /**
  * A container for message extracted from the templates.
@@ -33,10 +32,14 @@ export class MessageBundle {
       return htmlParserResult.errors;
     }
 
-    const messages = i18nParser.extractI18nMessages(
+    const i18nParserResult = extractor.extractMessages(
         htmlParserResult.rootNodes, interpolationConfig, this._implicitTags, this._implicitAttrs);
 
-    messages.forEach((message) => {
+    if (i18nParserResult.errors.length) {
+      return i18nParserResult.errors;
+    }
+
+    i18nParserResult.messages.forEach((message) => {
       this._messageMap[digestMessage(message.nodes, message.meaning)] = message;
     });
   }

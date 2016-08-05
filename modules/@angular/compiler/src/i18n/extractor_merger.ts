@@ -9,7 +9,7 @@
 import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 
-import {Message as I18nMessage} from './i18n_ast';
+import * as i18n from './i18n_ast';
 import * as i18nParser from './i18n_parser';
 import * as msgBundle from './message_bundle';
 import {I18nError} from './parse_util';
@@ -20,13 +20,13 @@ const _I18N_ATTR_PREFIX = 'i18n-';
 const _I18N_COMMENT_PREFIX_REGEXP = /^i18n:?/;
 
 /**
- * Extract translatable messages from an html AST as a list of html AST nodes
+ * Extract translatable messages from an html AST
  */
-export function extractAstMessages(
-    nodes: html.Node[], implicitTags: string[],
+export function extractMessages(
+    nodes: html.Node[], interpolationConfig: InterpolationConfig, implicitTags: string[],
     implicitAttrs: {[k: string]: string[]}): ExtractionResult {
   const visitor = new _Visitor(implicitTags, implicitAttrs);
-  return visitor.extract(nodes);
+  return visitor.extract(nodes, interpolationConfig);
 }
 
 export function mergeTranslations(
@@ -37,7 +37,7 @@ export function mergeTranslations(
 }
 
 export class ExtractionResult {
-  constructor(public messages: Message[], public errors: I18nError[]) {}
+  constructor(public messages: i18n.Message[], public errors: I18nError[]) {}
 }
 
 enum _VisitorMode {
@@ -71,11 +71,12 @@ class _Visitor implements html.Visitor {
   private _mode: _VisitorMode;
 
   // _VisitorMode.Extract only
-  private _messages: Message[];
+  private _messages: i18n.Message[];
 
   // _VisitorMode.Merge only
   private _translations: TranslationBundle;
-  private _convertHtmlToI18n: (html: Message) => I18nMessage;
+  private _createI18nMessage:
+      (msg: html.Node[], meaning: string, description: string) => i18n.Message;
 
 
   constructor(private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
@@ -83,8 +84,8 @@ class _Visitor implements html.Visitor {
   /**
    * Extracts the messages from the tree
    */
-  extract(nodes: html.Node[]): ExtractionResult {
-    this._init(_VisitorMode.Extract);
+  extract(nodes: html.Node[], interpolationConfig: InterpolationConfig): ExtractionResult {
+    this._init(_VisitorMode.Extract, interpolationConfig);
 
     nodes.forEach(node => node.visit(this, null));
 
@@ -101,8 +102,7 @@ class _Visitor implements html.Visitor {
   merge(
       nodes: html.Node[], translations: TranslationBundle,
       interpolationConfig: InterpolationConfig): html.Node[] {
-    this._init(_VisitorMode.Merge);
-    this._convertHtmlToI18n = i18nParser.getHtmlToI18nConverter(interpolationConfig);
+    this._init(_VisitorMode.Merge, interpolationConfig);
     this._translations = translations;
 
     // Construct a single fake root element
@@ -136,7 +136,7 @@ class _Visitor implements html.Visitor {
     if (!this._inIcu) {
       // nested ICU messages should not be extracted but top-level translated as a whole
       if (this._isInTranslatableSection) {
-        this._addMessage(context, [icu]);
+        this._addMessage([icu]);
       }
       this._inIcu = true;
     }
@@ -182,8 +182,7 @@ class _Visitor implements html.Visitor {
           if (this._depth == this._blockStartDepth) {
             this._closeTranslatableSection(comment, this._blockChildren);
             this._inI18nBlock = false;
-            const message =
-                this._addMessage(context, this._blockChildren, this._blockMeaningAndDesc);
+            const message = this._addMessage(this._blockChildren, this._blockMeaningAndDesc);
             return this._translateMessage(comment, message);
           } else {
             this._reportError(comment, 'I18N blocks should not cross element boundaries');
@@ -216,12 +215,12 @@ class _Visitor implements html.Visitor {
       if (i18nAttr) {
         // explicit translation
         this._inI18nNode = true;
-        const message = this._addMessage(context, el.children, i18nAttr.value);
+        const message = this._addMessage(el.children, i18nAttr.value);
         childNodes = this._translateMessage(el, message);
       } else if (isImplicitI18n) {
         // implicit translation
         this._inI18nNode = true;
-        const message = this._addMessage(context, el.children);
+        const message = this._addMessage(el.children);
         childNodes = this._translateMessage(el, message);
       }
 
@@ -273,7 +272,7 @@ class _Visitor implements html.Visitor {
       }
     }
 
-    this._visitAttributesOf(el, context);
+    this._visitAttributesOf(el);
 
     this._depth--;
     this._inI18nNode = wasInI18nNode;
@@ -291,7 +290,7 @@ class _Visitor implements html.Visitor {
     throw new Error('unreachable code');
   }
 
-  private _init(mode: _VisitorMode): void {
+  private _init(mode: _VisitorMode, interpolationConfig: InterpolationConfig): void {
     this._mode = mode;
     this._inI18nBlock = false;
     this._inI18nNode = false;
@@ -300,10 +299,11 @@ class _Visitor implements html.Visitor {
     this._msgCountAtSectionStart = void 0;
     this._errors = [];
     this._messages = [];
+    this._createI18nMessage = i18nParser.createI18nMessageFactory(interpolationConfig);
   }
 
   // looks for translatable attributes
-  private _visitAttributesOf(el: html.Element, context: any): void {
+  private _visitAttributesOf(el: html.Element): void {
     const explicitAttrNameToValue: {[k: string]: string} = {};
     const implicitAttrNames: string[] = this._implicitAttrs[el.name] || [];
 
@@ -314,15 +314,15 @@ class _Visitor implements html.Visitor {
 
     el.attrs.forEach(attr => {
       if (attr.name in explicitAttrNameToValue) {
-        this._addMessage(context, [attr], explicitAttrNameToValue[attr.name]);
+        this._addMessage([attr], explicitAttrNameToValue[attr.name]);
       } else if (implicitAttrNames.some(name => attr.name === name)) {
-        this._addMessage(context, [attr]);
+        this._addMessage([attr]);
       }
     });
   }
 
   // add a translatable message
-  private _addMessage(context: any, ast: html.Node[], meaningAndDesc?: string): Message {
+  private _addMessage(ast: html.Node[], meaningAndDesc?: string): i18n.Message {
     if (ast.length == 0 ||
         ast.length == 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value) {
       // Do not create empty messages
@@ -330,16 +330,15 @@ class _Visitor implements html.Visitor {
     }
 
     const [meaning, description] = _splitMeaningAndDesc(meaningAndDesc);
-    const message = new Message(ast, meaning, description);
+    const message = this._createI18nMessage(ast, meaning, description);
     this._messages.push(message);
     return message;
   }
 
   // translate the given message given the `TranslationBundle`
-  private _translateMessage(el: html.Node, message: Message): html.Node[] {
+  private _translateMessage(el: html.Node, message: i18n.Message): html.Node[] {
     if (message && this._mode === _VisitorMode.Merge) {
-      const i18nMessage: I18nMessage = this._convertHtmlToI18n(message);
-      const id = msgBundle.digestMessage(i18nMessage.nodes, i18nMessage.meaning);
+      const id = msgBundle.digestMessage(message.nodes, message.meaning);
       const nodes = this._translations.get(id);
 
       if (nodes) {
@@ -374,8 +373,8 @@ class _Visitor implements html.Visitor {
 
       if (i18nAttributeMeanings.hasOwnProperty(attr.name)) {
         const meaning = i18nAttributeMeanings[attr.name];
-        const i18nMessage: I18nMessage = this._convertHtmlToI18n(new Message([attr], meaning, ''));
-        const id = msgBundle.digestMessage(i18nMessage.nodes, i18nMessage.meaning);
+        const message: i18n.Message = this._createI18nMessage([attr], meaning, '');
+        const id = msgBundle.digestMessage(message.nodes, message.meaning);
         const nodes = this._translations.get(id);
         if (!nodes) {
           this._reportError(
@@ -456,7 +455,7 @@ class _Visitor implements html.Visitor {
     if (significantChildren == 1) {
       for (let i = this._messages.length - 1; i >= startIndex; i--) {
         const ast = this._messages[i].nodes;
-        if (!(ast.length == 1 && ast[0] instanceof html.Attribute)) {
+        if (!(ast.length == 1 && ast[0] instanceof i18n.Text)) {
           this._messages.splice(i, 1);
           break;
         }
@@ -469,13 +468,6 @@ class _Visitor implements html.Visitor {
   private _reportError(node: html.Node, msg: string): void {
     this._errors.push(new I18nError(node.sourceSpan, msg));
   }
-}
-
-/**
- * A Message contain a fragment (= a subtree) of the source html AST.
- */
-export class Message {
-  constructor(public nodes: html.Node[], public meaning: string, public description: string) {}
 }
 
 function _isOpeningComment(n: html.Node): boolean {

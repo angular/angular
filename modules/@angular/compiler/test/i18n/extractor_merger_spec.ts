@@ -8,55 +8,47 @@
 
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {ExtractionResult, Message as HtmlMessage, extractAstMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
-import {getHtmlToI18nConverter} from '../../src/i18n/i18n_parser';
-import {digestMessage} from '../../src/i18n/message_bundle';
+import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
+import * as i18n from '../../src/i18n/i18n_ast';
+import {digestMessage, serializeNodes as serializeI18nNodes} from '../../src/i18n/message_bundle';
 import {TranslationBundle} from '../../src/i18n/translation_bundle';
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
-import {serializeNodes} from '../ml_parser/ast_serializer_spec';
+import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_spec';
 
 export function main() {
   describe('Extractor', () => {
     describe('elements', () => {
       it('should extract from elements', () => {
         expect(extract('<div i18n="m|d|e">text<span>nested</span></div>')).toEqual([
-          [['text', '<span>nested</span>'], 'm', 'd|e'],
+          [['text', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm', 'd|e'],
         ]);
       });
 
-      it('should extract from elements', () => {
+      it('should extract from attributes', () => {
         expect(
             extract(
-                '<div i18n="m|d"><span i18n-title="m|d" title="single child">nested</span></div>'))
+                '<div i18n="m1|d1"><span i18n-title="m2|d2" title="single child">nested</span></div>'))
             .toEqual([
-              [
-                ['<span i18n-title="m|d" title="single child">nested</span>'],
-                'm',
-                'd',
-              ],
-              [
-                ['title="single child"'],
-                'm',
-                'd',
-              ],
+              [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1'],
+              [['single child'], 'm2', 'd2'],
             ]);
       });
 
-      it('should extract from elements', () => {
+      it('should extract from ICU messages', () => {
         expect(
             extract(
                 '<div i18n="m|d">{count, plural, =0 { <p i18n-title i18n-desc title="title" desc="desc"></p>}}</div>'))
             .toEqual([
               [
                 [
-                  '{count, plural, =0 {<p i18n-title="" i18n-desc="" title="title" desc="desc"></p>}}'
+                  '{count, plural, =0 {[<ph tag name="START_PARAGRAPH"></ph name="CLOSE_PARAGRAPH">]}}'
                 ],
                 'm', 'd'
               ],
-              [['title="title"'], '', ''],
-              [['desc="desc"'], '', ''],
+              [['title'], '', ''],
+              [['desc'], '', ''],
             ]);
       });
 
@@ -81,11 +73,18 @@ export function main() {
             extract(
                 `<!-- i18n -->text<p>html<b>nested</b></p>{count, plural, =0 {<span>html</span>}}{{interp}}<!-- /i18n -->`))
             .toEqual([
-              [['{count, plural, =0 {<span>html</span>}}'], '', ''],
               [
                 [
-                  'text', '<p>html<b>nested</b></p>', '{count, plural, =0 {<span>html</span>}}',
-                  '{{interp}}'
+                  '{count, plural, =0 {[<ph tag name="START_TAG_SPAN">html</ph name="CLOSE_TAG_SPAN">]}}'
+                ],
+                '', ''
+              ],
+              [
+                [
+                  'text',
+                  '<ph tag name="START_PARAGRAPH">html, <ph tag name="START_BOLD_TEXT">nested</ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">',
+                  '<ph icu name="ICU">{count, plural, =0 {[<ph tag name="START_TAG_SPAN">html</ph name="CLOSE_TAG_SPAN">]}}</ph>',
+                  '[<ph name="INTERPOLATION">interp</ph>]'
                 ],
                 '', ''
               ],
@@ -107,32 +106,35 @@ export function main() {
       it('should extract ICU messages from translatable elements', () => {
         // single message when ICU is the only children
         expect(extract('<div i18n="m|d">{count, plural, =0 {text}}</div>')).toEqual([
-          [['{count, plural, =0 {text}}'], 'm', 'd'],
+          [['{count, plural, =0 {[text]}}'], 'm', 'd'],
         ]);
 
         // single message when ICU is the only (implicit) children
         expect(extract('<div>{count, plural, =0 {text}}</div>', ['div'])).toEqual([
-          [['{count, plural, =0 {text}}'], '', ''],
+          [['{count, plural, =0 {[text]}}'], '', ''],
         ]);
 
         // one message for the element content and one message for the ICU
         expect(extract('<div i18n="m|d">before{count, plural, =0 {text}}after</div>')).toEqual([
-          [['before', '{count, plural, =0 {text}}', 'after'], 'm', 'd'],
-          [['{count, plural, =0 {text}}'], '', ''],
+          [['before', '<ph icu name="ICU">{count, plural, =0 {[text]}}</ph>', 'after'], 'm', 'd'],
+          [['{count, plural, =0 {[text]}}'], '', ''],
         ]);
       });
 
       it('should extract ICU messages from translatable block', () => {
         // single message when ICU is the only children
         expect(extract('<!-- i18n:m|d -->{count, plural, =0 {text}}<!-- /i18n -->')).toEqual([
-          [['{count, plural, =0 {text}}'], 'm', 'd'],
+          [['{count, plural, =0 {[text]}}'], 'm', 'd'],
         ]);
 
         // one message for the block content and one message for the ICU
         expect(extract('<!-- i18n:m|d -->before{count, plural, =0 {text}}after<!-- /i18n -->'))
             .toEqual([
-              [['{count, plural, =0 {text}}'], '', ''],
-              [['before', '{count, plural, =0 {text}}', 'after'], 'm', 'd'],
+              [['{count, plural, =0 {[text]}}'], '', ''],
+              [
+                ['before', '<ph icu name="ICU">{count, plural, =0 {[text]}}</ph>', 'after'], 'm',
+                'd'
+              ],
             ]);
       });
 
@@ -142,7 +144,7 @@ export function main() {
       it('should not extract nested ICU messages', () => {
         expect(extract('<div i18n="m|d">{count, plural, =0 { {sex, gender, =m {m}} }}</div>'))
             .toEqual([
-              [['{count, plural, =0 {{sex, gender, =m {m}} }}'], 'm', 'd'],
+              [['{count, plural, =0 {[{sex, gender, =m {[m]}},  ]}}'], 'm', 'd'],
             ]);
       });
     });
@@ -150,22 +152,32 @@ export function main() {
     describe('attributes', () => {
       it('should extract from attributes outside of translatable sections', () => {
         expect(extract('<div i18n-title="m|d" title="msg"></div>')).toEqual([
-          [['title="msg"'], 'm', 'd'],
+          [['msg'], 'm', 'd'],
         ]);
       });
 
       it('should extract from attributes in translatable elements', () => {
         expect(extract('<div i18n><p><b i18n-title="m|d" title="msg"></b></p></div>')).toEqual([
-          [['<p><b i18n-title="m|d" title="msg"></b></p>'], '', ''],
-          [['title="msg"'], 'm', 'd'],
+          [
+            [
+              '<ph tag name="START_PARAGRAPH"><ph tag name="START_BOLD_TEXT"></ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">'
+            ],
+            '', ''
+          ],
+          [['msg'], 'm', 'd'],
         ]);
       });
 
       it('should extract from attributes in translatable blocks', () => {
         expect(extract('<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->'))
             .toEqual([
-              [['title="msg"'], 'm', 'd'],
-              [['<p><b i18n-title="m|d" title="msg"></b></p>'], '', ''],
+              [['msg'], 'm', 'd'],
+              [
+                [
+                  '<ph tag name="START_PARAGRAPH"><ph tag name="START_BOLD_TEXT"></ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">'
+                ],
+                '', ''
+              ],
             ]);
       });
 
@@ -174,15 +186,20 @@ export function main() {
             extract(
                 '<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}<!-- /i18n -->'))
             .toEqual([
-              [['title="msg"'], 'm', 'd'],
-              [['{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}'], '', ''],
+              [['msg'], 'm', 'd'],
+              [
+                [
+                  '{count, plural, =0 {[<ph tag name="START_PARAGRAPH"><ph tag name="START_BOLD_TEXT"></ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">]}}'
+                ],
+                '', ''
+              ],
             ]);
       });
 
       it('should extract from attributes in non translatable ICUs', () => {
         expect(extract('{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}'))
             .toEqual([
-              [['title="msg"'], 'm', 'd'],
+              [['msg'], 'm', 'd'],
             ]);
       });
 
@@ -202,7 +219,7 @@ export function main() {
       it('should extract implicit attributes', () => {
         expect(extract('<b title="bb">bold</b><i title="ii">italic</i>', [], {'b': ['title']}))
             .toEqual([
-              [['title="bb"'], '', ''],
+              [['bb'], '', ''],
             ]);
       });
     });
@@ -296,38 +313,42 @@ export function main() {
     describe('elements', () => {
       it('should merge elements', () => {
         const HTML = `<p i18n="m|d">foo</p>`;
-        expect(fakeTranslate(HTML)).toEqual('<p>-*foo*-</p>');
+        expect(fakeTranslate(HTML)).toEqual('<p>**foo**</p>');
       });
 
       it('should merge nested elements', () => {
         const HTML = `<div>before<p i18n="m|d">foo</p><!-- comment --></div>`;
-        expect(fakeTranslate(HTML)).toEqual('<div>before<p>-*foo*-</p></div>');
+        expect(fakeTranslate(HTML)).toEqual('<div>before<p>**foo**</p></div>');
       });
     });
 
     describe('blocks', () => {
       it('should merge blocks', () => {
         const HTML = `before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after`;
-        expect(fakeTranslate(HTML)).toEqual('before-*<p>foo</p><span><i>bar</i></span>*-after');
+        expect(fakeTranslate(HTML))
+            .toEqual(
+                'before**<ph tag name="START_PARAGRAPH">foo</ph name="CLOSE_PARAGRAPH"><ph tag name="START_TAG_SPAN"><ph tag name="START_ITALIC_TEXT">bar</ph name="CLOSE_ITALIC_TEXT"></ph name="CLOSE_TAG_SPAN">**after');
       });
 
       it('should merge nested blocks', () => {
         const HTML =
             `<div>before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after</div>`;
         expect(fakeTranslate(HTML))
-            .toEqual('<div>before-*<p>foo</p><span><i>bar</i></span>*-after</div>');
+            .toEqual(
+                '<div>before**<ph tag name="START_PARAGRAPH">foo</ph name="CLOSE_PARAGRAPH"><ph tag name="START_TAG_SPAN"><ph tag name="START_ITALIC_TEXT">bar</ph name="CLOSE_ITALIC_TEXT"></ph name="CLOSE_TAG_SPAN">**after</div>');
       });
     });
 
     describe('attributes', () => {
       it('should merge attributes', () => {
         const HTML = `<p i18n-title="m|d" title="foo"></p>`;
-        expect(fakeTranslate(HTML)).toEqual('<p title="-*"></p>');
+        expect(fakeTranslate(HTML)).toEqual('<p title="**foo**"></p>');
       });
 
       it('should merge attributes', () => {
         const HTML = `<div>{count, plural, =0 {<p i18n-title title="foo"></p>}}</div>`;
-        expect(fakeTranslate(HTML)).toEqual('<div>{count, plural, =0 {<p title="-*"></p>}}</div>');
+        expect(fakeTranslate(HTML))
+            .toEqual('<div>{count, plural, =0 {<p title="**foo**"></p>}}</div>');
       });
     });
   });
@@ -346,20 +367,16 @@ function fakeTranslate(
     content: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): string {
   const htmlNodes: html.Node[] = parseHtml(content);
-  const htmlMsgs: HtmlMessage[] =
-      extractAstMessages(htmlNodes, implicitTags, implicitAttrs).messages;
+  const messages: i18n.Message[] =
+      extractMessages(htmlNodes, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs)
+          .messages;
 
   const i18nMsgMap: {[id: string]: html.Node[]} = {};
-  const converter = getHtmlToI18nConverter(DEFAULT_INTERPOLATION_CONFIG);
 
-  htmlMsgs.forEach(msg => {
-    const i18nMsg = converter(msg);
-
-    i18nMsgMap[digestMessage(i18nMsg.nodes, i18nMsg.meaning)] = [
-      new html.Text('-*', null),
-      ...msg.nodes,
-      new html.Text('*-', null),
-    ];
+  messages.forEach(msg => {
+    const id = digestMessage(msg.nodes, msg.meaning);
+    const text = serializeI18nNodes(msg.nodes).join('');
+    i18nMsgMap[id] = [new html.Text(`**${text}**`, null)];
   });
 
   const translations = new TranslationBundle(i18nMsgMap);
@@ -367,24 +384,28 @@ function fakeTranslate(
   const translateNodes = mergeTranslations(
       htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
 
-  return serializeNodes(translateNodes).join('');
+  return serializeHtmlNodes(translateNodes).join('');
 }
 
 function extract(
     html: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
-  const messages = extractAstMessages(parseHtml(html), implicitTags, implicitAttrs).messages;
+  const messages =
+      extractMessages(parseHtml(html), DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs)
+          .messages;
 
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
   return messages.map(
-    message => [serializeNodes(message.nodes), message.meaning, message.description, ]) as [string[], string, string][];
+    message => [serializeI18nNodes(message.nodes), message.meaning, message.description, ]) as [string[], string, string][];
   // clang-format on
 }
 
 function extractErrors(
     html: string, implicitTags: string[] = [], implicitAttrs: {[k: string]: string[]} = {}): any[] {
-  const errors = extractAstMessages(parseHtml(html), implicitTags, implicitAttrs).errors;
+  const errors =
+      extractMessages(parseHtml(html), DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs)
+          .errors;
 
   return errors.map((e): [string, string] => [e.msg, e.span.toString()]);
 }
