@@ -65,7 +65,7 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 }
 
 /** @stable */
-export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError;
+export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
 /** @experimental */
 export interface ExtraOptions {

@@ -114,7 +114,8 @@ export class RoutesRecognized {
 /**
  * @stable
  */
-export type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError;
+export type Event =
+    NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
 /**
  * The `Router` is responsible for mapping URLs to components.
