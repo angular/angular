@@ -259,19 +259,6 @@ describe('recognize', () => {
             });
       });
 
-      it('should not match when terminal', () => {
-        recognize(
-            RootComponent, [{
-              path: '',
-              pathMatch: 'full',
-              component: ComponentA,
-              children: [{path: 'b', component: ComponentB}]
-            }],
-            tree('b'), '')
-            .subscribe(
-                () => {}, (e) => { expect(e.message).toEqual('Cannot match any routes: \'b\''); });
-      });
-
       it('should work (nested case)', () => {
         checkRecognize(
             [{path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}], '',
@@ -676,20 +663,6 @@ describe('recognize', () => {
             expect(s.toString())
                 .toContain(
                     'Two segments cannot have the same outlet name: \'aux:b\' and \'aux:c\'.');
-          });
-    });
-
-    it('should error when no matching routes', () => {
-      recognize(RootComponent, [{path: 'a', component: ComponentA}], tree('invalid'), 'invalid')
-          .subscribe((_) => {}, (s: RouterStateSnapshot) => {
-            expect(s.toString()).toContain('Cannot match any routes');
-          });
-    });
-
-    it('should error when no matching routes (too short)', () => {
-      recognize(RootComponent, [{path: 'a/:id', component: ComponentA}], tree('a'), 'a')
-          .subscribe((_) => {}, (s: RouterStateSnapshot) => {
-            expect(s.toString()).toContain('Cannot match any routes');
           });
     });
   });

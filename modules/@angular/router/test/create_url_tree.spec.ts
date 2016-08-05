@@ -13,7 +13,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../
 import {PRIMARY_OUTLET, Params} from '../src/shared';
 import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
-fdescribe('createUrlTree', () => {
+describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
 
   it('should navigate to the root', () => {
