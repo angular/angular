@@ -1,3 +1,4 @@
+import {BaseException} from "@angular/core";
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -56,7 +57,28 @@ function runInTestZone(fn: Function, finishCallback: Function, failCallback: Fun
         'AsyncTestZoneSpec is needed for the async() test helper but could not be found. ' +
         'Please make sure that your environment includes zone.js/dist/async-test.js');
   }
-  var testZoneSpec = new AsyncTestZoneSpec(finishCallback, failCallback, 'test');
-  var testZone = Zone.current.fork(testZoneSpec);
+  const asyncTestZoneSpec = new AsyncTestZoneSpec(resetProxyZoneWrapper(finishCallback), resetProxyZoneWrapper(failCallback), 'test');
+
+  var proxyZoneSpec = (Zone as any).current.get('ProxyZoneSpec');
+  if (!proxyZoneSpec) {
+    throw new BaseException("ProxyZoneSpec not found. Did you forget to install it?");
+  }
+  proxyZoneSpec.setDelegate(asyncTestZoneSpec);
+
   return testZone.run(fn);
+}
+
+
+/**
+ * Wraps a callback into a function that calls the callback and resets the ProxyZone spec delegate
+ */
+function resetProxyZoneWrapper(callback: Function): Function {
+  return function() {
+    try {
+      callback.call(null, arguments);
+    } finally {
+      const proxyZoneSpec = (Zone as any).current.get('ProxyZoneSpec');
+      proxyZoneSpec.resetDelegate();
+    }
+  }
 }
