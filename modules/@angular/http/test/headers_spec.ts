@@ -33,7 +33,6 @@ export function main() {
       expect(secondHeadersObj.get('Content-Type')).toBe('image/jpeg');
     });
 
-
     describe('initialization', () => {
       it('should merge values in provided dictionary', () => {
         var map = StringMapWrapper.create();
