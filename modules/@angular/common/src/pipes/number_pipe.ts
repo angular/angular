@@ -13,6 +13,7 @@ import {NumberWrapper, Type, isBlank, isNumber, isPresent, isString} from '../fa
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
+var userLocale: string = navigator.language;
 var defaultLocale: string = 'en-US';
 const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/;
 
@@ -50,7 +51,7 @@ function formatNumber(
       maxFraction = NumberWrapper.parseIntAutoRadix(parts[5]);
     }
   }
-  return NumberFormatter.format(value as number, defaultLocale, style, {
+  return NumberFormatter.format(value as number, userLocale || defaultLocale, style, {
     minimumIntegerDigits: minInt,
     minimumFractionDigits: minFraction,
     maximumFractionDigits: maxFraction,
