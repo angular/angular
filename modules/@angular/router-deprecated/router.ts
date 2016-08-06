@@ -21,7 +21,7 @@ export {RootRouter, Router} from './src/router';
 export * from './src/route_config/route_config_decorator';
 export * from './src/route_definition';
 export {OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse} from './src/interfaces';
-export {CanActivate} from './src/lifecycle/lifecycle_annotations';
+export {CanActivate, CanActivateAnnotation} from './src/lifecycle/lifecycle_annotations';
 export {Instruction, ComponentInstruction} from './src/instruction';
 export {OpaqueToken} from '@angular/core';
 export {ROUTER_PROVIDERS_COMMON} from './src/router_providers_common';
