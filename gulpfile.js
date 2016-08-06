@@ -83,7 +83,13 @@ gulp.task('public-api:enforce', (done) => {
     });
 });
 
-gulp.task('public-api:update', ['build.sh'], (done) => {
+gulp.task('public-api', ['build.sh'], (done) => {
+    gulp.start('public-api:no-build');
+});
+
+gulp.task('public-api:no-build', ['public-api:update', 'format:enforce']);
+
+gulp.task('public-api:update', (done) => {
   const childProcess = require('child_process');
 
   childProcess
