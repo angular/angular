@@ -15,12 +15,12 @@ import {Parser} from '../expression_parser/parser';
 import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
 import {isBlank, isPresent} from '../facade/lang';
+import {Identifiers, identifierToken} from '../identifiers';
 import * as html from '../ml_parser/ast';
 import {HtmlParser, ParseTreeResult} from '../ml_parser/html_parser';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName, splitNsName} from '../ml_parser/tags';
-import {Identifiers, identifierToken} from '../identifiers';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
@@ -30,6 +30,7 @@ import {splitAtColon} from '../util';
 
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
+
 
 
 // Group 1 = "bind-"
