@@ -14,7 +14,7 @@ import {NgControl} from './ng_control';
 
 
 /**
- * Directive automatically applied to Angular forms that sets CSS classes
+ * Directive automatically applied to Angular form elements that sets CSS classes
  * based on control status (valid/invalid/dirty/etc).
  *
  * @experimental
