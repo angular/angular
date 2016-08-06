@@ -27,8 +27,8 @@ export function main() {
           FormControlComp, FormGroupComp, FormArrayComp, FormArrayNestedGroup,
           FormControlNameSelect, FormControlNumberInput, FormControlRadioButtons, WrappedValue,
           WrappedValueForm, MyInput, MyInputForm, FormGroupNgModel, FormControlNgModel,
-          LoginIsEmptyValidator, LoginIsEmptyWrapper, UniqLoginValidator, UniqLoginWrapper,
-          NestedFormGroupComp
+          LoginIsEmptyValidator, LoginIsEmptyWrapper, ValidationBindingsForm, UniqLoginValidator,
+          UniqLoginWrapper, NestedFormGroupComp
         ]
       });
     });
@@ -933,37 +933,175 @@ export function main() {
     describe('validations', () => {
       it('should use sync validators defined in html', () => {
         const fixture = TestBed.createComponent(LoginIsEmptyWrapper);
-        const form = new FormGroup(
-            {'login': new FormControl(''), 'min': new FormControl(''), 'max': new FormControl('')});
+        const form = new FormGroup({
+          'login': new FormControl(''),
+          'min': new FormControl(''),
+          'max': new FormControl(''),
+          'pattern': new FormControl('')
+        });
         fixture.debugElement.componentInstance.form = form;
         fixture.detectChanges();
 
         const required = fixture.debugElement.query(By.css('[required]'));
         const minLength = fixture.debugElement.query(By.css('[minlength]'));
         const maxLength = fixture.debugElement.query(By.css('[maxlength]'));
+        const pattern = fixture.debugElement.query(By.css('[pattern]'));
 
         required.nativeElement.value = '';
         minLength.nativeElement.value = '1';
         maxLength.nativeElement.value = '1234';
+        pattern.nativeElement.value = '12';
 
         dispatchEvent(required.nativeElement, 'input');
         dispatchEvent(minLength.nativeElement, 'input');
         dispatchEvent(maxLength.nativeElement, 'input');
+        dispatchEvent(pattern.nativeElement, 'input');
 
         expect(form.hasError('required', ['login'])).toEqual(true);
         expect(form.hasError('minlength', ['min'])).toEqual(true);
         expect(form.hasError('maxlength', ['max'])).toEqual(true);
+        expect(form.hasError('pattern', ['pattern'])).toEqual(true);
         expect(form.hasError('loginIsEmpty')).toEqual(true);
 
         required.nativeElement.value = '1';
         minLength.nativeElement.value = '123';
         maxLength.nativeElement.value = '123';
+        pattern.nativeElement.value = '123';
 
         dispatchEvent(required.nativeElement, 'input');
         dispatchEvent(minLength.nativeElement, 'input');
         dispatchEvent(maxLength.nativeElement, 'input');
+        dispatchEvent(pattern.nativeElement, 'input');
 
         expect(form.valid).toEqual(true);
+      });
+
+      it('should use sync validators using bindings', () => {
+        const fixture = TestBed.createComponent(ValidationBindingsForm);
+        const form = new FormGroup({
+          'login': new FormControl(''),
+          'min': new FormControl(''),
+          'max': new FormControl(''),
+          'pattern': new FormControl('')
+        });
+        fixture.debugElement.componentInstance.form = form;
+        fixture.debugElement.componentInstance.required = true;
+        fixture.debugElement.componentInstance.minLen = 3;
+        fixture.debugElement.componentInstance.maxLen = 3;
+        fixture.debugElement.componentInstance.pattern = '.{3,}';
+        fixture.detectChanges();
+
+        const required = fixture.debugElement.query(By.css('[name=required]'));
+        const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
+        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
+        const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+
+        required.nativeElement.value = '';
+        minLength.nativeElement.value = '1';
+        maxLength.nativeElement.value = '1234';
+        pattern.nativeElement.value = '12';
+
+        dispatchEvent(required.nativeElement, 'input');
+        dispatchEvent(minLength.nativeElement, 'input');
+        dispatchEvent(maxLength.nativeElement, 'input');
+        dispatchEvent(pattern.nativeElement, 'input');
+
+        expect(form.hasError('required', ['login'])).toEqual(true);
+        expect(form.hasError('minlength', ['min'])).toEqual(true);
+        expect(form.hasError('maxlength', ['max'])).toEqual(true);
+        expect(form.hasError('pattern', ['pattern'])).toEqual(true);
+
+        required.nativeElement.value = '1';
+        minLength.nativeElement.value = '123';
+        maxLength.nativeElement.value = '123';
+        pattern.nativeElement.value = '123';
+
+        dispatchEvent(required.nativeElement, 'input');
+        dispatchEvent(minLength.nativeElement, 'input');
+        dispatchEvent(maxLength.nativeElement, 'input');
+        dispatchEvent(pattern.nativeElement, 'input');
+
+        expect(form.valid).toEqual(true);
+      });
+
+      it('changes on binded properties should change the validation state of the form', () => {
+        const fixture = TestBed.createComponent(ValidationBindingsForm);
+        const form = new FormGroup({
+          'login': new FormControl(''),
+          'min': new FormControl(''),
+          'max': new FormControl(''),
+          'pattern': new FormControl('')
+        });
+        fixture.debugElement.componentInstance.form = form;
+        fixture.detectChanges();
+
+        const required = fixture.debugElement.query(By.css('[name=required]'));
+        const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
+        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
+        const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+
+        required.nativeElement.value = '';
+        minLength.nativeElement.value = '1';
+        maxLength.nativeElement.value = '1234';
+        pattern.nativeElement.value = '12';
+
+        dispatchEvent(required.nativeElement, 'input');
+        dispatchEvent(minLength.nativeElement, 'input');
+        dispatchEvent(maxLength.nativeElement, 'input');
+        dispatchEvent(pattern.nativeElement, 'input');
+
+        expect(form.hasError('required', ['login'])).toEqual(false);
+        expect(form.hasError('minlength', ['min'])).toEqual(false);
+        expect(form.hasError('maxlength', ['max'])).toEqual(false);
+        expect(form.hasError('pattern', ['pattern'])).toEqual(false);
+        expect(form.valid).toEqual(true);
+
+        fixture.debugElement.componentInstance.required = true;
+        fixture.debugElement.componentInstance.minLen = 3;
+        fixture.debugElement.componentInstance.maxLen = 3;
+        fixture.debugElement.componentInstance.pattern = '.{3,}';
+        fixture.detectChanges();
+
+        dispatchEvent(required.nativeElement, 'input');
+        dispatchEvent(minLength.nativeElement, 'input');
+        dispatchEvent(maxLength.nativeElement, 'input');
+        dispatchEvent(pattern.nativeElement, 'input');
+
+        expect(form.hasError('required', ['login'])).toEqual(true);
+        expect(form.hasError('minlength', ['min'])).toEqual(true);
+        expect(form.hasError('maxlength', ['max'])).toEqual(true);
+        expect(form.hasError('pattern', ['pattern'])).toEqual(true);
+        expect(form.valid).toEqual(false);
+
+        expect(required.nativeElement.getAttribute('required')).toEqual('');
+        expect(fixture.debugElement.componentInstance.minLen.toString())
+            .toEqual(minLength.nativeElement.getAttribute('minlength'));
+        expect(fixture.debugElement.componentInstance.maxLen.toString())
+            .toEqual(maxLength.nativeElement.getAttribute('maxlength'));
+        expect(fixture.debugElement.componentInstance.pattern.toString())
+            .toEqual(pattern.nativeElement.getAttribute('pattern'));
+
+        fixture.debugElement.componentInstance.required = false;
+        fixture.debugElement.componentInstance.minLen = null;
+        fixture.debugElement.componentInstance.maxLen = null;
+        fixture.debugElement.componentInstance.pattern = null;
+        fixture.detectChanges();
+
+        dispatchEvent(required.nativeElement, 'input');
+        dispatchEvent(minLength.nativeElement, 'input');
+        dispatchEvent(maxLength.nativeElement, 'input');
+        dispatchEvent(pattern.nativeElement, 'input');
+
+        expect(form.hasError('required', ['login'])).toEqual(false);
+        expect(form.hasError('minlength', ['min'])).toEqual(false);
+        expect(form.hasError('maxlength', ['max'])).toEqual(false);
+        expect(form.hasError('pattern', ['pattern'])).toEqual(false);
+        expect(form.valid).toEqual(true);
+
+        expect(required.nativeElement.getAttribute('required')).toEqual(null);
+        expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
+        expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
+        expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
       });
 
       it('should use async validators defined in the html', fakeAsync(() => {
@@ -1486,12 +1624,33 @@ class FormControlNgModel {
       <input type="text" formControlName="login" required>
       <input type="text" formControlName="min" minlength="3">
       <input type="text" formControlName="max" maxlength="3">
+      <input type="text" formControlName="pattern" pattern=".{3,}">
    </div>
   `
 })
 class LoginIsEmptyWrapper {
   form: FormGroup;
 }
+
+@Component({
+  selector: 'validation-bindings-form',
+  template: `
+    <div [formGroup]="form">
+      <input name="required" type="text" formControlName="login" [required]="required">
+      <input name="minlength" type="text" formControlName="min" [minlength]="minLen">
+      <input name="maxlength" type="text" formControlName="max" [maxlength]="maxLen">
+      <input name="pattern" type="text" formControlName="pattern" [pattern]="pattern">
+   </div>
+  `
+})
+class ValidationBindingsForm {
+  form: FormGroup;
+  required: boolean;
+  minLen: number;
+  maxLen: number;
+  pattern: string;
+}
+
 @Component({
   selector: 'uniq-login-wrapper',
   template: `
