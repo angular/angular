@@ -10,6 +10,7 @@ import {Class, Component, EventEmitter, Testability, disposePlatform, provide} f
 import {AsyncTestCompleter, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {UpgradeAdapter} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
+import {AppComponentNgFactory} from './mocks/app-component-ngfactory';
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {
@@ -238,6 +239,25 @@ export function main() {
            });
          }));
 
+      it('should downgrade offline compiled component and use inlined template and css',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var adapter: UpgradeAdapter = new UpgradeAdapter();
+           var ng1Module = angular.module('ng1', []);
+
+           var Ng2 = AppComponentNgFactory;
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           var element = html('<div><ng2></ng2></div>');
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             // CSS
+             expect(document.head.innerText.indexOf('color: red') > -1).toBe(true);
+             // Template
+             expect(multiTrim(document.body.textContent))
+                 .toEqual(
+                     'I originated in an external template, but was inlined by my friend the offline compiler');
+             ref.dispose();
+             async.done();
+           });
+         }));
 
       it('should fallback to the root ng2.injector when compiled outside the dom',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {

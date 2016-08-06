@@ -104,8 +104,8 @@ export class UpgradeAdapter {
    * Allows Angular v2 Component to be used from AngularJS v1.
    *
    * Use `downgradeNg2Component` to create an AngularJS v1 Directive Definition Factory from
-   * Angular v2 Component. The adapter will bootstrap Angular v2 component from within the
-   * AngularJS v1 template.
+   * Angular v2 Component or ComponentFactory. The adapter will bootstrap Angular v2 component from
+   * within the AngularJS v1 template.
    *
    * ## Mental Model
    *
@@ -131,7 +131,7 @@ export class UpgradeAdapter {
    * var adapter = new UpgradeAdapter();
    * var module = angular.module('myExample', []);
    * module.directive('greet', adapter.downgradeNg2Component(Greeter));
-   *
+   * module.directive('greetFromOffline', adapter.downgradeNg2Component(GreeterNgFactory));
    * @Component({
    *   selector: 'greet',
    *   template: '{{salutation}} {{name}}! - <ng-content></ng-content>'
@@ -149,10 +149,21 @@ export class UpgradeAdapter {
    * });
    * ```
    */
-  downgradeNg2Component(type: Type): Function {
-    this.upgradedComponents.push(type);
-    var info: ComponentInfo = getComponentInfo(type);
-    return ng1ComponentDirective(info, `${this.idPrefix}${info.selector}_c`);
+  downgradeNg2Component(component: Type|ComponentFactory<any>) {
+    let componentType: Type;
+    let offlineComponentFactory: ComponentFactory<any>;
+
+    if (component instanceof ComponentFactory) {
+      offlineComponentFactory = component;
+      componentType = component.componentType;
+    } else {
+      this.upgradedComponents.push(component);
+      componentType = component;
+    }
+
+    let info: ComponentInfo = getComponentInfo(componentType);
+    return ng1ComponentDirective(
+        info, offlineComponentFactory, `${this.idPrefix}${info.selector}_c`);
   }
 
   /**
@@ -537,7 +548,9 @@ interface ComponentFactoryRefMap {
   [selector: string]: ComponentFactory<any>;
 }
 
-function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
+function ng1ComponentDirective(
+    info: ComponentInfo, offlineComponentFactory: ComponentFactory<any>,
+    idPrefix: string): Function {
   (<any>directiveFactory).$inject = [NG1_INJECTOR, NG2_COMPONENT_FACTORY_REF_MAP, NG1_PARSE];
   function directiveFactory(
       ng1Injector: angular.IInjectorService, componentFactoryRefMap: ComponentFactoryRefMap,
@@ -549,7 +562,8 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
       link: {
         post: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
                parentInjector: any, transclude: angular.ITranscludeFunction): void => {
-          var componentFactory: ComponentFactory<any> = componentFactoryRefMap[info.selector];
+          var componentFactory: ComponentFactory<any> =
+              offlineComponentFactory || componentFactoryRefMap[info.selector];
           if (!componentFactory)
             throw new Error('Expecting ComponentFactory for: ' + info.selector);
 
