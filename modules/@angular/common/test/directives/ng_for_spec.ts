@@ -17,6 +17,8 @@ import {ListWrapper} from '../../src/facade/collection';
 
 let thisArg: any;
 
+let thisArg: any;
+
 export function main() {
   describe('ngFor', () => {
     const TEMPLATE =
