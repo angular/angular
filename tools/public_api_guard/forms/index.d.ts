@@ -88,6 +88,17 @@ export declare class AbstractFormGroupDirective extends ControlContainer impleme
 }
 
 /** @experimental */
+export declare class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
+    asyncValidator: AsyncValidatorFn;
+    control: FormGroup;
+    formDirective: Form;
+    path: string[];
+    validator: ValidatorFn;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+}
+
+/** @experimental */
 export interface AsyncValidatorFn {
     (c: AbstractControl): any;
 }
