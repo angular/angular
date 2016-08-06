@@ -38,6 +38,9 @@ export function main() {
       it('should return null if the value is null',
          () => { expect(pipe.transform(null, 1)).toBe(null); });
 
+      it('should return null if the value is null',
+         () => { expect(pipe.transform(null, [4, 2])).toBe(null); });
+
       it('should return all items after START index when START is positive and END is omitted',
          () => {
            expect(pipe.transform(list, 3)).toEqual([4, 5]);
