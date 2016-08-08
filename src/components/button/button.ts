@@ -10,7 +10,6 @@ import {
   NgModule,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MD_RIPPLE_DIRECTIVES} from '@angular2-material/core/core';
 import {BooleanFieldValue} from '@angular2-material/core/annotations/field-value';
 import {MdRippleModule} from '../../core/ripple/ripple';
 
