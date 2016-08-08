@@ -119,6 +119,8 @@ export class ActivatedRoute {
 
   get routeConfig(): Route { return this._futureSnapshot.routeConfig; }
 
+  get root(): ActivatedRoute { return this._routerState.root; }
+
   get parent(): ActivatedRoute { return this._routerState.parent(this); }
 
   get firstChild(): ActivatedRoute { return this._routerState.firstChild(this); }
@@ -206,6 +208,8 @@ export class ActivatedRouteSnapshot {
   }
 
   get routeConfig(): Route { return this._routeConfig; }
+
+  get root(): ActivatedRouteSnapshot { return this._routerState.root; }
 
   get parent(): ActivatedRouteSnapshot { return this._routerState.parent(this); }
 
