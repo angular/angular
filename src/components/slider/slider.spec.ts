@@ -25,6 +25,8 @@ describe('MdSlider', () => {
         SliderWithMinAndMax,
         SliderWithValue,
         SliderWithStep,
+        SliderWithAutoTickInterval,
+        SliderWithSetTickInterval
       ],
     });
 
@@ -434,6 +436,86 @@ describe('MdSlider', () => {
       expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
     });
   });
+
+  describe('slider with auto ticks', () => {
+    let fixture: ComponentFixture<SliderWithAutoTickInterval>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let tickContainer: HTMLElement;
+    let lastTickContainer: HTMLElement;
+
+    beforeEach(async(() => {
+      builder.createAsync(SliderWithAutoTickInterval).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+
+        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+        sliderNativeElement = sliderDebugElement.nativeElement;
+        tickContainer = <HTMLElement>sliderNativeElement.querySelector('.md-slider-tick-container');
+        lastTickContainer =
+            <HTMLElement>sliderNativeElement.querySelector('.md-slider-last-tick-container');
+      });
+    }));
+
+    it('should set the correct tick separation', () => {
+      // The first tick mark is going to be at value 30 as it is the first step after 30px. The
+      // width of the slider is 112px because the minimum width is 128px with padding of 8px on
+      // both sides. The value 30 will be located at the position 33.6px, and 1px is removed from
+      // the tick mark location in order to center the tick. Therefore, the tick separation should
+      // be 32.6px.
+      // toContain is used rather than toBe because FireFox adds 'transparent' to the beginning
+      // of the background before the repeating linear gradient.
+      expect(tickContainer.style.background).toContain('repeating-linear-gradient(to right, ' +
+          'black, black 2px, transparent 2px, transparent 32.6px)');
+    });
+
+    it('should draw a tick mark on the end of the track', () => {
+      expect(lastTickContainer.style.background).toContain('linear-gradient(to left, black, black' +
+          ' 2px, transparent 2px, transparent)');
+    });
+
+    it('should not draw the second to last tick when it is too close to the last tick', () => {
+      // When the second to last tick is too close (less than half the tick separation) to the last
+      // one, the tick container width is cut by the tick separation, which removes the second to
+      // last tick. Since the width of the slider is 112px and the tick separation is 33.6px, the
+      // tick container width should be 78.4px (112 - 33.6).
+      expect(tickContainer.style.width).toBe('78.4px');
+    });
+  });
+
+  describe('slider with set tick interval', () => {
+    let fixture: ComponentFixture<SliderWithSetTickInterval>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let tickContainer: HTMLElement;
+    let lastTickContainer: HTMLElement;
+
+    beforeEach(async(() => {
+      builder.createAsync(SliderWithSetTickInterval).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+
+        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+        sliderNativeElement = sliderDebugElement.nativeElement;
+        tickContainer = <HTMLElement>sliderNativeElement.querySelector('.md-slider-tick-container');
+        lastTickContainer =
+            <HTMLElement>sliderNativeElement.querySelector('.md-slider-last-tick-container');
+      });
+    }));
+
+    it('should set the correct tick separation', () => {
+      // The slider width is 112px, the first step is at value 18 (step of 3 * tick interval of 6),
+      // which is at the position 20.16px and 1px is subtracted to center, giving a tick
+      // separation of 19.16px.
+      expect(tickContainer.style.background).toContain('repeating-linear-gradient(to right, ' +
+          'black, black 2px, transparent 2px, transparent 19.16px)');
+    });
+
+    it('should draw a tick mark on the end of the track', () => {
+      expect(lastTickContainer.style.background).toContain('linear-gradient(to left, black, '
+          + 'black 2px, transparent 2px, transparent)');
+    });
+  });
 });
 
 // The transition has to be removed in order to test the updated positions without setTimeout.
@@ -479,6 +561,16 @@ class SliderWithValue { }
   encapsulation: ViewEncapsulation.None
 })
 class SliderWithStep { }
+
+@Component({
+  template: `<md-slider step="5" tick-interval="auto"></md-slider>`
+})
+class SliderWithAutoTickInterval { }
+
+@Component({
+  template: `<md-slider step="3" tick-interval="6"></md-slider>`
+})
+class SliderWithSetTickInterval { }
 
 /**
  * Dispatches a click event from an element.

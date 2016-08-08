@@ -12,6 +12,12 @@ import {BooleanFieldValue} from '@angular2-material/core/annotations/field-value
 import {applyCssTransform} from '@angular2-material/core/style/apply-transform';
 import {MdGestureConfig} from '@angular2-material/core/core';
 
+/**
+ * Visually, a 30px separation between tick marks looks best. This is very subjective but it is
+ * the default separation we chose.
+ */
+const MIN_AUTO_TICK_SEPARATION = 30;
+
 @Component({
   moduleId: module.id,
   selector: 'md-slider',
@@ -52,6 +58,12 @@ export class MdSlider implements AfterContentInit {
 
   /** The values at which the thumb will snap. */
   @Input() step: number = 1;
+
+  /**
+   * How often to show ticks. Relative to the step so that a tick always appears on a step.
+   * Ex: Tick interval of 4 with a step of 3 will draw a tick every 4 steps (every 12 values).
+   */
+  @Input('tick-interval') private _tickInterval: 'auto' | number;
 
   /**
    * Whether or not the thumb is sliding.
@@ -122,6 +134,7 @@ export class MdSlider implements AfterContentInit {
   ngAfterContentInit() {
     this._sliderDimensions = this._renderer.getSliderDimensions();
     this.snapToValue();
+    this._updateTickSeparation();
   }
 
   /** TODO: internal */
@@ -186,7 +199,7 @@ export class MdSlider implements AfterContentInit {
    * This is also used to move the thumb to a snapped value once sliding is done.
    */
   updatePercentFromValue() {
-    this._percent = (this.value - this.min) / (this.max - this.min);
+    this._percent = this.calculatePercentage(this.value);
   }
 
   /**
@@ -198,7 +211,7 @@ export class MdSlider implements AfterContentInit {
 
     // The exact value is calculated from the event and used to find the closest snap value.
     this._percent = this.clamp((pos - offset) / size);
-    let exactValue = this.min + (this._percent * (this.max - this.min));
+    let exactValue = this.calculateValue(this._percent);
 
     // This calculation finds the closest step by finding the closest whole number divisible by the
     // step relative to the min.
@@ -215,6 +228,80 @@ export class MdSlider implements AfterContentInit {
   snapToValue() {
     this.updatePercentFromValue();
     this._renderer.updateThumbAndFillPosition(this._percent, this._sliderDimensions.width);
+  }
+
+  /**
+   * Calculates the separation in pixels of tick marks. If there is no tick interval or the interval
+   * is set to something other than a number or 'auto', nothing happens.
+   */
+  private _updateTickSeparation() {
+    if (this._tickInterval == 'auto') {
+      this._updateAutoTickSeparation();
+    } else if (Number(this._tickInterval)) {
+      this._updateTickSeparationFromInterval();
+    }
+  }
+
+  /**
+   * Calculates the optimal separation in pixels of tick marks based on the minimum auto tick
+   * separation constant.
+   */
+  private _updateAutoTickSeparation() {
+    // We're looking for the multiple of step for which the separation between is greater than the
+    // minimum tick separation.
+    let sliderWidth = this._sliderDimensions.width;
+
+    // This is the total "width" of the slider in terms of values.
+    let valueWidth = this.max - this.min;
+
+    // Calculate how many values exist within 1px on the slider.
+    let valuePerPixel = valueWidth / sliderWidth;
+
+    // Calculate how many values exist in the minimum tick separation (px).
+    let valuePerSeparation = valuePerPixel  * MIN_AUTO_TICK_SEPARATION;
+
+    // Calculate how many steps exist in this separation. This will be the lowest value you can
+    // multiply step by to get a separation that is greater than or equal to the minimum tick
+    // separation.
+    let stepsPerSeparation = Math.ceil(valuePerSeparation / this.step);
+
+    // Get the percentage of the slider for which this tick would be located so we can then draw
+    // it on the slider.
+    let tickPercentage = this.calculatePercentage((this.step * stepsPerSeparation) + this.min);
+
+    // The pixel value of the tick is the percentage * the width of the slider. Use this to draw
+    // the ticks on the slider.
+    this._renderer.drawTicks(sliderWidth * tickPercentage);
+  }
+
+  /**
+   * Calculates the separation of tick marks by finding the pixel value of the tickInterval.
+   */
+  private _updateTickSeparationFromInterval() {
+    // Force tickInterval to be a number so it can be used in calculations.
+    let interval: number = <number> this._tickInterval;
+    // Calculate the first value a tick will be located at by getting the step at which the interval
+    // lands and adding that to the min.
+    let tickValue = (this.step * interval) + this.min;
+
+    // The percentage of the step on the slider is needed in order to calculate the pixel offset
+    // from the beginning of the slider. This offset is the tick separation.
+    let tickPercentage = this.calculatePercentage(tickValue);
+    this._renderer.drawTicks(this._sliderDimensions.width * tickPercentage);
+  }
+
+  /**
+   * Calculates the percentage of the slider that a value is.
+   */
+  calculatePercentage(value: number) {
+    return (value - this.min) / (this.max - this.min);
+  }
+
+  /**
+   * Calculates the value a percentage of the slider corresponds to.
+   */
+  calculateValue(percentage: number) {
+    return this.min + (percentage * (this.max - this.min));
   }
 
   /**
@@ -266,6 +353,32 @@ export class SliderRenderer {
    */
   addFocus() {
     this._sliderElement.focus();
+  }
+
+  /**
+   * Draws ticks onto the tick container.
+   */
+  drawTicks(tickSeparation: number) {
+    let tickContainer = <HTMLElement>this._sliderElement.querySelector('.md-slider-tick-container');
+    let tickContainerWidth = tickContainer.getBoundingClientRect().width;
+    // An extra element for the last tick is needed because the linear gradient cannot be told to
+    // always draw a tick at the end of the gradient. To get around this, there is a second
+    // container for ticks that has a single tick mark on the very right edge.
+    let lastTickContainer =
+        <HTMLElement>this._sliderElement.querySelector('.md-slider-last-tick-container');
+    // Subtract 1 from the tick separation to center the tick.
+    // TODO: Evaluate the rendering performance of using repeating background gradients.
+    tickContainer.style.background = `repeating-linear-gradient(to right, black, black 2px, ` +
+        `transparent 2px, transparent ${tickSeparation - 1}px)`;
+    // Add a tick to the very end by starting on the right side and adding a 2px black line.
+    lastTickContainer.style.background = `linear-gradient(to left, black, black 2px, transparent ` +
+        `2px, transparent)`;
+
+    // If the second to last tick is too close (a separation of less than half the normal
+    // separation), don't show it by decreasing the width of the tick container element.
+    if (tickContainerWidth % tickSeparation < (tickSeparation / 2)) {
+      tickContainer.style.width = tickContainerWidth - tickSeparation + 'px';
+    }
   }
 }
 

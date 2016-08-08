@@ -95,6 +95,13 @@ md-slider *::after {
   background-color: md-color($md-accent);
 }
 
+.md-slider-tick-container, .md-slider-last-tick-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100%;
+}
+
 .md-slider-thumb-container {
   position: absolute;
   left: 0;
