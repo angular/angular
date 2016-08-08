@@ -890,10 +890,18 @@ describe('Integration', () => {
                  router.resetConfig(
                      [{path: 'team/:id', component: TeamCmp, canActivate: ['alwaysFalse']}]);
 
+                 const recordedEvents: any[] = [];
+                 router.events.forEach(e => recordedEvents.push(e));
+
                  router.navigateByUrl('/team/22');
                  advance(fixture);
 
                  expect(location.path()).toEqual('/');
+
+                 expectEvents(recordedEvents, [
+                   [NavigationStart, '/team/22'], [RoutesRecognized, '/team/22'],
+                   [NavigationCancel, '/team/22']
+                 ]);
                })));
       });
 

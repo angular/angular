@@ -429,9 +429,11 @@ export class Router {
           })
           .then(
               () => {
-                this.navigated = true;
-                this.routerEvents.next(
-                    new NavigationEnd(id, this.serializeUrl(url), this.serializeUrl(appliedUrl)));
+                if (navigationIsSuccessful) {
+                  this.navigated = true;
+                  this.routerEvents.next(
+                      new NavigationEnd(id, this.serializeUrl(url), this.serializeUrl(appliedUrl)));
+                }
                 resolvePromise(navigationIsSuccessful);
               },
               e => {
