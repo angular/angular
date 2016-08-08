@@ -10,6 +10,7 @@ export declare class ActivatedRoute {
     parent: ActivatedRoute;
     pathFromRoot: ActivatedRoute[];
     queryParams: Observable<Params>;
+    root: ActivatedRoute;
     routeConfig: Route;
     snapshot: ActivatedRouteSnapshot;
     url: Observable<UrlSegment[]>;
@@ -28,6 +29,7 @@ export declare class ActivatedRouteSnapshot {
     parent: ActivatedRouteSnapshot;
     pathFromRoot: ActivatedRouteSnapshot[];
     queryParams: Params;
+    root: ActivatedRouteSnapshot;
     routeConfig: Route;
     url: UrlSegment[];
     toString(): string;
