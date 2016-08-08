@@ -248,7 +248,9 @@ export function main() {
       it('should allow nested implicit elements', () => {
         let result: any[];
 
-        expect(() => {result = extract('<div>outer<div>inner</div></div>', ['div'])}).not.toThrow();
+        expect(() => {
+          result = extract('<div>outer<div>inner</div></div>', ['div']);
+        }).not.toThrow();
 
         expect(result).toEqual([
           [['outer', '<ph tag name="START_TAG_DIV">inner</ph name="CLOSE_TAG_DIV">'], '', ''],
