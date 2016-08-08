@@ -34,6 +34,7 @@
     "test/config.spec.ts",
     "test/router_state.spec.ts",
     "test/router.spec.ts",
+    "test/integration.spec.ts",
     "../../../node_modules/@types/jasmine/index.d.ts"
   ]
 }

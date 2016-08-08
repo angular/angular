@@ -70,7 +70,8 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type): RouterS
   return new RouterState(new TreeNode<ActivatedRoute>(activated, []), snapshot);
 }
 
-function createEmptyStateSnapshot(urlTree: UrlTree, rootComponent: Type): RouterStateSnapshot {
+export function createEmptyStateSnapshot(
+    urlTree: UrlTree, rootComponent: Type): RouterStateSnapshot {
   const emptyParams = {};
   const emptyData = {};
   const emptyQueryParams = {};

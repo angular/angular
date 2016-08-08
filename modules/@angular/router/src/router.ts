@@ -447,7 +447,6 @@ export class Router {
 
 class CanActivate {
   constructor(public path: ActivatedRouteSnapshot[]) {}
-
   get route(): ActivatedRouteSnapshot { return this.path[this.path.length - 1]; }
 }
 
@@ -456,7 +455,7 @@ class CanDeactivate {
 }
 
 
-class PreActivation {
+export class PreActivation {
   private checks: Array<CanActivate|CanDeactivate> = [];
   constructor(
       private future: RouterStateSnapshot, private curr: RouterStateSnapshot,
@@ -504,6 +503,7 @@ class PreActivation {
       futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>,
       outletMap: RouterOutletMap, futurePath: ActivatedRouteSnapshot[]): void {
     const prevChildren: {[key: string]: any} = nodeChildrenAsMap(currNode);
+
     futureNode.children.forEach(c => {
       this.traverseRoutes(c, prevChildren[c.value.outlet], outletMap, futurePath.concat([c.value]));
       delete prevChildren[c.value.outlet];
@@ -524,6 +524,9 @@ class PreActivation {
     if (curr && future._routeConfig === curr._routeConfig) {
       if (!shallowEqual(future.params, curr.params)) {
         this.checks.push(new CanDeactivate(outlet.component, curr), new CanActivate(futurePath));
+      } else {
+        // we need to set the data
+        future.data = curr.data;
       }
 
       // If we have a component, we need to go through an outlet.
