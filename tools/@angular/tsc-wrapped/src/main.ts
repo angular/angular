@@ -16,8 +16,9 @@ export function main(project: string, basePath?: string, codegen?: CodegenExtens
     if (fs.lstatSync(project).isFile()) {
       projectDir = path.dirname(project);
     }
+
     // file names in tsconfig are resolved relative to this absolute path
-    basePath = path.join(process.cwd(), basePath || projectDir);
+    basePath = path.resolve(process.cwd(), basePath || projectDir);
 
     // read the configuration options from wherever you store them
     const {parsed, ngOptions} = tsc.readConfiguration(project, basePath);
