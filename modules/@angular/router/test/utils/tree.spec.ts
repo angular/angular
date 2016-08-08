@@ -20,6 +20,13 @@ describe('tree', () => {
     expect(t.parent(2)).toEqual(1);
   });
 
+  it('should return the parent of a node (second child)', () => {
+    const t = new Tree<any>(
+        new TreeNode<number>(1, [new TreeNode<number>(2, []), new TreeNode<number>(3, [])]));
+    expect(t.parent(1)).toEqual(null);
+    expect(t.parent(3)).toEqual(1);
+  });
+
   it('should return the children of a node', () => {
     const t = new Tree<any>(new TreeNode<number>(1, [new TreeNode<number>(2, [])]));
     expect(t.children(1)).toEqual([2]);

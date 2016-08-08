@@ -71,7 +71,7 @@ function findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tre
   for (let cc of c.children) {
     const cloned = collected.slice(0);
     const r = findPath(expected, cc, cloned);
-    if (r) return r;
+    if (r.length > 0) return r;
   }
 
   return [];
