@@ -1,4 +1,5 @@
 import {
+    NgModule,
     ComponentRef,
     Directive,
     TemplateRef,
@@ -103,3 +104,10 @@ export class PortalHostDirective extends BasePortalHost {
 }
 
 export const PORTAL_DIRECTIVES = [TemplatePortalDirective, PortalHostDirective];
+
+
+@NgModule({
+  exports: PORTAL_DIRECTIVES,
+  declarations: PORTAL_DIRECTIVES,
+})
+export class PortalModule { }

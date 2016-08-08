@@ -1,9 +1,12 @@
 import {
   inject,
   fakeAsync,
-  flushMicrotasks
+  flushMicrotasks,
+  TestComponentBuilder,
+  ComponentFixture,
+  TestBed,
+  async,
 } from '@angular/core/testing';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {
   Component,
   ViewChildren,
@@ -13,7 +16,7 @@ import {
   Optional,
   Injector,
 } from '@angular/core';
-import {TemplatePortalDirective, PortalHostDirective} from './portal-directives';
+import {TemplatePortalDirective, PortalModule} from './portal-directives';
 import {Portal, ComponentPortal} from './portal';
 import {DomPortalHost} from './dom-portal-host';
 
@@ -21,9 +24,16 @@ import {DomPortalHost} from './dom-portal-host';
 describe('Portals', () => {
   let builder: TestComponentBuilder;
 
-  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-    builder = tcb;
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [PortalModule],
+      declarations: [PortalTestApp, ArbitraryViewContainerRefComponent, PizzaMsg],
+    });
   }));
+
+  beforeEach(fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+    builder = tcb;
+  })));
 
   describe('PortalHostDirective', () => {
     it('should load a component into the portal', fakeAsync(() => {
@@ -413,9 +423,7 @@ class ArbitraryViewContainerRefComponent {
 
   <div *portal>Pie</div>
 
-  <template portal> {{fruit}} </template>
-  `,
-  directives: [PortalHostDirective, TemplatePortalDirective],
+  <template portal> {{fruit}} </template>`,
 })
 class PortalTestApp {
   @ViewChildren(TemplatePortalDirective) portals: QueryList<TemplatePortalDirective>;

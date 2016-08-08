@@ -1,11 +1,22 @@
-import {Component, ComponentRef, Directive, Input, ElementRef, ViewContainerRef,
-    ChangeDetectorRef} from '@angular/core';
-import {Overlay} from '@angular2-material/core/overlay/overlay';
-import {OverlayState} from '@angular2-material/core/overlay/overlay-state';
-import {OverlayRef} from '@angular2-material/core/overlay/overlay-ref';
-import {ComponentPortal} from '@angular2-material/core/portal/portal';
-import {OverlayConnectionPosition, OriginConnectionPosition} from
-    '@angular2-material/core/overlay/position/connected-position';
+import {
+    NgModule,
+    Component,
+    ComponentRef,
+    Directive,
+    Input,
+    ElementRef,
+    ViewContainerRef,
+    ChangeDetectorRef
+} from '@angular/core';
+import {
+  Overlay,
+  OverlayState,
+  OverlayModule,
+  OverlayRef,
+  ComponentPortal,
+  OverlayConnectionPosition,
+  OriginConnectionPosition,
+} from '@angular2-material/core/core';
 
 export type TooltipPosition = 'before' | 'after' | 'above' | 'below';
 
@@ -176,8 +187,17 @@ export class MdTooltip {
   template: `<div class="md-tooltip">{{message}}</div>`,
   styleUrls: ['tooltip.css'],
 })
-class TooltipComponent {
+export class TooltipComponent {
   message: string;
 }
 
 export const MD_TOOLTIP_DIRECTIVES = [MdTooltip];
+
+
+@NgModule({
+  imports: [OverlayModule],
+  exports: [MD_TOOLTIP_DIRECTIVES, TooltipComponent],
+  declarations: [MD_TOOLTIP_DIRECTIVES, TooltipComponent],
+  entryComponents: [TooltipComponent],
+})
+export class MdTooltipModule { }

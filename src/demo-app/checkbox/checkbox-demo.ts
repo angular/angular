@@ -1,7 +1,5 @@
 import {Component} from '@angular/core';
-import {NgFor} from '@angular/common';
-import {FORM_DIRECTIVES} from '@angular/forms';
-import {MdCheckbox} from '@angular2-material/checkbox/checkbox';
+
 
 export interface Task {
   name: string;
@@ -18,7 +16,6 @@ export interface Task {
     }
   `],
   templateUrl: 'nested-checklist.html',
-  directives: [MdCheckbox, NgFor]
 })
 export class MdCheckboxDemoNestedChecklist {
   tasks: Task[] = [
@@ -64,7 +61,6 @@ export class MdCheckboxDemoNestedChecklist {
   selector: 'md-checkbox-demo',
   templateUrl: 'checkbox-demo.html',
   styleUrls: ['checkbox-demo.css'],
-  directives: [MdCheckbox, MdCheckboxDemoNestedChecklist, FORM_DIRECTIVES]
 })
 export class CheckboxDemo {
   isIndeterminate: boolean = false;

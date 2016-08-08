@@ -18,6 +18,9 @@ mkdir deploy
 # Start off by building normally.
 ng build
 
+# `ng build` does not complete synchronously, so wait a moment for it.
+sleep 2
+
 # We need to remove moduleId for the ngc build. We do this by simply commenting out with a
 # distinguishing marker and then undoing those lines after we've generated the .metadata.json files.
 grep -lr "moduleId:" ./src/ | xargs sed -i 's|moduleId:|//MODULE moduleId:|g'
@@ -57,6 +60,9 @@ cp -R ./dist/components/* ./deploy/
 
 # Copy the core/ directory directly into ./deploy
 cp -R ./dist/core/ ./deploy/core/
+
+# Remove css files from src/
+find ./src -iname "*.css" | xargs rm
 
 # Remove test files from deploy/
 find ./deploy -iname "*.spec.d.ts" | xargs rm

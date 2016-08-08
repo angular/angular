@@ -1,11 +1,24 @@
 import {Component} from '@angular/core';
-import {inject} from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {
+  inject,
+  TestComponentBuilder,
+  TestBed,
+  async,
+} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {MdToolbar} from './toolbar';
+import {MdToolbarModule} from './toolbar';
 
 describe('MdToolbar', () => {
   let builder: TestComponentBuilder;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdToolbarModule],
+      declarations: [TestApp],
+    });
+
+    TestBed.compileComponents();
+  }));
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
@@ -44,9 +57,7 @@ describe('MdToolbar', () => {
   template: `
     <md-toolbar [color]="toolbarColor">
       <span>Test Toolbar</span>
-    </md-toolbar>
-  `,
-  directives: [MdToolbar]
+    </md-toolbar>`
 })
 class TestApp {
   toolbarColor: string;

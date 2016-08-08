@@ -1,22 +1,19 @@
 import {
-    addProviders,
     inject,
     async,
     fakeAsync,
-    flushMicrotasks
+    flushMicrotasks,
+    TestComponentBuilder,
+    ComponentFixture,
+    TestBed,
 } from '@angular/core/testing';
 import {
-    FORM_DIRECTIVES,
-    NgModel,
     NgControl,
-    disableDeprecatedForms,
-    provideForms
+    FormsModule,
 } from '@angular/forms';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdCheckbox, MdCheckboxChange} from './checkbox';
-
+import {MdCheckbox, MdCheckboxChange, MdCheckboxModule} from './checkbox';
 
 
 // TODO: Implement E2E tests for spacebar/click behavior for checking/unchecking
@@ -25,12 +22,23 @@ describe('MdCheckbox', () => {
   let builder: TestComponentBuilder;
   let fixture: ComponentFixture<any>;
 
-  beforeEach(() => {
-    addProviders([
-      disableDeprecatedForms(),
-      provideForms(),
-    ]);
-  });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdCheckboxModule, FormsModule],
+      declarations: [
+        SingleCheckbox,
+        CheckboxWithFormDirectives,
+        MultipleCheckboxes,
+        CheckboxWithTabIndex,
+        CheckboxWithAriaLabel,
+        CheckboxWithAriaLabelledby,
+        CheckboxWithNameAttribute,
+        CheckboxWithChangeEvent,
+      ],
+    });
+
+    TestBed.compileComponents();
+  }));
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
@@ -515,7 +523,6 @@ describe('MdCheckbox', () => {
 
 /** Simple component for testing a single checkbox. */
 @Component({
-  directives: [MdCheckbox],
   template: `
   <div (click)="parentElementClicked = true" (keyup)="parentElementKeyedUp = true">    
     <md-checkbox 
@@ -547,7 +554,6 @@ class SingleCheckbox {
 
 /** Simple component for testing an MdCheckbox with ngModel. */
 @Component({
-  directives: [MdCheckbox, FORM_DIRECTIVES, NgModel],
   template: `
     <form>
       <md-checkbox name="cb" [(ngModel)]="isGood">Be good</md-checkbox>
@@ -560,7 +566,6 @@ class CheckboxWithFormDirectives {
 
 /** Simple test component with multiple checkboxes. */
 @Component(({
-  directives: [MdCheckbox],
   template: `
     <md-checkbox>Option 1</md-checkbox>
     <md-checkbox>Option 2</md-checkbox>
@@ -571,7 +576,6 @@ class MultipleCheckboxes { }
 
 /** Simple test component with tabIndex */
 @Component({
-  directives: [MdCheckbox],
   template: `
     <md-checkbox [tabindex]="customTabIndex" [disabled]="isDisabled">
     </md-checkbox>`,
@@ -583,30 +587,27 @@ class CheckboxWithTabIndex {
 
 /** Simple test component with an aria-label set. */
 @Component({
-  directives: [MdCheckbox],
   template: `<md-checkbox aria-label="Super effective"></md-checkbox>`
 })
 class CheckboxWithAriaLabel { }
 
 /** Simple test component with an aria-label set. */
 @Component({
-  directives: [MdCheckbox],
   template: `<md-checkbox aria-labelledby="some-id"></md-checkbox>`
 })
 class CheckboxWithAriaLabelledby {}
 
 /** Simple test component with name attribute */
 @Component({
-  directives: [MdCheckbox],
   template: `<md-checkbox name="test-name"></md-checkbox>`
 })
 class CheckboxWithNameAttribute {}
 
 /** Simple test component with change event */
 @Component({
-  directives: [MdCheckbox],
   template: `<md-checkbox (change)="lastEvent = $event"></md-checkbox>`
 })
 class CheckboxWithChangeEvent {
   lastEvent: MdCheckboxChange;
 }
+

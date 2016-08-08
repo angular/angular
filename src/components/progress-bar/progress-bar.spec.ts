@@ -1,12 +1,25 @@
-import {inject} from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {
+  inject,
+  TestComponentBuilder,
+  TestBed,
+  async,
+} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdProgressBar} from './progress-bar';
+import {MdProgressBarModule} from './progress-bar';
 
 
 describe('MdProgressBar', () => {
   let builder: TestComponentBuilder;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdProgressBarModule],
+      declarations: [TestApp],
+    });
+
+    TestBed.compileComponents();
+  }));
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
@@ -117,8 +130,6 @@ describe('MdProgressBar', () => {
 
 /** Test component that contains an MdButton. */
 @Component({
-  directives: [MdProgressBar],
   template: '',
 })
-class TestApp {
-}
+class TestApp { }

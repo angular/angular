@@ -1,4 +1,5 @@
 import {
+  NgModule,
   Directive,
   ElementRef,
   HostBinding,
@@ -166,3 +167,10 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
 }
 
 export const MD_RIPPLE_DIRECTIVES = [MdRipple];
+
+
+@NgModule({
+  exports: MD_RIPPLE_DIRECTIVES,
+  declarations: MD_RIPPLE_DIRECTIVES,
+})
+export class MdRippleModule { }

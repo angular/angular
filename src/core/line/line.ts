@@ -1,4 +1,5 @@
 import {
+    NgModule,
     Directive,
     Renderer,
     ElementRef,
@@ -42,3 +43,9 @@ export class MdLineSetter {
   }
 
 }
+
+@NgModule({
+  exports: [MdLine],
+  declarations: [MdLine],
+})
+export class MdLineModule { }

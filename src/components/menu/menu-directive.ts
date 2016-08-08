@@ -24,10 +24,10 @@ import {MdMenuInvalidPositionX, MdMenuInvalidPositionY} from './menu-errors';
   exportAs: 'mdMenu'
 })
 export class MdMenu {
-  private _showClickCatcher: boolean = false;
+  _showClickCatcher: boolean = false;
 
   // config object to be passed into the menu's ngClass
-  private _classList: Object;
+  _classList: Object;
 
   positionX: MenuPositionX = 'after';
   positionY: MenuPositionY = 'below';

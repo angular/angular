@@ -1,4 +1,5 @@
 import {
+  NgModule,
   Component,
   ElementRef,
   HostBinding,
@@ -6,8 +7,10 @@ import {
   ViewEncapsulation,
   AfterContentInit,
 } from '@angular/core';
+import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {BooleanFieldValue} from '@angular2-material/core/annotations/field-value';
 import {applyCssTransform} from '@angular2-material/core/style/apply-transform';
+import {MdGestureConfig} from '@angular2-material/core/core';
 
 @Component({
   moduleId: module.id,
@@ -267,3 +270,13 @@ export class SliderRenderer {
 }
 
 export const MD_SLIDER_DIRECTIVES = [MdSlider];
+
+
+@NgModule({
+  exports: MD_SLIDER_DIRECTIVES,
+  declarations: MD_SLIDER_DIRECTIVES,
+  providers: [
+    {provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig},
+  ],
+})
+export class MdSliderModule { }

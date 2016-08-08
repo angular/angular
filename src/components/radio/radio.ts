@@ -12,6 +12,7 @@ import {
   QueryList,
   ViewEncapsulation,
   forwardRef,
+  NgModule,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -423,3 +424,12 @@ export class MdRadioButton implements OnInit {
 }
 
 export const MD_RADIO_DIRECTIVES = [MdRadioGroup, MdRadioButton];
+
+
+@NgModule({
+  exports: MD_RADIO_DIRECTIVES,
+  declarations: MD_RADIO_DIRECTIVES,
+  providers: [MdUniqueSelectionDispatcher]
+})
+export class MdRadioModule {
+}

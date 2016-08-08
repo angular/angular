@@ -8,8 +8,9 @@ import {
     ElementRef,
     Renderer,
     AfterContentInit,
+    NgModule,
 } from '@angular/core';
-import { MdLine, MdLineSetter } from '@angular2-material/core/line/line';
+import {MdLine, MdLineSetter, MdLineModule} from '@angular2-material/core/line/line';
 
 @Component({
   moduleId: module.id,
@@ -64,4 +65,12 @@ export class MdListItem implements AfterContentInit {
   }
 }
 
-export const MD_LIST_DIRECTIVES = [MdList, MdListItem, MdLine, MdListAvatar];
+export const MD_LIST_DIRECTIVES = [MdList, MdListItem, MdListAvatar];
+
+
+@NgModule({
+  imports: [MdLineModule],
+  exports: [MD_LIST_DIRECTIVES, MdLineModule],
+  declarations: MD_LIST_DIRECTIVES,
+})
+export class MdListModule { }

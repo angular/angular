@@ -18,7 +18,6 @@ import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
   selector: 'md-dialog-container',
   templateUrl: 'dialog-container.html',
   styleUrls: ['dialog-container.css'],
-  directives: [PortalHostDirective],
   host: {
     'class': 'md-dialog-container',
     '[attr.role]': 'dialogConfig?.role'
@@ -26,7 +25,7 @@ import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
 })
 export class MdDialogContainer extends BasePortalHost implements AfterViewInit {
   /** The portal host inside of this container into which the dialog content will be loaded. */
-  @ViewChild(PortalHostDirective) private _portalHost: PortalHostDirective;
+  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
 
   /**
    * Completer used to resolve the promise for cases when a portal is attempted to be attached,

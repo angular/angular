@@ -1,4 +1,5 @@
 import {
+    NgModule,
     Directive,
     TemplateRef,
     ViewContainerRef,
@@ -7,11 +8,12 @@ import {
     OnDestroy,
     ElementRef
 } from '@angular/core';
-import {Overlay} from './overlay';
+import {Overlay, OVERLAY_PROVIDERS} from './overlay';
 import {OverlayRef} from './overlay-ref';
 import {TemplatePortal} from '../portal/portal';
 import {OverlayState} from './overlay-state';
 import {ConnectionPositionPair} from './position/connected-position';
+import {PortalModule} from '../portal/portal-directives';
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
 let defaultPositionList = [
@@ -105,3 +107,12 @@ export class ConnectedOverlayDirective implements OnInit, OnDestroy {
 
 
 export const OVERLAY_DIRECTIVES = [ConnectedOverlayDirective, OverlayOrigin];
+
+
+@NgModule({
+  imports: [PortalModule],
+  exports: OVERLAY_DIRECTIVES,
+  declarations: OVERLAY_DIRECTIVES,
+  providers: OVERLAY_PROVIDERS,
+})
+export class OverlayModule { }

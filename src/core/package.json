@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/core",
-  "version": "2.0.0-alpha.6-2",
+  "version": "2.0.0-alpha.6-3",
   "description": "Angular 2 Material core",
   "main": "./core.js",
   "typings": "./core.d.ts",

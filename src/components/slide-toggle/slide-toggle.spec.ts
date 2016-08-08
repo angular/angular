@@ -1,23 +1,26 @@
 import {
-  addProviders,
   inject,
-  async
+  async,
+  TestComponentBuilder,
+  ComponentFixture,
+  TestBed,
 } from '@angular/core/testing';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {By} from '@angular/platform-browser';
 import {Component} from '@angular/core';
-import {MdSlideToggle, MdSlideToggleChange} from './slide-toggle';
-import {NgControl, disableDeprecatedForms, provideForms} from '@angular/forms';
+import {MdSlideToggle, MdSlideToggleChange, MdSlideToggleModule} from './slide-toggle';
+import {FormsModule, NgControl} from '@angular/forms';
 
 describe('MdSlideToggle', () => {
   let builder: TestComponentBuilder;
 
-  beforeEach(() => {
-    addProviders([
-      disableDeprecatedForms(),
-      provideForms(),
-    ]);
-  });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdSlideToggleModule, FormsModule],
+      declarations: [SlideToggleTestApp],
+    });
+
+    TestBed.compileComponents();
+  }));
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
@@ -412,13 +415,12 @@ function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void
   template: `
     <md-slide-toggle [(ngModel)]="slideModel" [disabled]="isDisabled" [color]="slideColor" 
                      [id]="slideId" [checked]="slideChecked" [name]="slideName" 
-                     [aria-label]="slideLabel" [ariaLabel]="slideLabel" 
-                     [ariaLabelledby]="slideLabelledBy" (change)="onSlideChange($event)"
+                     [ariaLabel]="slideLabel" [ariaLabelledby]="slideLabelledBy" 
+                     (change)="onSlideChange($event)"
                      (click)="onSlideClick($event)">
       <span>Test Slide Toggle</span>
     </md-slide-toggle>
   `,
-  directives: [MdSlideToggle]
 })
 class SlideToggleTestApp {
   isDisabled: boolean = false;

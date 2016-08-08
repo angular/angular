@@ -88,4 +88,6 @@ export const OVERLAY_PROVIDERS = [
   ViewportRuler,
   OverlayPositionBuilder,
   Overlay,
+  OverlayContainer,
 ];
+

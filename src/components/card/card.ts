@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
+import {NgModule, Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
 
 
 /*
@@ -75,3 +75,10 @@ TODO(kara): update link to demo site when it exists
 export class MdCardTitleGroup {}
 
 export const MD_CARD_DIRECTIVES: any[] = [MdCard, MdCardHeader, MdCardTitleGroup];
+
+
+@NgModule({
+  exports: MD_CARD_DIRECTIVES,
+  declarations: MD_CARD_DIRECTIVES,
+})
+export class MdCardModule { }

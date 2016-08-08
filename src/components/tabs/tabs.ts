@@ -1,4 +1,5 @@
 import {
+    NgModule,
     ContentChild,
     Directive,
     Component,
@@ -10,8 +11,8 @@ import {
     QueryList,
     ContentChildren
 } from '@angular/core';
-import {NgIf, NgFor} from '@angular/common';
-import {PortalHostDirective} from '@angular2-material/core/portal/portal-directives';
+import {CommonModule} from '@angular/common';
+import {PortalModule} from '@angular2-material/core/portal/portal-directives';
 import {MdTabLabel} from './tab-label';
 import {MdTabContent} from './tab-content';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
@@ -54,7 +55,6 @@ export class MdTab {
   selector: 'md-tab-group',
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
-  directives: [PortalHostDirective, MdTabLabelWrapper, MdInkBar, NgIf, NgFor],
 })
 export class MdTabGroup {
   @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
@@ -197,3 +197,11 @@ export class MdTabGroup {
 }
 
 export const MD_TABS_DIRECTIVES = [MdTabGroup, MdTabLabel, MdTabContent, MdTab];
+export const TABS_INTERNAL_DIRECTIVES = [MdInkBar, MdTabLabelWrapper];
+
+@NgModule({
+  imports: [CommonModule, PortalModule],
+  exports: [MD_TABS_DIRECTIVES],
+  declarations: [MD_TABS_DIRECTIVES, TABS_INTERNAL_DIRECTIVES],
+})
+export class MdTabsModule { }

@@ -2,23 +2,19 @@ import {
   inject,
   fakeAsync,
   flushMicrotasks,
-  addProviders,
+  TestComponentBuilder,
+  TestBed,
+  async,
 } from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {
-  Component,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core';
-import {TemplatePortalDirective} from '../portal/portal-directives';
+import {Component, ViewChild, ViewContainerRef} from '@angular/core';
+import {TemplatePortalDirective, PortalModule} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
 import {Overlay} from './overlay';
 import {OverlayContainer} from './overlay-container';
 import {OverlayRef} from './overlay-ref';
 import {OverlayState} from './overlay-state';
 import {PositionStrategy} from './position/position-strategy';
-import {OverlayPositionBuilder} from './position/overlay-position-builder';
-import {ViewportRuler} from './position/viewport-ruler';
+import {OverlayModule} from './overlay-directives';
 
 
 describe('Overlay', () => {
@@ -28,25 +24,22 @@ describe('Overlay', () => {
   let templatePortal: TemplatePortal;
   let overlayContainerElement: HTMLElement;
 
-  beforeEach(() => {
-    addProviders([
-      Overlay,
-      OverlayPositionBuilder,
-      ViewportRuler,
-      {provide: OverlayContainer, useFactory: () => {
-        return {
-          getContainerElement: () => {
-            if (overlayContainerElement) { return overlayContainerElement; }
-            overlayContainerElement = document.createElement('div');
-            return overlayContainerElement;
-          }
-        };
-      }}
-    ]);
-  });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [OverlayModule, PortalModule],
+      declarations: [TestComponentWithTemplatePortals, PizzaMsg],
+      providers: [
+        {provide: OverlayContainer, useFactory: () => {
+          overlayContainerElement = document.createElement('div');
+          return {getContainerElement: () => overlayContainerElement};
+        }}
+      ]
+    });
+  }));
+
 
   let deps = [TestComponentBuilder, Overlay];
-  beforeEach(inject(deps, fakeAsync((tcb: TestComponentBuilder, o: Overlay) => {
+  beforeEach(fakeAsync(inject(deps, (tcb: TestComponentBuilder, o: Overlay) => {
     builder = tcb;
     overlay = o;
 
@@ -59,7 +52,7 @@ describe('Overlay', () => {
     flushMicrotasks();
   })));
 
-  it('should load a component into an overlay', fakeAsyncTest(() => {
+  it('should load a component into an overlay', fakeAsync(() => {
     let overlayRef: OverlayRef;
 
     overlay.create().then(ref => {
@@ -76,7 +69,7 @@ describe('Overlay', () => {
     expect(overlayContainerElement.textContent).toBe('');
   }));
 
-  it('should load a template portal into an overlay', fakeAsyncTest(() => {
+  it('should load a template portal into an overlay', fakeAsync(() => {
     let overlayRef: OverlayRef;
 
     overlay.create().then(ref => {
@@ -93,7 +86,7 @@ describe('Overlay', () => {
     expect(overlayContainerElement.textContent).toBe('');
   }));
 
-  it('should open multiple overlays', fakeAsyncTest(() => {
+  it('should open multiple overlays', fakeAsync(() => {
     let pizzaOverlayRef: OverlayRef;
     let cakeOverlayRef: OverlayRef;
 
@@ -131,7 +124,7 @@ describe('Overlay', () => {
       state = new OverlayState();
     });
 
-    it('should apply the positioning strategy', fakeAsyncTest(() => {
+    it('should apply the positioning strategy', fakeAsync(() => {
       state.positionStrategy = new FakePositionStrategy();
 
       overlay.create(state).then(ref => {
@@ -151,21 +144,18 @@ describe('Overlay', () => {
   selector: 'pizza-msg',
   template: '<p>Pizza</p>',
 })
-class PizzaMsg {
-}
+class PizzaMsg { }
 
 
 /** Test-bed component that contains a TempatePortal and an ElementRef. */
 @Component({
   selector: 'portal-test',
   template: `<template portal>Cake</template>`,
-  directives: [TemplatePortalDirective],
 })
 class TestComponentWithTemplatePortals {
   @ViewChild(TemplatePortalDirective) templatePortal: TemplatePortalDirective;
 
-  constructor(public viewContainerRef: ViewContainerRef) {
-  }
+  constructor(public viewContainerRef: ViewContainerRef) { }
 }
 
 class FakePositionStrategy implements PositionStrategy {
@@ -176,6 +166,3 @@ class FakePositionStrategy implements PositionStrategy {
 
 }
 
-function fakeAsyncTest(fn: () => void) {
-  return inject([], fakeAsync(fn));
-}

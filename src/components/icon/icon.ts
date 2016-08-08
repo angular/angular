@@ -1,4 +1,5 @@
 import {
+    NgModule,
     ChangeDetectionStrategy,
     Component,
     ElementRef,
@@ -10,6 +11,7 @@ import {
     ViewEncapsulation,
     AfterViewChecked
 } from '@angular/core';
+import {HttpModule} from '@angular/http';
 import {MdError} from '@angular2-material/core/errors/error';
 import {MdIconRegistry} from './icon-registry';
 export {MdIconRegistry} from './icon-registry';
@@ -224,3 +226,12 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
 }
 
 export const MD_ICON_DIRECTIVES = [MdIcon];
+
+
+@NgModule({
+  imports: [HttpModule],
+  exports: MD_ICON_DIRECTIVES,
+  declarations: MD_ICON_DIRECTIVES,
+  providers: [MdIconRegistry],
+})
+export class MdIconModule { }

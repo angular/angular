@@ -4,36 +4,34 @@ import {
     fakeAsync,
     flushMicrotasks,
     addProviders,
+    TestComponentBuilder,
+    ComponentFixture,
+    TestBed,
 } from '@angular/core/testing';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {Component, ViewChild} from '@angular/core';
-import {ConnectedOverlayDirective, OverlayOrigin} from './overlay-directives';
-import {Overlay} from './overlay';
+import {ConnectedOverlayDirective, OverlayModule} from './overlay-directives';
 import {OverlayContainer} from './overlay-container';
-import {ViewportRuler} from './position/viewport-ruler';
-import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
+
 
 describe('Overlay directives', () => {
   let builder: TestComponentBuilder;
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ConnectedOverlayDirectiveTest>;
 
-  beforeEach(() => {
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [OverlayModule],
+      declarations: [ConnectedOverlayDirectiveTest],
+    });
+
     addProviders([
-      Overlay,
-      OverlayPositionBuilder,
-      ViewportRuler,
       {provide: OverlayContainer, useFactory: () => {
-        return {
-          getContainerElement: () => {
-           overlayContainerElement = document.createElement('div');
-            return overlayContainerElement;
-          }
-        };
-      }},
+        overlayContainerElement = document.createElement('div');
+        return {getContainerElement: () => overlayContainerElement};
+      }}
     ]);
-  });
+  }));
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
@@ -78,7 +76,6 @@ describe('Overlay directives', () => {
   <template connected-overlay [origin]="trigger">
     <p>Menu content</p>
   </template>`,
-  directives: [ConnectedOverlayDirective, OverlayOrigin],
 })
 class ConnectedOverlayDirectiveTest {
   @ViewChild(ConnectedOverlayDirective) connectedOverlayDirective: ConnectedOverlayDirective;

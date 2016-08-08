@@ -14,14 +14,14 @@ import {
   OnChanges,
   EventEmitter,
   Output,
+  NgModule,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor,
-  DefaultValueAccessor,
-  NgModel,
+  FormsModule,
 } from '@angular/forms';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {BooleanFieldValue} from '@angular2-material/core/annotations/field-value';
 import {MdError} from '@angular2-material/core/errors/error';
 import {Observable} from 'rxjs/Observable';
@@ -100,7 +100,6 @@ export class MdHint {
   templateUrl: 'input.html',
   styleUrls: ['input.css'],
   providers: [MD_INPUT_CONTROL_VALUE_ACCESSOR],
-  directives: [DefaultValueAccessor, NgIf, NgModel],
   host: {'(click)' : 'focus()'}
 })
 export class MdInput implements ControlValueAccessor, AfterContentInit, OnChanges {
@@ -309,3 +308,11 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
 }
 
 export const MD_INPUT_DIRECTIVES = [MdPlaceholder, MdInput, MdHint];
+
+
+@NgModule({
+  declarations: MD_INPUT_DIRECTIVES,
+  imports: [CommonModule, FormsModule],
+  exports: MD_INPUT_DIRECTIVES,
+})
+export class MdInputModule { }

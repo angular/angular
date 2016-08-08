@@ -3,8 +3,10 @@ import {
   fakeAsync,
   async,
   addProviders,
+  TestComponentBuilder,
+  ComponentFixture,
+  TestBed,
 } from '@angular/core/testing';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
 import {
   Component,
   Directive,
@@ -12,8 +14,7 @@ import {
   ViewContainerRef,
   ChangeDetectorRef,
 } from '@angular/core';
-import {MdDialog} from './dialog';
-import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
+import {MdDialog, MdDialogModule} from './dialog';
 import {OverlayContainer} from '@angular2-material/core/overlay/overlay-container';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
@@ -28,20 +29,21 @@ describe('MdDialog', () => {
   let testViewContainerRef: ViewContainerRef;
   let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
 
-  beforeEach(() => {
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdDialogModule],
+      declarations: [PizzaMsg, ComponentWithChildViewContainer, DirectiveWithViewContainer],
+    });
+
     addProviders([
-      OVERLAY_PROVIDERS,
-      MdDialog,
       {provide: OverlayContainer, useFactory: () => {
-        return {
-          getContainerElement: () => {
-            overlayContainerElement = document.createElement('div');
-            return overlayContainerElement;
-          }
-        };
-      }},
+        overlayContainerElement = document.createElement('div');
+        return {getContainerElement: () => overlayContainerElement};
+      }}
     ]);
-  });
+
+    TestBed.compileComponents();
+  }));
 
   let deps = [TestComponentBuilder, MdDialog];
   beforeEach(inject(deps, fakeAsync((tcb: TestComponentBuilder, d: MdDialog) => {
@@ -133,7 +135,6 @@ class DirectiveWithViewContainer {
 @Component({
   selector: 'arbitrary-component',
   template: `<dir-with-view-container></dir-with-view-container>`,
-  directives: [DirectiveWithViewContainer],
 })
 class ComponentWithChildViewContainer {
   @ViewChild(DirectiveWithViewContainer) childWithViewContainer: DirectiveWithViewContainer;
@@ -153,3 +154,4 @@ class ComponentWithChildViewContainer {
 class PizzaMsg {
   constructor(public dialogRef: MdDialogRef<PizzaMsg>) { }
 }
+

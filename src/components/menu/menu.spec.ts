@@ -1,29 +1,39 @@
-import {inject} from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {
+  inject,
+  TestComponentBuilder,
+  TestBed,
+  async,
+} from '@angular/core/testing';
 import {Component} from '@angular/core';
-
-import {MD_MENU_DIRECTIVES} from './menu';
+import {MdMenuModule} from './menu';
 
 describe('MdMenu', () => {
   let builder: TestComponentBuilder;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdMenuModule],
+      declarations: [TestList],
+    });
+
+    TestBed.compileComponents();
+  }));
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
   }));
 
-  it('should add and remove focus class on focus/blur', () => {
+  it('should add and remove focus class on focus/blur', async(() => {
     var template = ``;
-    return builder.overrideTemplate(TestList, template)
-        .createAsync(TestList).then((fixture) => {
-           expect(true).toBe(true);
-        });
-  });
+    builder.overrideTemplate(TestList, template).createAsync(TestList).then(fixture => {
+       expect(true).toBe(true);
+    });
+  }));
 
 });
 
 @Component({
   selector: 'test-menu',
-  template: ``,
-  directives: [MD_MENU_DIRECTIVES]
+  template: ``
 })
 class TestList {}

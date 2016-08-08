@@ -1,12 +1,11 @@
 import {Component, ViewEncapsulation} from '@angular/core';
-import {MdIcon, MdIconRegistry} from '@angular2-material/icon/icon';
+import {MdIconRegistry} from '@angular2-material/icon/icon';
 
 @Component({
   moduleId: module.id,
   selector: 'md-icon-demo',
   templateUrl: 'icon-demo.html',
   styleUrls: ['icon-demo.css'],
-  directives: [MdIcon],
   viewProviders: [MdIconRegistry],
   encapsulation: ViewEncapsulation.None,
 })

@@ -1,12 +1,20 @@
-import {inject} from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {inject, TestComponentBuilder, TestBed, async} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdProgressCircle} from './progress-circle';
+import {MdProgressCircleModule} from './progress-circle';
 
 
 describe('MdProgressCircular', () => {
   let builder: TestComponentBuilder;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdProgressCircleModule],
+      declarations: [TestApp],
+    });
+
+    TestBed.compileComponents();
+  }));
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
@@ -118,7 +126,6 @@ function getChildDebugElement(parent: DebugElement, selector: string): DebugElem
 
 /** Test component that contains an MdButton. */
 @Component({
-  directives: [MdProgressCircle],
   template: '',
 })
 class TestApp {

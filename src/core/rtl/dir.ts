@@ -1,4 +1,4 @@
-import {Directive, HostBinding, Output, Input, EventEmitter} from '@angular/core';
+import {NgModule, Directive, HostBinding, Output, Input, EventEmitter} from '@angular/core';
 
 export type LayoutDirection = 'ltr' | 'rtl';
 
@@ -33,3 +33,10 @@ export class Dir {
   get value(): LayoutDirection { return this.dir; }
   set value(v: LayoutDirection) { this.dir = v; }
 }
+
+
+@NgModule({
+  exports: [Dir],
+  declarations: [Dir]
+})
+export class RtlModule { }

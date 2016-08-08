@@ -1,4 +1,5 @@
 import {
+  NgModule,
   Component,
   ChangeDetectionStrategy,
   Input,
@@ -45,3 +46,10 @@ export class MdToolbar {
 }
 
 export const MD_TOOLBAR_DIRECTIVES = [MdToolbar];
+
+
+@NgModule({
+  exports: MD_TOOLBAR_DIRECTIVES,
+  declarations: MD_TOOLBAR_DIRECTIVES,
+})
+export class MdToolbarModule { }

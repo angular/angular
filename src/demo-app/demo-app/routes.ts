@@ -1,4 +1,4 @@
-import {provideRouter, RouterConfig} from '@angular/router';
+import {provideRouter, Routes} from '@angular/router';
 import {Home} from './demo-app';
 import {ButtonDemo} from '../button/button-demo';
 import {BaselineDemo} from '../baseline/baseline-demo';
@@ -27,7 +27,7 @@ import {DialogDemo} from '../dialog/dialog-demo';
 import {TooltipDemo} from '../tooltip/tooltip-demo';
 
 
-export const routes: RouterConfig = [
+export const routes: Routes = [
   {path: '', component: Home},
   {path: 'button', component: ButtonDemo},
   {path: 'card', component: CardDemo},

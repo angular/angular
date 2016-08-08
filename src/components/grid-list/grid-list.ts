@@ -1,4 +1,5 @@
 import {
+  NgModule,
   Component,
   ViewEncapsulation,
   AfterContentChecked,
@@ -20,7 +21,7 @@ import {
 } from './tile-styler';
 import {MdGridListColsError} from './grid-list-errors';
 import {Dir} from '@angular2-material/core/rtl/dir';
-import {MdLine} from '@angular2-material/core/line/line';
+import {MdLineModule} from '@angular2-material/core/line/line';
 import {coerceToString, coerceToNumber} from './grid-list-measure';
 
 // TODO(kara): Conditional (responsive) column count / row size.
@@ -151,4 +152,12 @@ export class MdGridList implements OnInit, AfterContentChecked {
 }
 
 
-export const MD_GRID_LIST_DIRECTIVES: any[] = [MdGridList, MdGridTile, MdLine, MdGridTileText];
+export const MD_GRID_LIST_DIRECTIVES: any[] = [MdGridList, MdGridTile, MdGridTileText];
+
+
+@NgModule({
+  imports: [MdLineModule],
+  exports: [MD_GRID_LIST_DIRECTIVES, MdLineModule],
+  declarations: MD_GRID_LIST_DIRECTIVES,
+})
+export class MdGridListModule { }

@@ -1,12 +1,24 @@
-import {inject, async} from '@angular/core/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
+import {
+  inject,
+  async,
+  TestComponentBuilder,
+  TestBed,
+} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-
-import {MD_LIST_DIRECTIVES, MdListItem} from './list';
+import {MdListItem, MdListModule} from './list';
 
 describe('MdList', () => {
   let builder: TestComponentBuilder;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdListModule],
+      declarations: [TestList],
+    });
+
+    TestBed.compileComponents();
+  }));
 
   beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
     builder = tcb;
@@ -168,8 +180,7 @@ describe('MdList', () => {
 
 @Component({
   selector: 'test-list',
-  template: ``,
-  directives: [MD_LIST_DIRECTIVES]
+  template: '',
 })
 class TestList {
   items: any[] = [

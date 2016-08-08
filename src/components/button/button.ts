@@ -7,6 +7,7 @@ import {
   ElementRef,
   Renderer,
   Type,
+  NgModule,
 } from '@angular/core';
 
 // TODO(jelbourn): Ink ripples.
@@ -137,3 +138,10 @@ export class MdAnchor extends MdButton {
 
 
 export const MD_BUTTON_DIRECTIVES: Type[] = [MdButton, MdAnchor];
+
+
+@NgModule({
+  exports: MD_BUTTON_DIRECTIVES,
+  declarations: MD_BUTTON_DIRECTIVES,
+})
+export class MdButtonModule { }

@@ -6,9 +6,11 @@ System.defaultJSExtensions = true;
 
 
 const components = [
+  'all',
   'button',
   'card',
   'checkbox',
+  'dialog',
   'grid-list',
   'icon',
   'input',
@@ -18,7 +20,9 @@ const components = [
   'progress-circle',
   'radio',
   'sidenav',
+  'slider',
   'slide-toggle',
+  'button-toggle',
   'tabs',
   'toolbar',
   'tooltip',

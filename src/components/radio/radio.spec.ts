@@ -1,15 +1,16 @@
 import {
-  addProviders,
-  inject,
-  async,
-  fakeAsync,
-  tick
+    inject,
+    async,
+    fakeAsync,
+    tick,
+    TestComponentBuilder,
+    ComponentFixture,
+    TestBed,
 } from '@angular/core/testing';
-import {FORM_DIRECTIVES, NgControl, disableDeprecatedForms, provideForms} from '@angular/forms';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+import {NgControl, FormsModule} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MD_RADIO_DIRECTIVES, MdRadioGroup, MdRadioButton, MdRadioChange} from './radio';
+import {MdRadioGroup, MdRadioButton, MdRadioChange, MdRadioModule} from './radio';
 import {
   MdUniqueSelectionDispatcher
 } from '@angular2-material/core/coordination/unique-selection-dispatcher';
@@ -19,19 +20,23 @@ describe('MdRadio', () => {
   let builder: TestComponentBuilder;
   let dispatcher: MdUniqueSelectionDispatcher;
 
-  beforeEach(() => {
-    addProviders([
-      disableDeprecatedForms(),
-      provideForms(),
-      {provide: MdUniqueSelectionDispatcher, useFactory: () => {
-        dispatcher = new MdUniqueSelectionDispatcher();
-        return dispatcher;
-      }},
-    ]);
-  });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdRadioModule, FormsModule],
+      declarations: [
+        RadiosInsideRadioGroup,
+        RadioGroupWithNgModel,
+        StandaloneRadioButtons,
+      ],
+    });
 
-  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+    TestBed.compileComponents();
+  }));
+
+  let injectDeps = [TestComponentBuilder, MdUniqueSelectionDispatcher];
+  beforeEach(inject(injectDeps, (tcb: TestComponentBuilder, d: MdUniqueSelectionDispatcher) => {
     builder = tcb;
+    dispatcher = d;
   }));
 
   describe('inside of a group', () => {
@@ -467,7 +472,6 @@ describe('MdRadio', () => {
 
 
 @Component({
-  directives: [MD_RADIO_DIRECTIVES],
   template: `
   <md-radio-group [disabled]="isGroupDisabled"
                   [align]="alignment"
@@ -487,7 +491,6 @@ class RadiosInsideRadioGroup {
 
 
 @Component({
-  directives: [MD_RADIO_DIRECTIVES],
   template: `
     <md-radio-button name="season" value="spring">Spring</md-radio-button>
     <md-radio-button name="season" value="summer">Summer</md-radio-button>
@@ -507,7 +510,6 @@ class StandaloneRadioButtons { }
 
 
 @Component({
-  directives: [MD_RADIO_DIRECTIVES, FORM_DIRECTIVES],
   template: `
   <md-radio-group [(ngModel)]="modelValue" (change)="lastEvent = $event">
     <md-radio-button *ngFor="let option of options" [value]="option.value">

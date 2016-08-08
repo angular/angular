@@ -1,14 +1,17 @@
-import {Injector, ComponentRef, Injectable} from '@angular/core';
-import {Overlay} from '@angular2-material/core/overlay/overlay';
-import {OverlayRef} from '@angular2-material/core/overlay/overlay-ref';
-import {OverlayState} from '@angular2-material/core/overlay/overlay-state';
-import {ComponentPortal} from '@angular2-material/core/portal/portal';
+import {NgModule, Injector, ComponentRef, Injectable} from '@angular/core';
+import {
+  Overlay,
+  OverlayModule,
+  PortalModule,
+  OverlayRef,
+  OverlayState,
+  ComponentPortal,
+} from '@angular2-material/core/core';
 import {ComponentType} from '@angular2-material/core/overlay/generic-component-type';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 import {DialogInjector} from './dialog-injector';
 import {MdDialogContainer} from './dialog-container';
-
 
 export {MdDialogConfig} from './dialog-config';
 export {MdDialogRef} from './dialog-ref';
@@ -116,3 +119,13 @@ export class MdDialog {
     return state;
   }
 }
+
+
+@NgModule({
+  imports: [OverlayModule, PortalModule],
+  exports: [MdDialogContainer],
+  declarations: [MdDialogContainer],
+  entryComponents: [MdDialogContainer],
+  providers: [MdDialog],
+})
+export class MdDialogModule { }

@@ -1,4 +1,5 @@
 import {
+    NgModule,
     Component,
     ContentChildren,
     Directive,
@@ -15,6 +16,7 @@ import {
 import {
     NG_VALUE_ACCESSOR,
     ControlValueAccessor,
+    FormsModule,
 } from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {
@@ -374,3 +376,12 @@ export const MD_BUTTON_TOGGLE_DIRECTIVES = [
   MdButtonToggleGroupMultiple,
   MdButtonToggle
 ];
+
+
+@NgModule({
+  imports: [FormsModule],
+  exports: MD_BUTTON_TOGGLE_DIRECTIVES,
+  declarations: MD_BUTTON_TOGGLE_DIRECTIVES,
+  providers: [MdUniqueSelectionDispatcher],
+})
+export class MdButtonToggleModule { }

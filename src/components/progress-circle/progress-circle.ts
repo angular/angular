@@ -1,4 +1,5 @@
 import {
+  NgModule,
   Component,
   HostBinding,
   ChangeDetectorRef,
@@ -313,3 +314,10 @@ function getSvgArc(currentValue: number, rotation: number) {
 }
 
 export const MD_PROGRESS_CIRCLE_DIRECTIVES = [MdProgressCircle, MdSpinner];
+
+
+@NgModule({
+  exports: MD_PROGRESS_CIRCLE_DIRECTIVES,
+  declarations: MD_PROGRESS_CIRCLE_DIRECTIVES,
+})
+export class MdProgressCircleModule { }
