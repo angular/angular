@@ -9,8 +9,10 @@ import {
   Type,
   NgModule,
 } from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {MD_RIPPLE_DIRECTIVES} from '@angular2-material/core/core';
 import {BooleanFieldValue} from '@angular2-material/core/annotations/field-value';
+import {MdRippleModule} from '../../core/ripple/ripple';
 
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
 // TODO(kara): Convert attribute selectors to classes when attr maps become available
@@ -29,7 +31,6 @@ import {BooleanFieldValue} from '@angular2-material/core/annotations/field-value
   },
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
-  directives: [MD_RIPPLE_DIRECTIVES],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -118,7 +119,6 @@ export class MdButton {
   },
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
-  directives: [MD_RIPPLE_DIRECTIVES],
   encapsulation: ViewEncapsulation.None
 })
 export class MdAnchor extends MdButton {
@@ -162,6 +162,7 @@ export const MD_BUTTON_DIRECTIVES: Type[] = [MdButton, MdAnchor];
 
 
 @NgModule({
+  imports: [CommonModule, MdRippleModule],
   exports: MD_BUTTON_DIRECTIVES,
   declarations: MD_BUTTON_DIRECTIVES,
 })
