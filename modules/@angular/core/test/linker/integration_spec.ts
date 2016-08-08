@@ -470,6 +470,27 @@ function declareTests({useJit}: {useJit: boolean}) {
                    });
              }));
 
+      it('should not share empty context for template directives - issue #10045',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               tcb.overrideView(
+                      MyComp, new ViewMetadata({
+                        template:
+                            '<template pollutedContext let-foo="bar">{{foo}}</template><template noContext let-foo="bar">{{foo}}</template>',
+                        directives: [PollutedContext, NoContext]
+                      }))
+
+                   .createAsync(MyComp)
+                   .then((fixture) => {
+
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('baz');
+
+                     async.done();
+                   });
+             }));
+
       it('should not detach views in ViewContainers when the parent view is destroyed.',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
@@ -2300,6 +2321,21 @@ class SomeViewport {
   constructor(public container: ViewContainerRef, templateRef: TemplateRef<SomeViewportContext>) {
     container.createEmbeddedView(templateRef, new SomeViewportContext('hello'));
     container.createEmbeddedView(templateRef, new SomeViewportContext('again'));
+  }
+}
+
+@Directive({selector: '[pollutedContext]'})
+class PollutedContext {
+  constructor(private tplRef: TemplateRef<any>, private vcRef: ViewContainerRef) {
+    const evRef = this.vcRef.createEmbeddedView(this.tplRef);
+    evRef.context.bar = 'baz';
+  }
+}
+
+@Directive({selector: '[noContext]'})
+class NoContext {
+  constructor(private tplRef: TemplateRef<any>, private vcRef: ViewContainerRef) {
+    this.vcRef.createEmbeddedView(this.tplRef);
   }
 }
 

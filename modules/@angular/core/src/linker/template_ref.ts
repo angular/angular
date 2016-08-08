@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank} from '../facade/lang';
 import {AppElement} from './element';
 import {ElementRef} from './element_ref';
 import {AppView} from './view';
 import {EmbeddedViewRef} from './view_ref';
-
-const EMPTY_CONTEXT = new Object();
 
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.
@@ -51,10 +48,7 @@ export class TemplateRef_<C> extends TemplateRef<C> {
   createEmbeddedView(context: C): EmbeddedViewRef<C> {
     var view: AppView<C> = this._viewFactory(
         this._appElement.parentView.viewUtils, this._appElement.parentInjector, this._appElement);
-    if (isBlank(context)) {
-      context = <any>EMPTY_CONTEXT;
-    }
-    view.create(context, null, null);
+    view.create(context || <any>{}, null, null);
     return view.ref;
   }
 
