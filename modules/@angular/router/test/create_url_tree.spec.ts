@@ -54,6 +54,12 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual('/a/11/d(right:c)');
   });
 
+  it('should support updating secondary segments (absolute)', () => {
+    const p = serializer.parse('/a(right:b)');
+    const t = createRoot(p, ['/', {outlets: {right: ['c']}}]);
+    expect(serializer.serialize(t)).toEqual('/a(right:c)');
+  });
+
   it('should support updating secondary segments', () => {
     const p = serializer.parse('/a(right:b)');
     const t = createRoot(p, [{outlets: {right: ['c', 11, 'd']}}]);
