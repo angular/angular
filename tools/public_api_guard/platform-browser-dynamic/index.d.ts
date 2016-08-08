@@ -1,4 +1,4 @@
-/** @experimental */
+/** @deprecated */
 export declare function bootstrap<C>(appComponentType: ConcreteType<C>, customProviders?: Array<any>): Promise<ComponentRef<C>>;
 
 /** @deprecated */
