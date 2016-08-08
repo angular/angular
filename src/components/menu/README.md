@@ -3,6 +3,13 @@
 `md-menu` is a list of options that displays when triggered.  You can read more about menus in the 
 [Material Design spec](https://material.google.com/components/menus.html).
 
+### Not yet implemented
+
+- Keyboard events: up arrow, down arrow, enter
+- `prevent-close` option, to turn off automatic menu close when clicking outside the menu
+- Custom offset support
+- Menu groupings (which menus are allowed to open together)
+
 ## Usage
 
 ### Setup
@@ -157,11 +164,5 @@ also adds `aria-hasPopup="true"` to the trigger element.
 | `toggleMenu()` | `Promise<void>` | Toggles the menu. Returns a promise that will resolve when the menu has completed opening or closing. |  
 | `destroyMenu()` | `Promise<void>` | Destroys the menu overlay completely. 
   
-
-### TODO
-
-- Keyboard events: up arrow, down arrow, enter
-- `prevent-close` option, to turn off automatic menu close when clicking outside the menu
-- Custom offset support
 
 
