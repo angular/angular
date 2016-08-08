@@ -35,9 +35,14 @@ export function createUrlTree(
 }
 
 function validateCommands(n: NormalizedNavigationCommands): void {
-  if (n.isAbsolute && n.commands.length > 0 && (typeof n.commands[0] === 'object')) {
+  if (n.isAbsolute && n.commands.length > 0 && isMatrixParams(n.commands[0])) {
     throw new Error('Root segment cannot have matrix parameters');
   }
+}
+
+function isMatrixParams(command: any): boolean {
+  return typeof command === 'object' && command.outlets === undefined &&
+      command.segmentPath === undefined;
 }
 
 function tree(
