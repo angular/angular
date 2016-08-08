@@ -41,11 +41,13 @@ describe('MdButtonToggle', () => {
   }));
 
   describe('inside of an exclusive selection group', () => {
+
     let fixture: ComponentFixture<ButtonTogglesInsideButtonToggleGroup>;
     let groupDebugElement: DebugElement;
     let groupNativeElement: HTMLElement;
     let buttonToggleDebugElements: DebugElement[];
     let buttonToggleNativeElements: HTMLElement[];
+    let buttonToggleLabelElements: HTMLLabelElement[];
     let groupInstance: MdButtonToggleGroup;
     let buttonToggleInstances: MdButtonToggle[];
     let testComponent: ButtonTogglesInsideButtonToggleGroup;
@@ -62,8 +64,13 @@ describe('MdButtonToggle', () => {
         groupInstance = groupDebugElement.injector.get(MdButtonToggleGroup);
 
         buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MdButtonToggle));
-        buttonToggleNativeElements =
-            buttonToggleDebugElements.map(debugEl => debugEl.nativeElement);
+
+        buttonToggleNativeElements = buttonToggleDebugElements
+          .map(debugEl => debugEl.nativeElement);
+
+        buttonToggleLabelElements = fixture.debugElement.queryAll(By.css('label'))
+          .map(debugEl => debugEl.nativeElement);
+
         buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
       });
     }));
@@ -133,15 +140,19 @@ describe('MdButtonToggle', () => {
       let changeSpy = jasmine.createSpy('button-toggle change listener');
       buttonToggleInstances[0].change.subscribe(changeSpy);
 
-      buttonToggleInstances[0].checked = true;
+
+      buttonToggleLabelElements[0].click();
       fixture.detectChanges();
       tick();
       expect(changeSpy).toHaveBeenCalled();
 
-      buttonToggleInstances[0].checked = false;
+      buttonToggleLabelElements[0].click();
       fixture.detectChanges();
       tick();
-      expect(changeSpy).toHaveBeenCalledTimes(2);
+
+      // The default browser behavior is to not emit a change event, when the value was set
+      // to false. That's because the current input type is set to `radio`
+      expect(changeSpy).toHaveBeenCalledTimes(1);
     }));
 
     it('should emit a change event from the button toggle group', fakeAsync(() => {
@@ -330,6 +341,7 @@ describe('MdButtonToggle', () => {
     let groupNativeElement: HTMLElement;
     let buttonToggleDebugElements: DebugElement[];
     let buttonToggleNativeElements: HTMLElement[];
+    let buttonToggleLabelElements: HTMLLabelElement[];
     let groupInstance: MdButtonToggleGroupMultiple;
     let buttonToggleInstances: MdButtonToggle[];
     let testComponent: ButtonTogglesInsideButtonToggleGroupMultiple;
@@ -346,8 +358,10 @@ describe('MdButtonToggle', () => {
         groupInstance = groupDebugElement.injector.get(MdButtonToggleGroupMultiple);
 
         buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MdButtonToggle));
-        buttonToggleNativeElements =
-            buttonToggleDebugElements.map(debugEl => debugEl.nativeElement);
+        buttonToggleNativeElements = buttonToggleDebugElements
+          .map(debugEl => debugEl.nativeElement);
+        buttonToggleLabelElements = fixture.debugElement.queryAll(By.css('label'))
+          .map(debugEl => debugEl.nativeElement);
         buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
       });
     }));
@@ -398,12 +412,36 @@ describe('MdButtonToggle', () => {
 
       expect(buttonToggleInstances[0].checked).toBe(false);
     });
+
+    it('should emit a change event for state changes', fakeAsync(() => {
+
+      expect(buttonToggleInstances[0].checked).toBe(false);
+
+      let changeSpy = jasmine.createSpy('button-toggle change listener');
+      buttonToggleInstances[0].change.subscribe(changeSpy);
+
+      buttonToggleLabelElements[0].click();
+      fixture.detectChanges();
+      tick();
+      expect(changeSpy).toHaveBeenCalled();
+
+      buttonToggleLabelElements[0].click();
+      fixture.detectChanges();
+      tick();
+
+      // The default browser behavior is to emit an event, when the value was set
+      // to false. That's because the current input type is set to `checkbox` when
+      // using the multiple mode.
+      expect(changeSpy).toHaveBeenCalledTimes(2);
+    }));
+
   });
 
   describe('as standalone', () => {
     let fixture: ComponentFixture<StandaloneButtonToggle>;
     let buttonToggleDebugElement: DebugElement;
     let buttonToggleNativeElement: HTMLElement;
+    let buttonToggleLabelElement: HTMLLabelElement;
     let buttonToggleInstance: MdButtonToggle;
     let testComponent: StandaloneButtonToggle;
 
@@ -416,24 +454,45 @@ describe('MdButtonToggle', () => {
 
         buttonToggleDebugElement = fixture.debugElement.query(By.directive(MdButtonToggle));
         buttonToggleNativeElement = buttonToggleDebugElement.nativeElement;
+        buttonToggleLabelElement = fixture.debugElement.query(By.css('label')).nativeElement;
         buttonToggleInstance = buttonToggleDebugElement.componentInstance;
       });
     }));
 
     it('should toggle when clicked', () => {
-      let nativeCheckboxLabel = buttonToggleDebugElement.query(By.css('label')).nativeElement;
-
-      nativeCheckboxLabel.click();
+      buttonToggleLabelElement.click();
 
       fixture.detectChanges();
 
       expect(buttonToggleInstance.checked).toBe(true);
 
-      nativeCheckboxLabel.click();
+      buttonToggleLabelElement.click();
       fixture.detectChanges();
 
       expect(buttonToggleInstance.checked).toBe(false);
     });
+
+    it('should emit a change event for state changes', fakeAsync(() => {
+
+      expect(buttonToggleInstance.checked).toBe(false);
+
+      let changeSpy = jasmine.createSpy('button-toggle change listener');
+      buttonToggleInstance.change.subscribe(changeSpy);
+
+      buttonToggleLabelElement.click();
+      fixture.detectChanges();
+      tick();
+      expect(changeSpy).toHaveBeenCalled();
+
+      buttonToggleLabelElement.click();
+      fixture.detectChanges();
+      tick();
+
+      // The default browser behavior is to emit an event, when the value was set
+      // to false. That's because the current input type is set to `checkbox`.
+      expect(changeSpy).toHaveBeenCalledTimes(2);
+    }));
+
   });
 });
 

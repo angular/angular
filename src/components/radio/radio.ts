@@ -238,12 +238,10 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   selector: 'md-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],
-  encapsulation: ViewEncapsulation.None,
-  host: {
-    '(click)': '_onClick($event)'
-  }
+  encapsulation: ViewEncapsulation.None
 })
 export class MdRadioButton implements OnInit {
+
   @HostBinding('class.md-radio-focused')
   _isFocused: boolean;
 
@@ -308,10 +306,6 @@ export class MdRadioButton implements OnInit {
       this.radioDispatcher.notify(this.id, this.name);
     }
 
-    if (newCheckedState != this._checked) {
-      this._emitChangeEvent();
-    }
-
     this._checked = newCheckedState;
 
     if (newCheckedState && this.radioGroup && this.radioGroup.value != this.value) {
@@ -374,23 +368,6 @@ export class MdRadioButton implements OnInit {
     this.change.emit(event);
   }
 
-  _onClick(event: Event) {
-    if (this.disabled) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
-
-    if (this.radioGroup != null) {
-      // Propagate the change one-way via the group, which will in turn mark this
-      // button as checked.
-      this.radioGroup.selected = this;
-      this.radioGroup._touch();
-    } else {
-      this.checked = true;
-    }
-  }
-
   /**
    * We use a hidden native input field to handle changes to focus state via keyboard navigation,
    * with visual rendering done separately. The native element is kept in sync with the overall
@@ -400,15 +377,31 @@ export class MdRadioButton implements OnInit {
     this._isFocused = true;
   }
 
+  /** TODO: internal */
   _onInputBlur() {
     this._isFocused = false;
+
     if (this.radioGroup) {
       this.radioGroup._touch();
     }
   }
 
+  /** TODO: internal */
+  _onInputClick(event: Event) {
+    // We have to stop propagation for click events on the visual hidden input element.
+    // By default, when a user clicks on a label element, a generated click event will be
+    // dispatched on the associated input element. Since we are using a label element as our
+    // root container, the click event on the `radio-button` will be executed twice.
+    // The real click event will bubble up, and the generated click event also tries to bubble up.
+    // This will lead to multiple click events.
+    // Preventing bubbling for the second event will solve that issue.
+    event.stopPropagation();
+  }
+
   /**
-   * Checks the radio due to an interaction with the underlying native <input type="radio">
+   * Triggered when the radio button received a click or the input recognized any change.
+   * Clicking on a label element, will trigger a change event on the associated input.
+   * TODO: internal
    */
   _onInputChange(event: Event) {
     // We always have to stop propagation on the change event.
@@ -417,6 +410,8 @@ export class MdRadioButton implements OnInit {
     event.stopPropagation();
 
     this.checked = true;
+    this._emitChangeEvent();
+
     if (this.radioGroup) {
       this.radioGroup._touch();
     }

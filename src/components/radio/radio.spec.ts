@@ -2,7 +2,6 @@ import {
     inject,
     async,
     fakeAsync,
-    tick,
     TestComponentBuilder,
     ComponentFixture,
     TestBed,
@@ -45,6 +44,7 @@ describe('MdRadio', () => {
     let groupNativeElement: HTMLElement;
     let radioDebugElements: DebugElement[];
     let radioNativeElements: HTMLElement[];
+    let radioLabelElements: HTMLLabelElement[];
     let groupInstance: MdRadioGroup;
     let radioInstances: MdRadioButton[];
     let testComponent: RadiosInsideRadioGroup;
@@ -63,6 +63,9 @@ describe('MdRadio', () => {
         radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
         radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
         radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
+
+        radioLabelElements = radioDebugElements
+          .map(debugEl => debugEl.query(By.css('label')).nativeElement);
       });
     }));
 
@@ -77,7 +80,7 @@ describe('MdRadio', () => {
       testComponent.isGroupDisabled = true;
       fixture.detectChanges();
 
-      radioNativeElements[0].click();
+      radioLabelElements[0].click();
       expect(radioInstances[0].checked).toBe(false);
     });
 
@@ -119,7 +122,7 @@ describe('MdRadio', () => {
     it('should update the group and radios when one of the radios is clicked', () => {
       expect(groupInstance.value).toBeFalsy();
 
-      radioNativeElements[0].click();
+      radioLabelElements[0].click();
       fixture.detectChanges();
 
       expect(groupInstance.value).toBe('fire');
@@ -127,7 +130,7 @@ describe('MdRadio', () => {
       expect(radioInstances[0].checked).toBe(true);
       expect(radioInstances[1].checked).toBe(false);
 
-      radioNativeElements[1].click();
+      radioLabelElements[1].click();
       fixture.detectChanges();
 
       expect(groupInstance.value).toBe('water');
@@ -150,18 +153,23 @@ describe('MdRadio', () => {
     it('should emit a change event from radio buttons', fakeAsync(() => {
       expect(radioInstances[0].checked).toBe(false);
 
-      let changeSpy = jasmine.createSpy('radio change listener');
-      radioInstances[0].change.subscribe(changeSpy);
+      let spies = radioInstances
+        .map((value, index) => jasmine.createSpy(`onChangeSpy ${index}`));
 
-      radioInstances[0].checked = true;
-      fixture.detectChanges();
-      tick();
-      expect(changeSpy).toHaveBeenCalled();
+      spies.forEach((spy, index) => radioInstances[index].change.subscribe(spy));
 
-      radioInstances[0].checked = false;
+      radioLabelElements[0].click();
       fixture.detectChanges();
-      tick();
-      expect(changeSpy).toHaveBeenCalledTimes(2);
+
+      expect(spies[0]).toHaveBeenCalled();
+
+      radioLabelElements[1].click();
+      fixture.detectChanges();
+
+      // To match the native radio button behavior, the change event shouldn't
+      // be triggered when the radio got unselected.
+      expect(spies[0]).toHaveBeenCalledTimes(1);
+      expect(spies[1]).toHaveBeenCalledTimes(1);
     }));
 
     it('should emit a change event from the radio group', fakeAsync(() => {
@@ -172,12 +180,12 @@ describe('MdRadio', () => {
 
       groupInstance.value = 'fire';
       fixture.detectChanges();
-      tick();
+
       expect(changeSpy).toHaveBeenCalled();
 
       groupInstance.value = 'water';
       fixture.detectChanges();
-      tick();
+
       expect(changeSpy).toHaveBeenCalledTimes(2);
     }));
 
@@ -236,6 +244,7 @@ describe('MdRadio', () => {
     let groupNativeElement: HTMLElement;
     let radioDebugElements: DebugElement[];
     let radioNativeElements: HTMLElement[];
+    let radioLabelElements: HTMLLabelElement[];
     let groupInstance: MdRadioGroup;
     let radioInstances: MdRadioButton[];
     let testComponent: RadioGroupWithNgModel;
@@ -256,6 +265,9 @@ describe('MdRadio', () => {
         radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
         radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
         radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
+
+        radioLabelElements = radioDebugElements
+          .map(debugEl => debugEl.query(By.css('label')).nativeElement);
       });
     }));
 
@@ -294,7 +306,6 @@ describe('MdRadio', () => {
       // but remain untouched.
       radioInstances[1].checked = true;
       fixture.detectChanges();
-      tick();
 
       expect(groupNgControl.valid).toBe(true);
       expect(groupNgControl.pristine).toBe(false);
@@ -302,9 +313,8 @@ describe('MdRadio', () => {
 
       // After a user interaction occurs (such as a click), the control should remain dirty and
       // now also be touched.
-      radioNativeElements[2].click();
+      radioLabelElements[2].click();
       fixture.detectChanges();
-      tick();
 
       expect(groupNgControl.valid).toBe(true);
       expect(groupNgControl.pristine).toBe(false);
@@ -314,8 +324,6 @@ describe('MdRadio', () => {
     it('should update the ngModel value when selecting a radio button', fakeAsync(() => {
       radioInstances[1].checked = true;
       fixture.detectChanges();
-
-      tick();
 
       expect(testComponent.modelValue).toBe('chocolate');
     }));
@@ -358,9 +366,14 @@ describe('MdRadio', () => {
       groupInstance.value = 'chocolate';
       fixture.detectChanges();
 
-      tick();
       expect(testComponent.modelValue).toBe('chocolate');
       expect(testComponent.lastEvent.value).toBe('chocolate');
+
+      groupInstance.value = 'vanilla';
+      fixture.detectChanges();
+
+      expect(testComponent.modelValue).toBe('vanilla');
+      expect(testComponent.lastEvent.value).toBe('vanilla');
     }));
   });
 
@@ -500,7 +513,7 @@ class RadiosInsideRadioGroup {
     <md-radio-button name="weather" value="hot">Summer</md-radio-button>
     <md-radio-button name="weather" value="cool">Autumn</md-radio-button>
     
-    <span id="xyz">Baby Banana<span>
+    <span id="xyz">Baby Banana</span>
     <md-radio-button name="fruit" value="banana" aria-label="Banana" aria-labelledby="xyz">
     </md-radio-button>
     <md-radio-button name="fruit" value="raspberry">Raspberry</md-radio-button>

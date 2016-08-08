@@ -5,7 +5,8 @@
          [checked]="checked"
          [disabled]="disabled"
          [name]="name"
-         (change)="_onInputChange($event)">
+         (change)="_onInputChange($event)"
+         (click)="_onInputClick($event)">
 
   <div class="md-button-toggle-label-content">
     <ng-content></ng-content>
