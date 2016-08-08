@@ -380,6 +380,52 @@ export function main() {
 
          }));
 
+      it('should bind to ng-model', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []);
+
+           ng1Module.run(($rootScope: any /** TODO #9100 */) => { $rootScope.modelA = 'A'; });
+
+           let ng2Instance: Ng2;
+           @Component({selector: 'ng2', template: '{{_value}}'})
+           class Ng2 {
+             private _value: any = '';
+             private _onChangeCallback: (_: any) => void = () => {};
+             constructor() { ng2Instance = this; }
+             writeValue(value: any) { this._value = value; }
+             registerOnChange(fn: any) { this._onChangeCallback = fn; }
+             doChange(newValue: string) {
+               this._value = newValue;
+               this._onChangeCallback(newValue);
+             }
+           }
+
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           const element = html(`<div><ng2 ng-model="modelA"></ng2> | {{modelA}}</div>`);
+
+           const Ng2Module = NgModule({
+                               declarations: [Ng2],
+                               imports: [BrowserModule],
+                               schemas: [NO_ERRORS_SCHEMA],
+                             }).Class({constructor: function() {}});
+
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             let $rootScope: any = ref.ng1RootScope;
+
+             expect(multiTrim(document.body.textContent)).toEqual('A | A');
+
+             $rootScope.modelA = 'B';
+             $rootScope.$apply();
+             expect(multiTrim(document.body.textContent)).toEqual('B | B');
+
+             ng2Instance.doChange('C');
+             expect($rootScope.modelA).toBe('C');
+             expect(multiTrim(document.body.textContent)).toEqual('C | C');
+
+             ref.dispose();
+           });
+         }));
+
       it('should properly run cleanup when ng1 directive is destroyed', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module('ng1', []);

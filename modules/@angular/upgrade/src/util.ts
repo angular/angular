@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as angular from './angular_js';
+
 export function onError(e: any) {
   // TODO: (misko): We seem to not have a stack trace here!
   if (console.error) {
@@ -44,5 +46,25 @@ export class Deferred<R> {
       this.resolve = res;
       this.reject = rej;
     });
+  }
+}
+
+/**
+ * @return true if the passed-in component implements the subset of
+ *     ControlValueAccessor needed for AngularJS ng-model compatibility.
+ */
+function supportsNgModel(component: any) {
+  return typeof component.writeValue === 'function' &&
+      typeof component.registerOnChange === 'function';
+}
+
+/**
+ * Glue the AngularJS ngModelController if it exists to the component if it
+ * implements the needed subset of ControlValueAccessor.
+ */
+export function hookupNgModel(ngModel: angular.INgModelController, component: any) {
+  if (ngModel && supportsNgModel(component)) {
+    ngModel.$render = () => { component.writeValue(ngModel.$viewValue); };
+    component.registerOnChange(ngModel.$setViewValue.bind(ngModel));
   }
 }
