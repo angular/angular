@@ -36,6 +36,11 @@ describe('RouterState & Snapshot', () => {
 
     it('should return root', () => {
       const b = state.root.firstChild;
+      expect(b.root).toBe(state.root);
+    });
+
+    it('should return parent', () => {
+      const b = state.root.firstChild;
       expect(b.parent).toBe(state.root);
     });
 
@@ -72,6 +77,11 @@ describe('RouterState & Snapshot', () => {
     });
 
     it('should return root', () => {
+      const b = state.root.firstChild;
+      expect(b.root).toBe(state.root);
+    });
+
+    it('should return parent', () => {
       const b = state.root.firstChild;
       expect(b.parent).toBe(state.root);
     });
