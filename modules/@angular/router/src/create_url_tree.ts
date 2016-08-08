@@ -38,6 +38,11 @@ function validateCommands(n: NormalizedNavigationCommands): void {
   if (n.isAbsolute && n.commands.length > 0 && isMatrixParams(n.commands[0])) {
     throw new Error('Root segment cannot have matrix parameters');
   }
+
+  const c = n.commands.filter(c => typeof c === 'object' && c.outlets !== undefined);
+  if (c.length > 0 && c[0] !== n.commands[n.commands.length - 1]) {
+    throw new Error('{outlets:{}} has to be the last command');
+  }
 }
 
 function isMatrixParams(command: any): boolean {
@@ -244,8 +249,14 @@ function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, command
 function createNewSegmentGroup(
     segmentGroup: UrlSegmentGroup, startIndex: number, commands: any[]): UrlSegmentGroup {
   const paths = segmentGroup.segments.slice(0, startIndex);
+
   let i = 0;
   while (i < commands.length) {
+    if (typeof commands[i] === 'object' && commands[i].outlets !== undefined) {
+      const children = createNewSegmentChldren(commands[i].outlets);
+      return new UrlSegmentGroup(paths, children);
+    }
+
     // if we start with an object literal, we need to reuse the path part from the segment
     if (i === 0 && (typeof commands[0] === 'object')) {
       const p = segmentGroup.segments[startIndex];
@@ -265,6 +276,16 @@ function createNewSegmentGroup(
     }
   }
   return new UrlSegmentGroup(paths, {});
+}
+
+function createNewSegmentChldren(outlets: {[name: string]: any}): any {
+  const children: {[key: string]: UrlSegmentGroup} = {};
+  forEach(outlets, (commands: any, outlet: string) => {
+    if (commands !== null) {
+      children[outlet] = createNewSegmentGroup(new UrlSegmentGroup([], {}), 0, commands);
+    }
+  });
+  return children;
 }
 
 function stringify(params: {[key: string]: any}): {[key: string]: string} {
