@@ -11,19 +11,13 @@ You can read more about button toggles in the
 
 ### Setup
 
-Importing the symbols:
+Importing the module:
 ```ts
-import { MdUniqueSelectionDispatcher } from '@angular2-material/core';
-import { MD_BUTTON_TOGGLE_DIRECTIVES } from '@angular2-material/button-toggle'
-```
-
-Adding providers and directives:
-```ts
-@Component({
-  ...
-  directives: [MD_BUTTON_TOGGLE_DIRECTIVES],
-  providers: [MdUniqueSelectionDispatcher]
-})
+ @NgModule({
+    imports: [MdButtonToggleModule],
+    ...
+ })
+ export class MyAppModule { }
 ```
 
 ### Basic Usage

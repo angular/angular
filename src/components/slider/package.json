@@ -1,9 +1,9 @@
 {
-  "name": "@angular2-material/button-toggle",
+  "name": "@angular2-material/slider",
   "version": "2.0.0-alpha.6-3",
-  "description": "Angular 2 Material Button Toggle",
-  "main": "./button-toggle.js",
-  "typings": "./button-toggle.d.ts",
+  "description": "Angular 2 Material Slider",
+  "main": "./slider.js",
+  "typings": "./slider.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/material2.git"
@@ -13,9 +13,7 @@
     "material",
     "material design",
     "components",
-    "button-toggle",
-    "button",
-    "toggle"
+    "slider"
   ],
   "license": "MIT",
   "bugs": {
@@ -23,7 +21,6 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.6-3",
-    "@angular/forms": "^0.2.0"
+    "@angular2-material/core": "2.0.0-alpha.6-3"
   }
 }
