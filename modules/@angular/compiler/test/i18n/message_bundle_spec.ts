@@ -26,7 +26,7 @@ export function main(): void {
         messages.updateFromTemplate(
             '<p i18n="m|d">Translate Me</p>', 'url', DEFAULT_INTERPOLATION_CONFIG);
         expect(humanizeMessages(messages)).toEqual([
-          'a486901=Translate Me',
+          '2e791a68a3324ecdd29e252198638dafacec46e9=Translate Me',
         ]);
       });
 
@@ -35,8 +35,8 @@ export function main(): void {
             '<p i18n="m|d">Translate Me</p><p i18n>Translate Me</p>', 'url',
             DEFAULT_INTERPOLATION_CONFIG);
         expect(humanizeMessages(messages)).toEqual([
-          'a486901=Translate Me',
-          '8475f2cc=Translate Me',
+          '2e791a68a3324ecdd29e252198638dafacec46e9=Translate Me',
+          '8ca133f957845af1b1868da1b339180d1f519644=Translate Me',
         ]);
       });
     });

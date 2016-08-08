@@ -38,7 +38,7 @@ describe('template i18n extraction output', () => {
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="5a2858f1" desc="desc" meaning="meaning">translate me</msg>
+  <msg id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" desc="desc" meaning="meaning">translate me</msg>
 </messagebundle>`;
 
     const xmbOutput = path.join(outDir, 'messages.xmb');
