@@ -70,49 +70,6 @@
 * **platform-browser:** remove testing_e2e target ([#10029](https://github.com/angular/angular/issues/10029)) ([4a96505](https://github.com/angular/angular/commit/4a96505))
 * **platform-browser:** throw useful error on missing platform module. ([73f02c7](https://github.com/angular/angular/commit/73f02c7))
 * **platform-browser-dynamic:** Add [@Injectable](https://github.com/Injectable)() annotation to XHRImpl. ([7b31178](https://github.com/angular/angular/commit/7b31178))
-* **router:** absolute redirects should work with lazy loading ([3a307c2](https://github.com/angular/angular/commit/3a307c2))
-* **router:** add segmentPath to the link DSL ([4f17dbc](https://github.com/angular/angular/commit/4f17dbc))
-* **router:** advance query params and fragment after advanced routes ([06e4ca4](https://github.com/angular/angular/commit/06e4ca4))
-* **router:** back button does not work in IE11 and Safari ([f08060b](https://github.com/angular/angular/commit/f08060b))
-* **router:** configure DI correctly when using the old `provideRouter` function ([93ade74](https://github.com/angular/angular/commit/93ade74))
-* **router:** disallow root segments with matrix params ([34b3c53](https://github.com/angular/angular/commit/34b3c53))
-* **router:** do not fire events on 'duplicate' location events ([0b54e3c](https://github.com/angular/angular/commit/0b54e3c))
-* **router:** encode/decode params and path segments ([46e105f](https://github.com/angular/angular/commit/46e105f))
-* **router:** export navigation extras ([51e661e](https://github.com/angular/angular/commit/51e661e))
-* **router:** expose initalNavigation and dispose so they can be used with webworkers ([b77a4a4](https://github.com/angular/angular/commit/b77a4a4))
-* **router:** fix matrix params check to handle 'special' objects ([d2d36c6](https://github.com/angular/angular/commit/d2d36c6))
-* **router:** fix offline compilation by exporting provideLocationStrategy ([8dc82a0](https://github.com/angular/angular/commit/8dc82a0))
-* **router:** fix rollup config to properly set up rxjs ([1803ed2](https://github.com/angular/angular/commit/1803ed2))
-* **router:** fix RouterLinKActive to work with RouterLink ([f7a0e9e](https://github.com/angular/angular/commit/f7a0e9e))
-* **router:** fix type definition ([c586656](https://github.com/angular/angular/commit/c586656))
-* **router:** freeze params and queryParams to prevent common source of bugs ([0668ba5](https://github.com/angular/angular/commit/0668ba5))
-* **router:** handle lastPathIndex of empty-path routes ([7a4f662](https://github.com/angular/angular/commit/7a4f662))
-* **router:** handle router outlets in ngIf ([0c65d5c](https://github.com/angular/angular/commit/0c65d5c))
-* **router:** handle url fragments when no url segments present ([43437c1](https://github.com/angular/angular/commit/43437c1))
-* **router:** handle urls with only secondary top-level segments ([44709e0](https://github.com/angular/angular/commit/44709e0))
-* **router:** handle when both primary and secondary are empty-path and primary has a child ([2b63330](https://github.com/angular/angular/commit/2b63330))
-* **router:** lazily-loaded modules should use loaded injectors instead of the root one ([85be729](https://github.com/angular/angular/commit/85be729))
-* **router:** lazy loaded components should use loaded injector ([921a179](https://github.com/angular/angular/commit/921a179))
-* **router:** make an outlet to unregister itself when it is removed from the dom ([3e377f5](https://github.com/angular/angular/commit/3e377f5))
-* **router:** make router provides work with cli and offline compilation ([d15a1d6](https://github.com/angular/angular/commit/d15a1d6))
-* **router:** merge SystemJsAppModuleFactoryLoader and SystemJsAllModuleLoader ([0426325](https://github.com/angular/angular/commit/0426325))
-* **router:** navigation should not preserve query params and fragment by default ([23ee29b](https://github.com/angular/angular/commit/23ee29b))
-* **router:** provideRouter should use provideRoutes ([#10488](https://github.com/angular/angular/issues/10488)) ([2eda7a5](https://github.com/angular/angular/commit/2eda7a5))
-* **router:** relax type defintion of Route to improve dev ergonomics ([bb8b82b](https://github.com/angular/angular/commit/bb8b82b))
-* **router:** remove a circular dep ([6bfd514](https://github.com/angular/angular/commit/6bfd514))
-* **router:** remove private and internal annotations ([#9745](https://github.com/angular/angular/issues/9745)) ([dabf214](https://github.com/angular/angular/commit/dabf214))
-* **router:** remove private and internal annotations ([#9753](https://github.com/angular/angular/issues/9753)) ([137fff9](https://github.com/angular/angular/commit/137fff9))
-* **router:** remove the precompile warning ([fb2539e](https://github.com/angular/angular/commit/fb2539e))
-* **router:** route.parent should work for secondary children ([5a99393](https://github.com/angular/angular/commit/5a99393))
-* **router:** router link active should take all descendants into account ([8d90a5a](https://github.com/angular/angular/commit/8d90a5a))
-* **router:** routerLinkActive should only set classes after the router has successfully navigated ([db54a84](https://github.com/angular/angular/commit/db54a84))
-* **router:** support outlets in non-absolute positions ([afcb3c0](https://github.com/angular/angular/commit/afcb3c0))
-* **router:** throw when cannot parse a url ([27b87ef](https://github.com/angular/angular/commit/27b87ef))
-* **router:** update current state and url before activating components ([5cf5897](https://github.com/angular/angular/commit/5cf5897))
-* **router:** update dts files ([81d27da](https://github.com/angular/angular/commit/81d27da))
-* **router:** update dts files ([a415613](https://github.com/angular/angular/commit/a415613))
-* **router:** update links when query params change ([f65ebec](https://github.com/angular/angular/commit/f65ebec))
-* **router:** updates router module to be offline-compilation friendly ([72da547](https://github.com/angular/angular/commit/72da547))
 * **static_reflector:** report methods with decorators in `propMetadata` as well ([367f0fd](https://github.com/angular/angular/commit/367f0fd)), closes [#10308](https://github.com/angular/angular/issues/10308) [#10318](https://github.com/angular/angular/issues/10318)
 * **static_reflector:** resolve values of functions in the function context ([d6b65db](https://github.com/angular/angular/commit/d6b65db))
 * **SyncAsyncResult:** fix default async value ([#10013](https://github.com/angular/angular/issues/10013)) ([6d02d2f](https://github.com/angular/angular/commit/6d02d2f)), closes [#10013](https://github.com/angular/angular/issues/10013)
@@ -186,26 +143,6 @@
 * **NgStyle:** add support for the style.unit notation ([#10496](https://github.com/angular/angular/issues/10496)) ([8b18ef4](https://github.com/angular/angular/commit/8b18ef4)), closes [#10326](https://github.com/angular/angular/issues/10326)
 * **ngUpgrade:** add support for NgModules ([6b564ec](https://github.com/angular/angular/commit/6b564ec))
 * **NumberPipe:** add string support ([#10163](https://github.com/angular/angular/issues/10163)) ([f3dd91e](https://github.com/angular/angular/commit/f3dd91e)), closes [#10159](https://github.com/angular/angular/issues/10159)
-* **router:** activateroute should expose its route config ([2fdb39e](https://github.com/angular/angular/commit/2fdb39e))
-* **router:** add a validation to make sure pathMatch is set correctly ([3c3e9dd](https://github.com/angular/angular/commit/3c3e9dd))
-* **router:** add activate and deactivate events to RouterOutlet ([245b091](https://github.com/angular/angular/commit/245b091))
-* **router:** add isActive to router ([5162fb6](https://github.com/angular/angular/commit/5162fb6))
-* **router:** add parent, children, firstChild to ActivatedRoute ([550ab31](https://github.com/angular/angular/commit/550ab31))
-* **router:** add queryParams and fragment to every activated route ([422d380](https://github.com/angular/angular/commit/422d380))
-* **router:** add RouterAppModule ([8aa2a0c](https://github.com/angular/angular/commit/8aa2a0c))
-* **router:** add RouterTestModule ([72544ba](https://github.com/angular/angular/commit/72544ba))
-* **router:** add support for canActivateChild ([9e3d13f](https://github.com/angular/angular/commit/9e3d13f))
-* **router:** add support for lazily loaded modules ([8ebb8e4](https://github.com/angular/angular/commit/8ebb8e4))
-* **router:** add the ANALYZE_FOR_PRECOMPILE provider to make dev ergonomics better ([96a9e66](https://github.com/angular/angular/commit/96a9e66))
-* **router:** Allow navigation without updating the URL ([#9608](https://github.com/angular/angular/issues/9608)) ([63b82cd](https://github.com/angular/angular/commit/63b82cd))
-* **router:** empty-path routes should inherit matrix params ([a77db44](https://github.com/angular/angular/commit/a77db44))
-* **router:** guards and data resolvers can now return promises ([a5dc570](https://github.com/angular/angular/commit/a5dc570))
-* **router:** implement canLoad ([62e7c0f](https://github.com/angular/angular/commit/62e7c0f))
-* **router:** rename UrlPathWithParams into UrlSegment ([6f68330](https://github.com/angular/angular/commit/6f68330))
-* **router:** support sibling modules providing routes ([29caa37](https://github.com/angular/angular/commit/29caa37))
-* **router:** update routerLink DSL to handle aux routes ([ded518d](https://github.com/angular/angular/commit/ded518d))
-* **router:** update the example app to use lazily-loaded modules ([6fbe56d](https://github.com/angular/angular/commit/6fbe56d))
-* **Router:** add extra validation for when route was passed as Array ([#9942](https://github.com/angular/angular/issues/9942)) ([aa88438](https://github.com/angular/angular/commit/aa88438))
 * **security:** categorize <track src> as a regular URL. ([a441b5b](https://github.com/angular/angular/commit/a441b5b)), closes [#10089](https://github.com/angular/angular/issues/10089)
 * **security:** only warn when actually sanitizing HTML. ([#10272](https://github.com/angular/angular/issues/10272)) ([482c019](https://github.com/angular/angular/commit/482c019)), closes [#10206](https://github.com/angular/angular/issues/10206)
 * **security:** trust resource URLs as URLs. ([#10220](https://github.com/angular/angular/issues/10220)) ([51f3d22](https://github.com/angular/angular/commit/51f3d22))
@@ -215,7 +152,7 @@
 
 ### BREAKING CHANGES
 
-* core: 
+* core:
 
   ## Bootstrap changes
   ```
@@ -241,15 +178,15 @@
   ```
 * browser:
   - short form bootstrap does no longer allow
-    to inject compiler internals (i.e. everything 
+    to inject compiler internals (i.e. everything
     from `@angular/compiler`). Inject `Compiler` instead.
-* core: 
-  - `ApplicationRef.waitForAsyncInitializers` is deprecated. Use 
+* core:
+  - `ApplicationRef.waitForAsyncInitializers` is deprecated. Use
   `AppInitStatus.donePromise` / `AppInitStatus.done` instead.
-* core: 
+* core:
   - `ApplicationRef.registerBootstrapListener` is deprecated. Provide a multi
   provider for the new token `APP_BOOTSTRAP_LISTENER` instead.
-* core: 
+* core:
   - `ApplicationRef.dispose` is deprecated. Destroy the module that was
     created during bootstrap instead by calling `NgModuleRef.destroy`.
   - `AplicationRef.registerDisposeListener` is deprecated.
@@ -262,17 +199,17 @@
     `PlatformRef.onDestroy` instead.
   - `PlaformRef.diposed` is deprecated. Use `PlatformRef.destroyed`
     instead.
-* testing: 
+* testing:
   * `withProviders`, use `TestBed.withModule` instead
   * `addProviders`, use `TestBed.configureTestingModule` instead
   * `TestComponentBuilder`, use `TestBed.configureTestModule` / `TestBed.override...` / `TestBed.createComponent` instead.
-* core: 
+* core:
   - ES5 users can no longer use the `View(…)` function to provide `ViewMetadata`.
   This mirrors the removal of the `@View` decorator a while ago.
 * core:
   - `bootstrapModule` and `bootstrapModuleFactory` have been moved to be members of `PlaformRef`.
     E.g. `platformBrowserDynamic().bootstrapModule(MyModule)`.
-* core: 
+* core:
   - By default, Angular will error during parsing
   on unknown properties,
   even if they are on elements with a `-` in their name
@@ -290,15 +227,12 @@
     })
     export class MyAppModule{}
   ```
-* core: 
+* core:
   - `coreLoadAndBootstrap` and `coreBootstrap` can't be used any more (without migration support).
     Use `bootstrapModule` / `bootstrapModuleFactory` instead.
   - All Components listed in routes have to be part of the `declarations` of an NgModule.
     Either directly on the bootstrap module / lazy loaded module, or in an NgModule imported by them.
-* router: 
-  `UrlPathWithParams` => `UrlSegment`
-  `UrlSegment` => `UrlSegmentGroup`
-* core: 
+* core:
   - `ApplicationRef.run` is deprecated. Use `NgZone.run` directly
   - `ApplicationRef.injector` is deprecated. Inject an `Injector` or
     use `NgModuleRef.injector` instead
@@ -350,9 +284,9 @@
     - use `NgModuleFactoryLoader` for lazy loading.
   - Instead of `SystemJsComponentResolver`, create an `@NgModule` and use `SystemJsNgModuleLoader`.
   - Instead of `SystemJsCmpFactoryResolver`, create an `@NgModule` and use `SystemJsNgModuleFactoryLoader`
-* core: 
+* core:
   - `lockRunMode` is deprecated and no more needed.
-* animations: 
+* animations:
   - animation trigger expressions within the template that are assigned as
   an element attribute (e.g. `@prop`) are deprecated. Please use the
   Angular2 property binding syntax (e.g. `[@prop]`) when assigning
@@ -366,8 +300,8 @@
   <div [@trigger]="expression"></div>
   ```
 
-* forms: 
-  
+* forms:
+
   We have removed the deprecated form directives from the built-in platform directive list, so apps are not required to package forms with their app. This also makes forms friendly to offline compilation.
 
   Instead, we have exposed three modules:
@@ -403,7 +337,7 @@
   })
   export class MyAppModule{}
   ```
-* testing: 
+* testing:
   - Application providers can no longer inject compiler internals (i.e. everything
   from `@angular/compiler`). Inject `Compiler` instead. This reflects the
   changes to `bootstrap` for module support (3f55aa609f60f130f1d69188ed057214b1267cb3).
@@ -412,26 +346,26 @@
   - Platform directives / pipes need to be provided via
     `configureModule` and can no longer be provided via the
     `PLATFORM_PIPES` / `PLATFORM_DIRECTIVES` tokens.
-  - `setBaseTestProviders()` was renamed into `initTestEnvironment` and 
+  - `setBaseTestProviders()` was renamed into `initTestEnvironment` and
     now takes a `PlatformRef` and a factory for a
     `Compiler`.
   - E.g. for the browser platform:
-    
+
     BEFORE:
     ```
     import {setBaseTestProviders} from ‘@angular/core/testing’;
     import {TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
         TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS} from ‘@angular/platform-browser-dynamic/testing’;
-    
+
     setBaseTestProviders(TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
-        TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS);   
+        TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS);
     ```
 
     AFTER:
     ```
     import {TestBed} from ‘@angular/core/testing’;
     import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from ‘@angular/platform-browser-dynamic/testing’;
-    
+
     TestBed.initTestEnvironment(
         BrowserDynamicTestingModule,
         platformBrowserDynamicTesting()
@@ -439,22 +373,22 @@
 
     ```
   - E.g. for the server platform:
-    
+
     BEFORE:
     ```
     import {setBaseTestProviders} from ‘@angular/core/testing’;
     import {TEST_SERVER_PLATFORM_PROVIDERS,
         TEST_SERVER_APPLICATION_PROVIDERS} from ‘@angular/platform-server/testing/server’;
-    
+
     setBaseTestProviders(TEST_SERVER_PLATFORM_PROVIDERS,
-        TEST_SERVER_APPLICATION_PROVIDERS);   
+        TEST_SERVER_APPLICATION_PROVIDERS);
     ```
 
     AFTER:
     ```
     import {TestBed} from ‘@angular/core/testing’;
     import {ServerTestingModule, serverTestingPlatform} from ‘@angular/platform-browser-dynamic/testing’;
-    
+
     TestBed.initTestEnvironment(
         ServerTestingModule,
         serverTestingPlatform()
@@ -462,15 +396,6 @@
     ```
 
   Related to #9726
-* router: Previously both imperative (router.navigate) and declarative (routerLink) navigations
-  would preserve the current query params and fragment. This behavior turned out to
-  be confusing. This commit changes it.
-
-  Now, neither is preserved by default. To preserve them, you need to do the following:
-
-  `router.naviage("newUrl", {preserveQueryParams: true, preserveFragment: true})`
-
-  `<a routerLink="newUrl" preserveQueryParams preserveFragment></a>`
 * ngUpgrade: UpgradeAdapter.addProvider are now deprecated in favor of passing in an NgModule into the adapter's constructor
 
   Before:
@@ -491,7 +416,9 @@
   let upgradeAdapter = new UpgradeAdapter(MyModule);
   ```
 
+### ROUTER CHANGE LOG
 
+[You can find the router changelog here.](https://github.com/angular/angular/blob/master/modules/@angular/router/CHANGELOG.md)
 
 <a name="2.0.0-rc.4"></a>
 # [2.0.0-rc.4](https://github.com/angular/angular/compare/2.0.0-rc.3...2.0.0-rc.4) (2016-06-30)
@@ -557,7 +484,7 @@
 
 ### BREAKING CHANGES
 
-* http: The changes to Http's URLSearchParams serialization now 
+* http: The changes to Http's URLSearchParams serialization now
   prevent encoding of these characters inside query parameters
   which were previously converted to percent-encoded values `@ : $ , ; + ; ? /`
 
@@ -619,8 +546,8 @@
   stringifyElement,
   expect (and custom matchers for Jasmine)
   ```
-* testing: 
-  
+* testing:
+
   Before:
 
       expect(...).toThrowErrorWith(msg);
@@ -898,7 +825,7 @@ The likelihood of anyone actually depending on this property is very low.
 * HTML, style values, and URLs are now automatically sanitized. Values that do not match are escaped
   or ignored. When binding a URL or style property that would get ignored, bind to a value
   explicitly marked as safe instead by injection the DOM sanitization service:
-  
+
   ```
   class MyComponent {
     constructor(sanitizer: DomSanitizationService) {
@@ -909,7 +836,7 @@ The likelihood of anyone actually depending on this property is very low.
   }
   ```
 
-* `PLATFORM_PIPES` and `PLATFORM_DIRECTIVES` now are fields on `CompilerConfig`. 
+* `PLATFORM_PIPES` and `PLATFORM_DIRECTIVES` now are fields on `CompilerConfig`.
   Instead of providing a binding to these tokens, provide a binding for `CompilerConfig` instead.
 
 * `CompilerConfig` used to take positional arguments and now takes named arguments.
