@@ -45,5 +45,7 @@ export class MessageBundle {
         (message) => { this._messageMap[digestMessage(message)] = message; });
   }
 
+  getMessageMap(): {[id: string]: Message} { return this._messageMap; }
+
   write(serializer: Serializer): string { return serializer.write(this._messageMap); }
 }

@@ -12,6 +12,7 @@ import * as html from '../ml_parser/ast';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseSourceSpan} from '../parse_util';
+import {digestMessage} from './digest';
 
 import * as i18n from './i18n_ast';
 import {PlaceholderRegistry} from './serializers/placeholder';
@@ -19,7 +20,7 @@ import {PlaceholderRegistry} from './serializers/placeholder';
 const _expParser = new ExpressionParser(new ExpressionLexer());
 
 /**
- * Returns a function converting html Messages to i18n Messages given an interpolationConfig
+ * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
 export function createI18nMessageFactory(interpolationConfig: InterpolationConfig): (
     nodes: html.Node[], meaning: string, description: string) => i18n.Message {
@@ -34,6 +35,7 @@ class _I18nVisitor implements html.Visitor {
   private _icuDepth: number;
   private _placeholderRegistry: PlaceholderRegistry;
   private _placeholderToContent: {[name: string]: string};
+  private _placeholderToIds: {[name: string]: string};
 
   constructor(
       private _expressionParser: ExpressionParser,
@@ -44,10 +46,12 @@ class _I18nVisitor implements html.Visitor {
     this._icuDepth = 0;
     this._placeholderRegistry = new PlaceholderRegistry();
     this._placeholderToContent = {};
+    this._placeholderToIds = {};
 
     const i18nodes: i18n.Node[] = html.visitAll(this, nodes, {});
 
-    return new i18n.Message(i18nodes, this._placeholderToContent, meaning, description);
+    return new i18n.Message(
+        i18nodes, this._placeholderToContent, this._placeholderToIds, meaning, description);
   }
 
   visitElement(el: html.Element, context: any): i18n.Node {
@@ -99,9 +103,14 @@ class _I18nVisitor implements html.Visitor {
       return i18nIcu;
     }
 
-    // else returns a placeholder
+    // Else returns a placeholder
+    // ICU placeholders should not be replaced with their original content but with the their
+    // translations. We need to create a new visitor (they are not re-entrant) to compute the
+    // message id.
+    // TODO(vicb): add a html.Node -> i18n.Message cache to avoid having to re-create the msg
     const phName = this._placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
-    this._placeholderToContent[phName] = icu.sourceSpan.toString();
+    const visitor = new _I18nVisitor(this._expressionParser, this._interpolationConfig);
+    this._placeholderToIds[phName] = digestMessage(visitor.toI18nMessage([icu], '', ''));
     return new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
   }
 

@@ -97,7 +97,7 @@ export function sha1(str: string): string {
     hex += (b >>> 4 & 0x0f).toString(16) + (b & 0x0f).toString(16);
   }
 
-  return hex;
+  return hex.toLowerCase();
 }
 
 function utf8Encode(str: string): string {

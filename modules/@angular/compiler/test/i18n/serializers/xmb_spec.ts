@@ -56,8 +56,8 @@ export function main(): void {
     it('should throw when trying to load an xmb file', () => {
       expect(() => {
         const serializer = new Xmb();
-        serializer.load(XMB, 'url', {});
-      }).toThrow();
+        serializer.load(XMB, 'url', null);
+      }).toThrowError(/Unsupported/);
     });
   });
 }

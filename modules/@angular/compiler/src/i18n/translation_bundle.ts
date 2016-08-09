@@ -7,8 +7,9 @@
  */
 
 import * as html from '../ml_parser/ast';
-import {Serializer} from './serializers/serializer';
 
+import {MessageBundle} from './message_bundle';
+import {Serializer} from './serializers/serializer';
 
 /**
  * A container for translated messages
@@ -16,10 +17,9 @@ import {Serializer} from './serializers/serializer';
 export class TranslationBundle {
   constructor(private _messageMap: {[id: string]: html.Node[]} = {}) {}
 
-  static load(
-      content: string, url: string, placeholders: {[id: string]: {[name: string]: string}},
-      serializer: Serializer): TranslationBundle {
-    return new TranslationBundle(serializer.load(content, url, placeholders));
+  static load(content: string, url: string, messageBundle: MessageBundle, serializer: Serializer):
+      TranslationBundle {
+    return new TranslationBundle(serializer.load(content, url, messageBundle));
   }
 
   get(id: string): html.Node[] { return this._messageMap[id]; }
