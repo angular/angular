@@ -2,7 +2,7 @@
 Class field decorators for directives and components
 @cheatsheetIndex 8
 @description
-{@target ts}`import {Input, ...} from '@angular/core';`{@endtarget}
+{@target ts}`import { Input, ... } from '@angular/core';`{@endtarget}
 {@target js}Available from the `ng.core` namespace{@endtarget}
 {@target dart}`import 'package:angular2/core.dart';`{@endtarget}
 
