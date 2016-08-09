@@ -19,6 +19,8 @@ import * as t from '../template_parser/template_ast';
 import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from './animation_ast';
 import {AnimationParseError, ParsedAnimationResult, parseAnimationEntry} from './animation_parser';
 
+const animationCompilationCache = new Map<CompileDirectiveMetadata, CompiledAnimation[]>();
+
 export class CompiledAnimation {
   constructor(
       public name: string, public statesMapStatement: o.Statement,
@@ -68,6 +70,7 @@ export class AnimationCompiler {
       throw new BaseException(errorMessageStr);
     }
 
+    animationCompilationCache.set(component, compiledAnimations);
     return compiledAnimations;
   }
 }
@@ -389,24 +392,43 @@ function _validateAnimationProperties(
 }
 
 class _AnimationTemplatePropertyVisitor implements t.TemplateAstVisitor {
-  private _animationRegistry: {[key: string]: boolean} = {};
-
+  private _animationRegistry: {[key: string]: boolean};
   public errors: AnimationParseError[] = [];
 
   constructor(animations: CompiledAnimation[]) {
-    animations.forEach(entry => { this._animationRegistry[entry.name] = true; });
+    this._animationRegistry = this._buildCompileAnimationLookup(animations);
+  }
+
+  private _buildCompileAnimationLookup(animations: CompiledAnimation[]): {[key: string]: boolean} {
+    var map: {[key: string]: boolean} = {};
+    animations.forEach(entry => { map[entry.name] = true; });
+    return map;
   }
 
   visitElement(ast: t.ElementAst, ctx: any): any {
-    ast.inputs.forEach(input => {
+    var inputAsts: t.BoundElementPropertyAst[] = ast.inputs;
+    var componentAnimationRegistry = this._animationRegistry;
+
+    var componentOnElement: t.DirectiveAst =
+        ast.directives.find(directive => directive.directive.isComponent);
+    if (componentOnElement) {
+      inputAsts = componentOnElement.hostProperties;
+      let cachedComponentAnimations = animationCompilationCache.get(componentOnElement.directive);
+      if (cachedComponentAnimations) {
+        componentAnimationRegistry = this._buildCompileAnimationLookup(cachedComponentAnimations);
+      }
+    }
+
+    inputAsts.forEach(input => {
       if (input.type == t.PropertyBindingType.Animation) {
         var animationName = input.name;
-        if (!isPresent(this._animationRegistry[animationName])) {
+        if (!isPresent(componentAnimationRegistry[animationName])) {
           this.errors.push(
               new AnimationParseError(`couldn't find an animation entry for ${animationName}`));
         }
       }
     });
+
     t.templateVisitAll(this, ast.children);
   }
 
