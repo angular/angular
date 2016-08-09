@@ -157,13 +157,28 @@ function findStartingPosition(
     return new Position(urlTree.root, true, 0);
   } else if (route.snapshot._lastPathIndex === -1) {
     return new Position(route.snapshot._urlSegment, true, 0);
-  } else if (route.snapshot._lastPathIndex + 1 - normalizedChange.numberOfDoubleDots >= 0) {
-    return new Position(
-        route.snapshot._urlSegment, false,
-        route.snapshot._lastPathIndex + 1 - normalizedChange.numberOfDoubleDots);
   } else {
-    throw new Error('Invalid number of \'../\'');
+    const modifier = isMatrixParams(normalizedChange.commands[0]) ? 0 : 1;
+    const index = route.snapshot._lastPathIndex + modifier;
+    return createPositionApplyingDoubleDots(
+        route.snapshot._urlSegment, index, normalizedChange.numberOfDoubleDots);
   }
+}
+
+function createPositionApplyingDoubleDots(
+    group: UrlSegmentGroup, index: number, numberOfDoubleDots: number): Position {
+  let g = group;
+  let ci = index;
+  let dd = numberOfDoubleDots;
+  while (dd > ci) {
+    dd -= ci;
+    g = g.parent;
+    if (!g) {
+      throw new Error('Invalid number of \'../\'');
+    }
+    ci = g.segments.length;
+  }
+  return new Position(g, false, ci - dd);
 }
 
 function getPath(command: any): any {
@@ -184,6 +199,7 @@ function updateSegmentGroup(
   if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
     return updateSegmentGroupChildren(segmentGroup, startIndex, commands);
   }
+
   const m = prefixedWith(segmentGroup, startIndex, commands);
   const slicedCommands = commands.slice(m.lastIndex);
 
@@ -258,7 +274,7 @@ function createNewSegmentGroup(
     }
 
     // if we start with an object literal, we need to reuse the path part from the segment
-    if (i === 0 && (typeof commands[0] === 'object')) {
+    if (i === 0 && isMatrixParams(commands[0])) {
       const p = segmentGroup.segments[startIndex];
       paths.push(new UrlSegment(p.path, commands[0]));
       i++;
@@ -267,7 +283,7 @@ function createNewSegmentGroup(
 
     const curr = getPath(commands[i]);
     const next = (i < commands.length - 1) ? commands[i + 1] : null;
-    if (curr && next && (typeof next === 'object')) {
+    if (curr && next && isMatrixParams(next)) {
       paths.push(new UrlSegment(curr, stringify(next)));
       i += 2;
     } else {

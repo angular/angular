@@ -139,10 +139,23 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t)).toEqual('/a/(c2//left:cp)(left:ap)');
     });
 
-    it('should work when given params', () => {
+    it('should support parameters-only navigation', () => {
+      const p = serializer.parse('/a');
+      const t = create(p.root.children[PRIMARY_OUTLET], 0, p, [{k: 99}]);
+      expect(serializer.serialize(t)).toEqual('/a;k=99');
+    });
+
+    it('should support parameters-only navigation (nested case)', () => {
       const p = serializer.parse('/a/(c//left:cp)(left:ap)');
       const t = create(p.root.children[PRIMARY_OUTLET], 0, p, [{'x': 99}]);
-      expect(serializer.serialize(t)).toEqual('/a/(c;x=99//left:cp)(left:ap)');
+      expect(serializer.serialize(t)).toEqual('/a;x=99(left:ap)');
+    });
+
+    it('should support parameters-only navigation (with a double dot)', () => {
+      const p = serializer.parse('/a/(c//left:cp)(left:ap)');
+      const t =
+          create(p.root.children[PRIMARY_OUTLET].children[PRIMARY_OUTLET], 0, p, ['../', {x: 5}]);
+      expect(serializer.serialize(t)).toEqual('/a;x=5(left:ap)');
     });
 
     it('should work when index > 0', () => {
@@ -157,13 +170,7 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t)).toEqual('/a/c2');
     });
 
-    it('should support setting matrix params', () => {
-      const p = serializer.parse('/a/(c//left:cp)(left:ap)');
-      const t = create(p.root.children[PRIMARY_OUTLET], 0, p, ['../', {x: 5}]);
-      expect(serializer.serialize(t)).toEqual('/a;x=5(left:ap)');
-    });
-
-    xit('should support going to a parent (across segments)', () => {
+    it('should support going to a parent (across segments)', () => {
       const p = serializer.parse('/q/(a/(c//left:cp)//left:qp)(left:ap)');
 
       const t =
