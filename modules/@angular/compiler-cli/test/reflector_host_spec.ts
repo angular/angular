@@ -203,6 +203,11 @@ describe('reflector_host', () => {
         .toBeUndefined();
   });
 
+  it('should be able to read empty metadata ', () => {
+    expect(reflectorNestedGenDir.getMetadataFor('node_modules/@angular/empty.d.ts'))
+        .toBeUndefined();
+  });
+
   it('should return undefined for missing modules', () => {
     expect(reflectorNestedGenDir.getMetadataFor('node_modules/@angular/missing.d.ts'))
         .toBeUndefined();
@@ -328,7 +333,9 @@ const FILES: Entry = {
           'core.metadata.json':
               `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
           'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
-          'unused.d.ts': dummyModule
+          'unused.d.ts': dummyModule,
+          'empty.d.ts': 'export declare var a: string;',
+          'empty.metadata.json': '[]',
         }
       }
     },
