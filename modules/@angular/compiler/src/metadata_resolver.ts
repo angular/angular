@@ -794,7 +794,7 @@ function componentModuleUrl(
 
   if (isPresent(cmpMetadata.moduleId)) {
     var moduleId = cmpMetadata.moduleId;
-    var scheme = getUrlScheme(moduleId);
+    var scheme = getUrlScheme(moduleId.toString());
     return isPresent(scheme) && scheme.length > 0 ? moduleId :
                                                     `package:${moduleId}${MODULE_SUFFIX}`;
   }
