@@ -75,7 +75,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
  *   selector: 'app',
  *   template: `
  *     <button (click)="value = value + 1">Change MyComponent</button>
- *     <my-cmp [my-prop]="value"></my-cmp>`,
+ *     <my-cmp [myProp]="value"></my-cmp>`,
  *   directives: [MyComponent]
  * })
  * export class App {
