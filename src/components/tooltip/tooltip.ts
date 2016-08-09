@@ -191,6 +191,7 @@ export class TooltipComponent {
   message: string;
 }
 
+/** @deprecated */
 export const MD_TOOLTIP_DIRECTIVES = [MdTooltip];
 
 

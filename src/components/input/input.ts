@@ -307,6 +307,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   }
 }
 
+/** @deprecated */
 export const MD_INPUT_DIRECTIVES = [MdPlaceholder, MdInput, MdHint];
 
 

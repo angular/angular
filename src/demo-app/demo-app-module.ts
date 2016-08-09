@@ -87,7 +87,9 @@ import {TabsDemo} from './tabs/tab-group-demo';
   ],
 })
 export class DemoAppModule {
-  constructor(appRef: ApplicationRef) {
-    appRef.bootstrap(DemoApp);
+  constructor(private _appRef: ApplicationRef) { }
+
+  ngDoBootstrap() {
+    this._appRef.bootstrap(DemoApp);
   }
 }

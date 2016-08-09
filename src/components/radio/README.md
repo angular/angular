@@ -5,18 +5,17 @@ Radio buttons allow the user to select one option from a set. Use radio buttons 
 
 ### Setup
 Importing the symbols:
-```typescript
-import { MdUniqueSelectionDispatcher } from '@angular2-material/core';
-import { MD_RADIO_DIRECTIVES } from '@angular2-material/radio';
+```ts
+import { MdRadioModule } from '@angular2-material/radio';
 ```
 
 Adding providers and directives:
-```typescript
-@Component({
+```ts
+@NgModule({
+  imports: [MdRadioModule],
   ...
-  directives: [MD_RADIO_DIRECTIVES],
-  providers: [MdUniqueSelectionDispatcher]
 })
+export class MyAppModule { }
 ```
 
 ### Examples

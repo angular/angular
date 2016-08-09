@@ -21,12 +21,14 @@ some initial config for the SystemJS module loader.
 ### Install Angular Material 2 components 
 
 Now that your project has been created, you can install any Angular Material 2 components you'd like 
-to use through npm. You can see our [list of published packages here](https://www.npmjs.com/~angular2-material).  
+to use through npm. You can see our [list of published packages here](https://www.npmjs.com/~angular2-material).
+
+Note that only packages published under the `@latest` npm tag are officially released.
 
 ```bash
 npm install --save @angular2-material/core @angular2-material/button @angular2-material/card
 ```
-Note: the core module is required as a peer dependency of other components.
+(the core module is required as a peer dependency of other components)
 
 ### Add components to vendor bundle
 
@@ -98,96 +100,43 @@ Now you should be able to import the components normally wherever you'd like to 
   
 **src/app/my-project.component.ts**
 ```ts
-import { MD_CARD_DIRECTIVES } from '@angular2-material/card';
-import { MD_BUTTON_DIRECTIVES } from '@angular2-material/button';
+import { MdCardModule } from '@angular2-material/card';
+import { MdButtonModule } from '@angular2-material/button';
 ```
 
-And don't forget to add the directives to your directives array:
+Import the components in your application module:
 
-**src/app/my-project.component.ts**
+**my-app-module.ts**
 ```ts
-directives: [MD_CARD_DIRECTIVES, MD_BUTTON_DIRECTIVES]
+@NgModule({
+  imports: [MdButtonModule, MdCardModule],
+  ...
+})
 ```
 
 ### Sample Angular Material 2 projects
 
-- [Puppy Love (ng-conf 2016)](https://github.com/kara/puppy-love) - see live demo [here](https://youtu.be/rRiV_b3WsoY?t=4m20s) 
-- [Puppy Love Mobile (Google IO 2016)](https://github.com/kara/puppy-love-io)
 - [Material 2 Sample App](https://github.com/jelbourn/material2-app)
 
-### Additional steps for using Material components with forms
+(the following are slightly out of date now)
+- [Puppy Love (ng-conf 2016)](https://github.com/kara/puppy-love) - see live demo [here](https://youtu.be/rRiV_b3WsoY?t=4m20s) 
+- [Puppy Love Mobile (Google IO 2016)](https://github.com/kara/puppy-love-io)
 
-If you're using Angular Material 2 version alpha.6 or later, you'll need to upgrade to Angular 2's 
-new forms module.  Here's how:
 
-- Install the `@angular/forms` package. If you're on Angular RC.4, install version 0.2.0.
+### Additional setup for `md-slide-toggle` and `md-slider`:
+The slide-toggle and slider components have a dependency on [HammerJS](http://hammerjs.github.io/).
+1) Add HammerJS to your application via [npm](https://www.npmjs.com/package/hammerjs), a CDN 
+   (such as the [Google CDN](https://developers.google.com/speed/libraries/#hammerjs)), 
+   or served directly from your app.
+2) Include the typings for HammerJS in your typescript build ([more info on @types](https://blogs.msdn.microsoft.com/typescript/2016/06/15/the-future-of-declaration-files))
 
-```bash
-npm install @angular/forms
-```
 
-- Change your bootstrap file to disable the old form directives and provide the new form 
-directives.    
+### Additional setup for `md-icon`:
 
-**main.ts**
-```ts
-import {disableDeprecatedForms, provideForms} from '@angular/forms'; 
-
-bootstrap(MyAppComponent, [
-  disableDeprecatedForms(),
-  provideForms()
-]);
-```
-
-- Import any and all forms symbols - `NgForm`, `Validators`, etc - from `@angular/forms`. 
-Importing them from `@angular/common` will result in a `No value accessor found` error.
-
-- Update your form code to use the new APIs. See more information about the changes in the proposal 
-doc [here](https://docs.google.com/document/u/1/d/1RIezQqE4aEhBRmArIAS1mRIZtWFf6JxN_7B4meyWK0Y/pub) 
-and the official documentation [here](https://angular.io/docs/ts/latest/guide/forms.html).
-
-### Additional steps for `md-icon` setup:
-
-- If you want to use Material Design icons, load the Material Design font in your `index.html`.  `md-icon` supports any font icons or svg icons,
- so this is only one potential option.
+- If you want to use Material Design icons, load the Material Design font in your `index.html`.  
+`md-icon` supports any font icons or svg icons, so this is only one potential option.
        
 **src/index.html**
 ```html
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 ```
-       
-- Include http providers in your `main.ts`: 
-    
-**src/main.ts**
-```ts
-import { HTTP_PROVIDERS } from '@angular/http';
-...
-bootstrap(MyAppComponent, [
-    HTTP_PROVIDERS
-]);       
-```
-    
-- Provide the icon registry at or above the component where you're using the icon:
-
-**src/app/my-project.component.ts**
- ```ts
-    import {MdIcon, MdIconRegistry} from '@angular2-material/icon';
-    ...
-    directives: [MD_CARD_DIRECTIVES, MD_BUTTON_DIRECTIVES, MdIcon],
-    providers: [MdIconRegistry]
- ```
-
-- Add the icon package to the list of Material components in your `system-config.ts`:
-
-**src/system-config.ts**
-```ts
-// put the names of any of your Material components here
-const materialPkgs:string[] = [
-  ...
-  'icon'
-];
-```
-    
-    
-    
-

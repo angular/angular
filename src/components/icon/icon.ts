@@ -225,6 +225,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
   }
 }
 
+/** @deprecated */
 export const MD_ICON_DIRECTIVES = [MdIcon];
 
 

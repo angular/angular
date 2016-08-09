@@ -382,6 +382,7 @@ export class SliderRenderer {
   }
 }
 
+/** @deprecated */
 export const MD_SLIDER_DIRECTIVES = [MdSlider];
 
 

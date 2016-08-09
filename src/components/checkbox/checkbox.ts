@@ -304,6 +304,7 @@ export class MdCheckbox implements ControlValueAccessor {
   }
 }
 
+/** @deprecated */
 export const MD_CHECKBOX_DIRECTIVES = [MdCheckbox];
 
 

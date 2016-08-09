@@ -152,6 +152,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
 }
 
 
+/** @deprecated */
 export const MD_GRID_LIST_DIRECTIVES: any[] = [MdGridList, MdGridTile, MdGridTileText];
 
 

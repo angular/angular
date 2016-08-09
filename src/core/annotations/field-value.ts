@@ -10,6 +10,7 @@
  *   <component myField>
  * or:
  *   <component myField="">
+ * @deprecated
  */
 function booleanFieldValueFactory() {
   return function booleanFieldValueMetadata(target: any, key: string): void {

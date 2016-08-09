@@ -383,6 +383,7 @@ export class MdSidenavLayout implements AfterContentInit {
 }
 
 
+/** @deprecated */
 export const MD_SIDENAV_DIRECTIVES = [MdSidenavLayout, MdSidenav];
 
 

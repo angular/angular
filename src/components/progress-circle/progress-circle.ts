@@ -313,6 +313,7 @@ function getSvgArc(currentValue: number, rotation: number) {
   return `M${start}A${pathRadius},${pathRadius} 0 ${largeArcFlag},${arcSweep} ${end}`;
 }
 
+/** @deprecated */
 export const MD_PROGRESS_CIRCLE_DIRECTIVES = [MdProgressCircle, MdSpinner];
 
 

@@ -65,6 +65,7 @@ export class MdListItem implements AfterContentInit {
   }
 }
 
+/** @deprecated */
 export const MD_LIST_DIRECTIVES = [MdList, MdListItem, MdListAvatar];
 
 

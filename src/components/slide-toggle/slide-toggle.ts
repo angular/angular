@@ -298,6 +298,7 @@ class SlideToggleRenderer {
 
 }
 
+/** @deprecated */
 export const MD_SLIDE_TOGGLE_DIRECTIVES = [MdSlideToggle];
 
 

@@ -196,6 +196,7 @@ export class MdTabGroup {
   }
 }
 
+/** @deprecated */
 export const MD_TABS_DIRECTIVES = [MdTabGroup, MdTabLabel, MdTabContent, MdTab];
 export const TABS_INTERNAL_DIRECTIVES = [MdInkBar, MdTabLabelWrapper];
 

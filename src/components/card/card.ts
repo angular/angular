@@ -74,6 +74,7 @@ TODO(kara): update link to demo site when it exists
 })
 export class MdCardTitleGroup {}
 
+/** @deprecated */
 export const MD_CARD_DIRECTIVES: any[] = [MdCard, MdCardHeader, MdCardTitleGroup];
 
 

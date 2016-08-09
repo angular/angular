@@ -14,30 +14,17 @@
 
 ### Setup
 
-`md-menu` relies on the existence of an app-wide `OverlayContainer`. This is the container in which 
-it will display. You'll need to import this from `@angular2-material/core` and add it to your 
-providers list on bootstrap.
+Import the MdMenu module.
 
-*main.ts*
+*my-app-module.ts*
 ```ts
-import { OverlayContainer } from '@angular2-material/core';
+import {MdMenuModule} from '@angular2-material/menu';
 
-bootstrap(AppComponent, [
-  OverlayContainer
-]);
-```
-
-You'll also want to import the menu directives and add them to your component's directives array:
-
-*my-comp.component.ts*
-```ts
-import {MD_MENU_DIRECTIVES} from '@angular2-material/menu';
-
-@Component({
+@NgModule({
+  imports: [MdMenuModule],
   ...
-  directives: [MD_MENU_DIRECTIVES]
 })
-class MyComp {}
+export class MyAppModule {}
 ```
 
 ### Simple menu
