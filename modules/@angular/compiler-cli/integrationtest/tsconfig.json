@@ -13,7 +13,6 @@
         "moduleResolution": "node",
         "rootDir": "",
         "declaration": true,
-        "lib": ["es6", "dom"],
-        "baseUrl": "."
+        "lib": ["es6", "dom"]
     }
 }
