@@ -491,6 +491,27 @@
   let upgradeAdapter = new UpgradeAdapter(MyModule);
   ```
 
+  * ngModel: `ngModel` is now always asynchronous when updating. This means that in tests, instead of calling `ComponentFixture.detectChanges`, you'll need to use `ComponentFixture.whenStable`, which is asynchronous.
+
+  Before:
+
+  ```js
+      let fixture = TestBed.createComponent(InputComp);
+      fixture.detectChanges();
+
+      let inputBox = <HTMLInputElement> fixture.debugElement.query(By.css('input')).nativeElement;
+      expect(inputBox.value).toEqual('Original Name');
+  ```
+
+  After:
+  ```js
+      let fixture = TedBed.createComponent(InputComp);
+      fixture.whenStable().then(() => {
+        let inputBox = <HTMLInputElement> fixture.debugElement.query(By.css('input')).nativeElement;
+        expect(inputBox.value).toEqual('Original Name');
+     });
+  ```
+
 
 
 <a name="2.0.0-rc.4"></a>
