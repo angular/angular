@@ -12,6 +12,7 @@ module.exports = function(config) {
       // Polyfills.
       'node_modules/es6-shim/es6-shim.js',
       'node_modules/reflect-metadata/Reflect.js',
+      'shims_for_IE.js',
 
       // System.js for module loading
       'node_modules/systemjs/dist/system-polyfills.js',
@@ -76,6 +77,10 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['Chrome'],
-    singleRun: false
+    singleRun: false,
+    captureTimeout: 60000,
+    browserDisconnectTimeout : 60000,
+    browserDisconnectTolerance : 3,
+    browserNoActivityTimeout : 60000
   });
 };
