@@ -11,6 +11,7 @@ import 'rxjs/add/operator/map';
 import {Location} from '@angular/common';
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
 import {ComponentFixture, TestBed, TestComponentBuilder, addProviders, fakeAsync, inject, tick} from '@angular/core/testing';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
@@ -664,7 +665,7 @@ describe('Integration', () => {
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.getAttribute('href')).toEqual('/team/33/simple');
-             native.click();
+             dispatchClick(native);
              advance(fixture);
 
              expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
@@ -742,7 +743,7 @@ describe('Integration', () => {
              expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
              const native = fixture.debugElement.nativeElement.querySelector('button');
-             native.click();
+             dispatchClick(native);
              advance(fixture);
 
              expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
@@ -768,7 +769,7 @@ describe('Integration', () => {
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.getAttribute('href')).toEqual('/team/33/simple');
-             native.click();
+             dispatchClick(native);
              advance(fixture);
 
              expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
@@ -794,7 +795,7 @@ describe('Integration', () => {
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.getAttribute('href')).toEqual('/team/22/simple');
-             native.click();
+             dispatchClick(native);
              advance(fixture);
 
              expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ simple, right:  ]');
@@ -821,7 +822,7 @@ describe('Integration', () => {
              const native = fixture.debugElement.nativeElement.querySelector('a');
 
              expect(native.getAttribute('href')).toEqual('/simple');
-             native.click();
+             dispatchClick(native);
              advance(fixture);
 
              expect(fixture.debugElement.nativeElement).toHaveText('link simple');
@@ -847,7 +848,7 @@ describe('Integration', () => {
 
              const native = fixture.debugElement.nativeElement.querySelector('a');
              expect(native.getAttribute('href')).toEqual('/team/22/simple?q=1#f');
-             native.click();
+             dispatchClick(native);
              advance(fixture);
 
              expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ simple, right:  ]');
@@ -1803,4 +1804,9 @@ function createRoot(tcb: TestComponentBuilder, router: Router, type: any): Compo
   router.initialNavigation();
   advance(f);
   return f;
+}
+
+function dispatchClick(target: HTMLElement): void {
+  const dispatchedEvent = getDOM().createMouseEvent('click');
+  getDOM().dispatchEvent(target, dispatchedEvent);
 }
