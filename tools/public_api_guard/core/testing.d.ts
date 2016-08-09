@@ -40,9 +40,6 @@ export declare function flushMicrotasks(): void;
 /** @experimental */
 export declare function getTestBed(): TestBed;
 
-/** @deprecated */
-export declare function getTestInjector(): TestBed;
-
 /** @stable */
 export declare function inject(tokens: any[], fn: Function): () => any;
 
@@ -59,14 +56,8 @@ export declare type MetadataOverride<T> = {
     set?: T;
 };
 
-/** @deprecated */
-export declare function resetBaseTestProviders(): void;
-
 /** @experimental */
 export declare function resetFakeAsyncZone(): void;
-
-/** @deprecated */
-export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
 
 /** @experimental */
 export declare class TestBed implements Injector {
