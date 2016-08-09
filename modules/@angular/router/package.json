@@ -1,7 +1,7 @@
 {
   "name": "@angular/router",
-  "version": "3.0.0-beta.2",
-  "description": "",
+  "version": "3.0.0-rc.1",
+  "description": "Angular 2 Router",
   "main": "index.js",
   "jsnext:main": "esm/index.js",
   "keywords": [
@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/angular#readme",
+  "homepage": "https://github.com/angular/angular/blob/master/modules/%40angular/router/README.md",
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
