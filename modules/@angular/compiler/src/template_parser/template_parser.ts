@@ -540,7 +540,7 @@ class TemplateParseVisitor implements html.Visitor {
       } else if (isPresent(bindParts[7])) {  // match: animate-name
         if (attrName[0] == '@' && isPresent(attrValue) && attrValue.length > 0) {
           this._reportError(
-              `Assigning animation triggers via @prop="exp" attributes with an expression is deprecated. Use [@prop]="exp" instead!`,
+              `Assigning animation triggers via @prop="exp" attributes with an expression is deprecated. Use property bindings (e.g. [@prop]="exp") instead!`,
               attr.sourceSpan, ParseErrorLevel.WARNING);
         }
         this._parseAnimation(
@@ -809,9 +809,13 @@ class TemplateParseVisitor implements html.Visitor {
         boundPropertyName = partValue.substr(1);
         bindingType = PropertyBindingType.Animation;
         securityContext = SecurityContext.NONE;
-        this._reportError(
-            `Assigning animation triggers within host data as attributes such as "@prop": "exp" is deprecated. Use "[@prop]": "exp" instead!`,
-            sourceSpan, ParseErrorLevel.WARNING);
+        // DEPRECATED: remove this if statement post RC5
+        if (boundPropertyName[0] == '@') {
+          this._reportError(
+              `Assigning animation triggers within host data as attributes such as "@prop": "exp" is deprecated. Use host bindings (e.g. "[@prop]": "exp") instead!`,
+              sourceSpan, ParseErrorLevel.WARNING);
+          boundPropertyName = boundPropertyName.substr(1);
+        }
       } else {
         boundPropertyName = this._schemaRegistry.getMappedPropName(partValue);
         securityContext = this._schemaRegistry.securityContext(elementName, boundPropertyName);
