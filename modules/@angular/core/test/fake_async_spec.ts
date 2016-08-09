@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
 import {discardPeriodicTasks, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {Log, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {Parser} from '../../compiler/src/expression_parser/parser';
-import {BaseException} from '../../router-deprecated/src/facade/exceptions';
 
 const resolvedPromise = Promise.resolve(null);
 

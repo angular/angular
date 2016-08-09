@@ -50,7 +50,6 @@ for PACKAGE in \
   platform-server \
   http \
   router \
-  router-deprecated \
   upgrade \
   compiler-cli
 do
@@ -60,13 +59,8 @@ do
   UMD_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.js
   UMD_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.min.js
 
-  if [[ ${PACKAGE} == "router-deprecated" ]]; then
-    echo "======      COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es5.json        ====="
-    $(npm bin)/tsc -p ${SRCDIR}/tsconfig-es5.json
-  else
-    echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es5.json        ====="
-    $TSC -p ${SRCDIR}/tsconfig-es5.json
-  fi
+  echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es5.json        ====="
+  $TSC -p ${SRCDIR}/tsconfig-es5.json
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
 
@@ -83,13 +77,8 @@ do
 
   if [[ ${PACKAGE} != compiler-cli ]]; then
 
-    if [[ ${PACKAGE} == "router-deprecated" ]]; then
-      echo "====== (esm)COMPILING: \$(npm bin)/tsc -p ${SRCDIR}/tsconfig-es2015.json ====="
-      $(npm bin)/tsc --emitDecoratorMetadata -p ${SRCDIR}/tsconfig-es2015.json
-    else
-      echo "====== (esm)COMPILING: $TSC -p ${SRCDIR}/tsconfig-es2015.json ====="
-      $TSC -p ${SRCDIR}/tsconfig-es2015.json
-    fi
+    echo "====== (esm)COMPILING: $TSC -p ${SRCDIR}/tsconfig-es2015.json ====="
+    $TSC -p ${SRCDIR}/tsconfig-es2015.json
 
     echo "======      BUNDLING: ${SRCDIR} ====="
     mkdir ${DESTDIR}/bundles

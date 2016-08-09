@@ -8,8 +8,7 @@
 
 import {XHR} from '@angular/compiler';
 import {Component, bind} from '@angular/core';
-import {TestComponentBuilder, addProviders, async, fakeAsync, flushMicrotasks, inject, tick} from '@angular/core/testing';
-import {ROUTER_DIRECTIVES, Route} from '@angular/router-deprecated';
+import {TestComponentBuilder, addProviders, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
 import {XHRImpl} from '../src/xhr/xhr_impl';
 
@@ -34,15 +33,6 @@ class ExternalTemplateComp {
 
 @Component({selector: 'bad-template-comp', templateUrl: 'non-existant.html'})
 class BadTemplateUrl {
-}
-
-@Component({
-  selector: 'test-router-cmp',
-  template:
-      `<a [routerLink]="['One']">one</a> <a [routerLink]="['Two']">two</a><router-outlet></router-outlet>`,
-  directives: [ROUTER_DIRECTIVES]
-})
-class TestRouterComponent {
 }
 
 // Tests for angular2/testing bundle specific to the browser environment.

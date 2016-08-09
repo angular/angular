@@ -173,13 +173,12 @@ describe('reflector_host', () => {
   });
 
   it('should be able to produce a symbol for an exported symbol', () => {
-    expect(reflectorNestedGenDir.findDeclaration('@angular/router-deprecated', 'foo', 'main.ts'))
+    expect(reflectorNestedGenDir.findDeclaration('@angular/router', 'foo', 'main.ts'))
         .toBeDefined();
   });
 
   it('should be able to produce a symbol for values space only reference', () => {
-    expect(reflectorNestedGenDir.findDeclaration(
-               '@angular/router-deprecated/src/providers', 'foo', 'main.ts'))
+    expect(reflectorNestedGenDir.findDeclaration('@angular/router/src/providers', 'foo', 'main.ts'))
         .toBeDefined();
   });
 
@@ -245,7 +244,7 @@ const FILES: Entry = {
     'src': {
       'main.ts': `
         import * as c from '@angular/core';
-        import * as r from '@angular/router-deprecated';
+        import * as r from '@angular/router';
         import * as u from './lib/utils';
         import * as cs from './lib/collections';
         import * as u2 from './lib2/utils2';
@@ -328,7 +327,7 @@ const FILES: Entry = {
           'core.d.ts': dummyModule,
           'core.metadata.json':
               `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
-          'router-deprecated': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
+          'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
           'unused.d.ts': dummyModule
         }
       }
