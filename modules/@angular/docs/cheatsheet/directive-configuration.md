@@ -1,6 +1,6 @@
 @cheatsheetSection
 Directive configuration
-@cheatsheetIndex 5
+@cheatsheetIndex 6
 @description
 {@target ts}`@Directive({ property1: value1, ... })`{@endtarget}
 {@target js}`ng.core.Directive({ property1: value1, ... }).Class({...})`{@endtarget}

@@ -1,6 +1,6 @@
 @cheatsheetSection
 Directive and component change detection and lifecycle hooks
-@cheatsheetIndex 8
+@cheatsheetIndex 9
 @description
 {@target ts dart}(implemented as class methods){@endtarget}
 {@target js}(implemented as component properties){@endtarget}

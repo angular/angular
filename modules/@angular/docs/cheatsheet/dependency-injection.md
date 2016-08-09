@@ -1,6 +1,6 @@
 @cheatsheetSection
 Dependency injection configuration
-@cheatsheetIndex 9
+@cheatsheetIndex 10
 @description
 {@target dart}`import 'package:angular2/core.dart';`{@endtarget}
 

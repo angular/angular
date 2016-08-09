@@ -1,6 +1,6 @@
 @cheatsheetSection
 Built-in directives
-@cheatsheetIndex 2
+@cheatsheetIndex 3
 @description
 {@target ts}`import {NgIf, ...} from '@angular/common';`{@endtarget}
 {@target js}Available from the `ng.common` namespace{@endtarget}

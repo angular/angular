@@ -1,6 +1,6 @@
 @cheatsheetSection
 Routing and navigation
-@cheatsheetIndex 10
+@cheatsheetIndex 11
 @description
 {@target ts}`import {provideRouter, RouteConfig, ROUTER_DIRECTIVES, ...} from '@angular/router';`{@endtarget}
 {@target js}Available from the `ng.router` namespace{@endtarget}

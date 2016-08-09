@@ -1,6 +1,6 @@
 @cheatsheetSection
 Class decorators
-@cheatsheetIndex 4
+@cheatsheetIndex 5
 @description
 {@target ts}`import {Directive, ...} from '@angular/core';`{@endtarget}
 {@target js}Available from the `ng.core` namespace{@endtarget}
