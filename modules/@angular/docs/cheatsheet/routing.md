@@ -9,7 +9,7 @@ Routing and navigation
 
 @cheatsheetItem
 syntax(ts):
-`let routes: Routes = [
+`const routes: Routes = [
   { path: '', HomeComponent },
   { path: 'path/:routeParam', component: MyComponent },
   { path: 'staticPath', component: ... },
@@ -18,7 +18,7 @@ syntax(ts):
   { path: ..., component: ..., data: { message: 'Custom' } }
 ]);
 
-provideRouter(routes);`|`Routes`
+const routing = RouterModule.forRoot(routes);`|`Routes`
 syntax(js):
 `var routes = [
   { path: '', HomeComponent },
@@ -29,7 +29,7 @@ syntax(js):
   { path: ..., component: ..., data: { message: 'Custom' } }
 ]);
 
-ng.router.provideRouter(routes)`|`ng.router.Routes`
+var routing = ng.router.RouterModule.forRoot(routes);`|`ng.router.Routes`
 syntax(dart):
 `@RouteConfig(const [
   const Route(path: 'path', component: MyComponent, name: 'MyCmp' ),
@@ -48,6 +48,7 @@ Marks the location to load the component of the active route.
 @cheatsheetItem
 syntax(ts js):
 `
+<a routerLink="/path">
 <a [routerLink]="[ '/path', routeParam ]">
 <a [routerLink]="[ '/path', { matrixParam: 'value' } ]">
 <a [routerLink]="[ '/path' ]" [queryParams]="{ page: 1 }">
