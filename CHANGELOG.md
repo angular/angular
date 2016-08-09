@@ -1,3 +1,54 @@
+<a name="2.0.0-alpha.7"></a>
+# [2.0.0-alpha.7 wax-umpire](https://github.com/angular/material2/compare/2.0.0-alpha.6...v2.0.0-alpha.7) (2016-08-09)
+
+
+### Bug Fixes
+
+* **checkbox:** wrong cursor when disabled ([#908](https://github.com/angular/material2/issues/908)) ([5251c27](https://github.com/angular/material2/commit/5251c27)), closes [#907](https://github.com/angular/material2/issues/907)
+* **checkbox, slide-toggle:** only emit change event if native input emitted one. ([#820](https://github.com/angular/material2/issues/820)) ([d52e6e0](https://github.com/angular/material2/commit/d52e6e0)), closes [#575](https://github.com/angular/material2/issues/575)
+* **gestures:** custom recognizers should not inherit twice. ([#902](https://github.com/angular/material2/issues/902)) ([c68efbd](https://github.com/angular/material2/commit/c68efbd))
+* **gestures:** ensure drag and pan are recognized with slide ([#901](https://github.com/angular/material2/issues/901)) ([3179fec](https://github.com/angular/material2/commit/3179fec))
+* **input:** ensure all of label displays on safari ([#871](https://github.com/angular/material2/issues/871)) ([c8303b4](https://github.com/angular/material2/commit/c8303b4)), closes [#795](https://github.com/angular/material2/issues/795)
+* **overlay:** lazily create container ([#894](https://github.com/angular/material2/issues/894)) ([1efbbb9](https://github.com/angular/material2/commit/1efbbb9))
+* **progress-circle:** correct elapsed time calculation ([#927](https://github.com/angular/material2/issues/927)) ([0b17cd3](https://github.com/angular/material2/commit/0b17cd3)), closes [#926](https://github.com/angular/material2/issues/926)
+* **progress-circle:** remove performance.now to support non browser envs ([#857](https://github.com/angular/material2/issues/857)) ([14c1765](https://github.com/angular/material2/commit/14c1765))
+* **progress-circle:** remove references to window ([#838](https://github.com/angular/material2/issues/838)) ([66ddd3a](https://github.com/angular/material2/commit/66ddd3a)), closes [#837](https://github.com/angular/material2/issues/837)
+* **radio:** only emit change event if native input does. ([#911](https://github.com/angular/material2/issues/911)) ([23a61ab](https://github.com/angular/material2/commit/23a61ab)), closes [#791](https://github.com/angular/material2/issues/791)
+* **slide-toggle:** fix runtime exception for incorrect mousedown binding. ([#828](https://github.com/angular/material2/issues/828)) ([bbbc87f](https://github.com/angular/material2/commit/bbbc87f)), closes [#828](https://github.com/angular/material2/issues/828)
+* fix type mismatches when offline compiling. ([#835](https://github.com/angular/material2/issues/835)) ([4bb7790](https://github.com/angular/material2/commit/4bb7790))
+
+
+### Features
+
+* Add NgModules ([#950](https://github.com/angular/material2/issues/950)) ([ca351b2](https://github.com/angular/material2/commit/ca351b2))
+
+Note that NgModules are now the supported way of including the Material components in your app.
+The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.8.
+
+
+* **tooltip:** initial tooltip implementation ([#799](https://github.com/angular/material2/issues/799)) ([f5e2a81](https://github.com/angular/material2/commit/f5e2a81))
+* **md-slider:** initial version for md-slider ([#779](https://github.com/angular/material2/issues/779)) ([8354750](https://github.com/angular/material2/commit/8354750))
+* **md-menu** initial version for md-menu (more features coming in alpha.8) ([#893](https://github.com/angular/material2/issues/893)) ([16eb6be](https://github.com/angular/material2/commit/16eb6be)) ([#855](https://github.com/angular/material2/issues/855)) ([e324e47](https://github.com/angular/material2/commit/e324e47)) ([#867](https://github.com/angular/material2/issues/867)) ([9a32489](https://github.com/angular/material2/commit/9a32489))
+* **ripple:** initial mdInkRipple implementation ([#681](https://github.com/angular/material2/issues/681)) ([47448cb](https://github.com/angular/material2/commit/47448cb))
+* **button:** add ripple to md-button ([32aa461](https://github.com/angular/material2/commit/32aa461))
+* **input:** support autocapitalize and autocorrect attributes ([#858](https://github.com/angular/material2/issues/858)) ([b2471f2](https://github.com/angular/material2/commit/b2471f2)) 
+* **slide-toggle:** add drag functionality to thumb ([#750](https://github.com/angular/material2/issues/750)) ([25b4f21](https://github.com/angular/material2/commit/25b4f21))
+
+
+### In-progress, not yet released
+* **dialog:** add styles and ability to close. ([#862](https://github.com/angular/material2/issues/862)) ([758b851](https://github.com/angular/material2/commit/758b851))
+* **dialog:** initial framework for md-dialog ([#761](https://github.com/angular/material2/issues/761)) ([9552ed5](https://github.com/angular/material2/commit/9552ed5))
+
+
+### Code health
+* **tabs:** adds e2e tests for tabs ([#650](https://github.com/angular/material2/issues/650)) ([3c74ae0](https://github.com/angular/material2/commit/3c74ae0)), closes [#549](https://github.com/angular/material2/issues/549)
+
+### BREAKING CHANGES
+
+* radio: radio-button will no longer emit change event on de-select.
+
+
+
 <a name="2.0.0-alpha.6"></a>
 # [2.0.0-alpha.6 carbonfiber-discotheque](https://github.com/angular/material2/compare/2.0.0-alpha.5...v2.0.0-alpha.6) (2016-06-30)
 
