@@ -36,14 +36,15 @@ class InheritedFromParent {
   }
 }
 
-export function recognize(rootComponentType: Type, config: Routes, urlTree: UrlTree, url: string):
-    Observable<RouterStateSnapshot> {
+export function recognize(
+    rootComponentType: Type<any>, config: Routes, urlTree: UrlTree,
+    url: string): Observable<RouterStateSnapshot> {
   return new Recognizer(rootComponentType, config, urlTree, url).recognize();
 }
 
 class Recognizer {
   constructor(
-      private rootComponentType: Type, private config: Routes, private urlTree: UrlTree,
+      private rootComponentType: Type<any>, private config: Routes, private urlTree: UrlTree,
       private url: string) {}
 
   recognize(): Observable<RouterStateSnapshot> {

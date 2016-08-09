@@ -9,8 +9,8 @@
 import {AnimationEntryMetadata} from '../animation/metadata';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {InjectableMetadata} from '../di/metadata';
-import {Type, isPresent} from '../facade/lang';
-
+import {isPresent} from '../facade/lang';
+import {Type} from '../type';
 import {ViewEncapsulation} from './view';
 
 /**
@@ -792,11 +792,11 @@ export interface ComponentMetadataType extends DirectiveMetadataType {
   styleUrls?: string[];
   styles?: string[];
   animations?: AnimationEntryMetadata[];
-  directives?: Array<Type|any[]>;
-  pipes?: Array<Type|any[]>;
+  directives?: Array<Type<any>|any[]>;
+  pipes?: Array<Type<any>|any[]>;
   encapsulation?: ViewEncapsulation;
   interpolation?: [string, string];
-  entryComponents?: Array<Type|any[]>;
+  entryComponents?: Array<Type<any>|any[]>;
 }
 
 /**
@@ -1000,9 +1000,9 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    */
   animations: AnimationEntryMetadata[];
 
-  directives: Array<Type|any[]>;
+  directives: Array<Type<any>|any[]>;
 
-  pipes: Array<Type|any[]>;
+  pipes: Array<Type<any>|any[]>;
 
   /**
    * Specify how the template and the styles should be encapsulated.
@@ -1020,7 +1020,7 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    * Angular will create a {@link ComponentFactory ComponentFactory} and store it in the
    * {@link ComponentFactoryResolver ComponentFactoryResolver}.
    */
-  entryComponents: Array<Type|any[]>;
+  entryComponents: Array<Type<any>|any[]>;
 
   constructor({selector,
                inputs,

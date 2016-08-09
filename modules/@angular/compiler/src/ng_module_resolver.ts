@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Injectable, NgModuleMetadata} from '@angular/core';
+import {Injectable, NgModuleMetadata, Type} from '@angular/core';
 
 import {ReflectorReader, reflector} from '../core_private';
-
-import {Type, isPresent, stringify} from './facade/lang';
+import {BaseException} from '../src/facade/exceptions';
+import {isPresent, stringify} from './facade/lang';
 
 function _isNgModuleMetadata(obj: any): obj is NgModuleMetadata {
   return obj instanceof NgModuleMetadata;
@@ -23,7 +23,7 @@ function _isNgModuleMetadata(obj: any): obj is NgModuleMetadata {
 export class NgModuleResolver {
   constructor(private _reflector: ReflectorReader = reflector) {}
 
-  resolve(type: Type, throwIfNotFound = true): NgModuleMetadata {
+  resolve(type: Type<any>, throwIfNotFound = true): NgModuleMetadata {
     const ngModuleMeta: NgModuleMetadata =
         this._reflector.annotations(type).find(_isNgModuleMetadata);
 

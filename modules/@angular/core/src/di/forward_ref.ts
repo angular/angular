@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isFunction, stringify} from '../facade/lang';
+import {isFunction, stringify} from '../facade/lang';
+import {Type} from '../type';
 
 
 /**
@@ -31,10 +32,10 @@ export interface ForwardRefFn { (): any; }
  * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref'}
  * @experimental
  */
-export function forwardRef(forwardRefFn: ForwardRefFn): Type {
+export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
   (<any>forwardRefFn).toString = function() { return stringify(this()); };
-  return (<Type><any>forwardRefFn);
+  return (<Type<any>><any>forwardRefFn);
 }
 
 /**

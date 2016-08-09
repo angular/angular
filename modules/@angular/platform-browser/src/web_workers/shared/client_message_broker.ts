@@ -47,7 +47,7 @@ export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
  * @experimental WebWorker support in Angular is experimental.
  */
 export abstract class ClientMessageBroker {
-  abstract runOnService(args: UiArguments, returnType: Type): Promise<any>;
+  abstract runOnService(args: UiArguments, returnType: Type<any>): Promise<any>;
 }
 
 interface PromiseCompleter {
@@ -82,7 +82,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     return id;
   }
 
-  runOnService(args: UiArguments, returnType: Type): Promise<any> {
+  runOnService(args: UiArguments, returnType: Type<any>): Promise<any> {
     var fnArgs: any[] /** TODO #9100 */ = [];
     if (isPresent(args.args)) {
       args.args.forEach(argument => {
@@ -172,7 +172,7 @@ class MessageData {
  * @experimental WebWorker support in Angular is experimental.
  */
 export class FnArg {
-  constructor(public value: any /** TODO #9100 */, public type: Type) {}
+  constructor(public value: any /** TODO #9100 */, public type: Type<any>) {}
 }
 
 /**

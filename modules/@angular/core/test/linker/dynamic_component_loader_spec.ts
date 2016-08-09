@@ -212,7 +212,7 @@ function createRootElement(doc: any, name: string): any {
   return rootEl;
 }
 
-function filterByDirective(type: Type): Predicate<DebugElement> {
+function filterByDirective(type: Type<any>): Predicate<DebugElement> {
   return (debugElement) => { return debugElement.providerTokens.indexOf(type) !== -1; };
 }
 

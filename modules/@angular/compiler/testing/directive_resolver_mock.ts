@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, BaseException, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, ViewMetadata, resolveForwardRef} from '@angular/core';
+import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Type, ViewMetadata, resolveForwardRef} from '@angular/core';
 
 import {DirectiveResolver} from '../src/directive_resolver';
 import {Map} from '../src/facade/collection';
-import {Type, isArray, isPresent, stringify} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
+import {isArray, isPresent, stringify} from '../src/facade/lang';
 
 
 
@@ -20,21 +21,21 @@ import {Type, isArray, isPresent, stringify} from '../src/facade/lang';
  */
 @Injectable()
 export class MockDirectiveResolver extends DirectiveResolver {
-  private _directives = new Map<Type, DirectiveMetadata>();
-  private _providerOverrides = new Map<Type, any[]>();
-  private _viewProviderOverrides = new Map<Type, any[]>();
-  private _views = new Map<Type, ViewMetadata>();
-  private _inlineTemplates = new Map<Type, string>();
-  private _animations = new Map<Type, AnimationEntryMetadata[]>();
-  private _directiveOverrides = new Map<Type, Map<Type, Type>>();
+  private _directives = new Map<Type<any>, DirectiveMetadata>();
+  private _providerOverrides = new Map<Type<any>, any[]>();
+  private _viewProviderOverrides = new Map<Type<any>, any[]>();
+  private _views = new Map<Type<any>, ViewMetadata>();
+  private _inlineTemplates = new Map<Type<any>, string>();
+  private _animations = new Map<Type<any>, AnimationEntryMetadata[]>();
+  private _directiveOverrides = new Map<Type<any>, Map<Type<any>, Type<any>>>();
 
   constructor(private _injector: Injector) { super(); }
 
   private get _compiler(): Compiler { return this._injector.get(Compiler); }
 
-  private _clearCacheFor(component: Type) { this._compiler.clearCacheFor(component); }
+  private _clearCacheFor(component: Type<any>) { this._compiler.clearCacheFor(component); }
 
-  resolve(type: Type, throwIfNotFound = true): DirectiveMetadata {
+  resolve(type: Type<any>, throwIfNotFound = true): DirectiveMetadata {
     let metadata = this._directives.get(type);
     if (!metadata) {
       metadata = super.resolve(type, throwIfNotFound);
@@ -134,17 +135,17 @@ export class MockDirectiveResolver extends DirectiveResolver {
   /**
    * Overrides the {@link DirectiveMetadata} for a directive.
    */
-  setDirective(type: Type, metadata: DirectiveMetadata): void {
+  setDirective(type: Type<any>, metadata: DirectiveMetadata): void {
     this._directives.set(type, metadata);
     this._clearCacheFor(type);
   }
 
-  setProvidersOverride(type: Type, providers: any[]): void {
+  setProvidersOverride(type: Type<any>, providers: any[]): void {
     this._providerOverrides.set(type, providers);
     this._clearCacheFor(type);
   }
 
-  setViewProvidersOverride(type: Type, viewProviders: any[]): void {
+  setViewProvidersOverride(type: Type<any>, viewProviders: any[]): void {
     this._viewProviderOverrides.set(type, viewProviders);
     this._clearCacheFor(type);
   }
@@ -152,19 +153,19 @@ export class MockDirectiveResolver extends DirectiveResolver {
   /**
    * Overrides the {@link ViewMetadata} for a component.
    */
-  setView(component: Type, view: ViewMetadata): void {
+  setView(component: Type<any>, view: ViewMetadata): void {
     this._views.set(component, view);
     this._clearCacheFor(component);
   }
   /**
    * Overrides the inline template for a component - other configuration remains unchanged.
    */
-  setInlineTemplate(component: Type, template: string): void {
+  setInlineTemplate(component: Type<any>, template: string): void {
     this._inlineTemplates.set(component, template);
     this._clearCacheFor(component);
   }
 
-  setAnimations(component: Type, animations: AnimationEntryMetadata[]): void {
+  setAnimations(component: Type<any>, animations: AnimationEntryMetadata[]): void {
     this._animations.set(component, animations);
     this._clearCacheFor(component);
   }
@@ -172,11 +173,11 @@ export class MockDirectiveResolver extends DirectiveResolver {
   /**
    * Overrides a directive from the component {@link ViewMetadata}.
    */
-  overrideViewDirective(component: Type, from: Type, to: Type): void {
+  overrideViewDirective(component: Type<any>, from: Type<any>, to: Type<any>): void {
     var overrides = this._directiveOverrides.get(component);
 
     if (!overrides) {
-      overrides = new Map<Type, Type>();
+      overrides = new Map<Type<any>, Type<any>>();
       this._directiveOverrides.set(component, overrides);
     }
 
@@ -185,7 +186,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
   }
 }
 
-function flattenArray(tree: any[], out: Array<Type|any[]>): void {
+function flattenArray(tree: any[], out: Array<Type<any>|any[]>): void {
   if (!isPresent(tree)) return;
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);

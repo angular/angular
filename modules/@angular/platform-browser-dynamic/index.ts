@@ -7,11 +7,10 @@
  */
 
 import {XHR, analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
-import {ApplicationRef, COMPILER_OPTIONS, CUSTOM_ELEMENTS_SCHEMA, Compiler, CompilerFactory, CompilerOptions, ComponentRef, ComponentResolver, ExceptionHandler, NgModule, NgModuleRef, OpaqueToken, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, SchemaMetadata, Type, assertPlatform, createPlatform, createPlatformFactory, getPlatform, isDevMode} from '@angular/core';
-import {BROWSER_PLATFORM_PROVIDERS, BrowserModule, WORKER_APP_PLATFORM_PROVIDERS, WORKER_SCRIPT, WorkerAppModule, platformBrowser, platformWorkerApp, platformWorkerUi} from '@angular/platform-browser';
+import {ApplicationRef, COMPILER_OPTIONS, CUSTOM_ELEMENTS_SCHEMA, CompilerFactory, CompilerOptions, ComponentRef, NgModule, PlatformRef, Type, createPlatformFactory} from '@angular/core';
+import {BrowserModule, WORKER_SCRIPT, WorkerAppModule, platformWorkerUi} from '@angular/platform-browser';
 
 import {Console} from './core_private';
-import {ConcreteType, isPresent, stringify} from './src/facade/lang';
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_providers';
 import {CachedXHR} from './src/xhr/xhr_cache';
 import {XHRImpl} from './src/xhr/xhr_impl';
@@ -121,7 +120,7 @@ export const browserDynamicPlatform = platformBrowserDynamic;
  */
 // Note: We are using typescript overloads here to have 2 function signatures!
 export function bootstrap<C>(
-    appComponentType: ConcreteType<C>,
+    appComponentType: Type<C>,
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<C>> {
   let compilerOptions: CompilerOptions;
   let declarations: any[] = [];
@@ -189,7 +188,7 @@ export const workerAppDynamicPlatform = platformWorkerAppDynamic;
  * with the {@link workerAppDynamicPlatform}() instead.
  */
 export function bootstrapWorkerApp<T>(
-    appComponentType: ConcreteType<T>,
+    appComponentType: Type<T>,
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<T>> {
   console.warn(
       'bootstrapWorkerApp is deprecated. Create an @NgModule that includes the `WorkerAppModule` and use `bootstrapModule` with the `workerAppDynamicPlatform()` instead.');

@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, OpaqueToken} from '../di';
-import {BaseException, unimplemented} from '../facade/exceptions';
-import {ConcreteType, Type, stringify} from '../facade/lang';
-import {NgModuleMetadata, ViewEncapsulation} from '../metadata';
+import {OpaqueToken} from '../di';
+import {BaseException} from '../facade/exceptions';
+import {stringify} from '../facade/lang';
+import {ViewEncapsulation} from '../metadata';
+import {Type} from '../type';
 
 import {ComponentFactory} from './component_factory';
-import {ComponentResolver} from './component_resolver';
 import {NgModuleFactory} from './ng_module_factory';
+
 
 
 /**
@@ -22,7 +23,7 @@ import {NgModuleFactory} from './ng_module_factory';
  * @stable
  */
 export class ComponentStillLoadingError extends BaseException {
-  constructor(public compType: Type) {
+  constructor(public compType: Type<any>) {
     super(`Can't compile synchronously as ${stringify(compType)} is still being loaded!`);
   }
 }
@@ -57,7 +58,7 @@ export class Compiler {
   /**
    * Loads the template and styles of a component and returns the associated `ComponentFactory`.
    */
-  compileComponentAsync<T>(component: ConcreteType<T>, ngModule: Type = null):
+  compileComponentAsync<T>(component: Type<T>, ngModule: Type<any> = null):
       Promise<ComponentFactory<T>> {
     throw _throwError();
   }
@@ -65,7 +66,7 @@ export class Compiler {
    * Compiles the given component. All templates have to be either inline or compiled via
    * `compileComponentAsync` before. Otherwise throws a {@link ComponentStillLoadingError}.
    */
-  compileComponentSync<T>(component: ConcreteType<T>, ngModule: Type = null): ComponentFactory<T> {
+  compileComponentSync<T>(component: Type<T>, ngModule: Type<any> = null): ComponentFactory<T> {
     throw _throwError();
   }
   /**
@@ -73,27 +74,24 @@ export class Compiler {
    * in `entryComponents`
    * have to be inlined. Otherwise throws a {@link ComponentStillLoadingError}.
    */
-  compileModuleSync<T>(moduleType: ConcreteType<T>): NgModuleFactory<T> { throw _throwError(); }
+  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> { throw _throwError(); }
 
   /**
    * Compiles the given NgModule and all of its components
    */
-  compileModuleAsync<T>(moduleType: ConcreteType<T>): Promise<NgModuleFactory<T>> {
-    throw _throwError();
-  }
+  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> { throw _throwError(); }
 
   /**
    * Same as {@link compileModuleSync} put also creates ComponentFactories for all components.
    */
-  compileModuleAndAllComponentsSync<T>(moduleType: ConcreteType<T>):
-      ModuleWithComponentFactories<T> {
+  compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
     throw _throwError();
   }
 
   /**
    * Same as {@link compileModuleAsync} put also creates ComponentFactories for all components.
    */
-  compileModuleAndAllComponentsAsync<T>(moduleType: ConcreteType<T>):
+  compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
       Promise<ModuleWithComponentFactories<T>> {
     throw _throwError();
   }
@@ -106,7 +104,7 @@ export class Compiler {
   /**
    * Clears the cache for the given component/ngModule.
    */
-  clearCacheFor(type: Type) {}
+  clearCacheFor(type: Type<any>) {}
 }
 
 /**

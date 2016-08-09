@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, SchemaMetadata, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
 import {LifecycleHooks, reflector} from '../core_private';
+
 import {ListWrapper, StringMapWrapper} from './facade/collection';
 import {BaseException, unimplemented} from './facade/exceptions';
-import {Type, isBlank, isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
-
+import {isBlank, isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
 import {CssSelector} from './selector';
 import {getUrlScheme} from './url_resolver';
 import {sanitizeIdentifier, splitAtColon} from './util';
@@ -308,7 +308,7 @@ export class CompileTypeMetadata extends CompileIdentifierMetadata {
   lifecycleHooks: LifecycleHooks[];
 
   constructor({runtime, name, moduleUrl, prefix, isHost, value, diDeps, lifecycleHooks}: {
-    runtime?: Type,
+    runtime?: Type<any>,
     name?: string,
     moduleUrl?: string,
     prefix?: string,
@@ -685,8 +685,8 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
 }
 
 export class TransitiveCompileNgModuleMetadata {
-  directivesSet = new Set<Type>();
-  pipesSet = new Set<Type>();
+  directivesSet = new Set<Type<any>>();
+  pipesSet = new Set<Type<any>>();
   constructor(
       public modules: CompileNgModuleMetadata[], public providers: CompileProviderMetadata[],
       public entryComponents: CompileTypeMetadata[], public directives: CompileDirectiveMetadata[],

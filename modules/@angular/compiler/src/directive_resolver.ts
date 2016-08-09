@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, resolveForwardRef} from '@angular/core';
-
+import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, Type, resolveForwardRef} from '@angular/core';
 import {ReflectorReader, reflector} from '../core_private';
-
 import {StringMapWrapper} from './facade/collection';
-import {Type, isPresent, stringify} from './facade/lang';
+import {BaseException} from './facade/exceptions';
+import {isPresent, stringify} from './facade/lang';
 import {splitAtColon} from './util';
 
 function _isDirectiveMetadata(type: any): type is DirectiveMetadata {
@@ -32,7 +31,7 @@ export class DirectiveResolver {
   /**
    * Return {@link DirectiveMetadata} for a given `Type`.
    */
-  resolve(type: Type, throwIfNotFound = true): DirectiveMetadata {
+  resolve(type: Type<any>, throwIfNotFound = true): DirectiveMetadata {
     var typeMetadata = this._reflector.annotations(resolveForwardRef(type));
     if (isPresent(typeMetadata)) {
       var metadata = typeMetadata.find(_isDirectiveMetadata);
@@ -49,7 +48,7 @@ export class DirectiveResolver {
 
   private _mergeWithPropertyMetadata(
       dm: DirectiveMetadata, propertyMetadata: {[key: string]: any[]},
-      directiveType: Type): DirectiveMetadata {
+      directiveType: Type<any>): DirectiveMetadata {
     var inputs: string[] = [];
     var outputs: string[] = [];
     var host: {[key: string]: string} = {};
@@ -90,7 +89,7 @@ export class DirectiveResolver {
 
   private _merge(
       dm: DirectiveMetadata, inputs: string[], outputs: string[], host: {[key: string]: string},
-      queries: {[key: string]: any}, directiveType: Type): DirectiveMetadata {
+      queries: {[key: string]: any}, directiveType: Type<any>): DirectiveMetadata {
     let mergedInputs: string[];
 
     if (isPresent(dm.inputs)) {

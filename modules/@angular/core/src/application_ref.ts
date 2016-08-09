@@ -8,7 +8,7 @@
 
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException, ExceptionHandler, unimplemented} from '../src/facade/exceptions';
-import {ConcreteType, Type, isBlank, isPresent, isPromise, stringify} from '../src/facade/lang';
+import {isBlank, isPresent, isPromise, stringify} from '../src/facade/lang';
 
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
@@ -22,6 +22,7 @@ import {ComponentResolver} from './linker/component_resolver';
 import {NgModuleFactory, NgModuleInjector, NgModuleRef} from './linker/ng_module_factory';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
+import {Type} from './type';
 import {NgZone, NgZoneError} from './zone/ng_zone';
 
 var _devMode: boolean = true;
@@ -182,7 +183,7 @@ export function coreBootstrap<C>(
  * @deprecated Use {@link bootstrapModule} instead.
  */
 export function coreLoadAndBootstrap(
-    componentType: Type, injector: Injector): Promise<ComponentRef<any>> {
+    componentType: Type<any>, injector: Injector): Promise<ComponentRef<any>> {
   throw new BaseException('coreLoadAndBootstrap is deprecated. Use bootstrapModule instead.');
 }
 
@@ -239,9 +240,8 @@ export abstract class PlatformRef {
    * ```
    * @stable
    */
-  bootstrapModule<M>(
-      moduleType: ConcreteType<M>,
-      compilerOptions: CompilerOptions|CompilerOptions[] = []): Promise<NgModuleRef<M>> {
+  bootstrapModule<M>(moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = []):
+      Promise<NgModuleRef<M>> {
     throw unimplemented();
   }
 
@@ -373,14 +373,13 @@ export class PlatformRef_ extends PlatformRef {
     });
   }
 
-  bootstrapModule<M>(
-      moduleType: ConcreteType<M>,
-      compilerOptions: CompilerOptions|CompilerOptions[] = []): Promise<NgModuleRef<M>> {
+  bootstrapModule<M>(moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = []):
+      Promise<NgModuleRef<M>> {
     return this._bootstrapModuleWithZone(moduleType, compilerOptions, null);
   }
 
   private _bootstrapModuleWithZone<M>(
-      moduleType: ConcreteType<M>, compilerOptions: CompilerOptions|CompilerOptions[] = [],
+      moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = [],
       ngZone: NgZone): Promise<NgModuleRef<M>> {
     const compilerFactory: CompilerFactory = this.injector.get(CompilerFactory);
     const compiler = compilerFactory.createCompiler(
@@ -455,7 +454,7 @@ export abstract class ApplicationRef {
    * ### Example
    * {@example core/ts/platform/platform.ts region='longform'}
    */
-  abstract bootstrap<C>(componentFactory: ComponentFactory<C>|ConcreteType<C>): ComponentRef<C>;
+  abstract bootstrap<C>(componentFactory: ComponentFactory<C>|Type<C>): ComponentRef<C>;
 
   /**
    * Retrieve the application {@link Injector}.
@@ -496,7 +495,7 @@ export abstract class ApplicationRef {
    * Get a list of component types registered to this application.
    * This list is populated even before the component is created.
    */
-  get componentTypes(): Type[] { return <Type[]>unimplemented(); };
+  get componentTypes(): Type<any>[] { return <Type<any>[]>unimplemented(); };
 
   /**
    * Get a list of components registered to this application.
@@ -515,7 +514,7 @@ export class ApplicationRef_ extends ApplicationRef {
    */
   private _disposeListeners: Function[] = [];
   private _rootComponents: ComponentRef<any>[] = [];
-  private _rootComponentTypes: Type[] = [];
+  private _rootComponentTypes: Type<any>[] = [];
   private _changeDetectorRefs: ChangeDetectorRef[] = [];
   private _runningTick: boolean = false;
   private _enforceNoNewChanges: boolean = false;
@@ -567,7 +566,7 @@ export class ApplicationRef_ extends ApplicationRef {
         () => _callAndReportToExceptionHandler(this._exceptionHandler, <any>callback));
   }
 
-  bootstrap<C>(componentOrFactory: ComponentFactory<C>|ConcreteType<C>): ComponentRef<C> {
+  bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>): ComponentRef<C> {
     if (!this._initStatus.done) {
       throw new BaseException(
           'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
@@ -655,7 +654,7 @@ export class ApplicationRef_ extends ApplicationRef {
    */
   dispose(): void { this.ngOnDestroy(); }
 
-  get componentTypes(): Type[] { return this._rootComponentTypes; }
+  get componentTypes(): Type<any>[] { return this._rootComponentTypes; }
 
   get components(): ComponentRef<any>[] { return this._rootComponents; }
 }

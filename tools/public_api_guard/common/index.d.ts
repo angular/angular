@@ -75,7 +75,7 @@ export declare class CheckboxControlValueAccessor implements ControlValueAccesso
 }
 
 /** @experimental */
-export declare const COMMON_DIRECTIVES: Type[][];
+export declare const COMMON_DIRECTIVES: any[];
 
 /** @experimental */
 export declare const COMMON_PIPES: (typeof AsyncPipe | typeof SlicePipe | typeof ReplacePipe | typeof I18nPluralPipe | typeof I18nSelectPipe)[];
@@ -139,7 +139,7 @@ export interface ControlValueAccessor {
 }
 
 /** @stable */
-export declare const CORE_DIRECTIVES: Type[];
+export declare const CORE_DIRECTIVES: Type<any>[];
 
 /** @experimental */
 export declare class CurrencyPipe implements PipeTransform {
@@ -182,10 +182,10 @@ export interface Form {
 }
 
 /** @experimental */
-export declare const FORM_DIRECTIVES: Type[];
+export declare const FORM_DIRECTIVES: Type<any>[];
 
 /** @experimental */
-export declare const FORM_PROVIDERS: Type[];
+export declare const FORM_PROVIDERS: Type<any>[];
 
 /** @experimental */
 export declare class FormBuilder {

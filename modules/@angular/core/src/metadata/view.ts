@@ -7,7 +7,7 @@
  */
 
 import {AnimationEntryMetadata} from '../animation/metadata';
-import {Type} from '../facade/lang';
+import {Type} from '../type';
 
 
 /**
@@ -123,9 +123,9 @@ export class ViewMetadata {
    * }
    * ```
    */
-  directives: Array<Type|any[]>;
+  directives: Array<Type<any>|any[]>;
 
-  pipes: Array<Type|any[]>;
+  pipes: Array<Type<any>|any[]>;
 
   /**
    * Specify how the template and the styles should be encapsulated.
@@ -144,8 +144,8 @@ export class ViewMetadata {
        interpolation}: {
         templateUrl?: string,
         template?: string,
-        directives?: Array<Type|any[]>,
-        pipes?: Array<Type|any[]>,
+        directives?: Array<Type<any>|any[]>,
+        pipes?: Array<Type<any>|any[]>,
         encapsulation?: ViewEncapsulation,
         styles?: string[],
         styleUrls?: string[],

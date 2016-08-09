@@ -7,7 +7,7 @@
  */
 
 import {InjectableMetadata} from '../di/metadata';
-import {Type} from '../facade/lang';
+import {Type} from '../type';
 
 /**
  * A wrapper around a module that also includes the providers.
@@ -15,7 +15,7 @@ import {Type} from '../facade/lang';
  * @experimental
  */
 export interface ModuleWithProviders {
-  ngModule: Type;
+  ngModule: Type<any>;
   providers?: any[];
 }
 
@@ -42,11 +42,11 @@ export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
  */
 export interface NgModuleMetadataType {
   providers?: any[];
-  declarations?: Array<Type|any[]>;
-  imports?: Array<Type|ModuleWithProviders|any[]>;
-  exports?: Array<Type|any[]>;
-  entryComponents?: Array<Type|any[]>;
-  bootstrap?: Array<Type|any[]>;
+  declarations?: Array<Type<any>|any[]>;
+  imports?: Array<Type<any>|ModuleWithProviders|any[]>;
+  exports?: Array<Type<any>|any[]>;
+  entryComponents?: Array<Type<any>|any[]>;
+  bootstrap?: Array<Type<any>|any[]>;
   schemas?: Array<SchemaMetadata|any[]>;
 }
 
@@ -101,7 +101,7 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * }
    * ```
    */
-  declarations: Array<Type|any[]>;
+  declarations: Array<Type<any>|any[]>;
 
   /**
    * Specifies a list of modules whose exported directives/pipes
@@ -118,7 +118,7 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * }
    * ```
    */
-  imports: Array<Type|ModuleWithProviders|any[]>;
+  imports: Array<Type<any>|ModuleWithProviders|any[]>;
 
   /**
    * Specifies a list of directives/pipes/module that can be used within the template
@@ -135,7 +135,7 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * }
    * ```
    */
-  exports: Array<Type|any[]>;
+  exports: Array<Type<any>|any[]>;
 
   /**
    * Defines the components that should be compiled as well when
@@ -143,14 +143,14 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * Angular will create a {@link ComponentFactory ComponentFactory} and store it in the
    * {@link ComponentFactoryResolver ComponentFactoryResolver}.
    */
-  entryComponents: Array<Type|any[]>;
+  entryComponents: Array<Type<any>|any[]>;
 
   /**
    * Defines the components that should be bootstrapped when
    * this module is bootstrapped. The components listed here
    * will automatically be added to `entryComponents`.
    */
-  bootstrap: Array<Type|any[]>;
+  bootstrap: Array<Type<any>|any[]>;
 
   schemas: Array<SchemaMetadata|any[]>;
 

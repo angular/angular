@@ -102,7 +102,7 @@ export class UpgradeAdapter {
   /* @internal */
   private idPrefix: string = `NG2_UPGRADE_${upgradeCount++}_`;
   /* @internal */
-  private upgradedComponents: Type[] = [];
+  private upgradedComponents: Type<any>[] = [];
   /**
    * An internal map of ng1 components which need to up upgraded to ng2.
    *
@@ -113,11 +113,11 @@ export class UpgradeAdapter {
    */
   private ng1ComponentsToBeUpgraded: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
   /* @internal */
-  private providers: Array<Type|Provider|any[]|any> = [];
+  private providers: Array<Type<any>|Provider|any[]|any> = [];
 
   // the ng2AppModule param should be required once the deprecated @Component.directives prop is
   // removed
-  constructor(private ng2AppModule?: Type) {
+  constructor(private ng2AppModule?: Type<any>) {
     if (arguments.length && !ng2AppModule) {
       throw new BaseException(
           'UpgradeAdapter constructor called with undefined instead of a ng module type');
@@ -179,7 +179,7 @@ export class UpgradeAdapter {
    * });
    * ```
    */
-  downgradeNg2Component(type: Type): Function {
+  downgradeNg2Component(type: Type<any>): Function {
     this.upgradedComponents.push(type);
     var info: ComponentInfo = getComponentInfo(type);
     return ng1ComponentDirective(info, `${this.idPrefix}${info.selector}_c`);
@@ -262,7 +262,7 @@ export class UpgradeAdapter {
    * });
    * ```
    */
-  upgradeNg1Component(name: string): Type {
+  upgradeNg1Component(name: string): Type<any> {
     if ((<any>this.ng1ComponentsToBeUpgraded).hasOwnProperty(name)) {
       return this.ng1ComponentsToBeUpgraded[name].type;
     } else {
@@ -489,7 +489,9 @@ export class UpgradeAdapter {
    * @deprecated Use NgModules and `new UpgradeAdapter(ng2AppModule)` to configure top-level
    *providers
    */
-  public addProvider(provider: Type|Provider|any[]|any): void { this.providers.push(provider); }
+  public addProvider(provider: Type<any>|Provider|any[]|any): void {
+    this.providers.push(provider);
+  }
 
   /**
    * Allows AngularJS v1 service to be accessible from Angular v2.

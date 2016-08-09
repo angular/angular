@@ -8,7 +8,8 @@
 
 import {ListWrapper} from '../facade/collection';
 import {BaseException, WrappedException} from '../facade/exceptions';
-import {Type, isBlank, stringify} from '../facade/lang';
+import {isBlank, stringify} from '../facade/lang';
+import {Type} from '../type';
 
 import {Provider} from './provider';
 import {ReflectiveInjector} from './reflective_injector';
@@ -225,11 +226,11 @@ export class InvalidProviderError extends BaseException {
  * @stable
  */
 export class NoAnnotationError extends BaseException {
-  constructor(typeOrFunc: Type|Function, params: any[][]) {
+  constructor(typeOrFunc: Type<any>|Function, params: any[][]) {
     super(NoAnnotationError._genMessage(typeOrFunc, params));
   }
 
-  private static _genMessage(typeOrFunc: Type|Function, params: any[][]) {
+  private static _genMessage(typeOrFunc: Type<any>|Function, params: any[][]) {
     var signature: string[] = [];
     for (var i = 0, ii = params.length; i < ii; i++) {
       var parameter = params[i];

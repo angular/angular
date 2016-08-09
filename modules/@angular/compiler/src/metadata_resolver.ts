@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, BaseException, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, Inject, InjectMetadata, Injectable, ModuleWithProviders, NgModule, NgModuleMetadata, Optional, OptionalMetadata, Provider, QueryMetadata, SchemaMetadata, SelfMetadata, SkipSelfMetadata, ViewMetadata, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, InjectMetadata, Injectable, ModuleWithProviders, OptionalMetadata, Provider, QueryMetadata, SchemaMetadata, SelfMetadata, SkipSelfMetadata, Type, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
 
 import {Console, LIFECYCLE_HOOKS_VALUES, ReflectorReader, createProvider, isProviderLiteral, reflector} from '../core_private';
 import {StringMapWrapper} from '../src/facade/collection';
@@ -15,7 +15,8 @@ import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {CompilerConfig} from './config';
 import {DirectiveResolver} from './directive_resolver';
-import {Type, isArray, isBlank, isPresent, isString, stringify} from './facade/lang';
+import {BaseException} from './facade/exceptions';
+import {isArray, isBlank, isPresent, isString, stringify} from './facade/lang';
 import {Identifiers, identifierToken} from './identifiers';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {NgModuleResolver} from './ng_module_resolver';
@@ -26,10 +27,10 @@ import {MODULE_SUFFIX, ValueTransformer, sanitizeIdentifier, visitValue} from '.
 
 @Injectable()
 export class CompileMetadataResolver {
-  private _directiveCache = new Map<Type, cpl.CompileDirectiveMetadata>();
-  private _pipeCache = new Map<Type, cpl.CompilePipeMetadata>();
-  private _ngModuleCache = new Map<Type, cpl.CompileNgModuleMetadata>();
-  private _ngModuleOfTypes = new Map<Type, Type>();
+  private _directiveCache = new Map<Type<any>, cpl.CompileDirectiveMetadata>();
+  private _pipeCache = new Map<Type<any>, cpl.CompilePipeMetadata>();
+  private _ngModuleCache = new Map<Type<any>, cpl.CompileNgModuleMetadata>();
+  private _ngModuleOfTypes = new Map<Type<any>, Type<any>>();
   private _anonymousTypes = new Map<Object, number>();
   private _anonymousTypeIndex = 0;
 
@@ -53,7 +54,7 @@ export class CompileMetadataResolver {
     return sanitizeIdentifier(identifier);
   }
 
-  clearCacheFor(type: Type) {
+  clearCacheFor(type: Type<any>) {
     this._directiveCache.delete(type);
     this._pipeCache.delete(type);
     this._ngModuleOfTypes.delete(type);
@@ -110,7 +111,8 @@ export class CompileMetadataResolver {
     return null;
   }
 
-  getDirectiveMetadata(directiveType: Type, throwIfNotFound = true): cpl.CompileDirectiveMetadata {
+  getDirectiveMetadata(directiveType: Type<any>, throwIfNotFound = true):
+      cpl.CompileDirectiveMetadata {
     directiveType = resolveForwardRef(directiveType);
     var meta = this._directiveCache.get(directiveType);
     if (isBlank(meta)) {
@@ -241,7 +243,7 @@ export class CompileMetadataResolver {
 
       if (meta.imports) {
         flattenArray(meta.imports).forEach((importedType) => {
-          let importedModuleType: Type;
+          let importedModuleType: Type<any>;
           if (isValidType(importedType)) {
             importedModuleType = importedType;
           } else if (importedType && importedType.ngModule) {
@@ -352,7 +354,7 @@ export class CompileMetadataResolver {
     return compileMeta;
   }
 
-  addComponentToModule(moduleType: Type, compType: Type) {
+  addComponentToModule(moduleType: Type<any>, compType: Type<any>) {
     const moduleMeta = this.getNgModuleMetadata(moduleType);
     // Collect @Component.directives/pipes/entryComponents into our declared directives/pipes.
     const compMeta = this.getDirectiveMetadata(compType, false);
@@ -395,7 +397,7 @@ export class CompileMetadataResolver {
         (dirMeta) => { this._getTransitiveViewDirectivesAndPipes(dirMeta, moduleMeta); });
   }
 
-  private _addTypeToModule(type: Type, moduleType: Type) {
+  private _addTypeToModule(type: Type<any>, moduleType: Type<any>) {
     const oldModule = this._ngModuleOfTypes.get(type);
     if (oldModule && oldModule !== moduleType) {
       throw new BaseException(
@@ -410,13 +412,13 @@ export class CompileMetadataResolver {
     if (!compMeta.isComponent) {
       return;
     }
-    const addPipe = (pipeType: Type) => {
+    const addPipe = (pipeType: Type<any>) => {
       const pipeMeta = this.getPipeMetadata(pipeType);
       this._addPipeToModule(
           pipeMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule, moduleMeta.declaredPipes);
     };
 
-    const addDirective = (dirType: Type) => {
+    const addDirective = (dirType: Type<any>) => {
       const dirMeta = this.getDirectiveMetadata(dirType);
       if (this._addDirectiveToModule(
               dirMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule,
@@ -484,7 +486,7 @@ export class CompileMetadataResolver {
     return false;
   }
 
-  getTypeMetadata(type: Type, moduleUrl: string, dependencies: any[] = null):
+  getTypeMetadata(type: Type<any>, moduleUrl: string, dependencies: any[] = null):
       cpl.CompileTypeMetadata {
     type = resolveForwardRef(type);
     return new cpl.CompileTypeMetadata({
@@ -507,7 +509,7 @@ export class CompileMetadataResolver {
     });
   }
 
-  getPipeMetadata(pipeType: Type, throwIfNotFound = true): cpl.CompilePipeMetadata {
+  getPipeMetadata(pipeType: Type<any>, throwIfNotFound = true): cpl.CompilePipeMetadata {
     pipeType = resolveForwardRef(pipeType);
     var meta = this._pipeCache.get(pipeType);
     if (isBlank(meta)) {
@@ -525,7 +527,7 @@ export class CompileMetadataResolver {
     return meta;
   }
 
-  getDependenciesMetadata(typeOrFunc: Type|Function, dependencies: any[]):
+  getDependenciesMetadata(typeOrFunc: Type<any>|Function, dependencies: any[]):
       cpl.CompileDiDependencyMetadata[] {
     let hasUnknownDeps = false;
     let params = isPresent(dependencies) ? dependencies : this._reflector.parameters(typeOrFunc);
@@ -694,7 +696,7 @@ export class CompileMetadataResolver {
 
   getQueriesMetadata(
       queries: {[key: string]: QueryMetadata}, isViewQuery: boolean,
-      directiveType: Type): cpl.CompileQueryMetadata[] {
+      directiveType: Type<any>): cpl.CompileQueryMetadata[] {
     var res: cpl.CompileQueryMetadata[] = [];
     StringMapWrapper.forEach(queries, (query: QueryMetadata, propertyName: string) => {
       if (query.isViewQuery === isViewQuery) {
@@ -704,7 +706,7 @@ export class CompileMetadataResolver {
     return res;
   }
 
-  getQueryMetadata(q: QueryMetadata, propertyName: string, typeOrFunc: Type|Function):
+  getQueryMetadata(q: QueryMetadata, propertyName: string, typeOrFunc: Type<any>|Function):
       cpl.CompileQueryMetadata {
     var selectors: cpl.CompileTokenMetadata[];
     if (q.isVarBindingQuery) {
@@ -729,7 +731,7 @@ export class CompileMetadataResolver {
 function getTransitiveModules(
     modules: cpl.CompileNgModuleMetadata[], includeImports: boolean,
     targetModules: cpl.CompileNgModuleMetadata[] = [],
-    visitedModules = new Set<Type>()): cpl.CompileNgModuleMetadata[] {
+    visitedModules = new Set<Type<any>>()): cpl.CompileNgModuleMetadata[] {
   modules.forEach((ngModule) => {
     if (!visitedModules.has(ngModule.type.runtime)) {
       visitedModules.add(ngModule.type.runtime);
@@ -761,7 +763,7 @@ function flattenArray(tree: any[], out: Array<any> = []): Array<any> {
 }
 
 function verifyNonBlankProviders(
-    directiveType: Type, providersTree: any[], providersType: string): any[] {
+    directiveType: Type<any>, providersTree: any[], providersType: string): any[] {
   var flat: any[] = [];
   var errMsg: string;
 

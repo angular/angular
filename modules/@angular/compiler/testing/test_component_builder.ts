@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, Compiler, ComponentFactory, Inject, Injectable, Injector, NgZone, ViewMetadata} from '@angular/core';
+import {AnimationEntryMetadata, Compiler, ComponentFactory, Inject, Injectable, Injector, NgZone, Type, ViewMetadata} from '@angular/core';
 import {ComponentFixture, ComponentFixtureNoNgZone, TestBed, TestComponentBuilder} from '@angular/core/testing';
 
 import {DirectiveResolver} from '../index';
 import {MapWrapper} from '../src/facade/collection';
-import {ConcreteType, Type, isPresent} from '../src/facade/lang';
+import {isPresent} from '../src/facade/lang';
+
 
 
 /**
@@ -23,17 +24,17 @@ import {ConcreteType, Type, isPresent} from '../src/facade/lang';
 @Injectable()
 export class OverridingTestComponentBuilder extends TestComponentBuilder {
   /** @internal */
-  _bindingsOverrides = new Map<Type, any[]>();
+  _bindingsOverrides = new Map<Type<any>, any[]>();
   /** @internal */
-  _directiveOverrides = new Map<Type, Map<Type, Type>>();
+  _directiveOverrides = new Map<Type<any>, Map<Type<any>, Type<any>>>();
   /** @internal */
-  _templateOverrides = new Map<Type, string>();
+  _templateOverrides = new Map<Type<any>, string>();
   /** @internal */
-  _animationOverrides = new Map<Type, AnimationEntryMetadata[]>();
+  _animationOverrides = new Map<Type<any>, AnimationEntryMetadata[]>();
   /** @internal */
-  _viewBindingsOverrides = new Map<Type, any[]>();
+  _viewBindingsOverrides = new Map<Type<any>, any[]>();
   /** @internal */
-  _viewOverrides = new Map<Type, ViewMetadata>();
+  _viewOverrides = new Map<Type<any>, ViewMetadata>();
 
   constructor(@Inject(TestBed) injector: Injector) { super(injector); }
 
@@ -48,54 +49,55 @@ export class OverridingTestComponentBuilder extends TestComponentBuilder {
     return clone;
   }
 
-  overrideTemplate(componentType: Type, template: string): OverridingTestComponentBuilder {
+  overrideTemplate(componentType: Type<any>, template: string): OverridingTestComponentBuilder {
     let clone = this._clone();
     clone._templateOverrides.set(componentType, template);
     return clone;
   }
 
-  overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]):
+  overrideAnimations(componentType: Type<any>, animations: AnimationEntryMetadata[]):
       TestComponentBuilder {
     var clone = this._clone();
     clone._animationOverrides.set(componentType, animations);
     return clone;
   }
 
-  overrideView(componentType: Type, view: ViewMetadata): OverridingTestComponentBuilder {
+  overrideView(componentType: Type<any>, view: ViewMetadata): OverridingTestComponentBuilder {
     let clone = this._clone();
     clone._viewOverrides.set(componentType, view);
     return clone;
   }
 
-  overrideDirective(componentType: Type, from: Type, to: Type): OverridingTestComponentBuilder {
+  overrideDirective(componentType: Type<any>, from: Type<any>, to: Type<any>):
+      OverridingTestComponentBuilder {
     let clone = this._clone();
     let overridesForComponent = clone._directiveOverrides.get(componentType);
     if (!isPresent(overridesForComponent)) {
-      clone._directiveOverrides.set(componentType, new Map<Type, Type>());
+      clone._directiveOverrides.set(componentType, new Map<Type<any>, Type<any>>());
       overridesForComponent = clone._directiveOverrides.get(componentType);
     }
     overridesForComponent.set(from, to);
     return clone;
   }
 
-  overrideProviders(type: Type, providers: any[]): OverridingTestComponentBuilder {
+  overrideProviders(type: Type<any>, providers: any[]): OverridingTestComponentBuilder {
     let clone = this._clone();
     clone._bindingsOverrides.set(type, providers);
     return clone;
   }
 
-  overrideViewProviders(type: Type, providers: any[]): OverridingTestComponentBuilder {
+  overrideViewProviders(type: Type<any>, providers: any[]): OverridingTestComponentBuilder {
     let clone = this._clone();
     clone._viewBindingsOverrides.set(type, providers);
     return clone;
   }
 
-  createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>> {
+  createAsync<T>(rootComponentType: Type<T>): Promise<ComponentFixture<T>> {
     this._applyMetadataOverrides();
     return super.createAsync(rootComponentType);
   }
 
-  createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
+  createSync<T>(rootComponentType: Type<T>): ComponentFixture<T> {
     this._applyMetadataOverrides();
     return super.createSync(rootComponentType);
   }

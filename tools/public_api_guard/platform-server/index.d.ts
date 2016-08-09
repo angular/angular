@@ -8,7 +8,7 @@ export declare const platformServer: (extraProviders?: any[]) => PlatformRef;
 export declare const SERVER_PLATFORM_PROVIDERS: Array<any>;
 
 /** @deprecated */
-export declare function serverBootstrap<T>(appComponentType: ConcreteType<T>, customProviders: Array<any>): Promise<ComponentRef<T>>;
+export declare function serverBootstrap<T>(appComponentType: Type<T>, customProviders: Array<any>): Promise<ComponentRef<T>>;
 
 /** @deprecated */
 export declare const serverDynamicPlatform: (extraProviders?: any[]) => PlatformRef;

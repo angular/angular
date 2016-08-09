@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 import {LocationType} from '@angular/platform-browser/src/web_workers/shared/serialized_types';
 import {WebWorkerPlatformLocation} from '@angular/platform-browser/src/web_workers/worker/platform_location';
-import {Type} from '../../../src/facade/lang';
+
 import {MockMessageBrokerFactory, createPairedMessageBuses, expectBrokerCall} from '../shared/web_worker_test_util';
 
 import {SpyMessageBroker} from './spies';
@@ -27,7 +28,7 @@ export function main() {
 
 
     function createWebWorkerPlatformLocation(loc: LocationType): WebWorkerPlatformLocation {
-      broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type) => {
+      broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type<any>) => {
         if (args.method === 'getLocation') {
           return Promise.resolve(loc);
         }

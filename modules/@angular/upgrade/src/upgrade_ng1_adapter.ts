@@ -20,7 +20,7 @@ const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 
 
 export class UpgradeNg1ComponentAdapterBuilder {
-  type: Type;
+  type: Type<any>;
   inputs: string[] = [];
   inputsRename: string[] = [];
   outputs: string[] = [];

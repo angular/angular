@@ -145,7 +145,7 @@ export class Router {
    * Creates the router service.
    */
   constructor(
-      private rootComponentType: Type, private resolver: ComponentResolver,
+      private rootComponentType: Type<any>, private resolver: ComponentResolver,
       private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
       private location: Location, private injector: Injector, loader: NgModuleFactoryLoader,
       config: Routes) {

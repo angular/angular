@@ -13,18 +13,18 @@ import {Map} from '../src/facade/collection';
 
 @Injectable()
 export class MockNgModuleResolver extends NgModuleResolver {
-  private _ngModules = new Map<Type, NgModuleMetadata>();
+  private _ngModules = new Map<Type<any>, NgModuleMetadata>();
 
   constructor(private _injector: Injector) { super(); }
 
   private get _compiler(): Compiler { return this._injector.get(Compiler); }
 
-  private _clearCacheFor(component: Type) { this._compiler.clearCacheFor(component); }
+  private _clearCacheFor(component: Type<any>) { this._compiler.clearCacheFor(component); }
 
   /**
    * Overrides the {@link NgModuleMetadata} for a module.
    */
-  setNgModule(type: Type, metadata: NgModuleMetadata): void {
+  setNgModule(type: Type<any>, metadata: NgModuleMetadata): void {
     this._ngModules.set(type, metadata);
     this._clearCacheFor(type);
   }
@@ -35,7 +35,7 @@ export class MockNgModuleResolver extends NgModuleResolver {
    * default
    * `NgModuleResolver`, see `setNgModule`.
    */
-  resolve(type: Type, throwIfNotFound = true): NgModuleMetadata {
+  resolve(type: Type<any>, throwIfNotFound = true): NgModuleMetadata {
     var metadata = this._ngModules.get(type);
     if (!metadata) {
       metadata = super.resolve(type, throwIfNotFound);

@@ -52,7 +52,7 @@ const _NO_XHR: XHR = {
  * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS: Array<any|Type|{[k: string]: any}|any[]> = [
+export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> = [
   {provide: Reflector, useValue: reflector},
   {provide: ReflectorReader, useExisting: Reflector},
   {provide: XHR, useValue: _NO_XHR},
@@ -79,8 +79,11 @@ export const COMPILER_PROVIDERS: Array<any|Type|{[k: string]: any}|any[]> = [
 ];
 
 
-export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[] = []):
-    {compilerOptions: CompilerOptions, moduleDeclarations: Type[], deprecationMessages: string[]} {
+export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[] = []): {
+  compilerOptions: CompilerOptions,
+  moduleDeclarations: Type<any>[],
+  deprecationMessages: string[]
+} {
   let platformDirectives: any[] = [];
   let platformPipes: any[] = [];
 

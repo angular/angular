@@ -10,9 +10,10 @@ var parse5 = require('parse5/index');
 
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from '../platform_browser_private';
-import {isPresent, isBlank, global, Type, setValueOnPath, DateWrapper} from '../src/facade/lang';
-import {BaseException} from '@angular/core';
+import {isPresent, isBlank, global, setValueOnPath, DateWrapper} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
 import {SelectorMatcher, CssSelector} from '../compiler_private';
+import {Type} from '@angular/core';
 import {XHR} from '@angular/compiler';
 
 var parser: any /** TODO #9100 */ = null;
@@ -68,7 +69,7 @@ export class Parse5DomAdapter extends DomAdapter {
 
   logGroupEnd() {}
 
-  getXHR(): Type { return XHR; }
+  getXHR(): Type<XHR> { return XHR; }
 
   get attrToPropMap() { return _attrToPropMap; }
 

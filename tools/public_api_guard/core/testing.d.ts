@@ -61,7 +61,7 @@ export declare function resetFakeAsyncZone(): void;
 
 /** @experimental */
 export declare class TestBed implements Injector {
-    ngModule: Type;
+    ngModule: Type<any>;
     platform: PlatformRef;
     compileComponents(): Promise<any>;
     configureCompiler(config: {
@@ -69,14 +69,14 @@ export declare class TestBed implements Injector {
         useJit?: boolean;
     }): void;
     configureTestingModule(moduleDef: TestModuleMetadata): void;
-    createComponent<T>(component: ConcreteType<T>): ComponentFixture<T>;
+    createComponent<T>(component: Type<T>): ComponentFixture<T>;
     execute(tokens: any[], fn: Function): any;
     get(token: any, notFoundValue?: any): any;
-    /** @experimental */ initTestEnvironment(ngModule: Type, platform: PlatformRef): void;
-    overrideComponent(component: ConcreteType<any>, override: MetadataOverride<ComponentMetadataType>): void;
-    overrideDirective(directive: ConcreteType<any>, override: MetadataOverride<DirectiveMetadataType>): void;
-    overrideModule(ngModule: ConcreteType<any>, override: MetadataOverride<NgModuleMetadataType>): void;
-    overridePipe(pipe: ConcreteType<any>, override: MetadataOverride<PipeMetadataType>): void;
+    /** @experimental */ initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): void;
+    overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>): void;
+    overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): void;
+    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>): void;
+    overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>): void;
     /** @deprecated */ reset(): void;
     /** @experimental */ resetTestEnvironment(): void;
     resetTestingModule(): void;
@@ -86,12 +86,12 @@ export declare class TestBed implements Injector {
         useJit?: boolean;
     }): typeof TestBed;
     static configureTestingModule(moduleDef: TestModuleMetadata): typeof TestBed;
-    static createComponent<T>(component: ConcreteType<T>): ComponentFixture<T>;
-    /** @experimental */ static initTestEnvironment(ngModule: Type, platform: PlatformRef): TestBed;
-    static overrideComponent(component: ConcreteType<any>, override: MetadataOverride<ComponentMetadataType>): typeof TestBed;
-    static overrideDirective(directive: ConcreteType<any>, override: MetadataOverride<DirectiveMetadataType>): typeof TestBed;
-    static overrideModule(ngModule: ConcreteType<any>, override: MetadataOverride<NgModuleMetadataType>): typeof TestBed;
-    static overridePipe(pipe: ConcreteType<any>, override: MetadataOverride<PipeMetadataType>): typeof TestBed;
+    static createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    /** @experimental */ static initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): TestBed;
+    static overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>): typeof TestBed;
+    static overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): typeof TestBed;
+    static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>): typeof TestBed;
+    static overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>): typeof TestBed;
     /** @experimental */ static resetTestEnvironment(): void;
     static resetTestingModule(): typeof TestBed;
 }
@@ -100,16 +100,16 @@ export declare class TestBed implements Injector {
 export declare class TestComponentBuilder {
     protected _injector: Injector;
     constructor(_injector: Injector);
-    createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>>;
-    createFakeAsync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T>;
+    createAsync<T>(rootComponentType: Type<T>): Promise<ComponentFixture<T>>;
+    createFakeAsync<T>(rootComponentType: Type<T>): ComponentFixture<T>;
     protected createFromFactory<C>(ngZone: NgZone, componentFactory: ComponentFactory<C>): ComponentFixture<C>;
-    createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T>;
-    overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder;
-    overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder;
-    overrideProviders(type: Type, providers: any[]): TestComponentBuilder;
-    overrideTemplate(componentType: Type, template: string): TestComponentBuilder;
-    overrideView(componentType: Type, view: ViewMetadata): TestComponentBuilder;
-    overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder;
+    createSync<T>(rootComponentType: Type<T>): ComponentFixture<T>;
+    overrideAnimations(componentType: Type<any>, animations: AnimationEntryMetadata[]): TestComponentBuilder;
+    overrideDirective(componentType: Type<any>, from: Type<any>, to: Type<any>): TestComponentBuilder;
+    overrideProviders(type: Type<any>, providers: any[]): TestComponentBuilder;
+    overrideTemplate(componentType: Type<any>, template: string): TestComponentBuilder;
+    overrideView(componentType: Type<any>, view: ViewMetadata): TestComponentBuilder;
+    overrideViewProviders(type: Type<any>, providers: any[]): TestComponentBuilder;
 }
 
 /** @experimental */

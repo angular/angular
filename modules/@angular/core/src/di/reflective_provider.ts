@@ -7,8 +7,9 @@
  */
 
 import {ListWrapper, MapWrapper} from '../facade/collection';
-import {Type, isArray, isBlank, isPresent} from '../facade/lang';
+import {isArray, isBlank, isPresent} from '../facade/lang';
 import {reflector} from '../reflection/reflection';
+import {Type} from '../type';
 
 import {resolveForwardRef} from './forward_ref';
 import {DependencyMetadata, HostMetadata, InjectMetadata, OptionalMetadata, SelfMetadata, SkipSelfMetadata} from './metadata';
@@ -16,6 +17,7 @@ import {Provider, ProviderBuilder, provide} from './provider';
 import {createProvider, isProviderLiteral} from './provider_util';
 import {InvalidProviderError, MixingMultiProvidersWithRegularProvidersError, NoAnnotationError} from './reflective_exceptions';
 import {ReflectiveKey} from './reflective_key';
+
 
 
 /**
@@ -54,7 +56,7 @@ const _EMPTY_LIST: any[] = [];
  */
 export interface ResolvedReflectiveProvider {
   /**
-   * A key, usually a `Type`.
+   * A key, usually a `Type<any>`.
    */
   key: ReflectiveKey;
 
@@ -140,7 +142,7 @@ export function resolveReflectiveProvider(provider: Provider): ResolvedReflectiv
  * Resolve a list of Providers.
  */
 export function resolveReflectiveProviders(
-    providers: Array<Type|Provider|{[k: string]: any}|any[]>): ResolvedReflectiveProvider[] {
+    providers: Array<Type<any>|Provider|{[k: string]: any}|any[]>): ResolvedReflectiveProvider[] {
   var normalized = _normalizeProviders(providers, []);
   var resolved = normalized.map(resolveReflectiveProvider);
   return MapWrapper.values(
@@ -185,7 +187,7 @@ export function mergeResolvedReflectiveProviders(
 }
 
 function _normalizeProviders(
-    providers: Array<Type|Provider|{[k: string]: any}|ProviderBuilder|any[]>,
+    providers: Array<Type<any>|Provider|{[k: string]: any}|ProviderBuilder|any[]>,
     res: Provider[]): Provider[] {
   providers.forEach(b => {
     if (b instanceof Type) {
