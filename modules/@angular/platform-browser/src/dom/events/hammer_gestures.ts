@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken} from '@angular/core';
-
-import {isPresent} from '../../facade/lang';
-
+import {Inject, Injectable, NgZone, OpaqueToken} from '@angular/core';
+import {getDOM} from '../dom_adapter';
 import {HammerGesturesPluginCommon} from './hammer_common';
+
 
 /**
  * A DI token that you can use to provide{@link HammerGestureConfig} to Angular. Use it to configure
@@ -35,7 +34,7 @@ export class HammerGestureConfig {
   overrides: {[key: string]: Object} = {};
 
   buildHammer(element: HTMLElement): HammerInstance {
-    var mc = new Hammer(element);
+    const mc = new Hammer(element);
 
     mc.get('pinch').set({enable: true});
     mc.get('rotate').set({enable: true});
@@ -55,7 +54,7 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
   supports(eventName: string): boolean {
     if (!super.supports(eventName) && !this.isCustomEvent(eventName)) return false;
 
-    if (!isPresent((window as any /** TODO #???? */)['Hammer'])) {
+    if (!(window as any /** TODO #???? */)['Hammer']) {
       throw new Error(`Hammer.js is not loaded, can not bind ${eventName} event`);
     }
 
@@ -63,18 +62,21 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    var zone = this.manager.getZone();
-    eventName = eventName.toLowerCase();
+    const zone: NgZone = this.manager.getZone();
+    const name: string = eventName.toLowerCase();
 
     return zone.runOutsideAngular(() => {
       // Creating the manager bind events, must be done outside of angular
-      var mc = this._config.buildHammer(element);
-      var callback = function(eventObj: any /** TODO #???? */) {
-        zone.runGuarded(function() { handler(eventObj); });
-      };
-      mc.on(eventName, callback);
-      return () => { mc.off(eventName, callback); };
+      const mc: HammerInstance = this._config.buildHammer(element);
+      const callback = (event: Event) => { zone.runGuarded(() => { handler(event); }); };
+      mc.on(name, callback);
+      return () => mc.off(name, callback);
     });
+  }
+
+  addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
+    const target: HTMLElement = getDOM().getGlobalEventTarget(element);
+    return this.addEventListener(target, eventName, handler);
   }
 
   isCustomEvent(eventName: string): boolean { return this._config.events.indexOf(eventName) > -1; }

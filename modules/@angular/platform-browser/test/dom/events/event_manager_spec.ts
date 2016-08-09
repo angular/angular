@@ -7,12 +7,10 @@
  */
 
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {beforeEach, ddescribe, describe, expect, iit, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
-
-import {ListWrapper, Map} from '../../../src/facade/collection';
 import {el} from '../../../testing/browser_util';
 
 export function main() {
@@ -96,7 +94,7 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
   _eventHandler = new Map<string, Function>();
   constructor(public _supports: string[]) { super(); }
 
-  supports(eventName: string): boolean { return ListWrapper.contains(this._supports, eventName); }
+  supports(eventName: string): boolean { return this._supports.indexOf(eventName) !== -1; }
 
   addEventListener(element: any /** TODO #9100 */, eventName: string, handler: Function) {
     this._eventHandler.set(eventName, handler);

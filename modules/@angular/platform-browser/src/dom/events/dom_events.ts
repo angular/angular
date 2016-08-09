@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-
+import {Injectable, NgZone} from '@angular/core';
 import {getDOM} from '../dom_adapter';
 import {EventManagerPlugin} from './event_manager';
 
@@ -18,17 +17,13 @@ export class DomEventsPlugin extends EventManagerPlugin {
   supports(eventName: string): boolean { return true; }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    var zone = this.manager.getZone();
-    var outsideHandler = (event: any /** TODO #9100 */) => zone.runGuarded(() => handler(event));
-    return this.manager.getZone().runOutsideAngular(
-        () => getDOM().onAndCancel(element, eventName, outsideHandler));
+    const zone: NgZone = this.manager.getZone();
+    const outsideHandler = (event: Event) => zone.runGuarded(() => handler(event));
+    return zone.runOutsideAngular(() => getDOM().onAndCancel(element, eventName, outsideHandler));
   }
 
-  addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
-    var element = getDOM().getGlobalEventTarget(target);
-    var zone = this.manager.getZone();
-    var outsideHandler = (event: any /** TODO #9100 */) => zone.runGuarded(() => handler(event));
-    return this.manager.getZone().runOutsideAngular(
-        () => getDOM().onAndCancel(element, eventName, outsideHandler));
+  addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
+    const target: HTMLElement = getDOM().getGlobalEventTarget(element);
+    return this.addEventListener(target, eventName, handler);
   }
 }
