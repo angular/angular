@@ -1,3 +1,53 @@
+# 3.0.0-rc.1 (2016-08-09)
+
+## Features
+* feat(router): add support for lazily loaded modules
+* feat(router): empty-path routes should inherit matrix params
+* feat(router): add activate and deactivate events to RouterOutlet
+* feat(router): update routerLink DSL to handle aux routes
+* feat(router): add support for canActivateChild
+* feat(router): guards and data resolvers can now return promises
+* feat(router): rename PRIMARY_OUTLET into primary
+* feat(router): rename UrlPathWithParams into UrlSegment
+* feat(router): implement canLoad
+* feat(router): take advantage of the new way of configuring modules
+* feat(router): ActivateRoute should expose its route config
+* feat(router): add isActive to router
+* feat(router): add a validation to make sure pathMatch is set correctly
+* feat(router): add parent, children, firstChild to ActivatedRoute
+* feat(router): add queryParams and fragment to every activated route
+* feat(router): add route.root returning the root of router state
+
+## Bug Fixes
+* fix(router): update links when query params change
+* fix(router): handle router outlets in ngIf
+* fix(router): encode/decode params and path segments
+* fix(router): disallow root segments with matrix params
+* fix(router): update current state and url before activating components
+* fix(router): do not fire events on 'duplicate' location events
+* fix(router): freeze params and queryParams to prevent common source of errors
+* fix(router): expose initalNavigation
+* fix(router): back button does not work in IE11 and Safari
+* fix(router): navigation should not preserve query params and fragment by default
+* fix(router): routerLinkActive should only set classes after the router has successfully navigated
+* fix(router): handle urls with only secondary top-level segments
+* fix(router): router link active should take all descendants into account
+* fix(router): handle when both primary and secondary are empty-path routes have children
+* fix(router): updates router module to be offline-compilation friendly
+* fix(router): relax type defintion of Route to improve dev ergonomics)
+* fix(router): make an outlet to unregister itself when it is removed from the DOM
+* fix(router): add segmentPath to the link DSL
+* fix(router): absolute redirects should work with lazy loading
+* fix(router): fix matrix params check to handle 'special' objects
+* fix(router): support outlets in non-absolute positions
+* fix(router): route.parent should work for secondary children
+
+## Breaking Changes
+
+* PRIMARY_OUTLET got renamed into 'primary'
+* UrlPathWithParams got renamed into UrlSegment
+* Query params and fragment are not longer preserved by default
+
 # 3.0.0-beta.2 (2016-06-30)
 
 ## Bug Fixes
