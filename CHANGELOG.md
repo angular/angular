@@ -1,5 +1,5 @@
 <a name="2.0.0-alpha.7"></a>
-# [2.0.0-alpha.7 wax-umpire](https://github.com/angular/material2/compare/2.0.0-alpha.6...v2.0.0-alpha.7) (2016-08-09)
+# [2.0.0-alpha.7 wax-umpire](https://github.com/angular/material2/compare/2.0.0-alpha.6...2.0.0-alpha.7) (2016-08-09)
 
 
 ### Bug Fixes
@@ -50,7 +50,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 
 
 <a name="2.0.0-alpha.6"></a>
-# [2.0.0-alpha.6 carbonfiber-discotheque](https://github.com/angular/material2/compare/2.0.0-alpha.5...v2.0.0-alpha.6) (2016-06-30)
+# [2.0.0-alpha.6 carbonfiber-discotheque](https://github.com/angular/material2/compare/2.0.0-alpha.5...2.0.0-alpha.6) (2016-06-30)
 
 ### Breaking changes
 * `MdRadioDispatcher` is now `MdUniqueSelectionDispatcher` and is imported from `core`
@@ -110,7 +110,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 
 
 <a name="2.0.0-alpha.5"></a>
-# [2.0.0-alpha.5 granite-gouda](https://github.com/angular/material2/compare/2.0.0-alpha.4...v2.0.0-alpha.5) (2016-05-25)
+# [2.0.0-alpha.5 granite-gouda](https://github.com/angular/material2/compare/2.0.0-alpha.4...2.0.0-alpha.5) (2016-05-25)
 
 
 ### Bug Fixes
@@ -152,7 +152,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 
 
 <a name="2.0.0-alpha.4"></a>
-# [2.0.0-alpha.4 mahogany-tambourine](https://github.com/angular/material2/compare/2.0.0-alpha.3...v2.0.0-alpha.4) (2016-05-04)
+# [2.0.0-alpha.4 mahogany-tambourine](https://github.com/angular/material2/compare/2.0.0-alpha.3...2.0.0-alpha.4) (2016-05-04)
 
 
 ### Bug Fixes
@@ -176,7 +176,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 
 
 <a name="2.0.0-alpha.3"></a>
-# [2.0.0-alpha.3 cotton-candelabrum](https://github.com/angular/material2/compare/2.0.0-alpha.2...v2.0.0-alpha.3) (2016-04-21)
+# [2.0.0-alpha.3 cotton-candelabrum](https://github.com/angular/material2/compare/2.0.0-alpha.2...2.0.0-alpha.3) (2016-04-21)
 
 
 ### Bug Fixes
@@ -198,7 +198,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 
 
 <a name="2.0.0-alpha.2"></a>
-# [2.0.0-alpha.2 diamond-haircut](https://github.com/angular/material2/compare/2.0.0-alpha.1...v2.0.0-alpha.2) (2016-04-06)
+# [2.0.0-alpha.2 diamond-haircut](https://github.com/angular/material2/compare/2.0.0-alpha.1...2.0.0-alpha.2) (2016-04-06)
 
 
 ### Bug Fixes
@@ -231,7 +231,7 @@ The MD_XXX_DIRECTIVES constants are now deprecated and will be removed in alpha.
 
 
 <a name="2.0.0-alpha.1"></a>
-# [2.0.0-alpha.1 nylon-hyperdrive](https://github.com/angular/material2/compare/2.0.0-alpha.0...v2.0.0-alpha.1) (2016-03-16)
+# [2.0.0-alpha.1 nylon-hyperdrive](https://github.com/angular/material2/compare/2.0.0-alpha.0...2.0.0-alpha.1) (2016-03-16)
 
 
 ### Features

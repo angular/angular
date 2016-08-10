@@ -1,20 +1,31 @@
 #!/usr/bin/env node
 
 'use strict';
-/**
+
+/*
  * Creates a conventional changelog from the current git repository / metadata.
  */
 
-var fs = require('fs');
-var addStream = require('add-stream');
-var cl = require('conventional-changelog');
-var inStream = fs.createReadStream('CHANGELOG.md');
+const fs = require('fs');
+const addStream = require('add-stream');
+const changelog = require('conventional-changelog');
+const spawnSync = require('child_process').spawnSync;
+const npmVersion = require('../../package.json').version;
 
 /**
  * When the command line argument `--force` is provided, then the full changelog will created and overwritten.
  * By default, it will only create the changelog from the latest tag to head and prepends it to the changelog.
  */
-var isForce = process.argv.indexOf('--force') !== -1;
+const isForce = process.argv.indexOf('--force') !== -1;
+const inStream = fs.createReadStream('CHANGELOG.md');
+const gitTags = getAvailableTags();
+
+// Whether the npm version is later than the most recent tag.
+const isNpmLatest = npmVersion !== gitTags[0];
+// When the npm version is the latest, use the npm version, otherwise use the latest tag.
+const currentTag = isNpmLatest ? npmVersion : gitTags[0];
+// When the npm version is the latest use the most recent tag. Otherwise use the previous tag.
+const previousTag = isNpmLatest ? gitTags[0] : gitTags[1];
 
 inStream.on('error', function(err) {
   console.error('An error occurred, while reading the previous changelog file.\n' +
@@ -28,7 +39,12 @@ var config = {
   releaseCount: isForce ? 0 : 1
 };
 
-var stream = cl(config)
+var context = {
+  currentTag: currentTag,
+  previousTag: previousTag
+};
+
+var stream = changelog(config, context)
   .on('error', function(err) {
     console.error('An error occurred while generating the changelog: ' + err);
   })
@@ -44,4 +60,12 @@ if (!isForce) {
 
 function getOutputStream() {
   return fs.createWriteStream('CHANGELOG.md');
+}
+
+/**
+ * Resolves available tags over all branches from the repository metadata.
+ * @returns {Array.<String>} Array of available tags.
+ */
+function getAvailableTags() {
+  return spawnSync('git', ['tag']).stdout.toString().trim().split('\n').reverse();
 }
