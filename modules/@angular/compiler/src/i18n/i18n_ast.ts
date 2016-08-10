@@ -9,8 +9,17 @@
 import {ParseSourceSpan} from '../parse_util';
 
 export class Message {
+  /**
+   * @param nodes message AST
+   * @param placeholders maps placeholder names to static content
+   * @param placeholderToMsgIds maps placeholder names to translatable message IDs (used for ICU
+   *                            messages)
+   * @param meaning
+   * @param description
+   */
   constructor(
-      public nodes: Node[], public placeholders: {[name: string]: string}, public meaning: string,
+      public nodes: Node[], public placeholders: {[name: string]: string},
+      public placeholderToMsgIds: {[name: string]: string}, public meaning: string,
       public description: string) {}
 }
 

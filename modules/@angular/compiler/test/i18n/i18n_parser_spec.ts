@@ -272,12 +272,17 @@ export function main() {
           [['{count, plural, =1 {[1]}}'], '', ''],
         ]);
 
-        expect(_humanizePlaceholders(html)).toEqual([
-          'ICU={count, plural, =0 {0}}, ICU_1={count, plural, =1 {1}}',
+        // ICU message placeholders are reference to translations.
+        // As such they have no static content but refs to message ids.
+        expect(_humanizePlaceholders(html)).toEqual(['', '', '', '']);
+
+        expect(_humanizePlaceholdersToIds(html)).toEqual([
+          'ICU=f0f76923009914f1b05f41042a5c7231b9496504, ICU_1=73693d1f78d0fc882f0bcbce4cb31a0aa1995cfe',
           '',
           '',
           '',
         ]);
+
       });
     });
   });
@@ -302,6 +307,17 @@ function _humanizePlaceholders(
     msg => Object.keys(msg.placeholders).map((name) => `${name}=${msg.placeholders[name]}`).join(', '));
   // clang-format on
 }
+
+function _humanizePlaceholdersToIds(
+    html: string, implicitTags: string[] = [],
+    implicitAttrs: {[k: string]: string[]} = {}): string[] {
+  // clang-format off
+  // https://github.com/angular/clang-format/issues/35
+  return _extractMessages(html, implicitTags, implicitAttrs).map(
+    msg => Object.keys(msg.placeholderToMsgIds).map(k => `${k}=${msg.placeholderToMsgIds[k]}`).join(', '));
+  // clang-format on
+}
+
 
 function _extractMessages(
     html: string, implicitTags: string[] = [],
