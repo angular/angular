@@ -1524,22 +1524,35 @@ describe('Integration', () => {
            [Router, TestComponentBuilder, Location, NgModuleFactoryLoader],
            (router: Router, tcb: TestComponentBuilder, location: Location,
             loader: SpyNgModuleFactoryLoader) => {
-             class LazyLoadedService {}
+             class LazyLoadedServiceDefinedInModule {}
+             class LazyLoadedServiceDefinedInCmp {}
 
-             @Component({selector: 'lazy', template: 'lazy-loaded', directives: ROUTER_DIRECTIVES})
-             class LazyLoadedComponent {
-               constructor(service: LazyLoadedService) {}
+             @Component({selector: 'lazy', template: 'lazy-loaded'})
+             class LazyLoadedChildComponent {
+               constructor(service: LazyLoadedServiceDefinedInCmp) {}
+             }
+
+             @Component({
+               selector: 'lazy',
+               template: '<router-outlet></router-outlet>',
+               providers: [LazyLoadedServiceDefinedInCmp]
+             })
+             class LazyLoadedParentComponent {
+               constructor(service: LazyLoadedServiceDefinedInModule) {}
              }
 
              @NgModule({
-               entryComponents: [LazyLoadedComponent],
-               declarations: [LazyLoadedComponent],
+               entryComponents: [LazyLoadedParentComponent],
+               declarations: [LazyLoadedParentComponent, LazyLoadedChildComponent],
                imports: [RouterModule.forChild([{
                  path: '',
-                 canActivate: ['alwaysTrue'],
-                 children: [{path: 'loaded', component: LazyLoadedComponent}]
+                 children: [{
+                   path: 'loaded',
+                   component: LazyLoadedParentComponent,
+                   children: [{path: 'child', component: LazyLoadedChildComponent}]
+                 }]
                }])],
-               providers: [LazyLoadedService, {provide: 'alwaysTrue', useValue: () => true}]
+               providers: [LazyLoadedServiceDefinedInModule]
              })
              class LoadedModule {
              }
@@ -1550,10 +1563,10 @@ describe('Integration', () => {
 
              router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
-             router.navigateByUrl('/lazy/loaded');
+             router.navigateByUrl('/lazy/loaded/child');
              advance(fixture);
 
-             expect(location.path()).toEqual('/lazy/loaded');
+             expect(location.path()).toEqual('/lazy/loaded/child');
              expect(fixture.debugElement.nativeElement).toHaveText('lazy-loaded');
            })));
 

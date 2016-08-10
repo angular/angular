@@ -581,7 +581,7 @@ export class PreActivation {
     const canActivate = future._routeConfig ? future._routeConfig.canActivate : null;
     if (!canActivate || canActivate.length === 0) return of (true);
     const obs = from(canActivate).map(c => {
-      const guard = this.getToken(c, future, this.future);
+      const guard = this.getToken(c, future);
       if (guard.canActivate) {
         return wrapIntoObservable(guard.canActivate(future, this.future));
       } else {
@@ -601,7 +601,7 @@ export class PreActivation {
 
     return andObservables(from(canActivateChildGuards).map(d => {
       const obs = from(d.guards).map(c => {
-        const guard = this.getToken(c, c.node, this.future);
+        const guard = this.getToken(c, c.node);
         if (guard.canActivateChild) {
           return wrapIntoObservable(guard.canActivateChild(future, this.future));
         } else {
@@ -624,7 +624,7 @@ export class PreActivation {
     if (!canDeactivate || canDeactivate.length === 0) return of (true);
     return from(canDeactivate)
         .map(c => {
-          const guard = this.getToken(c, curr, this.curr);
+          const guard = this.getToken(c, curr);
           if (guard.canDeactivate) {
             return wrapIntoObservable(guard.canDeactivate(component, curr, this.curr));
           } else {
@@ -646,14 +646,14 @@ export class PreActivation {
 
   private resolveNode(resolve: ResolveData, future: ActivatedRouteSnapshot): Observable<any> {
     return waitForMap(resolve, (k, v) => {
-      const resolver = this.getToken(v, future, this.future);
+      const resolver = this.getToken(v, future);
       return resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
                                 wrapIntoObservable(resolver(future, this.future));
     });
   }
 
-  private getToken(token: any, snapshot: ActivatedRouteSnapshot, state: RouterStateSnapshot): any {
-    const config = closestLoadedConfig(state, snapshot);
+  private getToken(token: any, snapshot: ActivatedRouteSnapshot): any {
+    const config = closestLoadedConfig(snapshot);
     const injector = config ? config.injector : this.injector;
     return injector.get(token);
   }
@@ -739,7 +739,8 @@ class ActivateRoutes {
       useValue: outletMap
     }];
 
-    const config = closestLoadedConfig(this.futureState.snapshot, future.snapshot);
+    const config = parentLoadedConfig(future.snapshot);
+
     let loadedFactoryResolver: ComponentFactoryResolver = null;
     let loadedInjector: Injector = null;
 
@@ -747,8 +748,7 @@ class ActivateRoutes {
       loadedFactoryResolver = config.factoryResolver;
       loadedInjector = config.injector;
       resolved.push({provide: ComponentFactoryResolver, useValue: loadedFactoryResolver});
-    };
-
+    }
     outlet.activate(
         future, loadedFactoryResolver, loadedInjector, ReflectiveInjector.resolve(resolved),
         outletMap);
@@ -766,13 +766,27 @@ class ActivateRoutes {
   }
 }
 
-function closestLoadedConfig(
-    state: RouterStateSnapshot, snapshot: ActivatedRouteSnapshot): LoadedRouterConfig {
-  const b = state.pathFromRoot(snapshot).filter(s => {
-    const config = (<any>s)._routeConfig;
-    return config && config._loadedConfig && s !== snapshot;
-  });
-  return b.length > 0 ? (<any>b[b.length - 1])._routeConfig._loadedConfig : null;
+function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig {
+  let s = snapshot.parent;
+  while (s) {
+    const c: any = s._routeConfig;
+    if (c && c._loadedConfig) return c._loadedConfig;
+    if (c && c.component) return null;
+    s = s.parent;
+  }
+  return null;
+}
+
+function closestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig {
+  if (!snapshot) return null;
+
+  let s = snapshot.parent;
+  while (s) {
+    const c: any = s._routeConfig;
+    if (c && c._loadedConfig) return c._loadedConfig;
+    s = s.parent;
+  }
+  return null;
 }
 
 function nodeChildrenAsMap(node: TreeNode<any>) {

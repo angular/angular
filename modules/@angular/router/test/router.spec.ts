@@ -54,7 +54,7 @@ function checkResolveData(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any, check: any): void {
   const p = new PreActivation(future, curr, injector);
   p.traverse(new RouterOutletMap());
-  p.resolveData().subscribe(check, (e) => {throw e});
+  p.resolveData().subscribe(check, (e) => { throw e; });
 }
 
 function createActivatedRouteSnapshot(cmp: string, extra: any = {}): ActivatedRouteSnapshot {
