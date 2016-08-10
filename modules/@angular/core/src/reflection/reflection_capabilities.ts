@@ -20,87 +20,10 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   isReflectionEnabled(): boolean { return true; }
 
   factory(t: ConcreteType<any>): Function {
-    switch (t.length) {
-      case 0:
-        return () => new t();
-      case 1:
-        return (a1: any) => new t(a1);
-      case 2:
-        return (a1: any, a2: any) => new t(a1, a2);
-      case 3:
-        return (a1: any, a2: any, a3: any) => new t(a1, a2, a3);
-      case 4:
-        return (a1: any, a2: any, a3: any, a4: any) => new t(a1, a2, a3, a4);
-      case 5:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any) => new t(a1, a2, a3, a4, a5);
-      case 6:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any) =>
-                   new t(a1, a2, a3, a4, a5, a6);
-      case 7:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any) =>
-                   new t(a1, a2, a3, a4, a5, a6, a7);
-      case 8:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any) =>
-                   new t(a1, a2, a3, a4, a5, a6, a7, a8);
-      case 9:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any) =>
-                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-      case 10:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any) => new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-      case 11:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any) => new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
-      case 12:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any, a12: any) =>
-                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
-      case 13:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any, a12: any, a13: any) =>
-                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13);
-      case 14:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any, a12: any, a13: any, a14: any) =>
-                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14);
-      case 15:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any, a12: any, a13: any, a14: any, a15: any) =>
-                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
-      case 16:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any) =>
-                   new t(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
-      case 17:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any) =>
-                   new t(
-                       a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
-      case 18:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
-                a18: any) =>
-                   new t(
-                       a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17,
-                       a18);
-      case 19:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
-                a18: any, a19: any) =>
-                   new t(
-                       a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17,
-                       a18, a19);
-      case 20:
-        return (a1: any, a2: any, a3: any, a4: any, a5: any, a6: any, a7: any, a8: any, a9: any,
-                a10: any, a11: any, a12: any, a13: any, a14: any, a15: any, a16: any, a17: any,
-                a18: any, a19: any, a20: any) =>
-                   new t(
-                       a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17,
-                       a18, a19, a20);
-    };
-
-    throw new Error(
-        `Cannot create a factory for '${stringify(t)}' because its constructor has more than 20 arguments`);
+    if (t.length > 20)
+      throw new Error(
+          `Cannot create a factory for '${stringify(t)}' because its constructor has more than 20 arguments`);
+    return (...a: any[]) => new t(...a);
   }
 
   /** @internal */
