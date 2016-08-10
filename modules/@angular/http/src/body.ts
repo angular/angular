@@ -42,7 +42,7 @@ export abstract class Body {
    */
   text(): string {
 
-    if(typeof this._body === null) this._body = '';
+    if(this._body === null) this._body = '';
 
     if (this._body instanceof URLSearchParams) {
       return this._body.toString();
