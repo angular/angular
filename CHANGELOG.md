@@ -162,7 +162,7 @@
     declarations: […], // directives, components, and pipes owned by this NgModule
     imports: [BrowserModule],
     providers: […], // additional providers
-    boostrap: [MainComponent],
+    bootstrap: [MainComponent],
   })
   class MyAppModule {}
 
