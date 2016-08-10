@@ -9,7 +9,7 @@
 import {NgModuleFactory} from './ng_module_factory';
 
 /**
- * Used to load ng moduled factories.
+ * Used to load ng module factories.
  * @experimental
  */
 export abstract class NgModuleFactoryLoader {

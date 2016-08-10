@@ -12,13 +12,12 @@ import {Provider} from './di';
 import {Reflector, reflector} from './reflection/reflection';
 import {ReflectorReader} from './reflection/reflector_reader';
 import {TestabilityRegistry} from './testability/testability';
-import {Type} from './type';
 
 function _reflector(): Reflector {
   return reflector;
 }
 
-const _CORE_PLATFORM_PROVIDERS: Array<any|Type<any>|Provider|any[]> = [
+const _CORE_PLATFORM_PROVIDERS: Provider[] = [
   PlatformRef_, {provide: PlatformRef, useExisting: PlatformRef_},
   {provide: Reflector, useFactory: _reflector, deps: []},
   {provide: ReflectorReader, useExisting: Reflector}, TestabilityRegistry, Console

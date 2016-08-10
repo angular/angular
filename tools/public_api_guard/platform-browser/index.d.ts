@@ -1,5 +1,5 @@
 /** @experimental */
-export declare const _WORKER_UI_PLATFORM_PROVIDERS: Array<any>;
+export declare const _WORKER_UI_PLATFORM_PROVIDERS: Provider[];
 
 /** @experimental */
 export declare abstract class AnimationDriver {

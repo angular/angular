@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LocationStrategy} from '@angular/common';
-import {APP_ID, NgModule, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
+import {APP_ID, NgModule, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, createPlatformFactory, platformCore} from '@angular/core';
 
 import {BrowserModule} from '../src/browser';
 import {BrowserDomAdapter} from '../src/browser/browser_adapter';
@@ -25,7 +24,7 @@ function createNgZone(): NgZone {
   return new NgZone({enableLongStackTrace: true});
 }
 
-const _TEST_BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
+const _TEST_BROWSER_PLATFORM_PROVIDERS: Provider[] =
     [{provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true}];
 
 /**

@@ -12,10 +12,8 @@
  * allows tests to be asynchronous by either returning a promise or using a 'done' parameter.
  */
 
-import {SchemaMetadata} from '../index';
-
 import {resetFakeAsyncZone} from './fake_async';
-import {TestBed, TestModuleMetadata, getTestBed} from './test_bed';
+import {TestBed} from './test_bed';
 
 declare var global: any;
 

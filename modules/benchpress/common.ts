@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {Injector, OpaqueToken, ReflectiveInjector, bind, provide} from '@angular/core/src/di';
+export {Injector, OpaqueToken, ReflectiveInjector} from '@angular/core/src/di';
 export {Options} from './src/common_options';
 export {MeasureValues} from './src/measure_values';
 export {Metric} from './src/metric';

@@ -1,11 +1,11 @@
 /** @deprecated */
-export declare function bootstrap<C>(appComponentType: Type<C>, customProviders?: Array<any>): Promise<ComponentRef<C>>;
+export declare function bootstrap<C>(appComponentType: Type<C>, customProviders?: Provider[]): Promise<ComponentRef<C>>;
 
 /** @experimental */
-export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Array<any>): Promise<PlatformRef>;
+export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Provider[]): Promise<PlatformRef>;
 
 /** @experimental */
-export declare const CACHED_TEMPLATE_PROVIDER: Array<any>;
+export declare const CACHED_TEMPLATE_PROVIDER: Provider[];
 
 /** @experimental */
 export declare const platformBrowserDynamic: (extraProviders?: any[]) => PlatformRef;

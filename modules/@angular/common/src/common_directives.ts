@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Provider} from '@angular/core';
+
 import {CORE_DIRECTIVES} from './directives';
+
 
 /**
  * A collection of Angular core directives that are likely to be used in each and every Angular
@@ -53,4 +56,4 @@ import {CORE_DIRECTIVES} from './directives';
  *
  * @experimental Contains forms which are experimental.
  */
-export const COMMON_DIRECTIVES: any[] = CORE_DIRECTIVES;
+export const COMMON_DIRECTIVES: Provider[] = CORE_DIRECTIVES;

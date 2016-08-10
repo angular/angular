@@ -720,3 +720,30 @@ export interface StaticSymbol {
   name: string;
   filePath: string;
 }
+
+export class ProviderMeta {
+  token: any;
+  useClass: Type<any>;
+  useValue: any;
+  useExisting: any;
+  useFactory: Function;
+  dependencies: Object[];
+  multi: boolean;
+
+  constructor(token: any, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+    useClass?: Type<any>,
+    useValue?: any,
+    useExisting?: any,
+    useFactory?: Function,
+    deps?: Object[],
+    multi?: boolean
+  }) {
+    this.token = token;
+    this.useClass = useClass;
+    this.useValue = useValue;
+    this.useExisting = useExisting;
+    this.useFactory = useFactory;
+    this.dependencies = deps;
+    this.multi = !!multi;
+  }
+}

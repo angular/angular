@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bind} from '@angular/core/src/di';
 import {Options} from './common';
 
 export * from './common';

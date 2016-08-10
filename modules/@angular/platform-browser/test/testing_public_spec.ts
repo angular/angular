@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgIf} from '@angular/common';
 import {CompilerConfig, XHR} from '@angular/compiler';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, ComponentFactoryResolver, ComponentMetadata, Directive, DirectiveMetadata, HostBinding, Injectable, Input, NgModule, NgModuleMetadata, Pipe, PipeMetadata, ViewMetadata, provide} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, Injectable, Input, NgModule, Pipe} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 

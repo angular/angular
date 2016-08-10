@@ -70,7 +70,8 @@ export class KeyValueDiffers {
    * ```
    */
   static extend(factories: KeyValueDifferFactory[]): Provider {
-    return new Provider(KeyValueDiffers, {
+    return {
+      provide: KeyValueDiffers,
       useFactory: (parent: KeyValueDiffers) => {
         if (isBlank(parent)) {
           // Typically would occur when calling KeyValueDiffers.extend inside of dependencies passed
@@ -82,7 +83,7 @@ export class KeyValueDiffers {
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
       deps: [[KeyValueDiffers, new SkipSelfMetadata(), new OptionalMetadata()]]
-    });
+    };
   }
 
   find(kv: Object): KeyValueDifferFactory {

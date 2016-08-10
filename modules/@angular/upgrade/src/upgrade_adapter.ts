@@ -113,7 +113,7 @@ export class UpgradeAdapter {
    */
   private ng1ComponentsToBeUpgraded: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
   /* @internal */
-  private providers: Array<Type<any>|Provider|any[]|any> = [];
+  private providers: Provider[] = [];
 
   // the ng2AppModule param should be required once the deprecated @Component.directives prop is
   // removed

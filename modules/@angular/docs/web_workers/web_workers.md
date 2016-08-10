@@ -45,7 +45,7 @@ import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT} from "
 import {platform} from "angular2/core";
 
 platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+.application([WORKER_RENDER_APPLICATION, {provide: WORKER_SCRIPT, useValue: "loader.js"};
 ```
 ```JavaScript
 // loader.js
@@ -125,7 +125,7 @@ class HelloWorld {
 
 main(List<String> args, SendPort replyTo) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  platform([WORKER_APP_PLATFORM, new Provider(RENDER_SEND_PORT, useValue: replyTo)])
+  platform([WORKER_APP_PLATFORM, {provide: RENDER_SEND_PORT, useValue: replyTo}])
   .application([WORKER_APP_APPLICATION])
   .bootstrap(RootComponent);
 }
@@ -219,7 +219,7 @@ import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, Messag
 import {platform} from "angular2/core";
 
 let appRef = platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+.application([WORKER_RENDER_APPLICATION, {provide: WORKER_SCRIPT, useValue: "loader.js"};
 let bus = appRef.injector.get(MessageBus);
 bus.initChannel("My Custom Channel");
 ```
@@ -243,7 +243,7 @@ import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, Messag
 import {platform} from "angular2/core";
 
 let appRef = platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+.application([WORKER_RENDER_APPLICATION, {provide: WORKER_SCRIPT, useValue: "loader.js"};
 let bus = appRef.injector.get(MessageBus);
 bus.initChannel("My Custom Channel");
 bus.to("My Custom Channel").emit("Hello from the UI");
@@ -335,7 +335,7 @@ during bootstrap like so:
 In TypeScript:
 ```TypeScript
 // index.ts, running on the UI side
-import {platform, Provider, APP_INITIALIZER, Injector} from 'angular2/core';
+import {platform, APP_INITIALIZER, Injector} from 'angular2/core';
 import {
     WORKER_RENDER_PLATFORM,
     WORKER_RENDER_APPLICATION_COMMON,
@@ -345,18 +345,18 @@ import {
 
 var bus = new MyAwesomeMessageBus();
 platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION_COMMON, new Provider(MessageBus, {useValue: bus}),
-  new Provider(APP_INITIALIZER, {
+.application([WORKER_RENDER_APPLICATION_COMMON, {provide: MessageBus, useValue: bus},
+  { provide: APP_INITIALIZER, 
     useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
     deps: [Injector],
     multi: true
-  })
+  }
 ]);
 ```
 ```TypeScript
 // background_index.ts, running on the application side
 import {WORKER_APP_PLATFORM, genericWorkerAppProviders} from "angular2/platform/worker_app";
-import {NgZone, platform, Provider} from "angular/core";
+import {NgZone, platform} from "angular/core";
 import {MyApp} from './app';
 
 /**
@@ -365,8 +365,8 @@ import {MyApp} from './app';
  */
 
 platform([WORKER_APP_PLATFORM_PROVIDERS])
-.application([WORKER_APP_APPLICATION_COMMON, new Provider(MessageBus, {useValue: bus}),
-new Provider(APP_INITIALIZER, {useFactory: (zone, bus) => () => initAppThread(zone, bus), multi: true, deps: [NgZone, MessageBus]})])
+.application([WORKER_APP_APPLICATION_COMMON, {provide: MessageBus, useValue: bus},
+{provide: APP_INITIALIZER, useFactory: (zone, bus) => () => initAppThread(zone, bus), multi: true, deps: [NgZone, MessageBus]}])
 .bootstrap(MyApp);
 
 function initAppThread(zone: NgZone, bus: MyAwesomeMessageBus): void{
@@ -406,7 +406,7 @@ import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, Servic
 import {platform} from "angular2/core";
 
 let appRef = platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+.application([WORKER_RENDER_APPLICATION, {provide: WORKER_SCRIPT, useValue: "loader.js"};
 let injector = instance.injector;
 var broker = injector.get(ServiceMessageBrokerFactory).createMessageBroker("My Broker Channel");
 
