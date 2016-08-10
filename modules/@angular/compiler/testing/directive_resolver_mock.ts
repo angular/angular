@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, ViewMetadata, resolveForwardRef} from '@angular/core';
+import {AnimationEntryMetadata, BaseException, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, ViewMetadata, resolveForwardRef} from '@angular/core';
 
 import {DirectiveResolver} from '../src/directive_resolver';
 import {Map} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
 import {Type, isArray, isPresent, stringify} from '../src/facade/lang';
+
 
 
 /**

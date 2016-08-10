@@ -7,11 +7,10 @@
  */
 
 import {PlatformLocation, UrlChangeListener} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {BaseException, Injectable} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {StringWrapper} from '../../facade/lang';
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';

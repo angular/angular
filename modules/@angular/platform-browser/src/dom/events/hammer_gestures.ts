@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken} from '@angular/core';
+import {BaseException, Inject, Injectable, OpaqueToken} from '@angular/core';
 
-import {BaseException} from '../../facade/exceptions';
 import {isPresent} from '../../facade/lang';
 
 import {HammerGesturesPluginCommon} from './hammer_common';

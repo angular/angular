@@ -7,7 +7,7 @@
  */
 
 import {XHR} from '@angular/compiler';
-import {BaseException} from '../facade/exceptions';
+import {BaseException} from '@angular/core';
 import {global} from '../facade/lang';
 
 /**

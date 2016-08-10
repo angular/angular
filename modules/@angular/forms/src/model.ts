@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
 import {PromiseObservable} from 'rxjs/observable/PromiseObservable';
 
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
-import {BaseException} from './facade/exceptions';
 import {isBlank, isPresent, isPromise, normalizeBool} from './facade/lang';
 
 

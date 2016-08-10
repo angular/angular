@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
+
 import {BrowserDomAdapter} from '../src/browser/browser_adapter';
 import {document, window} from '../src/facade/browser';
-import {BaseException} from '../src/facade/exceptions';
 import {NumberWrapper, isBlank} from '../src/facade/lang';
 
 var DOM = new BrowserDomAdapter();

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, PipeMetadata, resolveForwardRef} from '@angular/core';
+import {BaseException, Injectable, PipeMetadata, resolveForwardRef} from '@angular/core';
 
 import {ReflectorReader, reflector} from '../core_private';
-import {BaseException} from './facade/exceptions';
+
 import {Type, isPresent, stringify} from './facade/lang';
 
 function _isPipeMetadata(type: any): boolean {

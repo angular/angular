@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {BaseException, Injectable} from '@angular/core';
 
-import {BaseException} from '../facade/exceptions';
 import {Math, isBlank, isPresent} from '../facade/lang';
 
 

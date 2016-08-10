@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
+import {BaseException} from '@angular/core';
 import {FormErrorExamples as Examples} from './error_examples';
 
 export class TemplateDrivenErrors {

@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, resolveForwardRef} from '@angular/core';
+import {BaseException, ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, resolveForwardRef} from '@angular/core';
 
 import {ReflectorReader, reflector} from '../core_private';
 
 import {StringMapWrapper} from './facade/collection';
-import {BaseException} from './facade/exceptions';
 import {Type, isPresent, stringify} from './facade/lang';
 import {splitAtColon} from './util';
 

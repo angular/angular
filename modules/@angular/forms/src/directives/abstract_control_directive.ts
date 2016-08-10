@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
 import {Observable} from '../facade/async';
-import {unimplemented} from '../facade/exceptions';
 import {isPresent} from '../facade/lang';
 import {AbstractControl} from '../model';
-
-
 
 /**
  * Base class for control directives.
@@ -21,7 +19,7 @@ import {AbstractControl} from '../model';
  * @experimental
  */
 export abstract class AbstractControlDirective {
-  get control(): AbstractControl { return unimplemented(); }
+  get control(): AbstractControl { throw new BaseException('unimplemented'); }
 
   get value(): any { return isPresent(this.control) ? this.control.value : null; }
 
