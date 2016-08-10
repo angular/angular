@@ -780,6 +780,9 @@ export declare class KeyValueDiffers {
     static extend(factories: KeyValueDifferFactory[]): Provider;
 }
 
+/** @experimental */
+export declare const LOCALE_ID: OpaqueToken;
+
 /** @deprecated */
 export declare function lockRunMode(): void;
 
@@ -1329,6 +1332,12 @@ export interface TrackByFn {
 
 /** @experimental */
 export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
+
+/** @experimental */
+export declare const TRANSLATIONS: OpaqueToken;
+
+/** @experimental */
+export declare const TRANSLATIONS_FORMAT: OpaqueToken;
 
 /** @experimental */
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;

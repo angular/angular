@@ -7,7 +7,7 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, LOCALE_ID, TRANSLATIONS_FORMAT} from '@angular/core';
 import {FORM_DIRECTIVES} from '@angular/forms';
 
 import {MultipleComponentsMyComp} from './a/multiple_components';
@@ -23,5 +23,9 @@ export class BasicComp {
   ctxProp: string;
   ctxBool: boolean;
   ctxArr: any[] = [];
-  constructor() { this.ctxProp = 'initialValue'; }
+  constructor(
+      @Inject(LOCALE_ID) public localeId: string,
+      @Inject(TRANSLATIONS_FORMAT) public translationsFormat: string) {
+    this.ctxProp = 'initialValue';
+  }
 }
