@@ -8,7 +8,7 @@
 
 import {XHR} from '@angular/compiler';
 import {Component, bind} from '@angular/core';
-import {TestComponentBuilder, addProviders, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {TestBed, async, fakeAsync, flushMicrotasks, inject, tick} from '@angular/core/testing';
 
 import {XHRImpl} from '../src/xhr/xhr_impl';
 
@@ -56,7 +56,10 @@ export function main() {
 
     describe('using the test injector with the inject helper', () => {
       describe('setting up Providers', () => {
-        beforeEach(() => addProviders([{provide: FancyService, useValue: new FancyService()}]));
+        beforeEach(() => {
+          TestBed.configureTestingModule(
+              {providers: [{provide: FancyService, useValue: new FancyService()}]});
+        });
 
         it('provides a real XHR instance',
            inject([XHR], (xhr: XHR) => { expect(xhr instanceof XHRImpl).toBeTruthy(); }));
@@ -96,10 +99,10 @@ export function main() {
       it('should fail when an XHR fails', (done: any /** TODO #9100 */) => {
         var itPromise = patchJasmineIt();
 
-        it('should fail with an error from a promise',
-           async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-             return tcb.createAsync(BadTemplateUrl);
-           })));
+        it('should fail with an error from a promise', async(() => {
+             TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
+             TestBed.compileComponents();
+           }));
 
         itPromise.then(
             () => { done.fail('Expected test to fail, but it did not'); },
@@ -113,17 +116,15 @@ export function main() {
     });
 
     describe('test component builder', function() {
-      it('should allow an external templateUrl',
-         async(inject(
-             [TestComponentBuilder],
-             (tcb: TestComponentBuilder) => {
-
-               tcb.createAsync(ExternalTemplateComp).then((componentFixture) => {
-                 componentFixture.detectChanges();
-                 expect(componentFixture.debugElement.nativeElement.textContent)
-                     .toEqual('from external template\n');
-               });
-             })),
+      it('should allow an external templateUrl', async(() => {
+           TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
+           TestBed.compileComponents().then(() => {
+             let componentFixture = TestBed.createComponent(ExternalTemplateComp);
+             componentFixture.detectChanges();
+             expect(componentFixture.debugElement.nativeElement.textContent)
+                 .toEqual('from external template\n');
+           });
+         }),
          10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
     });
   });
