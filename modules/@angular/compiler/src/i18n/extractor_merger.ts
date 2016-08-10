@@ -111,6 +111,7 @@ class _Visitor implements html.Visitor {
 
     const translatedNode = wrapper.visit(this, null);
 
+    // TODO(vicb): return MergeResult with errors
     if (this._inI18nBlock) {
       this._reportError(nodes[nodes.length - 1], 'Unclosed block');
     }
@@ -184,7 +185,9 @@ class _Visitor implements html.Visitor {
             this._closeTranslatableSection(comment, this._blockChildren);
             this._inI18nBlock = false;
             const message = this._addMessage(this._blockChildren, this._blockMeaningAndDesc);
-            return this._translateMessage(comment, message);
+            // merge attributes in sections
+            const nodes = this._translateMessage(comment, message);
+            return html.visitAll(this, nodes);
           } else {
             this._reportError(comment, 'I18N blocks should not cross element boundaries');
             return;
@@ -341,7 +344,8 @@ class _Visitor implements html.Visitor {
     return message;
   }
 
-  // translate the given message given the `TranslationBundle`
+  // Translates the given message given the `TranslationBundle`
+  // no-op when called in extraction mode (returns [])
   private _translateMessage(el: html.Node, message: i18n.Message): html.Node[] {
     if (message && this._mode === _VisitorMode.Merge) {
       const id = digestMessage(message);

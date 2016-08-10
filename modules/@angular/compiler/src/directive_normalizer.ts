@@ -225,11 +225,11 @@ class TemplatePreparseVisitor implements html.Visitor {
     }
     return null;
   }
+
   visitComment(ast: html.Comment, context: any): any { return null; }
   visitAttribute(ast: html.Attribute, context: any): any { return null; }
   visitText(ast: html.Text, context: any): any { return null; }
   visitExpansion(ast: html.Expansion, context: any): any { return null; }
-
   visitExpansionCase(ast: html.ExpansionCase, context: any): any { return null; }
 }
 

@@ -28,15 +28,15 @@ export class ParseTreeResult {
 }
 
 export class Parser {
-  constructor(private _getTagDefinition: (tagName: string) => TagDefinition) {}
+  constructor(public getTagDefinition: (tagName: string) => TagDefinition) {}
 
   parse(
       source: string, url: string, parseExpansionForms: boolean = false,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
     const tokensAndErrors =
-        lex.tokenize(source, url, this._getTagDefinition, parseExpansionForms, interpolationConfig);
+        lex.tokenize(source, url, this.getTagDefinition, parseExpansionForms, interpolationConfig);
 
-    const treeAndErrors = new _TreeBuilder(tokensAndErrors.tokens, this._getTagDefinition).build();
+    const treeAndErrors = new _TreeBuilder(tokensAndErrors.tokens, this.getTagDefinition).build();
 
     return new ParseTreeResult(
         treeAndErrors.rootNodes,

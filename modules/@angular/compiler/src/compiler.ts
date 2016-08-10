@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Component, Inject, Injectable, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Component, Inject, Injectable, OptionalMetadata, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, Provider, ReflectiveInjector, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 export * from './template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser/template_parser';
@@ -42,6 +42,7 @@ import {PipeResolver} from './pipe_resolver';
 import {NgModuleResolver} from './ng_module_resolver';
 import {Console, Reflector, reflector, ReflectorReader, ReflectionCapabilities} from '../core_private';
 import {XHR} from './xhr';
+import * as i18n from './i18n';
 
 const _NO_XHR: XHR = {
   get(url: string): Promise<string>{
@@ -60,6 +61,12 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   Lexer,
   Parser,
   HtmlParser,
+  {
+    provide: i18n.HtmlParser,
+    useFactory: (parser: HtmlParser, translations: string) =>
+                    new i18n.HtmlParser(parser, translations),
+    deps: [HtmlParser, [new OptionalMetadata(), new Inject(i18n.TRANSLATIONS)]]
+  },
   TemplateParser,
   DirectiveNormalizer,
   CompileMetadataResolver,
@@ -77,7 +84,6 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   PipeResolver,
   NgModuleResolver
 ];
-
 
 export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[] = []): {
   compilerOptions: CompilerOptions,
