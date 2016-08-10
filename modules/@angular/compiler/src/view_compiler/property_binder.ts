@@ -21,7 +21,7 @@ import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompileView} from './compile_view';
 import {DetectChangesVars, ViewProperties} from './constants';
-import {convertCdExpressionToIr} from './expression_converter';
+import {convertCdExpressionToIr, temporaryDeclaration} from './expression_converter';
 
 function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
   return o.THIS_EXPR.prop(`_expr_${exprIndex}`);
@@ -36,12 +36,18 @@ const _animationViewCheckedFlagMap = new Map<CompileView, boolean>();
 function bind(
     view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,
     parsedExpression: cdAst.AST, context: o.Expression, actions: o.Statement[],
-    method: CompileMethod) {
-  var checkExpression =
-      convertCdExpressionToIr(view, context, parsedExpression, DetectChangesVars.valUnwrapper);
+    method: CompileMethod, bindingIndex: number) {
+  var checkExpression = convertCdExpressionToIr(
+      view, context, parsedExpression, DetectChangesVars.valUnwrapper, bindingIndex);
   if (isBlank(checkExpression.expression)) {
     // e.g. an empty expression was given
     return;
+  }
+
+  if (checkExpression.temporaryCount) {
+    for (let i = 0; i < checkExpression.temporaryCount; i++) {
+      method.addStmt(temporaryDeclaration(bindingIndex, i));
+    }
   }
 
   // private is fine here as no child view will reference the cached value...
@@ -80,7 +86,7 @@ export function bindRenderText(
       [o.THIS_EXPR.prop('renderer')
            .callMethod('setText', [compileNode.renderNode, currValExpr])
            .toStmt()],
-      view.detectChangesRenderPropertiesMethod);
+      view.detectChangesRenderPropertiesMethod, bindingIndex);
 }
 
 function bindAndWriteToRenderer(
@@ -183,7 +189,7 @@ function bindAndWriteToRenderer(
 
     bind(
         view, currValExpr, fieldExpr, boundProp.value, context, updateStmts,
-        view.detectChangesRenderPropertiesMethod);
+        view.detectChangesRenderPropertiesMethod, view.bindings.length);
   });
 }
 
@@ -274,7 +280,7 @@ export function bindDirectiveInputs(
     }
     bind(
         view, currValExpr, fieldExpr, input.value, view.componentContext, statements,
-        detectChangesInInputsMethod);
+        detectChangesInInputsMethod, bindingIndex);
   });
   if (isOnPushComp) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(DetectChangesVars.changed, [

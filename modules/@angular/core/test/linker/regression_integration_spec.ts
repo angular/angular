@@ -72,6 +72,39 @@ function declareTests({useJit}: {useJit: boolean}) {
                      async.done();
                    });
              }));
+
+      it('should only evaluate stateful pipes once - #10639',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               tcb.overrideView(
+                      MyComp1,
+                      new ViewMetadata(
+                          {template: '{{(null|countingPipe)?.value}}', pipes: [CountingPipe]}))
+                   .createAsync(MyComp1)
+                   .then(fixture => {
+                     CountingPipe.reset();
+                     fixture.detectChanges(/* checkNoChanges */ false);
+                     expect(fixture.nativeElement).toHaveText('counting pipe value');
+                     expect(CountingPipe.calls).toBe(1);
+                     async.done();
+                   });
+             }));
+
+      it('should only evaluate methods once - #10639',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               tcb.overrideView(MyCountingComp, new ViewMetadata({template: '{{method()?.value}}'}))
+                   .createAsync(MyCountingComp)
+                   .then(fixture => {
+                     MyCountingComp.reset();
+                     fixture.detectChanges(/* checkNoChanges */ false);
+                     expect(fixture.nativeElement).toHaveText('counting method value');
+                     expect(MyCountingComp.calls).toBe(1);
+                     async.done();
+                   });
+             }));
     });
 
     describe('providers', () => {
@@ -202,6 +235,27 @@ class CustomPipe implements PipeTransform {
 
 @Component({selector: 'cmp-content', template: `<ng-content></ng-content>`})
 class CmpWithNgContent {
+}
+
+@Component({selector: 'counting-cmp', template: ''})
+class MyCountingComp {
+  method(): {value: string}|undefined {
+    MyCountingComp.calls++;
+    return {value: 'counting method value'};
+  }
+
+  static reset() { MyCountingComp.calls = 0; }
+  static calls = 0;
+}
+
+@Pipe({name: 'countingPipe'})
+class CountingPipe implements PipeTransform {
+  transform(value: any): any {
+    CountingPipe.calls++;
+    return {value: 'counting pipe value'};
+  }
+  static reset() { CountingPipe.calls = 0; }
+  static calls = 0;
 }
 
 @Component({
