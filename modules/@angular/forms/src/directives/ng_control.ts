@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {unimplemented} from '../facade/exceptions';
+import {BaseException} from '@angular/core';
 
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlValueAccessor} from './control_value_accessor';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
+function unimplemented(): any {
+  throw new BaseException('unimplemented');
+}
 
 /**
  * A base class that all control directive extend.

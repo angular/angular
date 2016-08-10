@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, ViewEncapsulation} from '@angular/core';
+import {BaseException, Injectable, ViewEncapsulation} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {MapWrapper} from './facade/collection';
-import {BaseException} from './facade/exceptions';
 import {isBlank, isPresent} from './facade/lang';
 import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';

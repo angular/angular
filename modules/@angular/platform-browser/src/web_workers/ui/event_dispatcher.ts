@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
+
 import {EventEmitter} from '../../facade/async';
-import {BaseException} from '../../facade/exceptions';
 import {RenderStoreObject, Serializer} from '../shared/serializer';
 
 import {serializeEventWithTarget, serializeGenericEvent, serializeKeyboardEvent, serializeMouseEvent, serializeTransitionEvent} from './event_serializer';

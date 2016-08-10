@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
+
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
-import {BaseException} from '../facade/exceptions';
 import {ValueTransformer, visitValue} from '../util';
 
 import * as o from './output_ast';

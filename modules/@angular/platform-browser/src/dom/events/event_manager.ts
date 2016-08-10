@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, NgZone, OpaqueToken} from '@angular/core';
+import {BaseException, Inject, Injectable, NgZone, OpaqueToken} from '@angular/core';
 
 import {ListWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
+
 
 
 /**

@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {BaseException} from '@angular/core/src/facade/exceptions';
+import {BaseException} from '@angular/core';
 import {bootstrap} from '@angular/platform-browser-dynamic';
 
 @Component({

@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, ViewEncapsulation} from '@angular/core';
+import {BaseException, Injectable, RenderComponentType, ViewEncapsulation} from '@angular/core';
 
 import {VIEW_ENCAPSULATION_VALUES} from '../../../core_private';
 import {Map, MapWrapper, StringMapWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {Type, isArray, isPresent, serializeEnum} from '../../facade/lang';
 
 import {RenderStore} from './render_store';
 import {LocationType} from './serialized_types';
+
 
 
 // PRIMITIVE is any type that does not need to be serialized (string, number, boolean)

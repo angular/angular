@@ -7,12 +7,11 @@
  */
 
 import {UrlResolver, XHR} from '@angular/compiler';
-import {Component} from '@angular/core';
+import {BaseException, Component} from '@angular/core';
 import {TestBed, TestComponentBuilder, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {BaseException} from '../../src/facade/exceptions';
 import {CachedXHR} from '../../src/xhr/xhr_cache';
 
 import {setTemplateCache} from './xhr_cache_setter';

@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
+
 import {ListWrapper, Map, MapWrapper, StringMapWrapper, isListLikeIterable, iterateListLike} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
 import {isBlank} from '../src/facade/lang';
+
 
 
 /**

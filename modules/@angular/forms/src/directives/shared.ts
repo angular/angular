@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
+
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {BaseException} from '../facade/exceptions';
 import {hasConstructor, isBlank, isPresent, looseIdentical} from '../facade/lang';
 import {FormArray, FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';

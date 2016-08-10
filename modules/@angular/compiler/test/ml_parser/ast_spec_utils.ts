@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../../src/facade/exceptions';
+import {BaseException} from '@angular/core';
 import * as html from '../../src/ml_parser/ast';
 import {ParseTreeResult} from '../../src/ml_parser/html_parser';
 import {ParseLocation} from '../../src/parse_util';

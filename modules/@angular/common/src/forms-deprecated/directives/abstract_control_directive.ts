@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {unimplemented} from '../../facade/exceptions';
+import {BaseException} from '@angular/core';
 import {isPresent} from '../../facade/lang';
 import {AbstractControl} from '../model';
 
+function unimplemented(): any {
+  throw new BaseException('unimplemented');
+}
 
 /**
  * Base class for control directives.

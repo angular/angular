@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
+import {BaseException} from '@angular/core';
 import {Type, stringify} from '../facade/lang';
 
 export class InvalidPipeArgumentException extends BaseException {

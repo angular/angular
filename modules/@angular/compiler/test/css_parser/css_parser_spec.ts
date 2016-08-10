@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
+
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
 import {CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssSelectorRuleAst, CssStyleSheetAst, CssStyleValueAst} from '../../src/css_parser/css_ast';
 import {BlockType, CssParseError, CssParser, CssToken, ParsedCssResult} from '../../src/css_parser/css_parser';
-import {BaseException} from '../../src/facade/exceptions';
 import {ParseLocation} from '../../src/parse_util';
 
 export function assertTokens(tokens: CssToken[], valuesArr: string[]) {

@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, isDevMode} from '@angular/core';
-
-import {unimplemented} from '../src/facade/exceptions';
+import {BaseException, ViewEncapsulation, isDevMode} from '@angular/core';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers} from './identifiers';
+
+function unimplemented(): any {
+  throw new BaseException('unimplemented');
+}
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
