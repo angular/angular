@@ -369,10 +369,15 @@ export function main() {
         expect(fakeTranslate(HTML)).toEqual('<p title="**foo**"></p>');
       });
 
-      it('should merge attributes', () => {
+      it('should merge nested attributes', () => {
         const HTML = `<div>{count, plural, =0 {<p i18n-title title="foo"></p>}}</div>`;
         expect(fakeTranslate(HTML))
             .toEqual('<div>{count, plural, =0 {<p title="**foo**"></p>}}</div>');
+      });
+
+      it('should merge attributes without values', () => {
+        const HTML = `<p i18n-title="m|d" title=""></p>`;
+        expect(fakeTranslate(HTML)).toEqual('<p title=""></p>');
       });
     });
   });

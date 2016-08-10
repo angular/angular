@@ -377,7 +377,7 @@ class _Visitor implements html.Visitor {
         return;
       }
 
-      if (i18nAttributeMeanings.hasOwnProperty(attr.name)) {
+      if (attr.value && attr.value != '' && i18nAttributeMeanings.hasOwnProperty(attr.name)) {
         const meaning = i18nAttributeMeanings[attr.name];
         const message: i18n.Message = this._createI18nMessage([attr], meaning, '');
         const id = digestMessage(message);
