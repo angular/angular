@@ -1,9 +1,9 @@
 {
-  "name": "@angular2-material/core",
+  "name": "@angular2-material/tooltip",
   "version": "2.0.0-alpha.7-2",
-  "description": "Angular 2 Material core",
-  "main": "./core.js",
-  "typings": "./core.d.ts",
+  "description": "Angular 2 Material tooltip",
+  "main": "./tooltip.js",
+  "typings": "./tooltip.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/material2.git"
@@ -12,7 +12,8 @@
     "angular",
     "material",
     "material design",
-    "components"
+    "components",
+    "tooltip"
   ],
   "license": "MIT",
   "bugs": {
@@ -20,7 +21,6 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular/core": "^2.0.0-rc.5",
-    "@angular/common": "^2.0.0-rc.5"
+    "@angular2-material/core": "2.0.0-alpha.7-2"
   }
 }

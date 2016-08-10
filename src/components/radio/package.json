@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/radio",
-  "version": "2.0.0-alpha.7",
+  "version": "2.0.0-alpha.7-2",
   "description": "Angular 2 Material radio",
   "main": "./radio.js",
   "typings": "./radio.d.ts",
@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.7",
+    "@angular2-material/core": "2.0.0-alpha.7-2",
     "@angular/forms": "^0.3.0"
   }
 }
