@@ -238,7 +238,8 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     if (DTS.test(filePath)) {
       const metadataPath = filePath.replace(DTS, '.metadata.json');
       if (this.context.fileExists(metadataPath)) {
-        return this.readMetadata(metadataPath);
+        const metadata = this.readMetadata(metadataPath);
+        return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
       }
     } else {
       const sf = this.program.getSourceFile(filePath);
