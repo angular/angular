@@ -104,7 +104,6 @@ export class RouterOutlet implements OnDestroy {
     }
 
     const injector = loadedInjector ? loadedInjector : this.location.parentInjector;
-
     const inj = ReflectiveInjector.fromResolvedProviders(providers, injector);
     this.activated = this.location.createComponent(factory, this.location.length, inj, []);
     this.activated.changeDetectorRef.detectChanges();
