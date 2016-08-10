@@ -6,7 +6,6 @@ import {
   ChangeDetectionStrategy,
   ElementRef,
   Renderer,
-  Type,
   NgModule,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
@@ -158,7 +157,7 @@ export class MdAnchor extends MdButton {
 
 
 /** @deprecated */
-export const MD_BUTTON_DIRECTIVES: Type[] = [MdButton, MdAnchor];
+export const MD_BUTTON_DIRECTIVES: any[] = [MdButton, MdAnchor];
 
 
 @NgModule({
