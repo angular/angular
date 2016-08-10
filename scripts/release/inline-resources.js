@@ -46,6 +46,7 @@ for (let arg of process.argv.slice(2)) {
     readFile(filePath, 'utf-8')
       .then(content => inlineTemplate(filePath, content))
       .then(content => inlineStyle(filePath, content))
+      .then(content => removeModuleIds(content))
       .then(content => writeFile(filePath, content))
       .catch(err => {
         console.error('An error occured: ', err);
@@ -95,4 +96,14 @@ function inlineStyle(filePath, content) {
         .join(',\n')
       + ']';
   });
+}
+
+/**
+ * Removes the module ids of the component metadata.
+ * Since the templates and styles are now inlined, the module id has become unnecessary and
+ * can cause unexpected issues.
+ */
+function removeModuleIds(content) {
+  // Match the line feeds as well, because we want to get rid of that line.
+  return content.replace(/^\W+moduleId:\W+module\.id,?[\n|\r]+/gm, '');
 }
