@@ -25,7 +25,7 @@
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER",
-    "rxjs": "5.0.0-beta.6"
+    "rxjs": "5.0.0-beta.11"
   },
   "typings": "index.d.ts"
 }

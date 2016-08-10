@@ -13,8 +13,8 @@
   writeScriptTag('/all/playground/vendor/zone.js');
   writeScriptTag('/all/playground/vendor/long-stack-trace-zone.js');
   writeScriptTag('/all/playground/vendor/system.src.js');
-  writeScriptTag('/all/playground/vendor/Reflect.js');
-  writeScriptTag('/all/playground/vendor/rxjs/bundles/Rx.js', 'playgroundBootstrap()');
+  writeScriptTag('/all/playground/vendor/Reflect.js', 'playgroundBootstrap()');
+
   (<any>global).playgroundBootstrap = playgroundBootstrap;
 
   function playgroundBootstrap() {
@@ -36,11 +36,12 @@
           '@angular/upgrade': '/packages-dist/upgrade/bundles/upgrade.umd.js',
           '@angular/router': '/packages-dist/router/bundles/router.umd.js',
           '@angular/core/src/facade': '/all/@angular/core/src/facade',
-          'rxjs': location.pathname.replace(/\w+\.html$/i, '') + 'rxjs'
+          'rxjs': '/all/playground/vendor/rxjs'
         },
         packages: {
           'app': {defaultExtension: 'js'},
-          '@angular/core/src/facade': {defaultExtension: 'js'}
+          '@angular/core/src/facade': {defaultExtension: 'js'},
+          'rxjs': {defaultExtension: 'js'}
         }
       });
     } else {
@@ -48,7 +49,11 @@
           'Not using the Angular bundles. Don\'t use this configuration for e2e/performance tests!');
 
       System.config({
-        map: {'index': 'index.js', '@angular': '/all/@angular'},
+        map: {
+          'index': 'index.js',
+          '@angular': '/all/@angular',
+          'rxjs': '/all/playground/vendor/rxjs'
+        },
         packages: {
           'app': {defaultExtension: 'js'},
           '@angular/core': {main: 'index.js', defaultExtension: 'js'},
@@ -58,10 +63,8 @@
           '@angular/forms': {main: 'index.js', defaultExtension: 'js'},
           '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
           '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
-          '@angular/upgrade': {main: 'index.js', defaultExtension: 'js'}
-          // 'rxjs': {
-          //   defaultExtension: 'js'
-          // }
+          '@angular/upgrade': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs': {defaultExtension: 'js'}
         }
       });
     }
