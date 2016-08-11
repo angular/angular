@@ -166,6 +166,7 @@ export interface Route {
 
 /** @stable */
 export declare class Router {
+    config: Routes;
     events: Observable<Event>;
     /** @experimental */ navigated: boolean;
     routerState: RouterState;
