@@ -6,18 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
+import {BaseException, ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
 import {LifecycleHooks, reflector} from '../core_private';
 
 import {ListWrapper, StringMapWrapper} from './facade/collection';
-import {BaseException, unimplemented} from './facade/exceptions';
 import {isBlank, isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
 import {CssSelector} from './selector';
 import {getUrlScheme} from './url_resolver';
 import {sanitizeIdentifier, splitAtColon} from './util';
 
-
+function unimplemented(): any {
+  throw new BaseException('unimplemented');
+}
 
 // group 0: "[prop] or (event) or @trigger"
 // group 1: "prop" from "[prop]"
