@@ -792,9 +792,9 @@ function componentModuleUrl(
     return staticTypeModuleUrl(type);
   }
 
-  if (isPresent(cmpMetadata.moduleId)) {
+  if (isPresent(cmpMetadata.moduleId) && typeof cmpMetadata.moduleId === 'string') {
     var moduleId = cmpMetadata.moduleId;
-    var scheme = getUrlScheme(moduleId.toString());
+    var scheme = getUrlScheme(moduleId);
     return isPresent(scheme) && scheme.length > 0 ? moduleId :
                                                     `package:${moduleId}${MODULE_SUFFIX}`;
   }
