@@ -143,23 +143,6 @@ describe('MdButton', () => {
     });
 
   });
-
-  // Ripple tests.
-  describe('button ripples', () => {
-    it('should remove ripple if md-ripple-disabled input is set', async(() => {
-      builder.createAsync(TestApp).then(fixture => {
-        let testComponent = fixture.debugElement.componentInstance;
-        let buttonDebugElement = fixture.debugElement.query(By.css('button'));
-
-        fixture.detectChanges();
-        expect(buttonDebugElement.nativeElement.querySelectorAll('[md-ripple]').length).toBe(1);
-
-        testComponent.rippleDisabled = true;
-        fixture.detectChanges();
-        expect(buttonDebugElement.nativeElement.querySelectorAll('[md-ripple]').length).toBe(0);
-      });
-    }));
-  });
 });
 
 /** Test component that contains an MdButton. */
