@@ -10,7 +10,7 @@ import {NgFor, NgIf} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {FormsModule, NgForm} from '@angular/forms';
+import {FormsModule, NgForm, NgModelGroup} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
@@ -362,6 +362,57 @@ export function main() {
                fixture.detectChanges();
 
                expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+               async.done();
+             });
+           }));
+
+    it('should set status classes with ngModelGroup and ngForm',
+       inject(
+           [TestComponentBuilder, AsyncTestCompleter],
+           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+             const t = `<form>
+             <div ngModelGroup="person">
+                <input [(ngModel)]="name" required name="name">
+              </div>
+            </form>`;
+
+             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+               fixture.debugElement.componentInstance.name = '';
+               fixture.detectChanges();
+
+               const form = fixture.debugElement.query(By.css('form')).nativeElement;
+               const modelGroup =
+                   fixture.debugElement.query(By.directive(NgModelGroup)).nativeElement;
+               const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+               // ngModelGroup creates its control asynchronously
+               fixture.whenStable().then(() => {
+                 fixture.detectChanges();
+                 expect(sortedClassList(modelGroup)).toEqual([
+                   'ng-invalid', 'ng-pristine', 'ng-untouched'
+                 ]);
+
+                 expect(sortedClassList(form)).toEqual([
+                   'ng-invalid', 'ng-pristine', 'ng-untouched'
+                 ]);
+
+                 dispatchEvent(input, 'blur');
+                 fixture.detectChanges();
+
+                 expect(sortedClassList(modelGroup)).toEqual([
+                   'ng-invalid', 'ng-pristine', 'ng-touched'
+                 ]);
+                 expect(sortedClassList(form)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+
+                 input.value = 'updatedValue';
+                 dispatchEvent(input, 'input');
+                 fixture.detectChanges();
+
+                 expect(sortedClassList(modelGroup)).toEqual([
+                   'ng-dirty', 'ng-touched', 'ng-valid'
+                 ]);
+                 expect(sortedClassList(form)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+               });
                async.done();
              });
            }));
