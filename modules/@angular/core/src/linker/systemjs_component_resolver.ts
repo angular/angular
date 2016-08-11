@@ -8,10 +8,12 @@
 
 import {Console} from '../console';
 import {Injectable} from '../di';
-import {global, isString} from '../facade/lang';
+import {isString} from '../facade/lang';
 import {Type} from '../type';
 import {ComponentFactory} from './component_factory';
 import {ComponentResolver} from './component_resolver';
+
+declare var System: {import: (module: string) => Promise<any>;};
 
 const _SEPARATOR = '#';
 
@@ -36,9 +38,8 @@ export class SystemJsComponentResolver implements ComponentResolver {
         component = 'default';
       }
 
-      return (<any>global)
-          .System.import(module)
-          .then((module: any) => this._resolver.resolveComponent(module[component]));
+      return System.import(module).then(
+          (module: any) => this._resolver.resolveComponent(module[component]));
     }
 
     return this._resolver.resolveComponent(componentType);
@@ -64,8 +65,7 @@ export class SystemJsCmpFactoryResolver implements ComponentResolver {
     if (isString(componentType)) {
       this._console.warn(ComponentResolver.LazyLoadingDeprecationMsg);
       let [module, factory] = componentType.split(_SEPARATOR);
-      return (<any>global)
-          .System.import(module + FACTORY_MODULE_SUFFIX)
+      return System.import(module + FACTORY_MODULE_SUFFIX)
           .then((module: any) => module[factory + FACTORY_CLASS_SUFFIX]);
     }
 
