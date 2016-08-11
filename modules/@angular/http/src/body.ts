@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Json, isString} from '../src/facade/lang';
+import {Json, isString, isPresent} from '../src/facade/lang';
 
 import {isJsObject, stringToArrayBuffer} from './http_utils';
 import {URLSearchParams} from './url_search_params';
@@ -41,15 +41,16 @@ export abstract class Body {
    * Returns the body as a string, presuming `toString()` can be called on the response body.
    */
   text(): string {
-
-    if(this._body === null) this._body = '';
-
     if (this._body instanceof URLSearchParams) {
       return this._body.toString();
     }
 
     if (this._body instanceof ArrayBuffer) {
       return String.fromCharCode.apply(null, new Uint16Array(<ArrayBuffer>this._body));
+    }
+
+    if (!isPresent(this._body)) {
+      return '';
     }
 
     if (isJsObject(this._body)) {
