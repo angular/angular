@@ -162,7 +162,7 @@
     declarations: […], // directives, components, and pipes owned by this NgModule
     imports: [BrowserModule],
     providers: […], // additional providers
-    boostrap: [MainComponent],
+    bootstrap: [MainComponent],
   })
   class MyAppModule {}
 
@@ -223,7 +223,7 @@
       declarations: [MyComponentThatUsesAWebComponent],
       imports: [BrowserModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      boostrap:  [MyComponentThatUsesAWebComponent],
+      bootstrap:  [MyComponentThatUsesAWebComponent],
     })
     export class MyAppModule{}
   ```
@@ -333,7 +333,7 @@
   @NgModule({
     declarations: [MyComponent],
     imports: [BrowserModule, DeprecatedFormsModule],
-    boostrap:  [MyComponent],
+    bootstrap:  [MyComponent],
   })
   export class MyAppModule{}
   ```
