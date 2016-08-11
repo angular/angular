@@ -1178,11 +1178,11 @@ export function main() {
                });
              }));
 
-      it('should work with complex model-driven forms',
+      it('should work with single fields in parent forms',
          inject(
              [TestComponentBuilder, AsyncTestCompleter],
              (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var form = new FormGroup({'name': new FormControl('', Validators.required)});
+               const form = new FormGroup({'name': new FormControl('', Validators.required)});
 
                const t =
                    `<form [formGroup]="form"><input type="text" formControlName="name"></form>`;
@@ -1191,7 +1191,8 @@ export function main() {
                  fixture.debugElement.componentInstance.form = form;
                  fixture.detectChanges();
 
-                 var input = fixture.debugElement.query(By.css('input')).nativeElement;
+                 const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
                  expect(sortedClassList(input)).toEqual([
                    'ng-invalid', 'ng-pristine', 'ng-untouched'
                  ]);
@@ -1208,6 +1209,57 @@ export function main() {
                  fixture.detectChanges();
 
                  expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+                 async.done();
+               });
+             }));
+
+      it('should work with formGroup and formGroupName',
+         inject(
+             [TestComponentBuilder, AsyncTestCompleter],
+             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+               const form = new FormGroup(
+                   {'person': new FormGroup({'name': new FormControl('', Validators.required)})});
+
+               const t = `<form [formGroup]="form">
+                <div formGroupName="person">
+                  <input type="text" formControlName="name">
+                </div>
+              </form>`;
+
+               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+                 fixture.debugElement.componentInstance.form = form;
+                 fixture.detectChanges();
+
+                 const input = fixture.debugElement.query(By.css('input')).nativeElement;
+                 const formGroup =
+                     fixture.debugElement.query(By.css('[formGroupName]')).nativeElement;
+                 const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+
+                 expect(sortedClassList(formGroup)).toEqual([
+                   'ng-invalid', 'ng-pristine', 'ng-untouched'
+                 ]);
+
+                 expect(sortedClassList(formEl)).toEqual([
+                   'ng-invalid', 'ng-pristine', 'ng-untouched'
+                 ]);
+
+                 dispatchEvent(input, 'blur');
+                 fixture.detectChanges();
+
+                 expect(sortedClassList(formGroup)).toEqual([
+                   'ng-invalid', 'ng-pristine', 'ng-touched'
+                 ]);
+
+                 expect(sortedClassList(formEl)).toEqual([
+                   'ng-invalid', 'ng-pristine', 'ng-touched'
+                 ]);
+
+                 input.value = 'updatedValue';
+                 dispatchEvent(input, 'input');
+                 fixture.detectChanges();
+
+                 expect(sortedClassList(formGroup)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+                 expect(sortedClassList(formEl)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
                  async.done();
                });
              }));

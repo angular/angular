@@ -349,14 +349,13 @@ export declare abstract class NgControl extends AbstractControlDirective {
 }
 
 /** @experimental */
-export declare class NgControlStatus {
-    ngClassDirty: boolean;
-    ngClassInvalid: boolean;
-    ngClassPristine: boolean;
-    ngClassTouched: boolean;
-    ngClassUntouched: boolean;
-    ngClassValid: boolean;
+export declare class NgControlStatus extends AbstractControlStatus {
     constructor(cd: NgControl);
+}
+
+/** @experimental */
+export declare class NgControlStatusGroup extends AbstractControlStatus {
+    constructor(cd: ControlContainer);
 }
 
 /** @experimental */

@@ -10,7 +10,7 @@ import {NgModule, Type} from '@angular/core';
 
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 import {DefaultValueAccessor} from './directives/default_value_accessor';
-import {NgControlStatus} from './directives/ng_control_status';
+import {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
 import {NgForm} from './directives/ng_form';
 import {NgModel} from './directives/ng_model';
 import {NgModelGroup} from './directives/ng_model_group';
@@ -28,7 +28,7 @@ export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor
 export {ControlValueAccessor} from './directives/control_value_accessor';
 export {DefaultValueAccessor} from './directives/default_value_accessor';
 export {NgControl} from './directives/ng_control';
-export {NgControlStatus} from './directives/ng_control_status';
+export {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
 export {NgForm} from './directives/ng_form';
 export {NgModel} from './directives/ng_model';
 export {NgModelGroup} from './directives/ng_model_group';
@@ -45,8 +45,8 @@ export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValida
 export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
   NgSelectOption, NgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor,
   CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor,
-  RadioControlValueAccessor, NgControlStatus, RequiredValidator, MinLengthValidator,
-  MaxLengthValidator, PatternValidator
+  RadioControlValueAccessor, NgControlStatus, NgControlStatusGroup, RequiredValidator,
+  MinLengthValidator, MaxLengthValidator, PatternValidator
 ];
 
 export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] = [NgModel, NgModelGroup, NgForm];
