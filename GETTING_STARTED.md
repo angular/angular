@@ -123,6 +123,16 @@ Import the components in your application module:
 - [Puppy Love Mobile (Google IO 2016)](https://github.com/kara/puppy-love-io)
 
 
+### Additional setup for `md-menu` and `md-tooltip`:
+For alpha.7, you need to include the overlay styles in your app via a `link` element. This will
+look something like
+```html
+<link href="vendor/@angular2-material/core/overlay/overlay.css" rel="stylesheet">
+```
+
+In future releases, all of the core styles will be combined into a single distributed css file.
+
+
 ### Additional setup for `md-slide-toggle` and `md-slider`:
 The slide-toggle and slider components have a dependency on [HammerJS](http://hammerjs.github.io/).
 1) Add HammerJS to your application via [npm](https://www.npmjs.com/package/hammerjs), a CDN 
