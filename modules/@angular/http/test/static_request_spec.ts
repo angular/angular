@@ -77,5 +77,16 @@ export function main() {
         expect(req.detectContentType()).toEqual(ContentType.BLOB);
       });
     });
+
+    it('should return empty string if no body is present', () => {
+      const req = new Request(new RequestOptions({
+        url: 'test',
+        method: 'GET',
+        body: null,
+        headers: new Headers({'content-type': 'application/json'})
+      }));
+
+      expect(req.text()).toEqual('');
+    });
   });
 }
