@@ -23,6 +23,22 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
 
+    it('should support the "i18n" attribute',
+        inject(
+            [TestComponentBuilder, AsyncTestCompleter],
+            (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
+              tcb.overrideTemplate(MyComp, '<ng-container i18n>foo</ng-container>')
+                  .createAsync(MyComp)
+                  .then((fixture) => {
+                    fixture.detectChanges();
+
+                    const el = fixture.debugElement.nativeElement;
+                    expect(el).toHaveText('foo');
+
+                    async.done();
+                  });
+            }));
+
     it('should be rendered as comment with children as siblings',
        inject(
            [TestComponentBuilder, AsyncTestCompleter],
