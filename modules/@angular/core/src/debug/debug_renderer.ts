@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../../src/facade/collection';
 import {AnimationKeyframe} from '../animation/animation_keyframe';
 import {AnimationPlayer} from '../animation/animation_player';
 import {AnimationStyles} from '../animation/animation_styles';

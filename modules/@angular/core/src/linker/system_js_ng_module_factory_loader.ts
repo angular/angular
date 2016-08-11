@@ -7,7 +7,7 @@
  */
 
 
-import {Injectable, Optional} from '../di';
+import {Injectable} from '../di';
 
 import {Compiler} from './compiler';
 import {NgModuleFactory} from './ng_module_factory';

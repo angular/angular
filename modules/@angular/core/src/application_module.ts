@@ -7,10 +7,9 @@
  */
 
 import {ApplicationInitStatus} from './application_init';
-import {ApplicationRef, ApplicationRef_, isDevMode} from './application_ref';
+import {ApplicationRef, ApplicationRef_} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
-import {OptionalMetadata, SkipSelfMetadata} from './di';
 import {Compiler} from './linker/compiler';
 import {ComponentResolver} from './linker/component_resolver';
 import {DynamicComponentLoader, DynamicComponentLoader_} from './linker/dynamic_component_loader';
