@@ -89,7 +89,7 @@ class _Visitor implements i18n.Visitor {
     const nodes = [new xml.Text(`{${icu.expression}, ${icu.type}, `)];
 
     Object.keys(icu.cases).forEach((c: string) => {
-      nodes.push(new xml.Text(`${c} {`), ...icu.cases[c].visit(this), new xml.Text(`}`));
+      nodes.push(new xml.Text(`${c} {`), ...icu.cases[c].visit(this), new xml.Text(`} `));
     });
 
     nodes.push(new xml.Text(`}`));

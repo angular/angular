@@ -13,7 +13,6 @@ import {TestBed, TestComponentBuilder, fakeAsync} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {SpyXHR} from '../spies';
 import {NgLocalization} from '@angular/common';
 import {stringifyElement} from '@angular/platform-browser/testing/browser_util';

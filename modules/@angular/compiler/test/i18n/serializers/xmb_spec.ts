@@ -46,9 +46,9 @@ export function main(): void {
 ]>
 <messagebundle>
   <msg id="ec1d033f2436133c14ab038286c4f5df4697484a">translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> <ph name="INTERPOLATION"/></msg>
-  <msg id="e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2">{ count, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>}}</msg>
+  <msg id="e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2">{ count, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} }</msg>
   <msg id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" desc="d" meaning="m">foo</msg>
-  <msg id="83dd87699b8c1779dd72277ef6e2d46ca58be042">{ count, plural, =0 {{ sex, gender, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>}} }}</msg>
+  <msg id="83dd87699b8c1779dd72277ef6e2d46ca58be042">{ count, plural, =0 {{ sex, gender, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} } } }</msg>
 </messagebundle>`;
 
     it('should write a valid xmb file', () => { expect(toXmb(HTML)).toEqual(XMB); });
