@@ -8,6 +8,7 @@
 
 import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
+import {ParseTreeResult} from '../ml_parser/parser';
 
 import {digestMessage} from './digest';
 import * as i18n from './i18n_ast';
@@ -31,7 +32,7 @@ export function extractMessages(
 
 export function mergeTranslations(
     nodes: html.Node[], translations: TranslationBundle, interpolationConfig: InterpolationConfig,
-    implicitTags: string[], implicitAttrs: {[k: string]: string[]}): html.Node[] {
+    implicitTags: string[], implicitAttrs: {[k: string]: string[]}): ParseTreeResult {
   const visitor = new _Visitor(implicitTags, implicitAttrs);
   return visitor.merge(nodes, translations, interpolationConfig);
 }
@@ -102,7 +103,7 @@ class _Visitor implements html.Visitor {
    */
   merge(
       nodes: html.Node[], translations: TranslationBundle,
-      interpolationConfig: InterpolationConfig): html.Node[] {
+      interpolationConfig: InterpolationConfig): ParseTreeResult {
     this._init(_VisitorMode.Merge, interpolationConfig);
     this._translations = translations;
 
@@ -111,12 +112,11 @@ class _Visitor implements html.Visitor {
 
     const translatedNode = wrapper.visit(this, null);
 
-    // TODO(vicb): return MergeResult with errors
     if (this._inI18nBlock) {
       this._reportError(nodes[nodes.length - 1], 'Unclosed block');
     }
 
-    return translatedNode.children;
+    return new ParseTreeResult(translatedNode.children, this._errors);
   }
 
   visitExpansionCase(icuCase: html.ExpansionCase, context: any): any {
