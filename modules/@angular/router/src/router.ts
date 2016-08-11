@@ -131,7 +131,6 @@ export class Router {
   private locationSubscription: Subscription;
   private routerEvents: Subject<Event>;
   private navigationId: number = 0;
-  private config: Routes;
   private configLoader: RouterConfigLoader;
 
   /**
@@ -148,7 +147,7 @@ export class Router {
       private rootComponentType: Type<any>, private resolver: ComponentResolver,
       private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
       private location: Location, private injector: Injector, loader: NgModuleFactoryLoader,
-      config: Routes) {
+      public config: Routes) {
     this.resetConfig(config);
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
