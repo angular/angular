@@ -7,7 +7,7 @@
  */
 
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {isArray, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 
 import {FILL_STYLE_FLAG} from './animation_constants';
 import {AUTO_STYLE} from './metadata';
