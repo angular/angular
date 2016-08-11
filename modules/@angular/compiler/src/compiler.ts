@@ -42,7 +42,7 @@ import {PipeResolver} from './pipe_resolver';
 import {NgModuleResolver} from './ng_module_resolver';
 import {Console, Reflector, reflector, ReflectorReader, ReflectionCapabilities} from '../core_private';
 import {XHR} from './xhr';
-import * as i18n from './i18n';
+import * as i18n from './i18n/index';
 
 const _NO_XHR: XHR = {
   get(url: string): Promise<string>{
