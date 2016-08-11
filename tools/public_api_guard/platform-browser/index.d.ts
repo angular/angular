@@ -127,6 +127,11 @@ export interface MessageBusSource {
 }
 
 /** @experimental */
+export declare class NgProbeToken {
+    constructor(name: string, token: any);
+}
+
+/** @experimental */
 export declare const platformBrowser: (extraProviders?: any[]) => PlatformRef;
 
 /** @experimental */
