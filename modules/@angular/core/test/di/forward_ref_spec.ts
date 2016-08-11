@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '@angular/core';
 import {forwardRef, resolveForwardRef} from '@angular/core/src/di';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-
-import {Type} from '../../src/facade/lang';
 
 export function main() {
   describe('forwardRef', function() {

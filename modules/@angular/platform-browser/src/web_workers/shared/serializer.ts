@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Injectable, RenderComponentType, ViewEncapsulation} from '@angular/core';
+import {Injectable, RenderComponentType, Type, ViewEncapsulation} from '@angular/core';
 
 import {VIEW_ENCAPSULATION_VALUES} from '../../../core_private';
 import {Map, MapWrapper, StringMapWrapper} from '../../facade/collection';
-import {Type, isArray, isPresent, serializeEnum} from '../../facade/lang';
-
+import {BaseException} from '../../facade/exceptions';
+import {isArray, isPresent, serializeEnum} from '../../facade/lang';
 import {RenderStore} from './render_store';
 import {LocationType} from './serialized_types';
 
@@ -22,7 +22,7 @@ import {LocationType} from './serialized_types';
 /**
  * @experimental WebWorker support in Angular is currently experimental.
  */
-export const PRIMITIVE: Type = String;
+export const PRIMITIVE: Type<any> = String;
 
 @Injectable()
 export class Serializer {

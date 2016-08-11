@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
+import {Provider} from '@angular/core';
 
 import {CORE_DIRECTIVES} from './directives';
 
@@ -55,4 +55,4 @@ import {CORE_DIRECTIVES} from './directives';
  *
  * @experimental Contains forms which are experimental.
  */
-export const COMMON_DIRECTIVES: Type[][] = [CORE_DIRECTIVES];
+export const COMMON_DIRECTIVES: any[] = CORE_DIRECTIVES;

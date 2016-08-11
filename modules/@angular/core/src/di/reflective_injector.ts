@@ -8,7 +8,7 @@
 
 import {ListWrapper} from '../facade/collection';
 import {BaseException, unimplemented} from '../facade/exceptions';
-import {Type} from '../facade/lang';
+import {Type} from '../type';
 
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
 import {SelfMetadata, SkipSelfMetadata} from './metadata';
@@ -17,7 +17,7 @@ import {AbstractProviderError, CyclicDependencyError, InstantiationError, NoProv
 import {ReflectiveKey} from './reflective_key';
 import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
 
-var __unused: Type;  // avoid unused import when Type union types are erased
+var __unused: Type<any>;  // avoid unused import when Type union types are erased
 
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
@@ -392,7 +392,7 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * See {@link ReflectiveInjector#fromResolvedProviders} for more info.
    */
-  static resolve(providers: Array<Type|Provider|{[k: string]: any}|any[]>):
+  static resolve(providers: Array<Type<any>|Provider|{[k: string]: any}|any[]>):
       ResolvedReflectiveProvider[] {
     return resolveReflectiveProviders(providers);
   }
@@ -424,7 +424,7 @@ export abstract class ReflectiveInjector implements Injector {
    * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
   static resolveAndCreate(
-      providers: Array<Type|Provider|{[k: string]: any}|any[]>,
+      providers: Array<Type<any>|Provider|{[k: string]: any}|any[]>,
       parent: Injector = null): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return ReflectiveInjector.fromResolvedProviders(ResolvedReflectiveProviders, parent);
@@ -516,7 +516,7 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
-  resolveAndCreateChild(providers: Array<Type|Provider|{[k: string]: any}|any[]>):
+  resolveAndCreateChild(providers: Array<Type<any>|Provider|{[k: string]: any}|any[]>):
       ReflectiveInjector {
     return unimplemented();
   }
@@ -574,7 +574,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(car).not.toBe(injector.resolveAndInstantiate(Car));
    * ```
    */
-  resolveAndInstantiate(provider: Type|Provider): any { return unimplemented(); }
+  resolveAndInstantiate(provider: Type<any>|Provider): any { return unimplemented(); }
 
   /**
    * Instantiates an object using a resolved provider in the context of the injector.
@@ -644,7 +644,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
    */
   get internalStrategy(): any { return this._strategy; }
 
-  resolveAndCreateChild(providers: Array<Type|Provider|any[]>): ReflectiveInjector {
+  resolveAndCreateChild(providers: Array<Type<any>|Provider|any[]>): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return this.createChildFromResolved(ResolvedReflectiveProviders);
   }
@@ -656,7 +656,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return inj;
   }
 
-  resolveAndInstantiate(provider: Type|Provider): any {
+  resolveAndInstantiate(provider: Type<any>|Provider): any {
     return this.instantiateResolved(ReflectiveInjector.resolve([provider])[0]);
   }
 

@@ -7,8 +7,8 @@
  */
 
 import {AnimationEntryMetadata, Compiler, ComponentFactory, Injectable, Injector, NgZone, OpaqueToken, ViewMetadata} from '../index';
-import {ConcreteType, Type, isPresent} from '../src/facade/lang';
-
+import {isPresent} from '../src/facade/lang';
+import {Type} from '../src/type';
 import {ComponentFixture} from './component_fixture';
 import {tick} from './fake_async';
 
@@ -30,7 +30,7 @@ export class TestComponentBuilder {
    * Overrides only the html of a {@link ComponentMetadata}.
    * All the other properties of the component's {@link ViewMetadata} are preserved.
    */
-  overrideTemplate(componentType: Type, template: string): TestComponentBuilder {
+  overrideTemplate(componentType: Type<any>, template: string): TestComponentBuilder {
     throw new Error(
         'overrideTemplate is not supported in this implementation of TestComponentBuilder.');
   }
@@ -38,7 +38,7 @@ export class TestComponentBuilder {
   /**
    * Overrides a component's {@link ViewMetadata}.
    */
-  overrideView(componentType: Type, view: ViewMetadata): TestComponentBuilder {
+  overrideView(componentType: Type<any>, view: ViewMetadata): TestComponentBuilder {
     throw new Error(
         'overrideView is not supported in this implementation of TestComponentBuilder.');
   }
@@ -46,7 +46,8 @@ export class TestComponentBuilder {
   /**
    * Overrides the directives from the component {@link ViewMetadata}.
    */
-  overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder {
+  overrideDirective(componentType: Type<any>, from: Type<any>, to: Type<any>):
+      TestComponentBuilder {
     throw new Error(
         'overrideDirective is not supported in this implementation of TestComponentBuilder.');
   }
@@ -61,7 +62,7 @@ export class TestComponentBuilder {
    * duplicated providers to
    * be overridden.
    */
-  overrideProviders(type: Type, providers: any[]): TestComponentBuilder {
+  overrideProviders(type: Type<any>, providers: any[]): TestComponentBuilder {
     throw new Error(
         'overrideProviders is not supported in this implementation of TestComponentBuilder.');
   }
@@ -76,12 +77,12 @@ export class TestComponentBuilder {
    * duplicated providers to
    * be overridden.
    */
-  overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder {
+  overrideViewProviders(type: Type<any>, providers: any[]): TestComponentBuilder {
     throw new Error(
         'overrideViewProviders is not supported in this implementation of TestComponentBuilder.');
   }
 
-  overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]):
+  overrideAnimations(componentType: Type<any>, animations: AnimationEntryMetadata[]):
       TestComponentBuilder {
     throw new Error(
         'overrideAnimations is not supported in this implementation of TestComponentBuilder.');
@@ -101,7 +102,7 @@ export class TestComponentBuilder {
   /**
    * Builds and returns a ComponentFixture.
    */
-  createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>> {
+  createAsync<T>(rootComponentType: Type<T>): Promise<ComponentFixture<T>> {
     let noNgZone = this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
     let compiler: Compiler = this._injector.get(Compiler);
@@ -115,7 +116,7 @@ export class TestComponentBuilder {
     return ngZone == null ? initComponent() : ngZone.run(initComponent);
   }
 
-  createFakeAsync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
+  createFakeAsync<T>(rootComponentType: Type<T>): ComponentFixture<T> {
     let result: any /** TODO #9100 */;
     let error: any /** TODO #9100 */;
 
@@ -128,7 +129,7 @@ export class TestComponentBuilder {
     return result;
   }
 
-  createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T> {
+  createSync<T>(rootComponentType: Type<T>): ComponentFixture<T> {
     let noNgZone = this._injector.get(ComponentFixtureNoNgZone, false);
     let ngZone: NgZone = noNgZone ? null : this._injector.get(NgZone, null);
     let compiler: Compiler = this._injector.get(Compiler);

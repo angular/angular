@@ -141,10 +141,10 @@ export interface Form {
 }
 
 /** @experimental */
-export declare const FORM_DIRECTIVES: Type[][];
+export declare const FORM_DIRECTIVES: Type<any>[][];
 
 /** @experimental */
-export declare const FORM_PROVIDERS: Type[];
+export declare const FORM_PROVIDERS: Type<any>[];
 
 /** @experimental */
 export declare class FormArray extends AbstractControl {
@@ -433,10 +433,10 @@ export declare class PatternValidator implements Validator {
 export declare function provideForms(): any[];
 
 /** @experimental */
-export declare const REACTIVE_FORM_DIRECTIVES: Type[][];
+export declare const REACTIVE_FORM_DIRECTIVES: Type<any>[][];
 
 /** @experimental */
-export declare const REACTIVE_FORM_PROVIDERS: Type[];
+export declare const REACTIVE_FORM_PROVIDERS: Type<any>[];
 
 /** @experimental */
 export declare class ReactiveFormsModule {

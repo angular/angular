@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ChangeDetectorRef, CompilerFactory, Component, Injector, NgModule, PlatformRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ChangeDetectorRef, CompilerFactory, Component, Injector, NgModule, PlatformRef, Type} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -17,7 +17,6 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {ExceptionHandler} from '../src/facade/exception_handler';
 import {BaseException} from '../src/facade/exceptions';
-import {ConcreteType} from '../src/facade/lang';
 import {TestBed, async, inject, withModule} from '../testing';
 
 import {SpyChangeDetectorRef} from './spies';
@@ -40,9 +39,9 @@ export function main() {
 
     type CreateModuleOptions = {providers?: any[], ngDoBootstrap?: any, bootstrap?: any[]};
 
-    function createModule(providers?: any[]): ConcreteType<any>;
-    function createModule(options: CreateModuleOptions): ConcreteType<any>;
-    function createModule(providersOrOptions: any[] | CreateModuleOptions): ConcreteType<any> {
+    function createModule(providers?: any[]): Type<any>;
+    function createModule(options: CreateModuleOptions): Type<any>;
+    function createModule(providersOrOptions: any[] | CreateModuleOptions): Type<any> {
       let options: CreateModuleOptions = {};
       if (providersOrOptions instanceof Array) {
         options = {providers: providersOrOptions};

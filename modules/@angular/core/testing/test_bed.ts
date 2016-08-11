@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, ComponentFactory, ComponentMetadataType, ComponentStillLoadingError, DirectiveMetadataType, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleMetadataType, NgModuleRef, NgZone, OpaqueToken, PipeMetadataType, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type, assertPlatform, createPlatform, getPlatform} from '../index';
+import {CompilerOptions, ComponentFactory, ComponentMetadataType, ComponentStillLoadingError, DirectiveMetadataType, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleMetadataType, NgModuleRef, NgZone, OpaqueToken, PipeMetadataType, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, assertPlatform, createPlatform, getPlatform} from '../index';
 import {ListWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
-import {ConcreteType, FunctionWrapper, isPresent, stringify} from '../src/facade/lang';
-
+import {FunctionWrapper, isPresent, stringify} from '../src/facade/lang';
+import {Type} from '../src/type';
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -63,7 +63,7 @@ export class TestBed implements Injector {
    *
    * @experimental
    */
-  static initTestEnvironment(ngModule: Type, platform: PlatformRef): TestBed {
+  static initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): TestBed {
     const testBed = getTestBed();
     getTestBed().initTestEnvironment(ngModule, platform);
     return testBed;
@@ -106,34 +106,31 @@ export class TestBed implements Injector {
    */
   static compileComponents(): Promise<any> { return getTestBed().compileComponents(); }
 
-  static overrideModule(
-      ngModule: ConcreteType<any>,
-      override: MetadataOverride<NgModuleMetadataType>): typeof TestBed {
+  static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>):
+      typeof TestBed {
     getTestBed().overrideModule(ngModule, override);
     return TestBed;
   }
 
-  static overrideComponent(
-      component: ConcreteType<any>,
-      override: MetadataOverride<ComponentMetadataType>): typeof TestBed {
+  static overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>):
+      typeof TestBed {
     getTestBed().overrideComponent(component, override);
     return TestBed;
   }
 
-  static overrideDirective(
-      directive: ConcreteType<any>,
-      override: MetadataOverride<DirectiveMetadataType>): typeof TestBed {
+  static overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>):
+      typeof TestBed {
     getTestBed().overrideDirective(directive, override);
     return TestBed;
   }
 
-  static overridePipe(pipe: ConcreteType<any>, override: MetadataOverride<PipeMetadataType>):
+  static overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>):
       typeof TestBed {
     getTestBed().overridePipe(pipe, override);
     return TestBed;
   }
 
-  static createComponent<T>(component: ConcreteType<T>): ComponentFixture<T> {
+  static createComponent<T>(component: Type<T>): ComponentFixture<T> {
     return getTestBed().createComponent(component);
   }
 
@@ -145,14 +142,14 @@ export class TestBed implements Injector {
 
   private _compilerOptions: CompilerOptions[] = [];
 
-  private _moduleOverrides: [ConcreteType<any>, MetadataOverride<NgModuleMetadataType>][] = [];
-  private _componentOverrides: [ConcreteType<any>, MetadataOverride<ComponentMetadataType>][] = [];
-  private _directiveOverrides: [ConcreteType<any>, MetadataOverride<DirectiveMetadataType>][] = [];
-  private _pipeOverrides: [ConcreteType<any>, MetadataOverride<PipeMetadataType>][] = [];
+  private _moduleOverrides: [Type<any>, MetadataOverride<NgModuleMetadataType>][] = [];
+  private _componentOverrides: [Type<any>, MetadataOverride<ComponentMetadataType>][] = [];
+  private _directiveOverrides: [Type<any>, MetadataOverride<DirectiveMetadataType>][] = [];
+  private _pipeOverrides: [Type<any>, MetadataOverride<PipeMetadataType>][] = [];
 
-  private _providers: Array<Type|Provider|any[]|any> = [];
-  private _declarations: Array<Type|any[]|any> = [];
-  private _imports: Array<Type|any[]|any> = [];
+  private _providers: Array<Type<any>|Provider|any[]|any> = [];
+  private _declarations: Array<Type<any>|any[]|any> = [];
+  private _imports: Array<Type<any>|any[]|any> = [];
   private _schemas: Array<SchemaMetadata|any[]> = [];
 
   /**
@@ -168,7 +165,7 @@ export class TestBed implements Injector {
    *
    * @experimental
    */
-  initTestEnvironment(ngModule: Type, platform: PlatformRef) {
+  initTestEnvironment(ngModule: Type<any>, platform: PlatformRef) {
     if (this.platform || this.ngModule) {
       throw new BaseException('Cannot set base providers because it has already been called');
     }
@@ -211,7 +208,7 @@ export class TestBed implements Injector {
 
   platform: PlatformRef = null;
 
-  ngModule: Type = null;
+  ngModule: Type<any> = null;
 
   configureCompiler(config: {providers?: any[], useJit?: boolean}) {
     this._assertNotInstantiated('TestBed.configureCompiler', 'configure the compiler');
@@ -270,7 +267,7 @@ export class TestBed implements Injector {
     this._instantiated = true;
   }
 
-  private _createCompilerAndModule(): ConcreteType<any> {
+  private _createCompilerAndModule(): Type<any> {
     const providers = this._providers.concat([{provide: TestBed, useValue: this}]);
     const declarations = this._declarations;
     const imports = [this.ngModule, this._imports];
@@ -319,30 +316,27 @@ export class TestBed implements Injector {
     return FunctionWrapper.apply(fn, params);
   }
 
-  overrideModule(ngModule: ConcreteType<any>, override: MetadataOverride<NgModuleMetadataType>):
-      void {
+  overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>): void {
     this._assertNotInstantiated('overrideModule', 'override module metadata');
     this._moduleOverrides.push([ngModule, override]);
   }
 
-  overrideComponent(
-      component: ConcreteType<any>, override: MetadataOverride<ComponentMetadataType>): void {
+  overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>): void {
     this._assertNotInstantiated('overrideComponent', 'override component metadata');
     this._componentOverrides.push([component, override]);
   }
 
-  overrideDirective(
-      directive: ConcreteType<any>, override: MetadataOverride<DirectiveMetadataType>): void {
+  overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): void {
     this._assertNotInstantiated('overrideDirective', 'override directive metadata');
     this._directiveOverrides.push([directive, override]);
   }
 
-  overridePipe(pipe: ConcreteType<any>, override: MetadataOverride<PipeMetadataType>): void {
+  overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>): void {
     this._assertNotInstantiated('overridePipe', 'override pipe metadata');
     this._pipeOverrides.push([pipe, override]);
   }
 
-  createComponent<T>(component: ConcreteType<T>): ComponentFixture<T> {
+  createComponent<T>(component: Type<T>): ComponentFixture<T> {
     this._initIfNeeded();
     const componentFactory = this._moduleWithComponentFactories.componentFactories.find(
         (compFactory) => compFactory.componentType === component);

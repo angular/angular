@@ -8,8 +8,8 @@
 
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {BaseException, unimplemented} from '../facade/exceptions';
-import {ConcreteType, stringify} from '../facade/lang';
-
+import {stringify} from '../facade/lang';
+import {Type} from '../type';
 import {ComponentFactory} from './component_factory';
 import {CodegenComponentFactoryResolver, ComponentFactoryResolver} from './component_factory_resolver';
 
@@ -57,9 +57,9 @@ export abstract class NgModuleRef<T> {
 export class NgModuleFactory<T> {
   constructor(
       private _injectorClass: {new (parentInjector: Injector): NgModuleInjector<T>},
-      private _moduleype: ConcreteType<T>) {}
+      private _moduleype: Type<T>) {}
 
-  get moduleType(): ConcreteType<T> { return this._moduleype; }
+  get moduleType(): Type<T> { return this._moduleype; }
 
   create(parentInjector: Injector): NgModuleRef<T> {
     if (!parentInjector) {

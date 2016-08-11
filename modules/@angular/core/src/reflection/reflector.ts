@@ -8,8 +8,8 @@
 
 import {Map, MapWrapper, Set, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
-import {Type, isPresent} from '../facade/lang';
-
+import {isPresent} from '../facade/lang';
+import {Type} from '../type';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {ReflectorReader} from './reflector_reader';
 import {GetterFn, MethodFn, SetterFn} from './types';
@@ -77,7 +77,7 @@ export class Reflector extends ReflectorReader {
     this._injectableInfo.set(func, funcInfo);
   }
 
-  registerType(type: Type, typeInfo: ReflectionInfo): void {
+  registerType(type: Type<any>, typeInfo: ReflectionInfo): void {
     this._injectableInfo.set(type, typeInfo);
   }
 
@@ -87,7 +87,7 @@ export class Reflector extends ReflectorReader {
 
   registerMethods(methods: {[key: string]: MethodFn}): void { _mergeMaps(this._methods, methods); }
 
-  factory(type: Type): Function {
+  factory(type: Type<any>): Function {
     if (this._containsReflectionInfo(type)) {
       var res = this._getReflectionInfo(type).factory;
       return isPresent(res) ? res : null;
@@ -96,7 +96,7 @@ export class Reflector extends ReflectorReader {
     }
   }
 
-  parameters(typeOrFunc: /*Type*/ any): any[][] {
+  parameters(typeOrFunc: Type<any>): any[][] {
     if (this._injectableInfo.has(typeOrFunc)) {
       var res = this._getReflectionInfo(typeOrFunc).parameters;
       return isPresent(res) ? res : [];
@@ -105,7 +105,7 @@ export class Reflector extends ReflectorReader {
     }
   }
 
-  annotations(typeOrFunc: /*Type*/ any): any[] {
+  annotations(typeOrFunc: Type<any>): any[] {
     if (this._injectableInfo.has(typeOrFunc)) {
       var res = this._getReflectionInfo(typeOrFunc).annotations;
       return isPresent(res) ? res : [];
@@ -114,7 +114,7 @@ export class Reflector extends ReflectorReader {
     }
   }
 
-  propMetadata(typeOrFunc: /*Type*/ any): {[key: string]: any[]} {
+  propMetadata(typeOrFunc: Type<any>): {[key: string]: any[]} {
     if (this._injectableInfo.has(typeOrFunc)) {
       var res = this._getReflectionInfo(typeOrFunc).propMetadata;
       return isPresent(res) ? res : {};
@@ -123,7 +123,7 @@ export class Reflector extends ReflectorReader {
     }
   }
 
-  interfaces(type: /*Type*/ any): any[] {
+  interfaces(type: Type<any>): any[] {
     if (this._injectableInfo.has(type)) {
       var res = this._getReflectionInfo(type).interfaces;
       return isPresent(res) ? res : [];
@@ -132,7 +132,7 @@ export class Reflector extends ReflectorReader {
     }
   }
 
-  hasLifecycleHook(type: any, lcInterface: Type, lcProperty: string): boolean {
+  hasLifecycleHook(type: any, lcInterface: Type<any>, lcProperty: string): boolean {
     var interfaces = this.interfaces(type);
     if (interfaces.indexOf(lcInterface) !== -1) {
       return true;

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform, Type} from '@angular/core';
 
 import {NumberFormatStyle, NumberFormatter} from '../facade/intl';
-import {NumberWrapper, Type, isBlank, isNumber, isPresent, isString} from '../facade/lang';
+import {NumberWrapper, isBlank, isNumber, isPresent, isString} from '../facade/lang';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
@@ -17,7 +17,7 @@ var defaultLocale: string = 'en-US';
 const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/;
 
 function formatNumber(
-    pipe: Type, value: number | string, style: NumberFormatStyle, digits: string,
+    pipe: Type<any>, value: number | string, style: NumberFormatStyle, digits: string,
     currency: string = null, currencyAsSymbol: boolean = false): string {
   if (isBlank(value)) return null;
   // Convert strings to numbers

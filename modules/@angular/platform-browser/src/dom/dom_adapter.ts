@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isBlank} from '../facade/lang';
+import {Type} from '@angular/core';
+
+import {isBlank} from '../facade/lang';
 
 var _DOM: DomAdapter = null;
 
@@ -29,7 +31,7 @@ export function setRootDomAdapter(adapter: DomAdapter) {
  * Provides DOM operations in an environment-agnostic way.
  */
 export abstract class DomAdapter {
-  public xhrType: Type = null;
+  public xhrType: Type<any> = null;
   abstract hasProperty(element: any /** TODO #9100 */, name: string): boolean;
   abstract setProperty(el: Element, name: string, value: any): any /** TODO #9100 */;
   abstract getProperty(el: Element, name: string): any;
@@ -41,7 +43,7 @@ export abstract class DomAdapter {
   abstract logGroupEnd(): any /** TODO #9100 */;
 
   /** @deprecated */
-  getXHR(): Type { return this.xhrType; }
+  getXHR(): Type<any> { return this.xhrType; }
 
   /**
    * Maps attribute names to their corresponding property names for cases

@@ -8,8 +8,8 @@
 
 import {Console} from '../console';
 import {Injectable} from '../di';
-import {Type, global, isString} from '../facade/lang';
-
+import {global, isString} from '../facade/lang';
+import {Type} from '../type';
 import {ComponentFactory} from './component_factory';
 import {ComponentResolver} from './component_resolver';
 
@@ -26,7 +26,7 @@ const _SEPARATOR = '#';
 export class SystemJsComponentResolver implements ComponentResolver {
   constructor(private _resolver: ComponentResolver, private _console: Console) {}
 
-  resolveComponent(componentType: string|Type): Promise<ComponentFactory<any>> {
+  resolveComponent(componentType: string|Type<any>): Promise<ComponentFactory<any>> {
     if (isString(componentType)) {
       this._console.warn(ComponentResolver.LazyLoadingDeprecationMsg);
       let [module, component] = componentType.split(_SEPARATOR);
@@ -60,7 +60,7 @@ const FACTORY_CLASS_SUFFIX = 'NgFactory';
 @Injectable()
 export class SystemJsCmpFactoryResolver implements ComponentResolver {
   constructor(private _console: Console) {}
-  resolveComponent(componentType: string|Type): Promise<ComponentFactory<any>> {
+  resolveComponent(componentType: string|Type<any>): Promise<ComponentFactory<any>> {
     if (isString(componentType)) {
       this._console.warn(ComponentResolver.LazyLoadingDeprecationMsg);
       let [module, factory] = componentType.split(_SEPARATOR);

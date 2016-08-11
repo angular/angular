@@ -9,14 +9,14 @@
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {CompilerConfig, NgModuleResolver} from '@angular/compiler';
 import {MockNgModuleResolver} from '@angular/compiler/testing';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, ComponentRef, ComponentResolver, DebugElement, Directive, Host, HostBinding, Inject, Injectable, Injector, Input, ModuleWithProviders, NgModule, NgModuleMetadata, NgModuleRef, OpaqueToken, Optional, Pipe, Provider, ReflectiveInjector, SelfMetadata, SkipSelf, SkipSelfMetadata, ViewMetadata, forwardRef, getDebugNode, provide} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, ComponentResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, ReflectiveInjector, SelfMetadata, Type, forwardRef, provide} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {BaseException} from '../../src/facade/exceptions';
-import {ConcreteType, Type, stringify} from '../../src/facade/lang';
+import {stringify} from '../../src/facade/lang';
 import {NgModuleInjector} from '../../src/linker/ng_module_factory';
 
 class Engine {}
@@ -128,13 +128,11 @@ function declareTests({useJit}: {useJit: boolean}) {
       injector = _injector;
     }));
 
-    function createModule<T>(
-        moduleType: ConcreteType<T>, parentInjector: Injector = null): NgModuleRef<T> {
+    function createModule<T>(moduleType: Type<T>, parentInjector: Injector = null): NgModuleRef<T> {
       return compiler.compileModuleSync(moduleType).create(parentInjector);
     }
 
-    function createComp<T>(
-        compType: ConcreteType<T>, moduleType: ConcreteType<any>): ComponentFixture<T> {
+    function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
       let ngModule = createModule(moduleType);
       var cf = ngModule.componentFactoryResolver.resolveComponentFactory(compType);
       return new ComponentFixture(cf.create(injector), null, false);

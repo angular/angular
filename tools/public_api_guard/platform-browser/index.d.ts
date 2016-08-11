@@ -42,12 +42,12 @@ export declare class BrowserPlatformLocation extends PlatformLocation {
 export declare class By {
     static all(): Predicate<DebugElement>;
     static css(selector: string): Predicate<DebugElement>;
-    static directive(type: Type): Predicate<DebugElement>;
+    static directive(type: Type<any>): Predicate<DebugElement>;
 }
 
 /** @experimental */
 export declare abstract class ClientMessageBroker {
-    abstract runOnService(args: UiArguments, returnType: Type): Promise<any>;
+    abstract runOnService(args: UiArguments, returnType: Type<any>): Promise<any>;
 }
 
 /** @experimental */
@@ -87,9 +87,9 @@ export declare class EventManager {
 
 /** @experimental */
 export declare class FnArg {
-    type: Type;
+    type: Type<any>;
     value: any;
-    constructor(value: any, type: Type);
+    constructor(value: any, type: Type<any>);
 }
 
 /** @experimental */
@@ -136,7 +136,7 @@ export declare const platformWorkerApp: (extraProviders?: any[]) => PlatformRef;
 export declare const platformWorkerUi: (extraProviders?: any[]) => PlatformRef;
 
 /** @experimental */
-export declare const PRIMITIVE: Type;
+export declare const PRIMITIVE: Type<any>;
 
 /** @experimental */
 export declare class ReceivedMessage {
@@ -171,7 +171,7 @@ export interface SafeUrl extends SafeValue {
 
 /** @experimental */
 export declare abstract class ServiceMessageBroker {
-    abstract registerMethod(methodName: string, signature: Type[], method: Function, returnType?: Type): void;
+    abstract registerMethod(methodName: string, signature: Type<any>[], method: Function, returnType?: Type<any>): void;
 }
 
 /** @experimental */

@@ -1,8 +1,8 @@
 /** @deprecated */
-export declare function bootstrap<C>(appComponentType: ConcreteType<C>, customProviders?: Array<any>): Promise<ComponentRef<C>>;
+export declare function bootstrap<C>(appComponentType: Type<C>, customProviders?: Array<any>): Promise<ComponentRef<C>>;
 
 /** @deprecated */
-export declare function bootstrapWorkerApp<T>(appComponentType: ConcreteType<T>, customProviders?: Array<any>): Promise<ComponentRef<T>>;
+export declare function bootstrapWorkerApp<T>(appComponentType: Type<T>, customProviders?: Array<any>): Promise<ComponentRef<T>>;
 
 /** @experimental */
 export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Array<any>): Promise<PlatformRef>;

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, ComponentMetadataType, DirectiveMetadataType, Injector, NgModuleFactory, NgModuleMetadataType, PipeMetadataType} from '../index';
+import {Compiler, CompilerOptions, ComponentMetadataType, DirectiveMetadataType, Injector, NgModuleMetadataType, PipeMetadataType} from '../index';
 import {unimplemented} from '../src/facade/exceptions';
-import {ConcreteType} from '../src/facade/lang';
+import {Type} from '../src/type';
 import {MetadataOverride} from './metadata_override';
 
 /**
@@ -18,19 +18,18 @@ import {MetadataOverride} from './metadata_override';
  */
 export class TestingCompiler extends Compiler {
   get injector(): Injector { throw unimplemented(); }
-  overrideModule(module: ConcreteType<any>, overrides: MetadataOverride<NgModuleMetadataType>):
+  overrideModule(module: Type<any>, overrides: MetadataOverride<NgModuleMetadataType>): void {
+    throw unimplemented();
+  }
+  overrideDirective(directive: Type<any>, overrides: MetadataOverride<DirectiveMetadataType>):
       void {
     throw unimplemented();
   }
-  overrideDirective(
-      directive: ConcreteType<any>, overrides: MetadataOverride<DirectiveMetadataType>): void {
+  overrideComponent(component: Type<any>, overrides: MetadataOverride<ComponentMetadataType>):
+      void {
     throw unimplemented();
   }
-  overrideComponent(
-      component: ConcreteType<any>, overrides: MetadataOverride<ComponentMetadataType>): void {
-    throw unimplemented();
-  }
-  overridePipe(directive: ConcreteType<any>, overrides: MetadataOverride<PipeMetadataType>): void {
+  overridePipe(directive: Type<any>, overrides: MetadataOverride<PipeMetadataType>): void {
     throw unimplemented();
   }
 }

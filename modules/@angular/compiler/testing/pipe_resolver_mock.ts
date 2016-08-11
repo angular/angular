@@ -13,18 +13,18 @@ import {Map} from '../src/facade/collection';
 
 @Injectable()
 export class MockPipeResolver extends PipeResolver {
-  private _pipes = new Map<Type, PipeMetadata>();
+  private _pipes = new Map<Type<any>, PipeMetadata>();
 
   constructor(private _injector: Injector) { super(); }
 
   private get _compiler(): Compiler { return this._injector.get(Compiler); }
 
-  private _clearCacheFor(pipe: Type) { this._compiler.clearCacheFor(pipe); }
+  private _clearCacheFor(pipe: Type<any>) { this._compiler.clearCacheFor(pipe); }
 
   /**
    * Overrides the {@link PipeMetadata} for a pipe.
    */
-  setPipe(type: Type, metadata: PipeMetadata): void {
+  setPipe(type: Type<any>, metadata: PipeMetadata): void {
     this._pipes.set(type, metadata);
     this._clearCacheFor(type);
   }
@@ -35,7 +35,7 @@ export class MockPipeResolver extends PipeResolver {
    * default
    * `PipeResolver`, see `setPipe`.
    */
-  resolve(type: Type, throwIfNotFound = true): PipeMetadata {
+  resolve(type: Type<any>, throwIfNotFound = true): PipeMetadata {
     var metadata = this._pipes.get(type);
     if (!metadata) {
       metadata = super.resolve(type, throwIfNotFound);

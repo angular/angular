@@ -10,7 +10,7 @@ import {AsyncPipe, NgFor} from '@angular/common';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/test/test_bindings';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef, ViewMetadata, WrappedValue, forwardRef} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewContainerRef, ViewMetadata, WrappedValue, forwardRef} from '@angular/core';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
 import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
@@ -21,7 +21,7 @@ import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 import {EventEmitter} from '../../src/facade/async';
 import {StringMapWrapper} from '../../src/facade/collection';
 import {BaseException} from '../../src/facade/exceptions';
-import {ConcreteType, NumberWrapper, Type, isBlank} from '../../src/facade/lang';
+import {NumberWrapper, isBlank} from '../../src/facade/lang';
 
 export function main() {
   let tcb: TestComponentBuilder;
@@ -30,11 +30,11 @@ export function main() {
   let directiveLog: DirectiveLog;
 
   function createCompFixture<T>(template: string): ComponentFixture<TestComponent>;
-  function createCompFixture<T>(template: string, compType: ConcreteType<T>): ComponentFixture<T>;
+  function createCompFixture<T>(template: string, compType: Type<T>): ComponentFixture<T>;
   function createCompFixture<T>(
-      template: string, compType: ConcreteType<T>, _tcb: TestComponentBuilder): ComponentFixture<T>;
+      template: string, compType: Type<T>, _tcb: TestComponentBuilder): ComponentFixture<T>;
   function createCompFixture<T>(
-      template: string, compType: ConcreteType<T> = <any>TestComponent,
+      template: string, compType: Type<T> = <any>TestComponent,
       _tcb: TestComponentBuilder = null): ComponentFixture<T> {
     if (isBlank(_tcb)) {
       _tcb = tcb;
@@ -46,28 +46,28 @@ export function main() {
         .createFakeAsync(compType);
   }
 
-  function queryDirs(el: DebugElement, dirType: Type): any {
+  function queryDirs(el: DebugElement, dirType: Type<any>): any {
     var nodes = el.queryAllNodes(By.directive(dirType));
     return nodes.map(node => node.injector.get(dirType));
   }
 
   function _bindSimpleProp<T>(bindAttr: string): ComponentFixture<TestComponent>;
-  function _bindSimpleProp<T>(bindAttr: string, compType: ConcreteType<T>): ComponentFixture<T>;
+  function _bindSimpleProp<T>(bindAttr: string, compType: Type<T>): ComponentFixture<T>;
   function _bindSimpleProp<T>(
-      bindAttr: string, compType: ConcreteType<T> = <any>TestComponent): ComponentFixture<T> {
+      bindAttr: string, compType: Type<T> = <any>TestComponent): ComponentFixture<T> {
     var template = `<div ${bindAttr}></div>`;
     return createCompFixture(template, compType);
   }
 
   function _bindSimpleValue(expression: any): ComponentFixture<TestComponent>;
-  function _bindSimpleValue<T>(expression: any, compType: ConcreteType<T>): ComponentFixture<T>;
+  function _bindSimpleValue<T>(expression: any, compType: Type<T>): ComponentFixture<T>;
   function _bindSimpleValue<T>(
-      expression: any, compType: ConcreteType<T> = <any>TestComponent): ComponentFixture<T> {
+      expression: any, compType: Type<T> = <any>TestComponent): ComponentFixture<T> {
     return _bindSimpleProp(`[someProp]='${expression}'`, compType);
   }
 
   function _bindAndCheckSimpleValue(
-      expression: any, compType: ConcreteType<any> = TestComponent): string[] {
+      expression: any, compType: Type<any> = TestComponent): string[] {
     const ctx = _bindSimpleValue(expression, compType);
     ctx.detectChanges(false);
     return renderLog.log;

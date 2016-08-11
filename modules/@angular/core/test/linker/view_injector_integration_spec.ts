@@ -13,7 +13,7 @@ import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, x
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {ConcreteType, isBlank} from '../../src/facade/lang';
+import {isBlank} from '../../src/facade/lang';
 
 const ALL_DIRECTIVES = [
   forwardRef(() => SimpleDirective),
@@ -244,8 +244,7 @@ export function main() {
   var tcb: TestComponentBuilder;
 
   function createCompFixture<T>(
-      template: string, tcb: TestComponentBuilder,
-      comp: ConcreteType<T> = null): ComponentFixture<T> {
+      template: string, tcb: TestComponentBuilder, comp: Type<T> = null): ComponentFixture<T> {
     if (isBlank(comp)) {
       comp = <any>TestComp;
     }
@@ -257,7 +256,7 @@ export function main() {
   }
 
   function createComp(
-      template: string, tcb: TestComponentBuilder, comp: ConcreteType<any> = null): DebugElement {
+      template: string, tcb: TestComponentBuilder, comp: Type<any> = null): DebugElement {
     var fixture = createCompFixture(template, tcb, comp);
     fixture.detectChanges();
     return fixture.debugElement;

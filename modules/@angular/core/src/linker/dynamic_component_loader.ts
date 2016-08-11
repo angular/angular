@@ -7,8 +7,8 @@
  */
 
 import {Injectable, Injector, ReflectiveInjector, ResolvedReflectiveProvider} from '../di';
-import {Type, isPresent} from '../facade/lang';
-
+import {isPresent} from '../facade/lang';
+import {Type} from '../type';
 import {Compiler} from './compiler';
 import {ComponentRef} from './component_factory';
 import {ViewContainerRef} from './view_container_ref';
@@ -70,8 +70,8 @@ export abstract class DynamicComponentLoader {
    * ```
    */
   abstract loadAsRoot(
-      type: Type, overrideSelectorOrNode: string|any, injector: Injector, onDispose?: () => void,
-      projectableNodes?: any[][]): Promise<ComponentRef<any>>;
+      type: Type<any>, overrideSelectorOrNode: string|any, injector: Injector,
+      onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef<any>>;
 
 
   /**
@@ -115,7 +115,7 @@ export abstract class DynamicComponentLoader {
    * ```
    */
   abstract loadNextToLocation(
-      type: Type, location: ViewContainerRef, providers?: ResolvedReflectiveProvider[],
+      type: Type<any>, location: ViewContainerRef, providers?: ResolvedReflectiveProvider[],
       projectableNodes?: any[][]): Promise<ComponentRef<any>>;
 }
 
@@ -124,8 +124,8 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
   constructor(private _compiler: Compiler) { super(); }
 
   loadAsRoot(
-      type: Type, overrideSelectorOrNode: string|any, injector: Injector, onDispose?: () => void,
-      projectableNodes?: any[][]): Promise<ComponentRef<any>> {
+      type: Type<any>, overrideSelectorOrNode: string|any, injector: Injector,
+      onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef<any>> {
     return this._compiler.compileComponentAsync(<any>type).then(componentFactory => {
       var componentRef = componentFactory.create(
           injector, projectableNodes,
@@ -138,7 +138,7 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
   }
 
   loadNextToLocation(
-      type: Type, location: ViewContainerRef, providers: ResolvedReflectiveProvider[] = null,
+      type: Type<any>, location: ViewContainerRef, providers: ResolvedReflectiveProvider[] = null,
       projectableNodes: any[][] = null): Promise<ComponentRef<any>> {
     return this._compiler.compileComponentAsync(<any>type).then(componentFactory => {
       var contextInjector = location.parentInjector;

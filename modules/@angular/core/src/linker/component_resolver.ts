@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../facade/lang';
+import {Type} from '../type';
 import {ComponentFactory} from './component_factory';
 
 /**
@@ -25,6 +25,6 @@ export abstract class ComponentResolver {
       'ComponentResolver is deprecated for lazy loading. Use NgModuleFactoryLoader instead.';
 
 
-  abstract resolveComponent(component: Type|string): Promise<ComponentFactory<any>>;
+  abstract resolveComponent(component: Type<any>|string): Promise<ComponentFactory<any>>;
   abstract clearCache(): void;
 }

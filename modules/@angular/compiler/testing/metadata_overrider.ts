@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 import {MetadataOverride} from '@angular/core/testing';
-
-import {ConcreteType, stringify} from '../src/facade/lang';
+import {BaseException} from '../src/facade/exceptions';
+import {stringify} from '../src/facade/lang';
 
 type StringMap = {
   [key: string]: any

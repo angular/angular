@@ -141,9 +141,6 @@ export function main() {
         // clang-format on
       });
 
-      it('should throw when more than 20 arguments',
-         () => { expect(() => reflector.factory(TestObjWith21Args)).toThrowError(); });
-
       it('should return a registered factory if available', () => {
         reflector.registerType(TestObj, new ReflectionInfo(null, null, () => 'fake'));
         expect(reflector.factory(TestObj)()).toEqual('fake');

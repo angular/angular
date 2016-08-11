@@ -8,12 +8,11 @@
 
 import {PlatformLocation} from '@angular/common';
 import {analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
-import {ApplicationRef, CompilerFactory, ComponentRef, NgModule, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, Type, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
+import {ApplicationRef, ComponentRef, NgModule, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, Type, createPlatformFactory, platformCore} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {Console, ReflectionCapabilities, reflector, wtfInit} from '../core_private';
 
-import {ConcreteType} from './facade/lang';
 import {Parse5DomAdapter} from './parse5_adapter';
 
 function notSupported(feature: string): Error {
@@ -97,7 +96,7 @@ export const serverDynamicPlatform = platformDynamicServer;
  * instead.
  */
 export function serverBootstrap<T>(
-    appComponentType: ConcreteType<T>,
+    appComponentType: Type<T>,
     customProviders: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<T>> {
   console.warn(
       'serverBootstrap is deprecated. Create an @NgModule and use `bootstrapModule` with the `serverDynamicPlatform()` instead.');

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
+import {Type} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {ClientMessageBroker, ClientMessageBrokerFactory_, UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-browser/src/web_workers/shared/message_bus';
-
 import {ListWrapper, StringMapWrapper} from '../../../src/facade/collection';
-import {Type, isPresent} from '../../../src/facade/lang';
+import {BaseException} from '../../../src/facade/exceptions';
+import {isPresent} from '../../../src/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
 
 import {MockEventEmitter} from './mock_event_emitter';
@@ -46,7 +46,7 @@ export function createPairedMessageBuses(): PairedMessageBuses {
 export function expectBrokerCall(
     broker: SpyMessageBroker, methodName: string, vals?: Array<any>,
     handler?: (..._: any[]) => Promise<any>| void): void {
-  broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type) => {
+  broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type<any>) => {
     expect(args.method).toEqual(methodName);
     if (isPresent(vals)) {
       expect(args.args.length).toEqual(vals.length);

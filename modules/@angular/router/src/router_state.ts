@@ -56,7 +56,7 @@ export class RouterState extends Tree<ActivatedRoute> {
   toString(): string { return this.snapshot.toString(); }
 }
 
-export function createEmptyState(urlTree: UrlTree, rootComponent: Type): RouterState {
+export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>): RouterState {
   const snapshot = createEmptyStateSnapshot(urlTree, rootComponent);
   const emptyUrl = new BehaviorSubject([new UrlSegment('', {})]);
   const emptyParams = new BehaviorSubject({});
@@ -71,7 +71,7 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type): RouterS
 }
 
 export function createEmptyStateSnapshot(
-    urlTree: UrlTree, rootComponent: Type): RouterStateSnapshot {
+    urlTree: UrlTree, rootComponent: Type<any>): RouterStateSnapshot {
   const emptyParams = {};
   const emptyData = {};
   const emptyQueryParams = {};
@@ -113,7 +113,7 @@ export class ActivatedRoute {
   constructor(
       public url: Observable<UrlSegment[]>, public params: Observable<Params>,
       public queryParams: Observable<Params>, public fragment: Observable<string>,
-      public data: Observable<Data>, public outlet: string, public component: Type|string,
+      public data: Observable<Data>, public outlet: string, public component: Type<any>|string,
       futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
   }
@@ -200,7 +200,7 @@ export class ActivatedRouteSnapshot {
   constructor(
       public url: UrlSegment[], public params: Params, public queryParams: Params,
       public fragment: string, public data: Data, public outlet: string,
-      public component: Type|string, routeConfig: Route, urlSegment: UrlSegmentGroup,
+      public component: Type<any>|string, routeConfig: Route, urlSegment: UrlSegmentGroup,
       lastPathIndex: number, resolve: InheritedResolve) {
     this._routeConfig = routeConfig;
     this._urlSegment = urlSegment;

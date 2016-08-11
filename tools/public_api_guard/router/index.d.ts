@@ -1,7 +1,7 @@
 /** @stable */
 export declare class ActivatedRoute {
     children: ActivatedRoute[];
-    component: Type | string;
+    component: Type<any> | string;
     data: Observable<Data>;
     firstChild: ActivatedRoute;
     fragment: Observable<string>;
@@ -20,7 +20,7 @@ export declare class ActivatedRoute {
 /** @stable */
 export declare class ActivatedRouteSnapshot {
     children: ActivatedRouteSnapshot[];
-    component: Type | string;
+    component: Type<any> | string;
     data: Data;
     firstChild: ActivatedRouteSnapshot;
     fragment: string;
@@ -153,7 +153,7 @@ export interface Route {
     canDeactivate?: any[];
     canLoad?: any[];
     children?: Route[];
-    component?: Type | string;
+    component?: Type<any> | string;
     data?: Data;
     loadChildren?: string;
     outlet?: string;
@@ -170,7 +170,7 @@ export declare class Router {
     /** @experimental */ navigated: boolean;
     routerState: RouterState;
     url: string;
-    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, config: Routes);
+    constructor(rootComponentType: Type<any>, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, config: Routes);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;

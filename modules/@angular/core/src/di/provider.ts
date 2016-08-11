@@ -7,7 +7,8 @@
  */
 
 import {BaseException} from '../facade/exceptions';
-import {Type, isBlank, isFunction, isType, normalizeBool, stringify} from '../facade/lang';
+import {isBlank, isFunction, isType, normalizeBool, stringify} from '../facade/lang';
+import {Type} from '../type';
 
 
 /**
@@ -61,7 +62,7 @@ export class Provider {
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  useClass: Type;
+  useClass: Type<any>;
 
   /**
    * Binds a DI token to a value.
@@ -157,7 +158,7 @@ export class Provider {
   _multi: boolean;
 
   constructor(token: any, {useClass, useValue, useExisting, useFactory, deps, multi}: {
-    useClass?: Type,
+    useClass?: Type<any>,
     useValue?: any,
     useExisting?: any,
     useFactory?: Function,
@@ -213,7 +214,7 @@ export class Provider {
  */
 export class Binding extends Provider {
   constructor(token: any, {toClass, toValue, toAlias, toFactory, deps, multi}: {
-    toClass?: Type,
+    toClass?: Type<any>,
     toValue?: any,
     toAlias?: any,
     toFactory: Function, deps?: Object[], multi?: boolean
@@ -301,7 +302,7 @@ export class ProviderBuilder {
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toClass(type: Type): Provider {
+  toClass(type: Type<any>): Provider {
     if (!isType(type)) {
       throw new BaseException(
           `Trying to create a class provider but "${stringify(type)}" is not a class!`);
@@ -396,7 +397,7 @@ export class ProviderBuilder {
  * @deprecated
  */
 export function provide(token: any, {useClass, useValue, useExisting, useFactory, deps, multi}: {
-  useClass?: Type,
+  useClass?: Type<any>,
   useValue?: any,
   useExisting?: any,
   useFactory?: Function,

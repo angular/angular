@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../src/facade/lang';
-
 import {ApplicationInitStatus} from './application_init';
 import {ApplicationRef, ApplicationRef_, isDevMode} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
@@ -18,6 +16,7 @@ import {ComponentResolver} from './linker/component_resolver';
 import {DynamicComponentLoader, DynamicComponentLoader_} from './linker/dynamic_component_loader';
 import {ViewUtils} from './linker/view_utils';
 import {NgModule} from './metadata';
+import {Type} from './type';
 
 export function _iterableDiffersFactory() {
   return defaultIterableDiffers;
@@ -33,7 +32,7 @@ export function _keyValueDiffersFactory() {
  *
  * @deprecated Include `ApplicationModule` instead.
  */
-export const APPLICATION_COMMON_PROVIDERS: Array<Type|{[k: string]: any}|any[]> = [];
+export const APPLICATION_COMMON_PROVIDERS: Array<Type<any>|{[k: string]: any}|any[]> = [];
 
 /**
  * This module includes the providers of @angular/core that are needed

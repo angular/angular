@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../facade/lang';
+import {Type} from '@angular/core';
 
 import {NgClass} from './ng_class';
 import {NgFor} from './ng_for';
@@ -58,7 +58,7 @@ import {NgTemplateOutlet} from './ng_template_outlet';
  *
  * @stable
  */
-export const CORE_DIRECTIVES: Type[] = [
+export const CORE_DIRECTIVES: Type<any>[] = [
   NgClass,
   NgFor,
   NgIf,

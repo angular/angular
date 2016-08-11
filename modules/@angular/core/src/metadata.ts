@@ -11,14 +11,11 @@
  * to be used by the decorator versions of these annotations.
  */
 
-import {ChangeDetectionStrategy} from '../src/change_detection/change_detection';
-import {Type} from '../src/facade/lang';
-
-import {AnimationEntryMetadata} from './animation/metadata';
 import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 import {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata, PipeMetadataType} from './metadata/directives';
 import {ModuleWithProviders, NgModuleMetadata, NgModuleMetadataType, SchemaMetadata} from './metadata/ng_module';
 import {ViewEncapsulation} from './metadata/view';
+import {Type} from './type';
 import {TypeDecorator, makeDecorator, makeParamDecorator, makePropDecorator} from './util/decorators';
 
 export {ANALYZE_FOR_ENTRY_COMPONENTS, AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
@@ -26,6 +23,7 @@ export {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMe
 export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from './metadata/lifecycle_hooks';
 export {CUSTOM_ELEMENTS_SCHEMA, ModuleWithProviders, NgModuleMetadata, NgModuleMetadataType, SchemaMetadata} from './metadata/ng_module';
 export {ViewEncapsulation, ViewMetadata} from './metadata/view';
+
 
 
 /**
@@ -218,10 +216,11 @@ export interface AttributeMetadataFactory {
  * @deprecated
  */
 export interface QueryMetadataFactory {
-  (selector: Type|string,
+  (selector: Type<any>|Function|string,
    {descendants, read}?: {descendants?: boolean, read?: any}): ParameterDecorator;
-  new (selector: Type|string, {descendants, read}?: {descendants?: boolean, read?: any}):
-      QueryMetadata;
+  new (
+      selector: Type<any>|Function|string,
+      {descendants, read}?: {descendants?: boolean, read?: any}): QueryMetadata;
 }
 
 /**
@@ -229,9 +228,11 @@ export interface QueryMetadataFactory {
  * @stable
  */
 export interface ContentChildrenMetadataFactory {
-  (selector: Type|string, {descendants, read}?: {descendants?: boolean, read?: any}): any;
-  new (selector: Type|string, {descendants, read}?: {descendants?: boolean, read?: any}):
-      ContentChildrenMetadata;
+  (selector: Type<any>|Function|string,
+   {descendants, read}?: {descendants?: boolean, read?: any}): any;
+  new (
+      selector: Type<any>|Function|string,
+      {descendants, read}?: {descendants?: boolean, read?: any}): ContentChildrenMetadata;
 }
 
 /**
@@ -239,8 +240,8 @@ export interface ContentChildrenMetadataFactory {
  * @stable
  */
 export interface ContentChildMetadataFactory {
-  (selector: Type|string, {read}?: {read?: any}): any;
-  new (selector: Type|string, {read}?: {read?: any}): ContentChildMetadataFactory;
+  (selector: Type<any>|Function|string, {read}?: {read?: any}): any;
+  new (selector: Type<any>|Function|string, {read}?: {read?: any}): ContentChildMetadataFactory;
 }
 
 /**
@@ -248,8 +249,8 @@ export interface ContentChildMetadataFactory {
  * @stable
  */
 export interface ViewChildrenMetadataFactory {
-  (selector: Type|string, {read}?: {read?: any}): any;
-  new (selector: Type|string, {read}?: {read?: any}): ViewChildrenMetadata;
+  (selector: Type<any>|Function|string, {read}?: {read?: any}): any;
+  new (selector: Type<any>|Function|string, {read}?: {read?: any}): ViewChildrenMetadata;
 }
 
 /**
@@ -257,8 +258,8 @@ export interface ViewChildrenMetadataFactory {
  * @stable
  */
 export interface ViewChildMetadataFactory {
-  (selector: Type|string, {read}?: {read?: any}): any;
-  new (selector: Type|string, {read}?: {read?: any}): ViewChildMetadataFactory;
+  (selector: Type<any>|Function|string, {read}?: {read?: any}): any;
+  new (selector: Type<any>|Function|string, {read}?: {read?: any}): ViewChildMetadataFactory;
 }
 
 

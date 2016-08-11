@@ -18,13 +18,13 @@ import {FormBuilder} from './form_builder';
  * Shorthand set of providers used for building Angular forms.
  * @experimental
  */
-export const FORM_PROVIDERS: Type[] = [RadioControlRegistry];
+export const FORM_PROVIDERS: Type<any>[] = [RadioControlRegistry];
 
 /**
  * Shorthand set of providers used for building reactive Angular forms.
  * @experimental
  */
-export const REACTIVE_FORM_PROVIDERS: Type[] = [FormBuilder, RadioControlRegistry];
+export const REACTIVE_FORM_PROVIDERS: Type<any>[] = [FormBuilder, RadioControlRegistry];
 
 /**
  * The ng module for forms.

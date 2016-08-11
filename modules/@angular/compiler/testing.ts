@@ -12,8 +12,7 @@ export * from './testing/directive_resolver_mock';
 export * from './testing/ng_module_resolver_mock';
 export * from './testing/pipe_resolver_mock';
 
-import {ConcreteType, Type} from './src/facade/lang';
-import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, PlatformRef, CompilerFactory, ComponentFactory, NgModuleFactory, Injector, NgModuleMetadata, NgModuleMetadataType, ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, PipeMetadata, PipeMetadataType} from '@angular/core';
+import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, ComponentFactory, NgModuleFactory, Injector, NgModuleMetadata, NgModuleMetadataType, ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, PipeMetadata, PipeMetadataType, Type, PlatformRef} from '@angular/core';
 import {MetadataOverride} from '@angular/core/testing';
 import {TestingCompilerFactory, TestingCompiler} from './core_private_testing';
 import {platformCoreDynamic, RuntimeCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from './index';
@@ -40,55 +39,51 @@ export class TestingCompilerImpl implements TestingCompiler {
       private _compiler: RuntimeCompiler, private _directiveResolver: MockDirectiveResolver,
       private _pipeResolver: MockPipeResolver, private _moduleResolver: MockNgModuleResolver) {}
   get injector(): Injector { return this._compiler.injector; }
-  compileComponentAsync<T>(component: ConcreteType<T>, ngModule: Type = null):
+  compileComponentAsync<T>(component: Type<T>, ngModule: Type<any> = null):
       Promise<ComponentFactory<T>> {
     return this._compiler.compileComponentAsync(component, <any>ngModule);
   }
-  compileComponentSync<T>(component: ConcreteType<T>, ngModule: Type = null): ComponentFactory<T> {
+  compileComponentSync<T>(component: Type<T>, ngModule: Type<any> = null): ComponentFactory<T> {
     return this._compiler.compileComponentSync(component, <any>ngModule);
   }
-  compileModuleSync<T>(moduleType: ConcreteType<T>): NgModuleFactory<T> {
+  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
     return this._compiler.compileModuleSync(moduleType);
   }
 
-  compileModuleAsync<T>(moduleType: ConcreteType<T>): Promise<NgModuleFactory<T>> {
+  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
     return this._compiler.compileModuleAsync(moduleType);
   }
-  compileModuleAndAllComponentsSync<T>(moduleType: ConcreteType<T>):
-      ModuleWithComponentFactories<T> {
+  compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
     return this._compiler.compileModuleAndAllComponentsSync(moduleType);
   }
 
-  compileModuleAndAllComponentsAsync<T>(moduleType: ConcreteType<T>):
+  compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
       Promise<ModuleWithComponentFactories<T>> {
     return this._compiler.compileModuleAndAllComponentsAsync(moduleType);
   }
 
-  overrideModule(ngModule: ConcreteType<any>, override: MetadataOverride<NgModuleMetadataType>):
-      void {
+  overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>): void {
     const oldMetadata = this._moduleResolver.resolve(ngModule, false);
     this._moduleResolver.setNgModule(
         ngModule, this._overrider.overrideMetadata(NgModuleMetadata, oldMetadata, override));
   }
-  overrideDirective(
-      directive: ConcreteType<any>, override: MetadataOverride<DirectiveMetadataType>): void {
+  overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): void {
     const oldMetadata = this._directiveResolver.resolve(directive, false);
     this._directiveResolver.setDirective(
         directive, this._overrider.overrideMetadata(DirectiveMetadata, oldMetadata, override));
   }
-  overrideComponent(
-      component: ConcreteType<any>, override: MetadataOverride<ComponentMetadataType>): void {
+  overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>): void {
     const oldMetadata = this._directiveResolver.resolve(component, false);
     this._directiveResolver.setDirective(
         component, this._overrider.overrideMetadata(ComponentMetadata, oldMetadata, override));
   }
-  overridePipe(pipe: ConcreteType<any>, override: MetadataOverride<PipeMetadataType>): void {
+  overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>): void {
     const oldMetadata = this._pipeResolver.resolve(pipe, false);
     this._pipeResolver.setPipe(
         pipe, this._overrider.overrideMetadata(PipeMetadata, oldMetadata, override));
   }
   clearCache(): void { this._compiler.clearCache(); }
-  clearCacheFor(type: Type) { this._compiler.clearCacheFor(type); }
+  clearCacheFor(type: Type<any>) { this._compiler.clearCacheFor(type); }
 }
 
 /**
@@ -96,7 +91,7 @@ export class TestingCompilerImpl implements TestingCompiler {
  *
  * @experimental
  */
-export const platformCoreDynamicTesting =
+export const platformCoreDynamicTesting: (extraProviders?: any[]) => PlatformRef =
     createPlatformFactory(platformCoreDynamic, 'coreDynamicTesting', [
       {
         provide: COMPILER_OPTIONS,

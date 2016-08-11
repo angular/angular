@@ -58,7 +58,7 @@ export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValida
  * ```
  * @experimental
  */
-export const FORM_DIRECTIVES: Type[] = [
+export const FORM_DIRECTIVES: Type<any>[] = [
   NgControlName,
   NgControlGroup,
 

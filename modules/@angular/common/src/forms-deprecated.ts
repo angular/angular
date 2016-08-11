@@ -57,7 +57,7 @@ export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './forms-deprecated
  *
  * @experimental
  */
-export const FORM_PROVIDERS: Type[] = [FormBuilder, RadioControlRegistry];
+export const FORM_PROVIDERS: Type<any>[] = [FormBuilder, RadioControlRegistry];
 
 
 /**

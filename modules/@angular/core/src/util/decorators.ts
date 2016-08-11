@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConcreteType, Type, global, isFunction, stringify} from '../facade/lang';
+import {global, isFunction, stringify} from '../facade/lang';
+import {Type} from '../type';
 
 var _nextClassId = 0;
 
@@ -19,7 +20,7 @@ export interface ClassDefinition {
   /**
    * Optional argument for specifying the superclass.
    */
-  extends?: Type;
+  extends?: Type<any>;
 
   /**
    * Required constructor function for a class.
@@ -36,7 +37,7 @@ export interface ClassDefinition {
    * Other methods on the class. Note that values should have type 'Function' but TS requires
    * all properties to have a narrower type than the index signature.
    */
-  [x: string]: Type|Function|any[];
+  [x: string]: Type<any>|Function|any[];
 }
 
 /**
@@ -66,7 +67,7 @@ export interface TypeDecorator {
   /**
    * Invoke as ES7 decorator.
    */
-  <T extends Type>(type: T): T;
+  <T extends Type<any>>(type: T): T;
 
   // Make TypeDecorator assignable to built-in ParameterDecorator type.
   // ParameterDecorator is declared in lib.d.ts as a `declare type`
@@ -84,7 +85,7 @@ export interface TypeDecorator {
   /**
    * Generate a class from the definition and annotate it with {@link TypeDecorator#annotations}.
    */
-  Class(obj: ClassDefinition): ConcreteType<any>;
+  Class(obj: ClassDefinition): Type<any>;
 }
 
 function extractAnnotation(annotation: any): any {
@@ -219,7 +220,7 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
  * ```
  * @stable
  */
-export function Class(clsDef: ClassDefinition): ConcreteType<any> {
+export function Class(clsDef: ClassDefinition): Type<any> {
   const constructor = applyParams(
       clsDef.hasOwnProperty('constructor') ? clsDef.constructor : undefined, 'constructor');
   let proto = constructor.prototype;
@@ -246,7 +247,7 @@ export function Class(clsDef: ClassDefinition): ConcreteType<any> {
     (constructor as any)['overriddenName'] = `class${_nextClassId++}`;
   }
 
-  return <ConcreteType<any>>constructor;
+  return <Type<any>>constructor;
 }
 
 var Reflect = global.Reflect;
@@ -268,7 +269,7 @@ export function makeDecorator(annotationCls: any, chainFn: (fn: Function) => voi
       const chainAnnotation =
           isFunction(this) && this.annotations instanceof Array ? this.annotations : [];
       chainAnnotation.push(annotationInstance);
-      const TypeDecorator: TypeDecorator = <TypeDecorator>function TypeDecorator(cls: Type) {
+      const TypeDecorator: TypeDecorator = <TypeDecorator>function TypeDecorator(cls: Type<any>) {
         const annotations = Reflect.getOwnMetadata('annotations', cls) || [];
         annotations.push(annotationInstance);
         Reflect.defineMetadata('annotations', annotations, cls);
