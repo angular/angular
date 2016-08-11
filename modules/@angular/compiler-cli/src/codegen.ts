@@ -118,8 +118,8 @@ export class CodeGenerator {
 
   static create(
       options: AngularCompilerOptions, program: ts.Program, compilerHost: ts.CompilerHost,
-      reflectorHostContext?: ReflectorHostContext): CodeGenerator {
-    const xhr: compiler.XHR = {
+      reflectorHostContext?: ReflectorHostContext, xhr?: compiler.XHR): CodeGenerator {
+    xhr = xhr || {
       get: (s: string) => {
         if (!compilerHost.fileExists(s)) {
           // TODO: We should really have a test for error cases like this!
