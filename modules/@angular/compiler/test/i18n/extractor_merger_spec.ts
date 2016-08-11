@@ -410,10 +410,12 @@ function fakeTranslate(
 
   const translations = new TranslationBundle(i18nMsgMap);
 
-  const translateNodes = mergeTranslations(
-      htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
+  const translatedNodes =
+      mergeTranslations(
+          htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs)
+          .rootNodes;
 
-  return serializeHtmlNodes(translateNodes).join('');
+  return serializeHtmlNodes(translatedNodes).join('');
 }
 
 function extract(
