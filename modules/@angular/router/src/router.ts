@@ -407,7 +407,6 @@ export class Router {
           })
           .forEach((shouldActivate: boolean) => {
             if (!shouldActivate || id !== this.navigationId) {
-              this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url)));
               navigationIsSuccessful = false;
               return;
             }
@@ -430,9 +429,14 @@ export class Router {
           .then(
               () => {
                 this.navigated = true;
-                this.routerEvents.next(
-                    new NavigationEnd(id, this.serializeUrl(url), this.serializeUrl(appliedUrl)));
-                resolvePromise(navigationIsSuccessful);
+                if (navigationIsSuccessful) {
+                  this.routerEvents.next(
+                      new NavigationEnd(id, this.serializeUrl(url), this.serializeUrl(appliedUrl)));
+                  resolvePromise(true);
+                } else {
+                  this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url)));
+                  resolvePromise(false);
+                }
               },
               e => {
                 this.currentRouterState = storedState;
