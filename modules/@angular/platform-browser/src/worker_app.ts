@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, FORM_PROVIDERS} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {APP_INITIALIZER, ApplicationModule, ExceptionHandler, NgModule, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PlatformRef, ReflectiveInjector, RootRenderer, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
 
 import {BROWSER_SANITIZATION_PROVIDERS} from './browser';
@@ -83,7 +83,7 @@ function setupWebWorker(): void {
  */
 @NgModule({
   providers: [
-    FORM_PROVIDERS, BROWSER_SANITIZATION_PROVIDERS, Serializer,
+    BROWSER_SANITIZATION_PROVIDERS, Serializer,
     {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
     {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
     WebWorkerRootRenderer, {provide: RootRenderer, useExisting: WebWorkerRootRenderer},

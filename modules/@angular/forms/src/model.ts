@@ -257,15 +257,10 @@ export abstract class AbstractControl {
     this._updateControlsErrors(emitEvent);
   }
 
-  /**
-   * @deprecated - use get() instead
-   */
-  find(path: Array<string|number>|string): AbstractControl { return _find(this, path, '/'); }
-
   get(path: Array<string|number>|string): AbstractControl { return _find(this, path, '.'); }
 
   getError(errorCode: string, path: string[] = null): any {
-    var control = isPresent(path) && !ListWrapper.isEmpty(path) ? this.find(path) : this;
+    var control = isPresent(path) && !ListWrapper.isEmpty(path) ? this.get(path) : this;
     if (isPresent(control) && isPresent(control._errors)) {
       return StringMapWrapper.get(control._errors, errorCode);
     } else {
@@ -424,18 +419,6 @@ export class FormControl extends AbstractControl {
    * symmetry with patchValue() on FormGroups and FormArrays, where it does behave differently.
    */
   patchValue(value: any, options: {
-    onlySelf?: boolean,
-    emitEvent?: boolean,
-    emitModelToViewChange?: boolean,
-    emitViewToModelChange?: boolean
-  } = {}): void {
-    this.setValue(value, options);
-  }
-
-  /**
-   * @deprecated Please use setValue() instead.
-   */
-  updateValue(value: any, options: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,

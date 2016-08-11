@@ -380,8 +380,8 @@ export function main() {
            fixture.detectChanges();
            tick();
 
-           form.find('login').valueChanges.subscribe(
-               () => { expect(form.find('login').dirty).toBe(true); });
+           form.get('login').valueChanges.subscribe(
+               () => { expect(form.get('login').dirty).toBe(true); });
 
            const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
            loginEl.value = 'newValue';
@@ -409,10 +409,10 @@ export function main() {
            loginEl.value = 'newValue';
            dispatchEvent(loginEl, 'input');
 
-           expect(form.find('login').pristine).toBe(false);
+           expect(form.get('login').pristine).toBe(false);
 
-           form.find('login').valueChanges.subscribe(
-               () => { expect(form.find('login').pristine).toBe(true); });
+           form.get('login').valueChanges.subscribe(
+               () => { expect(form.get('login').pristine).toBe(true); });
 
            dispatchEvent(formEl, 'reset');
          });

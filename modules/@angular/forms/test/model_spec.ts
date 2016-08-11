@@ -365,66 +365,6 @@ export function main() {
            }));
       });
 
-      // deprecated function
-      // TODO(kara): remove these tests when updateValue is removed
-      describe('updateValue', () => {
-        var g: any /** TODO #9100 */, c: any /** TODO #9100 */;
-        beforeEach(() => {
-          c = new FormControl('oldValue');
-          g = new FormGroup({'one': c});
-        });
-
-        it('should update the value of the control', () => {
-          c.updateValue('newValue');
-          expect(c.value).toEqual('newValue');
-        });
-
-        it('should invoke ngOnChanges if it is present', () => {
-          var ngOnChanges: any /** TODO #9100 */;
-          c.registerOnChange((v: any /** TODO #9100 */) => ngOnChanges = ['invoked', v]);
-
-          c.updateValue('newValue');
-
-          expect(ngOnChanges).toEqual(['invoked', 'newValue']);
-        });
-
-        it('should not invoke on change when explicitly specified', () => {
-          var onChange: any /** TODO #9100 */ = null;
-          c.registerOnChange((v: any /** TODO #9100 */) => onChange = ['invoked', v]);
-
-          c.updateValue('newValue', {emitModelToViewChange: false});
-
-          expect(onChange).toBeNull();
-        });
-
-        it('should update the parent', () => {
-          c.updateValue('newValue');
-          expect(g.value).toEqual({'one': 'newValue'});
-        });
-
-        it('should not update the parent when explicitly specified', () => {
-          c.updateValue('newValue', {onlySelf: true});
-          expect(g.value).toEqual({'one': 'oldValue'});
-        });
-
-        it('should fire an event', fakeAsync(() => {
-
-             c.valueChanges.subscribe(
-                 {next: (value: any) => { expect(value).toEqual('newValue'); }});
-
-             c.updateValue('newValue');
-             tick();
-           }));
-
-        it('should not fire an event when explicitly specified', fakeAsync(() => {
-             c.valueChanges.subscribe({next: (value: any) => { throw 'Should not happen'; }});
-
-             c.updateValue('newValue', {emitEvent: false});
-
-             tick();
-           }));
-      });
-
       describe('reset()', () => {
         let c: FormControl;
 
@@ -1876,41 +1816,6 @@ export function main() {
 
              a.push(c2);
            }));
-      });
-
-      describe('find', () => {
-        it('should return null when path is null', () => {
-          var g = new FormGroup({});
-          expect(g.find(null)).toEqual(null);
-        });
-
-        it('should return null when path is empty', () => {
-          var g = new FormGroup({});
-          expect(g.find([])).toEqual(null);
-        });
-
-        it('should return null when path is invalid', () => {
-          var g = new FormGroup({});
-          expect(g.find(['one', 'two'])).toEqual(null);
-        });
-
-        it('should return a child of a control group', () => {
-          var g = new FormGroup({
-            'one': new FormControl('111'),
-            'nested': new FormGroup({'two': new FormControl('222')})
-          });
-
-          expect(g.find(['nested', 'two']).value).toEqual('222');
-          expect(g.find(['one']).value).toEqual('111');
-          expect(g.find('nested/two').value).toEqual('222');
-          expect(g.find('one').value).toEqual('111');
-        });
-
-        it('should return an element of an array', () => {
-          var g = new FormGroup({'array': new FormArray([new FormControl('111')])});
-
-          expect(g.find(['array', 0]).value).toEqual('111');
-        });
       });
 
       describe('get', () => {

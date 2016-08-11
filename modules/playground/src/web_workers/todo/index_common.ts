@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FORM_DIRECTIVES, NgFor} from '@angular/common';
+import {NgFor} from '@angular/common';
 import {Component} from '@angular/core';
+import {FORM_DIRECTIVES} from '@angular/forms';
 
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 

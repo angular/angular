@@ -20,7 +20,6 @@ export declare abstract class AbstractControl {
     constructor(validator: ValidatorFn, asyncValidator: AsyncValidatorFn);
     clearAsyncValidators(): void;
     clearValidators(): void;
-    /** @deprecated */ find(path: Array<string | number> | string): AbstractControl;
     get(path: Array<string | number> | string): AbstractControl;
     getError(errorCode: string, path?: string[]): any;
     hasError(errorCode: string, path?: string[]): boolean;
@@ -204,12 +203,6 @@ export declare class FormControl extends AbstractControl {
         onlySelf?: boolean;
     }): void;
     setValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange}?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-        emitModelToViewChange?: boolean;
-        emitViewToModelChange?: boolean;
-    }): void;
-    /** @deprecated */ updateValue(value: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
         emitModelToViewChange?: boolean;
