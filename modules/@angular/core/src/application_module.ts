@@ -13,7 +13,6 @@ import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValu
 import {LOCALE_ID} from './i18n/tokens';
 import {Compiler} from './linker/compiler';
 import {ComponentResolver} from './linker/component_resolver';
-import {DynamicComponentLoader, DynamicComponentLoader_} from './linker/dynamic_component_loader';
 import {ViewUtils} from './linker/view_utils';
 import {NgModule} from './metadata';
 import {Type} from './type';
@@ -51,7 +50,6 @@ export const APPLICATION_COMMON_PROVIDERS: Array<Type<any>|{[k: string]: any}|an
     ViewUtils,
     {provide: IterableDiffers, useFactory: _iterableDiffersFactory},
     {provide: KeyValueDiffers, useFactory: _keyValueDiffersFactory},
-    {provide: DynamicComponentLoader, useClass: DynamicComponentLoader_},
     {provide: LOCALE_ID, useValue: 'en_US'},
   ]
 })
