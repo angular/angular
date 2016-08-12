@@ -79,11 +79,6 @@ export class EventEmitter<T> extends Subject<T> {
 
   emit(value?: T) { super.next(value); }
 
-  /**
-   * @deprecated - use .emit(value) instead
-   */
-  next(value: any) { super.next(value); }
-
   subscribe(generatorOrNext?: any, error?: any, complete?: any): any {
     let schedulerFn: any /** TODO #9100 */;
     let errorFn = (err: any): any /** TODO #9100 */ => null;
