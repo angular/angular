@@ -14,6 +14,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Parser} from '../../compiler/src/expression_parser/parser';
 
 const resolvedPromise = Promise.resolve(null);
+const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'];
 
 export function main() {
   describe('fake async', () => {
@@ -294,11 +295,27 @@ export function main() {
            zoneInTest1 = Zone.current;
            expect(zoneInTest1).toBe(zoneInBeforeEach);
          }));
+    });
+  });
 
-      it('should use a different zone between tests', fakeAsync(() => {
-           expect(Zone.current).toBe(zoneInBeforeEach);
-           expect(Zone.current).not.toBe(zoneInTest1);
-         }));
+  describe('ProxyZone', () => {
+    beforeEach(() => { ProxyZoneSpec.assertPresent(); });
+
+    afterEach(() => { ProxyZoneSpec.assertPresent(); });
+
+    it('should allow fakeAsync zone to retroactively set a zoneSpec outside of fakeAsync', () => {
+      ProxyZoneSpec.assertPresent();
+      var state: string = 'not run';
+      const testZone = Zone.current.fork({name: 'test-zone'});
+      (fakeAsync(() => {
+        testZone.run(() => {
+          Promise.resolve('works').then((v) => state = v);
+          expect(state).toEqual('not run');
+          flushMicrotasks();
+          expect(state).toEqual('works');
+        });
+      }))();
+      expect(state).toEqual('works');
     });
   });
 }

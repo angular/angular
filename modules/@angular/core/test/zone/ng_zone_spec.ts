@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
-import {BaseException} from '../../src/facade/exceptions';
 import {isPresent, scheduleMicroTask} from '../../src/facade/lang';
 
 var needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
@@ -752,5 +753,45 @@ function commonTests() {
            async.done();
          }, resultTimer);
        }), testTimeout);
+  });
+
+  describe('bugs', () => {
+    describe('#10503', () => {
+      let ngZone: NgZone;
+
+      beforeEach(inject([NgZone], (_ngZone: NgZone) => {
+        // Create a zone outside the fakeAsync.
+        ngZone = _ngZone;
+      }));
+
+      it('should fakeAsync even if the NgZone was created outside.', fakeAsync(() => {
+           let result: string = null;
+           // try to escape the current fakeAsync zone by using NgZone which was created outside.
+           ngZone.run(() => {
+             Promise.resolve('works').then((v) => result = v);
+             flushMicrotasks();
+           });
+           expect(result).toEqual('works');
+         }));
+
+      describe('async', () => {
+        let asyncResult: string;
+        const waitLongerThenTestFrameworkAsyncTimeout = 5;
+
+        beforeEach(() => { asyncResult = null; });
+
+        it('should async even if the NgZone was created outside.', async(() => {
+             // try to escape the current async zone by using NgZone which was created outside.
+             ngZone.run(() => {
+               setTimeout(() => {
+                 Promise.resolve('works').then((v) => asyncResult = v);
+               }, waitLongerThenTestFrameworkAsyncTimeout);
+             });
+           }));
+
+        afterEach(() => { expect(asyncResult).toEqual('works'); });
+
+      });
+    });
   });
 }

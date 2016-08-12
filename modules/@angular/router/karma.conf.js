@@ -6,7 +6,7 @@ module.exports = function(config) {
 
     basePath: '../../../',
 
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'zonejs'],
 
     files: [
       // Polyfills.
@@ -17,13 +17,6 @@ module.exports = function(config) {
       // System.js for module loading
       'node_modules/systemjs/dist/system-polyfills.js',
       'node_modules/systemjs/dist/system.src.js',
-
-      // Zone.js dependencies
-      'node_modules/zone.js/dist/zone.js',
-      'node_modules/zone.js/dist/long-stack-trace-zone.js',
-      'node_modules/zone.js/dist/jasmine-patch.js',
-      'node_modules/zone.js/dist/async-test.js',
-      'node_modules/zone.js/dist/fake-async-test.js',
 
       // RxJs.
       { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },

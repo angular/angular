@@ -6,7 +6,7 @@ var internalAngularReporter = require('./tools/karma/reporter.js');
 module.exports = function(config) {
   config.set({
 
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'zonejs'],
 
     files: [
       // Sources and specs.
@@ -16,12 +16,6 @@ module.exports = function(config) {
       'node_modules/core-js/client/core.js',
       // include Angular v1 for upgrade module testing
       'node_modules/angular/angular.min.js',
-
-      'node_modules/zone.js/dist/zone.js',
-      'node_modules/zone.js/dist/long-stack-trace-zone.js',
-      'node_modules/zone.js/dist/jasmine-patch.js',
-      'node_modules/zone.js/dist/async-test.js',
-      'node_modules/zone.js/dist/fake-async-test.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'shims_for_IE.js',
@@ -47,6 +41,7 @@ module.exports = function(config) {
     customLaunchers: browserProvidersConf.customLaunchers,
 
     plugins: [
+      'karma-zonejs',
       'karma-jasmine',
       'karma-browserstack-launcher',
       'karma-sauce-launcher',

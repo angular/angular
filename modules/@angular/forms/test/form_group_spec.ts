@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fakeAsync, tick} from '@angular/core/testing';
+import {async, fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
@@ -624,8 +624,14 @@ export function main() {
     });
 
     describe('statusChanges', () => {
-      const control = new FormControl('', asyncValidatorReturningObservable);
-      const group = new FormGroup({'one': control});
+      let control: FormControl;
+      let group: FormGroup;
+
+      beforeEach(async(() => {
+        control = new FormControl('', asyncValidatorReturningObservable);
+        group = new FormGroup({'one': control});
+      }));
+
 
       // TODO(kara): update these tests to use fake Async
       it('should fire a statusChange if child has async validation change',
