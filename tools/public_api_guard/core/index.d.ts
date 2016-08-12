@@ -147,15 +147,8 @@ export declare class ApplicationModule {
 export declare abstract class ApplicationRef {
     componentTypes: Type<any>[];
     components: ComponentRef<any>[];
-    /** @deprecated */ injector: Injector;
-    /** @deprecated */ zone: NgZone;
     abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>): ComponentRef<C>;
-    /** @deprecated */ abstract dispose(): void;
-    /** @deprecated */ abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
-    /** @deprecated */ abstract registerDisposeListener(dispose: () => void): void;
-    /** @deprecated */ abstract run(callback: Function): any;
     abstract tick(): void;
-    /** @deprecated */ abstract waitForAsyncInitializers(): Promise<any>;
 }
 
 /** @experimental */
@@ -404,12 +397,6 @@ export interface ContentChildrenMetadataFactory {
         read?: any;
     }): ContentChildrenMetadata;
 }
-
-/** @deprecated */
-export declare function coreBootstrap<C>(componentFactory: ComponentFactory<C>, injector: Injector): ComponentRef<C>;
-
-/** @deprecated */
-export declare function coreLoadAndBootstrap(componentType: Type<any>, injector: Injector): Promise<ComponentRef<any>>;
 
 /** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
@@ -1003,14 +990,11 @@ export declare const platformCore: (extraProviders?: any[]) => PlatformRef;
 /** @experimental */
 export declare abstract class PlatformRef {
     destroyed: boolean;
-    /** @deprecated */ disposed: boolean;
     injector: Injector;
     /** @stable */ bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
     /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
     abstract destroy(): void;
-    /** @deprecated */ abstract dispose(): void;
     abstract onDestroy(callback: () => void): void;
-    /** @deprecated */ abstract registerDisposeListener(dispose: () => void): void;
 }
 
 /** @deprecated */

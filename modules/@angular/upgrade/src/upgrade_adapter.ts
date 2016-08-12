@@ -451,49 +451,6 @@ export class UpgradeAdapter {
   }
 
   /**
-   * Adds a provider to the top level environment of a hybrid AngularJS v1 / Angular v2 application.
-   *
-   * In hybrid AngularJS v1 / Angular v2 application, there is no one root Angular v2 component,
-   * for this reason we provide an application global way of registering providers which is
-   * consistent with single global injection in AngularJS v1.
-   *
-   * ### Example
-   *
-   * ```
-   * class Greeter {
-   *   greet(name) {
-   *     alert('Hello ' + name + '!');
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   template: ''
-   * })
-   * class App {
-   *   constructor(greeter: Greeter) {
-   *     this.greeter('World');
-   *   }
-   * }
-   *
-   * var adapter = new UpgradeAdapter();
-   * adapter.addProvider(Greeter);
-   *
-   * var module = angular.module('myExample', []);
-   * module.directive('app', adapter.downgradeNg2Component(App));
-   *
-   * document.body.innerHTML = '<app></app>'
-   * adapter.bootstrap(document.body, ['myExample']);
-   *```
-   *
-   * @deprecated Use NgModules and `new UpgradeAdapter(ng2AppModule)` to configure top-level
-   *providers
-   */
-  public addProvider(provider: Type<any>|Provider|any[]|any): void {
-    this.providers.push(provider);
-  }
-
-  /**
    * Allows AngularJS v1 service to be accessible from Angular v2.
    *
    *
