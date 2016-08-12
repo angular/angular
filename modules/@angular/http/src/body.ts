@@ -49,6 +49,10 @@ export abstract class Body {
       return String.fromCharCode.apply(null, new Uint16Array(<ArrayBuffer>this._body));
     }
 
+    if (this._body === null) {
+      return '';
+    }
+
     if (isJsObject(this._body)) {
       return Json.stringify(this._body);
     }
