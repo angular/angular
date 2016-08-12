@@ -323,10 +323,8 @@ export class ShadowCss {
    * by replacing with space.
   */
   private _convertShadowDOMSelectors(cssText: string): string {
-    for (let i = 0; i < _shadowDOMSelectorsRe.length; i++) {
-      cssText = StringWrapper.replaceAll(cssText, _shadowDOMSelectorsRe[i], ' ');
-    }
-    return cssText;
+    return _shadowDOMSelectorsRe.reduce(
+        (result, pattern) => { return StringWrapper.replaceAll(result, pattern, ' '); }, cssText);
   }
 
   // change a selector like 'div' to 'name div'
@@ -346,20 +344,22 @@ export class ShadowCss {
 
   private _scopeSelector(
       selector: string, scopeSelector: string, hostSelector: string, strict: boolean): string {
-    const r: any[] /** TODO #9100 */ = [], parts = selector.split(',');
-    for (let i = 0; i < parts.length; i++) {
-      const p = parts[i].trim();
-      const deepParts = StringWrapper.split(p, _shadowDeepSelectors);
-      const shallowPart = deepParts[0];
-      if (this._selectorNeedsScoping(shallowPart, scopeSelector)) {
-        deepParts[0] = strict && !StringWrapper.contains(shallowPart, _polyfillHostNoCombinator) ?
-            this._applyStrictSelectorScope(shallowPart, scopeSelector) :
-            this._applySelectorScope(shallowPart, scopeSelector, hostSelector);
-      }
-      // replace /deep/ with a space for child selectors
-      r.push(deepParts.join(' '));
-    }
-    return r.join(', ');
+    return selector.split(',')
+        .map((part) => { return StringWrapper.split(part.trim(), _shadowDeepSelectors); })
+        .map((deepParts) => {
+          const [shallowPart, ...otherParts] = deepParts;
+          const applyScope = (shallowPart: string) => {
+            if (this._selectorNeedsScoping(shallowPart, scopeSelector)) {
+              return strict && !StringWrapper.contains(shallowPart, _polyfillHostNoCombinator) ?
+                  this._applyStrictSelectorScope(shallowPart, scopeSelector) :
+                  this._applySelectorScope(shallowPart, scopeSelector, hostSelector);
+            } else {
+              return shallowPart;
+            }
+          };
+          return [applyScope(shallowPart), ...otherParts].join(' ');
+        })
+        .join(', ');
   }
 
   private _selectorNeedsScoping(selector: string, scopeSelector: string): boolean {
