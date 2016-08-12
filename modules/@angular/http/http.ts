@@ -334,7 +334,10 @@ export const JSONP_PROVIDERS: any[] = [
   {provide: JSONPBackend, useClass: JSONPBackend_},
 ];
 
-function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: RequestOptions) {
+/**
+ * @experimental
+ */
+export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: RequestOptions): Jsonp {
   return new Jsonp(jsonpBackend, requestOptions);
 }
 
