@@ -181,7 +181,12 @@ export class FormGroupDirective extends ControlContainer implements Form,
     return false;
   }
 
-  onReset(): void { this.form.reset(); }
+  onReset(): void { this.resetForm(); }
+
+  resetForm(value: any = undefined): void {
+    this.form.reset(value);
+    this._submitted = false;
+  }
 
   /** @internal */
   _updateDomValue() {

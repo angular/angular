@@ -150,6 +150,33 @@ export function main() {
          expect(form.value.name).toEqual(null);
        })));
 
+    it('should reset the form submit state when reset button is clicked',
+       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+         const t = `
+                <form>
+                  <input name="name" [(ngModel)]="name">
+                </form>
+               `;
+
+         const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
+         tick();
+         fixture.debugElement.componentInstance.name = '';
+         fixture.detectChanges();
+         tick();
+
+         const form = fixture.debugElement.children[0].injector.get(NgForm);
+         const formEl = fixture.debugElement.query(By.css('form'));
+
+         dispatchEvent(formEl.nativeElement, 'submit');
+         fixture.detectChanges();
+         tick();
+
+         dispatchEvent(formEl.nativeElement, 'reset');
+         fixture.detectChanges();
+         tick();
+         expect(form.submitted).toEqual(false);
+       })));
+
 
     it('should emit valueChanges and statusChanges on init',
        fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
