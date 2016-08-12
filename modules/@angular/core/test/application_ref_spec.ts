@@ -82,37 +82,6 @@ export function main() {
            }
          }));
 
-      describe('run', () => {
-        it('should rethrow errors even if the exceptionHandler is not rethrowing',
-           inject([ApplicationRef], (ref: ApplicationRef_) => {
-             expect(() => ref.run(() => { throw new BaseException('Test'); })).toThrowError('Test');
-           }));
-
-        it('should return a promise with rejected errors even if the exceptionHandler is not rethrowing',
-           async(inject([ApplicationRef], (ref: ApplicationRef_) => {
-             var promise: Promise<any> = ref.run(() => Promise.reject('Test'));
-             promise.then(() => expect(false).toBe(true), (e) => { expect(e).toEqual('Test'); });
-           })));
-      });
-
-      describe('registerBootstrapListener', () => {
-        it('should be called when a component is bootstrapped',
-           inject([ApplicationRef], (ref: ApplicationRef_) => {
-             const capturedCompRefs: ComponentRef<any>[] = [];
-             ref.registerBootstrapListener((compRef) => capturedCompRefs.push(compRef));
-             const compRef = ref.bootstrap(SomeComponent);
-             expect(capturedCompRefs).toEqual([compRef]);
-           }));
-
-        it('should be called immediately when a component was bootstrapped before',
-           inject([ApplicationRef], (ref: ApplicationRef_) => {
-             ref.registerBootstrapListener((compRef) => capturedCompRefs.push(compRef));
-             const capturedCompRefs: ComponentRef<any>[] = [];
-             const compRef = ref.bootstrap(SomeComponent);
-             expect(capturedCompRefs).toEqual([compRef]);
-           }));
-      });
-
       describe('APP_BOOTSTRAP_LISTENER', () => {
         let capturedCompRefs: ComponentRef<any>[];
         beforeEach(() => {
