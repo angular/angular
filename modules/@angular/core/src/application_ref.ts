@@ -164,29 +164,6 @@ export function getPlatform(): PlatformRef {
 }
 
 /**
- * Shortcut for ApplicationRef.bootstrap.
- * Requires a platform to be created first.
- *
- * @deprecated Use {@link bootstrapModuleFactory} instead.
- */
-export function coreBootstrap<C>(
-    componentFactory: ComponentFactory<C>, injector: Injector): ComponentRef<C> {
-  throw new BaseException('coreBootstrap is deprecated. Use bootstrapModuleFactory instead.');
-}
-
-/**
- * Resolves the componentFactory for the given component,
- * waits for asynchronous initializers and bootstraps the component.
- * Requires a platform to be created first.
- *
- * @deprecated Use {@link bootstrapModule} instead.
- */
-export function coreLoadAndBootstrap(
-    componentType: Type<any>, injector: Injector): Promise<ComponentRef<any>> {
-  throw new BaseException('coreLoadAndBootstrap is deprecated. Use bootstrapModule instead.');
-}
-
-/**
  * The Angular platform is the entry point for Angular on a web page. Each page
  * has exactly one platform, and services (such as reflection) which are common
  * to every Angular application running on the page are bound in its scope.
