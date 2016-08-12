@@ -489,6 +489,9 @@ export declare class DefaultIterableDiffer implements IterableDiffer {
     toString(): string;
 }
 
+/** @experimental */
+export declare function destroyPlatform(): void;
+
 /** @stable */
 export declare var Directive: DirectiveMetadataFactory;
 
@@ -536,9 +539,6 @@ export interface DirectiveMetadataType {
     };
     selector?: string;
 }
-
-/** @deprecated */
-export declare function disposePlatform(): void;
 
 /** @stable */
 export declare abstract class DoCheck {
