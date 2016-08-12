@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, disposePlatform} from '@angular/core';
+import {Component, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
 import {BROWSER_APP_COMPILER_PROVIDERS} from '@angular/platform-browser-dynamic';
@@ -26,8 +26,8 @@ export function main() {
 
   describe('platform-server integration', () => {
 
-    beforeEach(() => disposePlatform());
-    afterEach(() => disposePlatform());
+    beforeEach(() => destroyPlatform());
+    afterEach(() => destroyPlatform());
 
     it('should bootstrap', async(() => {
          var body = writeBody('<app></app>');

@@ -8,7 +8,7 @@
 
 import {XHR} from '@angular/compiler';
 import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, createPlatform, createPlatformFactory, provide} from '@angular/core';
-import {ApplicationRef, disposePlatform} from '@angular/core/src/application_ref';
+import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
@@ -121,7 +121,7 @@ export function main() {
     beforeEachProviders(() => { return [Log]; });
 
     beforeEach(() => {
-      disposePlatform();
+      destroyPlatform();
 
       fakeDoc = getDOM().createHtmlDocument();
       el = getDOM().createElement('hello-app', fakeDoc);
@@ -136,7 +136,7 @@ export function main() {
           [{provide: DOCUMENT, useValue: fakeDoc}, {provide: Console, useValue: compilerConsole}];
     });
 
-    afterEach(disposePlatform);
+    afterEach(destroyPlatform);
 
     it('should throw if bootstrapped Directive is not a Component', () => {
       expect(() => bootstrap(HelloRootDirectiveIsNotCmp))

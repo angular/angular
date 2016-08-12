@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Class, Component, EventEmitter, Inject, NgModule, OpaqueToken, Testability, disposePlatform} from '@angular/core';
+import {Class, Component, EventEmitter, Inject, NgModule, OpaqueToken, Testability, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {AsyncTestCompleter, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
@@ -15,8 +15,8 @@ import * as angular from '@angular/upgrade/src/angular_js';
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {
-    beforeEach(() => disposePlatform());
-    afterEach(() => disposePlatform());
+    beforeEach(() => destroyPlatform());
+    afterEach(() => destroyPlatform());
 
     it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
 
