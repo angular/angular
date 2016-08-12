@@ -15,6 +15,10 @@ interface SomeMetadataType {
   arrayProp?: any[];
 }
 
+interface OtherMetadataType extends SomeMetadataType {
+  otherPlainProp?: string;
+}
+
 class SomeMetadata implements SomeMetadataType {
   plainProp: string;
   private _getterProp: string;
@@ -25,6 +29,20 @@ class SomeMetadata implements SomeMetadataType {
     this.plainProp = options.plainProp;
     this._getterProp = options.getterProp;
     this.arrayProp = options.arrayProp;
+  }
+}
+
+class OtherMetadata extends SomeMetadata implements OtherMetadataType {
+  otherPlainProp: string;
+
+  constructor(options: OtherMetadataType) {
+    super({
+      plainProp: options.plainProp,
+      getterProp: options.getterProp,
+      arrayProp: options.arrayProp
+    });
+
+    this.otherPlainProp = options.otherPlainProp;
   }
 }
 
@@ -111,6 +129,24 @@ export function main() {
         expect(instance3).toEqual(new SomeMetadata({arrayProp: [Class2]}));
 
       });
+    });
+
+    describe('subclasses', () => {
+      it('should set individual properties and keep others', () => {
+        const oldInstance = new OtherMetadata({
+          plainProp: 'somePlainProp',
+          getterProp: 'someGetterProp',
+          otherPlainProp: 'newOtherProp'
+        });
+        const newInstance = overrider.overrideMetadata(
+            OtherMetadata, oldInstance, {set: {plainProp: 'newPlainProp'}});
+        expect(newInstance).toEqual(new OtherMetadata({
+          plainProp: 'newPlainProp',
+          getterProp: 'someGetterProp',
+          otherPlainProp: 'newOtherProp'
+        }));
+      });
+
     });
   });
 }

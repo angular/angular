@@ -118,13 +118,16 @@ function _valueProps(obj: any): string[] {
       props.push(prop);
     }
   });
+
   // getters
-  const proto = Object.getPrototypeOf(obj);
-  Object.keys(proto).forEach((protoProp) => {
-    var desc = Object.getOwnPropertyDescriptor(proto, protoProp);
-    if (!protoProp.startsWith('_') && desc && 'get' in desc) {
-      props.push(protoProp);
-    }
-  });
+  let proto = obj;
+  while (proto = Object.getPrototypeOf(proto)) {
+    Object.keys(proto).forEach((protoProp) => {
+      var desc = Object.getOwnPropertyDescriptor(proto, protoProp);
+      if (!protoProp.startsWith('_') && desc && 'get' in desc) {
+        props.push(protoProp);
+      }
+    });
+  }
   return props;
 }
