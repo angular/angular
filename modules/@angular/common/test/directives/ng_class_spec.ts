@@ -8,8 +8,8 @@
 
 import {NgClass, NgFor} from '@angular/common';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, TestComponentBuilder, async} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
 
