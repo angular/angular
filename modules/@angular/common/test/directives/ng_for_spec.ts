@@ -8,7 +8,7 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {Component, ContentChild, TemplateRef} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {TestBed, async} from '@angular/core/testing';
 import {ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';

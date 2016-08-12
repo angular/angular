@@ -8,7 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {Component} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {TestBed, async} from '@angular/core/testing';
 import {beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
