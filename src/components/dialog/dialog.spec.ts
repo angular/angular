@@ -2,8 +2,6 @@ import {
   inject,
   fakeAsync,
   async,
-  addProviders,
-  TestComponentBuilder,
   ComponentFixture,
   TestBed,
 } from '@angular/core/testing';
@@ -12,7 +10,6 @@ import {
   Directive,
   ViewChild,
   ViewContainerRef,
-  ChangeDetectorRef,
 } from '@angular/core';
 import {MdDialog, MdDialogModule} from './dialog';
 import {OverlayContainer} from '@angular2-material/core/overlay/overlay-container';
@@ -22,7 +19,6 @@ import {MdDialogRef} from './dialog-ref';
 
 
 describe('MdDialog', () => {
-  let builder: TestComponentBuilder;
   let dialog: MdDialog;
   let overlayContainerElement: HTMLElement;
 
@@ -33,32 +29,27 @@ describe('MdDialog', () => {
     TestBed.configureTestingModule({
       imports: [MdDialogModule],
       declarations: [PizzaMsg, ComponentWithChildViewContainer, DirectiveWithViewContainer],
+      providers: [
+        {provide: OverlayContainer, useFactory: () => {
+          overlayContainerElement = document.createElement('div');
+          return {getContainerElement: () => overlayContainerElement};
+        }}
+      ],
     });
-
-    addProviders([
-      {provide: OverlayContainer, useFactory: () => {
-        overlayContainerElement = document.createElement('div');
-        return {getContainerElement: () => overlayContainerElement};
-      }}
-    ]);
 
     TestBed.compileComponents();
   }));
 
-  let deps = [TestComponentBuilder, MdDialog];
-  beforeEach(inject(deps, fakeAsync((tcb: TestComponentBuilder, d: MdDialog) => {
-    builder = tcb;
+  beforeEach(inject([MdDialog], fakeAsync((d: MdDialog) => {
     dialog = d;
   })));
 
-  beforeEach(async(() => {
-    builder.createAsync(ComponentWithChildViewContainer).then(fixture => {
-      viewContainerFixture = fixture;
+  beforeEach(() => {
+    viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
 
-      viewContainerFixture.detectChanges();
-      testViewContainerRef = fixture.componentInstance.childViewContainer;
-    });
-  }));
+    viewContainerFixture.detectChanges();
+    testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
+  });
 
   it('should open a dialog with a component', async(() => {
     let config = new MdDialogConfig();
@@ -138,8 +129,6 @@ class DirectiveWithViewContainer {
 })
 class ComponentWithChildViewContainer {
   @ViewChild(DirectiveWithViewContainer) childWithViewContainer: DirectiveWithViewContainer;
-
-  constructor(public changeDetectorRef: ChangeDetectorRef) { }
 
   get childViewContainer() {
     return this.childWithViewContainer.viewContainerRef;
