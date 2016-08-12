@@ -398,12 +398,6 @@ export interface ContentChildrenMetadataFactory {
     }): ContentChildrenMetadata;
 }
 
-/** @deprecated */
-export declare function coreBootstrap<C>(componentFactory: ComponentFactory<C>, injector: Injector): ComponentRef<C>;
-
-/** @deprecated */
-export declare function coreLoadAndBootstrap(componentType: Type<any>, injector: Injector): Promise<ComponentRef<any>>;
-
 /** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
 
