@@ -183,6 +183,13 @@ export function main() {
 
     it('should support multiline comments',
        () => { expect(s('/* \n */b {c}', 'a')).toEqual('b[a] {c}'); });
+
+    it('should keep sourceMappingURL comments', () => {
+      expect(s('b {c}/*# sourceMappingURL=data:x */', 'a'))
+          .toEqual('b[a] {c}/*# sourceMappingURL=data:x */');
+      expect(s('b {c}/* #sourceMappingURL=data:x */', 'a'))
+          .toEqual('b[a] {c}/* #sourceMappingURL=data:x */');
+    });
   });
 
   describe('processRules', () => {
