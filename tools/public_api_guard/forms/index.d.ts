@@ -125,9 +125,6 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
-/** @deprecated */
-export declare function disableDeprecatedForms(): any[];
-
 /** @experimental */
 export interface Form {
     addControl(dir: NgControl): void;
@@ -422,9 +419,6 @@ export declare class PatternValidator implements Validator {
         [key: string]: any;
     };
 }
-
-/** @deprecated */
-export declare function provideForms(): any[];
 
 /** @experimental */
 export declare const REACTIVE_FORM_DIRECTIVES: Type<any>[][];

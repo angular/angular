@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, PLATFORM_DIRECTIVES, Type} from '@angular/core';
+import {NgModule, Type} from '@angular/core';
 
-import {FORM_DIRECTIVES, InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, SHARED_FORM_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
+import {InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
 import {RadioControlRegistry} from './directives/radio_control_value_accessor';
 import {FormBuilder} from './form_builder';
 
@@ -48,20 +48,4 @@ export class FormsModule {
   exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
 })
 export class ReactiveFormsModule {
-}
-
-/**
- * @deprecated
- */
-export function disableDeprecatedForms(): any[] {
-  return [];
-}
-
-/**
- * @deprecated
- */
-export function provideForms(): any[] {
-  return [
-    {provide: PLATFORM_DIRECTIVES, useValue: FORM_DIRECTIVES, multi: true}, REACTIVE_FORM_PROVIDERS
-  ];
 }
