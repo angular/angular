@@ -8,8 +8,8 @@
 
 import {SlicePipe} from '@angular/common';
 import {Component} from '@angular/core';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {TestBed, async} from '@angular/core/testing';
+import {afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -88,23 +88,23 @@ export function main() {
     });
 
     describe('integration', () => {
-      it('should work with mutable arrays',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               tcb.createAsync(TestComp).then((fixture) => {
-                 let mutable: number[] = [1, 2];
-                 fixture.debugElement.componentInstance.data = mutable;
-                 fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('2');
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          declarations: [TestComp],
+        });
+      });
 
-                 mutable.push(3);
-                 fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('2,3');
+      it('should work with mutable arrays', async(() => {
+           let fixture = TestBed.createComponent(TestComp);
+           let mutable: number[] = [1, 2];
+           fixture.debugElement.componentInstance.data = mutable;
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('2');
 
-                 async.done();
-               });
-             }));
+           mutable.push(3);
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('2,3');
+         }));
     });
   });
 }
