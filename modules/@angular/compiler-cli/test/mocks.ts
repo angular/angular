@@ -17,8 +17,6 @@ export interface Directory { [name: string]: Entry; }
 export class MockContext implements ReflectorHostContext {
   constructor(public currentDirectory: string, private files: Entry) {}
 
-  trace(s: string) { console.log(s); }
-
   fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }
 
   directoryExists(path: string): boolean { return typeof this.getEntry(path) === 'object'; }
