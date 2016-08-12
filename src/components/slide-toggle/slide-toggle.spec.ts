@@ -1,17 +1,10 @@
-import {
-  inject,
-  async,
-  TestComponentBuilder,
-  ComponentFixture,
-  TestBed,
-} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 import {MdSlideToggle, MdSlideToggleChange, MdSlideToggleModule} from './slide-toggle';
 import {FormsModule, NgControl} from '@angular/forms';
 
 describe('MdSlideToggle', () => {
-  let builder: TestComponentBuilder;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -22,12 +15,7 @@ describe('MdSlideToggle', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-    builder = tcb;
-  }));
-
   describe('basic behavior', () => {
-
     let fixture: ComponentFixture<any>;
 
     let testComponent: SlideToggleTestApp;
@@ -37,28 +25,27 @@ describe('MdSlideToggle', () => {
     let labelElement: HTMLLabelElement;
     let inputElement: HTMLInputElement;
 
+    // This initialization is async() because it needs to wait for ngModel to set the initial value.
     beforeEach(async(() => {
-      builder.createAsync(SlideToggleTestApp).then(f => {
-        fixture = f;
+      fixture = TestBed.createComponent(SlideToggleTestApp);
 
-        testComponent = fixture.debugElement.componentInstance;
+      testComponent = fixture.debugElement.componentInstance;
 
-        // Enable jasmine spies on event functions, which may trigger at initialization
-        // of the slide-toggle component.
-        spyOn(fixture.debugElement.componentInstance, 'onSlideChange').and.callThrough();
-        spyOn(fixture.debugElement.componentInstance, 'onSlideClick').and.callThrough();
+      // Enable jasmine spies on event functions, which may trigger at initialization
+      // of the slide-toggle component.
+      spyOn(fixture.debugElement.componentInstance, 'onSlideChange').and.callThrough();
+      spyOn(fixture.debugElement.componentInstance, 'onSlideClick').and.callThrough();
 
-        // Initialize the slide-toggle component, by triggering the first change detection cycle.
-        fixture.detectChanges();
+      // Initialize the slide-toggle component, by triggering the first change detection cycle.
+      fixture.detectChanges();
 
-        let slideToggleDebug = fixture.debugElement.query(By.css('md-slide-toggle'));
+      let slideToggleDebug = fixture.debugElement.query(By.css('md-slide-toggle'));
 
-        slideToggle = slideToggleDebug.componentInstance;
-        slideToggleElement = slideToggleDebug.nativeElement;
-        slideToggleControl = slideToggleDebug.injector.get(NgControl);
-        inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
-        labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
-      });
+      slideToggle = slideToggleDebug.componentInstance;
+      slideToggleElement = slideToggleDebug.nativeElement;
+      slideToggleControl = slideToggleDebug.injector.get(NgControl);
+      inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+      labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
     }));
 
     // TODO(kara); update when core/testing adds fix
@@ -348,53 +335,14 @@ describe('MdSlideToggle', () => {
   });
 
   describe('custom template', () => {
-
-    let testComponent: SlideToggleTestApp;
-    let slideToggle: MdSlideToggle;
-    let slideToggleElement: HTMLElement;
-    let labelElement: HTMLLabelElement;
-    let inputElement: HTMLInputElement;
-
     it('should not trigger the change event on initialization', async(() => {
-      builder
-        .overrideTemplate(SlideToggleTestApp, `
-          <md-slide-toggle checked="true" (change)="onSlideChange($event)"></md-slide-toggle>
-        `)
-        .createAsync(SlideToggleTestApp)
-        .then(fixture => {
-          // Initialize the variables for our test.
-          initializeTest(fixture);
-
-          // Enable jasmine spies on event functions, which may trigger at initialization
-          // of the slide-toggle component.
-          spyOn(fixture.debugElement.componentInstance, 'onSlideChange').and.callThrough();
-
-          fixture.detectChanges();
-
-          fixture.whenStable().then(() => {
-            expect(testComponent.onSlideChange).not.toHaveBeenCalled();
-          });
-        });
-    }));
-
-    /**
-     * Initializes the suites variables, to allow developers to easily access the several variables
-     * without loading / querying them always again.
-     * @param fixture Custom fixture, which contains the slide-toggle component.
-     */
-    function initializeTest(fixture: ComponentFixture<any>) {
-      testComponent = fixture.debugElement.componentInstance;
-
-      // Initialize the slide-toggle component, by triggering the first change detection cycle.
+      let fixture = TestBed.createComponent(SlideToggleTestApp);
+      fixture.componentInstance.slideModel = true;
+      fixture.componentInstance.slideChecked = true;
       fixture.detectChanges();
 
-      let slideToggleDebug = fixture.debugElement.query(By.css('md-slide-toggle'));
-
-      slideToggle = slideToggleDebug.componentInstance;
-      slideToggleElement = slideToggleDebug.nativeElement;
-      inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
-      labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
-    }
+      expect(fixture.componentInstance.lastEvent).toBeFalsy();
+    }));
   });
 
 });
@@ -419,8 +367,7 @@ function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void
                      (change)="onSlideChange($event)"
                      (click)="onSlideClick($event)">
       <span>Test Slide Toggle</span>
-    </md-slide-toggle>
-  `,
+    </md-slide-toggle>`,
 })
 class SlideToggleTestApp {
   isDisabled: boolean = false;
