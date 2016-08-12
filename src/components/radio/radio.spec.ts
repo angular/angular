@@ -1,23 +1,11 @@
-import {
-    inject,
-    async,
-    fakeAsync,
-    TestComponentBuilder,
-    ComponentFixture,
-    TestBed,
-} from '@angular/core/testing';
+import {async, fakeAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgControl, FormsModule} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdRadioGroup, MdRadioButton, MdRadioChange, MdRadioModule} from './radio';
-import {
-  MdUniqueSelectionDispatcher
-} from '@angular2-material/core/coordination/unique-selection-dispatcher';
 
 
 describe('MdRadio', () => {
-  let builder: TestComponentBuilder;
-  let dispatcher: MdUniqueSelectionDispatcher;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -32,12 +20,6 @@ describe('MdRadio', () => {
     TestBed.compileComponents();
   }));
 
-  let injectDeps = [TestComponentBuilder, MdUniqueSelectionDispatcher];
-  beforeEach(inject(injectDeps, (tcb: TestComponentBuilder, d: MdUniqueSelectionDispatcher) => {
-    builder = tcb;
-    dispatcher = d;
-  }));
-
   describe('inside of a group', () => {
     let fixture: ComponentFixture<RadiosInsideRadioGroup>;
     let groupDebugElement: DebugElement;
@@ -50,23 +32,21 @@ describe('MdRadio', () => {
     let testComponent: RadiosInsideRadioGroup;
 
     beforeEach(async(() => {
-      builder.createAsync(RadiosInsideRadioGroup).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+      fixture = TestBed.createComponent(RadiosInsideRadioGroup);
+      fixture.detectChanges();
 
-        testComponent = fixture.debugElement.componentInstance;
+      testComponent = fixture.debugElement.componentInstance;
 
-        groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
-        groupNativeElement = groupDebugElement.nativeElement;
-        groupInstance = groupDebugElement.injector.get(MdRadioGroup);
+      groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
+      groupNativeElement = groupDebugElement.nativeElement;
+      groupInstance = groupDebugElement.injector.get(MdRadioGroup);
 
-        radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
-        radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
-        radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+      radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
+      radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
 
-        radioLabelElements = radioDebugElements
-          .map(debugEl => debugEl.query(By.css('label')).nativeElement);
-      });
+      radioLabelElements = radioDebugElements
+        .map(debugEl => debugEl.query(By.css('label')).nativeElement);
     }));
 
     it('should set individual radio names based on the group name', () => {
@@ -250,26 +230,24 @@ describe('MdRadio', () => {
     let testComponent: RadioGroupWithNgModel;
     let groupNgControl: NgControl;
 
-    beforeEach(async(() => {
-      builder.createAsync(RadioGroupWithNgModel).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(RadioGroupWithNgModel);
+      fixture.detectChanges();
 
-        testComponent = fixture.debugElement.componentInstance;
+      testComponent = fixture.debugElement.componentInstance;
 
-        groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
-        groupNativeElement = groupDebugElement.nativeElement;
-        groupInstance = groupDebugElement.injector.get(MdRadioGroup);
-        groupNgControl = groupDebugElement.injector.get(NgControl);
+      groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
+      groupNativeElement = groupDebugElement.nativeElement;
+      groupInstance = groupDebugElement.injector.get(MdRadioGroup);
+      groupNgControl = groupDebugElement.injector.get(NgControl);
 
-        radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
-        radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
-        radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+      radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
+      radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
 
-        radioLabelElements = radioDebugElements
-          .map(debugEl => debugEl.query(By.css('label')).nativeElement);
-      });
-    }));
+      radioLabelElements = radioDebugElements
+        .map(debugEl => debugEl.query(By.css('label')).nativeElement);
+    });
 
     it('should set individual radio names based on the group name', () => {
       expect(groupInstance.name).toBeTruthy();
@@ -327,37 +305,6 @@ describe('MdRadio', () => {
 
       expect(testComponent.modelValue).toBe('chocolate');
     }));
-  });
-
-  describe('group with ngModel and change event', () => {
-    let fixture: ComponentFixture<RadioGroupWithNgModel>;
-    let groupDebugElement: DebugElement;
-    let groupNativeElement: HTMLElement;
-    let radioDebugElements: DebugElement[];
-    let radioNativeElements: HTMLElement[];
-    let groupInstance: MdRadioGroup;
-    let radioInstances: MdRadioButton[];
-    let testComponent: RadioGroupWithNgModel;
-    let groupNgControl: NgControl;
-
-    beforeEach(async(() => {
-      builder.createAsync(RadioGroupWithNgModel).then(f => {
-        fixture = f;
-
-        testComponent = fixture.componentInstance;
-
-        groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
-        groupNativeElement = groupDebugElement.nativeElement;
-        groupInstance = groupDebugElement.injector.get(MdRadioGroup);
-        groupNgControl = groupDebugElement.injector.get(NgControl);
-
-        radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
-        radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
-        radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
-
-        fixture.detectChanges();
-      });
-    }));
 
     it('should update the model before firing change event', fakeAsync(() => {
       expect(testComponent.modelValue).toBeUndefined();
@@ -386,36 +333,32 @@ describe('MdRadio', () => {
     let fruitRadioNativeInputs: HTMLElement[];
     let testComponent: StandaloneRadioButtons;
 
-    beforeEach(async(() => {
-      builder.createAsync(StandaloneRadioButtons).then(f => {
-        let fruitRadioNativeElements: HTMLElement[];
+    beforeEach(() => {
+      fixture = TestBed.createComponent(StandaloneRadioButtons);
+      fixture.detectChanges();
 
-        fixture = f;
-        fixture.detectChanges();
+      testComponent = fixture.debugElement.componentInstance;
 
-        testComponent = fixture.debugElement.componentInstance;
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+      seasonRadioInstances = radioDebugElements
+          .filter(debugEl => debugEl.componentInstance.name == 'season')
+          .map(debugEl => debugEl.componentInstance);
+      weatherRadioInstances = radioDebugElements
+          .filter(debugEl => debugEl.componentInstance.name == 'weather')
+          .map(debugEl => debugEl.componentInstance);
+      fruitRadioInstances = radioDebugElements
+          .filter(debugEl => debugEl.componentInstance.name == 'fruit')
+          .map(debugEl => debugEl.componentInstance);
 
-        radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
-        seasonRadioInstances = radioDebugElements
-            .filter(debugEl => debugEl.componentInstance.name == 'season')
-            .map(debugEl => debugEl.componentInstance);
-        weatherRadioInstances = radioDebugElements
-            .filter(debugEl => debugEl.componentInstance.name == 'weather')
-            .map(debugEl => debugEl.componentInstance);
-        fruitRadioInstances = radioDebugElements
-            .filter(debugEl => debugEl.componentInstance.name == 'fruit')
-            .map(debugEl => debugEl.componentInstance);
+      let fruitRadioNativeElements = radioDebugElements
+          .filter(debugEl => debugEl.componentInstance.name == 'fruit')
+          .map(debugEl => debugEl.nativeElement);
 
-        fruitRadioNativeElements = radioDebugElements
-            .filter(debugEl => debugEl.componentInstance.name == 'fruit')
-            .map(debugEl => debugEl.nativeElement);
-
-        fruitRadioNativeInputs = [];
-        for (let element of fruitRadioNativeElements) {
-          fruitRadioNativeInputs.push(<HTMLElement> element.querySelector('input'));
-        }
-      });
-    }));
+      fruitRadioNativeInputs = [];
+      for (let element of fruitRadioNativeElements) {
+        fruitRadioNativeInputs.push(<HTMLElement> element.querySelector('input'));
+      }
+    });
 
     it('should uniquely select radios by a name', () => {
       seasonRadioInstances[0].checked = true;
