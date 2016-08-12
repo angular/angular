@@ -3,7 +3,7 @@
 
 // This refers to the thickness of the slider. On a horizontal slider this is the height, on a
 // vertical slider this is the width.
-$md-slider-thickness: 20px !default;
+$md-slider-thickness: 48px !default;
 $md-slider-min-size: 128px !default;
 $md-slider-padding: 8px !default;
 
@@ -17,6 +17,16 @@ $md-slider-thumb-focus-scale: 1 !default;
 $md-slider-off-color: rgba(black, 0.26);
 $md-slider-focused-color: rgba(black, 0.38);
 $md-slider-disabled-color: rgba(black, 0.26);
+
+$md-slider-thumb-arrow-height: 16px !default;
+$md-slider-thumb-arrow-width: 28px !default;
+
+$md-slider-thumb-label-size: 28px !default;
+// The thumb has to be moved down so that it appears right over the slider track when visible and
+// on the slider track when not.
+$md-slider-thumb-label-top: ($md-slider-thickness / 2) -
+    ($md-slider-thumb-default-scale * $md-slider-thumb-size / 2) - $md-slider-thumb-label-size -
+    $md-slider-thumb-arrow-height + 10px !default;
 
 /**
  * Uses a container height and an item height to center an item vertically within the container.
@@ -137,6 +147,43 @@ md-slider *::after {
   border-color: md-color($md-accent);
 }
 
+.md-slider-thumb-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  left: -($md-slider-thumb-label-size / 2);
+  top: $md-slider-thumb-label-top;
+  width: $md-slider-thumb-label-size;
+  height: $md-slider-thumb-label-size;
+  border-radius: 50%;
+
+  transform: scale(0.4) translate3d(0, (-$md-slider-thumb-label-top + 10) / 0.4, 0) rotate(45deg);
+  transition: 300ms $swift-ease-in-out-timing-function;
+  transition-property: transform, border-radius;
+
+  background-color: md-color($md-accent);
+}
+
+.md-slider-thumb-label-text {
+  z-index: 1;
+  font-size: 12px;
+  font-weight: bold;
+  opacity: 0;
+  transform: rotate(-45deg);
+  transition: opacity 300ms $swift-ease-in-out-timing-function;
+  color: white;
+}
+
+.md-slider-container:not(.md-slider-thumb-label-showing) .md-slider-thumb-label {
+  display: none;
+}
+
+.md-slider-active.md-slider-thumb-label-showing .md-slider-thumb {
+  transform: scale(0);
+}
+
 .md-slider-sliding .md-slider-thumb-position,
 .md-slider-sliding .md-slider-track-fill {
   transition: none;
@@ -147,7 +194,11 @@ md-slider *::after {
   transform: scale($md-slider-thumb-focus-scale);
 }
 
-.md-slider-disabled .md-slider-thumb::after {
-  background-color: $md-slider-disabled-color;
-  border-color: $md-slider-disabled-color;
+.md-slider-active .md-slider-thumb-label {
+  border-radius: 50% 50% 0;
+  transform: rotate(45deg);
+}
+
+.md-slider-active .md-slider-thumb-label-text {
+  opacity: 1;
 }

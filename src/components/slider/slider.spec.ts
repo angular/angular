@@ -26,7 +26,8 @@ describe('MdSlider', () => {
         SliderWithValue,
         SliderWithStep,
         SliderWithAutoTickInterval,
-        SliderWithSetTickInterval
+        SliderWithSetTickInterval,
+        SliderWithThumbLabel,
       ],
     });
 
@@ -118,7 +119,7 @@ describe('MdSlider', () => {
       // offset relative to the track, subtract the offset on the track fill.
       let thumbPosition = thumbDimensions.left - trackFillDimensions.left;
       // The track fill width should be equal to the thumb's position.
-      expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
+      expect(trackFillDimensions.width).toBe(thumbPosition);
     });
 
     it('should update the thumb position on click', () => {
@@ -144,7 +145,7 @@ describe('MdSlider', () => {
       // offset relative to the track, subtract the offset on the track fill.
       let thumbPosition = thumbDimensions.left - trackFillDimensions.left;
       // The track fill width should be equal to the thumb's position.
-      expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
+      expect(trackFillDimensions.width).toBe(thumbPosition);
     });
 
     it('should update the thumb position on slide', () => {
@@ -309,7 +310,7 @@ describe('MdSlider', () => {
 
       // The closest snap is halfway on the slider.
       expect(thumbDimensions.left).toBe(sliderDimensions.width * 0.5 + sliderDimensions.left);
-      expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
+      expect(trackFillDimensions.width).toBe(thumbPosition);
     });
 
     it('should snap the thumb and fill to the nearest value on slide', () => {
@@ -325,7 +326,7 @@ describe('MdSlider', () => {
 
       // The closest snap is at the halfway point on the slider.
       expect(thumbDimensions.left).toBe(sliderDimensions.left + sliderDimensions.width * 0.5);
-      expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
+      expect(trackFillDimensions.width).toBe(thumbPosition);
 
     });
   });
@@ -410,7 +411,7 @@ describe('MdSlider', () => {
 
       // The closest step is at 75% of the slider.
       expect(thumbDimensions.left).toBe(sliderDimensions.width * 0.75 + sliderDimensions.left);
-      expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
+      expect(trackFillDimensions.width).toBe(thumbPosition);
     });
 
     it('should set the correct step value on slide', () => {
@@ -433,7 +434,7 @@ describe('MdSlider', () => {
 
       // The closest snap is at the end of the slider.
       expect(thumbDimensions.left).toBe(sliderDimensions.width + sliderDimensions.left);
-      expect(Math.round(trackFillDimensions.width)).toBe(Math.round(thumbPosition));
+      expect(trackFillDimensions.width).toBe(thumbPosition);
     });
   });
 
@@ -516,6 +517,77 @@ describe('MdSlider', () => {
           + 'black 2px, transparent 2px, transparent)');
     });
   });
+
+  describe('slider with thumb label', () => {
+    let fixture: ComponentFixture<SliderWithThumbLabel>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderInstance: MdSlider;
+    let sliderTrackElement: HTMLElement;
+    let sliderContainerElement: Element;
+    let thumbLabelTextElement: Element;
+
+    beforeEach(async(() => {
+      builder.createAsync(SliderWithThumbLabel).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+
+        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+        sliderNativeElement = sliderDebugElement.nativeElement;
+        sliderInstance = sliderDebugElement.componentInstance;
+        sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+        sliderContainerElement = sliderNativeElement.querySelector('.md-slider-container');
+        thumbLabelTextElement = sliderNativeElement.querySelector('.md-slider-thumb-label-text');
+      });
+    }));
+
+    it('should add the thumb label class to the slider container', () => {
+      expect(sliderContainerElement.classList).toContain('md-slider-thumb-label-showing');
+    });
+
+    it('should update the thumb label text on click', () => {
+      expect(thumbLabelTextElement.textContent).toBe('0');
+
+      dispatchClickEvent(sliderTrackElement, 0.13);
+      fixture.detectChanges();
+
+      // The thumb label text is set to the slider's value. These should always be the same.
+      expect(thumbLabelTextElement.textContent).toBe('13');
+    });
+
+    it('should update the thumb label text on slide', () => {
+      expect(thumbLabelTextElement.textContent).toBe('0');
+
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.56, gestureConfig);
+      fixture.detectChanges();
+
+      // The thumb label text is set to the slider's value. These should always be the same.
+      expect(thumbLabelTextElement.textContent).toBe(`${sliderInstance.value}`);
+    });
+
+    it('should show the thumb label on click', () => {
+      expect(sliderContainerElement.classList).not.toContain('md-slider-active');
+      expect(sliderContainerElement.classList).toContain('md-slider-thumb-label-showing');
+
+      dispatchClickEvent(sliderNativeElement, 0.49);
+      fixture.detectChanges();
+
+      // The thumb label appears when the slider is active and the 'md-slider-thumb-label-showing'
+      // class is applied.
+      expect(sliderContainerElement.classList).toContain('md-slider-thumb-label-showing');
+      expect(sliderContainerElement.classList).toContain('md-slider-active');
+    });
+
+    it('should show the thumb label on slide', () => {
+      expect(sliderContainerElement.classList).not.toContain('md-slider-active');
+
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.91, gestureConfig);
+      fixture.detectChanges();
+
+      expect(sliderContainerElement.classList).toContain('md-slider-thumb-label-showing');
+      expect(sliderContainerElement.classList).toContain('md-slider-active');
+    });
+  });
 });
 
 // The transition has to be removed in order to test the updated positions without setTimeout.
@@ -571,6 +643,17 @@ class SliderWithAutoTickInterval { }
   template: `<md-slider step="3" tick-interval="6"></md-slider>`
 })
 class SliderWithSetTickInterval { }
+
+@Component({
+  template: `<md-slider thumb-label></md-slider>`,
+  styles: [`
+    .md-slider-thumb-label, .md-slider-thumb-label-text {
+        transition: none !important;
+    }
+  `],
+  encapsulation: ViewEncapsulation.None
+})
+class SliderWithThumbLabel { }
 
 /**
  * Dispatches a click event from an element.
