@@ -467,7 +467,6 @@ export declare class DebugNode {
     };
     source: string;
     constructor(nativeNode: any, parent: DebugNode, _debugInfo: RenderDebugInfo);
-    /** @deprecated */ inject(token: any): any;
 }
 
 /** @stable */
