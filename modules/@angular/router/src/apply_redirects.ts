@@ -244,10 +244,14 @@ class ApplyRedirects {
     } else if (route.loadChildren) {
       return runGuards(injector, route).mergeMap(shouldLoad => {
         if (shouldLoad) {
-          return this.configLoader.load(injector, route.loadChildren).map(r => {
-            (<any>route)._loadedConfig = r;
-            return r;
-          });
+          if ((<any>route)._loadedConfig) {
+            return of ((<any>route)._loadedConfig);
+          } else {
+            return this.configLoader.load(injector, route.loadChildren).map(r => {
+              (<any>route)._loadedConfig = r;
+              return r;
+            });
+          }
         } else {
           return canLoadFails(route);
         }
