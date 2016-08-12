@@ -310,7 +310,7 @@ export declare class ComponentMetadata extends DirectiveMetadata implements Comp
     template: string;
     templateUrl: string;
     viewProviders: any[];
-    constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, directives, pipes, encapsulation, interpolation, entryComponents}?: ComponentMetadataType);
+    constructor({selector, inputs, outputs, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, directives, pipes, encapsulation, interpolation, entryComponents}?: ComponentMetadataType);
 }
 
 /** @stable */
@@ -498,20 +498,18 @@ export interface DirectiveDecorator extends TypeDecorator {
 
 /** @stable */
 export declare class DirectiveMetadata extends InjectableMetadata implements DirectiveMetadataType {
-    /** @deprecated */ events: string[];
     exportAs: string;
     host: {
         [key: string]: string;
     };
     inputs: string[];
     outputs: string[];
-    /** @deprecated */ properties: string[];
     providers: any[];
     queries: {
         [key: string]: any;
     };
     selector: string;
-    constructor({selector, inputs, outputs, properties, events, host, providers, exportAs, queries}?: DirectiveMetadataType);
+    constructor({selector, inputs, outputs, host, providers, exportAs, queries}?: DirectiveMetadataType);
 }
 
 /** @stable */
@@ -522,14 +520,12 @@ export interface DirectiveMetadataFactory {
 
 /** @experimental */
 export interface DirectiveMetadataType {
-    events?: string[];
     exportAs?: string;
     host?: {
         [key: string]: string;
     };
     inputs?: string[];
     outputs?: string[];
-    properties?: string[];
     providers?: any[];
     queries?: {
         [key: string]: any;
