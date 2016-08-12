@@ -8,8 +8,8 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {Component, ContentChild, TemplateRef} from '@angular/core';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {TestBed, TestComponentBuilder, async} from '@angular/core/testing';
+import {AsyncTestCompleter, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -18,256 +18,181 @@ import {ListWrapper} from '../../src/facade/collection';
 let thisArg: any;
 
 export function main() {
-  describe('ngFor', () => {
+  ddescribe('ngFor', () => {
     const TEMPLATE =
         '<div><copy-me template="ngFor let item of items">{{item.toString()}};</copy-me></div>';
 
-    it('should reflect initial elements',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, TEMPLATE)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('1;2;');
-                   async.done();
-                 });
-           }));
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        declarations: [TestComponent, ComponentUsingTestComponent],
+      });
+    });
 
-    it('should reflect added elements',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, TEMPLATE)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.detectChanges();
+    it('should reflect initial elements', async(() => {
+         TestBed.overrideComponent(TestComponent, {set: {template: TEMPLATE}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('1;2;');
+       }));
 
-                   (<number[]>fixture.debugElement.componentInstance.items).push(3);
-                   fixture.detectChanges();
+    it('should reflect added elements', async(() => {
+         TestBed.overrideComponent(TestComponent, {set: {template: TEMPLATE}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
 
-                   expect(fixture.debugElement.nativeElement).toHaveText('1;2;3;');
-                   async.done();
-                 });
-           }));
+         (<number[]>fixture.debugElement.componentInstance.items).push(3);
+         fixture.detectChanges();
 
-    it('should reflect removed elements',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, TEMPLATE)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('1;2;3;');
+       }));
 
-                   ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 1);
-                   fixture.detectChanges();
+    it('should reflect removed elements', async(() => {
+         TestBed.overrideComponent(TestComponent, {set: {template: TEMPLATE}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
 
-                   expect(fixture.debugElement.nativeElement).toHaveText('1;');
-                   async.done();
-                 });
-           }));
+         ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 1);
+         fixture.detectChanges();
 
-    it('should reflect moved elements',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, TEMPLATE)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('1;');
+       }));
 
-                   ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 0);
-                   (<number[]>fixture.debugElement.componentInstance.items).push(1);
-                   fixture.detectChanges();
+    it('should reflect moved elements', async(() => {
+         TestBed.overrideComponent(TestComponent, {set: {template: TEMPLATE}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
 
-                   expect(fixture.debugElement.nativeElement).toHaveText('2;1;');
-                   async.done();
-                 });
-           }));
+         ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 0);
+         (<number[]>fixture.debugElement.componentInstance.items).push(1);
+         fixture.detectChanges();
 
-    it('should reflect a mix of all changes (additions/removals/moves)',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, TEMPLATE)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.debugElement.componentInstance.items = [0, 1, 2, 3, 4, 5];
-                   fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('2;1;');
+       }));
 
-                   fixture.debugElement.componentInstance.items = [6, 2, 7, 0, 4, 8];
-                   fixture.detectChanges();
+    it('should reflect a mix of all changes (additions/removals/moves)', async(() => {
+         TestBed.overrideComponent(TestComponent, {set: {template: TEMPLATE}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.debugElement.componentInstance.items = [0, 1, 2, 3, 4, 5];
+         fixture.detectChanges();
 
-                   expect(fixture.debugElement.nativeElement).toHaveText('6;2;7;0;4;8;');
-                   async.done();
-                 });
-           }));
+         fixture.debugElement.componentInstance.items = [6, 2, 7, 0, 4, 8];
+         fixture.detectChanges();
 
-    it('should iterate over an array of objects',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const template =
-                 '<ul><li template="ngFor let item of items">{{item["name"]}};</li></ul>';
+         expect(fixture.debugElement.nativeElement).toHaveText('6;2;7;0;4;8;');
+       }));
 
-             tcb.overrideTemplate(TestComponent, template)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
+    it('should iterate over an array of objects', async(() => {
+         const template = '<ul><li template="ngFor let item of items">{{item["name"]}};</li></ul>';
+         TestBed.overrideComponent(TestComponent, {set: {template: template}});
+         let fixture = TestBed.createComponent(TestComponent);
 
-                   // INIT
-                   fixture.debugElement.componentInstance.items =
-                       [{'name': 'misko'}, {'name': 'shyam'}];
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('misko;shyam;');
+         // INIT
+         fixture.debugElement.componentInstance.items = [{'name': 'misko'}, {'name': 'shyam'}];
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('misko;shyam;');
 
-                   // GROW
-                   (<any[]>fixture.debugElement.componentInstance.items).push({'name': 'adam'});
-                   fixture.detectChanges();
+         // GROW
+         (<any[]>fixture.debugElement.componentInstance.items).push({'name': 'adam'});
+         fixture.detectChanges();
 
-                   expect(fixture.debugElement.nativeElement).toHaveText('misko;shyam;adam;');
+         expect(fixture.debugElement.nativeElement).toHaveText('misko;shyam;adam;');
 
-                   // SHRINK
-                   ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 2);
-                   ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 0);
-                   fixture.detectChanges();
+         // SHRINK
+         ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 2);
+         ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 0);
+         fixture.detectChanges();
 
-                   expect(fixture.debugElement.nativeElement).toHaveText('shyam;');
-                   async.done();
-                 });
-           }));
+         expect(fixture.debugElement.nativeElement).toHaveText('shyam;');
+       }));
 
-    it('should gracefully handle nulls',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const template = '<ul><li template="ngFor let item of null">{{item}};</li></ul>';
-             tcb.overrideTemplate(TestComponent, template)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('');
-                   async.done();
-                 });
-           }));
+    it('should gracefully handle nulls', async(() => {
+         const template = '<ul><li template="ngFor let item of null">{{item}};</li></ul>';
+         TestBed.overrideComponent(TestComponent, {set: {template: template}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('');
+       }));
 
-    it('should gracefully handle ref changing to null and back',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, TEMPLATE)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('1;2;');
+    it('should gracefully handle ref changing to null and back', async(() => {
+         TestBed.overrideComponent(TestComponent, {set: {template: TEMPLATE}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('1;2;');
 
-                   fixture.debugElement.componentInstance.items = null;
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('');
+         fixture.debugElement.componentInstance.items = null;
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('');
 
-                   fixture.debugElement.componentInstance.items = [1, 2, 3];
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('1;2;3;');
-                   async.done();
-                 });
-           }));
+         fixture.debugElement.componentInstance.items = [1, 2, 3];
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('1;2;3;');
+       }));
 
-    it('should throw on non-iterable ref and suggest using an array',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, TEMPLATE).createAsync(TestComponent).then((fixture) => {
-               fixture.debugElement.componentInstance.items = 'whaaa';
-               expect(() => fixture.detectChanges())
-                   .toThrowError(
-                       /Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables such as Arrays/);
-               async.done();
-             });
-           }));
+    it('should throw on non-iterable ref and suggest using an array', async(() => {
+         TestBed.overrideComponent(TestComponent, {set: {template: TEMPLATE}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.debugElement.componentInstance.items = 'whaaa';
+         expect(() => fixture.detectChanges())
+             .toThrowError(
+                 /Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables such as Arrays/);
+       }));
 
-    it('should throw on ref changing to string',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, TEMPLATE)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('1;2;');
+    it('should throw on ref changing to string', async(() => {
+         TestBed.overrideComponent(TestComponent, {set: {template: TEMPLATE}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('1;2;');
 
-                   fixture.debugElement.componentInstance.items = 'whaaa';
-                   expect(() => fixture.detectChanges()).toThrowError();
-                   async.done();
-                 });
-           }));
+         fixture.debugElement.componentInstance.items = 'whaaa';
+         expect(() => fixture.detectChanges()).toThrowError();
+       }));
 
-    it('should works with duplicates',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, TEMPLATE)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   var a = new Foo();
-                   fixture.debugElement.componentInstance.items = [a, a];
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('foo;foo;');
-                   async.done();
-                 });
-           }));
+    it('should works with duplicates', async(() => {
+         TestBed.overrideComponent(TestComponent, {set: {template: TEMPLATE}});
+         let fixture = TestBed.createComponent(TestComponent);
+         var a = new Foo();
+         fixture.debugElement.componentInstance.items = [a, a];
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('foo;foo;');
+       }));
 
-    it('should repeat over nested arrays',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const template = '<div>' +
-                 '<div template="ngFor let item of items">' +
-                 '<div template="ngFor let subitem of item">' +
-                 '{{subitem}}-{{item.length}};' +
-                 '</div>|' +
-                 '</div>' +
-                 '</div>';
+    it('should repeat over nested arrays', async(() => {
+         const template = '<div>' +
+             '<div template="ngFor let item of items">' +
+             '<div template="ngFor let subitem of item">' +
+             '{{subitem}}-{{item.length}};' +
+             '</div>|' +
+             '</div>' +
+             '</div>';
+         TestBed.overrideComponent(TestComponent, {set: {template: template}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.debugElement.componentInstance.items = [['a', 'b'], ['c']];
+         fixture.detectChanges();
+         fixture.detectChanges();
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('a-2;b-2;|c-1;|');
 
-             tcb.overrideTemplate(TestComponent, template)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.debugElement.componentInstance.items = [['a', 'b'], ['c']];
-                   fixture.detectChanges();
-                   fixture.detectChanges();
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('a-2;b-2;|c-1;|');
+         fixture.debugElement.componentInstance.items = [['e'], ['f', 'g']];
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('e-1;|f-2;g-2;|');
 
-                   fixture.debugElement.componentInstance.items = [['e'], ['f', 'g']];
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('e-1;|f-2;g-2;|');
+       }));
 
-                   async.done();
-                 });
-           }));
+    it('should repeat over nested arrays with no intermediate element', async(() => {
+         const template = '<div><template ngFor let-item [ngForOf]="items">' +
+             '<div template="ngFor let subitem of item">' +
+             '{{subitem}}-{{item.length}};' +
+             '</div></template></div>';
+         TestBed.overrideComponent(TestComponent, {set: {template: template}});
+         let fixture = TestBed.createComponent(TestComponent);
+         fixture.debugElement.componentInstance.items = [['a', 'b'], ['c']];
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('a-2;b-2;c-1;');
 
-    it('should repeat over nested arrays with no intermediate element',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const template = '<div><template ngFor let-item [ngForOf]="items">' +
-                 '<div template="ngFor let subitem of item">' +
-                 '{{subitem}}-{{item.length}};' +
-                 '</div></template></div>';
-
-             tcb.overrideTemplate(TestComponent, template)
-                 .createAsync(TestComponent)
-                 .then((fixture) => {
-                   fixture.debugElement.componentInstance.items = [['a', 'b'], ['c']];
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('a-2;b-2;c-1;');
-
-                   fixture.debugElement.componentInstance.items = [['e'], ['f', 'g']];
-                   fixture.detectChanges();
-                   expect(fixture.debugElement.nativeElement).toHaveText('e-1;f-2;g-2;');
-                   async.done();
-                 });
-           }));
+         fixture.debugElement.componentInstance.items = [['e'], ['f', 'g']];
+         fixture.detectChanges();
+         expect(fixture.debugElement.nativeElement).toHaveText('e-1;f-2;g-2;');
+       }));
 
     it('should repeat over nested ngIf that are the last node in the ngFor temlate',
        inject(
@@ -403,64 +328,70 @@ export function main() {
                  });
            }));
 
-    it('should allow to use a custom template',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(
-                    TestComponent,
-                    '<ul><template ngFor [ngForOf]="items" [ngForTemplate]="contentTpl"></template></ul>')
-                 .overrideTemplate(
-                     ComponentUsingTestComponent,
-                     '<test-cmp><li template="let item; let i=index">{{i}}: {{item}};</li></test-cmp>')
-                 .createAsync(ComponentUsingTestComponent)
-                 .then((fixture) => {
-                   const testComponent = fixture.debugElement.children[0];
-                   testComponent.componentInstance.items = ['a', 'b', 'c'];
-                   fixture.detectChanges();
-                   expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
+    it('should allow to use a custom template', async(() => {
+         TestBed.overrideComponent(TestComponent, {
+           set: {
+             template:
+                 '<ul><template ngFor [ngForOf]="items" [ngForTemplate]="contentTpl"></template></ul>'
+           }
+         });
+         TestBed.overrideComponent(ComponentUsingTestComponent, {
+           set: {
+             template:
+                 '<test-cmp><li template="let item; let i=index">{{i}}: {{item}};</li></test-cmp>'
+           }
+         });
+         let fixture = TestBed.createComponent(ComponentUsingTestComponent);
 
-                   async.done();
-                 });
-           }));
+         const testComponent = fixture.debugElement.children[0];
+         testComponent.componentInstance.items = ['a', 'b', 'c'];
+         fixture.detectChanges();
+         expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
 
-    it('should use a default template if a custom one is null',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, `<ul><template ngFor let-item [ngForOf]="items"
-         [ngForTemplate]="contentTpl" let-i="index">{{i}}: {{item}};</template></ul>`)
-                 .overrideTemplate(ComponentUsingTestComponent, '<test-cmp></test-cmp>')
-                 .createAsync(ComponentUsingTestComponent)
-                 .then((fixture) => {
-                   const testComponent = fixture.debugElement.children[0];
-                   testComponent.componentInstance.items = ['a', 'b', 'c'];
-                   fixture.detectChanges();
-                   expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
+       }));
 
-                   async.done();
-                 });
-           }));
+    it('should use a default template if a custom one is null', async(() => {
+         TestBed.overrideComponent(TestComponent, {
+           set: {
+             template: `<ul><template ngFor let-item [ngForOf]="items" 
+            [ngForTemplate]="contentTpl" let-i="index">{{i}}: {{item}};</template></ul>`
+           }
+         });
+         TestBed.overrideComponent(ComponentUsingTestComponent, {
+           set: {
+             template:
+                 '<test-cmp><li template="let item; let i=index">{{i}}: {{item}};</li></test-cmp>'
+           }
+         });
+         let fixture = TestBed.createComponent(ComponentUsingTestComponent);
 
-    it('should use a custom template when both default and a custom one are present',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(TestComponent, `<ul><template ngFor let-item [ngForOf]="items"
-         [ngForTemplate]="contentTpl" let-i="index">{{i}}=> {{item}};</template></ul>`)
-                 .overrideTemplate(
-                     ComponentUsingTestComponent,
-                     '<test-cmp><li template="let item; let i=index">{{i}}: {{item}};</li></test-cmp>')
-                 .createAsync(ComponentUsingTestComponent)
-                 .then((fixture) => {
-                   const testComponent = fixture.debugElement.children[0];
-                   testComponent.componentInstance.items = ['a', 'b', 'c'];
-                   fixture.detectChanges();
-                   expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
+         const testComponent = fixture.debugElement.children[0];
+         testComponent.componentInstance.items = ['a', 'b', 'c'];
+         fixture.detectChanges();
+         expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
 
-                   async.done();
-                 });
-           }));
+       }));
+
+    it('should use a custom template when both default and a custom one are present', async(() => {
+         TestBed.overrideComponent(TestComponent, {
+           set: {
+             template: `<ul><template ngFor let-item [ngForOf]="items"
+         [ngForTemplate]="contentTpl" let-i="index">{{i}}=> {{item}};</template></ul>`
+           }
+         });
+         TestBed.overrideComponent(ComponentUsingTestComponent, {
+           set: {
+             template:
+                 '<test-cmp><li template="let item; let i=index">{{i}}: {{item}};</li></test-cmp>'
+           }
+         });
+         let fixture = TestBed.createComponent(ComponentUsingTestComponent);
+
+         const testComponent = fixture.debugElement.children[0];
+         testComponent.componentInstance.items = ['a', 'b', 'c'];
+         fixture.detectChanges();
+         expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
+       }));
 
     describe('track by', () => {
       it('should set the context to the component instance',

@@ -62,6 +62,7 @@ export function main() {
            let template = '<div [ngClass]="{foo: condition, bar: !condition}"></div>';
            TestBed.overrideComponent(TestComponent, {set: {template: template}});
            let fixture = TestBed.createComponent(TestComponent);
+
            detectChangesAndCheck(fixture, 'foo');
 
            fixture.debugElement.componentInstance.condition = false;
@@ -72,6 +73,7 @@ export function main() {
            let template = '<div [ngClass]="objExpr"></div>';
            TestBed.overrideComponent(TestComponent, {set: {template: template}});
            let fixture = TestBed.createComponent(TestComponent);
+
            detectChangesAndCheck(fixture, 'foo');
 
            StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'bar', true);
