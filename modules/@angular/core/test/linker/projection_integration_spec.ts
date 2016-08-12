@@ -656,7 +656,7 @@ export function main() {
 
                    var contentViewportDir =
                        conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[1]
-                           .inject(ManualViewportDirective);
+                           .injector.get(ManualViewportDirective);
 
                    contentViewportDir.show();
 
