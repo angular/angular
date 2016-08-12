@@ -1,7 +1,7 @@
 <h1>Tab Group Demo</h1>
 
 <md-tab-group class="demo-tab-group">
-  <md-tab *ngFor="let tab of tabs">
+  <md-tab *ngFor="let tab of tabs; let i = index" [disabled]="i == 1">
     <template md-tab-label>{{tab.label}}</template>
     <template md-tab-content>
       {{tab.content}}
@@ -16,7 +16,7 @@
 <h1>Async Tabs</h1>
 
 <md-tab-group class="demo-tab-group">
-  <md-tab *ngFor="let tab of asyncTabs | async">
+  <md-tab *ngFor="let tab of asyncTabs | async; let i = index" [disabled]="i == 1">
     <template md-tab-label>{{tab.label}}</template>
     <template md-tab-content>
       {{tab.content}}

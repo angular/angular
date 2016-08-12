@@ -6,7 +6,8 @@
        [tabIndex]="selectedIndex == i ? 0 : -1"
        [attr.aria-controls]="_getTabContentId(i)"
        [attr.aria-selected]="selectedIndex == i"
-       [class.md-active]="selectedIndex == i"
+       [class.md-tab-active]="selectedIndex == i"
+       [class.md-tab-disabled]="tab.disabled"
        (click)="focusIndex = selectedIndex = i">
     <template [portalHost]="tab.label"></template>
   </div>
@@ -17,7 +18,7 @@
        role="tabpanel"
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabContentId(i)"
-       [class.md-active]="selectedIndex == i"
+       [class.md-tab-active]="selectedIndex == i"
        [attr.aria-labelledby]="_getTabLabelId(i)">
     <template [ngIf]="selectedIndex == i">
       <template [portalHost]="tab.content"></template>

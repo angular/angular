@@ -40,6 +40,11 @@ $md-tab-bar-height: 48px !default;
   }
 }
 
+.md-tab-disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
 /** The bottom section of the view; contains the tab bodies */
 .md-tab-body-wrapper {
   position: relative;

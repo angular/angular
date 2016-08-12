@@ -43,6 +43,16 @@ export class MdTabChangeEvent {
 export class MdTab {
   @ContentChild(MdTabLabel) label: MdTabLabel;
   @ContentChild(MdTabContent) content: MdTabContent;
+
+  // TODO: Replace this when BooleanFieldValue is removed.
+  private _disabled = false;
+  @Input('disabled')
+  set disabled(value: boolean) {
+    this._disabled = (value != null && `${value}` !== 'false');
+  }
+  get disabled(): boolean {
+    return this._disabled;
+  }
 }
 
 /**
@@ -67,7 +77,7 @@ export class MdTabGroup {
   private _selectedIndex: number = 0;
   @Input()
   set selectedIndex(value: number) {
-    if (value != this._selectedIndex) {
+    if (value != this._selectedIndex && this.isValidIndex(value)) {
       this._selectedIndex = value;
 
       if (this._isInitialized) {
@@ -77,6 +87,19 @@ export class MdTabGroup {
   }
   get selectedIndex(): number {
     return this._selectedIndex;
+  }
+
+  /**
+   * Determines if an index is valid.  If the tabs are not ready yet, we assume that the user is
+   * providing a valid index and return true.
+   */
+  isValidIndex(index: number): boolean {
+    if (this._tabs) {
+      const tab = this._tabs.toArray()[index];
+      return tab && !tab.disabled;
+    } else {
+      return true;
+    }
   }
 
   /** Output to enable support for two-way binding on `selectedIndex`. */
@@ -137,14 +160,16 @@ export class MdTabGroup {
 
   /** When the focus index is set, we must manually send focus to the correct label */
   set focusIndex(value: number) {
-    this._focusIndex = value;
+    if (this.isValidIndex(value)) {
+      this._focusIndex = value;
 
-    if (this._isInitialized) {
-      this._onFocusChange.emit(this._createChangeEvent(value));
-    }
+      if (this._isInitialized) {
+        this._onFocusChange.emit(this._createChangeEvent(value));
+      }
 
-    if (this._labelWrappers && this._labelWrappers.length) {
-      this._labelWrappers.toArray()[value].focus();
+      if (this._labelWrappers && this._labelWrappers.length) {
+        this._labelWrappers.toArray()[value].focus();
+      }
     }
   }
 
@@ -181,18 +206,29 @@ export class MdTabGroup {
     }
   }
 
-  /** Increment the focus index by 1; prevent going over the number of tabs */
-  focusNextTab(): void {
-    if (this._labelWrappers && this.focusIndex < this._labelWrappers.length - 1) {
-      this.focusIndex++;
+  /**
+   * Moves the focus left or right depending on the offset provided.  Valid offsets are 1 and -1.
+   */
+  moveFocus(offset: number) {
+    if (this._labelWrappers) {
+      const tabs: MdTab[] = this._tabs.toArray();
+      for (let i = this.focusIndex + offset; i < tabs.length && i >= 0; i += offset) {
+        if (this.isValidIndex(i)) {
+          this.focusIndex = i;
+          return;
+        }
+      }
     }
   }
 
-  /** Decrement the focus index by 1; prevent going below 0 */
+  /** Increment the focus index by 1 until a valid tab is found. */
+  focusNextTab(): void {
+    this.moveFocus(1);
+  }
+
+  /** Decrement the focus index by 1 until a valid tab is found. */
   focusPreviousTab(): void {
-    if (this.focusIndex > 0) {
-      this.focusIndex--;
-    }
+    this.moveFocus(-1);
   }
 }
 

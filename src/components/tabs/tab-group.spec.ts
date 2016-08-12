@@ -151,6 +151,92 @@ describe('MdTabGroup', () => {
     }));
   });
 
+  describe('disabled tabs', () => {
+    let fixture: ComponentFixture<DisabledTabsTestApp>;
+
+    beforeEach(async(() => {
+      builder.createAsync(DisabledTabsTestApp).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+      });
+    }));
+
+    it('should disable the second tab', () => {
+      let labels = fixture.debugElement.queryAll(By.css('.md-tab-label'));
+
+      expect(labels[1].nativeElement.classList.contains('md-tab-disabled')).toBeTruthy();
+    });
+
+    it('should skip over disabled tabs when navigating by keyboard', () => {
+      let component: MdTabGroup = fixture.debugElement.query(By.css('md-tab-group'))
+          .componentInstance;
+
+      component.focusIndex = 0;
+      component.focusNextTab();
+
+      expect(component.focusIndex).toBe(2);
+
+      component.focusNextTab();
+      expect(component.focusIndex).toBe(2);
+
+      component.focusPreviousTab();
+      expect(component.focusIndex).toBe(0);
+
+      component.focusPreviousTab();
+      expect(component.focusIndex).toBe(0);
+    });
+
+    it('should ignore attempts to select a disabled tab', () => {
+      let component: MdTabGroup = fixture.debugElement.query(By.css('md-tab-group'))
+          .componentInstance;
+
+      component.selectedIndex = 0;
+      expect(component.selectedIndex).toBe(0);
+
+      component.selectedIndex = 1;
+      expect(component.selectedIndex).toBe(0);
+    });
+
+    it('should ignore attempts to focus a disabled tab', () => {
+      let component: MdTabGroup = fixture.debugElement.query(By.css('md-tab-group'))
+          .componentInstance;
+
+      component.focusIndex = 0;
+      expect(component.focusIndex).toBe(0);
+
+      component.focusIndex = 1;
+      expect(component.focusIndex).toBe(0);
+    });
+
+    it('should ignore attempts to set invalid selectedIndex', () => {
+      let component: MdTabGroup = fixture.debugElement.query(By.css('md-tab-group'))
+          .componentInstance;
+
+      component.selectedIndex = 0;
+      expect(component.selectedIndex).toBe(0);
+
+      component.selectedIndex = -1;
+      expect(component.selectedIndex).toBe(0);
+
+      component.selectedIndex = 4;
+      expect(component.selectedIndex).toBe(0);
+    });
+
+    it('should ignore attempts to set invalid focusIndex', () => {
+      let component: MdTabGroup = fixture.debugElement.query(By.css('md-tab-group'))
+          .componentInstance;
+
+      component.focusIndex = 0;
+      expect(component.focusIndex).toBe(0);
+
+      component.focusIndex = -1;
+      expect(component.focusIndex).toBe(0);
+
+      component.focusIndex = 4;
+      expect(component.focusIndex).toBe(0);
+    });
+  });
+
   describe('async tabs', () => {
     let fixture: ComponentFixture<AsyncTabsTestApp>;
 
@@ -173,7 +259,7 @@ describe('MdTabGroup', () => {
 
   /**
    * Checks that the `selectedIndex` has been updated; checks that the label and body have the
-   * `md-active` class
+   * `md-tab-active` class
    */
   function checkSelectedIndex(index: number, fixture: ComponentFixture<any>) {
     fixture.detectChanges();
@@ -184,11 +270,11 @@ describe('MdTabGroup', () => {
 
     let tabLabelElement = fixture.debugElement
         .query(By.css(`.md-tab-label:nth-of-type(${index + 1})`)).nativeElement;
-    expect(tabLabelElement.classList.contains('md-active')).toBe(true);
+    expect(tabLabelElement.classList.contains('md-tab-active')).toBe(true);
 
     let tabContentElement = fixture.debugElement
         .query(By.css(`#${tabLabelElement.id}`)).nativeElement;
-    expect(tabContentElement.classList.contains('md-active')).toBe(true);
+    expect(tabContentElement.classList.contains('md-tab-active')).toBe(true);
   }
 });
 
@@ -225,6 +311,27 @@ class SimpleTabsTestApp {
     this.selectEvent = event;
   }
 }
+
+@Component({
+  selector: 'test-app',
+  template: `
+    <md-tab-group class="tab-group">
+      <md-tab>
+        <template md-tab-label>Tab One</template>
+        <template md-tab-content>Tab one content</template>
+      </md-tab>
+      <md-tab disabled>
+        <template md-tab-label>Tab Two</template>
+        <template md-tab-content>Tab two content</template>
+      </md-tab>
+      <md-tab>
+        <template md-tab-label>Tab Three</template>
+        <template md-tab-content>Tab three content</template>
+      </md-tab>
+    </md-tab-group>
+  `,
+})
+class DisabledTabsTestApp {}
 
 @Component({
   selector: 'test-app',

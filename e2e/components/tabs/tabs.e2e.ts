@@ -78,7 +78,7 @@ function getFocusStates(elements: ElementArrayFinder) {
  * @returns {webdriver.promise.Promise<Promise<boolean>[]>|webdriver.promise.Promise<T[]>}
  */
 function getActiveStates(elements: ElementArrayFinder) {
-  return getClassStates(elements, 'md-active');
+  return getClassStates(elements, 'md-tab-active');
 }
 
 /**
