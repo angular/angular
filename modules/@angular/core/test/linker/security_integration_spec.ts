@@ -214,7 +214,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                   fixture.detectChanges();
                   expect(getDOM().getInnerHTML(e)).toEqual('also <img src="x"> evil');
 
-                  ci.ctxProp = 'also <iframe srcdoc="evil"> evil';
+                  ci.ctxProp = 'also <iframe srcdoc="evil"></iframe> evil';
                   fixture.detectChanges();
                   expect(getDOM().getInnerHTML(e)).toEqual('also  evil');
 
