@@ -13,8 +13,6 @@ import {Compiler} from './compiler';
 import {NgModuleFactory} from './ng_module_factory';
 import {NgModuleFactoryLoader} from './ng_module_factory_loader';
 
-declare var System: {import: (module: string) => Promise<any>;};
-
 const _SEPARATOR = '#';
 
 const FACTORY_MODULE_SUFFIX = '.ngfactory';

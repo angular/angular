@@ -13,8 +13,6 @@ import {Type} from '../type';
 import {ComponentFactory} from './component_factory';
 import {ComponentResolver} from './component_resolver';
 
-declare var System: {import: (module: string) => Promise<any>;};
-
 const _SEPARATOR = '#';
 
 /**
