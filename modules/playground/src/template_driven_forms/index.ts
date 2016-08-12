@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ControlGroup, FORM_DIRECTIVES, NG_VALIDATORS, NgControl, NgFor, NgForm, NgIf, Validators} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
 import {Component, Directive, Host} from '@angular/core';
 import {isPresent, print} from '@angular/core/src/facade/lang';
+import {FORM_DIRECTIVES, FormGroup, NG_VALIDATORS, NgControl, NgForm, Validators} from '@angular/forms';
 import {bootstrap} from '@angular/platform-browser-dynamic';
+
 
 
 /**
@@ -79,8 +81,8 @@ class ShowError {
   constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
 
   get errorMessage(): string {
-    var form: ControlGroup = this.formDir.form;
-    var control = form.find(this.controlPath);
+    var form: FormGroup = this.formDir.form;
+    var control = form.get(this.controlPath);
     if (isPresent(control) && control.touched) {
       for (var i = 0; i < this.errorTypes.length; ++i) {
         if (control.hasError(this.errorTypes[i])) {
@@ -106,49 +108,49 @@ class ShowError {
     <form (ngSubmit)="onSubmit()" #f="ngForm">
       <p>
         <label for="firstName">First Name</label>
-        <input type="text" id="firstName" ngControl="firstName" [(ngModel)]="model.firstName" required>
+        <input type="text" id="firstName" name="firstName" [(ngModel)]="model.firstName" required>
         <show-error control="firstName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="middleName">Middle Name</label>
-        <input type="text" id="middleName" ngControl="middleName" [(ngModel)]="model.middleName">
+        <input type="text" id="middleName" name="middleName" [(ngModel)]="model.middleName">
       </p>
 
       <p>
         <label for="lastName">Last Name</label>
-        <input type="text" id="lastName" ngControl="lastName" [(ngModel)]="model.lastName" required>
+        <input type="text" id="lastName" name="lastName" [(ngModel)]="model.lastName" required>
         <show-error control="lastName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="country">Country</label>
-        <select id="country" ngControl="country" [(ngModel)]="model.country">
+        <select id="country" name="country" [(ngModel)]="model.country">
           <option *ngFor="let c of countries" [value]="c">{{c}}</option>
         </select>
       </p>
 
       <p>
         <label for="creditCard">Credit Card</label>
-        <input type="text" id="creditCard" ngControl="creditCard" [(ngModel)]="model.creditCard" required credit-card>
+        <input type="text" id="creditCard" name="creditCard" [(ngModel)]="model.creditCard" required credit-card>
         <show-error control="creditCard" [errors]="['required', 'invalidCreditCard']"></show-error>
       </p>
 
       <p>
         <label for="amount">Amount</label>
-        <input type="number" id="amount" ngControl="amount" [(ngModel)]="model.amount" required>
+        <input type="number" id="amount" name="amount" [(ngModel)]="model.amount" required>
         <show-error control="amount" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="email">Email</label>
-        <input type="email" id="email" ngControl="email" [(ngModel)]="model.email" required>
+        <input type="email" id="email" name="email" [(ngModel)]="model.email" required>
         <show-error control="email" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="comments">Comments</label>
-        <textarea id="comments" ngControl="comments" [(ngModel)]="model.comments">
+        <textarea id="comments" name="comments" [(ngModel)]="model.comments">
         </textarea>
       </p>
 

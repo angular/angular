@@ -26,6 +26,7 @@
           'index': 'index.js',
           '@angular/core': '/packages-dist/core/bundles/core.umd.js',
           '@angular/common': '/packages-dist/common/bundles/common.umd.js',
+          '@angular/forms': '/packages-dist/forms/bundles/forms.umd.js',
           '@angular/compiler': '/packages-dist/compiler/bundles/compiler.umd.js',
           '@angular/platform-browser':
               '/packages-dist/platform-browser/bundles/platform-browser.umd.js',
@@ -54,6 +55,7 @@
           '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
           '@angular/router': {main: 'index.js', defaultExtension: 'js'},
           '@angular/common': {main: 'index.js', defaultExtension: 'js'},
+          '@angular/forms': {main: 'index.js', defaultExtension: 'js'},
           '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
           '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
           '@angular/upgrade': {main: 'index.js', defaultExtension: 'js'}

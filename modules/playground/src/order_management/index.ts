@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FORM_DIRECTIVES, NgFor, NgIf} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
 import {Component, EventEmitter, Injectable, Input, Output} from '@angular/core';
 import {ListWrapper} from '@angular/core/src/facade/collection';
+import {FORM_DIRECTIVES} from '@angular/forms';
 import {bootstrap} from '@angular/platform-browser-dynamic';
 
 /**

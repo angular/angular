@@ -1,59 +1,3 @@
-/** @experimental */
-export declare abstract class AbstractControl {
-    asyncValidator: AsyncValidatorFn;
-    dirty: boolean;
-    errors: {
-        [key: string]: any;
-    };
-    pending: boolean;
-    pristine: boolean;
-    root: AbstractControl;
-    status: string;
-    statusChanges: Observable<any>;
-    touched: boolean;
-    untouched: boolean;
-    valid: boolean;
-    validator: ValidatorFn;
-    value: any;
-    valueChanges: Observable<any>;
-    constructor(validator: ValidatorFn, asyncValidator: AsyncValidatorFn);
-    find(path: Array<string | number> | string): AbstractControl;
-    getError(errorCode: string, path?: string[]): any;
-    hasError(errorCode: string, path?: string[]): boolean;
-    markAsDirty({onlySelf}?: {
-        onlySelf?: boolean;
-    }): void;
-    markAsPending({onlySelf}?: {
-        onlySelf?: boolean;
-    }): void;
-    markAsTouched(): void;
-    setErrors(errors: {
-        [key: string]: any;
-    }, {emitEvent}?: {
-        emitEvent?: boolean;
-    }): void;
-    setParent(parent: ControlGroup | ControlArray): void;
-    updateValueAndValidity({onlySelf, emitEvent}?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-}
-
-/** @experimental */
-export declare abstract class AbstractControlDirective {
-    control: AbstractControl;
-    dirty: boolean;
-    errors: {
-        [key: string]: any;
-    };
-    path: string[];
-    pristine: boolean;
-    touched: boolean;
-    untouched: boolean;
-    valid: boolean;
-    value: any;
-}
-
 /** @stable */
 export declare const APP_BASE_HREF: OpaqueToken;
 
@@ -65,16 +9,6 @@ export declare class AsyncPipe implements OnDestroy {
 }
 
 /** @experimental */
-export declare class CheckboxControlValueAccessor implements ControlValueAccessor {
-    onChange: (_: any) => void;
-    onTouched: () => void;
-    constructor(_renderer: Renderer, _elementRef: ElementRef);
-    registerOnChange(fn: (_: any) => {}): void;
-    registerOnTouched(fn: () => {}): void;
-    writeValue(value: any): void;
-}
-
-/** @experimental */
 export declare const COMMON_DIRECTIVES: any[];
 
 /** @experimental */
@@ -82,60 +16,6 @@ export declare const COMMON_PIPES: (typeof AsyncPipe | typeof SlicePipe | typeof
 
 /** @experimental */
 export declare class CommonModule {
-}
-
-/** @experimental */
-export declare class Control extends AbstractControl {
-    constructor(value?: any, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
-    registerOnChange(fn: Function): void;
-    updateValue(value: any, {onlySelf, emitEvent, emitModelToViewChange}?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-        emitModelToViewChange?: boolean;
-    }): void;
-}
-
-/** @experimental */
-export declare class ControlArray extends AbstractControl {
-    controls: AbstractControl[];
-    length: number;
-    constructor(controls: AbstractControl[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
-    at(index: number): AbstractControl;
-    insert(index: number, control: AbstractControl): void;
-    push(control: AbstractControl): void;
-    removeAt(index: number): void;
-}
-
-/** @experimental */
-export declare class ControlContainer extends AbstractControlDirective {
-    formDirective: Form;
-    name: string;
-    path: string[];
-}
-
-/** @experimental */
-export declare class ControlGroup extends AbstractControl {
-    controls: {
-        [key: string]: AbstractControl;
-    };
-    constructor(controls: {
-        [key: string]: AbstractControl;
-    }, optionals?: {
-        [key: string]: boolean;
-    }, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
-    addControl(name: string, control: AbstractControl): void;
-    contains(controlName: string): boolean;
-    exclude(controlName: string): void;
-    include(controlName: string): void;
-    registerControl(name: string, control: AbstractControl): void;
-    removeControl(name: string): void;
-}
-
-/** @experimental */
-export interface ControlValueAccessor {
-    registerOnChange(fn: any): void;
-    registerOnTouched(fn: any): void;
-    writeValue(obj: any): void;
 }
 
 /** @stable */
@@ -154,48 +34,6 @@ export declare class DatePipe implements PipeTransform {
 /** @experimental */
 export declare class DecimalPipe implements PipeTransform {
     transform(value: any, digits?: string): string;
-}
-
-/** @experimental */
-export declare class DefaultValueAccessor implements ControlValueAccessor {
-    onChange: (_: any) => void;
-    onTouched: () => void;
-    constructor(_renderer: Renderer, _elementRef: ElementRef);
-    registerOnChange(fn: (_: any) => void): void;
-    registerOnTouched(fn: () => void): void;
-    writeValue(value: any): void;
-}
-
-/** @deprecated */
-export declare class DeprecatedFormsModule {
-}
-
-/** @experimental */
-export interface Form {
-    addControl(dir: NgControl): void;
-    addControlGroup(dir: NgControlGroup): void;
-    getControl(dir: NgControl): Control;
-    getControlGroup(dir: NgControlGroup): ControlGroup;
-    removeControl(dir: NgControl): void;
-    removeControlGroup(dir: NgControlGroup): void;
-    updateModel(dir: NgControl, value: any): void;
-}
-
-/** @experimental */
-export declare const FORM_DIRECTIVES: Type<any>[];
-
-/** @experimental */
-export declare const FORM_PROVIDERS: Type<any>[];
-
-/** @experimental */
-export declare class FormBuilder {
-    array(controlsConfig: any[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn): ControlArray;
-    control(value: Object, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn): Control;
-    group(controlsConfig: {
-        [key: string]: any;
-    }, extra?: {
-        [key: string]: any;
-    }): ControlGroup;
 }
 
 /** @stable */
@@ -265,31 +103,6 @@ export declare class LowerCasePipe implements PipeTransform {
     transform(value: string): string;
 }
 
-/** @experimental */
-export declare class MaxLengthValidator implements Validator {
-    constructor(maxLength: string);
-    validate(c: AbstractControl): {
-        [key: string]: any;
-    };
-}
-
-/** @experimental */
-export declare class MinLengthValidator implements Validator {
-    constructor(minLength: string);
-    validate(c: AbstractControl): {
-        [key: string]: any;
-    };
-}
-
-/** @experimental */
-export declare const NG_ASYNC_VALIDATORS: OpaqueToken;
-
-/** @experimental */
-export declare const NG_VALIDATORS: OpaqueToken;
-
-/** @experimental */
-export declare const NG_VALUE_ACCESSOR: OpaqueToken;
-
 /** @stable */
 export declare class NgClass implements DoCheck {
     initialClasses: string;
@@ -300,53 +113,6 @@ export declare class NgClass implements DoCheck {
     ngDoCheck(): void;
 }
 
-/** @experimental */
-export declare abstract class NgControl extends AbstractControlDirective {
-    asyncValidator: AsyncValidatorFn;
-    name: string;
-    validator: ValidatorFn;
-    valueAccessor: ControlValueAccessor;
-    abstract viewToModelUpdate(newValue: any): void;
-}
-
-/** @experimental */
-export declare class NgControlGroup extends ControlContainer implements OnInit, OnDestroy {
-    asyncValidator: AsyncValidatorFn;
-    control: ControlGroup;
-    formDirective: Form;
-    path: string[];
-    validator: ValidatorFn;
-    constructor(parent: ControlContainer, _validators: any[], _asyncValidators: any[]);
-    ngOnDestroy(): void;
-    ngOnInit(): void;
-}
-
-/** @experimental */
-export declare class NgControlName extends NgControl implements OnChanges, OnDestroy {
-    asyncValidator: AsyncValidatorFn;
-    control: Control;
-    formDirective: any;
-    model: any;
-    path: string[];
-    validator: ValidatorFn;
-    viewModel: any;
-    constructor(_parent: ControlContainer, _validators: any[], _asyncValidators: any[], valueAccessors: ControlValueAccessor[]);
-    ngOnChanges(changes: SimpleChanges): void;
-    ngOnDestroy(): void;
-    viewToModelUpdate(newValue: any): void;
-}
-
-/** @experimental */
-export declare class NgControlStatus {
-    ngClassDirty: boolean;
-    ngClassInvalid: boolean;
-    ngClassPristine: boolean;
-    ngClassTouched: boolean;
-    ngClassUntouched: boolean;
-    ngClassValid: boolean;
-    constructor(cd: NgControl);
-}
-
 /** @stable */
 export declare class NgFor implements DoCheck, OnChanges {
     ngForOf: any;
@@ -355,64 +121,6 @@ export declare class NgFor implements DoCheck, OnChanges {
     constructor(_viewContainer: ViewContainerRef, _templateRef: TemplateRef<NgForRow>, _iterableDiffers: IterableDiffers, _cdr: ChangeDetectorRef);
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;
-}
-
-/** @experimental */
-export declare class NgForm extends ControlContainer implements Form {
-    control: ControlGroup;
-    controls: {
-        [key: string]: AbstractControl;
-    };
-    form: ControlGroup;
-    formDirective: Form;
-    ngSubmit: EventEmitter<{}>;
-    path: string[];
-    submitted: boolean;
-    constructor(validators: any[], asyncValidators: any[]);
-    addControl(dir: NgControl): void;
-    addControlGroup(dir: NgControlGroup): void;
-    getControl(dir: NgControl): Control;
-    getControlGroup(dir: NgControlGroup): ControlGroup;
-    onSubmit(): boolean;
-    removeControl(dir: NgControl): void;
-    removeControlGroup(dir: NgControlGroup): void;
-    updateModel(dir: NgControl, value: any): void;
-}
-
-/** @experimental */
-export declare class NgFormControl extends NgControl implements OnChanges {
-    asyncValidator: AsyncValidatorFn;
-    control: Control;
-    form: Control;
-    model: any;
-    path: string[];
-    update: EventEmitter<{}>;
-    validator: ValidatorFn;
-    viewModel: any;
-    constructor(_validators: any[], _asyncValidators: any[], valueAccessors: ControlValueAccessor[]);
-    ngOnChanges(changes: SimpleChanges): void;
-    viewToModelUpdate(newValue: any): void;
-}
-
-/** @experimental */
-export declare class NgFormModel extends ControlContainer implements Form, OnChanges {
-    control: ControlGroup;
-    directives: NgControl[];
-    form: ControlGroup;
-    formDirective: Form;
-    ngSubmit: EventEmitter<{}>;
-    path: string[];
-    submitted: boolean;
-    constructor(_validators: any[], _asyncValidators: any[]);
-    addControl(dir: NgControl): void;
-    addControlGroup(dir: NgControlGroup): void;
-    getControl(dir: NgControl): Control;
-    getControlGroup(dir: NgControlGroup): ControlGroup;
-    ngOnChanges(changes: SimpleChanges): void;
-    onSubmit(): boolean;
-    removeControl(dir: NgControl): void;
-    removeControlGroup(dir: NgControlGroup): void;
-    updateModel(dir: NgControl, value: any): void;
 }
 
 /** @stable */
@@ -427,20 +135,6 @@ export declare abstract class NgLocalization {
 }
 
 /** @experimental */
-export declare class NgModel extends NgControl implements OnChanges {
-    asyncValidator: AsyncValidatorFn;
-    control: Control;
-    model: any;
-    path: string[];
-    update: EventEmitter<{}>;
-    validator: ValidatorFn;
-    viewModel: any;
-    constructor(_validators: any[], _asyncValidators: any[], valueAccessors: ControlValueAccessor[]);
-    ngOnChanges(changes: SimpleChanges): void;
-    viewToModelUpdate(newValue: any): void;
-}
-
-/** @experimental */
 export declare class NgPlural {
     ngPlural: number;
     constructor(_localization: NgLocalization);
@@ -451,15 +145,6 @@ export declare class NgPlural {
 export declare class NgPluralCase {
     value: string;
     constructor(value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef, ngPlural: NgPlural);
-}
-
-/** @experimental */
-export declare class NgSelectOption implements OnDestroy {
-    id: string;
-    ngValue: any;
-    value: any;
-    constructor(_element: ElementRef, _renderer: Renderer, _select: SelectControlValueAccessor);
-    ngOnDestroy(): void;
 }
 
 /** @stable */
@@ -510,14 +195,6 @@ export declare class PathLocationStrategy extends LocationStrategy {
 }
 
 /** @experimental */
-export declare class PatternValidator implements Validator {
-    constructor(pattern: string);
-    validate(c: AbstractControl): {
-        [key: string]: any;
-    };
-}
-
-/** @experimental */
 export declare class PercentPipe implements PipeTransform {
     transform(value: any, digits?: string): string;
 }
@@ -536,31 +213,9 @@ export declare abstract class PlatformLocation {
     abstract replaceState(state: any, title: string, url: string): void;
 }
 
-/** @experimental */
-export declare class RadioButtonState {
-    checked: boolean;
-    value: string;
-    constructor(checked: boolean, value: string);
-}
-
 /** @deprecated */
 export declare class ReplacePipe implements PipeTransform {
     transform(value: any, pattern: string | RegExp, replacement: Function | string): any;
-}
-
-/** @experimental */
-export declare class RequiredValidator {
-}
-
-/** @experimental */
-export declare class SelectControlValueAccessor implements ControlValueAccessor {
-    onChange: (_: any) => void;
-    onTouched: () => void;
-    value: any;
-    constructor(_renderer: Renderer, _elementRef: ElementRef);
-    registerOnChange(fn: (value: any) => any): void;
-    registerOnTouched(fn: () => any): void;
-    writeValue(value: any): void;
 }
 
 /** @stable */
@@ -581,26 +236,4 @@ export interface UrlChangeEvent {
 /** @experimental */
 export interface UrlChangeListener {
     (e: UrlChangeEvent): any;
-}
-
-/** @experimental */
-export interface Validator {
-    validate(c: AbstractControl): {
-        [key: string]: any;
-    };
-}
-
-/** @experimental */
-export declare class Validators {
-    static compose(validators: ValidatorFn[]): ValidatorFn;
-    static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn;
-    static maxLength(maxLength: number): ValidatorFn;
-    static minLength(minLength: number): ValidatorFn;
-    static nullValidator(c: AbstractControl): {
-        [key: string]: boolean;
-    };
-    static pattern(pattern: string): ValidatorFn;
-    static required(control: AbstractControl): {
-        [key: string]: boolean;
-    };
 }
