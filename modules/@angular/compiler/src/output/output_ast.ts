@@ -260,7 +260,7 @@ export class WritePropExpr extends Expression {
 export enum BuiltinMethod {
   ConcatArray,
   SubscribeObservable,
-  bind
+  Bind
 }
 
 export class InvokeMethodExpr extends Expression {

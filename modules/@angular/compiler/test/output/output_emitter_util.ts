@@ -113,7 +113,7 @@ var _getExpressionsStmts: o.Statement[] = [
       'invokeMethodExternalInstanceViaBind',
       o.variable('externalInstance')
           .prop('someMethod')
-          .callMethod(o.BuiltinMethod.bind, [o.variable('externalInstance')])
+          .callMethod(o.BuiltinMethod.Bind, [o.variable('externalInstance')])
           .callFn([o.literal('someParam')])
     ],
     [
@@ -124,7 +124,7 @@ var _getExpressionsStmts: o.Statement[] = [
       'invokeMethodDynamicInstanceViaBind',
       o.variable('dynamicInstance')
           .prop('dynamicMethod')
-          .callMethod(o.BuiltinMethod.bind, [o.variable('dynamicInstance')])
+          .callMethod(o.BuiltinMethod.Bind, [o.variable('dynamicInstance')])
           .callFn([o.literal('someParam')])
     ],
     [
