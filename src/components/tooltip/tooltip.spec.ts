@@ -1,11 +1,4 @@
-import {
-    inject,
-    async,
-    addProviders,
-    TestComponentBuilder,
-    ComponentFixture,
-    TestBed,
-} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {TooltipPosition, MdTooltip} from '@angular2-material/tooltip/tooltip';
@@ -14,27 +7,21 @@ import {MdTooltipModule} from './tooltip';
 
 
 describe('MdTooltip', () => {
-  let builder: TestComponentBuilder;
   let overlayContainerElement: HTMLElement;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdTooltipModule],
       declarations: [BasicTooltipDemo],
+      providers: [
+        {provide: OverlayContainer, useFactory: () => {
+          overlayContainerElement = document.createElement('div');
+          return {getContainerElement: () => overlayContainerElement};
+        }}
+      ]
     });
 
-    addProviders([
-      {provide: OverlayContainer, useFactory: () => {
-        overlayContainerElement = document.createElement('div');
-        return {getContainerElement: () => overlayContainerElement};
-      }}
-    ]);
-
     TestBed.compileComponents();
-  }));
-
-  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-    builder = tcb;
   }));
 
   describe('basic usage', () => {
@@ -44,13 +31,11 @@ describe('MdTooltip', () => {
     let tooltipDirective: MdTooltip;
 
     beforeEach(async(() => {
-      builder.createAsync(BasicTooltipDemo).then(f => {
-        fixture = f;
-        fixture.detectChanges();
-        buttonDebugElement = fixture.debugElement.query(By.css('button'));
-        buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
-        tooltipDirective = buttonDebugElement.injector.get(MdTooltip);
-      });
+      fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.detectChanges();
+      buttonDebugElement = fixture.debugElement.query(By.css('button'));
+      buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
+      tooltipDirective = buttonDebugElement.injector.get(MdTooltip);
     }));
 
     it('should show/hide on mouse enter/leave', async(() => {
