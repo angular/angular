@@ -149,9 +149,10 @@ export class ShadowCss {
   * - hostSelector is the attribute added to the host itself.
   */
   shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
+    const sourceMappingUrl: string = extractSourceMappingUrl(cssText);
     cssText = stripComments(cssText);
     cssText = this._insertDirectives(cssText);
-    return this._scopeCssText(cssText, selector, hostSelector);
+    return this._scopeCssText(cssText, selector, hostSelector) + sourceMappingUrl;
   }
 
   private _insertDirectives(cssText: string): string {
@@ -454,10 +455,18 @@ var _polyfillHostRe = new RegExp(_polyfillHost, 'im');
 var _colonHostRe = /:host/gim;
 var _colonHostContextRe = /:host-context/gim;
 
-var _commentRe = /\/\*[\s\S]*?\*\//g;
+var _commentRe = /\/\*\s*[\s\S]*?\*\//g;
 
 function stripComments(input:string):string {
   return StringWrapper.replaceAllMapped(input, _commentRe, (_: any /** TODO #9100 */) => '');
+}
+
+// all comments except inline source mapping ("/* #sourceMappingURL= ... */")
+var _sourceMappingUrlRe = /[\s\S]*(\/\*\s*#\s*sourceMappingURL=[\s\S]+?\*\/)\s*$/;
+
+function extractSourceMappingUrl(input:string):string {
+  const matcher = input.match(_sourceMappingUrlRe);
+  return matcher ? matcher[1] : '';
 }
 
 var _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
