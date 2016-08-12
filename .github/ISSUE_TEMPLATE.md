@@ -1,6 +1,6 @@
 **I'm submitting a ...**  (check one with "x")
 ```
-[ ] bug report
+[ ] bug report => search github for a similar issue or PR before submitting
 [ ] feature request
 [ ] support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
 ```
