@@ -66,7 +66,7 @@ export function isDevMode(): boolean {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatform(injector: Injector): PlatformRef {
-  if (isPresent(_platform) && !_platform.disposed) {
+  if (isPresent(_platform) && !_platform.destroyed) {
     throw new BaseException(
         'There can be only one platform. Destroy the previous one to create a new one.');
   }
@@ -140,7 +140,7 @@ export function destroyPlatform(): void {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function getPlatform(): PlatformRef {
-  return isPresent(_platform) && !_platform.disposed ? _platform : null;
+  return isPresent(_platform) && !_platform.destroyed ? _platform : null;
 }
 
 /**
@@ -226,12 +226,6 @@ export abstract class PlatformRef {
 
   /**
    * Register a listener to be called when the platform is disposed.
-   * @deprecated Use `OnDestroy` instead
-   */
-  abstract registerDisposeListener(dispose: () => void): void;
-
-  /**
-   * Register a listener to be called when the platform is disposed.
    */
   abstract onDestroy(callback: () => void): void;
 
@@ -243,19 +237,9 @@ export abstract class PlatformRef {
 
   /**
    * Destroy the Angular platform and all Angular applications on the page.
-   * @deprecated Use `destroy` instead
-   */
-  abstract dispose(): void;
-
-  /**
-   * Destroy the Angular platform and all Angular applications on the page.
    */
   abstract destroy(): void;
 
-  /**
-   * @deprecated Use `destroyed` instead
-   */
-  get disposed(): boolean { throw unimplemented(); }
   get destroyed(): boolean { throw unimplemented(); }
 }
 
