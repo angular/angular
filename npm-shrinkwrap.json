@@ -2886,7 +2886,8 @@
         },
         "lodash": {
           "version": "4.14.2",
-          "from": "lodash@>=4.0.0 <5.0.0"
+          "from": "lodash@4.14.2",
+          "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.14.2.tgz"
         },
         "readable-stream": {
           "version": "2.0.6",
@@ -9213,9 +9214,9 @@
       }
     },
     "zone.js": {
-      "version": "0.6.12",
-      "from": "zone.js@0.6.12",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.12.tgz"
+      "version": "0.6.14",
+      "from": "zone.js@0.6.14",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.14.tgz"
     }
   }
 }
