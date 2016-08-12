@@ -15,7 +15,6 @@ import {extractMessages} from './extractor_merger';
 import {Message} from './i18n_ast';
 import {Serializer} from './serializers/serializer';
 
-
 /**
  * A container for message extracted from the templates.
  */

@@ -132,7 +132,7 @@ export class CodeGenerator {
     const reflectorHost = new ReflectorHost(program, compilerHost, options, reflectorHostContext);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
-    const htmlParser = new HtmlParser();
+    const htmlParser = new compiler.i18n.HtmlParser(new HtmlParser());
     const config = new compiler.CompilerConfig({
       genDebugInfo: options.debug === true,
       defaultEncapsulation: ViewEncapsulation.Emulated,

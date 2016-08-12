@@ -14,9 +14,10 @@ import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, 
 import {Parser} from '../expression_parser/parser';
 import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
+import {HtmlParser} from '../i18n/html_parser';
 import {Identifiers, identifierToken} from '../identifiers';
 import * as html from '../ml_parser/ast';
-import {HtmlParser, ParseTreeResult} from '../ml_parser/html_parser';
+import {ParseTreeResult} from '../ml_parser/html_parser';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName, splitNsName} from '../ml_parser/tags';
@@ -65,7 +66,7 @@ const TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
  *
  * This is currently an internal-only feature and not meant for general use.
  */
-export const TEMPLATE_TRANSFORMS: any = new OpaqueToken('TemplateTransforms');
+export const TEMPLATE_TRANSFORMS = new OpaqueToken('TemplateTransforms');
 
 export class TemplateParseError extends ParseError {
   constructor(message: string, span: ParseSourceSpan, level: ParseErrorLevel) {
