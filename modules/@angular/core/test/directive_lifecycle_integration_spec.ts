@@ -9,40 +9,44 @@
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnInit} from '@angular/core';
 import {Component, Directive} from '@angular/core/src/metadata';
 import {ViewMetadata} from '@angular/core/src/metadata/view';
+import {TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {
-
+    let log: Log;
     beforeEachProviders(() => { return [Log]; });
 
+    beforeEach(() => {
+      TestBed
+          .configureTestingModule({
+            declarations: [
+              LifecycleCmp,
+              LifecycleDir,
+              MyComp5,
+            ]
+          })
+          .overrideComponent(MyComp5, {set: {template: '<div [field]="123" lifecycle></div>'}});
+    });
+
+    beforeEach(inject([Log], (_log: any) => { log = _log; }));
+
     it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
-       inject(
-           [TestComponentBuilder, Log, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, log: Log, async: AsyncTestCompleter) => {
-             tcb.overrideView(MyComp5, new ViewMetadata({
-                                template: '<div [field]="123" lifecycle></div>',
-                                directives: [LifecycleCmp]
-                              }))
-                 .createAsync(MyComp5)
-                 .then((tc) => {
-                   tc.detectChanges();
+       () => {
+         let fixture = TestBed.createComponent(MyComp5);
+         fixture.detectChanges();
 
-                   expect(log.result())
-                       .toEqual(
-                           'ngOnChanges; ngOnInit; ngDoCheck; ngAfterContentInit; ngAfterContentChecked; child_ngDoCheck; ' +
-                           'ngAfterViewInit; ngAfterViewChecked');
+         expect(log.result())
+             .toEqual(
+                 'ngOnChanges; ngOnInit; ngDoCheck; ngAfterContentInit; ngAfterContentChecked; child_ngDoCheck; ' +
+                 'ngAfterViewInit; ngAfterViewChecked');
 
-                   log.clear();
-                   tc.detectChanges();
+         log.clear();
+         fixture.detectChanges();
 
-                   expect(log.result())
-                       .toEqual(
-                           'ngDoCheck; ngAfterContentChecked; child_ngDoCheck; ngAfterViewChecked');
-
-                   async.done();
-                 });
-           }));
+         expect(log.result())
+             .toEqual('ngDoCheck; ngAfterContentChecked; child_ngDoCheck; ngAfterViewChecked');
+       });
   });
 }
 
@@ -57,7 +61,6 @@ class LifecycleDir implements DoCheck {
   selector: '[lifecycle]',
   inputs: ['field'],
   template: `<div lifecycle-dir></div>`,
-  directives: [LifecycleDir]
 })
 class LifecycleCmp implements OnChanges,
     OnInit, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked {
@@ -79,6 +82,6 @@ class LifecycleCmp implements OnChanges,
   ngAfterViewChecked() { this._log.add('ngAfterViewChecked'); }
 }
 
-@Component({selector: 'my-comp', directives: []})
+@Component({selector: 'my-comp'})
 class MyComp5 {
 }
