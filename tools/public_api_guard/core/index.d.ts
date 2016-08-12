@@ -147,15 +147,8 @@ export declare class ApplicationModule {
 export declare abstract class ApplicationRef {
     componentTypes: Type<any>[];
     components: ComponentRef<any>[];
-    /** @deprecated */ injector: Injector;
-    /** @deprecated */ zone: NgZone;
     abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>): ComponentRef<C>;
-    /** @deprecated */ abstract dispose(): void;
-    /** @deprecated */ abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
-    /** @deprecated */ abstract registerDisposeListener(dispose: () => void): void;
-    /** @deprecated */ abstract run(callback: Function): any;
     abstract tick(): void;
-    /** @deprecated */ abstract waitForAsyncInitializers(): Promise<any>;
 }
 
 /** @experimental */

@@ -394,38 +394,6 @@ export class PlatformRef_ extends PlatformRef {
  */
 export abstract class ApplicationRef {
   /**
-   * Register a listener to be called each time `bootstrap()` is called to bootstrap
-   * a new root component.
-   *
-   * @deprecated Provide a callback via a multi provider for {@link APP_BOOTSTRAP_LISTENER}
-   * instead.
-   */
-  abstract registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void;
-
-  /**
-   * Register a listener to be called when the application is disposed.
-   *
-   * @deprecated Use `ngOnDestroy` lifecycle hook or {@link NgModuleRef}.onDestroy.
-   */
-  abstract registerDisposeListener(dispose: () => void): void;
-
-  /**
-   * Returns a promise that resolves when all asynchronous application initializers
-   * are done.
-   *
-   * @deprecated Use the {@link ApplicationInitStatus} class instead.
-   */
-  abstract waitForAsyncInitializers(): Promise<any>;
-
-  /**
-   * Runs the given callback in the zone and returns the result of the callback.
-   * Exceptions will be forwarded to the ExceptionHandler and rethrown.
-   *
-   * @deprecated Use {@link NgZone}.run instead.
-   */
-  abstract run(callback: Function): any;
-
-  /**
    * Bootstrap a new component at the root level of the application.
    *
    * ### Bootstrap process
@@ -438,29 +406,6 @@ export abstract class ApplicationRef {
    * {@example core/ts/platform/platform.ts region='longform'}
    */
   abstract bootstrap<C>(componentFactory: ComponentFactory<C>|Type<C>): ComponentRef<C>;
-
-  /**
-   * Retrieve the application {@link Injector}.
-   *
-   * @deprecated inject an {@link Injector} directly where needed or use {@link
-   * NgModuleRef}.injector.
-   */
-  get injector(): Injector { return <Injector>unimplemented(); };
-
-  /**
-   * Retrieve the application {@link NgZone}.
-   *
-   * @deprecated inject {@link NgZone} instead of calling this getter.
-   */
-  get zone(): NgZone { return <NgZone>unimplemented(); };
-
-  /**
-   * Dispose of this application and all of its components.
-   *
-   * @deprecated Destroy the module that was created during bootstrap instead by calling
-   * {@link NgModuleRef}.destroy.
-   */
-  abstract dispose(): void;
 
   /**
    * Invoke this method to explicitly process change detection and its side-effects.
@@ -492,10 +437,6 @@ export class ApplicationRef_ extends ApplicationRef {
   static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
 
   private _bootstrapListeners: Function[] = [];
-  /**
-   * @deprecated
-   */
-  private _disposeListeners: Function[] = [];
   private _rootComponents: ComponentRef<any>[] = [];
   private _rootComponentTypes: Type<any>[] = [];
   private _changeDetectorRefs: ChangeDetectorRef[] = [];
@@ -516,37 +457,12 @@ export class ApplicationRef_ extends ApplicationRef {
         {next: () => { this._zone.run(() => { this.tick(); }); }});
   }
 
-  /**
-   * @deprecated
-   */
-  registerBootstrapListener(listener: (ref: ComponentRef<any>) => void): void {
-    this._bootstrapListeners.push(listener);
-  }
-
-  /**
-   * @deprecated
-   */
-  registerDisposeListener(dispose: () => void): void { this._disposeListeners.push(dispose); }
-
   registerChangeDetector(changeDetector: ChangeDetectorRef): void {
     this._changeDetectorRefs.push(changeDetector);
   }
 
   unregisterChangeDetector(changeDetector: ChangeDetectorRef): void {
     ListWrapper.remove(this._changeDetectorRefs, changeDetector);
-  }
-
-  /**
-   * @deprecated
-   */
-  waitForAsyncInitializers(): Promise<any> { return this._initStatus.donePromise; }
-
-  /**
-   * @deprecated
-   */
-  run(callback: Function): any {
-    return this._zone.run(
-        () => _callAndReportToExceptionHandler(this._exceptionHandler, <any>callback));
   }
 
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>): ComponentRef<C> {
@@ -598,16 +514,6 @@ export class ApplicationRef_ extends ApplicationRef {
     ListWrapper.remove(this._rootComponents, componentRef);
   }
 
-  /**
-   * @deprecated
-   */
-  get injector(): Injector { return this._injector; }
-
-  /**
-   * @deprecated
-   */
-  get zone(): NgZone { return this._zone; }
-
   tick(): void {
     if (this._runningTick) {
       throw new BaseException('ApplicationRef.tick is called recursively');
@@ -629,13 +535,7 @@ export class ApplicationRef_ extends ApplicationRef {
   ngOnDestroy() {
     // TODO(alxhub): Dispose of the NgZone.
     ListWrapper.clone(this._rootComponents).forEach((ref) => ref.destroy());
-    this._disposeListeners.forEach((dispose) => dispose());
   }
-
-  /**
-   * @deprecated
-   */
-  dispose(): void { this.ngOnDestroy(); }
 
   get componentTypes(): Type<any>[] { return this._rootComponentTypes; }
 
