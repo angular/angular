@@ -18,6 +18,7 @@
   "files": [
     "index.ts",
     "testing.ts",
-    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+    "../../../node_modules/zone.js/dist/zone.js.d.ts",
+    "../../system.d.ts"
   ]
 }

@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-declare var System: any;
-
 
 (function(global: any /** TODO #9100 */) {
 
