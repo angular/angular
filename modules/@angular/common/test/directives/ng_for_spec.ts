@@ -8,8 +8,8 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {Component, ContentChild, TemplateRef} from '@angular/core';
-import {TestBed, TestComponentBuilder, async} from '@angular/core/testing';
-import {AsyncTestCompleter, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {async, TestBed} from '@angular/core/testing';
+import {ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -176,7 +176,6 @@ export function main() {
          fixture.debugElement.componentInstance.items = [['e'], ['f', 'g']];
          fixture.detectChanges();
          expect(fixture.debugElement.nativeElement).toHaveText('e-1;|f-2;g-2;|');
-
        }));
 
     it('should repeat over nested arrays with no intermediate element', async(() => {
@@ -217,7 +216,6 @@ export function main() {
          items.push(1);
          fixture.detectChanges();
          expect(el).toHaveText('0|even|1|2|even|');
-
        }));
 
     it('should display indices correctly', async(() => {
@@ -308,7 +306,6 @@ export function main() {
          testComponent.componentInstance.items = ['a', 'b', 'c'];
          fixture.detectChanges();
          expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
-
        }));
 
     it('should use a default template if a custom one is null', async(() => {
@@ -324,7 +321,6 @@ export function main() {
          testComponent.componentInstance.items = ['a', 'b', 'c'];
          fixture.detectChanges();
          expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
-
        }));
 
     it('should use a custom template when both default and a custom one are present', async(() => {

@@ -8,172 +8,143 @@
 
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 import {Component} from '@angular/core';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {async, TestBed} from '@angular/core/testing';
+import {beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('switch', () => {
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        declarations: [TestComponent],
+      });
+    });
+
     describe('switch value changes', () => {
-      it('should switch amongst when values',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var template = '<div>' +
-                   '<ul [ngSwitch]="switchValue">' +
-                   '<template ngSwitchCase="a"><li>when a</li></template>' +
-                   '<template ngSwitchCase="b"><li>when b</li></template>' +
-                   '</ul></div>';
+      it('should switch amongst when values', async(() => {
+           var template = '<div>' +
+               '<ul [ngSwitch]="switchValue">' +
+               '<template ngSwitchCase="a"><li>when a</li></template>' +
+               '<template ngSwitchCase="b"><li>when b</li></template>' +
+               '</ul></div>';
 
-               tcb.overrideTemplate(TestComponent, template)
-                   .createAsync(TestComponent)
-                   .then((fixture) => {
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('');
+           TestBed.overrideComponent(TestComponent, {set: {template: template}});
+           let fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('');
 
-                     fixture.debugElement.componentInstance.switchValue = 'a';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when a');
+           fixture.debugElement.componentInstance.switchValue = 'a';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when a');
 
-                     fixture.debugElement.componentInstance.switchValue = 'b';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when b');
-
-                     async.done();
-                   });
-             }));
+           fixture.debugElement.componentInstance.switchValue = 'b';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when b');
+         }));
 
       // TODO(robwormald): deprecate and remove
-      it('should switch amongst when values using switchWhen',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var template = '<div>' +
-                   '<ul [ngSwitch]="switchValue">' +
-                   '<template ngSwitchWhen="a"><li>when a</li></template>' +
-                   '<template ngSwitchWhen="b"><li>when b</li></template>' +
-                   '</ul></div>';
+      it('should switch amongst when values using switchWhen', async(() => {
+           var template = '<div>' +
+               '<ul [ngSwitch]="switchValue">' +
+               '<template ngSwitchWhen="a"><li>when a</li></template>' +
+               '<template ngSwitchWhen="b"><li>when b</li></template>' +
+               '</ul></div>';
 
-               tcb.overrideTemplate(TestComponent, template)
-                   .createAsync(TestComponent)
-                   .then((fixture) => {
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('');
+           TestBed.overrideComponent(TestComponent, {set: {template: template}});
+           let fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('');
 
-                     fixture.debugElement.componentInstance.switchValue = 'a';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when a');
+           fixture.debugElement.componentInstance.switchValue = 'a';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when a');
 
-                     fixture.debugElement.componentInstance.switchValue = 'b';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when b');
+           fixture.debugElement.componentInstance.switchValue = 'b';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when b');
+         }));
 
-                     async.done();
-                   });
-             }));
+      it('should switch amongst when values with fallback to default', async(() => {
+           var template = '<div>' +
+               '<ul [ngSwitch]="switchValue">' +
+               '<li template="ngSwitchCase \'a\'">when a</li>' +
+               '<li template="ngSwitchDefault">when default</li>' +
+               '</ul></div>';
 
-      it('should switch amongst when values with fallback to default',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var template = '<div>' +
-                   '<ul [ngSwitch]="switchValue">' +
-                   '<li template="ngSwitchCase \'a\'">when a</li>' +
-                   '<li template="ngSwitchDefault">when default</li>' +
-                   '</ul></div>';
+           TestBed.overrideComponent(TestComponent, {set: {template: template}});
+           let fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when default');
 
-               tcb.overrideTemplate(TestComponent, template)
-                   .createAsync(TestComponent)
-                   .then((fixture) => {
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when default');
+           fixture.debugElement.componentInstance.switchValue = 'a';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when a');
 
-                     fixture.debugElement.componentInstance.switchValue = 'a';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when a');
+           fixture.debugElement.componentInstance.switchValue = 'b';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when default');
+         }));
 
-                     fixture.debugElement.componentInstance.switchValue = 'b';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when default');
+      it('should support multiple whens with the same value', async(() => {
+           var template = '<div>' +
+               '<ul [ngSwitch]="switchValue">' +
+               '<template ngSwitchCase="a"><li>when a1;</li></template>' +
+               '<template ngSwitchCase="b"><li>when b1;</li></template>' +
+               '<template ngSwitchCase="a"><li>when a2;</li></template>' +
+               '<template ngSwitchCase="b"><li>when b2;</li></template>' +
+               '<template ngSwitchDefault><li>when default1;</li></template>' +
+               '<template ngSwitchDefault><li>when default2;</li></template>' +
+               '</ul></div>';
 
-                     async.done();
-                   });
-             }));
+           TestBed.overrideComponent(TestComponent, {set: {template: template}});
+           let fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when default1;when default2;');
 
-      it('should support multiple whens with the same value',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var template = '<div>' +
-                   '<ul [ngSwitch]="switchValue">' +
-                   '<template ngSwitchCase="a"><li>when a1;</li></template>' +
-                   '<template ngSwitchCase="b"><li>when b1;</li></template>' +
-                   '<template ngSwitchCase="a"><li>when a2;</li></template>' +
-                   '<template ngSwitchCase="b"><li>when b2;</li></template>' +
-                   '<template ngSwitchDefault><li>when default1;</li></template>' +
-                   '<template ngSwitchDefault><li>when default2;</li></template>' +
-                   '</ul></div>';
+           fixture.debugElement.componentInstance.switchValue = 'a';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when a1;when a2;');
 
-               tcb.overrideTemplate(TestComponent, template)
-                   .createAsync(TestComponent)
-                   .then((fixture) => {
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement)
-                         .toHaveText('when default1;when default2;');
-
-                     fixture.debugElement.componentInstance.switchValue = 'a';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when a1;when a2;');
-
-                     fixture.debugElement.componentInstance.switchValue = 'b';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when b1;when b2;');
-
-                     async.done();
-                   });
-             }));
+           fixture.debugElement.componentInstance.switchValue = 'b';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when b1;when b2;');
+         }));
     });
 
     describe('when values changes', () => {
-      it('should switch amongst when values',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var template = '<div>' +
-                   '<ul [ngSwitch]="switchValue">' +
-                   '<template [ngSwitchCase]="when1"><li>when 1;</li></template>' +
-                   '<template [ngSwitchCase]="when2"><li>when 2;</li></template>' +
-                   '<template ngSwitchDefault><li>when default;</li></template>' +
-                   '</ul></div>';
+      it('should switch amongst when values', async(() => {
+           var template = '<div>' +
+               '<ul [ngSwitch]="switchValue">' +
+               '<template [ngSwitchCase]="when1"><li>when 1;</li></template>' +
+               '<template [ngSwitchCase]="when2"><li>when 2;</li></template>' +
+               '<template ngSwitchDefault><li>when default;</li></template>' +
+               '</ul></div>';
 
-               tcb.overrideTemplate(TestComponent, template)
-                   .createAsync(TestComponent)
-                   .then((fixture) => {
-                     fixture.debugElement.componentInstance.when1 = 'a';
-                     fixture.debugElement.componentInstance.when2 = 'b';
-                     fixture.debugElement.componentInstance.switchValue = 'a';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when 1;');
+           TestBed.overrideComponent(TestComponent, {set: {template: template}});
+           let fixture = TestBed.createComponent(TestComponent);
+           fixture.debugElement.componentInstance.when1 = 'a';
+           fixture.debugElement.componentInstance.when2 = 'b';
+           fixture.debugElement.componentInstance.switchValue = 'a';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when 1;');
 
-                     fixture.debugElement.componentInstance.switchValue = 'b';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when 2;');
+           fixture.debugElement.componentInstance.switchValue = 'b';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when 2;');
 
-                     fixture.debugElement.componentInstance.switchValue = 'c';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when default;');
+           fixture.debugElement.componentInstance.switchValue = 'c';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when default;');
 
-                     fixture.debugElement.componentInstance.when1 = 'c';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when 1;');
+           fixture.debugElement.componentInstance.when1 = 'c';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when 1;');
 
-                     fixture.debugElement.componentInstance.when1 = 'd';
-                     fixture.detectChanges();
-                     expect(fixture.debugElement.nativeElement).toHaveText('when default;');
-
-                     async.done();
-                   });
-             }));
+           fixture.debugElement.componentInstance.when1 = 'd';
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('when default;');
+         }));
     });
   });
 }
