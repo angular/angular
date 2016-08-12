@@ -8,7 +8,7 @@
 
 import {BaseException, SchemaMetadata} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileTokenMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {ListWrapper} from './facade/collection';
 import {Identifiers} from './identifiers';
@@ -33,7 +33,8 @@ export class OfflineCompiler {
       private _metadataResolver: CompileMetadataResolver,
       private _directiveNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter) {}
+      private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
+      private _localeId: string, private _translationFormat: string) {}
 
   analyzeModules(ngModules: StaticSymbol[]): NgModulesSummary {
     const ngModuleByComponent = new Map<StaticSymbol, CompileNgModuleMetadata>();
@@ -107,7 +108,16 @@ export class OfflineCompiler {
 
   private _compileModule(ngModuleType: StaticSymbol, targetStatements: o.Statement[]): string {
     const ngModule = this._metadataResolver.getNgModuleMetadata(<any>ngModuleType);
-    let appCompileResult = this._ngModuleCompiler.compile(ngModule, []);
+    let appCompileResult = this._ngModuleCompiler.compile(ngModule, [
+      new CompileProviderMetadata({
+        token: new CompileTokenMetadata({identifier: Identifiers.LOCALE_ID}),
+        useValue: this._localeId
+      }),
+      new CompileProviderMetadata({
+        token: new CompileTokenMetadata({identifier: Identifiers.TRANSLATIONS_FORMAT}),
+        useValue: this._translationFormat
+      })
+    ]);
     appCompileResult.dependencies.forEach((dep) => {
       dep.placeholder.name = _componentFactoryName(dep.comp);
       dep.placeholder.moduleUrl = _ngfactoryModuleUrl(dep.comp.moduleUrl);

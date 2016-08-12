@@ -28,8 +28,9 @@ import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabi
 import {StaticReflector, StaticSymbol} from './static_reflector';
 
 function extract(
-    ngOptions: tsc.AngularCompilerOptions, program: ts.Program, host: ts.CompilerHost) {
-  const extractor = Extractor.create(ngOptions, program, host);
+    ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
+    program: ts.Program, host: ts.CompilerHost) {
+  const extractor = Extractor.create(ngOptions, cliOptions.i18nFormat, program, host);
   const bundlePromise: Promise<compiler.i18n.MessageBundle> = extractor.extract();
 
   return (bundlePromise).then(messageBundle => {
@@ -126,8 +127,8 @@ export class Extractor {
   }
 
   static create(
-      options: tsc.AngularCompilerOptions, program: ts.Program, compilerHost: ts.CompilerHost,
-      reflectorHostContext?: ReflectorHostContext): Extractor {
+      options: tsc.AngularCompilerOptions, translationsFormat: string, program: ts.Program,
+      compilerHost: ts.CompilerHost, reflectorHostContext?: ReflectorHostContext): Extractor {
     const xhr: compiler.XHR = {
       get: (s: string) => {
         if (!compilerHost.fileExists(s)) {
@@ -163,7 +164,7 @@ export class Extractor {
         config, console, elementSchemaRegistry, staticReflector);
     const offlineCompiler = new compiler.OfflineCompiler(
         resolver, normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
-        new NgModuleCompiler(), new TypeScriptEmitter(reflectorHost));
+        new NgModuleCompiler(), new TypeScriptEmitter(reflectorHost), null, null);
 
     // TODO(vicb): implicit tags & attributes
     let messageBundle = new compiler.i18n.MessageBundle(htmlParser, [], {});
@@ -183,9 +184,11 @@ interface FileMetadata {
 // Entry point
 if (require.main === module) {
   const args = require('minimist')(process.argv.slice(2));
-  tsc.main(args.p || args.project || '.', args.basePath, extract)
-      .then(exitCode => process.exit(exitCode))
-      .catch(e => {
+  const project = args.p || args.project || '.';
+  const cliOptions = new tsc.I18nExtractionCliOptions(args);
+  tsc.main(project, cliOptions, extract)
+      .then((exitCode: any) => process.exit(exitCode))
+      .catch((e: any) => {
         console.error(e.stack);
         console.error('Extraction failed');
         process.exit(1);

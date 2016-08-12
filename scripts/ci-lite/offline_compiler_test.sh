@@ -33,7 +33,7 @@ cp -v package.json $TMP
 
   ./node_modules/.bin/tsc --version
   # Compile the compiler-cli integration tests
-  ./node_modules/.bin/ngc
+  ./node_modules/.bin/ngc --i18nFile=src/messages.fi.xtb --locale=fi --i18nFormat=xtb
   ./node_modules/.bin/ng-xi18n
 
   ./node_modules/.bin/jasmine init
