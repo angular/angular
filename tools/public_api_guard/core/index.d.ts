@@ -783,9 +783,6 @@ export declare class KeyValueDiffers {
 /** @experimental */
 export declare const LOCALE_ID: OpaqueToken;
 
-/** @deprecated */
-export declare function lockRunMode(): void;
-
 /** @experimental */
 export declare class ModuleWithComponentFactories<T> {
     componentFactories: ComponentFactory<any>[];
