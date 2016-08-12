@@ -7,7 +7,7 @@
  */
 
 import {XHR} from '@angular/compiler';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, Pipe, ReflectiveInjector, createPlatform, createPlatformFactory, provide} from '@angular/core';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, ReflectiveInjector, createPlatform, createPlatformFactory, provide} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -306,27 +306,6 @@ export function main() {
            expect(el).toHaveText('hello world!');
            expect(compilerConsole.warnings).toEqual([
              'Passing XHR as regular provider is deprecated. Pass the provider via "compilerOptions" instead.'
-           ]);
-           async.done();
-         });
-       }));
-
-    // Note: This will soon be deprecated as bootstrap creates a separate injector for the compiler,
-    // i.e. such providers needs to go into that injecotr (when calling `browserCompiler`);
-    it('should still allow to provide platform directives/pipes via the regular providers',
-       inject([Console, AsyncTestCompleter], (console: DummyConsole, async: AsyncTestCompleter) => {
-         bootstrap(HelloCmpUsingPlatformDirectiveAndPipe, testProviders.concat([
-           {provide: PLATFORM_DIRECTIVES, useValue: [SomeDirective]},
-           {provide: PLATFORM_PIPES, useValue: [SomePipe]}
-         ])).then((compRef) => {
-           let compFixture = new ComponentFixture(compRef, null, null);
-           compFixture.detectChanges();
-           expect(compFixture.debugElement.children[0].properties['title'])
-               .toBe('transformed someValue');
-
-           expect(compilerConsole.warnings).toEqual([
-             `The PLATFORM_DIRECTIVES provider and CompilerConfig.platformDirectives is deprecated. Add the directives to an NgModule instead! (Directives: ${stringify(SomeDirective)})`,
-             `The PLATFORM_PIPES provider and CompilerConfig.platformPipes is deprecated. Add the pipes to an NgModule instead! (Pipes: ${stringify(SomePipe)})`
            ]);
            async.done();
          });

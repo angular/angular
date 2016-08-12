@@ -23,7 +23,6 @@ export * from './src/linker';
 export {DebugElement, DebugNode, asNativeElements, getDebugNode} from './src/debug/debug_node';
 export * from './src/testability/testability';
 export * from './src/change_detection';
-export * from './src/platform_directives_and_pipes';
 export * from './src/platform_core_providers';
 export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID} from './src/i18n/tokens';
 export {APPLICATION_COMMON_PROVIDERS, ApplicationModule} from './src/application_module';

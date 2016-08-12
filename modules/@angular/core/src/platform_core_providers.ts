@@ -30,10 +30,3 @@ const _CORE_PLATFORM_PROVIDERS: Array<any|Type<any>|Provider|any[]> = [
  * @experimental
  */
 export const platformCore = createPlatformFactory(null, 'core', _CORE_PLATFORM_PROVIDERS);
-
-/**
- * A default set of providers which should be included in any Angular platform.
- *
- * @deprecated Create platforms via `createPlatformFactory(corePlatform, ...) instead!
- */
-export const PLATFORM_COMMON_PROVIDERS = _CORE_PLATFORM_PROVIDERS;

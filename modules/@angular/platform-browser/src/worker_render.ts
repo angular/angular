@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, createPlatform, createPlatformFactory, getPlatform, isDevMode, platformCore} from '@angular/core';
+import {BaseException, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, createPlatform, createPlatformFactory, getPlatform, isDevMode, platformCore} from '@angular/core';
 
 import {wtfInit} from '../core_private';
 
@@ -105,18 +105,6 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*
   {provide: MessageBus, useFactory: messageBusFactory, deps: [WebWorkerInstance]}
 ];
 
-/**
- * * @deprecated Use `platformWorkerUi()` or create a custom platform factory via
- * `createPlatformFactory(platformWorkerUi, ...)`
- */
-export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    [PLATFORM_COMMON_PROVIDERS, _WORKER_UI_PLATFORM_PROVIDERS];
-
-/**
- * @deprecated Worker UI only has a platform but no application
- */
-export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [];
-
 function initializeGenericWorkerRenderer(injector: Injector) {
   var bus = injector.get(MessageBus);
   let zone = injector.get(NgZone);
@@ -156,12 +144,6 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
  */
 export const platformWorkerUi =
     createPlatformFactory(platformCore, 'workerUi', _WORKER_UI_PLATFORM_PROVIDERS);
-
-/**
- * @deprecated Use {@link platformWorkerUi} instead
- */
-export const workerUiPlatform = platformWorkerUi;
-
 
 function _exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(getDOM());

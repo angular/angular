@@ -21,36 +21,21 @@ export class CompilerConfig {
   private _genDebugInfo: boolean;
   private _logBindingUpdate: boolean;
   public useJit: boolean;
-  /**
-   * @deprecated Providing platform directives via the {@link CompilerConfig} is deprecated. Provide
-   * platform directives via an {@link NgModule} instead.
-   */
-  public platformDirectives: any[];
-  /**
-   * @deprecated Providing platform pipes via the {@link CompilerConfig} is deprecated. Provide
-   * platform pipes via an {@link NgModule} instead.
-   */
-  public platformPipes: any[];
 
   constructor(
       {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
-       genDebugInfo, logBindingUpdate, useJit = true, deprecatedPlatformDirectives = [],
-       deprecatedPlatformPipes = []}: {
+       genDebugInfo, logBindingUpdate, useJit = true}: {
         renderTypes?: RenderTypes,
         defaultEncapsulation?: ViewEncapsulation,
         genDebugInfo?: boolean,
         logBindingUpdate?: boolean,
-        useJit?: boolean,
-        deprecatedPlatformDirectives?: any[],
-        deprecatedPlatformPipes?: any[]
+        useJit?: boolean
       } = {}) {
     this.renderTypes = renderTypes;
     this.defaultEncapsulation = defaultEncapsulation;
     this._genDebugInfo = genDebugInfo;
     this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
-    this.platformDirectives = deprecatedPlatformDirectives;
-    this.platformPipes = deprecatedPlatformPipes;
   }
 
   get genDebugInfo(): boolean {

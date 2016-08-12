@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Component, Inject, Injectable, OptionalMetadata, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Component, Inject, Injectable, OptionalMetadata, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 export * from './template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser/template_parser';
@@ -90,9 +90,6 @@ export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[
   moduleDeclarations: Type<any>[],
   deprecationMessages: string[]
 } {
-  let platformDirectives: any[] = [];
-  let platformPipes: any[] = [];
-
   let compilerProviders: any[] = [];
   let useDebug: boolean;
   let useJit: boolean;
@@ -105,37 +102,17 @@ export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[
   const tempInj = ReflectiveInjector.resolveAndCreate(appProviders);
   const compilerConfig: CompilerConfig = tempInj.get(CompilerConfig, null);
   if (compilerConfig) {
-    platformDirectives = compilerConfig.platformDirectives;
-    platformPipes = compilerConfig.platformPipes;
     useJit = compilerConfig.useJit;
     useDebug = compilerConfig.genDebugInfo;
     defaultEncapsulation = compilerConfig.defaultEncapsulation;
     deprecationMessages.push(
         `Passing CompilerConfig as a regular provider is deprecated. Use the "compilerOptions" parameter of "bootstrap()" or use a custom "CompilerFactory" platform provider instead.`);
-  } else {
-    // If nobody provided a CompilerConfig, use the
-    // PLATFORM_DIRECTIVES / PLATFORM_PIPES values directly if existing
-    platformDirectives = tempInj.get(PLATFORM_DIRECTIVES, []);
-    platformPipes = tempInj.get(PLATFORM_PIPES, []);
   }
-  platformDirectives = ListWrapper.flatten(platformDirectives);
-  platformPipes = ListWrapper.flatten(platformPipes);
   const xhr = tempInj.get(XHR, null);
   if (xhr) {
     compilerProviders.push([{provide: XHR, useValue: xhr}]);
     deprecationMessages.push(
         `Passing XHR as regular provider is deprecated. Pass the provider via "compilerOptions" instead.`);
-  }
-
-  if (platformDirectives.length > 0) {
-    deprecationMessages.push(
-        `The PLATFORM_DIRECTIVES provider and CompilerConfig.platformDirectives is deprecated. Add the directives to an NgModule instead! ` +
-        `(Directives: ${platformDirectives.map(type => stringify(type))})`);
-  }
-  if (platformPipes.length > 0) {
-    deprecationMessages.push(
-        `The PLATFORM_PIPES provider and CompilerConfig.platformPipes is deprecated. Add the pipes to an NgModule instead! ` +
-        `(Pipes: ${platformPipes.map(type => stringify(type))})`);
   }
   const compilerOptions: CompilerOptions = {
     useJit: useJit,
@@ -144,18 +121,7 @@ export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[
     providers: compilerProviders
   };
 
-  // Declare a component that uses @Component.directives / pipes as these
-  // will be added to the module declarations only if they are not already
-  // imported by other modules.
-  @Component({directives: platformDirectives, pipes: platformPipes, template: ''})
-  class DynamicComponent {
-  }
-
-  return {
-    compilerOptions,
-    moduleDeclarations: [DynamicComponent],
-    deprecationMessages: deprecationMessages
-  };
+  return {compilerOptions, moduleDeclarations: [], deprecationMessages: deprecationMessages};
 }
 
 @Injectable()

@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {APP_ID, NgModule, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
+import {APP_ID, NgModule, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
 
 import {BrowserModule} from '../src/browser';
 import {BrowserDomAdapter} from '../src/browser/browser_adapter';

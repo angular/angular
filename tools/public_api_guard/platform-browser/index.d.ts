@@ -7,21 +7,12 @@ export declare abstract class AnimationDriver {
     static NOOP: AnimationDriver;
 }
 
-/** @deprecated */
-export declare const BROWSER_APP_PROVIDERS: Array<any>;
-
-/** @deprecated */
-export declare const BROWSER_PLATFORM_PROVIDERS: Array<any>;
-
 /** @experimental */
 export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
 
 /** @experimental */
 export declare class BrowserModule {
 }
-
-/** @deprecated */
-export declare const browserPlatform: (extraProviders?: any[]) => PlatformRef;
 
 /** @stable */
 export declare class BrowserPlatformLocation extends PlatformLocation {
@@ -203,9 +194,6 @@ export declare class WebWorkerInstance {
     worker: Worker;
 }
 
-/** @deprecated */
-export declare const WORKER_APP_APPLICATION_PROVIDERS: Array<any>;
-
 /** @experimental */
 export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     provide: typeof PlatformLocation;
@@ -217,14 +205,8 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     deps: (typeof PlatformLocation | typeof NgZone)[];
 })[];
 
-/** @deprecated */
-export declare const WORKER_APP_PLATFORM_PROVIDERS: Array<any>;
-
 /** @experimental */
 export declare const WORKER_SCRIPT: OpaqueToken;
-
-/** @deprecated */
-export declare const WORKER_UI_APPLICATION_PROVIDERS: Array<any>;
 
 /** @experimental */
 export declare const WORKER_UI_LOCATION_PROVIDERS: (typeof MessageBasedPlatformLocation | typeof BrowserPlatformLocation | {
@@ -234,18 +216,9 @@ export declare const WORKER_UI_LOCATION_PROVIDERS: (typeof MessageBasedPlatformL
     deps: typeof Injector[];
 })[];
 
-/** @deprecated */
-export declare const WORKER_UI_PLATFORM_PROVIDERS: Array<any>;
-
 /** @experimental */
 export declare const WORKER_UI_STARTABLE_MESSAGING_SERVICE: OpaqueToken;
 
 /** @experimental */
 export declare class WorkerAppModule {
 }
-
-/** @deprecated */
-export declare const workerAppPlatform: (extraProviders?: any[]) => PlatformRef;
-
-/** @deprecated */
-export declare const workerUiPlatform: (extraProviders?: any[]) => PlatformRef;

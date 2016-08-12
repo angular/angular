@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, destroyPlatform} from '@angular/core';
+import {Component, NgModule, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
-import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
-import {BROWSER_APP_COMPILER_PROVIDERS} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {serverBootstrap} from '@angular/platform-server';
+import {ServerModule, platformDynamicServer} from '@angular/platform-server';
 
 function writeBody(html: string): any {
   var dom = getDOM();
@@ -19,6 +17,15 @@ function writeBody(html: string): any {
   var body = dom.querySelector(doc, 'body');
   dom.setInnerHTML(body, html);
   return body;
+}
+
+
+@Component({selector: 'app', template: `Works!`})
+class MyServerApp {
+}
+
+@NgModule({imports: [ServerModule], bootstrap: [MyServerApp]})
+class ExampleModule {
 }
 
 export function main() {
@@ -31,13 +38,9 @@ export function main() {
 
     it('should bootstrap', async(() => {
          var body = writeBody('<app></app>');
-         serverBootstrap(MyServerApp, [
-           BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS
-         ]).then(() => { expect(getDOM().getText(body)).toEqual('Works!'); });
+         platformDynamicServer().bootstrapModule(ExampleModule).then(() => {
+           expect(getDOM().getText(body)).toEqual('Works!');
+         });
        }));
   });
-}
-
-@Component({selector: 'app', template: `Works!`})
-class MyServerApp {
 }
