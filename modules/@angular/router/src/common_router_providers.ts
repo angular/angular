@@ -7,7 +7,7 @@
  */
 
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentResolver, Injector, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentResolver, Injector, NgModuleFactoryLoader, OpaqueToken, SystemJsNgModuleLoader} from '@angular/core';
 
 import {Route, Routes} from './config';
 import {Router} from './router';
@@ -30,13 +30,13 @@ export interface ExtraOptions {
 export function setupRouter(
     ref: ApplicationRef, resolver: ComponentResolver, urlSerializer: UrlSerializer,
     outletMap: RouterOutletMap, location: Location, injector: Injector,
-    loader: NgModuleFactoryLoader, config: Route[][], opts: ExtraOptions = {}) {
+    loader: NgModuleFactoryLoader, compiler: Compiler, config: Route[][], opts: ExtraOptions = {}) {
   if (ref.componentTypes.length == 0) {
     throw new Error('Bootstrap at least one component before injecting Router.');
   }
   const componentType = ref.componentTypes[0];
   const r = new Router(
-      componentType, resolver, urlSerializer, outletMap, location, injector, loader,
+      componentType, resolver, urlSerializer, outletMap, location, injector, loader, compiler,
       flatten(config));
 
   if (opts.enableTracing) {
@@ -92,7 +92,7 @@ export function provideRouter(routes: Routes, config: ExtraOptions = {}): any[] 
       useFactory: setupRouter,
       deps: [
         ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
-        NgModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
+        NgModuleFactoryLoader, Compiler, ROUTES, ROUTER_CONFIGURATION
       ]
     },
 

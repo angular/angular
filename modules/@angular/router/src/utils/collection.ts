@@ -122,7 +122,7 @@ export function andObservables(observables: Observable<Observable<any>>): Observ
   return observables.mergeAll().every(result => result === true);
 }
 
-export function wrapIntoObservable<T>(value: T | Observable<T>): Observable<T> {
+export function wrapIntoObservable<T>(value: T | Promise<T>| Observable<T>): Observable<T> {
   if (value instanceof Observable) {
     return value;
   } else if (value instanceof Promise) {

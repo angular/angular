@@ -1570,6 +1570,33 @@ describe('Integration', () => {
              expect(fixture.debugElement.nativeElement).toHaveText('lazy-loaded');
            })));
 
+    it('works when given a callback',
+       fakeAsync(inject(
+           [Router, TestComponentBuilder, Location, NgModuleFactoryLoader],
+           (router: Router, tcb: TestComponentBuilder, location: Location) => {
+             @Component({selector: 'lazy', template: 'lazy-loaded'})
+             class LazyLoadedComponent {
+             }
+
+             @NgModule({
+               declarations: [LazyLoadedComponent],
+               imports: [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])],
+               entryComponents: [LazyLoadedComponent]
+             })
+             class LoadedModule {
+             }
+
+             const fixture = createRoot(tcb, router, RootCmp);
+
+             router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
+
+             router.navigateByUrl('/lazy/loaded');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/lazy/loaded');
+             expect(fixture.debugElement.nativeElement).toHaveText('lazy-loaded');
+           })));
+
     it('error emit an error when cannot load a config',
        fakeAsync(inject(
            [Router, TestComponentBuilder, Location, NgModuleFactoryLoader],

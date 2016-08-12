@@ -13,7 +13,7 @@ import 'rxjs/add/operator/reduce';
 import 'rxjs/add/operator/every';
 
 import {Location} from '@angular/common';
-import {ComponentFactoryResolver, ComponentResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type} from '@angular/core';
+import {Compiler, ComponentFactoryResolver, ComponentResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
@@ -147,11 +147,11 @@ export class Router {
       private rootComponentType: Type<any>, private resolver: ComponentResolver,
       private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
       private location: Location, private injector: Injector, loader: NgModuleFactoryLoader,
-      public config: Routes) {
+      compiler: Compiler, public config: Routes) {
     this.resetConfig(config);
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
-    this.configLoader = new RouterConfigLoader(loader);
+    this.configLoader = new RouterConfigLoader(loader, compiler);
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
   }
 

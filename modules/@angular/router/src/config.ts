@@ -7,6 +7,7 @@
  */
 
 import {Type} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
 
 
 /**
@@ -475,6 +476,16 @@ export type ResolveData = {
 };
 
 /**
+ * @experimental
+ */
+export type LoadChildrenCallback = () => Type<any>| Promise<Type<any>>| Observable<Type<any>>;
+
+/**
+ * @experimental
+ */
+export type LoadChildren = string | LoadChildrenCallback;
+
+/**
  * See {@link Routes} for more details.
  * @stable
  */
@@ -496,7 +507,7 @@ export interface Route {
   data?: Data;
   resolve?: ResolveData;
   children?: Route[];
-  loadChildren?: string;
+  loadChildren?: LoadChildren;
 }
 
 export function validateConfig(config: Routes): void {

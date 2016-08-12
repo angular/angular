@@ -8,7 +8,7 @@
 
 
 export {ExtraOptions, provideRouterConfig, provideRoutes} from './src/common_router_providers';
-export {Data, ResolveData, Route, RouterConfig, Routes} from './src/config';
+export {Data, LoadChildren, LoadChildrenCallback, ResolveData, Route, RouterConfig, Routes} from './src/config';
 export {RouterLink, RouterLinkWithHref} from './src/directives/router_link';
 export {RouterLinkActive} from './src/directives/router_link_active';
 export {RouterOutlet} from './src/directives/router_outlet';
