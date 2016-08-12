@@ -36,6 +36,9 @@ export declare class DecimalPipe implements PipeTransform {
     transform(value: any, digits?: string): string;
 }
 
+/** @experimental */
+export declare function getPluralCase(locale: string, nLike: number | string): Plural;
+
 /** @stable */
 export declare class HashLocationStrategy extends LocationStrategy {
     constructor(_platformLocation: PlatformLocation, _baseHref?: string);
@@ -130,6 +133,12 @@ export declare class NgIf {
 }
 
 /** @experimental */
+export declare class NgLocaleLocalization extends NgLocalization {
+    constructor(_locale: string);
+    getPluralCategory(value: any): string;
+}
+
+/** @experimental */
 export declare abstract class NgLocalization {
     abstract getPluralCategory(value: any): string;
 }
@@ -211,6 +220,16 @@ export declare abstract class PlatformLocation {
     abstract onPopState(fn: UrlChangeListener): void;
     abstract pushState(state: any, title: string, url: string): void;
     abstract replaceState(state: any, title: string, url: string): void;
+}
+
+/** @experimental */
+export declare enum Plural {
+    Zero = 0,
+    One = 1,
+    Two = 2,
+    Few = 3,
+    Many = 4,
+    Other = 5,
 }
 
 /** @deprecated */

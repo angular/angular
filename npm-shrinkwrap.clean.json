@@ -1660,6 +1660,17 @@
         }
       }
     },
+    "cldr": {
+      "version": "3.5.0",
+      "dependencies": {
+        "uglify-js": {
+          "version": "1.3.3"
+        },
+        "underscore": {
+          "version": "1.3.3"
+        }
+      }
+    },
     "cli-color": {
       "version": "1.1.0",
       "dependencies": {
@@ -3283,6 +3294,9 @@
     "hash.js": {
       "version": "1.0.3"
     },
+    "hashish": {
+      "version": "0.0.4"
+    },
     "hawk": {
       "version": "3.1.2"
     },
@@ -3990,6 +4004,17 @@
     "media-typer": {
       "version": "0.3.0"
     },
+    "memoizeasync": {
+      "version": "0.8.0",
+      "dependencies": {
+        "lru-cache": {
+          "version": "2.5.0"
+        },
+        "passerror": {
+          "version": "0.0.2"
+        }
+      }
+    },
     "memoizee": {
       "version": "0.3.10"
     },
@@ -4341,6 +4366,9 @@
     "parseurl": {
       "version": "1.3.0"
     },
+    "passerror": {
+      "version": "0.0.1"
+    },
     "path-array": {
       "version": "1.0.0"
     },
@@ -4378,6 +4406,9 @@
     },
     "pbkdf2-compat": {
       "version": "2.0.1"
+    },
+    "pegjs": {
+      "version": "0.7.0"
     },
     "pify": {
       "version": "2.3.0"
@@ -4843,6 +4874,14 @@
     },
     "send": {
       "version": "0.13.0"
+    },
+    "seq": {
+      "version": "0.3.5",
+      "dependencies": {
+        "chainsaw": {
+          "version": "0.0.9"
+        }
+      }
     },
     "sequencify": {
       "version": "0.0.7"
@@ -5420,6 +5459,9 @@
     "underscore.string": {
       "version": "2.3.3"
     },
+    "unicoderegexp": {
+      "version": "0.4.1"
+    },
     "unique-stream": {
       "version": "1.0.0"
     },
@@ -5696,8 +5738,14 @@
         }
       }
     },
+    "xmldom": {
+      "version": "0.1.19"
+    },
     "xmlhttprequest-ssl": {
       "version": "1.5.1"
+    },
+    "xpath": {
+      "version": "0.0.7"
     },
     "xtend": {
       "version": "4.0.1"
@@ -5730,5 +5778,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-rc.4"
+  "version": "2.0.0-rc.5"
 }
