@@ -1003,14 +1003,11 @@ export declare const platformCore: (extraProviders?: any[]) => PlatformRef;
 /** @experimental */
 export declare abstract class PlatformRef {
     destroyed: boolean;
-    /** @deprecated */ disposed: boolean;
     injector: Injector;
     /** @stable */ bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
     /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
     abstract destroy(): void;
-    /** @deprecated */ abstract dispose(): void;
     abstract onDestroy(callback: () => void): void;
-    /** @deprecated */ abstract registerDisposeListener(dispose: () => void): void;
 }
 
 /** @deprecated */
