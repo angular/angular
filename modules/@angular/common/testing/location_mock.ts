@@ -77,6 +77,7 @@ export class SpyLocation implements Location {
 
     var url = path + (query.length > 0 ? ('?' + query) : '');
     this.urlChanges.push(url);
+    this._subject.emit({'url': url, 'pop': false});
   }
 
   replaceState(path: string, query: string = '') {

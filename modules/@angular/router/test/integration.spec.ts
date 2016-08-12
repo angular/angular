@@ -872,6 +872,44 @@ describe('Integration', () => {
 
                             expect(location.path()).toEqual('/team/22');
                           })));
+
+    it('should not break the back button when trigger by location change',
+       fakeAsync(inject(
+           [Router, TestComponentBuilder, Location],
+           (router: Router, tcb: TestComponentBuilder, location: Location) => {
+             const fixture = tcb.createFakeAsync(RootCmp);
+             advance(fixture);
+             router.resetConfig([
+               {path: 'initial', component: BlankCmp},
+               {path: 'old/team/:id', redirectTo: 'team/:id'},
+               {path: 'team/:id', component: TeamCmp}
+             ]);
+
+             location.go('initial');
+             location.go('old/team/22');
+
+             // initial navigation
+             router.initialNavigation();
+             advance(fixture);
+             expect(location.path()).toEqual('/team/22');
+
+             location.back();
+             advance(fixture);
+             expect(location.path()).toEqual('/initial');
+
+             // location change
+             (<any>location).go('/old/team/33');
+
+
+             advance(fixture);
+             expect(location.path()).toEqual('/team/33');
+
+             location.back();
+             advance(fixture);
+             expect(location.path()).toEqual('/initial');
+           })));
+
+    // should not break the back button when trigger by initial navigation
   });
 
   describe('guards', () => {
