@@ -14,7 +14,7 @@ export * from './src/pipes';
 export * from './src/directives';
 export * from './src/common_directives';
 export * from './src/location';
-export {NgLocalization} from './src/localization';
+export {NgLocalization, NgLocaleLocalization, Plural, getPluralCase} from './src/localization';
 
 // Note: This does not contain the location providers,
 // as they need some platform specific implementations to work.
