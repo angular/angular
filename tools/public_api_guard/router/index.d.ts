@@ -108,6 +108,7 @@ export interface NavigationExtras {
     preserveQueryParams?: boolean;
     queryParams?: Params;
     relativeTo?: ActivatedRoute;
+    replaceUrl?: boolean;
     skipLocationChange?: boolean;
 }
 

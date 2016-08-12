@@ -47,6 +47,7 @@ export interface NavigationExtras {
   preserveQueryParams?: boolean;
   preserveFragment?: boolean;
   skipLocationChange?: boolean;
+  replaceUrl?: boolean;
 }
 
 /**
@@ -160,7 +161,7 @@ export class Router {
    */
   initialNavigation(): void {
     this.setUpLocationChangeListener();
-    this.navigateByUrl(this.location.path(true));
+    this.navigateByUrl(this.location.path(true), {replaceUrl: true});
   }
 
   /**
@@ -336,7 +337,8 @@ export class Router {
   private scheduleNavigation(url: UrlTree, extras: NavigationExtras): Promise<boolean> {
     const id = ++this.navigationId;
     this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
-    return Promise.resolve().then((_) => this.runNavigate(url, extras.skipLocationChange, id));
+    return Promise.resolve().then(
+        (_) => this.runNavigate(url, extras.skipLocationChange, extras.replaceUrl, id));
   }
 
   private setUpLocationChangeListener(): void {
@@ -347,12 +349,14 @@ export class Router {
       // we fire multiple events for a single URL change
       // we should navigate only once
       return this.currentUrlTree.toString() !== tree.toString() ?
-          this.scheduleNavigation(tree, change['pop']) :
+          this.scheduleNavigation(tree, {skipLocationChange: change['pop'], replaceUrl: true}) :
           null;
     }));
   }
 
-  private runNavigate(url: UrlTree, preventPushState: boolean, id: number): Promise<boolean> {
+  private runNavigate(
+      url: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
+      id: number): Promise<boolean> {
     if (id !== this.navigationId) {
       this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
       this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url)));
@@ -415,9 +419,9 @@ export class Router {
 
             new ActivateRoutes(state, storedState).activate(this.outletMap);
 
-            if (!preventPushState) {
+            if (!shouldPreventPushState) {
               let path = this.urlSerializer.serialize(appliedUrl);
-              if (this.location.isCurrentPathEqualTo(path)) {
+              if (this.location.isCurrentPathEqualTo(path) || shouldReplaceUrl) {
                 this.location.replaceState(path);
               } else {
                 this.location.go(path);
