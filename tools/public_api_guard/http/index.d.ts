@@ -109,6 +109,9 @@ export declare abstract class JSONPConnection implements Connection {
 }
 
 /** @experimental */
+export declare function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: RequestOptions): Jsonp;
+
+/** @experimental */
 export declare class JsonpModule {
 }
 
