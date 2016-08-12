@@ -1,7 +1,6 @@
 /** @experimental */
 export declare class UpgradeAdapter {
     constructor(ng2AppModule?: Type<any>);
-    /** @deprecated */ addProvider(provider: Type<any> | Provider | any[] | any): void;
     bootstrap(element: Element, modules?: any[], config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef;
     downgradeNg2Component(type: Type<any>): Function;
     downgradeNg2Provider(token: any): Function;

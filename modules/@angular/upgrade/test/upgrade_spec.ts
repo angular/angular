@@ -836,16 +836,18 @@ export function main() {
     describe('injection', () => {
       function SomeToken() {}
 
-      it('should export ng2 instance to ng1',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var adapter = new UpgradeAdapter();
+      it('should export ng2 instance to ng1', async(() => {
+           var MyModule = NgModule({
+                            providers: [{provide: SomeToken, useValue: 'correct_value'}],
+                            imports: [BrowserModule]
+                          }).Class({constructor: function() {}});
+
+           var adapter = new UpgradeAdapter(MyModule);
            var module = angular.module('myExample', []);
-           adapter.addProvider({provide: SomeToken, useValue: 'correct_value'});
            module.factory('someToken', adapter.downgradeNg2Provider(SomeToken));
            adapter.bootstrap(html('<div>'), ['myExample']).ready((ref) => {
              expect(ref.ng1Injector.get('someToken')).toBe('correct_value');
              ref.dispose();
-             async.done();
            });
          }));
 
