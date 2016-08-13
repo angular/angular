@@ -62,11 +62,22 @@ export class NgForRow {
  * elements were deleted and all new elements inserted). This is an expensive operation and should
  * be avoided if possible.
  *
+ * To customize the default tracking algorithm, `NgFor` supports `ngForTrackBy` option.
+ * `ngForTrackBy` takes a function which has two arguments: `index` and `item`.
+ * If `ngForTrackBy` is given, Angular tracks changes by the return value of the function.
+ *
  * ### Syntax
  *
- * - `<li *ngFor="let item of items; let i = index">...</li>`
- * - `<li template="ngFor let item of items; let i = index">...</li>`
- * - `<template ngFor let-item [ngForOf]="items" let-i="index"><li>...</li></template>`
+ * - `<li *ngFor="let item of items; let i = index; trackBy: trackByFn">...</li>`
+ * - `<li template="ngFor let item of items; let i = index; trackBy: trackByFn">...</li>`
+ *
+ * With `<template>` element:
+ *
+ * ```
+ * <template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
+ *   <li>...</li>
+ * </template>
+ * ```
  *
  * ### Example
  *
