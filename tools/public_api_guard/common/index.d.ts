@@ -12,7 +12,7 @@ export declare class AsyncPipe implements OnDestroy {
 export declare const COMMON_DIRECTIVES: any[];
 
 /** @experimental */
-export declare const COMMON_PIPES: (typeof AsyncPipe | typeof SlicePipe | typeof ReplacePipe | typeof I18nPluralPipe | typeof I18nSelectPipe)[];
+export declare const COMMON_PIPES: (typeof AsyncPipe | typeof SlicePipe | typeof I18nPluralPipe | typeof I18nSelectPipe)[];
 
 /** @experimental */
 export declare class CommonModule {
@@ -230,11 +230,6 @@ export declare enum Plural {
     Few = 3,
     Many = 4,
     Other = 5,
-}
-
-/** @deprecated */
-export declare class ReplacePipe implements PipeTransform {
-    transform(value: any, pattern: string | RegExp, replacement: Function | string): any;
 }
 
 /** @stable */
