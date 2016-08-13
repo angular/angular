@@ -84,7 +84,7 @@ export function main(): void {
       it('should replace ICU placeholders with their translations', () => {
         const HTML = `<div i18n>-{ count, plural, =0 {<p>bar</p>}}-</div>`;
 
-        const XTB = `<? xml version="1.0" encoding="UTF-8" ?>
+        const XTB = `<?xml version="1.0" encoding="UTF-8" ?>
 <translationbundle>
   <translation id="eb404e202fed4846e25e7d9ac1fcb719fe4da257">*<ph name="ICU"/>*</translation>
   <translation id="fc92b9b781194a02ab773129c8c5a7fc0735efd7">{ count, plural, =1 {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}}</translation>
@@ -103,7 +103,7 @@ export function main(): void {
 <div i18n="m|d">foo</div>
 <div i18n>{ count, plural, =0 {{ sex, gender, other {<p>bar</p>}} }}</div>`;
 
-        const XTB = `<? xml version="1.0" encoding="UTF-8" ?>
+        const XTB = `<?xml version="1.0" encoding="UTF-8" ?>
 <translationbundle>
   <translation id="7103b4b13b616270a0044efade97d8b4f96f2ca6"><ph name="INTERPOLATION"/><ph name="START_BOLD_TEXT"/>rab<ph name="CLOSE_BOLD_TEXT"/> oof</translation>
   <translation id="fc92b9b781194a02ab773129c8c5a7fc0735efd7">{ count, plural, =1 {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}}</translation>

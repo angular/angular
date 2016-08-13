@@ -15,7 +15,7 @@ describe('template i18n extraction output', () => {
   const outDir = '';
 
   it('should extract i18n messages', () => {
-    const EXPECTED = `<? xml version="1.0" encoding="UTF-8" ?>
+    const EXPECTED = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [
 <!ELEMENT messagebundle (msg)*>
 <!ATTLIST messagebundle class CDATA #IMPLIED>

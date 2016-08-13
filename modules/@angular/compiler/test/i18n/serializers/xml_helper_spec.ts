@@ -14,7 +14,7 @@ export function main(): void {
   describe('XML helper', () => {
     it('should serialize XML declaration', () => {
       expect(xml.serialize([new xml.Declaration({version: '1.0'})]))
-          .toEqual('<? xml version="1.0" ?>');
+          .toEqual('<?xml version="1.0" ?>');
     });
 
     it('should serialize text node',
