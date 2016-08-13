@@ -35,7 +35,7 @@ export class Xtb implements Serializer {
     }
 
     // Replace the placeholders, messages are now string
-    const {messages, errors} = new _Serializer().parse(result.rootNodes, messageBundle);
+    const {messages, errors} = new _Visitor().parse(result.rootNodes, messageBundle);
 
     if (errors.length) {
       throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
@@ -60,7 +60,7 @@ export class Xtb implements Serializer {
   }
 }
 
-class _Serializer implements ml.Visitor {
+class _Visitor implements ml.Visitor {
   private _messageNodes: [string, ml.Node[]][];
   private _translatedMessages: {[id: string]: string};
   private _bundleDepth: number;
