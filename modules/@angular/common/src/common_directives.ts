@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '@angular/core';
-
 import {CORE_DIRECTIVES} from './directives';
 
 /**
