@@ -1,11 +1,4 @@
-import {
-    addProviders,
-    inject,
-    async,
-    TestComponentBuilder,
-    ComponentFixture,
-    TestBed,
-} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Component, DebugElement, ViewEncapsulation} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -13,8 +6,8 @@ import {MdSlider, MdSliderModule} from './slider';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {TestGestureConfig} from './test-gesture-config';
 
+
 describe('MdSlider', () => {
-  let builder: TestComponentBuilder;
   let gestureConfig: TestGestureConfig;
 
   beforeEach(async(() => {
@@ -31,20 +24,15 @@ describe('MdSlider', () => {
         SliderWithThumbLabel,
         SliderWithTwoWayBinding,
       ],
+      providers: [
+        {provide: HAMMER_GESTURE_CONFIG, useFactory: () => {
+          gestureConfig = new TestGestureConfig();
+          return gestureConfig;
+        }}
+      ],
     });
 
-    addProviders([
-      {provide: HAMMER_GESTURE_CONFIG, useFactory: () => {
-        gestureConfig = new TestGestureConfig();
-        return gestureConfig;
-      }}
-    ]);
-
     TestBed.compileComponents();
-  }));
-
-  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-    builder = tcb;
   }));
 
   describe('standard slider', () => {
@@ -59,24 +47,22 @@ describe('MdSlider', () => {
     let thumbElement: HTMLElement;
     let thumbDimensions: ClientRect;
 
-    beforeEach(async(() => {
-      builder.createAsync(StandardSlider).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(StandardSlider);
+      fixture.detectChanges();
 
-        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
-        sliderNativeElement = sliderDebugElement.nativeElement;
-        sliderInstance = sliderDebugElement.componentInstance;
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.componentInstance;
 
-        trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
-        trackFillDimensions = trackFillElement.getBoundingClientRect();
-        sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
-        sliderDimensions = sliderTrackElement.getBoundingClientRect();
+      trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
+      trackFillDimensions = trackFillElement.getBoundingClientRect();
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderDimensions = sliderTrackElement.getBoundingClientRect();
 
-        thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
-        thumbDimensions = thumbElement.getBoundingClientRect();
-      });
-    }));
+      thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
+      thumbDimensions = thumbElement.getBoundingClientRect();
+    });
 
     it('should set the default values', () => {
       expect(sliderInstance.value).toBe(0);
@@ -207,16 +193,14 @@ describe('MdSlider', () => {
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
 
-    beforeEach(async(() => {
-      builder.createAsync(DisabledSlider).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(DisabledSlider);
+      fixture.detectChanges();
 
-        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
-        sliderNativeElement = sliderDebugElement.nativeElement;
-        sliderInstance = sliderDebugElement.componentInstance;
-      });
-    }));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.componentInstance;
+    });
 
     it('should be disabled', () => {
       expect(sliderInstance.disabled).toBeTruthy();
@@ -265,20 +249,18 @@ describe('MdSlider', () => {
     let trackFillElement: HTMLElement;
     let thumbElement: HTMLElement;
 
-    beforeEach(async(() => {
-      builder.createAsync(SliderWithMinAndMax).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithMinAndMax);
+      fixture.detectChanges();
 
-        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
-        sliderNativeElement = sliderDebugElement.nativeElement;
-        sliderInstance = sliderDebugElement.injector.get(MdSlider);
-        sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
-        sliderDimensions = sliderTrackElement.getBoundingClientRect();
-        trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
-        thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
-      });
-    }));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.injector.get(MdSlider);
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderDimensions = sliderTrackElement.getBoundingClientRect();
+      trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
+      thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
+    });
 
     it('should set the default values from the attributes', () => {
       expect(sliderInstance.value).toBe(4);
@@ -341,15 +323,13 @@ describe('MdSlider', () => {
     let sliderTrackElement: HTMLElement;
 
     beforeEach(async(() => {
-      builder.createAsync(SliderWithValue).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+      fixture = TestBed.createComponent(SliderWithValue);
+      fixture.detectChanges();
 
-        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
-        sliderNativeElement = sliderDebugElement.nativeElement;
-        sliderInstance = sliderDebugElement.injector.get(MdSlider);
-        sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
-      });
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.injector.get(MdSlider);
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
     }));
 
     it('should set the default value from the attribute', () => {
@@ -379,20 +359,18 @@ describe('MdSlider', () => {
     let trackFillElement: HTMLElement;
     let thumbElement: HTMLElement;
 
-    beforeEach(async(() => {
-      builder.createAsync(SliderWithStep).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithStep);
+      fixture.detectChanges();
 
-        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
-        sliderNativeElement = sliderDebugElement.nativeElement;
-        sliderInstance = sliderDebugElement.injector.get(MdSlider);
-        sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
-        sliderDimensions = sliderTrackElement.getBoundingClientRect();
-        trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
-        thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
-      });
-    }));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.injector.get(MdSlider);
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderDimensions = sliderTrackElement.getBoundingClientRect();
+      trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
+      thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
+    });
 
     it('should set the correct step value on click', () => {
       expect(sliderInstance.value).toBe(0);
@@ -448,16 +426,14 @@ describe('MdSlider', () => {
     let lastTickContainer: HTMLElement;
 
     beforeEach(async(() => {
-      builder.createAsync(SliderWithAutoTickInterval).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+      fixture = TestBed.createComponent(SliderWithAutoTickInterval);
+      fixture.detectChanges();
 
-        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
-        sliderNativeElement = sliderDebugElement.nativeElement;
-        tickContainer = <HTMLElement>sliderNativeElement.querySelector('.md-slider-tick-container');
-        lastTickContainer =
-            <HTMLElement>sliderNativeElement.querySelector('.md-slider-last-tick-container');
-      });
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      tickContainer = <HTMLElement>sliderNativeElement.querySelector('.md-slider-tick-container');
+      lastTickContainer =
+          <HTMLElement>sliderNativeElement.querySelector('.md-slider-last-tick-container');
     }));
 
     it('should set the correct tick separation', () => {
@@ -493,18 +469,16 @@ describe('MdSlider', () => {
     let tickContainer: HTMLElement;
     let lastTickContainer: HTMLElement;
 
-    beforeEach(async(() => {
-      builder.createAsync(SliderWithSetTickInterval).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithSetTickInterval);
+      fixture.detectChanges();
 
-        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
-        sliderNativeElement = sliderDebugElement.nativeElement;
-        tickContainer = <HTMLElement>sliderNativeElement.querySelector('.md-slider-tick-container');
-        lastTickContainer =
-            <HTMLElement>sliderNativeElement.querySelector('.md-slider-last-tick-container');
-      });
-    }));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      tickContainer = <HTMLElement>sliderNativeElement.querySelector('.md-slider-tick-container');
+      lastTickContainer =
+          <HTMLElement>sliderNativeElement.querySelector('.md-slider-last-tick-container');
+    });
 
     it('should set the correct tick separation', () => {
       // The slider width is 112px, the first step is at value 18 (step of 3 * tick interval of 6),
@@ -529,19 +503,17 @@ describe('MdSlider', () => {
     let sliderContainerElement: Element;
     let thumbLabelTextElement: Element;
 
-    beforeEach(async(() => {
-      builder.createAsync(SliderWithThumbLabel).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithThumbLabel);
+      fixture.detectChanges();
 
-        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
-        sliderNativeElement = sliderDebugElement.nativeElement;
-        sliderInstance = sliderDebugElement.componentInstance;
-        sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
-        sliderContainerElement = sliderNativeElement.querySelector('.md-slider-container');
-        thumbLabelTextElement = sliderNativeElement.querySelector('.md-slider-thumb-label-text');
-      });
-    }));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.componentInstance;
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderContainerElement = sliderNativeElement.querySelector('.md-slider-container');
+      thumbLabelTextElement = sliderNativeElement.querySelector('.md-slider-thumb-label-text');
+    });
 
     it('should add the thumb label class to the slider container', () => {
       expect(sliderContainerElement.classList).toContain('md-slider-thumb-label-showing');
@@ -599,19 +571,17 @@ describe('MdSlider', () => {
     let sliderTrackElement: HTMLElement;
     let testComponent: SliderWithTwoWayBinding;
 
-    beforeEach(async(() => {
-      builder.createAsync(SliderWithTwoWayBinding).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithTwoWayBinding);
+      fixture.detectChanges();
 
-        testComponent = fixture.debugElement.componentInstance;
+      testComponent = fixture.debugElement.componentInstance;
 
-        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
-        sliderNativeElement = sliderDebugElement.nativeElement;
-        sliderInstance = sliderDebugElement.injector.get(MdSlider);
-        sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
-      });
-    }));
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.injector.get(MdSlider);
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+    });
 
     it('should update the control when the value is updated', () => {
       expect(testComponent.control.value).toBe(0);
@@ -654,13 +624,12 @@ describe('MdSlider', () => {
 });
 
 // The transition has to be removed in order to test the updated positions without setTimeout.
+const noTransitionStyle =
+    '.md-slider-track-fill, .md-slider-thumb-position { transition: none !important; }';
+
 @Component({
   template: `<md-slider></md-slider>`,
-  styles: [`
-    .md-slider-track-fill, .md-slider-thumb-position {
-        transition: none !important;
-    }
-  `],
+  styles: [noTransitionStyle],
   encapsulation: ViewEncapsulation.None
 })
 class StandardSlider { }
@@ -672,11 +641,7 @@ class DisabledSlider { }
 
 @Component({
   template: `<md-slider min="4" max="6"></md-slider>`,
-  styles: [`
-    .md-slider-track-fill, .md-slider-thumb-position {
-        transition: none !important;
-    }
-  `],
+  styles: [noTransitionStyle],
   encapsulation: ViewEncapsulation.None
 })
 class SliderWithMinAndMax { }
@@ -688,32 +653,20 @@ class SliderWithValue { }
 
 @Component({
   template: `<md-slider step="25"></md-slider>`,
-  styles: [`
-    .md-slider-track-fill, .md-slider-thumb-position {
-        transition: none !important;
-    }
-  `],
+  styles: [noTransitionStyle],
   encapsulation: ViewEncapsulation.None
 })
 class SliderWithStep { }
 
-@Component({
-  template: `<md-slider step="5" tick-interval="auto"></md-slider>`
-})
+@Component({template: `<md-slider step="5" tick-interval="auto"></md-slider>`})
 class SliderWithAutoTickInterval { }
 
-@Component({
-  template: `<md-slider step="3" tick-interval="6"></md-slider>`
-})
+@Component({template: `<md-slider step="3" tick-interval="6"></md-slider>`})
 class SliderWithSetTickInterval { }
 
 @Component({
   template: `<md-slider thumb-label></md-slider>`,
-  styles: [`
-    .md-slider-thumb-label, .md-slider-thumb-label-text {
-        transition: none !important;
-    }
-  `],
+  styles: [noTransitionStyle],
   encapsulation: ViewEncapsulation.None
 })
 class SliderWithThumbLabel { }
