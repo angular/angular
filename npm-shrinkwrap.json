@@ -2599,9 +2599,9 @@
       }
     },
     "cldr": {
-      "version": "3.5.0",
-      "from": "cldr@latest",
-      "resolved": "https://registry.npmjs.org/cldr/-/cldr-3.5.0.tgz",
+      "version": "3.5.2",
+      "from": "cldr@>=3.5.0 <4.0.0",
+      "resolved": "https://registry.npmjs.org/cldr/-/cldr-3.5.2.tgz",
       "dependencies": {
         "uglify-js": {
           "version": "1.3.3",
@@ -7019,9 +7019,9 @@
       "resolved": "https://registry.npmjs.org/pbkdf2-compat/-/pbkdf2-compat-2.0.1.tgz"
     },
     "pegjs": {
-      "version": "0.7.0",
-      "from": "pegjs@0.7.0",
-      "resolved": "https://registry.npmjs.org/pegjs/-/pegjs-0.7.0.tgz"
+      "version": "0.9.0",
+      "from": "pegjs@0.9.0",
+      "resolved": "https://registry.npmjs.org/pegjs/-/pegjs-0.9.0.tgz"
     },
     "pify": {
       "version": "2.3.0",

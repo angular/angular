@@ -255,11 +255,10 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
     case 'bs':
     case 'hr':
     case 'sr':
-      // https://github.com/papandreou/node-cldr/issues/31
-      if (v === 0 && i % 10 === 1 && (!(i % 100 === 11)) || f % 10 === 1 && !(f % 100 === 11))
+      if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11))
         return Plural.One;
       if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-              (!(i % 100 >= 12 && i % 100 <= 14)) ||
+              !(i % 100 >= 12 && i % 100 <= 14) ||
           f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
               !(f % 100 >= 12 && f % 100 <= 14))
         return Plural.Few;
@@ -282,10 +281,10 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
       return Plural.Other;
     case 'dsb':
     case 'hsb':
-      if (v === 0 && (i % 100 === 1 || f % 100 === 1)) return Plural.One;
-      if (v === 0 && (i % 100 === 2 || f % 100 === 2)) return Plural.Two;
-      if (v === 0 && (i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 ||
-                      f % 100 === Math.floor(f % 100) && f % 100 >= 3 && f % 100 <= 4))
+      if (v === 0 && i % 100 === 1 || f % 100 === 1) return Plural.One;
+      if (v === 0 && i % 100 === 2 || f % 100 === 2) return Plural.Two;
+      if (v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 ||
+          f % 100 === Math.floor(f % 100) && f % 100 >= 3 && f % 100 <= 4)
         return Plural.Few;
       return Plural.Other;
     case 'ff':
@@ -295,9 +294,9 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
       if (i === 0 || i === 1) return Plural.One;
       return Plural.Other;
     case 'fil':
-      if (v === 0 && (i === 1 || i === 2 || i === 3 ||
-                      v === 0 && (!(i % 10 === 4 || i % 10 === 6 || i % 10 === 9) ||
-                                  !(v === 0) && !(f % 10 === 4 || f % 10 === 6 || f % 10 === 9))))
+      if (v === 0 && (i === 1 || i === 2 || i === 3) ||
+          v === 0 && !(i % 10 === 4 || i % 10 === 6 || i % 10 === 9) ||
+          !(v === 0) && !(f % 10 === 4 || f % 10 === 6 || f % 10 === 9))
         return Plural.One;
       return Plural.Other;
     case 'ga':
@@ -325,7 +324,7 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
       if (v === 0 && !(n >= 0 && n <= 10) && n % 10 === 0) return Plural.Many;
       return Plural.Other;
     case 'is':
-      if (t === 0 && i % 10 === 1 && (!(i % 100 === 11) || !(t === 0))) return Plural.One;
+      if (t === 0 && i % 10 === 1 && !(i % 100 === 11) || !(t === 0)) return Plural.One;
       return Plural.Other;
     case 'ksh':
       if (n === 0) return Plural.Zero;
@@ -354,13 +353,12 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
       if (n % 10 === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19 ||
           v === 2 && f % 100 === Math.floor(f % 100) && f % 100 >= 11 && f % 100 <= 19)
         return Plural.Zero;
-      if (n % 10 === 1 &&
-          (!(n % 100 === 11) ||
-           v === 2 && f % 10 === 1 && (!(f % 100 === 11) || !(v === 2) && f % 10 === 1)))
+      if (n % 10 === 1 && !(n % 100 === 11) || v === 2 && f % 10 === 1 && !(f % 100 === 11) ||
+          !(v === 2) && f % 10 === 1)
         return Plural.One;
       return Plural.Other;
     case 'mk':
-      if (v === 0 && (i % 10 === 1 || f % 10 === 1)) return Plural.One;
+      if (v === 0 && i % 10 === 1 || f % 10 === 1) return Plural.One;
       return Plural.Other;
     case 'mt':
       if (n === 1) return Plural.One;
@@ -373,11 +371,9 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
       if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
           !(i % 100 >= 12 && i % 100 <= 14))
         return Plural.Few;
-      if (v === 0 && !(i === 1) &&
-          (i % 10 === Math.floor(i % 10) && i % 10 >= 0 && i % 10 <= 1 ||
-           v === 0 &&
-               (i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
-                v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 12 && i % 100 <= 14)))
+      if (v === 0 && !(i === 1) && i % 10 === Math.floor(i % 10) && i % 10 >= 0 && i % 10 <= 1 ||
+          v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
+          v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 12 && i % 100 <= 14)
         return Plural.Many;
       return Plural.Other;
     case 'pt':
@@ -395,10 +391,9 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
       if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
           !(i % 100 >= 12 && i % 100 <= 14))
         return Plural.Few;
-      if (v === 0 && (i % 10 === 0 ||
-                      v === 0 && (i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
-                                  v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 11 &&
-                                      i % 100 <= 14)))
+      if (v === 0 && i % 10 === 0 ||
+          v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
+          v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 11 && i % 100 <= 14)
         return Plural.Many;
       return Plural.Other;
     case 'shi':
@@ -411,8 +406,7 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
     case 'sl':
       if (v === 0 && i % 100 === 1) return Plural.One;
       if (v === 0 && i % 100 === 2) return Plural.Two;
-      if (v === 0 &&
-          (i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 || !(v === 0)))
+      if (v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 || !(v === 0))
         return Plural.Few;
       return Plural.Other;
     case 'tzm':
