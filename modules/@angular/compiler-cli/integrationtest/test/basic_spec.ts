@@ -73,7 +73,7 @@ describe('template codegen output', () => {
 
     it('should inject the translations format into the component', () => {
       const compFixture = createComponent(BasicComp);
-      expect(compFixture.componentInstance.translationsFormat).toEqual('xtb');
+      expect(compFixture.componentInstance.translationsFormat).toEqual('xlf');
     });
 
     it('should support i18n for content tags', () => {

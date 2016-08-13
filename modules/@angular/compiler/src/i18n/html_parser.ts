@@ -12,17 +12,22 @@ import {ParseTreeResult} from '../ml_parser/parser';
 
 import {mergeTranslations} from './extractor_merger';
 import {MessageBundle} from './message_bundle';
+import {Serializer} from './serializers/serializer';
+import {Xliff} from './serializers/xliff';
+import {Xmb} from './serializers/xmb';
 import {Xtb} from './serializers/xtb';
 import {TranslationBundle} from './translation_bundle';
 
 export class HtmlParser implements BaseHtmlParser {
   // @override
-  public getTagDefinition: any;
+  getTagDefinition: any;
 
   // TODO(vicb): transB.load() should not need a msgB & add transB.resolve(msgB,
   // interpolationConfig)
   // TODO(vicb): remove the interpolationConfig from the Xtb serializer
-  constructor(private _htmlParser: BaseHtmlParser, private _translations?: string) {}
+  constructor(
+      private _htmlParser: BaseHtmlParser, private _translations?: string,
+      private _translationsFormat?: string) {}
 
   parse(
       source: string, url: string, parseExpansionForms: boolean = false,
@@ -43,9 +48,25 @@ export class HtmlParser implements BaseHtmlParser {
       return new ParseTreeResult(parseResult.rootNodes, parseResult.errors.concat(errors));
     }
 
-    const xtb = new Xtb(this._htmlParser, interpolationConfig);
-    const translationBundle = TranslationBundle.load(this._translations, url, messageBundle, xtb);
+    const serializer = this._createSerializer(interpolationConfig);
+    const translationBundle =
+        TranslationBundle.load(this._translations, url, messageBundle, serializer);
 
     return mergeTranslations(parseResult.rootNodes, translationBundle, interpolationConfig, [], {});
+  }
+
+  private _createSerializer(interpolationConfig: InterpolationConfig): Serializer {
+    const format = (this._translationsFormat || 'xlf').toLowerCase();
+
+    switch (format) {
+      case 'xmb':
+        return new Xmb();
+      case 'xtb':
+        return new Xtb(this._htmlParser, interpolationConfig);
+      case 'xliff':
+      case 'xlf':
+      default:
+        return new Xliff(this._htmlParser, interpolationConfig);
+    }
   }
 }

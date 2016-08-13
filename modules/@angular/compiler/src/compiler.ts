@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Component, Inject, Injectable, OptionalMetadata, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Component, Inject, Injectable, OptionalMetadata, PLATFORM_DIRECTIVES, PLATFORM_INITIALIZER, PLATFORM_PIPES, PlatformRef, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 export * from './template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser/template_parser';
@@ -63,9 +63,13 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   HtmlParser,
   {
     provide: i18n.HtmlParser,
-    useFactory: (parser: HtmlParser, translations: string) =>
-                    new i18n.HtmlParser(parser, translations),
-    deps: [HtmlParser, [new OptionalMetadata(), new Inject(TRANSLATIONS)]]
+    useFactory: (parser: HtmlParser, translations: string, format: string) =>
+                    new i18n.HtmlParser(parser, translations, format),
+    deps: [
+      HtmlParser,
+      [new OptionalMetadata(), new Inject(TRANSLATIONS)],
+      [new OptionalMetadata(), new Inject(TRANSLATIONS_FORMAT)],
+    ]
   },
   TemplateParser,
   DirectiveNormalizer,
