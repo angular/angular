@@ -18,7 +18,6 @@ import {I18nSelectPipe} from './i18n_select_pipe';
 import {JsonPipe} from './json_pipe';
 import {LowerCasePipe} from './lowercase_pipe';
 import {CurrencyPipe, DecimalPipe, PercentPipe} from './number_pipe';
-import {ReplacePipe} from './replace_pipe';
 import {SlicePipe} from './slice_pipe';
 import {UpperCasePipe} from './uppercase_pipe';
 
@@ -42,7 +41,6 @@ export const COMMON_PIPES = [
   PercentPipe,
   CurrencyPipe,
   DatePipe,
-  ReplacePipe,
   I18nPluralPipe,
   I18nSelectPipe,
 ];
