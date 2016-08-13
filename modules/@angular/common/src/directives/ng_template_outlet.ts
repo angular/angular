@@ -19,9 +19,21 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, TemplateRef, ViewContainer
  * ### Syntax
  *
  * ```
- * <template [ngTemplateOutlet]="templateRefExpression"
- *           [ngOutletContext]="objectExpression">
+ * <ng-container [ngTemplateOutlet]="templateRefExpression"
+ *               [ngOutletContext]="objectExpression">
+ * </ng-container>
+ * ```
+ *
+ * ### Example
+ *
+ * ```
+ * <template #t let-foo let-bar="explicit">
+ *   <p>{{foo}}{{bar}}</p>
  * </template>
+ *
+ * <ng-container [ngTemplateOutlet]="t"
+ *               [ngOutletContext]="{'$implicit': 'Foo', explicit: 'Bar'}">
+ * </ng-container>
  * ```
  *
  * @experimental
