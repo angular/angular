@@ -20,6 +20,8 @@ describe('reflector_host', () => {
   var reflectorNestedGenDir: ReflectorHost;
   var reflectorSiblingGenDir: ReflectorHost;
 
+  const DEBUG = false;
+
   beforeEach(() => {
     context = new MockContext('/tmp/src', clone(FILES));
     host = new MockCompilerHost(context);
@@ -35,87 +37,118 @@ describe('reflector_host', () => {
     }
     reflectorNestedGenDir = new ReflectorHost(
         program, host, {
-          genDir: '/tmp/project/src/gen/',
-          basePath: '/tmp/project/src',
+          // Intentional trailing slash, check for regression of #10533
+          genDir: '/tmp/src/gen/',
+          basePath: '/tmp/src',
           skipMetadataEmit: false,
           skipTemplateCodegen: false,
+          traceResolution: DEBUG,
           trace: false
         },
         context);
     reflectorSiblingGenDir = new ReflectorHost(
         program, host, {
-          genDir: '/tmp/project/gen',
-          basePath: '/tmp/project/src/',
+          genDir: '/tmp/gen',
+          // Intentional trailing slash, check for regression of #10533
+          basePath: '/tmp/src/',
+          rootDirs: ['/tmp/src/', '/tmp/gen/'],
           skipMetadataEmit: false,
           skipTemplateCodegen: false,
+          traceResolution: DEBUG,
           trace: false
         },
         context);
+
   });
 
-  describe('nestedGenDir', () => {
+  describe('path mapping', () => {
+    it('should use rootDirs for calculating relative imports', () => {
+      const reflectorHost = new ReflectorHost(
+          program, host, {
+            genDir: '/tmp/genfiles',
+            basePath: '/tmp/src/',
+            skipMetadataEmit: false,
+            skipTemplateCodegen: false,
+            trace: false,
+            traceResolution: DEBUG,
+            rootDirs: ['/tmp/src/', '/tmp/genfiles/'],
+            writeImportsForRootDirs: true,
+          },
+          context);
+      expect(reflectorHost.getImportPath(
+                 '/tmp/src/pathmapping/somefile.ts', '/tmp/src/pathmapping/comp.d.ts'))
+          .toEqual('./comp');
+    });
+  });
+
+  describe('nested genDir', () => {
     it('should import node_module from factory', () => {
       expect(reflectorNestedGenDir.getImportPath(
-                 '/tmp/project/src/gen/my.ngfactory.ts',
-                 '/tmp/project/node_modules/@angular/core.d.ts'))
+                 '/tmp/src/src/my.ngfactory.ts', '/tmp/src/node_modules/@angular/core.d.ts'))
           .toEqual('@angular/core');
+      expect(reflectorNestedGenDir.getImportPath(
+                 '/tmp/src/my.ngfactory.ts',
+                 '/tmp/node_modules/@angular/material/button.ngfactory.ts'))
+          .toEqual('./node_modules/@angular/material/button.ngfactory');
     });
 
     it('should import factory from factory', () => {
       expect(reflectorNestedGenDir.getImportPath(
-                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/my.other.ngfactory.ts'))
+                 '/tmp/src/my.ngfactory.ts', '/tmp/src/my.other.ngfactory.ts'))
           .toEqual('./my.other.ngfactory');
       expect(reflectorNestedGenDir.getImportPath(
-                 '/tmp/project/src/a/my.ngfactory.ts', '/tmp/project/src/my.other.css.ts'))
+                 '/tmp/src/a/my.ngfactory.ts', '/tmp/src/my.other.css.ts'))
           .toEqual('../my.other.css');
       expect(reflectorNestedGenDir.getImportPath(
-                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/a/my.other.css.shim.ts'))
+                 '/tmp/src/my.ngfactory.ts', '/tmp/src/a/my.other.css.shim.ts'))
           .toEqual('./a/my.other.css.shim');
     });
 
     it('should import application from factory', () => {
+      expect(
+          reflectorNestedGenDir.getImportPath('/tmp/src/my.ngfactory.ts', '/tmp/src/my.otherA.ts'))
+          .toEqual('../my.otherA');
       expect(reflectorNestedGenDir.getImportPath(
-                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/my.other.ts'))
-          .toEqual('../my.other');
+                 '/tmp/src/a/my.ngfactory.ts', '/tmp/src/my.otherB.ts'))
+          .toEqual('../../my.otherB');
       expect(reflectorNestedGenDir.getImportPath(
-                 '/tmp/project/src/a/my.ngfactory.ts', '/tmp/project/src/my.other.ts'))
-          .toEqual('../../my.other');
-      expect(reflectorNestedGenDir.getImportPath(
-                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/a/my.other.ts'))
-          .toEqual('../a/my.other');
+                 '/tmp/src/my.ngfactory.ts', '/tmp/src/a/my.otherC.ts'))
+          .toEqual('../a/my.otherC');
     });
   });
 
-  describe('nestedGenDir', () => {
+  describe('sibling genDir', () => {
     it('should import node_module from factory', () => {
       expect(reflectorSiblingGenDir.getImportPath(
-                 '/tmp/project/src/gen/my.ngfactory.ts',
-                 '/tmp/project/node_modules/@angular/core.d.ts'))
+                 '/tmp/src/my.ngfactory.ts', '/tmp/src/node_modules/@angular/core.d.ts'))
           .toEqual('@angular/core');
     });
 
     it('should import factory from factory', () => {
       expect(reflectorSiblingGenDir.getImportPath(
-                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/my.other.ngfactory.ts'))
+                 '/tmp/src/my.ngfactory.ts', '/tmp/src/my.other.ngfactory.ts'))
           .toEqual('./my.other.ngfactory');
       expect(reflectorSiblingGenDir.getImportPath(
-                 '/tmp/project/src/a/my.ngfactory.ts', '/tmp/project/src/my.other.css.ts'))
+                 '/tmp/src/a/my.ngfactory.ts', '/tmp/src/my.other.css.ts'))
           .toEqual('../my.other.css');
       expect(reflectorSiblingGenDir.getImportPath(
-                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/a/my.other.css.shim.ts'))
+                 '/tmp/src/my.ngfactory.ts', '/tmp/src/a/my.other.css.shim.ts'))
           .toEqual('./a/my.other.css.shim');
     });
 
     it('should import application from factory', () => {
-      expect(reflectorSiblingGenDir.getImportPath(
-                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/my.other.ts'))
+      expect(
+          reflectorSiblingGenDir.getImportPath('/tmp/src/my.ngfactory.ts', '/tmp/src/my.other.ts'))
           .toEqual('./my.other');
       expect(reflectorSiblingGenDir.getImportPath(
-                 '/tmp/project/src/a/my.ngfactory.ts', '/tmp/project/src/my.other.ts'))
+                 '/tmp/src/a/my.ngfactory.ts', '/tmp/src/my.other.ts'))
           .toEqual('../my.other');
       expect(reflectorSiblingGenDir.getImportPath(
-                 '/tmp/project/src/my.ngfactory.ts', '/tmp/project/src/a/my.other.ts'))
+                 '/tmp/src/my.ngfactory.ts', '/tmp/src/a/my.other.ts'))
           .toEqual('./a/my.other');
+      expect(reflectorSiblingGenDir.getImportPath(
+                 '/tmp/src/a/my.ngfactory.ts', '/tmp/src/a/my.other.ts'))
+          .toEqual('./my.other');
     });
   });
 
@@ -131,7 +164,7 @@ describe('reflector_host', () => {
 
   it('should be able to produce an import from main @angular/core', () => {
     expect(reflectorNestedGenDir.getImportPath(
-               '/tmp/project/src/main.ts', '/tmp/project/node_modules/@angular/core.d.ts'))
+               '/tmp/src/main.ts', '/tmp/src/node_modules/@angular/core.d.ts'))
         .toEqual('@angular/core');
   });
 
@@ -299,6 +332,17 @@ const FILES: Entry = {
           })
         }
       },
+      'pathmapping': {'bootstrap.ts': `import {a} from './comp.d.ts';`},
+      'a': {
+        'my.other.css.shim.ts': dummyModule,
+        'my.otherA.ts': dummyModule,
+        'my.otherB.ts': dummyModule,
+        'my.otherC.ts': dummyModule,
+      },
+      'my.other.ts': dummyModule,
+      'my.otherA.ts': dummyModule,
+      'my.otherB.ts': dummyModule,
+      'my.otherC.ts': dummyModule,
       'node_modules': {
         '@angular': {
           'core.d.ts': dummyModule,
@@ -308,7 +352,15 @@ const FILES: Entry = {
           'unused.d.ts': dummyModule,
           'empty.d.ts': 'export declare var a: string;',
           'empty.metadata.json': '[]',
+          'material': {'button.ts': dummyModule}
         }
+      }
+    },
+    'genfiles': {
+      'pathmapping': {
+        'comp.d.ts': `
+          export declare let a: string;
+        `
       }
     }
   }

@@ -16,8 +16,7 @@ import {StaticReflectorHost, StaticSymbol} from './static_reflector';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
-const NODE_MODULES = path.sep + 'node_modules' + path.sep;
-const IS_GENERATED = /\.(ngfactory|css(\.shim)?)$/;
+export const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 
 export interface ReflectorHostContext {
   fileExists(fileName: string): boolean;
@@ -32,17 +31,26 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   private isGenDirChildOfRootDir: boolean;
   private basePath: string;
   private genDir: string;
+  private rootDirs: string[];
   constructor(
       private program: ts.Program, private compilerHost: ts.CompilerHost,
       private options: AngularCompilerOptions, context?: ReflectorHostContext) {
     // normalize the path so that it never ends with '/'.
-    this.basePath = path.normalize(path.join(this.options.basePath, '.'));
-    this.genDir = path.normalize(path.join(this.options.genDir, '.'));
-
+    this.basePath = this.normalize(options.basePath);
+    this.genDir = this.normalize(options.genDir);
+    if (options.rootDir) {
+      this.rootDirs = [this.normalize(options.rootDir)];
+    } else if (options.rootDirs) {
+      this.rootDirs = options.rootDirs.map(f => this.normalize(f));
+    } else if (options.basePath) {
+      this.rootDirs = [this.normalize(options.basePath)];
+    }
     this.context = context || new NodeReflectorHostContext();
     var genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
   }
+
+  private normalize(filepath: string): string { return path.normalize(path.join(filepath, '.')); }
 
   angularImportLocations() {
     return {
@@ -58,6 +66,9 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   private resolve(m: string, containingFile: string) {
     const resolved =
         ts.resolveModuleName(m, containingFile, this.options, this.context).resolvedModule;
+    if (this.options.traceResolution) {
+      console.log('resolve', m, containingFile, '=>', resolved);
+    }
     return resolved ? resolved.resolvedFileName : null;
   };
 
@@ -79,8 +90,8 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
    * These need to be in a form that system.js can load, so absolute file paths don't work.
    *
    * The `containingFile` is always in the `genDir`, where as the `importedFile` can be in
-   * `genDir`, `node_module` or `basePath`.  The `importedFile` is either a generated file or
-   * existing file.
+   * `genDir`, `node_module` or `rootDir`/`rootDirs`.
+   * The `importedFile` is either a generated file or an existing file.
    *
    *               | genDir   | node_module |  rootDir
    * --------------+----------+-------------+----------
@@ -90,8 +101,19 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
    * NOTE: (*) the relative path is computed depending on `isGenDirChildOfRootDir`.
    */
   getImportPath(containingFile: string, importedFile: string): string {
+    // Both containingFile and importedFile come as if they were next to the
+    // source file which they are generated from. (But we know that proper location)
+    // is in the gen dir.
     importedFile = this.resolveAssetUrl(importedFile, containingFile);
     containingFile = this.resolveAssetUrl(containingFile, '');
+
+    // Now translate the path if the output is in the genDir
+    importedFile = this.adjustGendDirPath(importedFile);
+
+    if (this.options.traceResolution) {
+      console.log(
+          'getImportPath from containingFile', containingFile, 'to importedFile', importedFile);
+    }
 
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
@@ -99,59 +121,70 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       this.context.assumeFileExists(importedFile);
     }
 
-    containingFile = this.rewriteGenDirPath(containingFile);
+    // Now try to see if any of the absolute paths work. Such as @angular/core
+    let importModuleName = importedFile.replace(EXT, '');
+    const parts = importModuleName.split(path.sep).filter(p => !!p);
+    let foundRelativeImport: string = null;
+    for (let index = parts.length - 1; index >= 0; index--) {
+      let candidate = parts.slice(index, parts.length).join(path.sep);
+      if (this.resolve(candidate, containingFile) === importedFile) {
+        return candidate;
+      }
+    }
+
+    // Now try relative paths for each root.
+    // This would occure if generated file wants to import existing file.
+    containingFile = this.adjustGendDirPath(containingFile);
     const containingDir = path.dirname(containingFile);
-    // drop extension
-    importedFile = importedFile.replace(EXT, '');
-
-    var nodeModulesIndex = importedFile.indexOf(NODE_MODULES);
-    const importModule = nodeModulesIndex === -1 ?
-        null :
-        importedFile.substring(nodeModulesIndex + NODE_MODULES.length);
-    const isGeneratedFile = IS_GENERATED.test(importedFile);
-
-    if (isGeneratedFile) {
-      // rewrite to genDir path
-      if (importModule) {
-        // it is generated, therefore we do a relative path to the factory
-        return this.dotRelative(containingDir, this.genDir + NODE_MODULES + importModule);
-      } else {
-        // assume that import is also in `genDir`
-        importedFile = this.rewriteGenDirPath(importedFile);
-        return this.dotRelative(containingDir, importedFile);
-      }
-    } else {
-      // user code import
-      if (importModule) {
-        return importModule;
-      } else {
-        if (!this.isGenDirChildOfRootDir) {
-          // assume that they are on top of each other.
-          importedFile = importedFile.replace(this.basePath, this.genDir);
+    let shortestCandidate: any = null;
+    for (var i = 0; i < this.rootDirs.length; i++) {
+      const root = this.rootDirs[i];
+      const adjustedImport = importModuleName.replace(root, this.genDir);
+      const candidate = this.dotRelative(containingDir, adjustedImport);
+      if (this.resolve(candidate, containingFile)) {
+        if (!shortestCandidate || candidate.length < shortestCandidate.length) {
+          shortestCandidate = candidate;
         }
-        return this.dotRelative(containingDir, importedFile);
       }
+    }
+
+    if (shortestCandidate) {
+      return shortestCandidate;
+    }
+
+    // Assume relative import. Generated file => generated file.
+    return this.dotRelative(containingDir, importModuleName);
+  }
+
+  private adjustGendDirPath(filePath: string): string {
+    if (GENERATED_FILES.test(filePath)) {
+      // transplant the codegen path to be inside the `genDir`
+      let shortestRoot: string = null;
+      let shortestRelative: string = null;
+      // find the root which best matches the import;
+      for (var i = 0; i < this.rootDirs.length; i++) {
+        let root = this.rootDirs[i];
+        let relative: string = path.relative(root, filePath);
+        if (!shortestRelative || relative.length < shortestRelative.length) {
+          shortestRoot = root;
+          shortestRelative = relative;
+        }
+      }
+      var relativePath: string = path.relative(shortestRoot, filePath);
+      while (relativePath.startsWith('..' + path.sep)) {
+        // Strip out any `..` path such as: `../node_modules/@foo` as we want to put everything
+        // into `genDir`.
+        relativePath = relativePath.substr(3);
+      }
+      return path.join(this.options.genDir, relativePath);
+    } else {
+      return filePath;
     }
   }
 
   private dotRelative(from: string, to: string): string {
     var rPath: string = path.relative(from, to);
-    return rPath.startsWith('.') ? rPath : './' + rPath;
-  }
-
-  /**
-   * Moves the path into `genDir` folder while preserving the `node_modules` directory.
-   */
-  private rewriteGenDirPath(filepath: string) {
-    var nodeModulesIndex = filepath.indexOf(NODE_MODULES);
-    if (nodeModulesIndex !== -1) {
-      // If we are in node_modulse, transplant them into `genDir`.
-      return path.join(this.genDir, filepath.substring(nodeModulesIndex));
-    } else {
-      // pretend that containing file is on top of the `genDir` to normalize the paths.
-      // we apply the `genDir` => `rootDir` delta through `rootDirPrefix` later.
-      return filepath.replace(this.basePath, this.genDir);
-    }
+    return rPath.startsWith('.') ? rPath : '.' + path.sep + rPath;
   }
 
   findDeclaration(
