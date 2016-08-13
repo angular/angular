@@ -19,9 +19,7 @@ import {ViewEncapsulation} from './view';
  */
 export interface DirectiveMetadataType {
   selector?: string;
-  properties?: string[];
   inputs?: string[];
-  events?: string[];
   outputs?: string[];
   host?: {[key: string]: string};
   providers?: any[];
@@ -492,18 +490,8 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    * ```
    *
    */
-  get inputs(): string[] {
-    return isPresent(this._properties) && this._properties.length > 0 ? this._properties :
-                                                                        this._inputs;
-  }
-  /**
-   * Use `inputs` instead
-   *
-   * @deprecated
-   */
-  get properties(): string[] { return this.inputs; }
+  get inputs(): string[] { return this._inputs; }
   private _inputs: string[];
-  private _properties: string[];
 
   /**
    * Enumerates the set of event-bound output properties.
@@ -550,17 +538,8 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    * ```
    *
    */
-  get outputs(): string[] {
-    return isPresent(this._events) && this._events.length > 0 ? this._events : this._outputs;
-  }
-  /**
-   * Use `outputs` instead
-   *
-   * @deprecated
-   */
-  get events(): string[] { return this.outputs; }
+  get outputs(): string[] { return this._outputs; }
   private _outputs: string[];
-  private _events: string[];
 
   /**
    * Specify the events, actions, properties and attributes related to the host element.
@@ -764,14 +743,11 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
   queries: {[key: string]: any};
 
   constructor(
-      {selector, inputs, outputs, properties, events, host, providers, exportAs,
-       queries}: DirectiveMetadataType = {}) {
+      {selector, inputs, outputs, host, providers, exportAs, queries}: DirectiveMetadataType = {}) {
     super();
     this.selector = selector;
     this._inputs = inputs;
-    this._properties = properties;
     this._outputs = outputs;
-    this._events = events;
     this.host = host;
     this.exportAs = exportAs;
     this.queries = queries;
@@ -1022,34 +998,17 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    */
   entryComponents: Array<Type<any>|any[]>;
 
-  constructor({selector,
-               inputs,
-               outputs,
-               properties,
-               events,
-               host,
-               exportAs,
-               moduleId,
-               providers,
-               viewProviders,
-               changeDetection = ChangeDetectionStrategy.Default,
-               queries,
-               templateUrl,
-               template,
-               styleUrls,
-               styles,
-               animations,
-               directives,
-               pipes,
-               encapsulation,
-               interpolation,
-               entryComponents}: ComponentMetadataType = {}) {
+  constructor({selector,      inputs,         outputs,
+               host,          exportAs,       moduleId,
+               providers,     viewProviders,  changeDetection = ChangeDetectionStrategy.Default,
+               queries,       templateUrl,    template,
+               styleUrls,     styles,         animations,
+               directives,    pipes,          encapsulation,
+               interpolation, entryComponents}: ComponentMetadataType = {}) {
     super({
       selector: selector,
       inputs: inputs,
       outputs: outputs,
-      properties: properties,
-      events: events,
       host: host,
       exportAs: exportAs,
       providers: providers,
