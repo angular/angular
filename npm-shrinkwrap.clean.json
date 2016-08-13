@@ -1661,7 +1661,7 @@
       }
     },
     "cldr": {
-      "version": "3.5.0",
+      "version": "3.5.2",
       "dependencies": {
         "uglify-js": {
           "version": "1.3.3"
@@ -4408,7 +4408,7 @@
       "version": "2.0.1"
     },
     "pegjs": {
-      "version": "0.7.0"
+      "version": "0.9.0"
     },
     "pify": {
       "version": "2.3.0"
