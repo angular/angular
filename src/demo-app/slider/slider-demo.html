@@ -1,31 +1,21 @@
 <h1>Default Slider</h1>
-<section class="demo-section">
-  Label <md-slider #slidey></md-slider>
-  {{slidey.value}}
-</section>
+Label <md-slider #slidey></md-slider>
+{{slidey.value}}
 
 <h1>Slider with Min and Max</h1>
-<section class="demo-section">
-  <md-slider min="5" max="7" #slider2></md-slider>
-  {{slider2.value}}
-</section>
+<md-slider min="5" max="7" #slider2></md-slider>
+{{slider2.value}}
 
 <h1>Disabled Slider</h1>
-<section class="demo-section">
-  <md-slider disabled #slider3></md-slider>
-  {{slider3.value}}
-</section>
+<md-slider disabled #slider3></md-slider>
+{{slider3.value}}
 
 <h1>Slider with set value</h1>
-<section class="demo-section">
-  <md-slider value="43" #slider4></md-slider>
-</section>
+<md-slider value="43"></md-slider>
 
 <h1>Slider with step defined</h1>
-<section class="demo-section">
-  <md-slider min="1" max="100" step="20" #slider5></md-slider>
-  {{slider5.value}}
-</section>
+<md-slider min="1" max="100" step="20" #slider5></md-slider>
+{{slider5.value}}
 
 <h1>Slider with set tick interval</h1>
 <md-slider tick-interval="auto"></md-slider>
@@ -33,3 +23,7 @@
 
 <h1>Slider with Thumb Label</h1>
 <md-slider thumb-label></md-slider>
+
+<h1>Slider with two-way binding</h1>
+<md-slider [(ngModel)]="demo" step="40"></md-slider>
+<input [(ngModel)]="demo">

@@ -6,7 +6,13 @@ import {
   Input,
   ViewEncapsulation,
   AfterContentInit,
+  forwardRef,
 } from '@angular/core';
+import {
+  NG_VALUE_ACCESSOR,
+  ControlValueAccessor,
+  FormsModule,
+} from '@angular/forms';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {BooleanFieldValue} from '@angular2-material/core/annotations/field-value';
 import {applyCssTransform} from '@angular2-material/core/style/apply-transform';
@@ -18,9 +24,20 @@ import {MdGestureConfig} from '@angular2-material/core/core';
  */
 const MIN_AUTO_TICK_SEPARATION = 30;
 
+/**
+ * Provider Expression that allows md-slider to register as a ControlValueAccessor.
+ * This allows it to support [(ngModel)] and [formControl].
+ */
+export const MD_SLIDER_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MdSlider),
+  multi: true
+};
+
 @Component({
   moduleId: module.id,
   selector: 'md-slider',
+  providers: [MD_SLIDER_VALUE_ACCESSOR],
   host: {
     'tabindex': '0',
     '(click)': 'onClick($event)',
@@ -34,7 +51,7 @@ const MIN_AUTO_TICK_SEPARATION = 30;
   styleUrls: ['slider.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class MdSlider implements AfterContentInit {
+export class MdSlider implements AfterContentInit, ControlValueAccessor {
   /** A renderer to handle updating the slider's thumb and fill track. */
   private _renderer: SliderRenderer = null;
 
@@ -60,6 +77,11 @@ export class MdSlider implements AfterContentInit {
 
   /** The percentage of the slider that coincides with the value. */
   private _percent: number = 0;
+
+  private _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
+
+  /** onTouch function registered via registerOnTouch (ControlValueAccessor). */
+  onTouched: () => any = () => {};
 
   /** The values at which the thumb will snap. */
   @Input() step: number = 1;
@@ -123,8 +145,15 @@ export class MdSlider implements AfterContentInit {
   }
 
   set value(v: number) {
+    // Only set the value to a valid number. v is casted to an any as we know it will come in as a
+    // string but it is labeled as a number which causes parseFloat to not accept it.
+    if (isNaN(parseFloat(<any> v))) {
+      return;
+    }
+
     this._value = Number(v);
     this._isInitialized = true;
+    this._controlValueAccessorChangeFn(this._value);
   }
 
   constructor(elementRef: ElementRef) {
@@ -138,7 +167,10 @@ export class MdSlider implements AfterContentInit {
    */
   ngAfterContentInit() {
     this._sliderDimensions = this._renderer.getSliderDimensions();
-    this.snapToValue();
+    // This needs to be called after content init because the value can be set to the min if the
+    // value itself isn't set. If this happens, the control value accessor needs to be updated.
+    this._controlValueAccessorChangeFn(this.value);
+    this.snapThumbToValue();
     this._updateTickSeparation();
   }
 
@@ -152,7 +184,7 @@ export class MdSlider implements AfterContentInit {
     this.isSliding = false;
     this._renderer.addFocus();
     this.updateValueFromPosition(event.clientX);
-    this.snapToValue();
+    this.snapThumbToValue();
   }
 
   /** TODO: internal */
@@ -182,7 +214,7 @@ export class MdSlider implements AfterContentInit {
   /** TODO: internal */
   onSlideEnd() {
     this.isSliding = false;
-      this.snapToValue();
+    this.snapThumbToValue();
   }
 
   /** TODO: internal */
@@ -196,6 +228,7 @@ export class MdSlider implements AfterContentInit {
   /** TODO: internal */
   onBlur() {
     this.isActive = false;
+    this.onTouched();
   }
 
   /**
@@ -230,7 +263,7 @@ export class MdSlider implements AfterContentInit {
    * Snaps the thumb to the current value.
    * Called after a click or drag event is over.
    */
-  snapToValue() {
+  snapThumbToValue() {
     this.updatePercentFromValue();
     this._renderer.updateThumbAndFillPosition(this._percent, this._sliderDimensions.width);
   }
@@ -315,6 +348,34 @@ export class MdSlider implements AfterContentInit {
   clamp(value: number, min = 0, max = 1) {
     return Math.max(min, Math.min(value, max));
   }
+
+  /**
+   * Implemented as part of ControlValueAccessor.
+   * TODO: internal
+   */
+  writeValue(value: any) {
+    this.value = value;
+
+    if (this._sliderDimensions) {
+      this.snapThumbToValue();
+    }
+  }
+
+  /**
+   * Implemented as part of ControlValueAccessor.
+   * TODO: internal
+   */
+  registerOnChange(fn: (value: any) => void) {
+    this._controlValueAccessorChangeFn = fn;
+  }
+
+  /**
+   * Implemented as part of ControlValueAccessor.
+   * TODO: internal
+   */
+  registerOnTouched(fn: any) {
+    this.onTouched = fn;
+  }
 }
 
 /**
@@ -392,6 +453,7 @@ export const MD_SLIDER_DIRECTIVES = [MdSlider];
 
 
 @NgModule({
+  imports: [FormsModule],
   exports: MD_SLIDER_DIRECTIVES,
   declarations: MD_SLIDER_DIRECTIVES,
   providers: [

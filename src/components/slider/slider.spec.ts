@@ -6,6 +6,7 @@ import {
     ComponentFixture,
     TestBed,
 } from '@angular/core/testing';
+import {ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Component, DebugElement, ViewEncapsulation} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdSlider, MdSliderModule} from './slider';
@@ -18,7 +19,7 @@ describe('MdSlider', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSliderModule],
+      imports: [MdSliderModule, ReactiveFormsModule],
       declarations: [
         StandardSlider,
         DisabledSlider,
@@ -28,6 +29,7 @@ describe('MdSlider', () => {
         SliderWithAutoTickInterval,
         SliderWithSetTickInterval,
         SliderWithThumbLabel,
+        SliderWithTwoWayBinding,
       ],
     });
 
@@ -588,6 +590,67 @@ describe('MdSlider', () => {
       expect(sliderContainerElement.classList).toContain('md-slider-active');
     });
   });
+
+  describe('slider as a custom form control', () => {
+    let fixture: ComponentFixture<SliderWithTwoWayBinding>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderInstance: MdSlider;
+    let sliderTrackElement: HTMLElement;
+    let testComponent: SliderWithTwoWayBinding;
+
+    beforeEach(async(() => {
+      builder.createAsync(SliderWithTwoWayBinding).then(f => {
+        fixture = f;
+        fixture.detectChanges();
+
+        testComponent = fixture.debugElement.componentInstance;
+
+        sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+        sliderNativeElement = sliderDebugElement.nativeElement;
+        sliderInstance = sliderDebugElement.injector.get(MdSlider);
+        sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      });
+    }));
+
+    it('should update the control when the value is updated', () => {
+      expect(testComponent.control.value).toBe(0);
+
+      sliderInstance.value = 11;
+      fixture.detectChanges();
+
+      expect(testComponent.control.value).toBe(11);
+    });
+
+    it('should update the control on click', () => {
+      expect(testComponent.control.value).toBe(0);
+
+      dispatchClickEvent(sliderTrackElement, 0.76);
+      fixture.detectChanges();
+
+      expect(testComponent.control.value).toBe(76);
+    });
+
+    it('should update the control on slide', () => {
+      expect(testComponent.control.value).toBe(0);
+
+      dispatchSlideEvent(sliderTrackElement, sliderNativeElement, 0, 0.19, gestureConfig);
+      fixture.detectChanges();
+
+      expect(testComponent.control.value).toBe(19);
+    });
+
+    it('should update the value when the control is set', () => {
+      expect(sliderInstance.value).toBe(0);
+
+      testComponent.control.setValue(7);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(7);
+    });
+
+    // TODO: Add tests for ng-pristine, ng-touched, ng-invalid.
+  });
 });
 
 // The transition has to be removed in order to test the updated positions without setTimeout.
@@ -654,6 +717,13 @@ class SliderWithSetTickInterval { }
   encapsulation: ViewEncapsulation.None
 })
 class SliderWithThumbLabel { }
+
+@Component({
+  template: `<md-slider [formControl]="control"></md-slider>`
+})
+class SliderWithTwoWayBinding {
+  control = new FormControl('');
+}
 
 /**
  * Dispatches a click event from an element.
