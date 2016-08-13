@@ -28,7 +28,7 @@ class _Visitor implements IVisitor {
   visitText(text: Text): string { return text.value; }
 
   visitDeclaration(decl: Declaration): string {
-    return `<? xml${this._serializeAttributes(decl.attrs)} ?>`;
+    return `<?xml${this._serializeAttributes(decl.attrs)} ?>`;
   }
 
   private _serializeAttributes(attrs: {[k: string]: string}) {
