@@ -8,10 +8,9 @@
 
 import {DirectiveResolver, XHR, i18n} from '@angular/compiler';
 import {MockDirectiveResolver} from '@angular/compiler/testing';
-import {Compiler, Component, DebugElement, Injector, TRANSLATIONS} from '@angular/core';
+import {Compiler, Component, DebugElement, Injector, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
 import {TestBed, fakeAsync} from '@angular/core/testing';
-
-import {beforeEach, TestComponentBuilder, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
+import {beforeEach, TestComponentBuilder, ddescribe, describe, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {SpyXHR} from '../spies';
@@ -32,6 +31,7 @@ export function main() {
           {provide: XHR, useClass: SpyXHR},
           {provide: NgLocalization, useClass: FrLocalization},
           {provide: TRANSLATIONS, useValue: XTB},
+          {provide: TRANSLATIONS_FORMAT, useValue: 'xtb'},
         ]
       });
     });

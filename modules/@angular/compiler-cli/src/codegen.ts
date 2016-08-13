@@ -144,7 +144,8 @@ export class CodeGenerator {
     const reflectorHost = new ReflectorHost(program, compilerHost, options, reflectorHostContext);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
-    const htmlParser = new compiler.i18n.HtmlParser(new HtmlParser(), transContent);
+    const htmlParser =
+        new compiler.i18n.HtmlParser(new HtmlParser(), transContent, cliOptions.i18nFormat);
     const config = new compiler.CompilerConfig({
       genDebugInfo: options.debug === true,
       defaultEncapsulation: ViewEncapsulation.Emulated,
@@ -161,6 +162,7 @@ export class CodeGenerator {
         new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         config, console, elementSchemaRegistry, staticReflector);
+    // TODO(vicb): do not pass cliOptions.i18nFormat here
     const offlineCompiler = new compiler.OfflineCompiler(
         resolver, normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
         new NgModuleCompiler(), new TypeScriptEmitter(reflectorHost), cliOptions.locale,
