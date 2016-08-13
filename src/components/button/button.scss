@@ -4,11 +4,17 @@
 @import 'button-base';
 
 // TODO(kara): Replace attribute selectors with class selectors when possible
-[md-button] {
+[md-button], [md-icon-button] {
   @extend %md-button-base;
 
+  // Only flat buttons and icon buttons (not raised or fabs) have a hover style.
+  &:hover {
+    // Use the same visual treatment for hover as for focus.
+    @include md-button-focus();
+  }
+
   &[disabled]:hover {
-    &.md-primary, &.md-accent, &.md-warn, &:hover {
+    &.md-primary, &.md-accent, &.md-warn, &::after {
       background-color: transparent;
     }
   }
@@ -58,12 +64,6 @@
   // z-index needed to make clipping to border-radius work correctly.
   // http://stackoverflow.com/questions/20001515/chrome-bug-border-radius-not-clipping-contents-when-combined-with-css-transiti
   z-index: 1;
-}
-
-// Only flat buttons and icon buttons (not raised or fabs) have a hover style.
-[md-button]:hover, [md-icon-button]:hover {
-  // Use the same visual treatment for hover as for focus.
-  @include md-button-focus();
 }
 
 // Applies a clearer border for high-contrast mode (a11y)
