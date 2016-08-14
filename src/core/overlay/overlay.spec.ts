@@ -1,12 +1,5 @@
-import {
-  inject,
-  fakeAsync,
-  flushMicrotasks,
-  TestComponentBuilder,
-  TestBed,
-  async,
-} from '@angular/core/testing';
-import {Component, ViewChild, ViewContainerRef} from '@angular/core';
+import {inject, fakeAsync, flushMicrotasks, TestBed, async} from '@angular/core/testing';
+import {NgModule, Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {TemplatePortalDirective, PortalModule} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
 import {Overlay} from './overlay';
@@ -18,7 +11,6 @@ import {OverlayModule} from './overlay-directives';
 
 
 describe('Overlay', () => {
-  let builder: TestComponentBuilder;
   let overlay: Overlay;
   let componentPortal: ComponentPortal<PizzaMsg>;
   let templatePortal: TemplatePortal;
@@ -26,8 +18,7 @@ describe('Overlay', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [OverlayModule, PortalModule],
-      declarations: [TestComponentWithTemplatePortals, PizzaMsg],
+      imports: [OverlayModule, PortalModule, OverlayTestModule],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -35,19 +26,17 @@ describe('Overlay', () => {
         }}
       ]
     });
+
+    TestBed.compileComponents();
   }));
 
-
-  let deps = [TestComponentBuilder, Overlay];
-  beforeEach(fakeAsync(inject(deps, (tcb: TestComponentBuilder, o: Overlay) => {
-    builder = tcb;
+  beforeEach(fakeAsync(inject([Overlay], (o: Overlay) => {
     overlay = o;
 
-    builder.createAsync(TestComponentWithTemplatePortals).then(fixture => {
-      fixture.detectChanges();
-      templatePortal = fixture.componentInstance.templatePortal;
-      componentPortal = new ComponentPortal(PizzaMsg, fixture.componentInstance.viewContainerRef);
-    });
+    let fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
+    fixture.detectChanges();
+    templatePortal = fixture.componentInstance.templatePortal;
+    componentPortal = new ComponentPortal(PizzaMsg, fixture.componentInstance.viewContainerRef);
 
     flushMicrotasks();
   })));
@@ -140,23 +129,28 @@ describe('Overlay', () => {
 
 
 /** Simple component for testing ComponentPortal. */
-@Component({
-  selector: 'pizza-msg',
-  template: '<p>Pizza</p>',
-})
+@Component({template: '<p>Pizza</p>'})
 class PizzaMsg { }
 
 
 /** Test-bed component that contains a TempatePortal and an ElementRef. */
-@Component({
-  selector: 'portal-test',
-  template: `<template portal>Cake</template>`,
-})
+@Component({template: `<template portal>Cake</template>`})
 class TestComponentWithTemplatePortals {
   @ViewChild(TemplatePortalDirective) templatePortal: TemplatePortalDirective;
 
   constructor(public viewContainerRef: ViewContainerRef) { }
 }
+
+// Create a real (non-test) NgModule as a workaround for
+// https://github.com/angular/angular/issues/10760
+const TEST_COMPONENTS = [PizzaMsg, TestComponentWithTemplatePortals];
+@NgModule({
+  imports: [OverlayModule, PortalModule],
+  exports: TEST_COMPONENTS,
+  declarations: TEST_COMPONENTS,
+  entryComponents: TEST_COMPONENTS,
+})
+class OverlayTestModule { }
 
 class FakePositionStrategy implements PositionStrategy {
   apply(element: Element): Promise<void> {

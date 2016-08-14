@@ -1,21 +1,9 @@
-import {
-  inject,
-  fakeAsync,
-  async,
-  ComponentFixture,
-  TestBed,
-} from '@angular/core/testing';
-import {
-  Component,
-  Directive,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core';
+import {inject, fakeAsync, async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
 import {MdDialog, MdDialogModule} from './dialog';
 import {OverlayContainer} from '@angular2-material/core/overlay/overlay-container';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
-
 
 
 describe('MdDialog', () => {
@@ -27,8 +15,7 @@ describe('MdDialog', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdDialogModule],
-      declarations: [PizzaMsg, ComponentWithChildViewContainer, DirectiveWithViewContainer],
+      imports: [MdDialogModule, DialogTestModule],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -144,3 +131,13 @@ class PizzaMsg {
   constructor(public dialogRef: MdDialogRef<PizzaMsg>) { }
 }
 
+// Create a real (non-test) NgModule as a workaround for
+// https://github.com/angular/angular/issues/10760
+const TEST_DIRECTIVES = [ComponentWithChildViewContainer, PizzaMsg, DirectiveWithViewContainer];
+@NgModule({
+  imports: [MdDialogModule],
+  exports: TEST_DIRECTIVES,
+  declarations: TEST_DIRECTIVES,
+  entryComponents: [ComponentWithChildViewContainer, PizzaMsg],
+})
+class DialogTestModule { }

@@ -1,5 +1,5 @@
 import {
-  ComponentResolver,
+  ComponentFactoryResolver,
   Injectable,
 } from '@angular/core';
 import {OverlayState} from './overlay-state';
@@ -28,7 +28,7 @@ let defaultState = new OverlayState();
  @Injectable()
 export class Overlay {
   constructor(private _overlayContainer: OverlayContainer,
-              private _componentResolver: ComponentResolver,
+              private _componentFactoryResolver: ComponentFactoryResolver,
               private _positionBuilder: OverlayPositionBuilder) {}
 
   /**
@@ -68,7 +68,7 @@ export class Overlay {
    * @returns A portal host for the given DOM element.
    */
   private _createPortalHost(pane: HTMLElement): DomPortalHost {
-    return new DomPortalHost(pane, this._componentResolver);
+    return new DomPortalHost(pane, this._componentFactoryResolver);
   }
 
   /**

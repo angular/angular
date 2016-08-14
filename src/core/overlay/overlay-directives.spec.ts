@@ -1,13 +1,4 @@
-import {
-    inject,
-    async,
-    fakeAsync,
-    flushMicrotasks,
-    addProviders,
-    TestComponentBuilder,
-    ComponentFixture,
-    TestBed,
-} from '@angular/core/testing';
+import {async, fakeAsync, flushMicrotasks, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {ConnectedOverlayDirective, OverlayModule} from './overlay-directives';
 import {OverlayContainer} from './overlay-container';
@@ -15,7 +6,6 @@ import {ConnectedPositionStrategy} from './position/connected-position-strategy'
 
 
 describe('Overlay directives', () => {
-  let builder: TestComponentBuilder;
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ConnectedOverlayDirectiveTest>;
 
@@ -23,25 +13,18 @@ describe('Overlay directives', () => {
     TestBed.configureTestingModule({
       imports: [OverlayModule],
       declarations: [ConnectedOverlayDirectiveTest],
+      providers: [
+        {provide: OverlayContainer, useFactory: () => {
+          overlayContainerElement = document.createElement('div');
+          return {getContainerElement: () => overlayContainerElement};
+        }}
+      ],
     });
-
-    addProviders([
-      {provide: OverlayContainer, useFactory: () => {
-        overlayContainerElement = document.createElement('div');
-        return {getContainerElement: () => overlayContainerElement};
-      }}
-    ]);
-  }));
-
-  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-    builder = tcb;
   }));
 
   beforeEach(async(() => {
-    builder.createAsync(ConnectedOverlayDirectiveTest).then(f => {
-      fixture = f;
-      fixture.detectChanges();
-    });
+    fixture = TestBed.createComponent(ConnectedOverlayDirectiveTest);
+    fixture.detectChanges();
   }));
 
   it(`should create an overlay and attach the directive's template`, () => {
