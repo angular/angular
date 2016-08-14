@@ -13,7 +13,11 @@ const _THROW_IF_NOT_FOUND = new Object();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
 class _NullInjector implements Injector {
-  get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
+  get(token: any): any;
+  get(token: any, notFoundValue: any): any;
+  get<T>(token: any): T;
+  get<T, D>(token: any, notFoundValue: any): T|D;
+  get<T, D>(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): T|D {
     if (notFoundValue === _THROW_IF_NOT_FOUND) {
       throw new BaseException(`No provider for ${stringify(token)}!`);
     }
@@ -52,5 +56,9 @@ export abstract class Injector {
    * expect(injector.get(Injector)).toBe(injector);
    * ```
    */
-  get(token: any, notFoundValue?: any): any { return unimplemented(); }
+  get(token: any): any;
+  get(token: any, notFoundValue?: any): any;
+  get<T>(token: any): T;
+  get<T, D>(token: any, notFoundValue: any): T|D;
+  get<T, D>(token: any, notFoundValue?: any): T|D { return unimplemented(); }
 }
