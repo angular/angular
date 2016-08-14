@@ -62,9 +62,9 @@ export class NgForRow {
  * elements were deleted and all new elements inserted). This is an expensive operation and should
  * be avoided if possible.
  *
- * To customize the default tracking algorithm, `NgFor` supports `ngForTrackBy` option.
- * `ngForTrackBy` takes a function which has two arguments: `index` and `item`.
- * If `ngForTrackBy` is given, Angular tracks changes by the return value of the function.
+ * To customize the default tracking algorithm, `NgFor` supports `trackBy` option.
+ * `trackBy` takes a function which has two arguments: `index` and `item`.
+ * If `trackBy` is given, Angular tracks changes by the return value of the function.
  *
  * ### Syntax
  *
