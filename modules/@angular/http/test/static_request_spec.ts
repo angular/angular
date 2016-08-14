@@ -78,11 +78,21 @@ export function main() {
       });
     });
 
-    it('should return empty string if no body is present', () => {
+    it('should return empty string if body is null', () => {
       const req = new Request(new RequestOptions({
         url: 'test',
         method: 'GET',
         body: null,
+        headers: new Headers({'content-type': 'application/json'})
+      }));
+
+      expect(req.text()).toEqual('');
+    });
+
+    it('should return empty string if body is undefined', () => {
+      const req = new Request(new RequestOptions({
+        url: 'test',
+        method: 'GET',
         headers: new Headers({'content-type': 'application/json'})
       }));
 
