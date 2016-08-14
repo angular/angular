@@ -97,7 +97,7 @@ export function main() {
 
       expect(
           emitStmt(
-              o.variable('fn').callMethod(o.BuiltinMethod.bind, [o.variable('someObj')]).toStmt()))
+              o.variable('fn').callMethod(o.BuiltinMethod.Bind, [o.variable('someObj')]).toStmt()))
           .toEqual('fn.bind(someObj);');
     });
 

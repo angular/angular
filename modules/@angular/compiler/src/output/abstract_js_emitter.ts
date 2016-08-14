@@ -157,7 +157,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
       case o.BuiltinMethod.SubscribeObservable:
         name = 'subscribe';
         break;
-      case o.BuiltinMethod.bind:
+      case o.BuiltinMethod.Bind:
         name = 'bind';
         break;
       default:
