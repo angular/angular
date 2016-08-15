@@ -33,8 +33,11 @@ cp -v package.json $TMP
 
   ./node_modules/.bin/tsc --version
   # Compile the compiler-cli integration tests
-  ./node_modules/.bin/ngc --i18nFile=src/messages.fi.xtb --locale=fi --i18nFormat=xtb
-  ./node_modules/.bin/ng-xi18n
+  # TODO(vicb): restore the test for .xtb
+  #./node_modules/.bin/ngc --i18nFile=src/messages.fi.xtb --locale=fi --i18nFormat=xtb
+  ./node_modules/.bin/ngc --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
+  ./node_modules/.bin/ng-xi18n --i18nFormat=xlf
+  ./node_modules/.bin/ng-xi18n --i18nFormat=xmb
 
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node

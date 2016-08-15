@@ -22,7 +22,7 @@ export function main(): void {
 <p i18n="m|d">foo</p>
 <p i18n>{ count, plural, =0 { { sex, gender, other {<p>deeply nested</p>}} }}</p>`;
 
-    const XMB = `<? xml version="1.0" encoding="UTF-8" ?>
+    const XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [
 <!ELEMENT messagebundle (msg)*>
 <!ATTLIST messagebundle class CDATA #IMPLIED>

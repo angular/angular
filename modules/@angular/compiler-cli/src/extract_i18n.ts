@@ -30,12 +30,29 @@ import {StaticReflector, StaticSymbol} from './static_reflector';
 function extract(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
     program: ts.Program, host: ts.CompilerHost) {
-  const extractor = Extractor.create(ngOptions, cliOptions.i18nFormat, program, host);
+  const htmlParser = new compiler.i18n.HtmlParser(new HtmlParser());
+  const extractor = Extractor.create(ngOptions, cliOptions.i18nFormat, program, host, htmlParser);
   const bundlePromise: Promise<compiler.i18n.MessageBundle> = extractor.extract();
 
   return (bundlePromise).then(messageBundle => {
-    const serializer = new compiler.i18n.Xmb();
-    const dstPath = path.join(ngOptions.genDir, 'messages.xmb');
+    let ext: string;
+    let serializer: compiler.i18n.Serializer;
+    const format = (cliOptions.i18nFormat || 'xlf').toLowerCase();
+
+    switch (format) {
+      case 'xmb':
+        ext = 'xmb';
+        serializer = new compiler.i18n.Xmb();
+        break;
+      case 'xliff':
+      case 'xlf':
+      default:
+        ext = 'xlf';
+        serializer = new compiler.i18n.Xliff(htmlParser, compiler.DEFAULT_INTERPOLATION_CONFIG);
+        break;
+    }
+
+    const dstPath = path.join(ngOptions.genDir, `messages.${ext}`);
     host.writeFile(dstPath, messageBundle.write(serializer), false);
   });
 }
@@ -128,7 +145,8 @@ export class Extractor {
 
   static create(
       options: tsc.AngularCompilerOptions, translationsFormat: string, program: ts.Program,
-      compilerHost: ts.CompilerHost, reflectorHostContext?: ReflectorHostContext): Extractor {
+      compilerHost: ts.CompilerHost, htmlParser: compiler.i18n.HtmlParser,
+      reflectorHostContext?: ReflectorHostContext): Extractor {
     const xhr: compiler.XHR = {
       get: (s: string) => {
         if (!compilerHost.fileExists(s)) {
@@ -143,7 +161,6 @@ export class Extractor {
     const reflectorHost = new ReflectorHost(program, compilerHost, options, reflectorHostContext);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
-    const htmlParser = new compiler.i18n.HtmlParser(new HtmlParser());
 
     const config = new compiler.CompilerConfig({
       genDebugInfo: options.debug === true,

@@ -11,11 +11,7 @@ import './init';
 import * as fs from 'fs';
 import * as path from 'path';
 
-describe('template i18n extraction output', () => {
-  const outDir = '';
-
-  it('should extract i18n messages', () => {
-    const EXPECTED = `<? xml version="1.0" encoding="UTF-8" ?>
+const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [
 <!ELEMENT messagebundle (msg)*>
 <!ATTLIST messagebundle class CDATA #IMPLIED>
@@ -42,9 +38,39 @@ describe('template i18n extraction output', () => {
   <msg id="65cc4ab3b4c438e07c89be2b677d08369fb62da2">Welcome</msg>
 </messagebundle>`;
 
+const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+ <file source-language="en" datatype="plaintext" original="ng2.template">
+   <body>
+     <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
+       <source>translate me</source>
+       <target/>
+       <note priority="1" from="description">desc</note>
+       <note priority="1" from="meaning">meaning</note>
+     </trans-unit>
+     <trans-unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2" datatype="html">
+       <source>Welcome</source>
+       <target/>
+     </trans-unit>
+   </body>
+ </file>
+</xliff>`;
+
+describe('template i18n extraction output', () => {
+  const outDir = '';
+
+  it('should extract i18n messages as xmb', () => {
     const xmbOutput = path.join(outDir, 'messages.xmb');
     expect(fs.existsSync(xmbOutput)).toBeTruthy();
     const xmb = fs.readFileSync(xmbOutput, {encoding: 'utf-8'});
-    expect(xmb).toEqual(EXPECTED);
+    expect(xmb).toEqual(EXPECTED_XMB);
   });
+
+  it('should extract i18n messages as xliff', () => {
+    const xlfOutput = path.join(outDir, 'messages.xlf');
+    expect(fs.existsSync(xlfOutput)).toBeTruthy();
+    const xlf = fs.readFileSync(xlfOutput, {encoding: 'utf-8'});
+    expect(xlf).toEqual(EXPECTED_XLIFF);
+  });
+
 });
