@@ -527,12 +527,6 @@ export declare abstract class DoCheck {
     abstract ngDoCheck(): void;
 }
 
-/** @deprecated */
-export declare abstract class DynamicComponentLoader {
-    abstract loadAsRoot(type: Type<any>, overrideSelectorOrNode: string | any, injector: Injector, onDispose?: () => void, projectableNodes?: any[][]): Promise<ComponentRef<any>>;
-    abstract loadNextToLocation(type: Type<any>, location: ViewContainerRef, providers?: ResolvedReflectiveProvider[], projectableNodes?: any[][]): Promise<ComponentRef<any>>;
-}
-
 /** @stable */
 export declare class ElementRef {
     /** @stable */ nativeElement: any;
