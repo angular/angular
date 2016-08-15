@@ -964,17 +964,8 @@ export interface PipeTransform {
     transform(value: any, ...args: any[]): any;
 }
 
-/** @deprecated */
-export declare const PLATFORM_COMMON_PROVIDERS: any[];
-
-/** @deprecated */
-export declare const PLATFORM_DIRECTIVES: OpaqueToken;
-
 /** @experimental */
 export declare const PLATFORM_INITIALIZER: any;
-
-/** @deprecated */
-export declare const PLATFORM_PIPES: OpaqueToken;
 
 /** @experimental */
 export declare const platformCore: (extraProviders?: any[]) => PlatformRef;

@@ -6,10 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrapWorkerApp} from '@angular/platform-browser-dynamic';
+import {NgModule} from '@angular/core';
+import {WorkerAppModule} from '@angular/platform-browser';
+import {platformWorkerAppDynamic} from '@angular/platform-browser-dynamic';
 
 import {HelloCmp} from './index_common';
 
+@NgModule({imports: [WorkerAppModule], bootstrap: [HelloCmp]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrapWorkerApp(HelloCmp);
+  platformWorkerAppDynamic().bootstrapModule(ExampleModule);
 }

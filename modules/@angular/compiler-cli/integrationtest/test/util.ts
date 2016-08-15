@@ -8,14 +8,14 @@
 
 import {NgModuleFactory, NgModuleRef} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
-import {serverPlatform} from '@angular/platform-server';
+import {platformServer} from '@angular/platform-server';
 
 import {MainModule} from '../src/module';
 import {MainModuleNgFactory} from '../src/module.ngfactory';
 
 let mainModuleRef: NgModuleRef<MainModule> = null;
 beforeEach((done) => {
-  serverPlatform().bootstrapModuleFactory(MainModuleNgFactory).then((moduleRef) => {
+  platformServer().bootstrapModuleFactory(MainModuleNgFactory).then((moduleRef: any) => {
     mainModuleRef = moduleRef;
     done();
   });

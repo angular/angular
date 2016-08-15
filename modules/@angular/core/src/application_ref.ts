@@ -170,9 +170,9 @@ export abstract class PlatformRef {
    *
    * main.ts:
    * import {MyModuleNgFactory} from './my_module.ngfactory';
-   * import {browserPlatform} from '@angular/platform-browser';
+   * import {platformBrowser} from '@angular/platform-browser';
    *
-   * let moduleRef = browserPlatform().bootstrapModuleFactory(MyModuleNgFactory);
+   * let moduleRef = platformBrowser().bootstrapModuleFactory(MyModuleNgFactory);
    * ```
    *
    * @experimental APIs related to application bootstrap are currently under review.
@@ -192,7 +192,7 @@ export abstract class PlatformRef {
    * })
    * class MyModule {}
    *
-   * let moduleRef = browserPlatform().bootstrapModule(MyModule);
+   * let moduleRef = platformBrowser().bootstrapModule(MyModule);
    * ```
    * @stable
    */
