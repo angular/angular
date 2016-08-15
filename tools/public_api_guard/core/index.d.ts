@@ -1243,20 +1243,6 @@ export declare function style(tokens: string | {
     [key: string]: string | number;
 }>): AnimationStyleMetadata;
 
-/** @deprecated */
-export declare class SystemJsCmpFactoryResolver implements ComponentResolver {
-    constructor(_console: Console);
-    clearCache(): void;
-    resolveComponent(componentType: string | Type<any>): Promise<ComponentFactory<any>>;
-}
-
-/** @deprecated */
-export declare class SystemJsComponentResolver implements ComponentResolver {
-    constructor(_resolver: ComponentResolver, _console: Console);
-    clearCache(): void;
-    resolveComponent(componentType: string | Type<any>): Promise<ComponentFactory<any>>;
-}
-
 /** @experimental */
 export declare class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     constructor(_compiler: Compiler);
