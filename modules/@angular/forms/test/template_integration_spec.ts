@@ -8,9 +8,9 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {FormsModule, NgForm, NgModelGroup} from '@angular/forms';
+import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {FormsModule, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
@@ -19,759 +19,484 @@ import {ListWrapper} from '../src/facade/collection';
 export function main() {
   describe('template-driven forms integration tests', () => {
 
-    beforeEach(() => { TestBed.configureTestingModule({imports: [FormsModule]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        declarations: [
+          StandaloneNgModel, NgModelForm, NgModelGroupForm, NgModelValidBinding, NgModelNgIfForm,
+          NgModelRadioForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
+          NgModelOptionsStandalone
+        ],
+        imports: [FormsModule]
+      });
+      TestBed.compileComponents();
+    });
+
+    describe('basic functionality', () => {
+      it('should support ngModel for standalone fields', fakeAsync(() => {
+           const fixture = TestBed.createComponent(StandaloneNgModel);
+           fixture.debugElement.componentInstance.name = 'oldValue';
 
-    it('should support ngModel for single fields',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `<div><input type="text" [(ngModel)]="name"></div>`;
-
-         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.name = 'oldValue';
-         fixture.detectChanges();
-
-         var input = fixture.debugElement.query(By.css('input')).nativeElement;
-
-         tick();
-         expect(input.value).toEqual('oldValue');
-
-         input.value = 'updatedValue';
-         dispatchEvent(input, 'input');
-         tick();
-
-         expect(fixture.debugElement.componentInstance.name).toEqual('updatedValue');
-       })));
-
-
-    it('should support ngModel registration with a parent form',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `
-                <form>
-                  <input name="first" [(ngModel)]="name" maxlength="4">
-                </form>
-                `;
-
-         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.name = 'Nancy';
-         fixture.detectChanges();
-         var form = fixture.debugElement.children[0].injector.get(NgForm);
-
-         tick();
-         expect(form.value).toEqual({first: 'Nancy'});
-         expect(form.valid).toBe(false);
-
-       })));
-
-
-    it('should add new controls and control groups',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `<form>
-                         <div ngModelGroup="user">
-                          <input type="text" name="login" ngModel>
-                         </div>
-                   </form>`;
-
-         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.name = null;
-         fixture.detectChanges();
-
-         var form = fixture.debugElement.children[0].injector.get(NgForm);
-         expect(form.controls['user']).not.toBeDefined();
-
-         tick();
-
-         expect(form.controls['user']).toBeDefined();
-         expect(form.controls['user'].controls['login']).toBeDefined();
-       })));
-
-    it('should emit ngSubmit event on submit',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `<div><form (ngSubmit)="name='updated'"></form></div>`;
-
-         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.name = 'old';
-         var form = fixture.debugElement.query(By.css('form'));
-
-         dispatchEvent(form.nativeElement, 'submit');
-         tick();
-
-         expect(fixture.debugElement.componentInstance.name).toEqual('updated');
-       })));
-
-    it('should mark NgForm as submitted on submit event',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `<div>
-                      <form #f="ngForm" (ngSubmit)="data=f.submitted"></form>
-                      <span>{{data}}</span>
-                    </div>`;
-
-         var fixture: ComponentFixture<MyComp8>;
-
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((root) => { fixture = root; });
-         tick();
-
-         fixture.debugElement.componentInstance.data = false;
-
-         tick();
-
-         var form = fixture.debugElement.query(By.css('form'));
-         dispatchEvent(form.nativeElement, 'submit');
-
-         tick();
-         expect(fixture.debugElement.componentInstance.data).toEqual(true);
-       })));
-
-
-    it('should reset the form to empty when reset button is clicked',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `
-                <form>
-                  <input name="name" [(ngModel)]="name">
-                </form>
-               `;
-
-         const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.name = 'should be cleared';
-         fixture.detectChanges();
-         tick();
-
-         const form = fixture.debugElement.children[0].injector.get(NgForm);
-         const formEl = fixture.debugElement.query(By.css('form'));
-
-         dispatchEvent(formEl.nativeElement, 'reset');
-         fixture.detectChanges();
-         tick();
-
-         expect(fixture.debugElement.componentInstance.name).toBe(null);
-         expect(form.value.name).toEqual(null);
-       })));
-
-    it('should reset the form submit state when reset button is clicked',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `
-                <form>
-                  <input name="name" [(ngModel)]="name">
-                </form>
-               `;
-
-         const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.name = '';
-         fixture.detectChanges();
-         tick();
-
-         const form = fixture.debugElement.children[0].injector.get(NgForm);
-         const formEl = fixture.debugElement.query(By.css('form'));
-
-         dispatchEvent(formEl.nativeElement, 'submit');
-         fixture.detectChanges();
-         tick();
-
-         dispatchEvent(formEl.nativeElement, 'reset');
-         fixture.detectChanges();
-         tick();
-         expect(form.submitted).toEqual(false);
-       })));
-
-
-    it('should emit valueChanges and statusChanges on init',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `<form>
-                      <input type="text" name="first" [ngModel]="name" minlength="3">
-                    </form>`;
-
-         const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         const form = fixture.debugElement.children[0].injector.get(NgForm);
-         fixture.debugElement.componentInstance.name = 'aa';
-         fixture.detectChanges();
-
-         expect(form.valid).toEqual(true);
-         expect(form.value).toEqual({});
-
-         let formValidity: string;
-         let formValue: Object;
-
-
-         form.statusChanges.subscribe({next: (status: string) => { formValidity = status; }});
-
-         form.valueChanges.subscribe({next: (value: string) => { formValue = value; }});
-
-         tick();
-
-         expect(formValidity).toEqual('INVALID');
-         expect(formValue).toEqual({first: 'aa'});
-       })));
-
-    it('should not create a template-driven form when ngNoForm is used',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const t = `<form ngNoForm>
-                   </form>`;
-
-             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-               fixture.debugElement.componentInstance.name = null;
-               fixture.detectChanges();
-
-               expect(fixture.debugElement.children[0].providerTokens.length).toEqual(0);
-               async.done();
-             });
-           }));
-
-    it('should remove controls',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `<form>
-                        <div *ngIf="name == 'show'">
-                          <input type="text" name="login" ngModel>
-                        </div>
-                      </form>`;
-
-         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.name = 'show';
-         fixture.detectChanges();
-         tick();
-         var form = fixture.debugElement.children[0].injector.get(NgForm);
-
-
-         expect(form.controls['login']).toBeDefined();
-
-         fixture.debugElement.componentInstance.name = 'hide';
-         fixture.detectChanges();
-         tick();
-
-         expect(form.controls['login']).not.toBeDefined();
-       })));
-
-    it('should remove control groups',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `<form>
-                         <div *ngIf="name=='show'" ngModelGroup="user">
-                          <input type="text" name="login" ngModel>
-                         </div>
-                   </form>`;
-
-
-         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.name = 'show';
-         fixture.detectChanges();
-         tick();
-         var form = fixture.debugElement.children[0].injector.get(NgForm);
-
-         expect(form.controls['user']).toBeDefined();
-
-         fixture.debugElement.componentInstance.name = 'hide';
-         fixture.detectChanges();
-         tick();
-
-         expect(form.controls['user']).not.toBeDefined();
-       })));
-
-    it('should support ngModel for complex forms',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `<form>
-                          <input type="text" name="name" [(ngModel)]="name">
-                   </form>`;
-
-         let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.name = 'oldValue';
-         fixture.detectChanges();
-         tick();
-
-         var input = fixture.debugElement.query(By.css('input')).nativeElement;
-         expect(input.value).toEqual('oldValue');
-
-         input.value = 'updatedValue';
-         dispatchEvent(input, 'input');
-         tick();
-
-         expect(fixture.debugElement.componentInstance.name).toEqual('updatedValue');
-       })));
-
-
-    it('should throw if ngModel has a parent form but no name attr or standalone label',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const t = `<form>
-                      <input [(ngModel)]="name">
-                    </form>`;
-
-             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-               expect(() => fixture.detectChanges())
-                   .toThrowError(new RegExp(`name attribute must be set`));
-               async.done();
-             });
-           }));
-
-    it('should not throw if ngModel has a parent form, no name attr, and a standalone label',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const t = `<form>
-                      <input [(ngModel)]="name" [ngModelOptions]="{standalone: true}">
-                    </form>`;
-
-             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-               expect(() => fixture.detectChanges()).not.toThrow();
-               async.done();
-             });
-           }));
-
-    it('should override name attribute with ngModelOptions name if provided',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `
-                <form>
-                  <input name="one" [(ngModel)]="data" [ngModelOptions]="{name: 'two'}">
-                </form>
-                `;
-
-         const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.data = 'some data';
-         fixture.detectChanges();
-         const form = fixture.debugElement.children[0].injector.get(NgForm);
-
-         tick();
-         expect(form.value).toEqual({two: 'some data'});
-       })));
-
-    it('should not register standalone ngModels with parent form',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-         const t = `
-                <form>
-                  <input name="one" [(ngModel)]="data">
-                  <input [(ngModel)]="list" [ngModelOptions]="{standalone: true}">
-                </form>
-                `;
-
-         const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-         tick();
-         fixture.debugElement.componentInstance.data = 'some data';
-         fixture.debugElement.componentInstance.list = 'should not show';
-         fixture.detectChanges();
-         const form = fixture.debugElement.children[0].injector.get(NgForm);
-         const inputs = fixture.debugElement.queryAll(By.css('input'));
-
-         tick();
-         expect(form.value).toEqual({one: 'some data'});
-         expect(inputs[1].nativeElement.value).toEqual('should not show');
-       })));
-
-    it('should set status classes with ngModel',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const t = `<div><input [(ngModel)]="name" required></div>`;
-
-             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-               fixture.debugElement.componentInstance.name = '';
-               fixture.detectChanges();
-
-               var input = fixture.debugElement.query(By.css('input')).nativeElement;
-               expect(sortedClassList(input)).toEqual([
-                 'ng-invalid', 'ng-pristine', 'ng-untouched'
-               ]);
-
-               dispatchEvent(input, 'blur');
-               fixture.detectChanges();
-
-               expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
-
-               input.value = 'updatedValue';
-               dispatchEvent(input, 'input');
-               fixture.detectChanges();
-
-               expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-               async.done();
-             });
-           }));
-
-    it('should set status classes with ngModelGroup and ngForm',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const t = `<form>
-             <div ngModelGroup="person">
-                <input [(ngModel)]="name" required name="name">
-              </div>
-            </form>`;
-
-             tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-               fixture.debugElement.componentInstance.name = '';
-               fixture.detectChanges();
-
-               const form = fixture.debugElement.query(By.css('form')).nativeElement;
-               const modelGroup =
-                   fixture.debugElement.query(By.directive(NgModelGroup)).nativeElement;
-               const input = fixture.debugElement.query(By.css('input')).nativeElement;
-
-               // ngModelGroup creates its control asynchronously
-               fixture.whenStable().then(() => {
-                 fixture.detectChanges();
-                 expect(sortedClassList(modelGroup)).toEqual([
-                   'ng-invalid', 'ng-pristine', 'ng-untouched'
-                 ]);
-
-                 expect(sortedClassList(form)).toEqual([
-                   'ng-invalid', 'ng-pristine', 'ng-untouched'
-                 ]);
-
-                 dispatchEvent(input, 'blur');
-                 fixture.detectChanges();
-
-                 expect(sortedClassList(modelGroup)).toEqual([
-                   'ng-invalid', 'ng-pristine', 'ng-touched'
-                 ]);
-                 expect(sortedClassList(form)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
-
-                 input.value = 'updatedValue';
-                 dispatchEvent(input, 'input');
-                 fixture.detectChanges();
-
-                 expect(sortedClassList(modelGroup)).toEqual([
-                   'ng-dirty', 'ng-touched', 'ng-valid'
-                 ]);
-                 expect(sortedClassList(form)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-               });
-               async.done();
-             });
-           }));
-
-    it('should mark controls as dirty before emitting a value change event',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-
-         const t = `<form>
-                <input type="text" name="login" ngModel>
-               </form>`;
-
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-           fixture.detectChanges();
-
-           const form = fixture.debugElement.children[0].injector.get(NgForm).form;
            fixture.detectChanges();
            tick();
 
-           form.get('login').valueChanges.subscribe(
-               () => { expect(form.get('login').dirty).toBe(true); });
+           // model -> view
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           expect(input.value).toEqual('oldValue');
 
-           const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
-           loginEl.value = 'newValue';
+           input.value = 'updatedValue';
+           dispatchEvent(input, 'input');
+           tick();
 
-           dispatchEvent(loginEl, 'input');
-         });
-       })));
+           // view -> model
+           expect(fixture.debugElement.componentInstance.name).toEqual('updatedValue');
+         }));
 
-    it('should mark control as pristine before emitting a value change event when resetting ',
-       fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+      it('should support ngModel registration with a parent form', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+           fixture.debugElement.componentInstance.name = 'Nancy';
 
-         const t = `<form>
-                <input type="text" name="login" ngModel>
-               </form>`;
-
-         tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
            fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.value).toEqual({name: 'Nancy'});
+           expect(form.valid).toBe(false);
+         }));
+
+      it('should support ngModelGroup', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelGroupForm);
+           fixture.debugElement.componentInstance.first = 'Nancy';
+           fixture.debugElement.componentInstance.last = 'Drew';
+           fixture.debugElement.componentInstance.email = 'some email';
+
+           fixture.detectChanges();
+           tick();
+
+           // model -> view
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+           expect(inputs[0].nativeElement.value).toEqual('Nancy');
+           expect(inputs[1].nativeElement.value).toEqual('Drew');
+
+           inputs[0].nativeElement.value = 'Carson';
+           dispatchEvent(inputs[0].nativeElement, 'input');
+           tick();
+
+           // view -> model
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.value).toEqual({name: {first: 'Carson', last: 'Drew'}, email: 'some email'});
+         }));
+
+      it('should add controls and control groups to form control model', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelGroupForm);
+           fixture.debugElement.componentInstance.first = 'Nancy';
+           fixture.debugElement.componentInstance.last = 'Drew';
+           fixture.debugElement.componentInstance.email = 'some email';
+
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.control.get('name').value).toEqual({first: 'Nancy', last: 'Drew'});
+           expect(form.control.get('name.first').value).toEqual('Nancy');
+           expect(form.control.get('email').value).toEqual('some email');
+         }));
+
+      it('should remove controls and control groups from form control model', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelNgIfForm);
+           fixture.debugElement.componentInstance.emailShowing = true;
+           fixture.debugElement.componentInstance.first = 'Nancy';
+           fixture.debugElement.componentInstance.email = 'some email';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.control.get('email').value).toEqual('some email');
+           expect(form.value).toEqual({name: {first: 'Nancy'}, email: 'some email'});
+
+           // should remove individual control successfully
+           fixture.debugElement.componentInstance.emailShowing = false;
+           fixture.detectChanges();
+           tick();
+
+           expect(form.control.get('email')).toBe(null);
+           expect(form.value).toEqual({name: {first: 'Nancy'}});
+
+           expect(form.control.get('name').value).toEqual({first: 'Nancy'});
+           expect(form.control.get('name.first').value).toEqual('Nancy');
+
+           // should remove form group successfully
+           fixture.debugElement.componentInstance.groupShowing = false;
+           fixture.detectChanges();
+           tick();
+
+           expect(form.control.get('name')).toBe(null);
+           expect(form.control.get('name.first')).toBe(null);
+           expect(form.value).toEqual({});
+         }));
+
+      it('should set status classes with ngModel', () => {
+        const fixture = TestBed.createComponent(NgModelForm);
+        fixture.debugElement.componentInstance.name = 'aa';
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const form = fixture.debugElement.children[0].injector.get(NgForm);
+          expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+
+          input.value = 'updatedValue';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+          expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+        });
+      });
+
+      it('should set status classes with ngModelGroup and ngForm', () => {
+        const fixture = TestBed.createComponent(NgModelGroupForm);
+        fixture.debugElement.componentInstance.first = '';
+        fixture.detectChanges();
+
+        const form = fixture.debugElement.query(By.css('form')).nativeElement;
+        const modelGroup = fixture.debugElement.query(By.css('[ngModelGroup]')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        // ngModelGroup creates its control asynchronously
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(sortedClassList(modelGroup)).toEqual([
+            'ng-invalid', 'ng-pristine', 'ng-untouched'
+          ]);
+
+          expect(sortedClassList(form)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(sortedClassList(modelGroup)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+          expect(sortedClassList(form)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+
+          input.value = 'updatedValue';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(sortedClassList(modelGroup)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+          expect(sortedClassList(form)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+        });
+      });
+
+      it('should not create a template-driven form when ngNoForm is used', () => {
+        const fixture = TestBed.createComponent(NgNoFormComp);
+        fixture.detectChanges();
+        expect(fixture.debugElement.children[0].providerTokens.length).toEqual(0);
+      });
+    });
+
+    describe('name and ngModelOptions', () => {
+      it('should throw if ngModel has a parent form but no name attr or standalone label', () => {
+        const fixture = TestBed.createComponent(InvalidNgModelNoName);
+        expect(() => fixture.detectChanges())
+            .toThrowError(new RegExp(`name attribute must be set`));
+      });
+
+      it('should not throw if ngModel has a parent form, no name attr, and a standalone label',
+         () => {
+           const fixture = TestBed.createComponent(NgModelOptionsStandalone);
+           expect(() => fixture.detectChanges()).not.toThrow();
+         });
+
+      it('should not register standalone ngModels with parent form', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelOptionsStandalone);
+           fixture.debugElement.componentInstance.one = 'some data';
+           fixture.debugElement.componentInstance.two = 'should not show';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+           tick();
+
+           expect(form.value).toEqual({one: 'some data'});
+           expect(inputs[1].nativeElement.value).toEqual('should not show');
+         }));
+
+      it('should override name attribute with ngModelOptions name if provided', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+           fixture.debugElement.componentInstance.options = {name: 'override'};
+           fixture.debugElement.componentInstance.name = 'some data';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.value).toEqual({override: 'some data'});
+         }));
+    });
+
+    describe('submit and reset events', () => {
+      it('should emit ngSubmit event on submit', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+           fixture.debugElement.componentInstance.name = 'old';
+
+           const form = fixture.debugElement.query(By.css('form'));
+           dispatchEvent(form.nativeElement, 'submit');
+           tick();
+
+           expect(fixture.debugElement.componentInstance.name).toEqual('submitted');
+         }));
+
+      it('should mark NgForm as submitted on submit event', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+
+           tick();
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.submitted).toBe(false);
+
+           const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+           dispatchEvent(formEl, 'submit');
+           tick();
+
+           expect(form.submitted).toBe(true);
+         }));
+
+      it('should reset the form to empty when reset event is fired', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+           fixture.debugElement.componentInstance.name = 'should be cleared';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           const formEl = fixture.debugElement.query(By.css('form'));
+           const input = fixture.debugElement.query(By.css('input'));
+
+           expect(input.nativeElement.value).toBe('should be cleared');  // view value
+           expect(fixture.debugElement.componentInstance.name)
+               .toBe('should be cleared');                        // ngModel value
+           expect(form.value.name).toEqual('should be cleared');  // control value
+
+           dispatchEvent(formEl.nativeElement, 'reset');
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.value).toBe('');                      // view value
+           expect(fixture.debugElement.componentInstance.name).toBe(null);  // ngModel value
+           expect(form.value.name).toEqual(null);                           // control value
+         }));
+
+      it('should reset the form submit state when reset button is clicked', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           const formEl = fixture.debugElement.query(By.css('form'));
+
+           dispatchEvent(formEl.nativeElement, 'submit');
+           fixture.detectChanges();
+           tick();
+           expect(form.submitted).toBe(true);
+
+           dispatchEvent(formEl.nativeElement, 'reset');
+           fixture.detectChanges();
+           tick();
+           expect(form.submitted).toBe(false);
+         }));
+    });
+
+    describe('valueChange and statusChange events', () => {
+      it('should emit valueChanges and statusChanges on init', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           fixture.debugElement.componentInstance.name = 'aa';
+           fixture.detectChanges();
+
+           expect(form.valid).toEqual(true);
+           expect(form.value).toEqual({});
+
+           let formValidity: string;
+           let formValue: Object;
+
+           form.statusChanges.subscribe((status: string) => formValidity = status);
+           form.valueChanges.subscribe((value: string) => formValue = value);
+
+           tick();
+
+           expect(formValidity).toEqual('INVALID');
+           expect(formValue).toEqual({name: 'aa'});
+         }));
+
+      it('should mark controls dirty before emitting the value change event', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+           const form = fixture.debugElement.children[0].injector.get(NgForm).form;
+
+           fixture.detectChanges();
+           tick();
+
+           form.get('name').valueChanges.subscribe(
+               () => { expect(form.get('name').dirty).toBe(true); });
+
+           const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+           inputEl.value = 'newValue';
+
+           dispatchEvent(inputEl, 'input');
+         }));
+
+      it('should mark controls pristine before emitting the value change event when resetting ',
+         fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+           fixture.detectChanges();
+           tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm).form;
            const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
-           const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
-           fixture.detectChanges();
-           tick();
+           const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
 
-           loginEl.value = 'newValue';
-           dispatchEvent(loginEl, 'input');
+           inputEl.value = 'newValue';
+           dispatchEvent(inputEl, 'input');
 
-           expect(form.get('login').pristine).toBe(false);
+           expect(form.get('name').pristine).toBe(false);
 
-           form.get('login').valueChanges.subscribe(
-               () => { expect(form.get('login').pristine).toBe(true); });
+           form.get('name').valueChanges.subscribe(
+               () => { expect(form.get('name').pristine).toBe(true); });
 
            dispatchEvent(formEl, 'reset');
-         });
-       })));
-
-    describe('radio value accessor', () => {
-      it('should support <type=radio>',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           const t = `<form>
-                      <input type="radio" name="food" [(ngModel)]="data.food" value="chicken">
-                      <input type="radio" name="food" [(ngModel)]="data.food" value="fish">
-                    </form>`;
-
-           const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-           tick();
-
-           fixture.debugElement.componentInstance.data = {food: 'fish'};
-           fixture.detectChanges();
-           tick();
-
-           const inputs = fixture.debugElement.queryAll(By.css('input'));
-           expect(inputs[0].nativeElement.checked).toEqual(false);
-           expect(inputs[1].nativeElement.checked).toEqual(true);
-
-           dispatchEvent(inputs[0].nativeElement, 'change');
-           tick();
-
-           const data = fixture.debugElement.componentInstance.data;
-
-           expect(data.food).toEqual('chicken');
-           expect(inputs[1].nativeElement.checked).toEqual(false);
-         })));
-
-      it('should support multiple named <type=radio> groups',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           const t = `<form>
-                      <input type="radio" name="food" [(ngModel)]="data.food" value="chicken">
-                      <input type="radio" name="food"  [(ngModel)]="data.food" value="fish">
-                      <input type="radio" name="drink" [(ngModel)]="data.drink" value="cola">
-                      <input type="radio" name="drink" [(ngModel)]="data.drink" value="sprite">
-                    </form>`;
-
-           const fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-           tick();
-
-           fixture.debugElement.componentInstance.data = {food: 'fish', drink: 'sprite'};
-           fixture.detectChanges();
-           tick();
-
-           const inputs = fixture.debugElement.queryAll(By.css('input'));
-           expect(inputs[0].nativeElement.checked).toEqual(false);
-           expect(inputs[1].nativeElement.checked).toEqual(true);
-           expect(inputs[2].nativeElement.checked).toEqual(false);
-           expect(inputs[3].nativeElement.checked).toEqual(true);
-
-           dispatchEvent(inputs[0].nativeElement, 'change');
-           tick();
-
-           const data = fixture.debugElement.componentInstance.data;
-
-           expect(data.food).toEqual('chicken');
-           expect(data.drink).toEqual('sprite');
-           expect(inputs[1].nativeElement.checked).toEqual(false);
-           expect(inputs[2].nativeElement.checked).toEqual(false);
-           expect(inputs[3].nativeElement.checked).toEqual(true);
-
-         })));
+         }));
     });
 
-    describe('select value accessor', () => {
-      it('with option values that are objects',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           const t = `<div>
-                      <select [(ngModel)]="selectedCity">
-                        <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
-                      </select>
-                  </div>`;
+    describe('radio controls', () => {
+      it('should support <type=radio>', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelRadioForm);
+           fixture.debugElement.componentInstance.food = 'fish';
+           fixture.detectChanges();
+           tick();
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+           // model -> view
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+           expect(inputs[0].nativeElement.checked).toEqual(false);
+           expect(inputs[1].nativeElement.checked).toEqual(true);
 
-             var testComp = fixture.debugElement.componentInstance;
-             testComp.list = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
-             testComp.selectedCity = testComp.list[1];
-             fixture.detectChanges();
+           dispatchEvent(inputs[0].nativeElement, 'change');
+           tick();
 
-             var select = fixture.debugElement.query(By.css('select'));
-             var nycOption = fixture.debugElement.queryAll(By.css('option'))[1];
+           // view -> model
+           expect(fixture.debugElement.componentInstance.food).toEqual('chicken');
+           expect(inputs[1].nativeElement.checked).toEqual(false);
+         }));
 
-             tick();
-             expect(select.nativeElement.value).toEqual('1: Object');
-             expect(nycOption.nativeElement.selected).toBe(true);
+      it('should support multiple named <type=radio> groups', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelRadioForm);
+           fixture.debugElement.componentInstance.food = 'fish';
+           fixture.debugElement.componentInstance.drink = 'sprite';
+           fixture.detectChanges();
+           tick();
 
-             select.nativeElement.value = '2: Object';
-             dispatchEvent(select.nativeElement, 'change');
-             fixture.detectChanges();
-             tick();
-             expect(testComp.selectedCity['name']).toEqual('Buffalo');
-           });
-         })));
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+           expect(inputs[0].nativeElement.checked).toEqual(false);
+           expect(inputs[1].nativeElement.checked).toEqual(true);
+           expect(inputs[2].nativeElement.checked).toEqual(false);
+           expect(inputs[3].nativeElement.checked).toEqual(true);
 
-      it('when new options are added (selection through the model)',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           const t = `<div>
-                      <select [(ngModel)]="selectedCity">
-                        <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
-                      </select>
-                  </div>`;
+           dispatchEvent(inputs[0].nativeElement, 'change');
+           tick();
 
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+           expect(fixture.debugElement.componentInstance.food).toEqual('chicken');
+           expect(fixture.debugElement.componentInstance.drink).toEqual('sprite');
+           expect(inputs[1].nativeElement.checked).toEqual(false);
+           expect(inputs[2].nativeElement.checked).toEqual(false);
+           expect(inputs[3].nativeElement.checked).toEqual(true);
+         }));
+    });
 
-             var testComp: MyComp8 = fixture.debugElement.componentInstance;
-             testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
-             testComp.selectedCity = testComp.list[1];
-             fixture.detectChanges();
+    describe('select controls', () => {
+      it('with option values that are objects', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelSelectForm);
+           const comp = fixture.debugElement.componentInstance;
+           comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
+           comp.selectedCity = comp.cities[1];
+           fixture.detectChanges();
+           tick();
 
-             testComp.list.push({'name': 'Buffalo'});
-             testComp.selectedCity = testComp.list[2];
-             fixture.detectChanges();
-             tick();
+           const select = fixture.debugElement.query(By.css('select'));
+           const nycOption = fixture.debugElement.queryAll(By.css('option'))[1];
 
-             var select = fixture.debugElement.query(By.css('select'));
-             var buffalo = fixture.debugElement.queryAll(By.css('option'))[2];
-             expect(select.nativeElement.value).toEqual('2: Object');
-             expect(buffalo.nativeElement.selected).toBe(true);
-           });
-         })));
+           // model -> view
+           expect(select.nativeElement.value).toEqual('1: Object');
+           expect(nycOption.nativeElement.selected).toBe(true);
 
-      it('when new options are added (selection through the UI)',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               const t = `<div>
-                      <select [(ngModel)]="selectedCity">
-                        <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
-                      </select>
-                  </div>`;
+           select.nativeElement.value = '2: Object';
+           dispatchEvent(select.nativeElement, 'change');
+           fixture.detectChanges();
+           tick();
 
-               tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+           // view -> model
+           expect(comp.selectedCity.name).toEqual('Buffalo');
+         }));
 
-                 var testComp: MyComp8 = fixture.debugElement.componentInstance;
-                 testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
-                 testComp.selectedCity = testComp.list[0];
-                 fixture.detectChanges();
+      it('when new options are added', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelSelectForm);
+           const comp = fixture.debugElement.componentInstance;
+           comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
+           comp.selectedCity = comp.cities[1];
+           fixture.detectChanges();
+           tick();
 
-                 var select = fixture.debugElement.query(By.css('select'));
-                 var ny = fixture.debugElement.queryAll(By.css('option'))[1];
+           comp.cities.push({'name': 'Buffalo'});
+           comp.selectedCity = comp.cities[2];
+           fixture.detectChanges();
+           tick();
 
-                 select.nativeElement.value = '1: Object';
-                 dispatchEvent(select.nativeElement, 'change');
-                 testComp.list.push({'name': 'Buffalo'});
-                 fixture.detectChanges();
+           const select = fixture.debugElement.query(By.css('select'));
+           const buffalo = fixture.debugElement.queryAll(By.css('option'))[2];
+           expect(select.nativeElement.value).toEqual('2: Object');
+           expect(buffalo.nativeElement.selected).toBe(true);
+         }));
 
-                 expect(select.nativeElement.value).toEqual('1: Object');
-                 expect(ny.nativeElement.selected).toBe(true);
-                 async.done();
-               });
-             }));
+      it('when options are removed', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelSelectForm);
+           const comp = fixture.debugElement.componentInstance;
+           comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
+           comp.selectedCity = comp.cities[1];
+           fixture.detectChanges();
+           tick();
 
+           const select = fixture.debugElement.query(By.css('select'));
+           expect(select.nativeElement.value).toEqual('1: Object');
 
-      it('when options are removed',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           const t = `<div>
-                      <select [(ngModel)]="selectedCity">
-                        <option *ngFor="let c of list" [ngValue]="c">{{c}}</option>
-                      </select>
-                  </div>`;
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
+           comp.cities.pop();
+           fixture.detectChanges();
+           tick();
 
-             var testComp: MyComp8 = fixture.debugElement.componentInstance;
-             testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
-             testComp.selectedCity = testComp.list[1];
-             fixture.detectChanges();
-             tick();
+           expect(select.nativeElement.value).not.toEqual('1: Object');
+         }));
 
-             var select = fixture.debugElement.query(By.css('select'));
-             expect(select.nativeElement.value).toEqual('1: Object');
+      it('when option values have same content, but different identities', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelSelectForm);
+           const comp = fixture.debugElement.componentInstance;
+           comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'NYC'}];
+           comp.selectedCity = comp.cities[0];
+           fixture.detectChanges();
 
-             testComp.list.pop();
-             fixture.detectChanges();
-             tick();
+           comp.selectedCity = comp.cities[2];
+           fixture.detectChanges();
+           tick();
 
-             expect(select.nativeElement.value).not.toEqual('1: Object');
-           });
-         })));
-
-      it('when option values change identity while tracking by index',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           const t = `<div>
-                      <select [(ngModel)]="selectedCity">
-                        <option *ngFor="let c of list; trackBy:customTrackBy" [ngValue]="c">{{c}}</option>
-                      </select>
-                  </div>`;
-
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-
-             var testComp = fixture.debugElement.componentInstance;
-
-             testComp.list = [{'name': 'SF'}, {'name': 'NYC'}];
-             testComp.selectedCity = testComp.list[0];
-             fixture.detectChanges();
-
-             testComp.list[1] = 'Buffalo';
-             testComp.selectedCity = testComp.list[1];
-             fixture.detectChanges();
-             tick();
-
-             var select = fixture.debugElement.query(By.css('select'));
-             var buffalo = fixture.debugElement.queryAll(By.css('option'))[1];
-
-             expect(select.nativeElement.value).toEqual('1: Buffalo');
-             expect(buffalo.nativeElement.selected).toBe(true);
-           });
-         })));
-
-      it('with duplicate option values',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           const t = `<div>
-                      <select [(ngModel)]="selectedCity">
-                        <option *ngFor="let c of list" [ngValue]="c">{{c.name}}</option>
-                      </select>
-                  </div>`;
-
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-
-             var testComp = fixture.debugElement.componentInstance;
-
-             testComp.list = [{'name': 'NYC'}, {'name': 'SF'}, {'name': 'SF'}];
-             testComp.selectedCity = testComp.list[0];
-             fixture.detectChanges();
-
-             testComp.selectedCity = testComp.list[1];
-             fixture.detectChanges();
-             tick();
-
-             var select = fixture.debugElement.query(By.css('select'));
-             var firstSF = fixture.debugElement.queryAll(By.css('option'))[1];
-
-             expect(select.nativeElement.value).toEqual('1: Object');
-             expect(firstSF.nativeElement.selected).toBe(true);
-           });
-         })));
-
-      it('when option values have same content, but different identities',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           const t = `<div>
-                      <select [(ngModel)]="selectedCity">
-                        <option *ngFor="let c of list" [ngValue]="c">{{c['name']}}</option>
-                      </select>
-                  </div>`;
-
-           tcb.overrideTemplate(MyComp8, t).createAsync(MyComp8).then((fixture) => {
-
-             var testComp = fixture.debugElement.componentInstance;
-             testComp.list = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'NYC'}];
-             testComp.selectedCity = testComp.list[0];
-             fixture.detectChanges();
-
-             testComp.selectedCity = testComp.list[2];
-             fixture.detectChanges();
-             tick();
-
-             var select = fixture.debugElement.query(By.css('select'));
-             var secondNYC = fixture.debugElement.queryAll(By.css('option'))[2];
-
-             expect(select.nativeElement.value).toEqual('2: Object');
-             expect(secondNYC.nativeElement.selected).toBe(true);
-           });
-         })));
+           const select = fixture.debugElement.query(By.css('select'));
+           const secondNYC = fixture.debugElement.queryAll(By.css('option'))[2];
+           expect(select.nativeElement.value).toEqual('2: Object');
+           expect(secondNYC.nativeElement.selected).toBe(true);
+         }));
     });
 
     describe('ngModel corner cases', () => {
       it('should update the view when the model is set back to what used to be in the view',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           const t = `<input type="text" [(ngModel)]="name">`;
-           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
-           tick();
+         fakeAsync(() => {
+           const fixture = TestBed.createComponent(StandaloneNgModel);
            fixture.debugElement.componentInstance.name = '';
            fixture.detectChanges();
+           tick();
 
-           // Type "aa" into the input.
-           var input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
            input.value = 'aa';
            input.selectionStart = 1;
            dispatchEvent(input, 'input');
@@ -791,35 +516,159 @@ export function main() {
            fixture.detectChanges();
            tick();
            expect(input.value).toEqual('aa');
-         })));
+         }));
 
-      it('should not crash when validity is checked from a binding',
-         fakeAsync(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-           // {{x.valid}} used to crash because valid() tried to read a property
-           // from form.control before it was set. This test verifies this bug is
-           // fixed.
-           const t = `<form><div ngModelGroup="x" #x="ngModelGroup">
-                    <input type="text" name="test" ngModel></div>{{x.valid}}</form>`;
-           let fixture = tcb.overrideTemplate(MyComp8, t).createFakeAsync(MyComp8);
+      it('should not crash when validity is checked from a binding', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelValidBinding);
            tick();
-           fixture.detectChanges();
-         })));
+           expect(() => fixture.detectChanges()).not.toThrowError();
+         }));
     });
 
   });
 };
 
-@Component({selector: 'my-comp', template: '', directives: [NgIf, NgFor]})
-class MyComp8 {
-  form: any;
+@Component({
+  selector: 'standalone-ng-model',
+  template: `
+    <input type="text" [(ngModel)]="name">
+  `
+})
+class StandaloneNgModel {
   name: string;
-  data: any;
-  list: any[];
-  selectedCity: any;
-  customTrackBy(index: number, obj: any): number { return index; };
 }
 
-function sortedClassList(el: any /** TODO #9100 */) {
+@Component({
+  selector: 'ng-model-form',
+  template: `
+    <form (ngSubmit)="name='submitted'">
+      <input name="name" [(ngModel)]="name" minlength="10" [ngModelOptions]="options">
+    </form>
+  `
+})
+class NgModelForm {
+  name: string;
+  options = {};
+}
+
+@Component({
+  selector: 'ng-model-group-form',
+  template: `
+    <form>
+      <div ngModelGroup="name">
+        <input name="first" [(ngModel)]="first" required>
+        <input name="last" [(ngModel)]="last">
+      </div>
+      <input name="email" [(ngModel)]="email">
+    </form>
+  `
+})
+class NgModelGroupForm {
+  first: string;
+  last: string;
+  email: string;
+}
+
+@Component({
+  selector: 'ng-model-group-form',
+  template: `
+    <form>
+      <div ngModelGroup="name" #group="ngModelGroup">
+        <input name="first" [(ngModel)]="first" required>
+        {{ group.valid }}
+      </div>
+    </form>
+  `
+})
+class NgModelValidBinding {
+  first: string;
+}
+
+
+@Component({
+  selector: 'ng-model-ngif-form',
+  template: `
+    <form>
+      <div ngModelGroup="name" *ngIf="groupShowing">
+        <input name="first" [(ngModel)]="first">
+      </div>
+      <input name="email" [(ngModel)]="email" *ngIf="emailShowing">
+    </form>
+  `
+})
+class NgModelNgIfForm {
+  first: string;
+  groupShowing = true;
+  emailShowing = true;
+}
+
+@Component({
+  selector: 'ng-no-form',
+  template: `
+    <form ngNoForm>
+      <input name="name">
+    </form>
+  `
+})
+class NgNoFormComp {
+}
+
+@Component({
+  selector: 'invalid-ng-model-noname',
+  template: `
+    <form>
+      <input [(ngModel)]="name">
+    </form>
+  `
+})
+class InvalidNgModelNoName {
+}
+
+@Component({
+  selector: 'ng-model-options-standalone',
+  template: `
+    <form>
+      <input name="one" [(ngModel)]="one">
+      <input [(ngModel)]="two" [ngModelOptions]="{standalone: true}">
+    </form>
+  `
+})
+class NgModelOptionsStandalone {
+  one: string;
+  two: string;
+}
+
+@Component({
+  selector: 'ng-model-radio-form',
+  template: `
+    <form>
+      <input type="radio" name="food" [(ngModel)]="food" value="chicken">
+      <input type="radio" name="food"  [(ngModel)]="food" value="fish">
+      
+      <input type="radio" name="drink" [(ngModel)]="drink" value="cola">
+      <input type="radio" name="drink" [(ngModel)]="drink" value="sprite">
+    </form>
+  `
+})
+class NgModelRadioForm {
+  food: string;
+  drink: string;
+}
+
+@Component({
+  selector: 'ng-model-select-form',
+  template: `
+    <select [(ngModel)]="selectedCity">
+      <option *ngFor="let c of cities" [ngValue]="c"> {{c.name}} </option>
+    </select>
+  `
+})
+class NgModelSelectForm {
+  selectedCity: Object = {};
+  cities: any[] = [];
+}
+
+function sortedClassList(el: HTMLElement) {
   var l = getDOM().classList(el);
   ListWrapper.sort(l);
   return l;
