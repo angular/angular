@@ -7,7 +7,6 @@
  */
 
 import {NgIf} from '@angular/common';
-import {TestComponentBuilder} from '@angular/core/testing';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
@@ -22,7 +21,7 @@ import {AUTO_STYLE, AnimationEntryMetadata, animate, group, keyframes, sequence,
 import {isArray, isPresent} from '../../src/facade/lang';
 import {TestBed, fakeAsync, flushMicrotasks, tick} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });

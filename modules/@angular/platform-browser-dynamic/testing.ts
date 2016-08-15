@@ -8,7 +8,7 @@
 
 import {OverridingTestComponentBuilder, platformCoreDynamicTesting} from '@angular/compiler/testing';
 import {NgModule, PlatformRef, createPlatformFactory} from '@angular/core';
-import {TestComponentBuilder, TestComponentRenderer} from '@angular/core/testing';
+import {TestComponentRenderer, __core_private_testing__ as r, __core_private_testing_types__ as t} from '@angular/core/testing';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_providers';
@@ -31,7 +31,7 @@ export const platformBrowserDynamicTesting = createPlatformFactory(
 @NgModule({
   exports: [BrowserTestingModule],
   providers: [
-    {provide: TestComponentBuilder, useClass: OverridingTestComponentBuilder},
+    {provide: r.TestComponentBuilder, useClass: OverridingTestComponentBuilder},
     {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
   ]
 })

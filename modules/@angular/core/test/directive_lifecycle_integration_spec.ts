@@ -8,8 +8,7 @@
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnInit} from '@angular/core';
 import {Component, Directive, ViewMetadata} from '@angular/core/src/metadata';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, Log, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, Log, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {

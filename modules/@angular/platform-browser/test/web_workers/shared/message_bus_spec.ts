@@ -7,7 +7,7 @@
  */
 
 import {NgZone} from '@angular/core';
-import {withProviders} from '@angular/core/testing/test_bed';
+import {withModule} from '@angular/core/testing/test_bed';
 import {AsyncTestCompleter, MockNgZone, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {MessageBus} from '@angular/platform-browser/src/web_workers/shared/message_bus';
 
@@ -118,7 +118,7 @@ export function main() {
     function flushMessages(fn: () => void) { setTimeout(fn, 50); }
 
     it('should buffer messages and wait for the zone to exit before sending',
-       withProviders(() => [{provide: NgZone, useClass: MockNgZone}])
+       withModule({providers: [{provide: NgZone, useClass: MockNgZone}]})
            .inject(
                [AsyncTestCompleter, NgZone],
                (async: AsyncTestCompleter, zone: MockNgZone) => {

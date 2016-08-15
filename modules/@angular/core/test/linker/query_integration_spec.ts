@@ -8,8 +8,7 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {isPresent, stringify} from '../../src/facade/lang';

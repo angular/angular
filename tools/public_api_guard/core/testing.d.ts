@@ -1,6 +1,3 @@
-/** @deprecated */
-export declare function addProviders(providers: Array<any>): void;
-
 /** @stable */
 export declare function async(fn: Function): (done: any) => any;
 
@@ -95,22 +92,6 @@ export declare class TestBed implements Injector {
     static resetTestingModule(): typeof TestBed;
 }
 
-/** @deprecated */
-export declare class TestComponentBuilder {
-    protected _injector: Injector;
-    constructor(_injector: Injector);
-    createAsync<T>(rootComponentType: Type<T>): Promise<ComponentFixture<T>>;
-    createFakeAsync<T>(rootComponentType: Type<T>): ComponentFixture<T>;
-    protected createFromFactory<C>(ngZone: NgZone, componentFactory: ComponentFactory<C>): ComponentFixture<C>;
-    createSync<T>(rootComponentType: Type<T>): ComponentFixture<T>;
-    overrideAnimations(componentType: Type<any>, animations: AnimationEntryMetadata[]): TestComponentBuilder;
-    overrideDirective(componentType: Type<any>, from: Type<any>, to: Type<any>): TestComponentBuilder;
-    overrideProviders(type: Type<any>, providers: any[]): TestComponentBuilder;
-    overrideTemplate(componentType: Type<any>, template: string): TestComponentBuilder;
-    overrideView(componentType: Type<any>, view: ViewMetadata): TestComponentBuilder;
-    overrideViewProviders(type: Type<any>, providers: any[]): TestComponentBuilder;
-}
-
 /** @experimental */
 export declare class TestComponentRenderer {
     insertRootElement(rootElementId: string): void;
@@ -129,6 +110,3 @@ export declare function tick(millis?: number): void;
 
 /** @experimental */
 export declare function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
-
-/** @deprecated */
-export declare function withProviders(providers: () => any): InjectSetupWrapper;

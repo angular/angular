@@ -7,8 +7,7 @@
  */
 
 import {Component, Directive, ElementRef, Input, QueryList, ViewChild, ViewChildren, ViewMetadata} from '@angular/core';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('ViewChild', () => {

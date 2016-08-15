@@ -9,8 +9,7 @@
 import {NgFor, NgIf} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {Component, Directive, Input} from '@angular/core/src/metadata';
-import {TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';

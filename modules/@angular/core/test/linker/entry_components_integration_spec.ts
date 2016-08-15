@@ -7,8 +7,8 @@
  */
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, NoComponentFactoryError, ViewMetadata, forwardRef} from '@angular/core';
-import {TestBed, TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {TestBed} from '@angular/core/testing';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {Console} from '../../src/console';
 import {stringify} from '../../src/facade/lang';

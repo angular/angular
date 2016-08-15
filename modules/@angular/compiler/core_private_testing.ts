@@ -13,3 +13,6 @@ export var TestingCompiler: typeof t.TestingCompiler = r.TestingCompiler;
 
 export type TestingCompilerFactory = t.TestingCompilerFactory;
 export var TestingCompilerFactory: typeof t.TestingCompilerFactory = r.TestingCompilerFactory;
+
+export type TestComponentBuilder = t.TestComponentBuilder;
+export var TestComponentBuilder: typeof t.TestComponentBuilder = r.TestComponentBuilder;
