@@ -72,14 +72,7 @@ export interface ResolvedReflectiveProvider {
   multiProvider: boolean;
 }
 
-/**
- * See {@link ResolvedReflectiveProvider} instead.
- *
- * @deprecated
- */
-export interface ResolvedReflectiveBinding extends ResolvedReflectiveProvider {}
-
-export class ResolvedReflectiveProvider_ implements ResolvedReflectiveBinding {
+export class ResolvedReflectiveProvider_ implements ResolvedReflectiveProvider {
   constructor(
       public key: ReflectiveKey, public resolvedFactories: ResolvedReflectiveFactory[],
       public multiProvider: boolean) {}

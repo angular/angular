@@ -1009,7 +1009,6 @@ export declare abstract class ReflectiveInjector implements Injector {
     instantiateResolved(provider: ResolvedReflectiveProvider): any;
     resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
     resolveAndInstantiate(provider: Provider): any;
-    /** @deprecated */ static fromResolvedBindings(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
     /** @experimental */ static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector): ReflectiveInjector;
     static resolve(providers: Provider[]): ResolvedReflectiveProvider[];
     static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector;
@@ -1061,10 +1060,6 @@ export declare abstract class Renderer {
     abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
     abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): void;
     abstract setText(renderNode: any, text: string): void;
-}
-
-/** @deprecated */
-export interface ResolvedReflectiveBinding extends ResolvedReflectiveProvider {
 }
 
 /** @experimental */
