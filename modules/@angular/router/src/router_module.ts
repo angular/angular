@@ -66,7 +66,7 @@ export const ROUTER_PROVIDERS: any[] = [
  * bootstrap(AppCmp, {imports: [RouterModule.forRoot(ROUTES)]});
  * ```
  *
- * For lazy loaded modules it should be used as follows:
+ * For submodules and lazy loaded submodules it should be used as follows:
  *
  * ### Example
  *

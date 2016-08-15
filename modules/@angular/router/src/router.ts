@@ -40,12 +40,95 @@ declare var Zone: any;
  * @experimental
  */
 export interface NavigationExtras {
+  /**
+  * Enables relative navigation from the current ActivatedRoute
+  *
+  * Configuration
+  *
+  * ```
+  * [{
+  *   path: 'parent',
+  *   component: ParentComponent,
+  *   children: [
+  *     {
+  *       path: 'list',
+  *       component: ListComponent
+  *     },
+  *     {
+  *       path: 'child',
+  *       component: ChildComponent
+  *     }
+  *   ]
+  * }]
+  * ```
+  *
+  * Navigate to list route from child route
+  *
+  * ```
+  *  @Component({...})
+  *  class ChildComponent {
+  *    constructor(private router: Router, private route: ActivatedRoute) {}
+  *
+  *    go() {
+  *      this.router.navigate('../list', { relativeTo: this.route });
+  *    }
+  *  }
+  * ```
+  */
   relativeTo?: ActivatedRoute;
+  /**
+  * Sets query parameters to the URL
+  *
+  * ```
+  * // Navigate to /results?page=1
+  * this.router.navigate('/results', { queryParams: { page: 1 } });
+  * ```
+  */
   queryParams?: Params;
+  /**
+  * Sets the hash fragment for the URL
+  *
+  * ```
+  * // Navigate to /results#top
+  * this.router.navigate('/results', { fragment: 'top' });
+  * ```
+  */
   fragment?: string;
+  /**
+  * Preserves the query parameters for the next navigation
+  *
+  * ```
+  * // Preserve query params from /results?page=1 to /view?page=1
+  * this.router.navigate('/view', { preserveQueryParams: true });
+  * ```
+  */
   preserveQueryParams?: boolean;
+  /**
+  * Preserves the fragment for the next navigation
+  *
+  * ```
+  * // Preserve fragment from /results#top to /view#top
+  * this.router.navigate('/view', { preserveFragment: true });
+  * ```
+  */
   preserveFragment?: boolean;
+  /**
+  * Navigates without pushing a new state into history
+  *
+  * ```
+  * // Navigate silently to /view
+  * this.router.navigate('/view', { skipLocationChange: true });
+  * ```
+  */
   skipLocationChange?: boolean;
+  /**
+  * Navigates while replacing the current state in history
+  *
+  * ```
+  * // Navigate to /view
+  * this.router.navigate('/view', { replaceUrl: true });
+  * ```
+  */
   replaceUrl?: boolean;
 }
 
