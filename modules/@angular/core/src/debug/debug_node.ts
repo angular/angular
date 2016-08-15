@@ -131,7 +131,7 @@ export class DebugElement extends DebugNode {
     return children;
   }
 
-  triggerEventHandler(eventName: string, eventObj: any) {
+  triggerEventHandler(eventName: string, eventObj?: any) {
     this.listeners.forEach((listener) => {
       if (listener.name == eventName) {
         listener.callback(eventObj);
