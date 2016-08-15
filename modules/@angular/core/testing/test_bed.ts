@@ -184,11 +184,6 @@ export class TestBed implements Injector {
     this.ngModule = null;
   }
 
-  /**
-   * @deprecated use `resetTestingModule` instead
-   */
-  reset() { this.resetTestingModule(); }
-
   resetTestingModule() {
     this._compiler = null;
     this._moduleOverrides = [];
