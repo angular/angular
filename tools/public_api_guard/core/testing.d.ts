@@ -77,7 +77,6 @@ export declare class TestBed implements Injector {
     overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): void;
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>): void;
     overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>): void;
-    /** @deprecated */ reset(): void;
     /** @experimental */ resetTestEnvironment(): void;
     resetTestingModule(): void;
     static compileComponents(): Promise<any>;
