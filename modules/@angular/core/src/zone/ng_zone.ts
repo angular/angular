@@ -9,10 +9,7 @@
 import {EventEmitter} from '../facade/async';
 import {BaseException} from '../facade/exceptions';
 
-import {NgZoneError, NgZoneImpl} from './ng_zone_impl';
-
-export {NgZoneError} from './ng_zone_impl';
-
+import {NgZoneImpl} from './ng_zone_impl';
 
 
 /**
@@ -139,7 +136,7 @@ export class NgZone {
         this._checkStable();
       },
       setMacrotask: (hasMacrotasks: boolean) => { this._hasPendingMacrotasks = hasMacrotasks; },
-      onError: (error: NgZoneError) => this._onErrorEvents.emit(error)
+      onError: (error: any) => this._onErrorEvents.emit(error)
     });
   }
 

@@ -22,7 +22,7 @@ import {NgModuleFactory, NgModuleInjector, NgModuleRef} from './linker/ng_module
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
-import {NgZone, NgZoneError} from './zone/ng_zone';
+import {NgZone} from './zone/ng_zone';
 
 var _devMode: boolean = true;
 var _runModeLocked: boolean = false;
@@ -300,9 +300,8 @@ export class PlatformRef_ extends PlatformRef {
         throw new Error('No ExceptionHandler. Is platform module (BrowserModule) included?');
       }
       moduleRef.onDestroy(() => ListWrapper.remove(this._modules, moduleRef));
-      ngZone.onError.subscribe({
-        next: (error: NgZoneError) => { exceptionHandler.call(error.error, error.stackTrace); }
-      });
+      ngZone.onError.subscribe(
+          {next: (error: any) => { exceptionHandler.call(error, error ? error.stack : null); }});
       return _callAndReportToExceptionHandler(exceptionHandler, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         return initStatus.donePromise.then(() => {

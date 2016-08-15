@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgZone, NgZoneError} from '@angular/core/src/zone/ng_zone';
+import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {AsyncTestCompleter, Log, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
@@ -31,9 +31,9 @@ const resolvedPromise = Promise.resolve(null);
 
 function logOnError() {
   _zone.onError.subscribe({
-    next: (ngErr: NgZoneError) => {
-      _errors.push(ngErr.error);
-      _traces.push(ngErr.stackTrace);
+    next: (error: any) => {
+      _errors.push(error);
+      _traces.push(error.stack);
     }
   });
 }
