@@ -1,12 +1,4 @@
-import {
-    inject,
-    async,
-    fakeAsync,
-    tick,
-    TestComponentBuilder,
-    ComponentFixture,
-    TestBed,
-} from '@angular/core/testing';
+import {async, fakeAsync, tick, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MdTabGroup, MdTabsModule} from './tabs';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -14,7 +6,6 @@ import {Observable} from 'rxjs/Observable';
 
 
 describe('MdTabGroup', () => {
-  let builder: TestComponentBuilder;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -22,23 +13,18 @@ describe('MdTabGroup', () => {
       declarations: [
         SimpleTabsTestApp,
         AsyncTabsTestApp,
+        DisabledTabsTestApp
       ],
     });
 
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-    builder = tcb;
-  }));
-
   describe('basic behavior', () => {
     let fixture: ComponentFixture<SimpleTabsTestApp>;
 
     beforeEach(async(() => {
-      builder.createAsync(SimpleTabsTestApp).then(f => {
-        fixture = f;
-      });
+      fixture = TestBed.createComponent(SimpleTabsTestApp);
     }));
 
     it('should default to the first tab', async(() => {
@@ -155,10 +141,8 @@ describe('MdTabGroup', () => {
     let fixture: ComponentFixture<DisabledTabsTestApp>;
 
     beforeEach(async(() => {
-      builder.createAsync(DisabledTabsTestApp).then(f => {
-        fixture = f;
-        fixture.detectChanges();
-      });
+      fixture = TestBed.createComponent(DisabledTabsTestApp);
+      fixture.detectChanges();
     }));
 
     it('should disable the second tab', () => {
