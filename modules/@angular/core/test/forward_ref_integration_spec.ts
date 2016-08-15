@@ -7,7 +7,7 @@
  */
 
 import {NgFor} from '@angular/common';
-import {Component, Directive, Inject, Query, QueryList, asNativeElements, bind, forwardRef, provide, resolveForwardRef} from '@angular/core';
+import {Component, ContentChildren, Directive, Inject, QueryList, asNativeElements, bind, forwardRef, provide, resolveForwardRef} from '@angular/core';
 import {TestComponentBuilder} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -42,15 +42,10 @@ class App {
   template: `{{frame.name}}(<span *ngFor="let  lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
-  locks: QueryList<Lock>;
+  @ContentChildren(forwardRef(() => Lock)) locks: QueryList<Lock>;
   frame: Frame;
 
-  constructor(
-      @Query(forwardRef(() => Lock)) locks: QueryList<Lock>,
-      @Inject(forwardRef(() => Frame)) frame: Frame) {
-    this.frame = frame;
-    this.locks = locks;
-  }
+  constructor(@Inject(forwardRef(() => Frame)) frame: Frame) { this.frame = frame; }
 }
 
 class Frame {

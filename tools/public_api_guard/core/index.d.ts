@@ -1028,9 +1028,6 @@ export declare class ProviderBuilder {
     toValue(value: any): Provider;
 }
 
-/** @deprecated */
-export declare var Query: QueryMetadataFactory;
-
 /** @stable */
 export declare class QueryList<T> {
     changes: Observable<any>;
@@ -1050,7 +1047,7 @@ export declare class QueryList<T> {
     toString(): string;
 }
 
-/** @deprecated */
+/** @stable */
 export declare class QueryMetadata extends DependencyMetadata {
     descendants: boolean;
     first: boolean;
@@ -1065,18 +1062,6 @@ export declare class QueryMetadata extends DependencyMetadata {
         read?: any;
     });
     toString(): string;
-}
-
-/** @deprecated */
-export interface QueryMetadataFactory {
-    (selector: Type<any> | Function | string, {descendants, read}?: {
-        descendants?: boolean;
-        read?: any;
-    }): ParameterDecorator;
-    new (selector: Type<any> | Function | string, {descendants, read}?: {
-        descendants?: boolean;
-        read?: any;
-    }): QueryMetadata;
 }
 
 /** @stable */
@@ -1356,6 +1341,7 @@ export declare class ViewChildrenMetadata extends ViewQueryMetadata {
     constructor(_selector: Type<any> | string, {read}?: {
         read?: any;
     });
+    toString(): string;
 }
 
 /** @stable */
@@ -1416,10 +1402,7 @@ export declare class ViewMetadata {
     });
 }
 
-/** @deprecated */
-export declare var ViewQuery: QueryMetadataFactory;
-
-/** @deprecated */
+/** @stable */
 export declare class ViewQueryMetadata extends QueryMetadata {
     isViewQuery: boolean;
     constructor(_selector: Type<any> | string, {descendants, first, read}?: {
@@ -1427,7 +1410,6 @@ export declare class ViewQueryMetadata extends QueryMetadata {
         first?: boolean;
         read?: any;
     });
-    toString(): string;
 }
 
 /** @stable */

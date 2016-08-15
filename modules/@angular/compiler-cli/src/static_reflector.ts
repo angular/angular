@@ -192,10 +192,6 @@ export class StaticReflector implements ReflectorReader {
     this.registerDecoratorOrConstructor(
         this.host.findDeclaration(coreDecorators, 'Attribute'), AttributeMetadata);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Query'), QueryMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ViewQuery'), ViewQueryMetadata);
-    this.registerDecoratorOrConstructor(
         this.host.findDeclaration(coreDecorators, 'ContentChild'), ContentChildMetadata);
     this.registerDecoratorOrConstructor(
         this.host.findDeclaration(coreDecorators, 'ContentChildren'), ContentChildrenMetadata);

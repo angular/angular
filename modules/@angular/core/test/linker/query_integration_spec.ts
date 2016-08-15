@@ -7,7 +7,7 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, Query, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ViewQuery, asNativeElements} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
 import {TestComponentBuilder} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -425,34 +425,6 @@ export function main() {
                  });
 
                  view.debugElement.componentInstance.shouldShow = true;
-                 view.detectChanges();
-               });
-             }));
-
-      it('should notify child\'s query before notifying parent\'s query',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               var template = '<needs-query-desc #q1>' +
-                   '<needs-query-desc #q2>' +
-                   '<div text="1"></div>' +
-                   '</needs-query-desc>' +
-                   '</needs-query-desc>';
-
-               tcb.overrideTemplate(MyComp0, template).createAsync(MyComp0).then((view) => {
-                 var q1 = view.debugElement.children[0].references['q1'];
-                 var q2 = view.debugElement.children[0].children[0].references['q2'];
-
-                 var firedQ2 = false;
-
-                 q2.query.changes.subscribe({next: () => { firedQ2 = true; }});
-                 q1.query.changes.subscribe({
-                   next: () => {
-                     expect(firedQ2).toBe(true);
-                     async.done();
-                   }
-                 });
-
                  view.detectChanges();
                });
              }));
@@ -907,8 +879,7 @@ class InertDirective {
   template: '<div text="ignoreme"></div><b *ngFor="let  dir of query">{{dir.text}}|</b>'
 })
 class NeedsQuery {
-  query: QueryList<TextDirective>;
-  constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
+  @ContentChildren(TextDirective) query: QueryList<TextDirective>;
 }
 
 @Component({selector: 'needs-four-queries', template: ''})
@@ -925,18 +896,12 @@ class NeedsFourQueries {
   template: '<ng-content></ng-content><div *ngFor="let  dir of query">{{dir.text}}|</div>'
 })
 class NeedsQueryDesc {
-  query: QueryList<TextDirective>;
-  constructor(@Query(TextDirective, {descendants: true}) query: QueryList<TextDirective>) {
-    this.query = query;
-  }
+  @ContentChildren(TextDirective, {descendants: true}) query: QueryList<TextDirective>;
 }
 
 @Component({selector: 'needs-query-by-ref-binding', directives: [], template: '<ng-content>'})
 class NeedsQueryByLabel {
-  query: QueryList<any>;
-  constructor(@Query('textLabel', {descendants: true}) query: QueryList<any>) {
-    this.query = query;
-  }
+  @ContentChildren('textLabel', {descendants: true}) query: QueryList<any>;
 }
 
 @Component({
@@ -945,16 +910,12 @@ class NeedsQueryByLabel {
   template: '<div #textLabel>text</div>'
 })
 class NeedsViewQueryByLabel {
-  query: QueryList<any>;
-  constructor(@ViewQuery('textLabel') query: QueryList<any>) { this.query = query; }
+  @ViewChildren('textLabel') query: QueryList<any>;
 }
 
 @Component({selector: 'needs-query-by-ref-bindings', directives: [], template: '<ng-content>'})
 class NeedsQueryByTwoLabels {
-  query: QueryList<any>;
-  constructor(@Query('textLabel1,textLabel2', {descendants: true}) query: QueryList<any>) {
-    this.query = query;
-  }
+  @ContentChildren('textLabel1,textLabel2', {descendants: true}) query: QueryList<any>;
 }
 
 @Component({
@@ -963,8 +924,7 @@ class NeedsQueryByTwoLabels {
   template: '<div *ngFor="let  dir of query">{{dir.text}}|</div><ng-content></ng-content>'
 })
 class NeedsQueryAndProject {
-  query: QueryList<TextDirective>;
-  constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
+  @ContentChildren(TextDirective) query: QueryList<TextDirective>;
 }
 
 @Component({
@@ -974,8 +934,7 @@ class NeedsQueryAndProject {
       '<div text="3"></div><div text="4"></div>'
 })
 class NeedsViewQuery {
-  query: QueryList<TextDirective>;
-  constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
+  @ViewChildren(TextDirective) query: QueryList<TextDirective>;
 }
 
 @Component({
@@ -985,11 +944,8 @@ class NeedsViewQuery {
 })
 class NeedsViewQueryIf {
   show: boolean;
-  query: QueryList<TextDirective>;
-  constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) {
-    this.query = query;
-    this.show = false;
-  }
+  @ViewChildren(TextDirective) query: QueryList<TextDirective>;
+  constructor() { this.show = false; }
 }
 
 
@@ -1000,11 +956,8 @@ class NeedsViewQueryIf {
 })
 class NeedsViewQueryNestedIf {
   show: boolean;
-  query: QueryList<TextDirective>;
-  constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) {
-    this.query = query;
-    this.show = true;
-  }
+  @ViewChildren(TextDirective) query: QueryList<TextDirective>;
+  constructor() { this.show = true; }
 }
 
 @Component({
@@ -1015,12 +968,9 @@ class NeedsViewQueryNestedIf {
       '<div text="4"></div>'
 })
 class NeedsViewQueryOrder {
-  query: QueryList<TextDirective>;
+  @ViewChildren(TextDirective) query: QueryList<TextDirective>;
   list: string[];
-  constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) {
-    this.query = query;
-    this.list = ['2', '3'];
-  }
+  constructor() { this.list = ['2', '3']; }
 }
 
 @Component({
@@ -1031,24 +981,16 @@ class NeedsViewQueryOrder {
       '<div text="4"></div></div>'
 })
 class NeedsViewQueryOrderWithParent {
-  query: QueryList<TextDirective>;
+  @ViewChildren(TextDirective) query: QueryList<TextDirective>;
   list: string[];
-  constructor(@ViewQuery(TextDirective) query: QueryList<TextDirective>) {
-    this.query = query;
-    this.list = ['2', '3'];
-  }
+  constructor() { this.list = ['2', '3']; }
 }
 
 @Component({selector: 'needs-tpl', template: '<template><div>shadow</div></template>'})
 class NeedsTpl {
-  viewQuery: QueryList<TemplateRef<Object>>;
-  query: QueryList<TemplateRef<Object>>;
-  constructor(
-      @ViewQuery(TemplateRef) viewQuery: QueryList<TemplateRef<Object>>,
-      @Query(TemplateRef) query: QueryList<TemplateRef<Object>>, public vc: ViewContainerRef) {
-    this.viewQuery = viewQuery;
-    this.query = query;
-  }
+  @ViewChildren(TemplateRef) viewQuery: QueryList<TemplateRef<Object>>;
+  @ContentChildren(TemplateRef) query: QueryList<TemplateRef<Object>>;
+  constructor(public vc: ViewContainerRef) {}
 }
 
 @Component({selector: 'needs-named-tpl', template: '<template #tpl><div>shadow</div></template>'})

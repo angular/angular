@@ -16,7 +16,7 @@ import {QueryList} from '@angular/core/src/linker/query_list';
 import {TemplateRef, TemplateRef_} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
-import {Attribute, Component, Directive, HostBinding, HostListener, Input, Output, Pipe, Query, ViewMetadata} from '@angular/core/src/metadata';
+import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe, ViewMetadata} from '@angular/core/src/metadata';
 import {Renderer} from '@angular/core/src/render';
 import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
@@ -2483,13 +2483,10 @@ class ToolbarViewContainer {
   directives: [ToolbarViewContainer, NgFor]
 })
 class ToolbarComponent {
-  query: QueryList<ToolbarPart>;
+  @ContentChildren(ToolbarPart) query: QueryList<ToolbarPart>;
   ctxProp: string;
 
-  constructor(@Query(ToolbarPart) query: QueryList<ToolbarPart>) {
-    this.ctxProp = 'hello world';
-    this.query = query;
-  }
+  constructor() { this.ctxProp = 'hello world'; }
 }
 
 @Directive({selector: '[two-way]', inputs: ['control'], outputs: ['controlChange']})
