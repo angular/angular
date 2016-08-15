@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, ChangeDetectorRef, ComponentFactory, ComponentRef, ComponentResolver, DebugElement, ElementRef, Injectable, Injector, NgZone, NgZoneError, OpaqueToken, ViewMetadata, getDebugNode} from '../index';
+import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, getDebugNode} from '../index';
 import {BaseException} from '../src/facade/exceptions';
 import {scheduleMicroTask} from '../src/facade/lang';
 
@@ -108,7 +108,7 @@ export class ComponentFixture<T> {
       });
 
       this._onErrorSubscription =
-          ngZone.onError.subscribe({next: (error: NgZoneError) => { throw error.error; }});
+          ngZone.onError.subscribe({next: (error: any) => { throw error; }});
     }
   }
 

@@ -856,13 +856,6 @@ export declare class NgZone {
     static isInAngularZone(): boolean;
 }
 
-/** @deprecated */
-export declare class NgZoneError {
-    error: any;
-    stackTrace: any;
-    constructor(error: any, stackTrace: any);
-}
-
 /** @stable */
 export declare class NoAnnotationError extends BaseException {
     constructor(typeOrFunc: Type<any> | Function, params: any[][]);
