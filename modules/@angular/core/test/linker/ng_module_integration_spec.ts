@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, ComponentResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, ReflectiveInjector, SelfMetadata, Type, forwardRef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, SelfMetadata, Type, forwardRef} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
@@ -628,47 +628,6 @@ function declareTests({useJit}: {useJit: boolean}) {
         // compile again should produce the same result
         expect(boundCompiler.compileComponentSync(CompUsingModuleDirectiveAndPipe)).toBe(cf);
       });
-
-      it('should provide a ComponentResolver instance that uses the directives/pipes of the module',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-
-           @NgModule({declarations: [SomeDirective, SomePipe]})
-           class SomeModule {
-           }
-
-           const ngModule = createModule(SomeModule);
-
-           const boundCompiler: ComponentResolver = ngModule.injector.get(ComponentResolver);
-           boundCompiler.resolveComponent(CompUsingModuleDirectiveAndPipe).then((cf) => {
-             const compFixture = new ComponentFixture(cf.create(injector), null, false);
-             compFixture.detectChanges();
-             expect(compFixture.debugElement.children[0].properties['title'])
-                 .toBe('transformed someValue');
-             async.done();
-           });
-         }));
-
-      it('should provide a ComponentResolver instance that delegates to the parent ComponentResolver for strings',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           @NgModule()
-           class SomeModule {
-           }
-
-           let parentResolver: any =
-               jasmine.createSpyObj('resolver', ['resolveComponent', 'clearCache']);
-           const ngModule = createModule(
-               SomeModule, ReflectiveInjector.resolveAndCreate(
-                               [{provide: ComponentResolver, useValue: parentResolver}]));
-           parentResolver.resolveComponent.and.returnValue(
-               Promise.resolve('someFactoryFromParent'));
-           let boundCompiler: ComponentResolver = ngModule.injector.get(ComponentResolver);
-           boundCompiler.resolveComponent('someString').then((result) => {
-             expect(parentResolver.resolveComponent).toHaveBeenCalledWith('someString');
-             expect(result).toBe('someFactoryFromParent');
-             async.done();
-           });
-         }));
-
     });
 
     describe('providers', function() {

@@ -7,10 +7,9 @@
  */
 
 import {AsyncPipe, NgFor, NgIf} from '@angular/common';
-import {CompilerConfig} from '@angular/compiler';
-import {Compiler, Host, Inject, Injectable, Injector, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf, SkipSelfMetadata, forwardRef} from '@angular/core';
+import {Compiler, Host, Inject, Injectable, Injector, NgModule, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf, SkipSelfMetadata, forwardRef} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
-import {ComponentResolver} from '@angular/core/src/linker/component_resolver';
+import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {QueryList} from '@angular/core/src/linker/query_list';
 import {TemplateRef, TemplateRef_} from '@angular/core/src/linker/template_ref';
@@ -19,7 +18,7 @@ import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
 import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {Renderer} from '@angular/core/src/render';
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util';
@@ -1263,27 +1262,35 @@ function declareTests({useJit}: {useJit: boolean}) {
              }));
 
       describe('dynamic ViewContainers', () => {
-        it('should allow to create a ViewContainerRef at any bound location',
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter, ComponentResolver],
-               (tcb: TestComponentBuilder, async: AsyncTestCompleter,
-                compiler: ComponentResolver) => {
-                 tcb.overrideView(MyComp, new ViewMetadata({
-                                    template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',
-                                    directives: [DynamicViewport]
-                                  }))
-                     .createAsync(MyComp)
-                     .then((fixture) => {
-                       var tc = fixture.debugElement.children[0].children[0];
-                       var dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
-                       dynamicVp.done.then((_) => {
-                         fixture.detectChanges();
-                         expect(fixture.debugElement.children[0].children[1].nativeElement)
-                             .toHaveText('dynamic greet');
-                         async.done();
-                       });
-                     });
-               }));
+        beforeEach(() => {
+
+          // we need a module to declarate ChildCompUsingService as an entryComponent otherwise the
+          // factory doesn't get created
+          @NgModule({
+            declarations: [DynamicViewport, MyComp, ChildCompUsingService],
+            entryComponents: [ChildCompUsingService, MyComp]
+          })
+          class MyModule {
+          }
+
+
+          TestBed.configureTestingModule({imports: [MyModule]});
+          TestBed.overrideComponent(
+              MyComp, {add: {template: '<div><dynamic-vp #dynamic></dynamic-vp></div>'}});
+          return TestBed.compileComponents();
+        });
+
+
+        it('should allow to create a ViewContainerRef at any bound location', async(() => {
+             var fixture = TestBed.createComponent(MyComp);
+             var tc = fixture.debugElement.children[0].children[0];
+             var dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+             dynamicVp.done.then((_) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.children[0].children[1].nativeElement)
+                   .toHaveText('dynamic greet');
+             });
+           }));
 
       });
 
@@ -2135,14 +2142,15 @@ class SimpleImperativeViewComponent {
 @Directive({selector: 'dynamic-vp'})
 class DynamicViewport {
   done: Promise<any>;
-  constructor(vc: ViewContainerRef, compiler: ComponentResolver) {
+  constructor(vc: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver) {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
 
     var injector = ReflectiveInjector.resolveAndCreate(
         [{provide: MyService, useValue: myService}], vc.injector);
-    this.done = compiler.resolveComponent(ChildCompUsingService)
-                    .then((componentFactory) => vc.createComponent(componentFactory, 0, injector));
+    this.done =
+        Promise.resolve(componentFactoryResolver.resolveComponentFactory(ChildCompUsingService))
+            .then((componentFactory) => vc.createComponent(componentFactory, 0, injector));
   }
 }
 

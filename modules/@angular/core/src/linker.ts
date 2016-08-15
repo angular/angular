@@ -10,7 +10,6 @@
 export {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, ComponentStillLoadingError, ModuleWithComponentFactories} from './linker/compiler';
 export {ComponentFactory, ComponentRef} from './linker/component_factory';
 export {ComponentFactoryResolver, NoComponentFactoryError} from './linker/component_factory_resolver';
-export {ComponentResolver} from './linker/component_resolver';
 export {ElementRef} from './linker/element_ref';
 export {ExpressionChangedAfterItHasBeenCheckedException} from './linker/exceptions';
 export {NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';

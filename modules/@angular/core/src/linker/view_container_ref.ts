@@ -78,7 +78,7 @@ export abstract class ViewContainerRef {
    * specified `index`.
    *
    * The component is instantiated using its {@link ComponentFactory} which can be
-   * obtained via {@link ComponentResolver#resolveComponent}.
+   * obtained via {@link ComponentFactoryResolver#resolveComponentFactory}.
    *
    * If `index` is not specified, the new View will be inserted as the last View in the container.
    *
