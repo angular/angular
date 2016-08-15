@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, Input, QueryList, ViewChild, ViewChildren, ViewMetadata} from '@angular/core';
+import {Component, Directive, ElementRef, Input, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {

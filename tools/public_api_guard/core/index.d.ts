@@ -1314,30 +1314,6 @@ export declare enum ViewEncapsulation {
     None = 2,
 }
 
-/** @deprecated */
-export declare class ViewMetadata {
-    animations: AnimationEntryMetadata[];
-    directives: Array<Type<any> | any[]>;
-    encapsulation: ViewEncapsulation;
-    interpolation: [string, string];
-    pipes: Array<Type<any> | any[]>;
-    styleUrls: string[];
-    styles: string[];
-    template: string;
-    templateUrl: string;
-    constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls, animations, interpolation}?: {
-        templateUrl?: string;
-        template?: string;
-        directives?: Array<Type<any> | any[]>;
-        pipes?: Array<Type<any> | any[]>;
-        encapsulation?: ViewEncapsulation;
-        styles?: string[];
-        styleUrls?: string[];
-        animations?: AnimationEntryMetadata[];
-        interpolation?: [string, string];
-    });
-}
-
 /** @stable */
 export declare class ViewQueryMetadata extends QueryMetadata {
     isViewQuery: boolean;

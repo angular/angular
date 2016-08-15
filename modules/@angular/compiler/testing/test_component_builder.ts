@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, Compiler, ComponentFactory, Inject, Injectable, Injector, NgZone, Type, ViewMetadata} from '@angular/core';
+import {AnimationEntryMetadata, Compiler, ComponentFactory, Inject, Injectable, Injector, NgZone, Type} from '@angular/core';
 import {ComponentFixture, ComponentFixtureNoNgZone, TestBed} from '@angular/core/testing';
+
+import {ViewMetadata} from '../core_private';
 import {TestComponentBuilder} from '../core_private_testing';
+// export {ViewMetadata} from '../core_private';
 
 import {DirectiveResolver} from '../index';
 import {MapWrapper} from '../src/facade/collection';
@@ -25,17 +28,17 @@ import {isPresent} from '../src/facade/lang';
 @Injectable()
 export class OverridingTestComponentBuilder extends TestComponentBuilder {
   /** @internal */
-  _bindingsOverrides = new Map<Type<any>, any[]>();
+  private _bindingsOverrides = new Map<Type<any>, any[]>();
   /** @internal */
-  _directiveOverrides = new Map<Type<any>, Map<Type<any>, Type<any>>>();
+  private _directiveOverrides = new Map<Type<any>, Map<Type<any>, Type<any>>>();
   /** @internal */
-  _templateOverrides = new Map<Type<any>, string>();
+  private _templateOverrides = new Map<Type<any>, string>();
   /** @internal */
-  _animationOverrides = new Map<Type<any>, AnimationEntryMetadata[]>();
+  private _animationOverrides = new Map<Type<any>, AnimationEntryMetadata[]>();
   /** @internal */
-  _viewBindingsOverrides = new Map<Type<any>, any[]>();
+  private _viewBindingsOverrides = new Map<Type<any>, any[]>();
   /** @internal */
-  _viewOverrides = new Map<Type<any>, ViewMetadata>();
+  private _viewOverrides = new Map<Type<any>, ViewMetadata>();
 
   constructor(@Inject(TestBed) injector: Injector) { super(injector); }
 

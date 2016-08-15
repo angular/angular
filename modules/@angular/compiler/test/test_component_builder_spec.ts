@@ -7,11 +7,13 @@
  */
 
 import {NgIf} from '@angular/common';
-import {Component, Injectable, Input, NgModule, Pipe, ViewMetadata} from '@angular/core';
+import {Component, Injectable, Input, NgModule, Pipe} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, withModule} from '@angular/core/testing';
 import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {ViewMetadata} from '../core_private';
 
 @Component(
     {selector: 'child-comp', template: `<span>Original {{childBinding}}</span>`, directives: []})

@@ -7,7 +7,8 @@
  */
 
 import {NgClass, NgIf} from '@angular/common';
-import {Component, Injector, OpaqueToken, Pipe, PipeTransform, ViewMetadata, forwardRef} from '@angular/core';
+import {Component, Injector, OpaqueToken, Pipe, PipeTransform, forwardRef} from '@angular/core';
+import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';

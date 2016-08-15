@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Type, ViewMetadata, resolveForwardRef} from '@angular/core';
+import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Type, resolveForwardRef} from '@angular/core';
+import {ViewMetadata} from '../core_private';
 
 import {DirectiveResolver} from '../src/directive_resolver';
 import {Map} from '../src/facade/collection';

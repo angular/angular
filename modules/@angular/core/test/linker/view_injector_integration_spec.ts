@@ -7,7 +7,8 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, InjectMetadata, Input, Optional, Pipe, PipeTransform, Self, SkipSelfMetadata, TemplateRef, Type, ViewContainerRef, ViewMetadata, forwardRef} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, InjectMetadata, Input, Optional, Pipe, PipeTransform, Self, SkipSelfMetadata, TemplateRef, Type, ViewContainerRef, forwardRef} from '@angular/core';
+import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {ComponentFixture, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';

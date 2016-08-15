@@ -7,8 +7,9 @@
  */
 
 import {NgIf} from '@angular/common';
-import {Component, ComponentRef, Injectable, Injector, ReflectiveInjector, ViewMetadata, getPlatform} from '@angular/core';
+import {Component, ComponentRef, Injectable, Injector, ReflectiveInjector, getPlatform} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
+import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/testing_internal';

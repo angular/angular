@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentMetadata, Injector, ViewMetadata} from '@angular/core';
+import {Component, ComponentMetadata, Injector} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
+import {ViewMetadata} from '../core_private';
 import {isBlank, stringify} from '../src/facade/lang';
 import {MockDirectiveResolver} from '../testing';
 
