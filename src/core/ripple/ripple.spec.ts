@@ -1,12 +1,7 @@
-import {
-    TestBed,
-    inject,
-    async,
-    TestComponentBuilder,
-    ComponentFixture,
-} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {MdRipple, MdRippleModule} from './ripple';
+
 
 /** Creates a DOM event to indicate that a CSS transition for the given property ended. */
 const createTransitionEndEvent = (propertyName: string) => {
@@ -61,18 +56,17 @@ const pxStringToFloat = (s: string) => {
 };
 
 describe('MdRipple', () => {
-  let builder: TestComponentBuilder;
   let fixture: ComponentFixture<any>;
   let rippleElement: HTMLElement;
   let rippleBackground: Element;
   let originalBodyMargin: string;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [MdRippleModule],
       declarations: [BasicRippleContainer, RippleContainerWithInputBindings],
     });
-  }));
+  });
 
   beforeEach(() => {
     // Set body margin to 0 during tests so it doesn't mess up position calculations.
@@ -84,21 +78,15 @@ describe('MdRipple', () => {
     document.body.style.margin = originalBodyMargin;
   });
 
-  beforeEach(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-    builder = tcb;
-  }));
-
   describe('basic ripple', () => {
-    beforeEach(async(() => {
-      builder.createAsync(BasicRippleContainer).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(BasicRippleContainer);
+      fixture.detectChanges();
 
-        rippleElement = fixture.debugElement.nativeElement.querySelector('[md-ripple]');
-        rippleBackground = rippleElement.querySelector('.md-ripple-background');
-        expect(rippleBackground).toBeTruthy();
-      });
-    }));
+      rippleElement = fixture.debugElement.nativeElement.querySelector('[md-ripple]');
+      rippleBackground = rippleElement.querySelector('.md-ripple-background');
+      expect(rippleBackground).toBeTruthy();
+    });
 
     it('shows background when parent receives mousedown event', () => {
       expect(rippleBackground.classList).not.toContain('md-ripple-active');
@@ -198,18 +186,16 @@ describe('MdRipple', () => {
     let controller: RippleContainerWithInputBindings;
     let rippleComponent: MdRipple;
 
-    beforeEach(async(() => {
-      builder.createAsync(RippleContainerWithInputBindings).then(f => {
-        fixture = f;
-        fixture.detectChanges();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(RippleContainerWithInputBindings);
+      fixture.detectChanges();
 
-        controller = fixture.debugElement.componentInstance;
-        rippleComponent = controller.ripple;
-        rippleElement = fixture.debugElement.nativeElement.querySelector('[md-ripple]');
-        rippleBackground = rippleElement.querySelector('.md-ripple-background');
-        expect(rippleBackground).toBeTruthy();
-      });
-    }));
+      controller = fixture.debugElement.componentInstance;
+      rippleComponent = controller.ripple;
+      rippleElement = fixture.debugElement.nativeElement.querySelector('[md-ripple]');
+      rippleBackground = rippleElement.querySelector('.md-ripple-background');
+      expect(rippleBackground).toBeTruthy();
+    });
 
     it('sets ripple background color', () => {
       // This depends on the exact color format that getComputedStyle returns; for example, alpha
