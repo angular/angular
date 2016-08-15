@@ -66,7 +66,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   private classes: string[] = [];
   private subscription: Subscription;
 
-  @Input() private routerLinkActiveOptions: {exact: boolean} = {exact: false};
+  @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
   constructor(private router: Router, private element: ElementRef, private renderer: Renderer) {
     this.subscription = router.events.subscribe(s => {
