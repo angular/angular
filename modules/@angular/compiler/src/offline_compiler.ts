@@ -58,7 +58,7 @@ export class OfflineCompiler {
   compile(
       moduleUrl: string, ngModulesSummary: NgModulesSummary, components: StaticSymbol[],
       ngModules: StaticSymbol[]): Promise<SourceModule[]> {
-    let fileSuffix = _splitLastSuffix(moduleUrl)[1];
+    let fileSuffix = _splitTypescriptSuffix(moduleUrl)[1];
     let statements: o.Statement[] = [];
     let exportedVars: string[] = [];
     let outputSourceModules: SourceModule[] = [];
@@ -203,7 +203,7 @@ function _resolveStyleStatements(
 }
 
 function _ngfactoryModuleUrl(compUrl: string): string {
-  var urlWithSuffix = _splitLastSuffix(compUrl);
+  var urlWithSuffix = _splitTypescriptSuffix(compUrl);
   return `${urlWithSuffix[0]}.ngfactory${urlWithSuffix[1]}`;
 }
 
@@ -221,7 +221,10 @@ function _assertComponent(meta: CompileDirectiveMetadata) {
   }
 }
 
-function _splitLastSuffix(path: string): string[] {
+function _splitTypescriptSuffix(path: string): string[] {
+  if (/\.d\.ts$/.test(path)) {
+    return [path.substring(0, path.length - 5), '.ts'];
+  }
   let lastDot = path.lastIndexOf('.');
   if (lastDot !== -1) {
     return [path.substring(0, lastDot), path.substring(lastDot)];

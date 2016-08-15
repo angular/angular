@@ -36,6 +36,12 @@ describe('template codegen output', () => {
     expect(fs.readFileSync(dtsOutput, {encoding: 'utf-8'})).toContain('Basic');
   });
 
+  it('should write .ngfactory.ts for .d.ts inputs', () => {
+    const factoryOutput =
+        path.join('node_modules', '@angular2-material', 'button', 'button.ngfactory.ts');
+    expect(fs.existsSync(factoryOutput)).toBeTruthy();
+  });
+
   it('should be able to create the basic component', () => {
     var compFixture = createComponent(BasicComp);
     expect(compFixture.componentInstance).toBeTruthy();
