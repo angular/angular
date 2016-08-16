@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/progress-circle",
-  "version": "2.0.0-alpha.7-2",
+  "version": "2.0.0-alpha.7-3",
   "description": "Angular 2 Material progress-circle",
   "main": "./progress-circle.js",
   "typings": "./progress-circle.d.ts",
@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.7-2"
+    "@angular2-material/core": "2.0.0-alpha.7-3"
   }
 }

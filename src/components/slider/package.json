@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/slider",
-  "version": "2.0.0-alpha.7-2",
+  "version": "2.0.0-alpha.7-3",
   "description": "Angular 2 Material Slider",
   "main": "./slider.js",
   "typings": "./slider.d.ts",
@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.7-2"
+    "@angular2-material/core": "2.0.0-alpha.7-3"
   }
 }
