@@ -7,13 +7,13 @@
  */
 
 import {NgModule} from '@angular/core';
-import {HTTP_PROVIDERS} from '@angular/http';
+import {HttpModule} from '@angular/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {HttpCmp} from './app/http_comp';
 
-@NgModule({bootstrap: [HttpCmp], providers: [HTTP_PROVIDERS], imports: [BrowserModule]})
+@NgModule({bootstrap: [HttpCmp], imports: [BrowserModule, HttpModule]})
 class ExampleModule {
 }
 
