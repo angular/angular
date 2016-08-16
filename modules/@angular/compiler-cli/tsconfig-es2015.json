@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "es2015",
         "target": "es5",
         "lib": ["es6", "dom"],
         "noImplicitAny": true,
@@ -17,17 +17,12 @@
         "experimentalDecorators": true,
         "rootDir": ".",
         "sourceRoot": ".",
-        "outDir": "../../../dist/packages-dist/compiler-cli",
+        "outDir": "../../../dist/packages-dist/compiler-cli/esm",
         "declaration": true,
         "skipLibCheck": true
     },
     "exclude": ["integrationtest"],
     "files": [
-        "index.ts",
-        "src/main.ts",
-        "src/extract_i18n.ts",
-        "../../../node_modules/@types/node/index.d.ts",
-        "../../../node_modules/@types/jasmine/index.d.ts",
-        "../../../node_modules/zone.js/dist/zone.js.d.ts"
+
     ]
 }

@@ -6,15 +6,16 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/common/",
+    "outDir": "../../../dist/packages-dist/common/cjs",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core/"]
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "lib": ["es6", "dom"],
-    "target": "es5"
+    "lib": ["es2015", "dom"],
+    "target": "es5",
+    "skipLibCheck": true
   },
   "files": [
     "index.ts",

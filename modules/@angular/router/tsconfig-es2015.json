@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/router/esm",
+    "outDir": "../../../dist/packages-dist/router",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/common": ["../../../dist/packages-dist/common"],
@@ -18,8 +18,9 @@
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "lib": ["es6", "dom"],
-    "target": "es6"
+    "lib": ["es2015", "dom"],
+    "target": "es5",
+    "skipLibCheck": true
   },
   "files": [
     "index.ts",

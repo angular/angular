@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/forms/esm",
+    "outDir": "../../../dist/packages-dist/forms",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
@@ -18,8 +18,10 @@
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es2015"
-  },
+    "target": "es5",
+    "lib": ["es2015", "dom"],
+    "skipLibCheck": true
+   },
   "files": [
     "index.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"

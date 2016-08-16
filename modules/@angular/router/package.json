@@ -2,8 +2,8 @@
   "name": "@angular/router",
   "version": "3.0.0-rc.1",
   "description": "Angular 2 Router",
-  "main": "index.js",
-  "jsnext:main": "esm/index.js",
+  "main": "cjs/index.js",
+  "module": "index.js",
   "keywords": [
     "angular2",
     "angular",

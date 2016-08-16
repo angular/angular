@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/platform-browser/esm",
+    "outDir": "../../../dist/packages-dist/platform-browser",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
@@ -20,7 +20,9 @@
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es2015"
+    "lib": ["es2015", "dom"],
+    "target": "es5",
+    "skipLibCheck": true
   },
   "files": [
     "index.ts",

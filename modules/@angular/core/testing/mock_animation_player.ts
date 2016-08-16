@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer} from '../src/animation/animation_player';
+import {AnimationPlayer} from '@angular/core';
 import {isPresent} from '../src/facade/lang';
 
 export class MockAnimationPlayer implements AnimationPlayer {

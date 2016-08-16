@@ -42,16 +42,16 @@ rm -rf ./dist/packages-dist
 
 for PACKAGE in \
   core \
-  compiler \
-  common \
-  forms \
-  platform-browser \
-  platform-browser-dynamic \
-  platform-server \
-  http \
-  router \
-  upgrade \
-  compiler-cli
+ # compiler \
+ # common \
+ # forms \
+ # platform-browser \
+ # platform-browser-dynamic \
+ # platform-server \
+ # http \
+ # router \
+ # upgrade \
+ # compiler-cli
 do
   SRCDIR=./modules/@angular/${PACKAGE}
   DESTDIR=./dist/packages-dist/${PACKAGE}
@@ -59,8 +59,11 @@ do
   UMD_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.js
   UMD_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.min.js
 
-  echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es5.json        ====="
-  $TSC -p ${SRCDIR}/tsconfig-es5.json
+  echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015.json        ====="
+  $TSC -p ${SRCDIR}/tsconfig-es2015.json
+
+  # echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es5.json        ====="
+  # $TSC -p ${SRCDIR}/tsconfig-es5.json
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
 
@@ -75,13 +78,13 @@ do
     find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
   fi
 
-  if [[ ${PACKAGE} != compiler-cli ]]; then
+  # if [[  ${PACKAGE} != compiler-cli ]]; then
 
-    echo "====== (esm)COMPILING: $TSC -p ${SRCDIR}/tsconfig-es2015.json ====="
-    $TSC -p ${SRCDIR}/tsconfig-es2015.json
+  #   echo "====== (esm)COMPILING: $TSC -p ${SRCDIR}/tsconfig-es2015.json ====="
+  #   $TSC -p ${SRCDIR}/tsconfig-es2015.json
 
-    echo "======      BUNDLING: ${SRCDIR} ====="
-    mkdir ${DESTDIR}/bundles
+  #   echo "======      BUNDLING: ${SRCDIR} ====="
+  #   mkdir ${DESTDIR}/bundles
 
     (
       cd  ${SRCDIR}
@@ -89,21 +92,21 @@ do
       ../../../node_modules/.bin/rollup -c rollup.config.js
     ) 2>&1 | grep -v "as external dependency"
 
-    $(npm bin)/tsc  \
-        --out ${UMD_ES5_PATH} \
-        --target es5 \
-        --lib "es6,dom" \
-        --allowJs \
-        ${UMD_ES6_PATH}
+  #   $(npm bin)/tsc  \
+  #       --out ${UMD_ES5_PATH} \
+  #       --target es5 \
+  #       --lib "es6,dom" \
+  #       --allowJs \
+  #       ${UMD_ES6_PATH}
 
-    rm ${UMD_ES6_PATH}
+  #   rm ${UMD_ES6_PATH}
 
-    cat ./modules/@angular/license-banner.txt > ${UMD_ES5_PATH}.tmp
-    cat ${UMD_ES5_PATH} >> ${UMD_ES5_PATH}.tmp
-    mv ${UMD_ES5_PATH}.tmp ${UMD_ES5_PATH}
+  #   cat ./modules/@angular/license-banner.txt > ${UMD_ES5_PATH}.tmp
+  #   cat ${UMD_ES5_PATH} >> ${UMD_ES5_PATH}.tmp
+  #   mv ${UMD_ES5_PATH}.tmp ${UMD_ES5_PATH}
 
-    $(npm bin)/uglifyjs -c --screw-ie8 -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_PATH}
-  fi
+  #   $(npm bin)/uglifyjs -c --screw-ie8 -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_PATH}
+  # fi
 done
 
 echo "======      COMPILING: \$(npm bin)/tsc -p benchpress/tsconfig.json ====="

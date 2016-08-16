@@ -19,7 +19,11 @@
     "inlineSourceMap": true,
     "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable"],
     "skipDefaultLibCheck": true,
-    "target": "es5"
+    "skipLibCheck": true,
+    "target": "es5",
+    "typeRoots": [
+      //"../node_modules/@types"
+    ]
   },
   "exclude": [
     "angular1_router",

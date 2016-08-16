@@ -1,3 +1,4 @@
+import {existsSync} from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -66,8 +67,13 @@ export class Tsc implements CompilerInterface {
     const {config, error} = ts.readConfigFile(project, this.readFile);
     check([error]);
 
-    this.parsed =
-        ts.parseJsonConfigFileContent(config, {readDirectory: this.readDirectory}, basePath);
+    this.parsed = ts.parseJsonConfigFileContent(
+        config, {
+          useCaseSensitiveFileNames: true,
+          fileExists: existsSync,
+          readDirectory: this.readDirectory
+        },
+        basePath);
 
     check(this.parsed.errors);
 

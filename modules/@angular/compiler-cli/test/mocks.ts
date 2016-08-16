@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ReflectorHostContext} from '../src/reflector_host';
+import {ReflectorHostContext} from '@angular/compiler-cli/src/reflector_host';
 
 export type Entry = string | Directory;
 
@@ -60,6 +60,15 @@ export class MockContext implements ReflectorHostContext {
       current = next;
     }
     return current;
+  }
+
+  getDirectories(path: string): string[] {
+    const dir = this.getEntry(path);
+    if (typeof dir !== 'object') {
+      return [];
+    } else {
+      return Object.keys(dir).filter(key => typeof dir[key] === 'object');
+    }
   }
 }
 
@@ -117,4 +126,8 @@ export class MockCompilerHost implements ts.CompilerHost {
   useCaseSensitiveFileNames(): boolean { return false; }
 
   getNewLine(): string { return '\n'; }
+
+  getDirectories(path: string): string[] {
+    return this.context.getDirectories(path);
+  }
 }

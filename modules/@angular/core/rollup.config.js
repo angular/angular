@@ -1,7 +1,7 @@
 
 export default {
-  entry: '../../../dist/packages-dist/core/esm/index.js',
-  dest: '../../../dist/packages-dist/core/esm/core.umd.js',
+  entry: '../../../dist/packages-dist/core/core.js',
+  dest: '../../../dist/packages-dist/core/core.umd.js',
   format: 'umd',
   moduleName: 'ng.core',
   globals: {

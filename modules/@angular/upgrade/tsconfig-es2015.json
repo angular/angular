@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/upgrade/esm",
+    "outDir": "../../../dist/packages-dist/upgrade",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/common": ["../../../dist/packages-dist/common"],
@@ -17,7 +17,9 @@
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es2015"
+    "lib": ["es2015", "dom"],
+    "target": "es5",
+    "skipLibCheck": true
   },
   "files": [
     "index.ts",

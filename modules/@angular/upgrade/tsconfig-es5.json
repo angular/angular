@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/upgrade/",
+    "outDir": "../../../dist/packages-dist/upgrade/cjs",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/common": ["../../../dist/packages-dist/common"],
@@ -17,8 +17,9 @@
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "lib": ["es6", "dom"],
-    "target": "es5"
+    "lib": ["es2015", "dom"],
+    "target": "es5",
+    "skipLibCheck": true
   },
   "files": [
     "index.ts",

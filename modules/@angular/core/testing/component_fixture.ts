@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, getDebugNode} from '../index';
+import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, getDebugNode} from '@angular/core';
 import {BaseException} from '../src/facade/exceptions';
 import {scheduleMicroTask} from '../src/facade/lang';
 

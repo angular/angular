@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, NgZone} from '../index';
+import {Injectable, NgZone} from '@angular/core';
 import {EventEmitter} from '../src/facade/async';
 
 /**
