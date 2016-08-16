@@ -61,6 +61,15 @@ export class MockContext implements ReflectorHostContext {
     }
     return current;
   }
+
+  getDirectories(path: string): string[] {
+    const dir = this.getEntry(path);
+    if (typeof dir !== 'object') {
+      return [];
+    } else {
+      return Object.keys(dir).filter(key => typeof dir[key] === 'object');
+    }
+  }
 }
 
 function normalize(parts: string[]): string[] {
@@ -117,4 +126,8 @@ export class MockCompilerHost implements ts.CompilerHost {
   useCaseSensitiveFileNames(): boolean { return false; }
 
   getNewLine(): string { return '\n'; }
+
+  getDirectories(path: string): string[] {
+    return this.context.getDirectories(path);
+  }
 }
