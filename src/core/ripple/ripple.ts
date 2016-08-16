@@ -24,7 +24,9 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
    * The element that triggers the ripple when click events are received. Defaults to the
    * directive's host element.
    */
-  @Input('md-ripple-trigger') trigger: HTMLElement;
+  // Prevent TS metadata emit from referencing HTMLElement in ripple.js
+  // That breaks tests running in node that load material components.
+  @Input('md-ripple-trigger') trigger: HTMLElement|HTMLElement;
   /**
    * Whether the ripple always originates from the center of the host element's bounds, rather
    * than originating from the location of the click event.
