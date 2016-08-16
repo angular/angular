@@ -21,5 +21,5 @@ export declare namespace __core_private_testing_types__ {
 export var __core_private_testing__ = {
   TestingCompiler: test_compiler.TestingCompiler,
   TestingCompilerFactory: test_compiler.TestingCompilerFactory,
-  TestComponentBuilder: test_component_builder.TestComponentBuilder
+  TestComponentBuilder: test_component_builder.TestComponentBuilder,
 };

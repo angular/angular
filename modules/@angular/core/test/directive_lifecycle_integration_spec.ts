@@ -7,7 +7,8 @@
  */
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnInit} from '@angular/core';
-import {Component, Directive, ViewMetadata} from '@angular/core/src/metadata';
+import {Component, Directive} from '@angular/core/src/metadata';
+import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {AsyncTestCompleter, Log, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {

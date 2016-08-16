@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation, ViewMetadata, forwardRef} from '@angular/core';
+import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation, forwardRef} from '@angular/core';
 import {getAllDebugNodes} from '@angular/core/src/debug/debug_node';
+import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {ComponentFixture} from '@angular/core/testing';
 import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';

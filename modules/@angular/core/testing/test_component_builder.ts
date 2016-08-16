@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, Compiler, ComponentFactory, Injectable, Injector, NgZone, OpaqueToken, ViewMetadata} from '../index';
+import {AnimationEntryMetadata, Compiler, ComponentFactory, Injectable, Injector, NgZone, OpaqueToken} from '../index';
 import {isPresent} from '../src/facade/lang';
+import {ViewMetadata} from '../src/metadata/view';
 import {Type} from '../src/type';
+
 import {ComponentFixture} from './component_fixture';
 import {tick} from './fake_async';
-
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestComponentRenderer} from './test_bed';
 
 var _nextRootElementId = 0;

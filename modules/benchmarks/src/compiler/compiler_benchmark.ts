@@ -10,8 +10,9 @@ import {
   Component,
   Directive,
   ViewContainerRef,
-  ViewMetadata
 } from '@angular/core';
+
+import {ViewMetadata} from '@angular/core/src/metadata/view';
 
 import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
 
