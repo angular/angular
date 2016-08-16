@@ -13,9 +13,6 @@ import {isBlank, isPresent, normalizeBlank} from '../facade/lang';
 
 const _CASE_DEFAULT = new Object();
 
-// TODO: remove when fully deprecated
-let _warned: boolean = false;
-
 export class SwitchView {
   constructor(
       private _viewContainerRef: ViewContainerRef, private _templateRef: TemplateRef<Object>) {}
@@ -182,7 +179,7 @@ export class NgSwitch {
  *
  * @experimental
  */
-@Directive({selector: '[ngSwitchCase],[ngSwitchWhen]'})
+@Directive({selector: '[ngSwitchCase]'})
 export class NgSwitchCase {
   // `_CASE_DEFAULT` is used as a marker for a not yet initialized value
   /** @internal */
@@ -200,16 +197,6 @@ export class NgSwitchCase {
 
   @Input()
   set ngSwitchCase(value: any) {
-    this._switch._onCaseValueChanged(this._value, value, this._view);
-    this._value = value;
-  }
-
-  @Input()
-  set ngSwitchWhen(value: any) {
-    if (!_warned) {
-      _warned = true;
-      console.warn('*ngSwitchWhen is deprecated and will be removed. Use *ngSwitchCase instead');
-    }
     this._switch._onCaseValueChanged(this._value, value, this._view);
     this._value = value;
   }
