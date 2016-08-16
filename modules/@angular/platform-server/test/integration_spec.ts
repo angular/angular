@@ -41,7 +41,8 @@ export function main() {
          platformDynamicServer().bootstrapModule(ExampleModule).then(() => {
            expect(getDOM().getText(body)).toEqual('Works!');
          });
-       }));
+       }),
+       500);
   });
 }
 
