@@ -11,7 +11,7 @@ import {COMPILER_OPTIONS} from '@angular/core';
 
 import {INTERNAL_BROWSER_PLATFORM_PROVIDERS} from '../platform_browser_private';
 
-import {ResourceLoaderImpl} from './xhr/xhr_impl';
+import {ResourceLoaderImpl} from './resource_loader/resource_loader_impl';
 
 export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: any[] = [
   INTERNAL_BROWSER_PLATFORM_PROVIDERS,

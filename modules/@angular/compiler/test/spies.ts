@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ResourceLoader} from '@angular/compiler/src/xhr';
+import {ResourceLoader} from '@angular/compiler/src/resource_loader';
 
 import {SpyObject, proxy} from '@angular/core/testing/testing_internal';
 

@@ -19,7 +19,7 @@ import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
 import {SyncAsyncResult} from './util';
-import {ResourceLoader} from './xhr';
+import {ResourceLoader} from './resource_loader';
 
 @Injectable()
 export class DirectiveNormalizer {

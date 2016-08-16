@@ -12,8 +12,8 @@ import {BrowserModule, WORKER_SCRIPT, WorkerAppModule, platformWorkerUi} from '@
 
 import {Console} from './core_private';
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_providers';
-import {CachedResourceLoader} from './src/xhr/xhr_cache';
-import {ResourceLoaderImpl} from './src/xhr/xhr_impl';
+import {CachedResourceLoader} from './src/resource_loader/resource_loader_cache';
+import {ResourceLoaderImpl} from './src/resource_loader/resource_loader_impl';
 
 
 

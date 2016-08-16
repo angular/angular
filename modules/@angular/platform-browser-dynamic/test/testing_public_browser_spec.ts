@@ -10,7 +10,7 @@ import {ResourceLoader} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
-import {ResourceLoaderImpl} from '../src/xhr/xhr_impl';
+import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 
 
 

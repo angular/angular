@@ -9,8 +9,8 @@
 import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
-import {ResourceLoader} from '@angular/compiler/src/xhr';
-import {MockResourceLoader} from '@angular/compiler/testing/xhr_mock';
+import {ResourceLoader} from '@angular/compiler/src/resource_loader';
+import {MockResourceLoader} from '@angular/compiler/testing/resource_loader_mock';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 import {TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';

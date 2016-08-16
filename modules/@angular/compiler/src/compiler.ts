@@ -15,7 +15,7 @@ export * from './compile_metadata';
 export * from './offline_compiler';
 export {RuntimeCompiler} from './runtime_compiler';
 export * from './url_resolver';
-export * from './xhr';
+export * from './resource_loader';
 
 export {DirectiveResolver} from './directive_resolver';
 export {PipeResolver} from './pipe_resolver';
@@ -41,7 +41,7 @@ import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {NgModuleResolver} from './ng_module_resolver';
 import {Console, Reflector, reflector, ReflectorReader, ReflectionCapabilities} from '../core_private';
-import {ResourceLoader} from './xhr';
+import {ResourceLoader} from './resource_loader';
 import * as i18n from './i18n/index';
 
 const _NO_RESOURCE_LOADER: ResourceLoader = {
