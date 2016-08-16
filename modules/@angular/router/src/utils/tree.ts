@@ -15,7 +15,7 @@ export class Tree<T> {
   get root(): T { return this._root.value; }
 
   /**
-   * @deprecated (use ActivatedRoute.parent instead)
+   * @internal
    */
   parent(t: T): T {
     const p = this.pathFromRoot(t);
@@ -23,7 +23,7 @@ export class Tree<T> {
   }
 
   /**
-   * @deprecated (use ActivatedRoute.children instead)
+   * @internal
    */
   children(t: T): T[] {
     const n = findNode(t, this._root);
@@ -31,7 +31,7 @@ export class Tree<T> {
   }
 
   /**
-   * @deprecated (use ActivatedRoute.firstChild instead)
+   * @internal
    */
   firstChild(t: T): T {
     const n = findNode(t, this._root);
@@ -39,7 +39,7 @@ export class Tree<T> {
   }
 
   /**
-   * @deprecated
+   * @internal
    */
   siblings(t: T): T[] {
     const p = findPath(t, this._root, []);
@@ -50,7 +50,7 @@ export class Tree<T> {
   }
 
   /**
-   * @deprecated (use ActivatedRoute.pathFromRoot instead)
+   * @internal
    */
   pathFromRoot(t: T): T[] { return findPath(t, this._root, []).map(s => s.value); }
 }

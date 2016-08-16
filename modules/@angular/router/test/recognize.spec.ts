@@ -631,13 +631,13 @@ describe('recognize', () => {
     it('should support query params', () => {
       const config = [{path: 'a', component: ComponentA}];
       checkRecognize(config, 'a?q=11', (s: RouterStateSnapshot) => {
-        expect(s.queryParams).toEqual({q: '11'});
+        expect(s.root.queryParams).toEqual({q: '11'});
       });
     });
 
     it('should freeze query params object', () => {
       checkRecognize([{path: 'a', component: ComponentA}], 'a?q=11', (s: RouterStateSnapshot) => {
-        expect(Object.isFrozen(s.queryParams)).toBeTruthy();
+        expect(Object.isFrozen(s.root.queryParams)).toBeTruthy();
       });
     });
   });
@@ -646,7 +646,7 @@ describe('recognize', () => {
     it('should support fragment', () => {
       const config = [{path: 'a', component: ComponentA}];
       checkRecognize(
-          config, 'a#f1', (s: RouterStateSnapshot) => { expect(s.fragment).toEqual('f1'); });
+          config, 'a#f1', (s: RouterStateSnapshot) => { expect(s.root.fragment).toEqual('f1'); });
     });
   });
 

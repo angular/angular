@@ -84,23 +84,10 @@ export class RouterOutlet implements OnDestroy {
     const component: any = <any>snapshot._routeConfig.component;
 
     let factory: ComponentFactory<any>;
-    try {
-      if (typeof component === 'string') {
-        factory = snapshot._resolvedComponentFactory;
-      } else if (loadedResolver) {
-        factory = loadedResolver.resolveComponentFactory(component);
-      } else {
-        factory = this.resolver.resolveComponentFactory(component);
-      }
-    } catch (e) {
-      if (!(e instanceof NoComponentFactoryError)) throw e;
-      const componentName = component ? component.name : null;
-      console.warn(
-          `'${componentName}' not found in entryComponents array.  To ensure all components referred
-          to by the Routes are compiled, you must add '${componentName}' to the
-          'entryComponents' array of your application component. This will be required in a future
-          release of the router.`);
-      factory = snapshot._resolvedComponentFactory;
+    if (loadedResolver) {
+      factory = loadedResolver.resolveComponentFactory(component);
+    } else {
+      factory = this.resolver.resolveComponentFactory(component);
     }
 
     const injector = loadedInjector ? loadedInjector : this.location.parentInjector;

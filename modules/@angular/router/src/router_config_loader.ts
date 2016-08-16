@@ -15,11 +15,6 @@ import {LoadChildren, Route} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 
-
-/**
- * @deprecated use Routes
- */
-export const ROUTER_CONFIG = new OpaqueToken('ROUTER_CONFIG');
 export const ROUTES = new OpaqueToken('ROUTES');
 
 export class LoadedRouterConfig {
