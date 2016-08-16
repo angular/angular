@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ApplicationRef, ComponentResolver, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, SystemJsNgModuleLoader} from '@angular/core';
+import {ApplicationRef, Compiler, ComponentResolver, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, SystemJsNgModuleLoader} from '@angular/core';
 
 import {ExtraOptions, ROUTER_CONFIGURATION, provideRouterConfig, provideRouterInitializer, provideRoutes, rootRoute, setupRouter} from './common_router_providers';
 import {Routes} from './config';
@@ -42,7 +42,7 @@ export const ROUTER_PROVIDERS: any[] = [
     useFactory: setupRouter,
     deps: [
       ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
-      NgModuleFactoryLoader, ROUTES, ROUTER_CONFIGURATION
+      NgModuleFactoryLoader, Compiler, ROUTES, ROUTER_CONFIGURATION
     ]
   },
   RouterOutletMap, {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},

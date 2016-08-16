@@ -40,9 +40,11 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
 
 function setupTestingRouter(
     resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap,
-    location: Location, loader: NgModuleFactoryLoader, injector: Injector, routes: Route[][]) {
+    location: Location, loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector,
+    routes: Route[][]) {
   return new Router(
-      null, resolver, urlSerializer, outletMap, location, injector, loader, flatten(routes));
+      null, resolver, urlSerializer, outletMap, location, injector, loader, compiler,
+      flatten(routes));
 }
 
 /**
@@ -75,7 +77,7 @@ function setupTestingRouter(
       useFactory: setupTestingRouter,
       deps: [
         ComponentResolver, UrlSerializer, RouterOutletMap, Location, NgModuleFactoryLoader,
-        Injector, ROUTES
+        Compiler, Injector, ROUTES
       ]
     },
   ]

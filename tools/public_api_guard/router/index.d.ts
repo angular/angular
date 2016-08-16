@@ -75,6 +75,12 @@ export interface ExtraOptions {
     useHash?: boolean;
 }
 
+/** @experimental */
+export declare type LoadChildren = string | LoadChildrenCallback;
+
+/** @experimental */
+export declare type LoadChildrenCallback = () => Type<any> | Promise<Type<any>> | Observable<Type<any>>;
+
 /** @stable */
 export declare class NavigationCancel {
     id: number;
@@ -156,7 +162,7 @@ export interface Route {
     children?: Route[];
     component?: Type<any> | string;
     data?: Data;
-    loadChildren?: string;
+    loadChildren?: LoadChildren;
     outlet?: string;
     path?: string;
     pathMatch?: string;
@@ -172,7 +178,7 @@ export declare class Router {
     /** @experimental */ navigated: boolean;
     routerState: RouterState;
     url: string;
-    constructor(rootComponentType: Type<any>, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, config: Routes);
+    constructor(rootComponentType: Type<any>, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
