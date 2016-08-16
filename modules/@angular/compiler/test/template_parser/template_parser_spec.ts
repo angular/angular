@@ -284,44 +284,36 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
           ]);
         });
 
-        it('should parse bound properties via animate- and not report them as attributes', () => {
-          expect(humanizeTplAst(parse('<div animate-something="value2">', []))).toEqual([
-            [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Animation, 'something', 'value2', null]
-          ]);
-        });
-
-        // DEPRECATED: remove this spec post RC5
-        it('should parse bound properties via @ and not report them as attributes and also report a deprecation warning',
+        it('should parse bound properties via bind-animate- and not report them as animation properties',
            () => {
-             expect(humanizeTplAst(parse('<div @something="value2">', []))).toEqual([
+             expect(humanizeTplAst(parse('<div bind-animate-something="value2">', []))).toEqual([
                [ElementAst, 'div'],
                [
                  BoundElementPropertyAst, PropertyBindingType.Animation, 'something', 'value2', null
                ]
              ]);
-
-             expect(console.warnings).toEqual([[
-               'Template parse warnings:',
-               `Assigning animation triggers via @prop="exp" attributes with an expression is deprecated. Use property bindings (e.g. [@prop]="exp") instead! ("<div [ERROR ->]@something="value2">"): TestComp@0:5`
-             ].join('\n')]);
            });
 
-        // DEPRECATED: remove this spec post RC5
-        it('should issue a warning when host attributes contain a non property-bound animation trigger',
+        it('should throw an error when parsing detects non-bound properties via @ that contain a value',
            () => {
-             var dirA = CompileDirectiveMetadata.create({
-               selector: 'div',
-               type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
-               host: {'@prop': 'expr'}
-             });
+             expect(() => { parse('<div @something="value2">', []); })
+                 .toThrowError(
+                     /Assigning animation triggers via @prop="exp" attributes with an expression is invalid. Use property bindings \(e.g. \[@prop\]="exp"\) or use an attribute without a value \(e.g. @prop\) instead. \("<div \[ERROR ->\]@something="value2">"\): TestComp@0:5/);
+           });
 
-             humanizeTplAst(parse('<div></div>', [dirA]));
+        it('should throw an error when host attributes contain a non property-bound animation trigger',
+           () => {
+             expect(() => {
+               var dirA = CompileDirectiveMetadata.create({
+                 selector: 'div',
+                 type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+                 host: {'@prop': 'expr'}
+               });
 
-             expect(console.warnings).toEqual([[
-               'Template parse warnings:',
-               `Assigning animation triggers within host data as attributes such as "@prop": "exp" is deprecated. Use host bindings (e.g. "[@prop]": "exp") instead! ("[ERROR ->]<div></div>"): TestComp@0:0, Directive DirA`
-             ].join('\n')]);
+               humanizeTplAst(parse('<div></div>', [dirA]));
+             })
+                 .toThrowError(
+                     /Assigning animation triggers within host data as attributes such as "@prop": "exp" is invalid. Use host bindings \(e.g. "\[@prop\]": "exp"\) instead. \("\[ERROR ->\]<div><\/div>"\): TestComp@0:0, Directive DirA/);
            });
 
         it('should not issue a warning when host attributes contain a valid property-bound animation trigger',

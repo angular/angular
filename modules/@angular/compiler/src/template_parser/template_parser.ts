@@ -39,14 +39,15 @@ import {PreparsedElementType, preparseElement} from './template_preparser';
 // Group 4 = "ref-/#"
 // Group 5 = "on-"
 // Group 6 = "bindon-"
-// Group 7 = "animate-/@"
+// Group 7 = "@"
 // Group 8 = the identifier after "bind-", "var-/#", or "on-"
 // Group 9 = identifier inside [()]
 // Group 10 = identifier inside []
 // Group 11 = identifier inside ()
 const BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(var-)|(let-)|(ref-|#)|(on-)|(bindon-)|(animate-|@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
+    /^(?:(?:(?:(bind-)|(var-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
 
+const ANIMATE_PROP_PREFIX = 'animate-';
 const TEMPLATE_ELEMENT = 'template';
 const TEMPLATE_ATTR = 'template';
 const TEMPLATE_ATTR_PREFIX = '*';
@@ -540,8 +541,8 @@ class TemplateParseVisitor implements html.Visitor {
       } else if (isPresent(bindParts[7])) {  // match: animate-name
         if (attrName[0] == '@' && isPresent(attrValue) && attrValue.length > 0) {
           this._reportError(
-              `Assigning animation triggers via @prop="exp" attributes with an expression is deprecated. Use property bindings (e.g. [@prop]="exp") instead!`,
-              attr.sourceSpan, ParseErrorLevel.WARNING);
+              `Assigning animation triggers via @prop="exp" attributes with an expression is invalid. Use property bindings (e.g. [@prop]="exp") or use an attribute without a value \(e.g. @prop\) instead.`,
+              attr.sourceSpan, ParseErrorLevel.FATAL);
         }
         this._parseAnimation(
             bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs, targetAnimationProps);
@@ -598,9 +599,18 @@ class TemplateParseVisitor implements html.Visitor {
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetProps: BoundElementOrDirectiveProperty[],
       targetAnimationProps: BoundElementPropertyAst[]) {
-    if (name[0] == '@') {
+    const animatePropLength = ANIMATE_PROP_PREFIX.length;
+    var isAnimationProp = name[0] == '@';
+    var animationPrefixLength = 1;
+    if (name.substring(0, animatePropLength) == ANIMATE_PROP_PREFIX) {
+      isAnimationProp = true;
+      animationPrefixLength = animatePropLength;
+    }
+
+    if (isAnimationProp) {
       this._parseAnimation(
-          name.substr(1), expression, sourceSpan, targetMatchableAttrs, targetAnimationProps);
+          name.substr(animationPrefixLength), expression, sourceSpan, targetMatchableAttrs,
+          targetAnimationProps);
     } else {
       this._parsePropertyAst(
           name, this._parseBinding(expression, sourceSpan), sourceSpan, targetMatchableAttrs,
@@ -809,11 +819,10 @@ class TemplateParseVisitor implements html.Visitor {
         boundPropertyName = partValue.substr(1);
         bindingType = PropertyBindingType.Animation;
         securityContext = SecurityContext.NONE;
-        // DEPRECATED: remove this if statement post RC5
         if (boundPropertyName[0] == '@') {
           this._reportError(
-              `Assigning animation triggers within host data as attributes such as "@prop": "exp" is deprecated. Use host bindings (e.g. "[@prop]": "exp") instead!`,
-              sourceSpan, ParseErrorLevel.WARNING);
+              `Assigning animation triggers within host data as attributes such as "@prop": "exp" is invalid. Use host bindings (e.g. "[@prop]": "exp") instead.`,
+              sourceSpan, ParseErrorLevel.FATAL);
           boundPropertyName = boundPropertyName.substr(1);
         }
       } else {
