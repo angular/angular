@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "declaration": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../dist/all/",
