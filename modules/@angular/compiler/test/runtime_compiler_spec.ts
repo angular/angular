@@ -38,8 +38,10 @@ export function main() {
     let dirResolver: MockDirectiveResolver;
     let injector: Injector;
 
-    beforeEach(
-        () => { TestBed.configureCompiler({providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]}); });
+    beforeEach(() => {
+      TestBed.configureCompiler(
+          {providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]});
+    });
 
     beforeEach(fakeAsync(inject(
         [Compiler, TestComponentBuilder, ResourceLoader, DirectiveResolver, Injector],

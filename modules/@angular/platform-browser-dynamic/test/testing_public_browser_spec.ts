@@ -48,7 +48,8 @@ export function main() {
 
       it('should run async tests with ResourceLoaders', async(() => {
            var resourceLoader = new ResourceLoaderImpl();
-           resourceLoader.get('/base/modules/@angular/platform-browser/test/static_assets/test.html')
+           resourceLoader
+               .get('/base/modules/@angular/platform-browser/test/static_assets/test.html')
                .then(() => { actuallyDone = true; });
          }),
          10000);  // Long timeout here because this test makes an actual ResourceLoader.
@@ -127,7 +128,8 @@ export function main() {
                  .toEqual('from external template\n');
            });
          }),
-         10000);  // Long timeout here because this test makes an actual ResourceLoader, and is slow on Edge.
+         10000);  // Long timeout here because this test makes an actual ResourceLoader, and is slow
+                  // on Edge.
     });
   });
 }

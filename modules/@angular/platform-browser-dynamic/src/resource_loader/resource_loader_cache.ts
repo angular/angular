@@ -24,7 +24,8 @@ export class CachedResourceLoader extends ResourceLoader {
     super();
     this._cache = (<any>global).$templateCache;
     if (this._cache == null) {
-      throw new BaseException('CachedResourceLoader: Template cache was not found in $templateCache.');
+      throw new BaseException(
+          'CachedResourceLoader: Template cache was not found in $templateCache.');
     }
   }
 
@@ -32,7 +33,8 @@ export class CachedResourceLoader extends ResourceLoader {
     if (this._cache.hasOwnProperty(url)) {
       return Promise.resolve(this._cache[url]);
     } else {
-      return <Promise<any>>Promise.reject('CachedResourceLoader: Did not find cached template for ' + url);
+      return <Promise<any>>Promise.reject(
+          'CachedResourceLoader: Did not find cached template for ' + url);
     }
   }
 }

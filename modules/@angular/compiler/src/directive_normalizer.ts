@@ -15,19 +15,19 @@ import {isBlank, isPresent} from './facade/lang';
 import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';
 import {InterpolationConfig} from './ml_parser/interpolation_config';
+import {ResourceLoader} from './resource_loader';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
 import {SyncAsyncResult} from './util';
-import {ResourceLoader} from './resource_loader';
 
 @Injectable()
 export class DirectiveNormalizer {
   private _resourceLoaderCache = new Map<string, Promise<string>>();
 
   constructor(
-    private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver, private _htmlParser: HtmlParser,
-    private _config: CompilerConfig) {}
+      private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver,
+      private _htmlParser: HtmlParser, private _config: CompilerConfig) {}
 
   clearCache() { this._resourceLoaderCache.clear(); }
 

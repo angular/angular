@@ -368,10 +368,11 @@ export function main() {
 
         describe('providers', () => {
           beforeEach(() => {
-            let resourceLoaderGet =
-                jasmine.createSpy('resourceLoaderGet').and.returnValue(Promise.resolve('Hello world!'));
+            let resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
+                                        .and.returnValue(Promise.resolve('Hello world!'));
             TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
-            TestBed.configureCompiler({providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
+            TestBed.configureCompiler(
+                {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
           });
 
           it('should use set up providers', fakeAsync(() => {
@@ -482,8 +483,10 @@ export function main() {
       describe('components', () => {
         let resourceLoaderGet: jasmine.Spy;
         beforeEach(() => {
-          resourceLoaderGet = jasmine.createSpy('resourceLoaderGet').and.returnValue(Promise.resolve('Hello world!'));
-          TestBed.configureCompiler({providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
+          resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
+                                  .and.returnValue(Promise.resolve('Hello world!'));
+          TestBed.configureCompiler(
+              {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
         });
 
         it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',

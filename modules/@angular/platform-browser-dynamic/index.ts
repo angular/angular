@@ -20,7 +20,8 @@ import {ResourceLoaderImpl} from './src/resource_loader/resource_loader_impl';
 /**
  * @experimental
  */
-export const RESOURCE_CACHE_PROVIDER: Provider[] = [{provide: ResourceLoader, useClass: CachedResourceLoader}];
+export const RESOURCE_CACHE_PROVIDER: Provider[] =
+    [{provide: ResourceLoader, useClass: CachedResourceLoader}];
 
 /**
  * @experimental API related to bootstrapping are still under review.
@@ -46,12 +47,12 @@ export function bootstrapWorkerUi(
 /**
  * @experimental API related to bootstrapping are still under review.
  */
-export const platformWorkerAppDynamic =
-    createPlatformFactory(platformCoreDynamic, 'workerAppDynamic', [{
-                            provide: COMPILER_OPTIONS,
-                            useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl}]},
-                            multi: true
-                          }]);
+export const platformWorkerAppDynamic = createPlatformFactory(
+    platformCoreDynamic, 'workerAppDynamic', [{
+      provide: COMPILER_OPTIONS,
+      useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl}]},
+      multi: true
+    }]);
 
 function normalizeArray(arr: any[]): any[] {
   return arr ? arr : [];

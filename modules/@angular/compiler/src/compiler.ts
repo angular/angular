@@ -46,7 +46,8 @@ import * as i18n from './i18n/index';
 
 const _NO_RESOURCE_LOADER: ResourceLoader = {
   get(url: string): Promise<string>{
-      throw new Error(`No ResourceLoader implementation has been provided. Can't read the url "${url}"`);}
+      throw new Error(
+          `No ResourceLoader implementation has been provided. Can't read the url "${url}"`);}
 };
 
 /**

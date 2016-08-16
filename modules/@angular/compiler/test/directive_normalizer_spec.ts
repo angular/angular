@@ -116,7 +116,8 @@ export function main() {
       it('should load a template from a url that is resolved against moduleUrl',
          inject(
              [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, resourceLoader: MockResourceLoader) => {
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: MockResourceLoader) => {
                resourceLoader.expect('package:some/module/sometplurl.html', 'a');
                normalizer
                    .normalizeTemplateAsync(dirType, new CompileTemplateMetadata({
@@ -137,7 +138,8 @@ export function main() {
       it('should resolve styles on the annotation against the moduleUrl',
          inject(
              [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, resourceLoader: MockResourceLoader) => {
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: MockResourceLoader) => {
                resourceLoader.expect('package:some/module/tpl/sometplurl.html', '');
                normalizer
                    .normalizeTemplateAsync(dirType, new CompileTemplateMetadata({
@@ -157,7 +159,8 @@ export function main() {
       it('should resolve styles in the template against the templateUrl',
          inject(
              [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, resourceLoader: MockResourceLoader) => {
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: MockResourceLoader) => {
                resourceLoader.expect(
                    'package:some/module/tpl/sometplurl.html', '<style>@import test.css</style>');
                normalizer
@@ -179,13 +182,16 @@ export function main() {
 
     describe('normalizeExternalStylesheets', () => {
 
-      beforeEach(
-          () => { TestBed.configureCompiler({providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]}); });
+      beforeEach(() => {
+        TestBed.configureCompiler(
+            {providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]});
+      });
 
       it('should load an external stylesheet',
          inject(
              [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, resourceLoader: SpyResourceLoader) => {
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: SpyResourceLoader) => {
                programResourceLoaderSpy(resourceLoader, {'package:some/module/test.css': 'a'});
                normalizer
                    .normalizeExternalStylesheets(new CompileTemplateMetadata({
@@ -207,7 +213,8 @@ export function main() {
       it('should load stylesheets referenced by external stylesheets',
          inject(
              [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, resourceLoader: SpyResourceLoader) => {
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: SpyResourceLoader) => {
                programResourceLoaderSpy(resourceLoader, {
                  'package:some/module/test.css': 'a@import "test2.css"',
                  'package:some/module/test2.css': 'b'
@@ -239,7 +246,8 @@ export function main() {
       it('should work for templateUrl',
          inject(
              [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, resourceLoader: MockResourceLoader) => {
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: MockResourceLoader) => {
                resourceLoader.expect('package:some/module/cmp.html', 'a');
                var templateMeta = new CompileTemplateMetadata({
                  templateUrl: 'cmp.html',

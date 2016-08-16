@@ -101,8 +101,9 @@ export function main() {
       expect(() => { resourceLoader.flush(); }).toThrowError('Unexpected request /foo');
     });
 
-    it('should throw when flush is called without any pending requests',
-       () => { expect(() => { resourceLoader.flush(); }).toThrowError('No pending requests to flush'); });
+    it('should throw when flush is called without any pending requests', () => {
+      expect(() => { resourceLoader.flush(); }).toThrowError('No pending requests to flush');
+    });
 
     it('should throw on unsatisfied expectations', () => {
       resourceLoader.expect('/foo', 'bar');

@@ -53,7 +53,8 @@ export class XHRConnection implements Connection {
       // load event handler
       let onLoad = () => {
         // responseText is the old-school way of retrieving response (supported by IE8 & 9)
-        // response/responseType properties were introduced in ResourceLoader Level2 spec (supported by
+        // response/responseType properties were introduced in ResourceLoader Level2 spec (supported
+        // by
         // IE10)
         let body = isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
         // Implicitly strip a potential XSSI prefix.
