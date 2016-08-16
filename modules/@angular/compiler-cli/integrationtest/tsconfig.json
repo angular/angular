@@ -10,6 +10,8 @@
         "target": "es5",
         "experimentalDecorators": true,
         "noImplicitAny": true,
+        // TODO(alexeagle): fix issues with `never` type
+        "strictNullChecks": false,
         "moduleResolution": "node",
         "rootDir": "",
         "declaration": true,

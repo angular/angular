@@ -29,5 +29,5 @@ export function createComponent<C>(comp: {new (...args: any[]): C}): ComponentFi
   const moduleRef = createModule();
   const compRef =
       moduleRef.componentFactoryResolver.resolveComponentFactory(comp).create(moduleRef.injector);
-  return new ComponentFixture(compRef, null, null);
+  return new ComponentFixture(compRef, null as any, null as any);
 }

@@ -255,7 +255,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     if (isString(value)) {
       ctx.print(escapeSingleQuoteString(value, this._escapeDollarInStrings));
     } else if (isBlank(value)) {
-      ctx.print('null');
+      ctx.print('(null as any)');
     } else {
       ctx.print(`${value}`);
     }
