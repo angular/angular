@@ -8,8 +8,8 @@
 
 import {UrlResolver, XHR} from '@angular/compiler';
 import {BaseException, Component} from '@angular/core';
-import {TestBed, TestComponentBuilder, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {CachedXHR} from '../../src/xhr/xhr_cache';

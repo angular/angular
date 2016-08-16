@@ -10,7 +10,7 @@ import {StringMapWrapper} from '../src/facade/collection';
 import {Math, global, isFunction, isPromise} from '../src/facade/lang';
 
 import {AsyncTestCompleter} from './async_test_completer';
-import {getTestBed, inject} from './test_bed';
+import {TestBed, getTestBed, inject} from './test_bed';
 
 export {AsyncTestCompleter} from './async_test_completer';
 export {MockAnimationPlayer} from './mock_animation_player';
@@ -18,6 +18,7 @@ export {inject} from './test_bed';
 export * from './logger';
 export * from './ng_zone_mock';
 export * from './mock_application_ref';
+export * from './test_component_builder';
 
 export var proxy: ClassDecorator = (t: any /** TODO #9100 */) => t;
 
@@ -112,6 +113,18 @@ export function beforeEachProviders(fn: any /** TODO #9100 */): void {
     testBed.configureTestingModule({providers: providers});
   });
 }
+
+/**
+ * Allows overriding default providers of the test injector,
+ * which are defined in test_injector.js
+ *
+ * @deprecated Use `TestBed.configureTestingModule instead.
+ */
+export function addProviders(providers: Array<any>): void {
+  if (!providers) return;
+  TestBed.configureTestingModule({providers: providers});
+}
+
 
 /**
  * @deprecated

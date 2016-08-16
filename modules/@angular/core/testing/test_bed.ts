@@ -430,13 +430,6 @@ export class InjectSetupWrapper {
 }
 
 /**
- * @deprecated Use `TestBed.configureTestingModule instead.
- */
-export function withProviders(providers: () => any) {
-  return new InjectSetupWrapper(() => { return {providers: providers()}; });
-}
-
-/**
  * @experimental
  */
 export function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;

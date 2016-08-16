@@ -7,8 +7,8 @@
  */
 
 import {Component} from '@angular/core/src/metadata';
-import {TestBed, TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {TestBed} from '@angular/core/testing';
+import {AsyncTestCompleter, TestComponentBuilder, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizationService} from '@angular/platform-browser/src/security/dom_sanitization_service';
 

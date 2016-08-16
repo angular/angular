@@ -10,7 +10,8 @@ import 'rxjs/add/operator/map';
 
 import {Location} from '@angular/common';
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
-import {ComponentFixture, TestBed, TestComponentBuilder, addProviders, fakeAsync, inject, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
+import {TestComponentBuilder, addProviders} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';

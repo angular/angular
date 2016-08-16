@@ -8,8 +8,8 @@
 
 import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation, ViewMetadata, forwardRef} from '@angular/core';
 import {getAllDebugNodes} from '@angular/core/src/debug/debug_node';
-import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {ComponentFixture} from '@angular/core/testing';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';

@@ -8,8 +8,8 @@
 
 import {NgIf} from '@angular/common';
 import {Component, Injectable, Input, NgModule, Pipe, ViewMetadata} from '@angular/core';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestComponentBuilder, withProviders} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, withModule} from '@angular/core/testing';
+import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -345,7 +345,7 @@ export function main() {
              }));
 
       it('should auto detect changes if ComponentFixtureAutoDetect is provided as true',
-         withProviders(() => [{provide: ComponentFixtureAutoDetect, useValue: true}])
+         withModule({providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]})
              .inject(
                  [TestComponentBuilder, AsyncTestCompleter],
                  (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {

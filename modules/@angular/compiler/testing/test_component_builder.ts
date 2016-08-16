@@ -7,7 +7,8 @@
  */
 
 import {AnimationEntryMetadata, Compiler, ComponentFactory, Inject, Injectable, Injector, NgZone, Type, ViewMetadata} from '@angular/core';
-import {ComponentFixture, ComponentFixtureNoNgZone, TestBed, TestComponentBuilder} from '@angular/core/testing';
+import {ComponentFixture, ComponentFixtureNoNgZone, TestBed} from '@angular/core/testing';
+import {TestComponentBuilder} from '../core_private_testing';
 
 import {DirectiveResolver} from '../index';
 import {MapWrapper} from '../src/facade/collection';

@@ -9,8 +9,8 @@
 import {DirectiveResolver, XHR} from '@angular/compiler';
 import {MockDirectiveResolver} from '@angular/compiler/testing';
 import {Compiler, Component, ComponentFactory, Injectable, Injector, Input, NgModule, NgModuleFactory, Type, ViewMetadata} from '@angular/core';
-import {ComponentFixture, TestBed, TestComponentBuilder, fakeAsync, tick} from '@angular/core/testing';
-import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../src/facade/lang';
