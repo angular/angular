@@ -414,7 +414,7 @@ describe('applyRedirects', () => {
               children: [
                 {path: 'b', component: ComponentB}, {path: '', redirectTo: 'b'},
                 {path: 'c', component: ComponentC, outlet: 'aux'},
-                {path: '', terminal: true, redirectTo: 'c', outlet: 'aux'}
+                {path: '', pathMatch: 'full', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
             'a', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });

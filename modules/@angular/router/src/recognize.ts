@@ -182,8 +182,7 @@ function match(
     segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[],
     parent: ActivatedRouteSnapshot) {
   if (route.path === '') {
-    if ((route.terminal || route.pathMatch === 'full') &&
-        (segmentGroup.hasChildren() || segments.length > 0)) {
+    if (route.pathMatch === 'full' && (segmentGroup.hasChildren() || segments.length > 0)) {
       throw new NoMatch();
     } else {
       const params = parent ? parent.params : {};
@@ -213,7 +212,7 @@ function match(
     currentIndex++;
   }
 
-  if ((route.terminal || route.pathMatch === 'full') &&
+  if (route.pathMatch === 'full' &&
       (segmentGroup.hasChildren() || currentIndex < segments.length)) {
     throw new NoMatch();
   }
@@ -334,8 +333,7 @@ function containsEmptyPathMatches(
 
 function emptyPathMatch(
     segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], r: Route): boolean {
-  if ((segmentGroup.hasChildren() || slicedSegments.length > 0) &&
-      (r.terminal || r.pathMatch === 'full'))
+  if ((segmentGroup.hasChildren() || slicedSegments.length > 0) && r.pathMatch === 'full')
     return false;
   return r.path === '' && r.redirectTo === undefined;
 }

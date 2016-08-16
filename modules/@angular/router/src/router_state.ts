@@ -43,16 +43,6 @@ export class RouterState extends Tree<ActivatedRoute> {
     setRouterStateSnapshot<RouterState, ActivatedRoute>(this, root);
   }
 
-  /**
-    * @deprecated (Use root.queryParams)
-    */
-  get queryParams(): Observable<Params> { return this.root.queryParams; }
-
-  /**
-   * @deprecated (Use root.fragment)
-   */
-  get fragment(): Observable<string> { return this.root.fragment; }
-
   toString(): string { return this.snapshot.toString(); }
 }
 
@@ -174,11 +164,6 @@ export class InheritedResolve {
  * @stable
  */
 export class ActivatedRouteSnapshot {
-  /**
-   * @internal
-   */
-  _resolvedComponentFactory: ComponentFactory<any>;
-
   /** @internal **/
   _routeConfig: Route;
 
@@ -250,16 +235,6 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
     super(root);
     setRouterStateSnapshot<RouterStateSnapshot, ActivatedRouteSnapshot>(this, root);
   }
-
-  /**
-   * @deprecated (Use root.queryParams)
-   */
-  get queryParams(): Params { return this.root.queryParams; }
-
-  /**
-   * @deprecated (Use root.fragment)
-   */
-  get fragment(): string { return this.root.fragment; }
 
   toString(): string { return serializeNode(this._root); }
 }

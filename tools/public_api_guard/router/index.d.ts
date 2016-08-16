@@ -69,7 +69,7 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 /** @stable */
 export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
-/** @experimental */
+/** @stable */
 export interface ExtraOptions {
     enableTracing?: boolean;
     useHash?: boolean;
@@ -134,13 +134,7 @@ export declare type Params = {
 /** @experimental */
 export declare const PRIMARY_OUTLET: string;
 
-/** @experimental */
-export declare function provideRouter(config: Routes, opts?: ExtraOptions): any[];
-
-/** @deprecated */
-export declare function provideRouterConfig(config: ExtraOptions): any;
-
-/** @deprecated */
+/** @stable */
 export declare function provideRoutes(routes: Routes): any;
 
 /** @experimental */
@@ -160,7 +154,7 @@ export interface Route {
     canDeactivate?: any[];
     canLoad?: any[];
     children?: Route[];
-    component?: Type<any> | string;
+    component?: Type<any>;
     data?: Data;
     loadChildren?: LoadChildren;
     outlet?: string;
@@ -168,7 +162,6 @@ export interface Route {
     pathMatch?: string;
     redirectTo?: string;
     resolve?: ResolveData;
-    /** @deprecated */ terminal?: boolean;
 }
 
 /** @stable */
@@ -178,7 +171,7 @@ export declare class Router {
     /** @experimental */ navigated: boolean;
     routerState: RouterState;
     url: string;
-    constructor(rootComponentType: Type<any>, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
+    constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
@@ -193,9 +186,6 @@ export declare class Router {
 
 /** @stable */
 export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkWithHref | typeof RouterLinkActive)[];
-
-/** @deprecated */
-export declare type RouterConfig = Route[];
 
 /** @stable */
 export declare class RouterLink {
@@ -275,16 +265,12 @@ export declare class RouterOutletMap {
 
 /** @stable */
 export declare class RouterState extends Tree<ActivatedRoute> {
-    /** @deprecated */ fragment: Observable<string>;
-    /** @deprecated */ queryParams: Observable<Params>;
     snapshot: RouterStateSnapshot;
     toString(): string;
 }
 
 /** @stable */
 export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
-    /** @deprecated */ fragment: string;
-    /** @deprecated */ queryParams: Params;
     url: string;
     toString(): string;
 }

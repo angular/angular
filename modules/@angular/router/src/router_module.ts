@@ -7,10 +7,9 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ApplicationRef, Compiler, ComponentResolver, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, SystemJsNgModuleLoader} from '@angular/core';
 
-import {ExtraOptions, ROUTER_CONFIGURATION, provideRouterConfig, provideRouterInitializer, provideRoutes, rootRoute, setupRouter} from './common_router_providers';
-import {Routes} from './config';
+import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
@@ -19,6 +18,7 @@ import {ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
+import {flatten} from './utils/collection';
 
 
 
@@ -26,6 +26,11 @@ import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
  * @stable
  */
 export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
+
+/**
+ * @stable
+ */
+export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
 
 const pathLocationStrategy = {
   provide: LocationStrategy,
@@ -41,8 +46,8 @@ export const ROUTER_PROVIDERS: any[] = [
     provide: Router,
     useFactory: setupRouter,
     deps: [
-      ApplicationRef, ComponentResolver, UrlSerializer, RouterOutletMap, Location, Injector,
-      NgModuleFactoryLoader, Compiler, ROUTES, ROUTER_CONFIGURATION
+      ApplicationRef, UrlSerializer, RouterOutletMap, Location, Injector, NgModuleFactoryLoader,
+      Compiler, ROUTES, ROUTER_CONFIGURATION
     ]
   },
   RouterOutletMap, {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
@@ -102,4 +107,64 @@ export function provideLocationStrategy(
     platformLocationStrategy: PlatformLocation, baseHref: string, options: ExtraOptions = {}) {
   return options.useHash ? new HashLocationStrategy(platformLocationStrategy, baseHref) :
                            new PathLocationStrategy(platformLocationStrategy, baseHref);
+}
+
+/**
+ * @stable
+ */
+export function provideRoutes(routes: Routes): any {
+  return [
+    {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+    {provide: ROUTES, multi: true, useValue: routes}
+  ];
+}
+
+
+/**
+ * @stable
+ */
+export interface ExtraOptions {
+  enableTracing?: boolean;
+  useHash?: boolean;
+}
+
+export function setupRouter(
+    ref: ApplicationRef, urlSerializer: UrlSerializer, outletMap: RouterOutletMap,
+    location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler,
+    config: Route[][], opts: ExtraOptions = {}) {
+  if (ref.componentTypes.length == 0) {
+    throw new Error('Bootstrap at least one component before injecting Router.');
+  }
+  const componentType = ref.componentTypes[0];
+  const r = new Router(
+      componentType, urlSerializer, outletMap, location, injector, loader, compiler,
+      flatten(config));
+
+  if (opts.enableTracing) {
+    r.events.subscribe(e => {
+      console.group(`Router Event: ${(<any>e.constructor).name}`);
+      console.log(e.toString());
+      console.log(e);
+      console.groupEnd();
+    });
+  }
+
+  return r;
+}
+
+export function rootRoute(router: Router): ActivatedRoute {
+  return router.routerState.root;
+}
+
+export function initialRouterNavigation(router: Router) {
+  return () => { router.initialNavigation(); };
+}
+
+export function provideRouterInitializer() {
+  return {
+    provide: APP_BOOTSTRAP_LISTENER,
+    multi: true,
+    useFactory: initialRouterNavigation,
+    deps: [Router]
+  };
 }

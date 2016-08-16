@@ -52,7 +52,7 @@ describe('config', () => {
 
     it('should throw when path is missing', () => {
       expect(() => {
-        validateConfig([{component: '', redirectTo: 'b'}]);
+        validateConfig([{component: null, redirectTo: 'b'}]);
       }).toThrowError(`Invalid route configuration: routes must have path specified`);
     });
 
@@ -76,7 +76,7 @@ describe('config', () => {
        });
 
     it('should throw when pathPatch is invalid', () => {
-      expect(() => { validateConfig([{path: 'a', pathMatch: 'invalid', component: 'b'}]); })
+      expect(() => { validateConfig([{path: 'a', pathMatch: 'invalid', component: ComponentB}]); })
           .toThrowError(
               /Invalid configuration of route 'a': pathMatch can only be set to 'prefix' or 'full'/);
     });

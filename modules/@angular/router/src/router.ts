@@ -13,7 +13,7 @@ import 'rxjs/add/operator/reduce';
 import 'rxjs/add/operator/every';
 
 import {Location} from '@angular/common';
-import {Compiler, ComponentFactoryResolver, ComponentResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type} from '@angular/core';
+import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
@@ -26,7 +26,6 @@ import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
 import {recognize} from './recognize';
-import {resolve} from './resolve';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
@@ -145,10 +144,9 @@ export class Router {
    * Creates the router service.
    */
   constructor(
-      private rootComponentType: Type<any>, private resolver: ComponentResolver,
-      private urlSerializer: UrlSerializer, private outletMap: RouterOutletMap,
-      private location: Location, private injector: Injector, loader: NgModuleFactoryLoader,
-      compiler: Compiler, public config: Routes) {
+      private rootComponentType: Type<any>, private urlSerializer: UrlSerializer,
+      private outletMap: RouterOutletMap, private location: Location, private injector: Injector,
+      loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
     this.resetConfig(config);
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
@@ -380,10 +378,10 @@ export class Router {
                 this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl));
           })
 
-          .mergeMap((newRouterStateSnapshot) => {
+          .map((newRouterStateSnapshot) => {
             this.routerEvents.next(new RoutesRecognized(
                 id, this.serializeUrl(url), this.serializeUrl(appliedUrl), newRouterStateSnapshot));
-            return resolve(this.resolver, newRouterStateSnapshot);
+            return newRouterStateSnapshot;
 
           })
           .map((routerStateSnapshot) => {
