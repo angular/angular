@@ -10,8 +10,6 @@ import {ListWrapper} from '../facade/collection';
 import {BaseException, WrappedException} from '../facade/exceptions';
 import {isBlank, stringify} from '../facade/lang';
 import {Type} from '../type';
-
-import {Provider} from './provider';
 import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';
 
@@ -273,8 +271,8 @@ export class OutOfBoundsError extends BaseException {
  *
  * ```typescript
  * expect(() => Injector.resolveAndCreate([
- *   new Provider("Strings", {useValue: "string1", multi: true}),
- *   new Provider("Strings", {useValue: "string2", multi: false})
+ *   { provide: "Strings", useValue: "string1", multi: true},
+ *   { provide: "Strings", useValue: "string2", multi: false}
  * ])).toThrowError();
  * ```
  */

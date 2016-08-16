@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken, Provider, bind} from '@angular/core';
+import {OpaqueToken, Provider} from '@angular/core';
 import {StringMapWrapper} from '@angular/facade/src/collection';
 import {isNumber} from '@angular/facade/src/lang';
 
@@ -68,7 +68,8 @@ export class UserMetric extends Metric {
   describe(): {[key: string]: any} { return this._userMetrics; }
 }
 
-var _PROVIDERS = [bind(UserMetric)
-                      .toFactory(
-                          (userMetrics, wdAdapter) => new UserMetric(userMetrics, wdAdapter),
-                          [Options.USER_METRICS, WebDriverAdapter])];
+var _PROVIDERS: Provider[] = [{
+  provide: UserMetric,
+  useFactory: (userMetrics, wdAdapter) => new UserMetric(userMetrics, wdAdapter),
+  deps: [Options.USER_METRICS, WebDriverAdapter]
+}];

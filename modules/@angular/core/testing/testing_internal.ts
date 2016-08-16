@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {provide} from '../index';
 import {StringMapWrapper} from '../src/facade/collection';
 import {Math, global, isFunction, isPromise} from '../src/facade/lang';
 

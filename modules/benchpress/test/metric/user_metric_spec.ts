@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectiveInjector} from '@angular/core';
+import {Provider, ReflectiveInjector} from '@angular/core';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {StringMapWrapper} from '@angular/facade/src/collection';
 import {Json, isBlank, isPresent} from '@angular/facade/src/lang';
-import {Injector, Metric, MultiMetric, Options, PerfLogFeatures, PerflogMetric, UserMetric, WebDriverAdapter, WebDriverExtension, bind, provide} from 'benchpress/common';
+import {Injector, Metric, MultiMetric, Options, PerfLogFeatures, PerflogMetric, UserMetric, WebDriverAdapter, WebDriverExtension} from 'benchpress/common';
 
 export function main() {
   var wdAdapter: MockDriverAdapter;
@@ -26,10 +26,10 @@ export function main() {
       userMetrics = StringMapWrapper.create();
     }
     wdAdapter = new MockDriverAdapter();
-    var bindings = [
+    var bindings: Provider[] = [
       Options.DEFAULT_PROVIDERS, UserMetric.PROVIDERS,
-      bind(Options.USER_METRICS).toValue(userMetrics),
-      provide(WebDriverAdapter, {useValue: wdAdapter})
+      {provide: Options.USER_METRICS, useValue: userMetrics},
+      {provide: WebDriverAdapter, useValue: wdAdapter}
     ];
     return ReflectiveInjector.resolveAndCreate(bindings).get(UserMetric);
   }

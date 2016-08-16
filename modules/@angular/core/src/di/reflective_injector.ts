@@ -392,8 +392,7 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * See {@link ReflectiveInjector#fromResolvedProviders} for more info.
    */
-  static resolve(providers: Array<Type<any>|Provider|{[k: string]: any}|any[]>):
-      ResolvedReflectiveProvider[] {
+  static resolve(providers: Provider[]): ResolvedReflectiveProvider[] {
     return resolveReflectiveProviders(providers);
   }
 
@@ -423,9 +422,7 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
-  static resolveAndCreate(
-      providers: Array<Type<any>|Provider|{[k: string]: any}|any[]>,
-      parent: Injector = null): ReflectiveInjector {
+  static resolveAndCreate(providers: Provider[], parent: Injector = null): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return ReflectiveInjector.fromResolvedProviders(ResolvedReflectiveProviders, parent);
   }
@@ -516,10 +513,7 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
-  resolveAndCreateChild(providers: Array<Type<any>|Provider|{[k: string]: any}|any[]>):
-      ReflectiveInjector {
-    return unimplemented();
-  }
+  resolveAndCreateChild(providers: Provider[]): ReflectiveInjector { return unimplemented(); }
 
   /**
    * Creates a child injector from previously resolved providers.
@@ -574,7 +568,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(car).not.toBe(injector.resolveAndInstantiate(Car));
    * ```
    */
-  resolveAndInstantiate(provider: Type<any>|Provider): any { return unimplemented(); }
+  resolveAndInstantiate(provider: Provider): any { return unimplemented(); }
 
   /**
    * Instantiates an object using a resolved provider in the context of the injector.
@@ -644,7 +638,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
    */
   get internalStrategy(): any { return this._strategy; }
 
-  resolveAndCreateChild(providers: Array<Type<any>|Provider|any[]>): ReflectiveInjector {
+  resolveAndCreateChild(providers: Provider[]): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return this.createChildFromResolved(ResolvedReflectiveProviders);
   }
@@ -656,7 +650,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return inj;
   }
 
-  resolveAndInstantiate(provider: Type<any>|Provider): any {
+  resolveAndInstantiate(provider: Provider): any {
     return this.instantiateResolved(ReflectiveInjector.resolve([provider])[0]);
   }
 

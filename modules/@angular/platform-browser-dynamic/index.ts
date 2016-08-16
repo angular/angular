@@ -7,7 +7,7 @@
  */
 
 import {XHR, analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
-import {ApplicationRef, COMPILER_OPTIONS, CUSTOM_ELEMENTS_SCHEMA, CompilerFactory, CompilerOptions, ComponentRef, NgModule, PlatformRef, Type, createPlatformFactory} from '@angular/core';
+import {ApplicationRef, COMPILER_OPTIONS, CUSTOM_ELEMENTS_SCHEMA, CompilerFactory, CompilerOptions, ComponentRef, NgModule, PlatformRef, Provider, Type, createPlatformFactory} from '@angular/core';
 import {BrowserModule, WORKER_SCRIPT, WorkerAppModule, platformWorkerUi} from '@angular/platform-browser';
 
 import {Console} from './core_private';
@@ -15,11 +15,12 @@ import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_provid
 import {CachedXHR} from './src/xhr/xhr_cache';
 import {XHRImpl} from './src/xhr/xhr_impl';
 
+
+
 /**
  * @experimental
  */
-export const CACHED_TEMPLATE_PROVIDER: Array<any /*Type | Provider | any[]*/> =
-    [{provide: XHR, useClass: CachedXHR}];
+export const CACHED_TEMPLATE_PROVIDER: Provider[] = [{provide: XHR, useClass: CachedXHR}];
 
 /**
  * @experimental API related to bootstrapping are still under review.
@@ -107,8 +108,7 @@ export const platformBrowserDynamic = createPlatformFactory(
  */
 // Note: We are using typescript overloads here to have 2 function signatures!
 export function bootstrap<C>(
-    appComponentType: Type<C>,
-    customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<C>> {
+    appComponentType: Type<C>, customProviders?: Provider[]): Promise<ComponentRef<C>> {
   let compilerOptions: CompilerOptions;
   let declarations: any[] = [];
   let entryComponents: any[] = [];
@@ -145,13 +145,13 @@ export function bootstrap<C>(
  * @experimental
  */
 export function bootstrapWorkerUi(
-    workerScriptUri: string,
-    customProviders: Array<any /*Type | Provider | any[]*/> = []): Promise<PlatformRef> {
+    workerScriptUri: string, customProviders: Provider[] = []): Promise<PlatformRef> {
   // For now, just creates the worker ui platform...
-  return Promise.resolve(platformWorkerUi([{
+  return Promise.resolve(platformWorkerUi(([{
                                             provide: WORKER_SCRIPT,
                                             useValue: workerScriptUri,
-                                          }].concat(customProviders)));
+                                          }] as Provider[])
+                                              .concat(customProviders)));
 }
 
 /**

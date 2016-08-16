@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ClassProvider, ExistingProvider, FactoryProvider, TypeProvider, ValueProvider} from '@angular/core';
+
 import * as browser from './src/browser';
 import * as ng_proble from './src/dom/debug/ng_probe';
 import * as dom_adapter from './src/dom/dom_adapter';

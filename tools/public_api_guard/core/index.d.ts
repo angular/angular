@@ -185,25 +185,6 @@ export declare class BaseException extends Error {
     toString(): string;
 }
 
-/** @deprecated */
-export declare function bind(token: any): ProviderBuilder;
-
-/** @deprecated */
-export declare class Binding extends Provider {
-    /** @deprecated */ toAlias: any;
-    /** @deprecated */ toClass: Type<any>;
-    /** @deprecated */ toFactory: Function;
-    /** @deprecated */ toValue: any;
-    constructor(token: any, {toClass, toValue, toAlias, toFactory, deps, multi}: {
-        toClass?: Type<any>;
-        toValue?: any;
-        toAlias?: any;
-        toFactory: Function;
-        deps?: Object[];
-        multi?: boolean;
-    });
-}
-
 /** @stable */
 export declare enum ChangeDetectionStrategy {
     OnPush = 0,
@@ -227,6 +208,13 @@ export interface ClassDefinition {
     constructor: Function | any[];
     extends?: Type<any>;
     [x: string]: Type<any> | Function | any[];
+}
+
+/** @stable */
+export interface ClassProvider {
+    multi?: boolean;
+    provide: any;
+    useClass: Type<any>;
 }
 
 /** @stable */
@@ -559,8 +547,23 @@ export declare class ExceptionHandler {
 }
 
 /** @stable */
+export interface ExistingProvider {
+    multi?: boolean;
+    provide: any;
+    useExisting: any;
+}
+
+/** @stable */
 export declare class ExpressionChangedAfterItHasBeenCheckedException extends BaseException {
     constructor(oldValue: any, currValue: any, context: any);
+}
+
+/** @stable */
+export interface FactoryProvider {
+    deps: any[];
+    multi?: boolean;
+    provide: any;
+    useFactory: Function;
 }
 
 /** @experimental */
@@ -967,44 +970,8 @@ export declare abstract class PlatformRef {
     abstract onDestroy(callback: () => void): void;
 }
 
-/** @deprecated */
-export declare function provide(token: any, {useClass, useValue, useExisting, useFactory, deps, multi}: {
-    useClass?: Type<any>;
-    useValue?: any;
-    useExisting?: any;
-    useFactory?: Function;
-    deps?: Object[];
-    multi?: boolean;
-}): Provider;
-
-/** @deprecated */
-export declare class Provider {
-    dependencies: Object[];
-    multi: boolean;
-    token: any;
-    useClass: Type<any>;
-    useExisting: any;
-    useFactory: Function;
-    useValue: any;
-    constructor(token: any, {useClass, useValue, useExisting, useFactory, deps, multi}: {
-        useClass?: Type<any>;
-        useValue?: any;
-        useExisting?: any;
-        useFactory?: Function;
-        deps?: Object[];
-        multi?: boolean;
-    });
-}
-
-/** @deprecated */
-export declare class ProviderBuilder {
-    token: any;
-    constructor(token: any);
-    toAlias(aliasToken: any): Provider;
-    toClass(type: Type<any>): Provider;
-    toFactory(factory: Function, dependencies?: any[]): Provider;
-    toValue(value: any): Provider;
-}
+/** @stable */
+export declare type Provider = TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[];
 
 /** @stable */
 export declare class QueryList<T> {
@@ -1048,18 +1015,12 @@ export declare abstract class ReflectiveInjector implements Injector {
     createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
     abstract get(token: any, notFoundValue?: any): any;
     instantiateResolved(provider: ResolvedReflectiveProvider): any;
-    resolveAndCreateChild(providers: Array<Type<any> | Provider | {
-        [k: string]: any;
-    } | any[]>): ReflectiveInjector;
-    resolveAndInstantiate(provider: Type<any> | Provider): any;
+    resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
+    resolveAndInstantiate(provider: Provider): any;
     /** @deprecated */ static fromResolvedBindings(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
     /** @experimental */ static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector): ReflectiveInjector;
-    static resolve(providers: Array<Type<any> | Provider | {
-        [k: string]: any;
-    } | any[]>): ResolvedReflectiveProvider[];
-    static resolveAndCreate(providers: Array<Type<any> | Provider | {
-        [k: string]: any;
-    } | any[]>, parent?: Injector): ReflectiveInjector;
+    static resolve(providers: Provider[]): ResolvedReflectiveProvider[];
+    static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector;
 }
 
 /** @experimental */
@@ -1275,6 +1236,17 @@ export interface TypeDecorator {
     (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
     <T extends Type<any>>(type: T): T;
     Class(obj: ClassDefinition): Type<any>;
+}
+
+/** @stable */
+export interface TypeProvider extends Type<any> {
+}
+
+/** @stable */
+export interface ValueProvider {
+    multi?: boolean;
+    provide: any;
+    useValue: any;
 }
 
 /** @stable */

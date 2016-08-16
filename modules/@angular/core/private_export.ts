@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from './index';
 import {ANY_STATE as ANY_STATE_, DEFAULT_STATE as DEFAULT_STATE_, EMPTY_STATE as EMPTY_STATE_, FILL_STYLE_FLAG as FILL_STYLE_FLAG_} from './src/animation/animation_constants';
 import {AnimationGroupPlayer as AnimationGroupPlayer_} from './src/animation/animation_group_player';
 import {AnimationKeyframe as AnimationKeyframe_} from './src/animation/animation_keyframe';
@@ -18,7 +17,7 @@ import * as change_detection_util from './src/change_detection/change_detection_
 import * as constants from './src/change_detection/constants';
 import * as console from './src/console';
 import * as debug from './src/debug/debug_renderer';
-import * as provider_util from './src/di/provider_util';
+import * as provider from './src/di/provider';
 import * as reflective_provider from './src/di/reflective_provider';
 import * as component_factory_resolver from './src/linker/component_factory_resolver';
 import * as component_resolver from './src/linker/component_resolver';
@@ -83,8 +82,6 @@ export declare namespace __core_private_types__ {
   export var makeDecorator: typeof decorators.makeDecorator;
   export type DebugDomRootRenderer = debug.DebugDomRootRenderer;
   export var DebugDomRootRenderer: typeof debug.DebugDomRootRenderer;
-  export var createProvider: typeof provider_util.createProvider;
-  export var isProviderLiteral: typeof provider_util.isProviderLiteral;
   export var EMPTY_ARRAY: typeof view_utils.EMPTY_ARRAY;
   export var EMPTY_MAP: typeof view_utils.EMPTY_MAP;
   export var pureProxy1: typeof view_utils.pureProxy1;
@@ -158,8 +155,6 @@ export var __core_private__ = {
   ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities,
   makeDecorator: decorators.makeDecorator,
   DebugDomRootRenderer: debug.DebugDomRootRenderer,
-  createProvider: provider_util.createProvider,
-  isProviderLiteral: provider_util.isProviderLiteral,
   EMPTY_ARRAY: view_utils.EMPTY_ARRAY,
   EMPTY_MAP: view_utils.EMPTY_MAP,
   pureProxy1: view_utils.pureProxy1,

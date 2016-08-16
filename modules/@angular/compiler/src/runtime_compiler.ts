@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, ComponentResolver, ComponentStillLoadingError, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, OptionalMetadata, Provider, SchemaMetadata, SkipSelfMetadata, Type} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentResolver, ComponentStillLoadingError, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, OptionalMetadata, SchemaMetadata, SkipSelfMetadata, Type} from '@angular/core';
 
 import {Console} from '../core_private';
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, createHostComponentMeta} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {BaseException} from './facade/exceptions';
@@ -129,12 +129,12 @@ export class RuntimeCompiler implements Compiler {
           new ModuleBoundCompiler(this, moduleMeta.type.runtime, parentResolver, this._console);
       // Always provide a bound Compiler and ComponentResolver
       const extraProviders = [
-        this._metadataResolver.getProviderMetadata(new Provider(Compiler, {
+        this._metadataResolver.getProviderMetadata(new ProviderMeta(Compiler, {
           useFactory: boundCompilerFactory,
           deps: [[new OptionalMetadata(), new SkipSelfMetadata(), ComponentResolver]]
         })),
         this._metadataResolver.getProviderMetadata(
-            new Provider(ComponentResolver, {useExisting: Compiler}))
+            new ProviderMeta(ComponentResolver, {useExisting: Compiler}))
       ];
       var compileResult = this._ngModuleCompiler.compile(moduleMeta, extraProviders);
       compileResult.dependencies.forEach((dep) => {

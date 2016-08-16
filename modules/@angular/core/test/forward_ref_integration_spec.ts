@@ -7,7 +7,7 @@
  */
 
 import {NgFor} from '@angular/common';
-import {Component, ContentChildren, Directive, Inject, QueryList, asNativeElements, bind, forwardRef, provide, resolveForwardRef} from '@angular/core';
+import {Component, ContentChildren, Directive, Inject, QueryList, asNativeElements, forwardRef} from '@angular/core';
 import {TestComponentBuilder} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';

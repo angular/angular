@@ -8,7 +8,7 @@
 
 import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, InjectMetadata, Injectable, ModuleWithProviders, OptionalMetadata, Provider, QueryMetadata, SchemaMetadata, SelfMetadata, SkipSelfMetadata, Type, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
 
-import {Console, LIFECYCLE_HOOKS_VALUES, ReflectorReader, createProvider, isProviderLiteral, reflector} from '../core_private';
+import {Console, LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector} from '../core_private';
 import {StringMapWrapper} from '../src/facade/collection';
 
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
@@ -616,18 +616,18 @@ export class CompileMetadataResolver {
     return compileToken;
   }
 
-  getProvidersMetadata(providers: any[], targetEntryComponents: cpl.CompileTypeMetadata[]):
+  getProvidersMetadata(providers: Provider[], targetEntryComponents: cpl.CompileTypeMetadata[]):
       Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> {
     const compileProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
-    providers.forEach((provider) => {
+    providers.forEach((provider: any) => {
       provider = resolveForwardRef(provider);
-      if (isProviderLiteral(provider)) {
-        provider = createProvider(provider);
+      if (provider && typeof provider == 'object' && provider.hasOwnProperty('provide')) {
+        provider = new cpl.ProviderMeta(provider.provide, provider);
       }
       let compileProvider: cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[];
       if (isArray(provider)) {
         compileProvider = this.getProvidersMetadata(provider, targetEntryComponents);
-      } else if (provider instanceof Provider) {
+      } else if (provider instanceof cpl.ProviderMeta) {
         let tokenMeta = this.getTokenMetadata(provider.token);
         if (tokenMeta.equalsTo(identifierToken(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS))) {
           targetEntryComponents.push(...this._getEntryComponentsFromProvider(provider));
@@ -647,7 +647,7 @@ export class CompileMetadataResolver {
     return compileProviders;
   }
 
-  private _getEntryComponentsFromProvider(provider: Provider): cpl.CompileTypeMetadata[] {
+  private _getEntryComponentsFromProvider(provider: cpl.ProviderMeta): cpl.CompileTypeMetadata[] {
     let components: cpl.CompileTypeMetadata[] = [];
     let collectedIdentifiers: cpl.CompileIdentifierMetadata[] = [];
     if (provider.useFactory || provider.useExisting || provider.useClass) {
@@ -667,7 +667,7 @@ export class CompileMetadataResolver {
     return components;
   }
 
-  getProviderMetadata(provider: Provider): cpl.CompileProviderMetadata {
+  getProviderMetadata(provider: cpl.ProviderMeta): cpl.CompileProviderMetadata {
     var compileDeps: cpl.CompileDiDependencyMetadata[];
     var compileTypeMetadata: cpl.CompileTypeMetadata = null;
     var compileFactoryMetadata: cpl.CompileFactoryMetadata = null;
