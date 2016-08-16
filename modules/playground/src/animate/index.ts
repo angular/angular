@@ -5,11 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {AnimateApp} from './app/animate-app';
 
+@NgModule({bootstrap: [AnimateApp], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(AnimateApp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

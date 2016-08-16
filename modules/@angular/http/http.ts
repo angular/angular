@@ -79,9 +79,6 @@ export {QueryEncoder, URLSearchParams} from './src/url_search_params';
  *     this.active = !this.active;
  *   }
  * }
- *
- * bootstrap(App)
- *   .catch(err => console.error(err));
  * ```
  *
  * The primary public API included in `HTTP_PROVIDERS` is the {@link Http} class.
@@ -112,8 +109,11 @@ export {QueryEncoder, URLSearchParams} from './src/url_search_params';
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_PROVIDERS, {provide: RequestOptions, useClass: MyOptions}])
- *   .catch(err => console.error(err));
+ * @NgModule({
+ *   imports: [HttpModule],
+ *   providers: [{provide: RequestOptions, useClass: MyOptions}]
+ * })
+ * class MyModule {}
  * ```
  *
  * Likewise, to use a mock backend for unit tests, the {@link XHRBackend}

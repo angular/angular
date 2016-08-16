@@ -1,11 +1,19 @@
-import {Component} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
+import {Component, NgModule} from 'angular2/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({selector: 'app', template: '<h1>Page Load Time</h1>'})
 class App {
 }
 
-bootstrap(App).then(() => {
+@NgModule({
+  imports: [BrowserModule],
+  bootstrap: [App],
+})
+class AppModule {
+}
+
+platformBrowserDynamic().bootstrapModule(App).then(() => {
   (<any>window).loadTime = Date.now() - performance.timing.navigationStart;
   (<any>window).someConstant = 1234567890;
 });

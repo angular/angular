@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {BaseException} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({
   selector: 'error-app',
@@ -19,6 +20,10 @@ export class ErrorComponent {
   createError(): void { throw new BaseException('Sourcemap test'); }
 }
 
+@NgModule({bootstrap: [ErrorComponent], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(ErrorComponent);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

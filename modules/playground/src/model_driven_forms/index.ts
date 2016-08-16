@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
-import {Component, Directive, Host} from '@angular/core';
+import {Component, Directive, Host, NgModule} from '@angular/core';
 import {isPresent, print} from '@angular/core/src/facade/lang';
-import {AbstractControl, FormBuilder, FormGroup, FormGroupDirective, REACTIVE_FORM_DIRECTIVES, Validators} from '@angular/forms';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {AbstractControl, FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators} from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 
 
@@ -45,8 +45,7 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   inputs: ['controlPath: control', 'errorTypes: errors'],
   template: `
     <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
-  `,
-  directives: [NgIf]
+  `
 })
 class ShowError {
   formDir: any /** TODO #9100 */;
@@ -132,8 +131,7 @@ class ShowError {
 
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
-  `,
-  directives: [REACTIVE_FORM_DIRECTIVES, NgFor, ShowError]
+  `
 })
 class ReactiveForms {
   form: any /** TODO #9100 */;
@@ -158,6 +156,14 @@ class ReactiveForms {
   }
 }
 
+@NgModule({
+  bootstrap: [ReactiveForms],
+  declarations: [ShowError],
+  imports: [BrowserModule, ReactiveFormsModule]
+})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(ReactiveForms);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

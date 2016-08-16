@@ -6,25 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({selector: '[svg-group]', template: `<svg:text x="20" y="20">Hello</svg:text>`})
 class SvgGroup {
 }
 
-
 @Component({
   selector: 'svg-app',
   template: `<svg>
     <g svg-group></g>
-  </svg>`,
-  directives: [SvgGroup]
+  </svg>`
 })
 class SvgApp {
 }
 
+@NgModule({bootstrap: [SvgApp], declarations: [SvgGroup], imports: [BrowserModule]})
+class ExampleModule {
+}
 
 export function main() {
-  bootstrap(SvgApp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

@@ -1,5 +1,6 @@
 import {bootstrap} from '@angular/platform-browser';
 import {
+  NgModule,
   Component,
   enableProdMode
 } from '@angular/core';
@@ -17,6 +18,8 @@ import {
   windowProfileEnd
 } from '@angular/testing/src/benchmark_util';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 function createProviders(): any[] {
   return [];
@@ -84,8 +87,16 @@ export function main() {
 
   function noop() {}
 
+  @NgModule({
+    imports: [BrowserModule],
+    bootstrap: [AppComponent],
+    providers: createProviders()
+  })
+  class AppModule {
+  }
+
   function initNg2() {
-    bootstrap(AppComponent, createProviders())
+    platformBrowserDynamic().bootstrapModule(AppModule)
         .then((ref) => {
           var injector = ref.injector;
           appRef = injector.get(ApplicationRef);

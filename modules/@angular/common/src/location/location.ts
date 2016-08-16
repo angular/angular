@@ -32,23 +32,13 @@ import {LocationStrategy} from './location_strategy';
  * ```
  * import {Component} from '@angular/core';
  * import {Location} from '@angular/common';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from '@angular/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
+ * @Component({selector: 'app-component'})
  * class AppCmp {
  *   constructor(location: Location) {
  *     location.go('/foo');
  *   }
  * }
- *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  *
  * @stable

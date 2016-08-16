@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
-import {Component, Injectable} from '@angular/core';
-import {FORM_DIRECTIVES} from '@angular/forms';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, Injectable, NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 /**
  * You can find the Angular 1 implementation of this example here:
@@ -100,8 +100,7 @@ class DataService {
           </div>
       </form>
     </div>
-  `,
-  directives: [FORM_DIRECTIVES]
+  `
 })
 class FullNameComponent {
   constructor(private _service: DataService) {}
@@ -148,8 +147,7 @@ class FullNameComponent {
 				</div>
       </form>
     </div>
-  `,
-  directives: [FORM_DIRECTIVES, NgIf]
+  `
 })
 class PersonsDetailComponent {
   constructor(private _service: DataService) {}
@@ -169,8 +167,7 @@ class PersonsDetailComponent {
 
      <person-detail-cmp></person-detail-cmp>
     </div>
-  `,
-  directives: [FORM_DIRECTIVES, PersonsDetailComponent, NgFor]
+  `
 })
 class PersonsComponent {
   persons: Person[];
@@ -190,8 +187,7 @@ class PersonsComponent {
 
     <full-name-cmp *ngIf="mode == 'editName'"></full-name-cmp>
     <persons-cmp *ngIf="mode == 'personList'"></persons-cmp>
-  `,
-  directives: [FullNameComponent, PersonsComponent, NgIf]
+  `
 })
 class PersonManagementApplication {
   mode: string;
@@ -200,6 +196,14 @@ class PersonManagementApplication {
   switchToPersonList(): void { this.mode = 'personList'; }
 }
 
+@NgModule({
+  bootstrap: [PersonManagementApplication],
+  declarations: [FullNameComponent, PersonsComponent, PersonsDetailComponent],
+  imports: [BrowserModule, FormsModule]
+})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(PersonManagementApplication);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

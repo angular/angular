@@ -1,6 +1,3 @@
-/** @deprecated */
-export declare function bootstrap<C>(appComponentType: Type<C>, customProviders?: Provider[]): Promise<ComponentRef<C>>;
-
 /** @experimental */
 export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Provider[]): Promise<PlatformRef>;
 

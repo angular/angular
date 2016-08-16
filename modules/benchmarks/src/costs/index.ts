@@ -4,6 +4,8 @@ import {NgIf, NgFor} from '@angular/common';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {ListWrapper} from '@angular/facade/src/lang';
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 var testList = null;
 
@@ -11,7 +13,7 @@ export function main() {
   var size = getIntParameter('size');
   testList = ListWrapper.createFixedSize(size);
 
-  bootstrap(AppComponent)
+  platformBrowserDynamic().bootstrapModule(AppModule)
       .then((ref) => {
         var injector = ref.injector;
         var app: AppComponent = ref.instance;
@@ -104,4 +106,13 @@ class AppComponent {
     this.list = testList;
     this.testingDynamicComponents = true;
   }
+}
+
+
+
+@NgModule({
+  imports: [BrowserModule],
+  bootstrap: [AppComponent]
+})
+class AppModule {
 }

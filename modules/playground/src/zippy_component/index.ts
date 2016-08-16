@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {Zippy} from './app/zippy';
 
@@ -29,6 +30,10 @@ class ZippyApp {
   pushLog(log: string) { this.logs.push(log); }
 }
 
+@NgModule({bootstrap: [ZippyApp], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(ZippyApp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

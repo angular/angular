@@ -77,8 +77,6 @@ export class SwitchView {
  *     this.value = this.value === 'init' ? 0 : this.value + 1;
  *   }
  * }
- *
- * bootstrap(App).catch(err => console.error(err));
  * ```
  *
  * @experimental
