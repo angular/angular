@@ -20,7 +20,6 @@ import * as debug from './src/debug/debug_renderer';
 import * as provider from './src/di/provider';
 import * as reflective_provider from './src/di/reflective_provider';
 import * as component_factory_resolver from './src/linker/component_factory_resolver';
-import * as component_resolver from './src/linker/component_resolver';
 import * as debug_context from './src/linker/debug_context';
 import * as element from './src/linker/element';
 import * as ng_module_factory from './src/linker/ng_module_factory';

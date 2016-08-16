@@ -164,7 +164,6 @@ export declare class NgSwitch {
 /** @experimental */
 export declare class NgSwitchCase {
     ngSwitchCase: any;
-    ngSwitchWhen: any;
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
 }
 

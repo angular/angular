@@ -329,14 +329,6 @@ export declare abstract class ComponentRef<C> {
     abstract onDestroy(callback: Function): void;
 }
 
-/** @deprecated */
-export declare abstract class ComponentResolver {
-    abstract clearCache(): void;
-    abstract resolveComponent(component: Type<any> | string): Promise<ComponentFactory<any>>;
-    static DynamicCompilationDeprecationMsg: string;
-    static LazyLoadingDeprecationMsg: string;
-}
-
 /** @stable */
 export declare class ComponentStillLoadingError extends BaseException {
     compType: Type<any>;

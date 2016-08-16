@@ -44,11 +44,11 @@ export function main() {
          }));
 
       // TODO(robwormald): deprecate and remove
-      it('should switch amongst when values using switchWhen', async(() => {
+      it('should switch amongst when values using switchCase', async(() => {
            var template = '<div>' +
                '<ul [ngSwitch]="switchValue">' +
-               '<template ngSwitchWhen="a"><li>when a</li></template>' +
-               '<template ngSwitchWhen="b"><li>when b</li></template>' +
+               '<template ngSwitchCase="a"><li>when a</li></template>' +
+               '<template ngSwitchCase="b"><li>when b</li></template>' +
                '</ul></div>';
 
            TestBed.overrideComponent(TestComponent, {set: {template: template}});
