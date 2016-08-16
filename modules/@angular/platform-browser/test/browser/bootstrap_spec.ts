@@ -7,17 +7,18 @@
  */
 
 import {XHR} from '@angular/compiler';
-import {APP_INITIALIZER, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, createPlatformFactory} from '@angular/core';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
-import {bootstrap, platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
+
 import {stringify} from '../../src/facade/lang';
 
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
@@ -110,6 +111,21 @@ class DummyConsole implements Console {
   warn(message: string) { this.warnings.push(message); }
 }
 
+
+class TestModule {}
+function bootstrap(cmpType: any, providers: any = []): Promise<any> {
+  @NgModule({
+    imports: [BrowserModule],
+    declarations: [cmpType],
+    bootstrap: [cmpType],
+    providers: providers,
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  })
+  class TestModule {
+  }
+  return platformBrowserDynamic().bootstrapModule(TestModule);
+}
+
 export function main() {
   var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, el2: any /** TODO #9100 */,
       testProviders: any /** TODO #9100 */, lightDom: any /** TODO #9100 */;
@@ -147,10 +163,9 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var logger = new _ArrayLogger();
          var exceptionHandler = new ExceptionHandler(logger, false);
-
-         var refPromise =
-             bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
-         refPromise.then(null, (reason) => {
+         bootstrap(HelloRootCmp, [
+           {provide: ExceptionHandler, useValue: exceptionHandler}
+         ]).then(null, (reason) => {
            expect(reason.message).toContain('The selector "hello-app" did not match any elements');
            async.done();
            return null;
@@ -236,7 +251,7 @@ export function main() {
              HelloRootCmp3, [testProviders, {provide: 'appBinding', useValue: 'BoundValue'}]);
 
          refPromise.then((ref) => {
-           expect(ref.instance.appBinding).toEqual('BoundValue');
+           expect(ref.injector.get('appBinding')).toEqual('BoundValue');
            async.done();
          });
        }));
@@ -246,7 +261,8 @@ export function main() {
          var refPromise = bootstrap(HelloRootCmp4, testProviders);
 
          refPromise.then((ref) => {
-           expect(ref.instance.appRef).toBe(ref.injector.get(ApplicationRef));
+           const appRef = ref.injector.get(ApplicationRef);
+           expect(appRef).toBeDefined();
            async.done();
          });
        }));
@@ -291,22 +307,6 @@ export function main() {
              expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
              async.done();
            });
-         });
-       }));
-
-    // Note: This will soon be deprecated as bootstrap creates a separate injector for the compiler,
-    // i.e. such providers needs to go into that injecotr (when calling `browserCompiler`);
-    it('should still allow to provide a custom xhr via the regular providers',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         let spyXhr: XHR = {get: (url: string) => Promise.resolve('{{greeting}} world!')};
-         bootstrap(HelloUrlCmp, testProviders.concat([
-           {provide: XHR, useValue: spyXhr}
-         ])).then((compRef) => {
-           expect(el).toHaveText('hello world!');
-           expect(compilerConsole.warnings).toEqual([
-             'Passing XHR as regular provider is deprecated. Pass the provider via "compilerOptions" instead.'
-           ]);
-           async.done();
          });
        }));
 

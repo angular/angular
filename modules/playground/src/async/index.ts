@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgIf} from '@angular/common';
-import {Component} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({
   selector: 'async-app',
@@ -32,8 +32,7 @@ import {bootstrap} from '@angular/platform-browser-dynamic';
       <button class='action' (click)="periodicIncrement()">Periodic Increment</button>
       <button class='cancel' *ngIf="intervalId != null" (click)="cancelPeriodicIncrement()">Cancel</button>
     </div>
-  `,
-  directives: [NgIf]
+  `
 })
 class AsyncApplication {
   val1: number = 0;
@@ -99,6 +98,10 @@ class AsyncApplication {
   };
 }
 
+@NgModule({bootstrap: [AsyncApplication], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(AsyncApplication);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

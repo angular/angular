@@ -7,10 +7,11 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {Component, Directive, Host} from '@angular/core';
+import {Component, Directive, Host, NgModule} from '@angular/core';
 import {isPresent, print} from '@angular/core/src/facade/lang';
 import {FORM_DIRECTIVES, FormGroup, NG_VALIDATORS, NgControl, NgForm, Validators} from '@angular/forms';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 
 
@@ -168,7 +169,10 @@ class TemplateDrivenForms {
     print(this.model);
   }
 }
+@NgModule({bootstrap: [TemplateDrivenForms], imports: [BrowserModule]})
+class ExampleModule {
+}
 
 export function main() {
-  bootstrap(TemplateDrivenForms);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

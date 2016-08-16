@@ -981,8 +981,6 @@ export var Pipe: PipeMetadataFactory = <PipeMetadataFactory>makeDecorator(PipeMe
  *   directives: [BankAccount]
  * })
  * class App {}
- *
- * bootstrap(App);
  * ```
  * @stable
  * @Annotation
@@ -1028,7 +1026,6 @@ export var Input: InputMetadataFactory = makePropDecorator(InputMetadata);
  *   everySecond() { console.log('second'); }
  *   everyFiveSeconds() { console.log('five seconds'); }
  * }
- * bootstrap(App);
  * ```
  * @stable
  * @Annotation
@@ -1067,8 +1064,6 @@ export var Output: OutputMetadataFactory = makePropDecorator(OutputMetadata);
  * class App {
  *   prop;
  * }
- *
- * bootstrap(App);
  * ```
  * @stable
  * @Annotation
@@ -1106,8 +1101,6 @@ export var HostBinding: HostBindingMetadataFactory = makePropDecorator(HostBindi
  *   directives: [CountClicks]
  * })
  * class App {}
- *
- * bootstrap(App);
  * ```
  * @stable
  * @Annotation

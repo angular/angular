@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {MyCmp} from './app/my_cmp';
 
 export function main() {
-  bootstrap(RelativeApp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }
 
 @Component({
@@ -21,4 +22,8 @@ export function main() {
   template: `component = <my-cmp></my-cmp>`,
 })
 export class RelativeApp {
+}
+
+@NgModule({bootstrap: [RelativeApp], imports: [BrowserModule]})
+class ExampleModule {
 }

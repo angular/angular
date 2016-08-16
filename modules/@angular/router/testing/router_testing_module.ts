@@ -68,18 +68,16 @@ function setupTestingRouter(
 @NgModule({
   exports: [RouterModule],
   providers: [
-    ROUTER_PROVIDERS,
-    {provide: Location, useClass: SpyLocation},
+    ROUTER_PROVIDERS, {provide: Location, useClass: SpyLocation},
     {provide: LocationStrategy, useClass: MockLocationStrategy},
-    {provide: NgModuleFactoryLoader, useClass: SpyNgModuleFactoryLoader},
-    {
+    {provide: NgModuleFactoryLoader, useClass: SpyNgModuleFactoryLoader}, {
       provide: Router,
       useFactory: setupTestingRouter,
       deps: [
         ComponentResolver, UrlSerializer, RouterOutletMap, Location, NgModuleFactoryLoader,
         Compiler, Injector, ROUTES
       ]
-    },
+    }
   ]
 })
 export class RouterTestingModule {

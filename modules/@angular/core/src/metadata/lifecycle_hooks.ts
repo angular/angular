@@ -81,8 +81,6 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * export class App {
  *   value = 0;
  * }
- *
- * bootstrap(App).catch(err => console.error(err));
  * ```
  * @stable
  */
@@ -125,9 +123,7 @@ export abstract class OnChanges { abstract ngOnChanges(changes: SimpleChanges): 
  * export class App {
  *   hasChild = true;
  * }
- *
- * bootstrap(App).catch(err => console.error(err));
- *  ```
+ * ```
  * @stable
  */
 export abstract class OnInit { abstract ngOnInit(): void; }
@@ -236,8 +232,6 @@ export abstract class DoCheck { abstract ngDoCheck(): void; }
  * export class App {
  *   hasChild = true;
  * }
- *
- * bootstrap(App).catch(err => console.error(err));
  * ```
  *
  *
@@ -340,8 +334,6 @@ export abstract class OnDestroy { abstract ngOnDestroy(): void; }
  * })
  * export class App {
  * }
- *
- * bootstrap(App).catch(err => console.error(err));
  * ```
  * @stable
  */
@@ -389,8 +381,6 @@ export abstract class AfterContentInit { abstract ngAfterContentInit(): void; }
  * export class App {
  *   hasContent = true;
  * }
- *
- * bootstrap(App).catch(err => console.error(err));
  * ```
  * @stable
  */
@@ -437,8 +427,6 @@ export abstract class AfterContentChecked { abstract ngAfterContentChecked(): vo
  * })
  * export class App {
  * }
- *
- * bootstrap(App).catch(err => console.error(err));
  * ```
  * @stable
  */
@@ -488,8 +476,6 @@ export abstract class AfterViewInit { abstract ngAfterViewInit(): void; }
  * })
  * export class App {
  * }
- *
- * bootstrap(App).catch(err => console.error(err));
  * ```
  * @stable
  */

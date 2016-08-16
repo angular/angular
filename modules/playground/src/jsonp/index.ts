@@ -6,11 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgModule} from '@angular/core';
 import {JSONP_PROVIDERS} from '@angular/http';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {JsonpCmp} from './app/jsonp_comp';
 
+@NgModule({
+  bootstrap: [JsonpCmp],
+  declarations: [JsonpCmp],
+  providers: [JSONP_PROVIDERS],
+  imports: [BrowserModule]
+})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(JsonpCmp, [JSONP_PROVIDERS]);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

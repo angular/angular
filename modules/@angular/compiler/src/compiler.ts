@@ -110,7 +110,7 @@ export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[
     useDebug = compilerConfig.genDebugInfo;
     defaultEncapsulation = compilerConfig.defaultEncapsulation;
     deprecationMessages.push(
-        `Passing CompilerConfig as a regular provider is deprecated. Use the "compilerOptions" parameter of "bootstrap()" or use a custom "CompilerFactory" platform provider instead.`);
+        `Passing CompilerConfig as a regular provider is deprecated. Use "compilerOptions" use a custom "CompilerFactory" platform provider instead.`);
   }
   const xhr = tempInj.get(XHR, null);
   if (xhr) {

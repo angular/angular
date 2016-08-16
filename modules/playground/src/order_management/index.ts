@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
-import {Component, EventEmitter, Injectable, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Injectable, Input, NgModule, Output} from '@angular/core';
 import {ListWrapper} from '@angular/core/src/facade/collection';
-import {FORM_DIRECTIVES} from '@angular/forms';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {FormsModule} from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 /**
  * You can find the Angular 1 implementation of this example here:
@@ -103,8 +103,7 @@ class DataService {
 
       <button (click)="select(order)">Select</button>
   	</div>
-  `,
-  directives: [FORM_DIRECTIVES, NgFor]
+  `
 })
 class OrderListComponent {
   orders: Order[];
@@ -137,8 +136,7 @@ class OrderListComponent {
 
       <button (click)="onDelete()">Delete</button>
     </div>
-  `,
-  directives: [FORM_DIRECTIVES]
+  `
 })
 class OrderItemComponent {
   @Input() item: OrderItem;
@@ -174,8 +172,7 @@ class OrderItemComponent {
       <button (click)="addItem()">Add Item</button>
       <order-item-cmp *ngFor="let item of order.items" [item]="item" (delete)="deleteItem(item)"></order-item-cmp>
     </div>
-  `,
-  directives: [FORM_DIRECTIVES, OrderItemComponent, NgFor, NgIf]
+  `
 })
 class OrderDetailsComponent {
   constructor(private _service: DataService) {}
@@ -193,12 +190,19 @@ class OrderDetailsComponent {
   template: `
     <order-list-cmp></order-list-cmp>
     <order-details-cmp></order-details-cmp>
-  `,
-  directives: [OrderListComponent, OrderDetailsComponent]
+  `
 })
 class OrderManagementApplication {
 }
 
+@NgModule({
+  bootstrap: [OrderManagementApplication],
+  declarations: [OrderListComponent, OrderDetailsComponent, OrderItemComponent],
+  imports: [BrowserModule, FormsModule]
+})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(OrderManagementApplication);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

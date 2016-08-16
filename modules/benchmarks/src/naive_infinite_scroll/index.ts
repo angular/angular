@@ -1,13 +1,18 @@
-import {bootstrap} from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {
+  NgModule
+} from '@angular/core';
 
 import {App} from './app';
 
-import {bind, provide} from '@angular/core';
-
-export function main() {
-  bootstrap(App, createBindings());
+@NgModule({
+  imports: [BrowserModule],
+  bootstrap: [App]
+})
+class AppModule {
 }
 
-function createBindings(): any[] {
-  return [];
+export function main() {
+  platformBrowserDynamic().bootstrapModule(AppModule);
 }
