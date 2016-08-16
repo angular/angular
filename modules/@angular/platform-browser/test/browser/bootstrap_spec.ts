@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {XHR} from '@angular/compiler';
+import {ResourceLoader} from '@angular/compiler';
 import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';

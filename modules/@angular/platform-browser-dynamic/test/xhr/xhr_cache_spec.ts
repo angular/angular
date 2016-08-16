@@ -6,29 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UrlResolver, XHR} from '@angular/compiler';
+import {UrlResolver, ResourceLoader} from '@angular/compiler';
 import {BaseException, Component} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {CachedXHR} from '../../src/xhr/xhr_cache';
+import {CachedResourceLoader} from '../../src/xhr/xhr_cache';
 
 import {setTemplateCache} from './xhr_cache_setter';
 
 export function main() {
-  describe('CachedXHR', () => {
-    var xhr: CachedXHR;
+  describe('CachedResourceLoader', () => {
+    var xhr: CachedResourceLoader;
 
-    function createCachedXHR(): CachedXHR {
+    function createCachedResourceLoader(): CachedResourceLoader {
       setTemplateCache({'test.html': '<div>Hello</div>'});
-      return new CachedXHR();
+      return new CachedResourceLoader();
     }
     beforeEach(() => {
       TestBed.configureCompiler({
         providers: [
           {provide: UrlResolver, useClass: TestUrlResolver},
-          {provide: XHR, useFactory: createCachedXHR}
+          {provide: ResourceLoader, useFactory: createCachedResourceLoader}
         ]
       });
     });
@@ -36,14 +36,14 @@ export function main() {
     it('should throw exception if $templateCache is not found', () => {
       setTemplateCache(null);
       expect(() => {
-        xhr = new CachedXHR();
-      }).toThrowError('CachedXHR: Template cache was not found in $templateCache.');
+        xhr = new CachedResourceLoader();
+      }).toThrowError('CachedResourceLoader: Template cache was not found in $templateCache.');
     });
 
     it('should resolve the Promise with the cached file content on success',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          setTemplateCache({'test.html': '<div>Hello</div>'});
-         xhr = new CachedXHR();
+         xhr = new CachedResourceLoader();
          xhr.get('test.html').then((text) => {
            expect(text).toEqual('<div>Hello</div>');
            async.done();
@@ -52,7 +52,7 @@ export function main() {
 
     it('should reject the Promise on failure',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         xhr = new CachedXHR();
+         xhr = new CachedResourceLoader();
          xhr.get('unknown.html')
              .then((text) => { throw new BaseException('Not expected to succeed.'); })
              .catch((error) => { async.done(); });

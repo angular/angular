@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveResolver, XHR, i18n} from '@angular/compiler';
+import {DirectiveResolver, ResourceLoader, i18n} from '@angular/compiler';
 import {MockDirectiveResolver} from '@angular/compiler/testing';
 import {Compiler, Component, DebugElement, Injector, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
 import {TestBed, fakeAsync} from '@angular/core/testing';
 import {beforeEach, TestComponentBuilder, ddescribe, describe, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {SpyXHR} from '../spies';
+import {SpyResourceLoader} from '../spies';
 import {NgLocalization} from '@angular/common';
 import {stringifyElement} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('i18n integration spec', () => {
     let compiler: Compiler;
-    let xhr: SpyXHR;
+    let xhr: SpyResourceLoader;
     let tcb: TestComponentBuilder;
     let dirResolver: MockDirectiveResolver;
     let injector: Injector;
@@ -28,7 +28,7 @@ export function main() {
     beforeEach(() => {
       TestBed.configureCompiler({
         providers: [
-          {provide: XHR, useClass: SpyXHR},
+          {provide: ResourceLoader, useClass: SpyResourceLoader},
           {provide: NgLocalization, useClass: FrLocalization},
           {provide: TRANSLATIONS, useValue: XTB},
           {provide: TRANSLATIONS_FORMAT, useValue: 'xtb'},
@@ -37,8 +37,8 @@ export function main() {
     });
 
     beforeEach(fakeAsync(inject(
-        [Compiler, TestComponentBuilder, XHR, DirectiveResolver, Injector],
-        (_compiler: Compiler, _tcb: TestComponentBuilder, _xhr: SpyXHR,
+        [Compiler, TestComponentBuilder, ResourceLoader, DirectiveResolver, Injector],
+        (_compiler: Compiler, _tcb: TestComponentBuilder, _xhr: SpyResourceLoader,
          _dirResolver: MockDirectiveResolver, _injector: Injector) => {
           compiler = _compiler;
           tcb = _tcb;

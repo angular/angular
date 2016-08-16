@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementSchemaRegistry, UrlResolver, XHR} from '@angular/compiler';
+import {ElementSchemaRegistry, UrlResolver, ResourceLoader} from '@angular/compiler';
 import {createUrlResolverWithoutPackagePrefix} from '@angular/compiler/src/url_resolver';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
-import {MockXHR} from '@angular/compiler/testing/xhr_mock';
+import {MockResourceLoader} from '@angular/compiler/testing/xhr_mock';
 
 export var TEST_COMPILER_PROVIDERS: any[] = [
   {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {})},
-  {provide: XHR, useClass: MockXHR},
+  {provide: ResourceLoader, useClass: MockResourceLoader},
   {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix}
 ];

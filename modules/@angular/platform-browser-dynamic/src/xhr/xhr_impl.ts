@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {XHR} from '@angular/compiler';
+import {ResourceLoader} from '@angular/compiler';
 import {Injectable} from '@angular/core';
 
 import {isPresent} from '../facade/lang';
 
 @Injectable()
-export class XHRImpl extends XHR {
+export class ResourceLoaderImpl extends ResourceLoader {
   get(url: string): Promise<string> {
     var resolve: (result: any) => void;
     var reject: (error: any) => void;
@@ -25,7 +25,7 @@ export class XHRImpl extends XHR {
 
     xhr.onload = function() {
       // responseText is the old-school way of retrieving response (supported by IE8 & 9)
-      // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
+      // response/responseType properties were introduced in ResourceLoader Level2 spec (supported by IE10)
       var response = isPresent(xhr.response) ? xhr.response : xhr.responseText;
 
       // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)

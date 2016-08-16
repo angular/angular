@@ -123,8 +123,8 @@ export class CodeGenerator {
   static create(
       options: AngularCompilerOptions, cliOptions: NgcCliOptions, program: ts.Program,
       compilerHost: ts.CompilerHost, reflectorHostContext?: ReflectorHostContext,
-      xhr?: compiler.XHR): CodeGenerator {
-    xhr = xhr || {
+      resourceLoader?: compiler.ResourceLoader): CodeGenerator {
+    resourceLoader = resourceLoader || {
       get: (s: string) => {
         if (!compilerHost.fileExists(s)) {
           // TODO: We should really have a test for error cases like this!
@@ -152,7 +152,7 @@ export class CodeGenerator {
       logBindingUpdate: false,
       useJit: false
     });
-    const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
+    const normalizer = new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
     const expressionParser = new Parser(new Lexer());
     const elementSchemaRegistry = new DomElementSchemaRegistry();
     const console = new Console();

@@ -41,12 +41,12 @@ import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {NgModuleResolver} from './ng_module_resolver';
 import {Console, Reflector, reflector, ReflectorReader, ReflectionCapabilities} from '../core_private';
-import {XHR} from './xhr';
+import {ResourceLoader} from './xhr';
 import * as i18n from './i18n/index';
 
-const _NO_XHR: XHR = {
+const _NO_RESOURCE_LOADER: ResourceLoader = {
   get(url: string): Promise<string>{
-      throw new Error(`No XHR implementation has been provided. Can't read the url "${url}"`);}
+      throw new Error(`No ResourceLoader implementation has been provided. Can't read the url "${url}"`);}
 };
 
 /**
@@ -56,7 +56,7 @@ const _NO_XHR: XHR = {
 export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> = [
   {provide: Reflector, useValue: reflector},
   {provide: ReflectorReader, useExisting: Reflector},
-  {provide: XHR, useValue: _NO_XHR},
+  {provide: ResourceLoader, useValue: _NO_RESOURCE_LOADER},
   Console,
   Lexer,
   Parser,
@@ -101,7 +101,7 @@ export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[
   const deprecationMessages: string[] = [];
 
   // Note: This is a hack to still support the old way
-  // of configuring platform directives / pipes and the compiler xhr.
+  // of configuring platform directives / pipes and the compiler resource loader.
   // This will soon be deprecated!
   const tempInj = ReflectiveInjector.resolveAndCreate(appProviders);
   const compilerConfig: CompilerConfig = tempInj.get(CompilerConfig, null);
@@ -112,11 +112,11 @@ export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[
     deprecationMessages.push(
         `Passing CompilerConfig as a regular provider is deprecated. Use "compilerOptions" use a custom "CompilerFactory" platform provider instead.`);
   }
-  const xhr = tempInj.get(XHR, null);
-  if (xhr) {
-    compilerProviders.push([{provide: XHR, useValue: xhr}]);
+  const resourceLoader = tempInj.get(ResourceLoader, null);
+  if (resourceLoader) {
+    compilerProviders.push([{provide: ResourceLoader, useValue: resourceLoader}]);
     deprecationMessages.push(
-        `Passing XHR as regular provider is deprecated. Pass the provider via "compilerOptions" instead.`);
+        `Passing ResourceLoader as regular provider is deprecated. Pass the provider via "compilerOptions" instead.`);
   }
   const compilerOptions: CompilerOptions = {
     useJit: useJit,

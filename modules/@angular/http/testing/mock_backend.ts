@@ -27,7 +27,7 @@ import {Response} from '../src/static_response';
  */
 export class MockConnection implements Connection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
-  // descriptive than XHR states.
+  // descriptive than ResourceLoader states.
   /**
    * Describes the state of the connection, based on `XMLHttpRequest.readyState`, but with
    * additional states. For example, state 5 indicates an aborted connection.
@@ -105,7 +105,7 @@ export class MockConnection implements Connection {
    *
    */
   mockError(err?: Error) {
-    // Matches XHR semantics
+    // Matches ResourceLoader semantics
     this.readyState = ReadyState.Done;
     this.response.error(err);
   }

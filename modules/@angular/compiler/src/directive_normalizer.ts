@@ -19,32 +19,32 @@ import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
 import {SyncAsyncResult} from './util';
-import {XHR} from './xhr';
+import {ResourceLoader} from './xhr';
 
 @Injectable()
 export class DirectiveNormalizer {
-  private _xhrCache = new Map<string, Promise<string>>();
+  private _resourceLoaderCache = new Map<string, Promise<string>>();
 
   constructor(
-      private _xhr: XHR, private _urlResolver: UrlResolver, private _htmlParser: HtmlParser,
-      private _config: CompilerConfig) {}
+    private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver, private _htmlParser: HtmlParser,
+    private _config: CompilerConfig) {}
 
-  clearCache() { this._xhrCache.clear(); }
+  clearCache() { this._resourceLoaderCache.clear(); }
 
   clearCacheFor(normalizedDirective: CompileDirectiveMetadata) {
     if (!normalizedDirective.isComponent) {
       return;
     }
-    this._xhrCache.delete(normalizedDirective.template.templateUrl);
+    this._resourceLoaderCache.delete(normalizedDirective.template.templateUrl);
     normalizedDirective.template.externalStylesheets.forEach(
-        (stylesheet) => { this._xhrCache.delete(stylesheet.moduleUrl); });
+        (stylesheet) => { this._resourceLoaderCache.delete(stylesheet.moduleUrl); });
   }
 
   private _fetch(url: string): Promise<string> {
-    var result = this._xhrCache.get(url);
+    var result = this._resourceLoaderCache.get(url);
     if (!result) {
-      result = this._xhr.get(url);
-      this._xhrCache.set(url, result);
+      result = this._resourceLoader.get(url);
+      this._resourceLoaderCache.set(url, result);
     }
     return result;
   }

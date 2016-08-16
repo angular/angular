@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockXHR} from '@angular/compiler/testing/xhr_mock';
+import {MockResourceLoader} from '@angular/compiler/testing/xhr_mock';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {isPresent} from '../src/facade/lang';
 
 export function main() {
-  describe('MockXHR', () => {
-    var xhr: MockXHR;
+  describe('MockResourceLoader', () => {
+    var resourceLoader: MockResourceLoader;
 
-    beforeEach(() => { xhr = new MockXHR(); });
+    beforeEach(() => { resourceLoader = new MockResourceLoader(); });
 
     function expectResponse(
         request: Promise<string>, url: string, response: string, done: () => void = null) {
@@ -45,70 +45,70 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response = 'bar';
-         xhr.when(url, response);
-         expectResponse(xhr.get(url), url, response, () => async.done());
-         xhr.flush();
+         resourceLoader.when(url, response);
+         expectResponse(resourceLoader.get(url), url, response, () => async.done());
+         resourceLoader.flush();
        }));
 
     it('should return an error from the definitions',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response: any /** TODO #9100 */ = null;
-         xhr.when(url, response);
-         expectResponse(xhr.get(url), url, response, () => async.done());
-         xhr.flush();
+         resourceLoader.when(url, response);
+         expectResponse(resourceLoader.get(url), url, response, () => async.done());
+         resourceLoader.flush();
        }));
 
     it('should return a response from the expectations',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response = 'bar';
-         xhr.expect(url, response);
-         expectResponse(xhr.get(url), url, response, () => async.done());
-         xhr.flush();
+         resourceLoader.expect(url, response);
+         expectResponse(resourceLoader.get(url), url, response, () => async.done());
+         resourceLoader.flush();
        }));
 
     it('should return an error from the expectations',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
          var response: any /** TODO #9100 */ = null;
-         xhr.expect(url, response);
-         expectResponse(xhr.get(url), url, response, () => async.done());
-         xhr.flush();
+         resourceLoader.expect(url, response);
+         expectResponse(resourceLoader.get(url), url, response, () => async.done());
+         resourceLoader.flush();
        }));
 
     it('should not reuse expectations', () => {
       var url = '/foo';
       var response = 'bar';
-      xhr.expect(url, response);
-      xhr.get(url);
-      xhr.get(url);
-      expect(() => { xhr.flush(); }).toThrowError('Unexpected request /foo');
+      resourceLoader.expect(url, response);
+      resourceLoader.get(url);
+      resourceLoader.get(url);
+      expect(() => { resourceLoader.flush(); }).toThrowError('Unexpected request /foo');
     });
 
     it('should return expectations before definitions',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
-         xhr.when(url, 'when');
-         xhr.expect(url, 'expect');
-         expectResponse(xhr.get(url), url, 'expect');
-         expectResponse(xhr.get(url), url, 'when', () => async.done());
-         xhr.flush();
+         resourceLoader.when(url, 'when');
+         resourceLoader.expect(url, 'expect');
+         expectResponse(resourceLoader.get(url), url, 'expect');
+         expectResponse(resourceLoader.get(url), url, 'when', () => async.done());
+         resourceLoader.flush();
        }));
 
     it('should throw when there is no definitions or expectations', () => {
-      xhr.get('/foo');
-      expect(() => { xhr.flush(); }).toThrowError('Unexpected request /foo');
+      resourceLoader.get('/foo');
+      expect(() => { resourceLoader.flush(); }).toThrowError('Unexpected request /foo');
     });
 
     it('should throw when flush is called without any pending requests',
-       () => { expect(() => { xhr.flush(); }).toThrowError('No pending requests to flush'); });
+       () => { expect(() => { resourceLoader.flush(); }).toThrowError('No pending requests to flush'); });
 
     it('should throw on unsatisfied expectations', () => {
-      xhr.expect('/foo', 'bar');
-      xhr.when('/bar', 'foo');
-      xhr.get('/bar');
-      expect(() => { xhr.flush(); }).toThrowError('Unsatisfied requests: /foo');
+      resourceLoader.expect('/foo', 'bar');
+      resourceLoader.when('/bar', 'foo');
+      resourceLoader.get('/bar');
+      expect(() => { resourceLoader.flush(); }).toThrowError('Unsatisfied requests: /foo');
     });
   });
 }
