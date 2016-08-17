@@ -1,7 +1,7 @@
-# Building and Testing Angular 2 for JS and Dart
+# Building and Testing Angular 2 for JS
 
-This document describes how to set up your development environment to build and test Angular, both
-JS and Dart versions. It also explains the basic mechanics of using `git`, `node`, and `npm`.
+This document describes how to set up your development environment to build and test Angular 2 JS version. 
+It also explains the basic mechanics of using `git`, `node`, and `npm`.
 
 * [Prerequisite Software](#prerequisite-software)
 * [Getting the Sources](#getting-the-sources)
@@ -52,7 +52,7 @@ git remote add upstream https://github.com/angular/angular.git
 ```
 ## Installing NPM Modules
 
-Next, install the JavaScript modules and Dart packages needed to build and test Angular:
+Next, install the JavaScript modules needed to build and test Angular:
 
 ```shell
 # Install Angular project dependencies (package.json)
