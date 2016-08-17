@@ -51,7 +51,7 @@ class TodoApp {
   clearCompleted(): void { this.todoStore.removeBy((todo: Todo) => todo.completed); }
 }
 
-@NgModule({bootstrap: [TodoApp], imports: [BrowserModule]})
+@NgModule({declarations: [TodoApp], bootstrap: [TodoApp], imports: [BrowserModule]})
 class ExampleModule {
 }
 

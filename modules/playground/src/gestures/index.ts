@@ -25,7 +25,7 @@ class GesturesCmp {
   onRotate(event: any /** TODO #9100 */): void { this.rotateAngle = event.rotation; }
 }
 
-@NgModule({bootstrap: [GesturesCmp], imports: [BrowserModule]})
+@NgModule({declarations: [GesturesCmp], bootstrap: [GesturesCmp], imports: [BrowserModule]})
 class ExampleModule {
 }
 

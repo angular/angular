@@ -20,7 +20,7 @@ export class ErrorComponent {
   createError(): void { throw new BaseException('Sourcemap test'); }
 }
 
-@NgModule({bootstrap: [ErrorComponent], imports: [BrowserModule]})
+@NgModule({declarations: [ErrorComponent], bootstrap: [ErrorComponent], imports: [BrowserModule]})
 class ExampleModule {
 }
 

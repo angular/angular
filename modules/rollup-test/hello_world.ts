@@ -15,6 +15,7 @@ class HelloWorldComponent {
 }
 
 @NgModule({
+  declarations: [HelloWorldComponent],
   bootstrap: [HelloWorldComponent],
   imports: [BrowserModule]
 })

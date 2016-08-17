@@ -23,7 +23,7 @@ class SvgGroup {
 class SvgApp {
 }
 
-@NgModule({bootstrap: [SvgApp], declarations: [SvgGroup], imports: [BrowserModule]})
+@NgModule({bootstrap: [SvgApp], declarations: [SvgApp, SvgGroup], imports: [BrowserModule]})
 class ExampleModule {
 }
 

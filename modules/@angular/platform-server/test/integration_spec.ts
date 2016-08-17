@@ -24,7 +24,7 @@ function writeBody(html: string): any {
 class MyServerApp {
 }
 
-@NgModule({imports: [ServerModule], bootstrap: [MyServerApp]})
+@NgModule({imports: [ServerModule], declarations: [MyServerApp], bootstrap: [MyServerApp]})
 class ExampleModule {
 }
 
