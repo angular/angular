@@ -1,4 +1,4 @@
-/** @experimental */
+/** @stable */
 export declare abstract class AbstractControl {
     asyncValidator: AsyncValidatorFn;
     dirty: boolean;
@@ -55,7 +55,7 @@ export declare abstract class AbstractControl {
     }): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class AbstractControlDirective {
     control: AbstractControl;
     dirty: boolean;
@@ -75,7 +75,7 @@ export declare abstract class AbstractControlDirective {
     reset(value?: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: FormGroup;
@@ -86,12 +86,12 @@ export declare class AbstractFormGroupDirective extends ControlContainer impleme
     ngOnInit(): void;
 }
 
-/** @experimental */
+/** @stable */
 export interface AsyncValidatorFn {
     (c: AbstractControl): any;
 }
 
-/** @experimental */
+/** @stable */
 export declare class CheckboxControlValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
@@ -101,21 +101,21 @@ export declare class CheckboxControlValueAccessor implements ControlValueAccesso
     writeValue(value: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class ControlContainer extends AbstractControlDirective {
     formDirective: Form;
     name: string;
     path: string[];
 }
 
-/** @experimental */
+/** @stable */
 export interface ControlValueAccessor {
     registerOnChange(fn: any): void;
     registerOnTouched(fn: any): void;
     writeValue(obj: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class DefaultValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
@@ -136,13 +136,13 @@ export interface Form {
     updateModel(dir: NgControl, value: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare const FORM_DIRECTIVES: Type<any>[][];
 
-/** @experimental */
+/** @stable */
 export declare const FORM_PROVIDERS: Type<any>[];
 
-/** @experimental */
+/** @stable */
 export declare class FormArray extends AbstractControl {
     controls: AbstractControl[];
     length: number;
@@ -162,7 +162,7 @@ export declare class FormArray extends AbstractControl {
     }): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class FormArrayName extends ControlContainer implements OnInit, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: FormArray;
@@ -175,7 +175,7 @@ export declare class FormArrayName extends ControlContainer implements OnInit, O
     ngOnInit(): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class FormBuilder {
     array(controlsConfig: any[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn): FormArray;
     control(value: Object, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]): FormControl;
@@ -186,7 +186,7 @@ export declare class FormBuilder {
     }): FormGroup;
 }
 
-/** @experimental */
+/** @stable */
 export declare class FormControl extends AbstractControl {
     constructor(value?: any, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]);
     patchValue(value: any, options?: {
@@ -207,7 +207,7 @@ export declare class FormControl extends AbstractControl {
     }): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class FormControlDirective extends NgControl implements OnChanges {
     asyncValidator: AsyncValidatorFn;
     control: FormControl;
@@ -222,7 +222,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     viewToModelUpdate(newValue: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class FormControlName extends NgControl implements OnChanges, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: FormControl;
@@ -238,7 +238,7 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     viewToModelUpdate(newValue: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class FormGroup extends AbstractControl {
     controls: {
         [key: string]: AbstractControl;
@@ -250,8 +250,8 @@ export declare class FormGroup extends AbstractControl {
     }, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     addControl(name: string, control: AbstractControl): void;
     contains(controlName: string): boolean;
-    exclude(controlName: string): void;
-    include(controlName: string): void;
+    /** @deprecated */ exclude(controlName: string): void;
+    /** @deprecated */ include(controlName: string): void;
     patchValue(value: {
         [key: string]: any;
     }, {onlySelf}?: {
@@ -269,7 +269,7 @@ export declare class FormGroup extends AbstractControl {
     }): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges {
     control: FormGroup;
     directives: NgControl[];
@@ -295,17 +295,17 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     updateModel(dir: NgControl, value: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
     name: string;
     constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
 }
 
-/** @experimental */
+/** @stable */
 export declare class FormsModule {
 }
 
-/** @experimental */
+/** @stable */
 export declare class MaxLengthValidator implements Validator {
     constructor(maxLength: string);
     validate(c: AbstractControl): {
@@ -313,7 +313,7 @@ export declare class MaxLengthValidator implements Validator {
     };
 }
 
-/** @experimental */
+/** @stable */
 export declare class MinLengthValidator implements Validator {
     constructor(minLength: string);
     validate(c: AbstractControl): {
@@ -321,16 +321,16 @@ export declare class MinLengthValidator implements Validator {
     };
 }
 
-/** @experimental */
+/** @stable */
 export declare const NG_ASYNC_VALIDATORS: OpaqueToken;
 
-/** @experimental */
+/** @stable */
 export declare const NG_VALIDATORS: OpaqueToken;
 
-/** @experimental */
+/** @stable */
 export declare const NG_VALUE_ACCESSOR: OpaqueToken;
 
-/** @experimental */
+/** @stable */
 export declare abstract class NgControl extends AbstractControlDirective {
     asyncValidator: AsyncValidatorFn;
     name: string;
@@ -339,17 +339,17 @@ export declare abstract class NgControl extends AbstractControlDirective {
     abstract viewToModelUpdate(newValue: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgControlStatus extends AbstractControlStatus {
     constructor(cd: NgControl);
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgControlStatusGroup extends AbstractControlStatus {
     constructor(cd: ControlContainer);
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgForm extends ControlContainer implements Form {
     control: FormGroup;
     controls: {
@@ -376,7 +376,7 @@ export declare class NgForm extends ControlContainer implements Form {
     updateModel(dir: NgControl, value: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: FormControl;
@@ -397,13 +397,13 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     viewToModelUpdate(newValue: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgModelGroup extends AbstractFormGroupDirective implements OnInit, OnDestroy {
     name: string;
     constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgSelectOption implements OnDestroy {
     id: string;
     ngValue: any;
@@ -412,7 +412,7 @@ export declare class NgSelectOption implements OnDestroy {
     ngOnDestroy(): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class PatternValidator implements Validator {
     constructor(pattern: string);
     validate(c: AbstractControl): {
@@ -420,21 +420,21 @@ export declare class PatternValidator implements Validator {
     };
 }
 
-/** @experimental */
+/** @stable */
 export declare const REACTIVE_FORM_DIRECTIVES: Type<any>[][];
 
-/** @experimental */
+/** @stable */
 export declare const REACTIVE_FORM_PROVIDERS: Type<any>[];
 
-/** @experimental */
+/** @stable */
 export declare class ReactiveFormsModule {
 }
 
-/** @experimental */
+/** @stable */
 export declare class RequiredValidator {
 }
 
-/** @experimental */
+/** @stable */
 export declare class SelectControlValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
@@ -445,7 +445,7 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
     writeValue(value: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class SelectMultipleControlValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
@@ -456,21 +456,21 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
     writeValue(value: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export interface Validator {
     validate(c: AbstractControl): {
         [key: string]: any;
     };
 }
 
-/** @experimental */
+/** @stable */
 export interface ValidatorFn {
     (c: AbstractControl): {
         [key: string]: any;
     };
 }
 
-/** @experimental */
+/** @stable */
 export declare class Validators {
     static compose(validators: ValidatorFn[]): ValidatorFn;
     static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn;

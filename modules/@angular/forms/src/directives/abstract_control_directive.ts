@@ -16,7 +16,7 @@ import {AbstractControl} from '../model';
  *
  * Only used internally in the forms module.
  *
- * @experimental
+ * @stable
  */
 export abstract class AbstractControlDirective {
   get control(): AbstractControl { throw new BaseException('unimplemented'); }

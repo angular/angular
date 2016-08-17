@@ -71,7 +71,7 @@ function coerceToAsyncValidator(asyncValidator: AsyncValidatorFn | AsyncValidato
 }
 
 /**
- * @experimental
+ * @stable
  */
 export abstract class AbstractControl {
   /** @internal */
@@ -368,7 +368,7 @@ export abstract class AbstractControl {
  * can be bound to a DOM element instead. This `FormControl` can be configured with a custom
  * validation function.
  *
- * @experimental
+ * @stable
  */
 export class FormControl extends AbstractControl {
   /** @internal */
@@ -467,14 +467,15 @@ export class FormControl extends AbstractControl {
  * controls, but is of variable length.
  *
  *
- * @experimental
+ * @stable
  */
 export class FormGroup extends AbstractControl {
   private _optionals: {[key: string]: boolean};
 
   constructor(
-      public controls: {[key: string]: AbstractControl}, optionals: {[key: string]: boolean} = null,
-      validator: ValidatorFn = null, asyncValidator: AsyncValidatorFn = null) {
+      public controls: {[key: string]: AbstractControl},
+      /* @deprecated */ optionals: {[key: string]: boolean} = null, validator: ValidatorFn = null,
+      asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._optionals = isPresent(optionals) ? optionals : {};
     this._initObservables();
@@ -510,6 +511,7 @@ export class FormGroup extends AbstractControl {
 
   /**
    * Mark the named control as non-optional.
+   * @deprecated
    */
   include(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, true);
@@ -518,6 +520,7 @@ export class FormGroup extends AbstractControl {
 
   /**
    * Mark the named control as optional.
+   * @deprecated
    */
   exclude(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, false);
@@ -651,7 +654,7 @@ export class FormGroup extends AbstractControl {
  * as broken change detection.
  *
  *
- * @experimental
+ * @stable
  */
 export class FormArray extends AbstractControl {
   constructor(

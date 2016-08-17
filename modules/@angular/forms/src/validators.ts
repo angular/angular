@@ -23,7 +23,7 @@ import {AbstractControl} from './model';
  * ### Example
  *
  * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
- * @experimental
+ * @stable
  */
 export const NG_VALIDATORS: OpaqueToken = new OpaqueToken('NgValidators');
 
@@ -35,7 +35,7 @@ export const NG_VALIDATORS: OpaqueToken = new OpaqueToken('NgValidators');
  *
  * See {@link NG_VALIDATORS} for more details.
  *
- * @experimental
+ * @stable
  */
 export const NG_ASYNC_VALIDATORS: OpaqueToken = new OpaqueToken('NgAsyncValidators');
 
@@ -51,7 +51,7 @@ export const NG_ASYNC_VALIDATORS: OpaqueToken = new OpaqueToken('NgAsyncValidato
  * var loginControl = new FormControl("", Validators.required)
  * ```
  *
- * @experimental
+ * @stable
  */
 export class Validators {
   /**

@@ -27,7 +27,7 @@ export const DEFAULT_VALUE_ACCESSOR: any = {
  *  <input type="text" name="searchQuery" ngModel>
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({
   selector:

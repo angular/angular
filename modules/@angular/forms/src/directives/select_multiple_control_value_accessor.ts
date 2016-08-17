@@ -45,7 +45,7 @@ abstract class HTMLCollection {
 /**
  * The accessor for writing a value and listening to changes on a select element.
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector:

@@ -55,7 +55,7 @@ export const modelGroupProvider: any = {
  * This example declares a model group for a user's name. The value and validation state of
  * this group can be accessed separately from the overall form.
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: '[ngModelGroup]', providers: [modelGroupProvider], exportAs: 'ngModelGroup'})
 export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, OnDestroy {

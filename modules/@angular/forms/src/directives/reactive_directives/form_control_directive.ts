@@ -70,7 +70,7 @@ export const formControlBinding: any = {
  * }
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
 

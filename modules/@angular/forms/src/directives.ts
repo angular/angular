@@ -69,12 +69,12 @@ export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
  * })
  * class MyApp {}
  * ```
- * @experimental
+ * @stable
  */
 export const FORM_DIRECTIVES: Type<any>[][] = [TEMPLATE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
 
 /**
- * @experimental
+ * @stable
  */
 
 export const REACTIVE_FORM_DIRECTIVES: Type<any>[][] =

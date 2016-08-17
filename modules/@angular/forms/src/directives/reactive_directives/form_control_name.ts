@@ -92,7 +92,7 @@ export const controlNameBinding: any = {
  * }
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({selector: '[formControlName]', providers: [controlNameBinding]})
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {

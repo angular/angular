@@ -94,7 +94,7 @@ export const formDirectiveProvider: any = {
  * }
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({
   selector: '[formGroup]',
