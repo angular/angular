@@ -8,11 +8,12 @@
 
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
-import {Compiler, Injectable, Injector, NgModule, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
+import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
 
 import {Route, Router, RouterOutletMap, UrlSerializer} from '../index';
+import {Routes} from '../src/config';
 import {ROUTES} from '../src/router_config_loader';
-import {ROUTER_PROVIDERS, RouterModule} from '../src/router_module';
+import {ROUTER_PROVIDERS, RouterModule, provideRoutes} from '../src/router_module';
 import {flatten} from '../src/utils/collection';
 
 
@@ -53,10 +54,12 @@ function setupTestingRouter(
  *
  * ```
  * beforeEach(() => {
- *   configureModule({
- *     modules: [RouterTestingModule],
- *     providers: [provideRoutes(
+ *   TestBed.configureTestModule({
+ *     modules: [
+ *       RouterTestingModule.withRoutes(
  *         [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])]
+ *       )
+ *     ]
  *   });
  * });
  * ```
@@ -74,8 +77,12 @@ function setupTestingRouter(
       deps: [
         UrlSerializer, RouterOutletMap, Location, NgModuleFactoryLoader, Compiler, Injector, ROUTES
       ]
-    }
+    },
+    provideRoutes([])
   ]
 })
 export class RouterTestingModule {
+  static withRoutes(routes: Routes): ModuleWithProviders {
+    return {ngModule: RouterTestingModule, providers: [provideRoutes(routes)]};
+  }
 }

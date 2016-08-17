@@ -22,9 +22,11 @@ import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 describe('Integration', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, TestModule],
-      providers: [provideRoutes(
-          [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])]
+      imports: [
+        RouterTestingModule.withRoutes(
+            [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}]),
+        TestModule
+      ]
     });
   });
 
