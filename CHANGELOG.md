@@ -619,7 +619,7 @@
 
     it('does stuff', inject([MyService], (service) => {
       // actual test
-    });
+    }));
   });
   ```
 
