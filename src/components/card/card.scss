@@ -171,13 +171,13 @@ md-card-title-group {
 
 // top els in md-card-content and md-card can't have their default margin-tops (e.g. <p> tags)
 // or they'll incorrectly add to card's top padding
-.md-card > :first-child, md-card-content > :first-child {
+md-card > :first-child, md-card-content > :first-child {
   margin-top: 0;
 }
 
 // last els in md-card-content and md-card can't have their default margin-bottoms (e.g. <p> tags)
 // or they'll incorrectly add to card's bottom padding
-.md-card > :last-child, md-card-content > :last-child {
+md-card > :last-child, md-card-content > :last-child {
   margin-bottom: 0;
 }
 
@@ -189,7 +189,7 @@ md-card-title-group {
 
 // actions panel on bottom should be 8px from bottom of card
 // so must strip 16px from default card padding of 24px
-.md-card > md-card-actions:last-child {
+md-card > md-card-actions:last-child {
   margin-bottom: -16px;
   padding-bottom: 0;
 }
@@ -216,12 +216,12 @@ md-card-header md-card-subtitle:not(:first-child) {
 
 // xl image should always have 16px on top.
 // when it's the first el, it'll need to remove 8px from default card padding of 24px
-.md-card > [md-card-xl-image]:first-child {
+md-card > [md-card-xl-image]:first-child {
   margin-top: -8px;
 }
 
 // xl image should always have 16px on bottom
 // when it's the last el, it'll need to remove 8px from default card padding of 24px
-.md-card > [md-card-xl-image]:last-child {
+md-card > [md-card-xl-image]:last-child {
   margin-bottom: -8px;
 }
