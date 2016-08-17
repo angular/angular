@@ -89,4 +89,4 @@ Depending on if you are using Angular bundles or not you can either use RxJS bun
 
 ## ES6 shims (optional)
 
-Users of pre-ES6 browsers might need to add an ES6 shim (e.g. [es6-shim](https://github.com/paulmillr/es6-shim))
+Users of pre-ES6 browsers might need to add an ES6 shim (e.g. [core-js](https://github.com/zloirock/core-js))
