@@ -8,10 +8,9 @@
 
 import 'rxjs/add/operator/map';
 
-import {Location} from '@angular/common';
+import {CommonModule, Location} from '@angular/common';
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, getTestBed, inject, tick} from '@angular/core/testing';
-import {addProviders} from '@angular/core/testing/testing_internal';
+import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
@@ -19,34 +18,13 @@ import {of } from 'rxjs/observable/of';
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, provideRoutes} from '../index';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
+
 describe('Integration', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, TestModule],
       providers: [provideRoutes(
-          [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])],
-      declarations: [
-        BlankCmp,
-        SimpleCmp,
-        TeamCmp,
-        UserCmp,
-        StringLinkCmp,
-        DummyLinkCmp,
-        AbsoluteLinkCmp,
-        RelativeLinkCmp,
-        DummyLinkWithParentCmp,
-        LinkWithQueryParamsAndFragment,
-        CollectParamsCmp,
-        QueryParamsAndFragmentCmp,
-        StringLinkButtonCmp,
-        WrapperCmp,
-        LinkInNgIf,
-        ComponentRecordingRoutePathAndUrl,
-        RouteCmp,
-        RootCmp,
-        RelativeLinkInIfCmp,
-        RootCmpWithTwoOutlets
-      ]
+          [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])]
     });
   });
 
@@ -80,16 +58,15 @@ describe('Integration', () => {
 
        @Component({
          selector: 'someRoot',
-         template: `<div *ngIf="cond"><router-outlet></router-outlet></div>`,
-         entryComponents: [BlankCmp, SimpleCmp]
+         template: `<div *ngIf="cond"><router-outlet></router-outlet></div>`
        })
        class RootCmpWithLink {
          cond: boolean = true;
        }
        TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
 
-       const router: Router = getTestBed().get(Router);
-       const location: Location = getTestBed().get(Location);
+       const router: Router = TestBed.get(Router);
+       const location: Location = TestBed.get(Location);
 
        const fixture = createRoot(router, RootCmpWithLink);
 
@@ -517,7 +494,7 @@ describe('Integration', () => {
 
        TestBed.configureTestingModule({declarations: [Container]});
 
-       const router: Router = getTestBed().get(Router);
+       const router: Router = TestBed.get(Router);
 
        const fixture = createRoot(router, Container);
        const cmp = fixture.debugElement.componentInstance;
@@ -565,11 +542,13 @@ describe('Integration', () => {
     }
 
     beforeEach(() => {
-      addProviders([
-        {provide: 'resolveTwo', useValue: (a: any, b: any) => 2},
-        {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
-        {provide: 'resolveSix', useClass: ResolveSix}
-      ]);
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: 'resolveTwo', useValue: (a: any, b: any) => 2},
+          {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
+          {provide: 'resolveSix', useClass: ResolveSix}
+        ]
+      });
     });
 
     it('should provide resolved data',
@@ -645,14 +624,13 @@ describe('Integration', () => {
     it('should not preserve query params and fragment by default', fakeAsync(() => {
          @Component({
            selector: 'someRoot',
-           template: `<router-outlet></router-outlet><a routerLink="/home">Link</a>`,
-           directives: ROUTER_DIRECTIVES
+           template: `<router-outlet></router-outlet><a routerLink="/home">Link</a>`
          })
          class RootCmpWithLink {
          }
 
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = getTestBed().get(Router);
+         const router: Router = TestBed.get(Router);
 
          const fixture = createRoot(router, RootCmpWithLink);
 
@@ -670,13 +648,12 @@ describe('Integration', () => {
          @Component({
            selector: 'someRoot',
            template:
-               `<router-outlet></router-outlet><a routerLink="/home" preserveQueryParams preserveFragment>Link</a>`,
-           directives: ROUTER_DIRECTIVES
+               `<router-outlet></router-outlet><a routerLink="/home" preserveQueryParams preserveFragment>Link</a>`
          })
          class RootCmpWithLink {
          }
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = getTestBed().get(Router);
+         const router: Router = TestBed.get(Router);
          const fixture = createRoot(router, RootCmpWithLink);
 
          router.resetConfig([{path: 'home', component: SimpleCmp}]);
@@ -871,7 +848,8 @@ describe('Integration', () => {
     describe('CanActivate', () => {
       describe('should not activate a route when CanActivate returns false', () => {
         beforeEach(() => {
-          addProviders([{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]);
+          TestBed.configureTestingModule(
+              {providers: [{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]});
         });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -891,7 +869,8 @@ describe('Integration', () => {
           'should not activate a route when CanActivate returns false (componentless route)',
           () => {
             beforeEach(() => {
-              addProviders([{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]);
+              TestBed.configureTestingModule(
+                  {providers: [{provide: 'alwaysFalse', useValue: (a: any, b: any) => false}]});
             });
 
             it('works',
@@ -913,10 +892,12 @@ describe('Integration', () => {
 
       describe('should activate a route when CanActivate returns true', () => {
         beforeEach(() => {
-          addProviders([{
-            provide: 'alwaysTrue',
-            useValue: (a: ActivatedRouteSnapshot, s: RouterStateSnapshot) => true
-          }]);
+          TestBed.configureTestingModule({
+            providers: [{
+              provide: 'alwaysTrue',
+              useValue: (a: ActivatedRouteSnapshot, s: RouterStateSnapshot) => true
+            }]
+          });
         });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -939,7 +920,7 @@ describe('Integration', () => {
           }
         }
 
-        beforeEach(() => { addProviders([AlwaysTrue]); });
+        beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
@@ -956,10 +937,13 @@ describe('Integration', () => {
 
       describe('should work when returns an observable', () => {
         beforeEach(() => {
-          addProviders([{
-            provide: 'CanActivate',
-            useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return of (false); }
-          }]);
+          TestBed.configureTestingModule({
+            providers: [{
+              provide: 'CanActivate',
+              useValue:
+                  (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return of (false); }
+            }]
+          });
         });
 
 
@@ -977,16 +961,18 @@ describe('Integration', () => {
 
       describe('should work when returns a promise', () => {
         beforeEach(() => {
-          addProviders([{
-            provide: 'CanActivate',
-            useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-              if (a.params['id'] == '22') {
-                return Promise.resolve(true);
-              } else {
-                return Promise.resolve(false);
+          TestBed.configureTestingModule({
+            providers: [{
+              provide: 'CanActivate',
+              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                if (a.params['id'] == '22') {
+                  return Promise.resolve(true);
+                } else {
+                  return Promise.resolve(false);
+                }
               }
-            }
-          }]);
+            }]
+          });
         });
 
 
@@ -1010,26 +996,28 @@ describe('Integration', () => {
     describe('CanDeactivate', () => {
       describe('should not deactivate a route when CanDeactivate returns false', () => {
         beforeEach(() => {
-          addProviders([
-            {
-              provide: 'CanDeactivateParent',
-              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return a.params['id'] === '22';
+          TestBed.configureTestingModule({
+            providers: [
+              {
+                provide: 'CanDeactivateParent',
+                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                  return a.params['id'] === '22';
+                }
+              },
+              {
+                provide: 'CanDeactivateTeam',
+                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                  return c.route.snapshot.params['id'] === '22';
+                }
+              },
+              {
+                provide: 'CanDeactivateUser',
+                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                  return a.params['name'] === 'victor';
+                }
               }
-            },
-            {
-              provide: 'CanDeactivateTeam',
-              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return c.route.snapshot.params['id'] === '22';
-              }
-            },
-            {
-              provide: 'CanDeactivateUser',
-              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return a.params['name'] === 'victor';
-              }
-            }
-          ]);
+            ]
+          });
         });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -1118,7 +1106,7 @@ describe('Integration', () => {
           }
         }
 
-        beforeEach(() => { addProviders([AlwaysTrue]); });
+        beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
@@ -1139,12 +1127,14 @@ describe('Integration', () => {
 
       describe('should work when returns an observable', () => {
         beforeEach(() => {
-          addProviders([{
-            provide: 'CanDeactivate',
-            useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-              return of (false);
-            }
-          }]);
+          TestBed.configureTestingModule({
+            providers: [{
+              provide: 'CanDeactivate',
+              useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return of (false);
+              }
+            }]
+          });
         });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -1167,10 +1157,12 @@ describe('Integration', () => {
     describe('CanActivateChild', () => {
       describe('should be invoked when activating a child', () => {
         beforeEach(() => {
-          addProviders([{
-            provide: 'alwaysFalse',
-            useValue: (a: any, b: any) => { return a.params.id === '22'; }
-          }]);
+          TestBed.configureTestingModule({
+            providers: [{
+              provide: 'alwaysFalse',
+              useValue: (a: any, b: any) => { return a.params.id === '22'; }
+            }]
+          });
         });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -1198,10 +1190,12 @@ describe('Integration', () => {
     describe('CanLoad', () => {
       describe('should not load children when CanLoad returns false', () => {
         beforeEach(() => {
-          addProviders([
-            {provide: 'alwaysFalse', useValue: (a: any) => false},
-            {provide: 'alwaysTrue', useValue: (a: any) => true}
-          ]);
+          TestBed.configureTestingModule({
+            providers: [
+              {provide: 'alwaysFalse', useValue: (a: any) => false},
+              {provide: 'alwaysTrue', useValue: (a: any) => true}
+            ]
+          });
         });
 
         it('works',
@@ -1216,8 +1210,7 @@ describe('Integration', () => {
                  @NgModule({
                    declarations: [LazyLoadedComponent],
                    imports:
-                       [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])],
-                   entryComponents: [LazyLoadedComponent]
+                       [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])]
                  })
                  class LoadedModule {
                  }
@@ -1303,7 +1296,7 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = getTestBed().get(Router);
+         const router: Router = TestBed.get(Router);
 
          const f = TestBed.createComponent(RootCmpWithLink);
          advance(f);
@@ -1382,8 +1375,7 @@ describe('Integration', () => {
                     (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
                       @Component({
                         selector: 'lazy',
-                        template: 'lazy-loaded-parent [<router-outlet></router-outlet>]',
-                        directives: ROUTER_DIRECTIVES
+                        template: 'lazy-loaded-parent [<router-outlet></router-outlet>]'
                       })
                       class ParentLazyLoadedComponent {
                       }
@@ -1398,8 +1390,7 @@ describe('Integration', () => {
                           path: 'loaded',
                           component: ParentLazyLoadedComponent,
                           children: [{path: 'child', component: ChildLazyLoadedComponent}]
-                        }])],
-                        entryComponents: [ParentLazyLoadedComponent, ChildLazyLoadedComponent]
+                        }])]
                       })
                       class LoadedModule {
                       }
@@ -1429,14 +1420,12 @@ describe('Integration', () => {
 
              @NgModule({
                declarations: [LazyComponent2],
-               imports: [RouterModule.forChild([{path: 'loaded', component: LazyComponent2}])],
-               entryComponents: [LazyComponent2]
+               imports: [RouterModule.forChild([{path: 'loaded', component: LazyComponent2}])]
              })
              class SiblingOfLoadedModule {
              }
 
-             @Component(
-                 {selector: 'lazy', template: 'lazy-loaded-1', directives: ROUTER_DIRECTIVES})
+             @Component({selector: 'lazy', template: 'lazy-loaded-1'})
              class LazyComponent1 {
              }
 
@@ -1445,8 +1434,7 @@ describe('Integration', () => {
                imports: [
                  RouterModule.forChild([{path: 'loaded', component: LazyComponent1}]),
                  SiblingOfLoadedModule
-               ],
-               entryComponents: [LazyComponent1]
+               ]
              })
              class LoadedModule {
              }
@@ -1491,7 +1479,6 @@ describe('Integration', () => {
              }
 
              @NgModule({
-               entryComponents: [LazyLoadedParentComponent],
                declarations: [LazyLoadedParentComponent, LazyLoadedChildComponent],
                imports: [RouterModule.forChild([{
                  path: '',
@@ -1529,7 +1516,6 @@ describe('Integration', () => {
              @NgModule({
                declarations: [LazyLoadedComponent],
                imports: [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])],
-               entryComponents: [LazyLoadedComponent]
              })
              class LoadedModule {
              }
@@ -1576,27 +1562,21 @@ function expectEvents(events: Event[], pairs: any[]) {
   }
 }
 
-@Component({
-  selector: 'link-cmp',
-  template: `<a routerLink="/team/33/simple">link</a>`,
-  directives: ROUTER_DIRECTIVES
-})
+@Component({selector: 'link-cmp', template: `<a routerLink="/team/33/simple">link</a>`})
 class StringLinkCmp {
 }
 
 @Component({
   selector: 'link-cmp',
   template: `<button routerLink
-="/team/33/simple">link</button>`,
-  directives: ROUTER_DIRECTIVES
+="/team/33/simple">link</button>`
 })
 class StringLinkButtonCmp {
 }
 
 @Component({
   selector: 'link-cmp',
-  template: `<router-outlet></router-outlet><a [routerLink]="['/team/33/simple']">link</a>`,
-  directives: ROUTER_DIRECTIVES
+  template: `<router-outlet></router-outlet><a [routerLink]="['/team/33/simple']">link</a>`
 })
 class AbsoluteLinkCmp {
 }
@@ -1606,36 +1586,29 @@ class AbsoluteLinkCmp {
   template:
       `<router-outlet></router-outlet><a routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">link</a>
 <button routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}" [routerLink]="['./']">button</button>
-`,
-  directives: ROUTER_DIRECTIVES
+`
 })
 class DummyLinkCmp {
   private exact: boolean;
   constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
 }
 
-@Component({
-  selector: 'link-cmp',
-  template: `<a [routerLink]="['../simple']">link</a>`,
-  directives: ROUTER_DIRECTIVES
-})
+@Component({selector: 'link-cmp', template: `<a [routerLink]="['../simple']">link</a>`})
 class RelativeLinkCmp {
 }
 
 @Component({
   selector: 'link-cmp',
-  template: `<a [routerLink]="['../simple']" [queryParams]="{q: '1'}" fragment="f">link</a>`,
-  directives: ROUTER_DIRECTIVES
+  template: `<a [routerLink]="['../simple']" [queryParams]="{q: '1'}" fragment="f">link</a>`
 })
 class LinkWithQueryParamsAndFragment {
 }
 
-@Component({selector: 'simple-cmp', template: `simple`, directives: ROUTER_DIRECTIVES})
+@Component({selector: 'simple-cmp', template: `simple`})
 class SimpleCmp {
 }
 
-@Component(
-    {selector: 'collect-params-cmp', template: `collect-params`, directives: ROUTER_DIRECTIVES})
+@Component({selector: 'collect-params-cmp', template: `collect-params`})
 class CollectParamsCmp {
   private params: any = [];
   private urls: any = [];
@@ -1650,15 +1623,14 @@ class CollectParamsCmp {
   }
 }
 
-@Component({selector: 'blank-cmp', template: ``, directives: ROUTER_DIRECTIVES})
+@Component({selector: 'blank-cmp', template: ``})
 class BlankCmp {
 }
 
 @Component({
   selector: 'team-cmp',
   template:
-      `team {{id | async}} [ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]`,
-  directives: ROUTER_DIRECTIVES
+      `team {{id | async}} [ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]`
 })
 class TeamCmp {
   id: Observable<string>;
@@ -1670,8 +1642,7 @@ class TeamCmp {
   }
 }
 
-@Component(
-    {selector: 'user-cmp', template: `user {{name | async}}`, directives: [ROUTER_DIRECTIVES]})
+@Component({selector: 'user-cmp', template: `user {{name | async}}`})
 class UserCmp {
   name: Observable<string>;
   recordedParams: Params[] = [];
@@ -1682,19 +1653,12 @@ class UserCmp {
   }
 }
 
-@Component({
-  selector: 'wrapper',
-  template: `<router-outlet></router-outlet>`,
-  directives: [ROUTER_DIRECTIVES]
-})
+@Component({selector: 'wrapper', template: `<router-outlet></router-outlet>`})
 class WrapperCmp {
 }
 
-@Component({
-  selector: 'query-cmp',
-  template: `query: {{name | async}} fragment: {{fragment | async}}`,
-  directives: [ROUTER_DIRECTIVES]
-})
+@Component(
+    {selector: 'query-cmp', template: `query: {{name | async}} fragment: {{fragment | async}}`})
 class QueryParamsAndFragmentCmp {
   name: Observable<string>;
   fragment: Observable<string>;
@@ -1705,7 +1669,7 @@ class QueryParamsAndFragmentCmp {
   }
 }
 
-@Component({selector: 'route-cmp', template: `route`, directives: ROUTER_DIRECTIVES})
+@Component({selector: 'route-cmp', template: `route`})
 class RouteCmp {
   constructor(public route: ActivatedRoute) {}
 }
@@ -1713,19 +1677,14 @@ class RouteCmp {
 @Component({
   selector: 'link-cmp',
   template:
-      `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`,
-  directives: ROUTER_DIRECTIVES,
-  entryComponents: [BlankCmp, SimpleCmp]
+      `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`
 })
 class RelativeLinkInIfCmp {
   show: boolean = false;
 }
 
-@Component({
-  selector: 'child',
-  template: '<div *ngIf="alwaysTrue"><router-outlet></router-outlet></div>',
-  directives: ROUTER_DIRECTIVES
-})
+@Component(
+    {selector: 'child', template: '<div *ngIf="alwaysTrue"><router-outlet></router-outlet></div>'})
 class LinkInNgIf {
   alwaysTrue = true;
 }
@@ -1735,8 +1694,7 @@ class LinkInNgIf {
   template: `<router-outlet></router-outlet>
                     <link-parent routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
                       <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
-                    </link-parent>`,
-  directives: ROUTER_DIRECTIVES
+                    </link-parent>`
 })
 class DummyLinkWithParentCmp {
   private exact: boolean;
@@ -1754,26 +1712,14 @@ class ComponentRecordingRoutePathAndUrl {
   }
 }
 
-@Component({
-  selector: 'root-cmp',
-  template: `<router-outlet></router-outlet>`,
-  directives: [ROUTER_DIRECTIVES],
-  entryComponents: [
-    BlankCmp, SimpleCmp, TeamCmp, UserCmp, StringLinkCmp, DummyLinkCmp, AbsoluteLinkCmp,
-    RelativeLinkCmp, DummyLinkWithParentCmp, LinkWithQueryParamsAndFragment, CollectParamsCmp,
-    QueryParamsAndFragmentCmp, StringLinkButtonCmp, WrapperCmp, LinkInNgIf,
-    ComponentRecordingRoutePathAndUrl
-  ]
-})
+@Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
 class RootCmp {
 }
 
 @Component({
   selector: 'root-cmp',
   template:
-      `primary [<router-outlet></router-outlet>] right [<router-outlet name="right"></router-outlet>]`,
-  directives: [ROUTER_DIRECTIVES],
-  entryComponents: [BlankCmp, SimpleCmp, RouteCmp, UserCmp]
+      `primary [<router-outlet></router-outlet>] right [<router-outlet name="right"></router-outlet>]`
 })
 class RootCmpWithTwoOutlets {
 }
@@ -1790,4 +1736,82 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
   router.initialNavigation();
   advance(f);
   return f;
+}
+
+
+@NgModule({
+  imports: [RouterTestingModule, CommonModule],
+  entryComponents: [
+    BlankCmp,
+    SimpleCmp,
+    TeamCmp,
+    UserCmp,
+    StringLinkCmp,
+    DummyLinkCmp,
+    AbsoluteLinkCmp,
+    RelativeLinkCmp,
+    DummyLinkWithParentCmp,
+    LinkWithQueryParamsAndFragment,
+    CollectParamsCmp,
+    QueryParamsAndFragmentCmp,
+    StringLinkButtonCmp,
+    WrapperCmp,
+    LinkInNgIf,
+    ComponentRecordingRoutePathAndUrl,
+    RouteCmp,
+    RootCmp,
+    RelativeLinkInIfCmp,
+    RootCmpWithTwoOutlets
+  ],
+
+
+  exports: [
+    BlankCmp,
+    SimpleCmp,
+    TeamCmp,
+    UserCmp,
+    StringLinkCmp,
+    DummyLinkCmp,
+    AbsoluteLinkCmp,
+    RelativeLinkCmp,
+    DummyLinkWithParentCmp,
+    LinkWithQueryParamsAndFragment,
+    CollectParamsCmp,
+    QueryParamsAndFragmentCmp,
+    StringLinkButtonCmp,
+    WrapperCmp,
+    LinkInNgIf,
+    ComponentRecordingRoutePathAndUrl,
+    RouteCmp,
+    RootCmp,
+    RelativeLinkInIfCmp,
+    RootCmpWithTwoOutlets
+  ],
+
+
+
+  declarations: [
+    BlankCmp,
+    SimpleCmp,
+    TeamCmp,
+    UserCmp,
+    StringLinkCmp,
+    DummyLinkCmp,
+    AbsoluteLinkCmp,
+    RelativeLinkCmp,
+    DummyLinkWithParentCmp,
+    LinkWithQueryParamsAndFragment,
+    CollectParamsCmp,
+    QueryParamsAndFragmentCmp,
+    StringLinkButtonCmp,
+    WrapperCmp,
+    LinkInNgIf,
+    ComponentRecordingRoutePathAndUrl,
+    RouteCmp,
+    RootCmp,
+    RelativeLinkInIfCmp,
+    RootCmpWithTwoOutlets
+  ]
+})
+class TestModule {
 }
