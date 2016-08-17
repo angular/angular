@@ -13,9 +13,9 @@ export function main() {
     describe('no initializers', () => {
 
       it('should return true for `done`',
-         inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
+         async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
            expect(status.done).toBe(true);
-         }));
+         })));
 
       it('should return a promise that resolves immediately for `donePromise`',
          async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {

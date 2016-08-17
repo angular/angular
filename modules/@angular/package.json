@@ -9,7 +9,7 @@
   "repository": <%= JSON.stringify(packageJson.repository) %>,
   "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
   "peerDependencies": {
-    "es6-shim": "<%= packageJson.dependencies['es6-shim'] %>",
+    "core-js": "<%= packageJson.dependencies['core-js'] %>",
     "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>",
     "rxjs": "<%= packageJson.dependencies['rxjs'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"

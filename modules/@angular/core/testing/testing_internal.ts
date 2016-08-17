@@ -35,7 +35,7 @@ var jsmIt = _global.it;
 var jsmIIt = _global.fit;
 var jsmXIt = _global.xit;
 
-var runnerStack: any[] /** TODO #9100 */ = [];
+var runnerStack: BeforeEachRunner[] = [];
 var inIt = false;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
 var globalTimeOut = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -63,7 +63,7 @@ class BeforeEachRunner {
 // Reset the test providers before each test
 jsmBeforeEach(() => { testBed.resetTestingModule(); });
 
-function _describe(jsmFn: any /** TODO #9100 */, ...args: any[] /** TODO #9100 */) {
+function _describe(jsmFn: Function, ...args: any[]) {
   var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
   var runner = new BeforeEachRunner(parentRunner);
   runnerStack.push(runner);
@@ -72,15 +72,15 @@ function _describe(jsmFn: any /** TODO #9100 */, ...args: any[] /** TODO #9100 *
   return suite;
 }
 
-export function describe(...args: any[] /** TODO #9100 */): void {
+export function describe(...args: any[]): void {
   return _describe(jsmDescribe, ...args);
 }
 
-export function ddescribe(...args: any[] /** TODO #9100 */): void {
+export function ddescribe(...args: any[]): void {
   return _describe(jsmDDescribe, ...args);
 }
 
-export function xdescribe(...args: any[] /** TODO #9100 */): void {
+export function xdescribe(...args: any[]): void {
   return _describe(jsmXDescribe, ...args);
 }
 
@@ -106,7 +106,7 @@ export function beforeEach(fn: Function): void {
  *     {provide: SomeToken, useValue: myValue},
  *   ]);
  */
-export function beforeEachProviders(fn: any /** TODO #9100 */): void {
+export function beforeEachProviders(fn: Function): void {
   jsmBeforeEach(() => {
     var providers = fn();
     if (!providers) return;
@@ -129,7 +129,7 @@ export function addProviders(providers: Array<any>): void {
 /**
  * @deprecated
  */
-export function beforeEachBindings(fn: any /** TODO #9100 */): void {
+export function beforeEachBindings(fn: Function): void {
   beforeEachProviders(fn);
 }
 

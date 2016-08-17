@@ -21,7 +21,7 @@ cp -r ./modules/playground/favicon.ico ./dist/
 #rsync -aP ./modules/playground/* ./dist/all/playground/
 mkdir ./dist/all/playground/vendor
 cd ./dist/all/playground/vendor
-ln -s ../../../../node_modules/es6-shim/es6-shim.js .
+ln -s ../../../../node_modules/core-js/client/core.js .
 ln -s ../../../../node_modules/zone.js/dist/zone.js .
 ln -s ../../../../node_modules/zone.js/dist/long-stack-trace-zone.js .
 ln -s ../../../../node_modules/systemjs/dist/system.src.js .

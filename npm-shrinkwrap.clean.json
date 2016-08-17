@@ -1885,7 +1885,7 @@
       "version": "1.0.0"
     },
     "core-js": {
-      "version": "2.4.0"
+      "version": "2.4.1"
     },
     "core-object": {
       "version": "0.0.2"
@@ -2118,9 +2118,6 @@
     },
     "es6-module-loader": {
       "version": "0.17.9"
-    },
-    "es6-shim": {
-      "version": "0.35.0"
     },
     "es6-symbol": {
       "version": "3.0.2"
@@ -3627,6 +3624,9 @@
     },
     "karma-sourcemap-loader": {
       "version": "0.3.6"
+    },
+    "karma-zonejs": {
+      "version": "0.0.1"
     },
     "kind-of": {
       "version": "3.0.2"
@@ -5774,7 +5774,7 @@
       }
     },
     "zone.js": {
-      "version": "0.6.12"
+      "version": "0.6.14"
     }
   },
   "name": "angular-srcs",

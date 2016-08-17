@@ -1,4 +1,4 @@
-importScripts("../../../vendor/es6-shim.js",
+importScripts("../../../vendor/core.js",
   "../../../vendor/zone.js",
   "../../../vendor/long-stack-trace-zone.js",
   "../../../vendor/system.src.js",
