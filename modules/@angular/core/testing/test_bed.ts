@@ -130,6 +130,10 @@ export class TestBed implements Injector {
     return TestBed;
   }
 
+  static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
+    return getTestBed().get(token, notFoundValue);
+  }
+
   static createComponent<T>(component: Type<T>): ComponentFixture<T> {
     return getTestBed().createComponent(component);
   }
