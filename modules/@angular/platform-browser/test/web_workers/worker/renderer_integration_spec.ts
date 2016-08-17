@@ -12,7 +12,6 @@ import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
 import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed} from '@angular/core/testing';
-import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRootRenderer, DomRootRenderer_} from '@angular/platform-browser/src/dom/dom_renderer';
@@ -81,6 +80,7 @@ export function main() {
       workerRenderStore = new RenderStore();
 
       TestBed.configureTestingModule({
+        declarations: [MyComp2],
         providers: [
           Serializer, {provide: RenderStore, useValue: workerRenderStore}, {
             provide: RootRenderer,
@@ -104,142 +104,103 @@ export function main() {
       return (<any>componentRef.hostView).internalView.renderer;
     }
 
-    it('should update text nodes',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideView(MyComp2, new ViewMetadata({template: '<div>{{ctxProp}}</div>'}))
-                 .createAsync(MyComp2)
-                 .then((fixture) => {
-                   var renderEl = getRenderElement(fixture.debugElement.nativeElement);
-                   expect(renderEl).toHaveText('');
+    it('should update text nodes', () => {
+      TestBed.overrideComponent(MyComp2, {set: {template: '<div>{{ctxProp}}</div>'}});
+      const fixture = TestBed.createComponent(MyComp2);
 
-                   fixture.debugElement.componentInstance.ctxProp = 'Hello World!';
-                   fixture.detectChanges();
-                   expect(renderEl).toHaveText('Hello World!');
-                   async.done();
+      var renderEl = getRenderElement(fixture.debugElement.nativeElement);
+      expect(renderEl).toHaveText('');
 
-                 });
-           }));
+      fixture.debugElement.componentInstance.ctxProp = 'Hello World!';
+      fixture.detectChanges();
+      expect(renderEl).toHaveText('Hello World!');
+    });
 
     it('should update any element property/attributes/class/style(s) independent of the compilation on the root element and other elements',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideView(
-                    MyComp2,
-                    new ViewMetadata({template: '<input [title]="y" style="position:absolute">'}))
-                 .createAsync(MyComp2)
-                 .then((fixture) => {
-                   var checkSetters =
-                       (componentRef: any /** TODO #9100 */, workerEl: any /** TODO #9100 */) => {
-                         var renderer = getRenderer(componentRef);
-                         var el = getRenderElement(workerEl);
-                         renderer.setElementProperty(workerEl, 'tabIndex', 1);
-                         expect((<HTMLInputElement>el).tabIndex).toEqual(1);
+       () => {
+         TestBed.overrideComponent(
+             MyComp2, {set: {template: '<input [title]="y" style="position:absolute">'}});
+         const fixture = TestBed.createComponent(MyComp2);
 
-                         renderer.setElementClass(workerEl, 'a', true);
-                         expect(getDOM().hasClass(el, 'a')).toBe(true);
-                         renderer.setElementClass(workerEl, 'a', false);
-                         expect(getDOM().hasClass(el, 'a')).toBe(false);
+         var checkSetters =
+             (componentRef: any /** TODO #9100 */, workerEl: any /** TODO #9100 */) => {
+               var renderer = getRenderer(componentRef);
+               var el = getRenderElement(workerEl);
+               renderer.setElementProperty(workerEl, 'tabIndex', 1);
+               expect((<HTMLInputElement>el).tabIndex).toEqual(1);
 
-                         renderer.setElementStyle(workerEl, 'width', '10px');
-                         expect(getDOM().getStyle(el, 'width')).toEqual('10px');
-                         renderer.setElementStyle(workerEl, 'width', null);
-                         expect(getDOM().getStyle(el, 'width')).toEqual('');
+               renderer.setElementClass(workerEl, 'a', true);
+               expect(getDOM().hasClass(el, 'a')).toBe(true);
+               renderer.setElementClass(workerEl, 'a', false);
+               expect(getDOM().hasClass(el, 'a')).toBe(false);
 
-                         renderer.setElementAttribute(workerEl, 'someattr', 'someValue');
-                         expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
-                       };
+               renderer.setElementStyle(workerEl, 'width', '10px');
+               expect(getDOM().getStyle(el, 'width')).toEqual('10px');
+               renderer.setElementStyle(workerEl, 'width', null);
+               expect(getDOM().getStyle(el, 'width')).toEqual('');
 
-                   // root element
-                   checkSetters(fixture.componentRef, fixture.debugElement.nativeElement);
-                   // nested elements
-                   checkSetters(
-                       fixture.componentRef, fixture.debugElement.children[0].nativeElement);
+               renderer.setElementAttribute(workerEl, 'someattr', 'someValue');
+               expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
+             };
 
-                   async.done();
-                 });
-           }));
+         // root element
+         checkSetters(fixture.componentRef, fixture.debugElement.nativeElement);
+         // nested elements
+         checkSetters(fixture.componentRef, fixture.debugElement.children[0].nativeElement);
+       });
 
-    it('should update any template comment property/attributes',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             var tpl = '<template [ngIf]="ctxBoolProp"></template>';
-             tcb.overrideView(MyComp2, new ViewMetadata({template: tpl, directives: [NgIf]}))
+    it('should update any template comment property/attributes', () => {
 
-                 .createAsync(MyComp2)
-                 .then((fixture) => {
-                   (<MyComp2>fixture.debugElement.componentInstance).ctxBoolProp = true;
-                   fixture.detectChanges();
-                   var el = getRenderElement(fixture.debugElement.nativeElement);
-                   expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
-                   async.done();
-                 });
-           }));
+      TestBed.overrideComponent(
+          MyComp2, {set: {template: '<template [ngIf]="ctxBoolProp"></template>'}});
+      const fixture = TestBed.createComponent(MyComp2);
 
-    it('should add and remove fragments',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideView(MyComp2, new ViewMetadata({
-                                template: '<template [ngIf]="ctxBoolProp">hello</template>',
-                                directives: [NgIf]
-                              }))
-                 .createAsync(MyComp2)
-                 .then((fixture) => {
+      (<MyComp2>fixture.debugElement.componentInstance).ctxBoolProp = true;
+      fixture.detectChanges();
+      var el = getRenderElement(fixture.debugElement.nativeElement);
+      expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
+    });
 
-                   var rootEl = getRenderElement(fixture.debugElement.nativeElement);
-                   expect(rootEl).toHaveText('');
+    it('should add and remove fragments', () => {
+      TestBed.overrideComponent(
+          MyComp2, {set: {template: '<template [ngIf]="ctxBoolProp">hello</template>'}});
+      const fixture = TestBed.createComponent(MyComp2);
 
-                   fixture.debugElement.componentInstance.ctxBoolProp = true;
-                   fixture.detectChanges();
-                   expect(rootEl).toHaveText('hello');
+      var rootEl = getRenderElement(fixture.debugElement.nativeElement);
+      expect(rootEl).toHaveText('');
 
-                   fixture.debugElement.componentInstance.ctxBoolProp = false;
-                   fixture.detectChanges();
-                   expect(rootEl).toHaveText('');
+      fixture.debugElement.componentInstance.ctxBoolProp = true;
+      fixture.detectChanges();
+      expect(rootEl).toHaveText('hello');
 
-                   async.done();
-                 });
-           }));
+      fixture.debugElement.componentInstance.ctxBoolProp = false;
+      fixture.detectChanges();
+      expect(rootEl).toHaveText('');
+    });
 
     if (getDOM().supportsDOMEvents()) {
-      it('should call actions on the element',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               tcb.overrideView(MyComp2, new ViewMetadata({template: '<input [title]="y">'}))
-                   .createAsync(MyComp2)
-                   .then((fixture) => {
-                     var el = fixture.debugElement.children[0];
-                     getRenderer(fixture.componentRef)
-                         .invokeElementMethod(el.nativeElement, 'setAttribute', ['a', 'b']);
+      it('should call actions on the element', () => {
+        TestBed.overrideComponent(MyComp2, {set: {template: '<input [title]="y">'}});
+        const fixture = TestBed.createComponent(MyComp2);
+        var el = fixture.debugElement.children[0];
+        getRenderer(fixture.componentRef).invokeElementMethod(el.nativeElement, 'setAttribute', [
+          'a', 'b'
+        ]);
 
-                     expect(getDOM().getAttribute(getRenderElement(el.nativeElement), 'a'))
-                         .toEqual('b');
-                     async.done();
-                   });
-             }));
+        expect(getDOM().getAttribute(getRenderElement(el.nativeElement), 'a')).toEqual('b');
 
-      it('should listen to events',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               tcb.overrideView(
-                      MyComp2, new ViewMetadata({template: '<input (change)="ctxNumProp = 1">'}))
-                   .createAsync(MyComp2)
-                   .then((fixture) => {
-                     var el = fixture.debugElement.children[0];
-                     dispatchEvent(getRenderElement(el.nativeElement), 'change');
-                     expect(fixture.componentInstance.ctxNumProp).toBe(1);
+      });
 
-                     fixture.destroy();
+      it('should listen to events', () => {
+        TestBed.overrideComponent(MyComp2, {set: {template: '<input (change)="ctxNumProp = 1">'}});
+        const fixture = TestBed.createComponent(MyComp2);
 
-                     async.done();
-                   });
-             }));
+        var el = fixture.debugElement.children[0];
+        dispatchEvent(getRenderElement(el.nativeElement), 'change');
+        expect(fixture.componentInstance.ctxNumProp).toBe(1);
+
+        fixture.destroy();
+      });
     }
   });
 }
