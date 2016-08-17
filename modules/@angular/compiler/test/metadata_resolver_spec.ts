@@ -7,7 +7,7 @@
  */
 
 import {CompilerConfig} from '@angular/compiler/src/config';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation} from '@angular/core';
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {TestBed} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
@@ -66,6 +66,62 @@ export function main() {
            expect(() => resolver.getDirectiveMetadata(MyBrokenComp1))
                .toThrowError(`Can't resolve all parameters for MyBrokenComp1: (?).`);
          }));
+      it('should throw with descriptive error message when a directive is passed to imports',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           @NgModule({imports: [ComponentWithoutModuleId]})
+           class ModuleWithImportedComponent {
+           }
+           expect(() => resolver.getNgModuleMetadata(ModuleWithImportedComponent))
+               .toThrowError(
+                   `Unexpected directive 'ComponentWithoutModuleId' imported by the module 'ModuleWithImportedComponent'`);
+         }));
+
+      it('should throw with descriptive error message when a pipe is passed to imports',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           @Pipe({name: 'somePipe'})
+           class SomePipe {
+           }
+           @NgModule({imports: [SomePipe]})
+           class ModuleWithImportedPipe {
+           }
+           expect(() => resolver.getNgModuleMetadata(ModuleWithImportedPipe))
+               .toThrowError(
+                   `Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'`);
+         }));
+
+      it('should throw with descriptive error message when a module is passed to declarations',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           @NgModule({})
+           class SomeModule {
+           }
+           @NgModule({declarations: [SomeModule]})
+           class ModuleWithDeclaredModule {
+           }
+           expect(() => resolver.getNgModuleMetadata(ModuleWithDeclaredModule))
+               .toThrowError(
+                   `Unexpected module 'SomeModule' declared by the module 'ModuleWithDeclaredModule'`);
+         }));
+
+      it('should throw with descriptive error message when null is passed to declarations',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           @NgModule({declarations: [null]})
+           class ModuleWithNullDeclared {
+           }
+           expect(() => resolver.getNgModuleMetadata(ModuleWithNullDeclared))
+               .toThrowError(
+                   `Unexpected value 'null' declared by the module 'ModuleWithNullDeclared'`);
+         }));
+
+      it('should throw with descriptive error message when null is passed to imports',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           @NgModule({imports: [null]})
+           class ModuleWithNullImported {
+           }
+           expect(() => resolver.getNgModuleMetadata(ModuleWithNullImported))
+               .toThrowError(
+                   `Unexpected value 'null' imported by the module 'ModuleWithNullImported'`);
+         }));
+
 
       it('should throw with descriptive error message when a param token of a dependency is undefined',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
