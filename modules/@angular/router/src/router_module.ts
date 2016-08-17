@@ -77,7 +77,7 @@ export const ROUTER_PROVIDERS: any[] = [
  * class Lazy {}
  * ```
  *
- * @experimental
+ * @stable
  */
 @NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
 export class RouterModule {

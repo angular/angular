@@ -252,12 +252,12 @@ export type ResolveData = {
 };
 
 /**
- * @experimental
+ * @stable
  */
 export type LoadChildrenCallback = () => Type<any>| Promise<Type<any>>| Observable<Type<any>>;
 
 /**
- * @experimental
+ * @stable
  */
 export type LoadChildren = string | LoadChildrenCallback;
 
