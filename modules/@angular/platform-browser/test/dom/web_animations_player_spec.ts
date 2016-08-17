@@ -128,5 +128,16 @@ export function main() {
       expect(captures2['finish'].length).toEqual(1);
       expect(captures2['cancel'].length).toEqual(0);
     });
+
+    it('should run the onStart method when started but only once', () => {
+      var calls = 0;
+      player.onStart(() => calls++);
+      expect(calls).toEqual(0);
+      player.play();
+      expect(calls).toEqual(1);
+      player.pause();
+      player.play();
+      expect(calls).toEqual(1);
+    });
   });
 }
