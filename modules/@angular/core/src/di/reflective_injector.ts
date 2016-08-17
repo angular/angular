@@ -456,13 +456,6 @@ export abstract class ReflectiveInjector implements Injector {
         ReflectiveProtoInjector.fromResolvedProviders(providers), parent);
   }
 
-  /**
-   * @deprecated
-   */
-  static fromResolvedBindings(providers: ResolvedReflectiveProvider[]): ReflectiveInjector {
-    return ReflectiveInjector.fromResolvedProviders(providers);
-  }
-
 
   /**
    * Parent of this injector.

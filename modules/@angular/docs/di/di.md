@@ -230,9 +230,9 @@ The `resolveAndCreate` and `resolveAndCreateChild` functions resolve passed-in b
 You can create an injector using a list of resolved bindings.
 
 ```
-var listOfResolvingBindings = Injector.resolve([Binding1, Binding2]);
-var inj = Injector.fromResolvedBindings(listOfResolvingBindings);
-inj.createChildFromResolvedBindings(listOfResolvedBindings);
+var listOfResolvingProviders = Injector.resolve([Provider11, Provider2]);
+var inj = Injector.fromResolvedProviders(listOfResolvingProviders);
+inj.createChildFromResolvedProviders(listOfResolvedProviders);
 ```
 
 
