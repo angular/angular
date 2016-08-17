@@ -21,7 +21,7 @@ import {flatten} from '../src/utils/collection';
  * A spy for {@link NgModuleFactoryLoader} that allows tests to simulate the loading of ng module
  * factories.
  *
- * @experimental
+ * @stable
  */
 @Injectable()
 export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
@@ -61,7 +61,7 @@ function setupTestingRouter(
  * });
  * ```
  *
- * @experimental
+ * @stable
  */
 @NgModule({
   exports: [RouterModule],

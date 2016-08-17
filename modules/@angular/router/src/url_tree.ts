@@ -154,7 +154,7 @@ export function mapChildrenIntoArray<T>(
 /**
  * Defines a way to serialize/deserialize a url tree.
  *
- * @experimental
+ * @stable
  */
 export abstract class UrlSerializer {
   /**
@@ -171,7 +171,7 @@ export abstract class UrlSerializer {
 /**
  * A default implementation of the serialization.
  *
- * @experimental
+ * @stable
  */
 export class DefaultUrlSerializer implements UrlSerializer {
   parse(url: string): UrlTree {

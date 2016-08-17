@@ -60,7 +60,7 @@ export declare type Data = {
     [name: string]: any;
 };
 
-/** @experimental */
+/** @stable */
 export declare class DefaultUrlSerializer implements UrlSerializer {
     parse(url: string): UrlTree;
     serialize(tree: UrlTree): string;
@@ -75,10 +75,10 @@ export interface ExtraOptions {
     useHash?: boolean;
 }
 
-/** @experimental */
+/** @stable */
 export declare type LoadChildren = string | LoadChildrenCallback;
 
-/** @experimental */
+/** @stable */
 export declare type LoadChildrenCallback = () => Type<any> | Promise<Type<any>> | Observable<Type<any>>;
 
 /** @stable */
@@ -126,18 +126,18 @@ export declare class NavigationStart {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare type Params = {
     [key: string]: any;
 };
 
-/** @experimental */
+/** @stable */
 export declare const PRIMARY_OUTLET: string;
 
 /** @stable */
 export declare function provideRoutes(routes: Routes): any;
 
-/** @experimental */
+/** @stable */
 export interface Resolve<T> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any;
 }
@@ -237,7 +237,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
 }
 
-/** @experimental */
+/** @stable */
 export declare class RouterModule {
     static forChild(routes: Routes): ModuleWithProviders;
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders;
@@ -300,7 +300,7 @@ export declare class UrlSegment {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class UrlSerializer {
     abstract parse(url: string): UrlTree;
     abstract serialize(tree: UrlTree): string;

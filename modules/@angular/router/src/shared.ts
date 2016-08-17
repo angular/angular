@@ -10,14 +10,14 @@
  * Name of the primary outlet.
  * @type {string}
  *
- * @experimental
+ * @stable
  */
 export const PRIMARY_OUTLET = 'primary';
 
 /**
  * A collection of parameters.
  *
- * @experimental
+ * @stable
  */
 export type Params = {
   [key: string]: any
