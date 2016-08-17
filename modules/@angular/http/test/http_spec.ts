@@ -7,12 +7,13 @@
  */
 
 import {Injector, ReflectiveInjector} from '@angular/core';
+import {TestBed, getTestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {zip} from 'rxjs/observable/zip';
 
-import {BaseRequestOptions, ConnectionBackend, HTTP_PROVIDERS, Http, JSONPBackend, JSONP_PROVIDERS, Jsonp, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../http';
+import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../http';
 import {Json} from '../src/facade/lang';
 import {stringToArrayBuffer} from '../src/http_utils';
 import {MockBackend, MockConnection} from '../testing/mock_backend';
@@ -21,32 +22,32 @@ export function main() {
   describe('injectables', () => {
     var url = 'http://foo.bar';
     var http: Http;
-    var parentInjector: ReflectiveInjector;
-    var childInjector: ReflectiveInjector;
+    var injector: Injector;
     var jsonpBackend: MockBackend;
     var xhrBackend: MockBackend;
     var jsonp: Jsonp;
 
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [HttpModule, JsonpModule],
+        providers: [
+          {provide: XHRBackend, useClass: MockBackend},
+          {provide: JSONPBackend, useClass: MockBackend}
+        ]
+      });
+      injector = getTestBed();
+    });
+
     it('should allow using jsonpInjectables and httpInjectables in same injector',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         parentInjector = ReflectiveInjector.resolveAndCreate([
-           {provide: XHRBackend, useClass: MockBackend},
-           {provide: JSONPBackend, useClass: MockBackend}
-         ]);
 
-         childInjector = parentInjector.resolveAndCreateChild([
-           HTTP_PROVIDERS, JSONP_PROVIDERS, {provide: XHRBackend, useClass: MockBackend},
-           {provide: JSONPBackend, useClass: MockBackend}
-         ]);
-
-         http = childInjector.get(Http);
-         jsonp = childInjector.get(Jsonp);
-         jsonpBackend = childInjector.get(JSONPBackend);
-         xhrBackend = childInjector.get(XHRBackend);
+         http = injector.get(Http);
+         jsonp = injector.get(Jsonp);
+         jsonpBackend = injector.get(JSONPBackend);
+         xhrBackend = injector.get(XHRBackend);
 
          var xhrCreatedConnections = 0;
          var jsonpCreatedConnections = 0;
-
 
          xhrBackend.connections.subscribe(() => {
            xhrCreatedConnections++;

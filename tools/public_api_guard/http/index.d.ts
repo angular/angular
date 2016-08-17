@@ -71,12 +71,6 @@ export declare class Http {
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response>;
 }
 
-/** @deprecated */
-export declare const HTTP_BINDINGS: any[];
-
-/** @deprecated */
-export declare const HTTP_PROVIDERS: any[];
-
 /** @experimental */
 export declare function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions): Http;
 
@@ -84,17 +78,11 @@ export declare function httpFactory(xhrBackend: XHRBackend, requestOptions: Requ
 export declare class HttpModule {
 }
 
-/** @deprecated */
-export declare const JSON_BINDINGS: any[];
-
 /** @experimental */
 export declare class Jsonp extends Http {
     constructor(backend: ConnectionBackend, defaultOptions: RequestOptions);
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response>;
 }
-
-/** @experimental */
-export declare const JSONP_PROVIDERS: any[];
 
 /** @experimental */
 export declare abstract class JSONPBackend extends ConnectionBackend {

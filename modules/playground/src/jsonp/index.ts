@@ -7,18 +7,13 @@
  */
 
 import {NgModule} from '@angular/core';
-import {JSONP_PROVIDERS} from '@angular/http';
+import {JsonpModule} from '@angular/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {JsonpCmp} from './app/jsonp_comp';
 
-@NgModule({
-  bootstrap: [JsonpCmp],
-  declarations: [JsonpCmp],
-  providers: [JSONP_PROVIDERS],
-  imports: [BrowserModule]
-})
+@NgModule({bootstrap: [JsonpCmp], declarations: [JsonpCmp], imports: [BrowserModule, JsonpModule]})
 class ExampleModule {
 }
 
