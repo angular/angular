@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {XHR} from '@angular/compiler/src/xhr';
+import {ResourceLoader} from '@angular/compiler/src/resource_loader';
 
 import {SpyObject, proxy} from '@angular/core/testing/testing_internal';
 
-export class SpyXHR extends SpyObject {
-  constructor() { super(XHR); }
+export class SpyResourceLoader extends SpyObject {
+  constructor() { super(ResourceLoader); }
 }

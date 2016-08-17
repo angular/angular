@@ -8,16 +8,16 @@
 
 import {BaseException} from '@angular/core';
 
-import {XHR} from '../index';
+import {ResourceLoader} from '../index';
 import {ListWrapper, Map} from '../src/facade/collection';
 import {isBlank, normalizeBlank} from '../src/facade/lang';
 
 
 /**
- * A mock implementation of {@link XHR} that allows outgoing requests to be mocked
+ * A mock implementation of {@link ResourceLoader} that allows outgoing requests to be mocked
  * and responded to within a single test, without going to the network.
  */
-export class MockXHR extends XHR {
+export class MockResourceLoader extends ResourceLoader {
   private _expectations: _Expectation[] = [];
   private _definitions = new Map<string, string>();
   private _requests: _PendingRequest[] = [];

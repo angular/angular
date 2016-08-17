@@ -14,7 +14,7 @@ import {isPresent, isBlank, global, setValueOnPath, DateWrapper} from '../src/fa
 import {BaseException} from '../src/facade/exceptions';
 import {SelectorMatcher, CssSelector} from '../compiler_private';
 import {Type} from '@angular/core';
-import {XHR} from '@angular/compiler';
+import {ResourceLoader} from '@angular/compiler';
 
 var parser: any /** TODO #9100 */ = null;
 var serializer: any /** TODO #9100 */ = null;
@@ -69,7 +69,7 @@ export class Parse5DomAdapter extends DomAdapter {
 
   logGroupEnd() {}
 
-  getXHR(): Type<XHR> { return XHR; }
+  getResourceLoader(): Type<ResourceLoader> { return ResourceLoader; }
 
   get attrToPropMap() { return _attrToPropMap; }
 

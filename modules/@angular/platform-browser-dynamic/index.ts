@@ -6,21 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {XHR, analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
+import {ResourceLoader, analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
 import {ApplicationRef, COMPILER_OPTIONS, CUSTOM_ELEMENTS_SCHEMA, CompilerFactory, CompilerOptions, ComponentRef, NgModule, PlatformRef, Provider, Type, createPlatformFactory} from '@angular/core';
 import {BrowserModule, WORKER_SCRIPT, WorkerAppModule, platformWorkerUi} from '@angular/platform-browser';
 
 import {Console} from './core_private';
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_providers';
-import {CachedXHR} from './src/xhr/xhr_cache';
-import {XHRImpl} from './src/xhr/xhr_impl';
+import {CachedResourceLoader} from './src/resource_loader/resource_loader_cache';
+import {ResourceLoaderImpl} from './src/resource_loader/resource_loader_impl';
 
 
 
 /**
  * @experimental
  */
-export const CACHED_TEMPLATE_PROVIDER: Provider[] = [{provide: XHR, useClass: CachedXHR}];
+export const RESOURCE_CACHE_PROVIDER: Provider[] =
+    [{provide: ResourceLoader, useClass: CachedResourceLoader}];
 
 /**
  * @experimental API related to bootstrapping are still under review.
@@ -46,12 +47,12 @@ export function bootstrapWorkerUi(
 /**
  * @experimental API related to bootstrapping are still under review.
  */
-export const platformWorkerAppDynamic =
-    createPlatformFactory(platformCoreDynamic, 'workerAppDynamic', [{
-                            provide: COMPILER_OPTIONS,
-                            useValue: {providers: [{provide: XHR, useClass: XHRImpl}]},
-                            multi: true
-                          }]);
+export const platformWorkerAppDynamic = createPlatformFactory(
+    platformCoreDynamic, 'workerAppDynamic', [{
+      provide: COMPILER_OPTIONS,
+      useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl}]},
+      multi: true
+    }]);
 
 function normalizeArray(arr: any[]): any[] {
   return arr ? arr : [];

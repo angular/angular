@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerConfig, XHR} from '@angular/compiler';
+import {CompilerConfig, ResourceLoader} from '@angular/compiler';
 import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, Injectable, Input, NgModule, Pipe} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -368,10 +368,11 @@ export function main() {
 
         describe('providers', () => {
           beforeEach(() => {
-            let xhrGet =
-                jasmine.createSpy('xhrGet').and.returnValue(Promise.resolve('Hello world!'));
+            let resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
+                                        .and.returnValue(Promise.resolve('Hello world!'));
             TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
-            TestBed.configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
+            TestBed.configureCompiler(
+                {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
           });
 
           it('should use set up providers', fakeAsync(() => {
@@ -480,10 +481,12 @@ export function main() {
       });
 
       describe('components', () => {
-        let xhrGet: jasmine.Spy;
+        let resourceLoaderGet: jasmine.Spy;
         beforeEach(() => {
-          xhrGet = jasmine.createSpy('xhrGet').and.returnValue(Promise.resolve('Hello world!'));
-          TestBed.configureCompiler({providers: [{provide: XHR, useValue: {get: xhrGet}}]});
+          resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
+                                  .and.returnValue(Promise.resolve('Hello world!'));
+          TestBed.configureCompiler(
+              {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
         });
 
         it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',

@@ -7,11 +7,11 @@
  */
 
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {XHRImpl} from '../../src/xhr/xhr_impl';
+import {ResourceLoaderImpl} from '../../src/resource_loader/resource_loader_impl';
 
 export function main() {
-  describe('XHRImpl', () => {
-    var xhr: XHRImpl;
+  describe('ResourceLoaderImpl', () => {
+    var resourceLoader: ResourceLoaderImpl;
 
     // TODO(juliemr): This file currently won't work with dart unit tests run using
     // exclusive it or describe (iit or ddescribe). This is because when
@@ -22,11 +22,11 @@ export function main() {
     var url200 = '/base/modules/@angular/platform-browser/test/browser/static_assets/200.html';
     var url404 = '/bad/path/404.html';
 
-    beforeEach(() => { xhr = new XHRImpl(); });
+    beforeEach(() => { resourceLoader = new ResourceLoaderImpl(); });
 
     it('should resolve the Promise with the file content on success',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         xhr.get(url200).then((text) => {
+         resourceLoader.get(url200).then((text) => {
            expect(text.trim()).toEqual('<p>hey</p>');
            async.done();
          });
@@ -34,7 +34,7 @@ export function main() {
 
     it('should reject the Promise on failure',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         xhr.get(url404).catch((e) => {
+         resourceLoader.get(url404).catch((e) => {
            expect(e).toEqual(`Failed to load ${url404}`);
            async.done();
            return null;

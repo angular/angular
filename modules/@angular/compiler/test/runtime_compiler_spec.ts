@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveResolver, XHR} from '@angular/compiler';
+import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
 import {MockDirectiveResolver} from '@angular/compiler/testing';
 import {Compiler, Component, ComponentFactory, Injectable, Injector, Input, NgModule, NgModuleFactory, Type} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
@@ -16,7 +16,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {ViewMetadata} from '../core_private';
 import {stringify} from '../src/facade/lang';
 
-import {SpyXHR} from './spies';
+import {SpyResourceLoader} from './spies';
 
 @Component({selector: 'child-cmp', template: 'childComp'})
 class ChildComp {
@@ -33,21 +33,23 @@ class SomeCompWithUrlTemplate {
 export function main() {
   describe('RuntimeCompiler', () => {
     let compiler: Compiler;
-    let xhr: SpyXHR;
+    let resourceLoader: SpyResourceLoader;
     let tcb: TestComponentBuilder;
     let dirResolver: MockDirectiveResolver;
     let injector: Injector;
 
-    beforeEach(
-        () => { TestBed.configureCompiler({providers: [{provide: XHR, useClass: SpyXHR}]}); });
+    beforeEach(() => {
+      TestBed.configureCompiler(
+          {providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]});
+    });
 
     beforeEach(fakeAsync(inject(
-        [Compiler, TestComponentBuilder, XHR, DirectiveResolver, Injector],
-        (_compiler: Compiler, _tcb: TestComponentBuilder, _xhr: SpyXHR,
+        [Compiler, TestComponentBuilder, ResourceLoader, DirectiveResolver, Injector],
+        (_compiler: Compiler, _tcb: TestComponentBuilder, _resourceLoader: SpyResourceLoader,
          _dirResolver: MockDirectiveResolver, _injector: Injector) => {
           compiler = _compiler;
           tcb = _tcb;
-          xhr = _xhr;
+          resourceLoader = _resourceLoader;
           dirResolver = _dirResolver;
           injector = _injector;
         })));
@@ -55,13 +57,13 @@ export function main() {
     describe('clearCacheFor', () => {
       it('should support changing the content of a template referenced via templateUrl',
          fakeAsync(() => {
-           xhr.spy('get').andCallFake(() => Promise.resolve('init'));
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve('init'));
            let compFixture =
                tcb.overrideView(SomeComp, new ViewMetadata({templateUrl: '/myComp.html'}))
                    .createFakeAsync(SomeComp);
            expect(compFixture.nativeElement).toHaveText('init');
 
-           xhr.spy('get').andCallFake(() => Promise.resolve('new content'));
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve('new content'));
            // Note: overrideView is calling .clearCacheFor...
            compFixture = tcb.overrideView(SomeComp, new ViewMetadata({templateUrl: '/myComp.html'}))
                              .createFakeAsync(SomeComp);
@@ -91,7 +93,7 @@ export function main() {
 
     describe('compileComponentSync', () => {
       it('should throw when using a templateUrl that has not been compiled before', () => {
-        xhr.spy('get').andCallFake(() => Promise.resolve(''));
+        resourceLoader.spy('get').andCallFake(() => Promise.resolve(''));
         expect(() => tcb.createSync(SomeCompWithUrlTemplate))
             .toThrowError(
                 `Can't compile synchronously as ${stringify(SomeCompWithUrlTemplate)} is still being loaded!`);
@@ -99,7 +101,7 @@ export function main() {
 
       it('should throw when using a templateUrl in a nested component that has not been compiled before',
          () => {
-           xhr.spy('get').andCallFake(() => Promise.resolve(''));
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve(''));
            let localTcb =
                tcb.overrideView(SomeComp, new ViewMetadata({template: '', directives: [ChildComp]}))
                    .overrideView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
@@ -110,7 +112,7 @@ export function main() {
 
       it('should allow to use templateUrl components that have been loaded before',
          fakeAsync(() => {
-           xhr.spy('get').andCallFake(() => Promise.resolve('hello'));
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve('hello'));
            tcb.createFakeAsync(SomeCompWithUrlTemplate);
            let compFixture = tcb.createSync(SomeCompWithUrlTemplate);
            expect(compFixture.nativeElement).toHaveText('hello');
@@ -126,7 +128,7 @@ export function main() {
            class SomeModule {
            }
 
-           xhr.spy('get').andCallFake(() => Promise.resolve('hello'));
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve('hello'));
            let ngModuleFactory: NgModuleFactory<any>;
            compiler.compileModuleAsync(SomeModule).then((f) => ngModuleFactory = f);
            tick();
@@ -141,7 +143,7 @@ export function main() {
         class SomeModule {
         }
 
-        xhr.spy('get').andCallFake(() => Promise.resolve(''));
+        resourceLoader.spy('get').andCallFake(() => Promise.resolve(''));
         expect(() => compiler.compileModuleSync(SomeModule))
             .toThrowError(
                 `Can't compile synchronously as ${stringify(SomeCompWithUrlTemplate)} is still being loaded!`);
@@ -153,7 +155,7 @@ export function main() {
            class SomeModule {
            }
 
-           xhr.spy('get').andCallFake(() => Promise.resolve(''));
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve(''));
            dirResolver.setView(SomeComp, new ViewMetadata({template: '', directives: [ChildComp]}));
            dirResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
            expect(() => compiler.compileModuleSync(SomeModule))
@@ -170,7 +172,7 @@ export function main() {
            class SomeModule {
            }
 
-           xhr.spy('get').andCallFake(() => Promise.resolve('hello'));
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve('hello'));
            compiler.compileModuleAsync(SomeModule);
            tick();
 

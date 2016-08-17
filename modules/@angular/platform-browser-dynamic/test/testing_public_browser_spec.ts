@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {XHR} from '@angular/compiler';
+import {ResourceLoader} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
-import {XHRImpl} from '../src/xhr/xhr_impl';
+import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 
 
 
@@ -46,12 +46,13 @@ export function main() {
 
       afterEach(() => { expect(actuallyDone).toEqual(true); });
 
-      it('should run async tests with XHRs', async(() => {
-           var xhr = new XHRImpl();
-           xhr.get('/base/modules/@angular/platform-browser/test/static_assets/test.html')
+      it('should run async tests with ResourceLoaders', async(() => {
+           var resourceLoader = new ResourceLoaderImpl();
+           resourceLoader
+               .get('/base/modules/@angular/platform-browser/test/static_assets/test.html')
                .then(() => { actuallyDone = true; });
          }),
-         10000);  // Long timeout here because this test makes an actual XHR.
+         10000);  // Long timeout here because this test makes an actual ResourceLoader.
     });
 
     describe('using the test injector with the inject helper', () => {
@@ -61,8 +62,10 @@ export function main() {
               {providers: [{provide: FancyService, useValue: new FancyService()}]});
         });
 
-        it('provides a real XHR instance',
-           inject([XHR], (xhr: XHR) => { expect(xhr instanceof XHRImpl).toBeTruthy(); }));
+        it('provides a real ResourceLoader instance',
+           inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
+             expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+           }));
 
         it('should allow the use of fakeAsync',
            fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
@@ -96,7 +99,7 @@ export function main() {
 
       var restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
-      it('should fail when an XHR fails', (done: any /** TODO #9100 */) => {
+      it('should fail when an ResourceLoader fails', (done: any /** TODO #9100 */) => {
         var itPromise = patchJasmineIt();
 
         it('should fail with an error from a promise', async(() => {
@@ -125,7 +128,8 @@ export function main() {
                  .toEqual('from external template\n');
            });
          }),
-         10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
+         10000);  // Long timeout here because this test makes an actual ResourceLoader, and is slow
+                  // on Edge.
     });
   });
 }

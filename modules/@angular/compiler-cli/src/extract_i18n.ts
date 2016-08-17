@@ -147,7 +147,7 @@ export class Extractor {
       options: tsc.AngularCompilerOptions, translationsFormat: string, program: ts.Program,
       compilerHost: ts.CompilerHost, htmlParser: compiler.i18n.HtmlParser,
       reflectorHostContext?: ReflectorHostContext): Extractor {
-    const xhr: compiler.XHR = {
+    const resourceLoader: compiler.ResourceLoader = {
       get: (s: string) => {
         if (!compilerHost.fileExists(s)) {
           // TODO: We should really have a test for error cases like this!
@@ -169,7 +169,7 @@ export class Extractor {
       useJit: false
     });
 
-    const normalizer = new DirectiveNormalizer(xhr, urlResolver, htmlParser, config);
+    const normalizer = new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
     const expressionParser = new Parser(new Lexer());
     const elementSchemaRegistry = new DomElementSchemaRegistry();
     const console = new Console();

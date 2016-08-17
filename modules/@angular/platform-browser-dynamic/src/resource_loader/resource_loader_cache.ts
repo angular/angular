@@ -6,25 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {XHR} from '@angular/compiler';
+import {ResourceLoader} from '@angular/compiler';
 import {BaseException} from '@angular/core';
 import {global} from '../facade/lang';
 
 /**
- * An implementation of XHR that uses a template cache to avoid doing an actual
- * XHR.
+ * An implementation of ResourceLoader that uses a template cache to avoid doing an actual
+ * ResourceLoader.
  *
  * The template cache needs to be built and loaded into window.$templateCache
  * via a separate mechanism.
  */
-export class CachedXHR extends XHR {
+export class CachedResourceLoader extends ResourceLoader {
   private _cache: {[url: string]: string};
 
   constructor() {
     super();
     this._cache = (<any>global).$templateCache;
     if (this._cache == null) {
-      throw new BaseException('CachedXHR: Template cache was not found in $templateCache.');
+      throw new BaseException(
+          'CachedResourceLoader: Template cache was not found in $templateCache.');
     }
   }
 
@@ -32,7 +33,8 @@ export class CachedXHR extends XHR {
     if (this._cache.hasOwnProperty(url)) {
       return Promise.resolve(this._cache[url]);
     } else {
-      return <Promise<any>>Promise.reject('CachedXHR: Did not find cached template for ' + url);
+      return <Promise<any>>Promise.reject(
+          'CachedResourceLoader: Did not find cached template for ' + url);
     }
   }
 }
