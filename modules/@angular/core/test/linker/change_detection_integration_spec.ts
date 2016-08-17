@@ -8,8 +8,8 @@
 
 import {AsyncPipe, NgFor} from '@angular/common';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
-import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/test/test_bindings';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
+import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentMetadata, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewContainerRef, WrappedValue, forwardRef} from '@angular/core';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
 import {ViewMetadata} from '@angular/core/src/metadata/view';
