@@ -97,6 +97,9 @@ export function main() {
           expect(pipe.transform(date, 'mediumTime')).toEqual('9:03:01 AM');
           expect(pipe.transform(date, 'shortTime')).toEqual('9:03 AM');
         });
+
+        it('should remove bidi control characters',
+           () => { expect(pipe.transform(date, 'MM/dd/yyyy').length).toEqual(10); });
       });
     }
   });
