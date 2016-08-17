@@ -12,6 +12,7 @@ export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
 
 /** @experimental */
 export declare class BrowserModule {
+    constructor(parentModule: BrowserModule);
 }
 
 /** @stable */
