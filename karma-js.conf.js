@@ -13,7 +13,7 @@ module.exports = function(config) {
       // Loaded through the System loader, in `test-main.js`.
       {pattern: 'dist/all/@angular/**/*.js', included: false, watched: true},
 
-      'node_modules/es6-shim/es6-shim.js',
+      'node_modules/core-js/client/core.js',
       // include Angular v1 for upgrade module testing
       'node_modules/angular/angular.min.js',
 

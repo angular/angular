@@ -2886,7 +2886,8 @@
         },
         "lodash": {
           "version": "4.14.2",
-          "from": "lodash@>=4.0.0 <5.0.0"
+          "from": "lodash@4.14.2",
+          "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.14.2.tgz"
         },
         "readable-stream": {
           "version": "2.0.6",
@@ -2958,9 +2959,9 @@
       "resolved": "https://registry.npmjs.org/copy-dereference/-/copy-dereference-1.0.0.tgz"
     },
     "core-js": {
-      "version": "2.4.0",
-      "from": "core-js@>=2.1.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.4.0.tgz"
+      "version": "2.4.1",
+      "from": "core-js@latest",
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.4.1.tgz"
     },
     "core-object": {
       "version": "0.0.2",
@@ -3337,11 +3338,6 @@
       "version": "0.17.9",
       "from": "es6-module-loader@>=0.17.4 <0.18.0",
       "resolved": "https://registry.npmjs.org/es6-module-loader/-/es6-module-loader-0.17.9.tgz"
-    },
-    "es6-shim": {
-      "version": "0.35.0",
-      "from": "es6-shim@0.35.0",
-      "resolved": "https://registry.npmjs.org/es6-shim/-/es6-shim-0.35.0.tgz"
     },
     "es6-symbol": {
       "version": "3.0.2",

@@ -9,7 +9,7 @@
 
 (function(global: any /** TODO #9100 */) {
 
-  writeScriptTag('/all/playground/vendor/es6-shim.js');
+  writeScriptTag('/all/playground/vendor/core.js');
   writeScriptTag('/all/playground/vendor/zone.js');
   writeScriptTag('/all/playground/vendor/long-stack-trace-zone.js');
   writeScriptTag('/all/playground/vendor/system.src.js');
