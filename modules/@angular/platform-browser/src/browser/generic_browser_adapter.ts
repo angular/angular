@@ -14,6 +14,9 @@ import {isFunction, isPresent} from '../facade/lang';
 
 /**
  * Provides DOM operations in any browser environment.
+ *
+ * @security Tread carefully! Interacting with the DOM directly is dangerous and
+ * can introduce XSS risks.
  */
 export abstract class GenericBrowserDomAdapter extends DomAdapter {
   private _animationPrefix: string = null;
