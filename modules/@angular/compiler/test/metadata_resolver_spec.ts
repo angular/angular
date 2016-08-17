@@ -7,6 +7,7 @@
  */
 
 import {CompilerConfig} from '@angular/compiler/src/config';
+import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation} from '@angular/core';
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {TestBed} from '@angular/core/testing';
@@ -17,7 +18,6 @@ import {stringify} from '../src/facade/lang';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
-import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('CompileMetadataResolver', () => {
