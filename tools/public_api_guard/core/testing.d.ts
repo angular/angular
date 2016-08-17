@@ -83,6 +83,7 @@ export declare class TestBed implements Injector {
     }): typeof TestBed;
     static configureTestingModule(moduleDef: TestModuleMetadata): typeof TestBed;
     static createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    static get(token: any, notFoundValue?: any): any;
     /** @experimental */ static initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): TestBed;
     static overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>): typeof TestBed;
     static overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): typeof TestBed;
