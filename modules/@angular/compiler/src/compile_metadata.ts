@@ -87,6 +87,10 @@ export class CompileAnimationGroupMetadata extends CompileAnimationWithStepsMeta
   constructor(steps: CompileAnimationMetadata[] = null) { super(steps); }
 }
 
+
+const identifierHashKey = '__identifierHashKey__';
+let nextAssetCacheKeyId = 1;
+
 export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier {
   runtime: any;
   name: string;
@@ -113,7 +117,14 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
     if (this._assetCacheKey === UNDEFINED) {
       if (isPresent(this.moduleUrl) && isPresent(getUrlScheme(this.moduleUrl))) {
         var uri = reflector.importUri({'filePath': this.moduleUrl, 'name': this.name});
-        this._assetCacheKey = `${this.name}|${uri}`;
+        if (this.runtime) {
+          if (!this.runtime[identifierHashKey]) {
+            this.runtime[identifierHashKey] = ++nextAssetCacheKeyId;
+          }
+          this._assetCacheKey = `${this.name}|${uri}|${this.runtime[identifierHashKey]}`;
+        } else {
+          this._assetCacheKey = `${this.name}|${uri}`;
+        }
       } else {
         this._assetCacheKey = null;
       }
