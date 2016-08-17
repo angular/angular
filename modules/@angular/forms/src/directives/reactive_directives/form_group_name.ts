@@ -68,7 +68,7 @@ export const formGroupNameProvider: any = {
  * This example syncs the form group for the user's name. The value and validation state of
  * this group can be accessed separately from the overall form.
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: '[formGroupName]', providers: [formGroupNameProvider]})
 export class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
@@ -131,7 +131,7 @@ export const formArrayNameProvider: any = {
  * }
  * ```
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: '[formArrayName]', providers: [formArrayNameProvider]})
 export class FormArrayName extends ControlContainer implements OnInit, OnDestroy {

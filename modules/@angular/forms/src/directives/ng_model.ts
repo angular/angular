@@ -49,7 +49,7 @@ const resolvedPromise = Promise.resolve(null);
  * }
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',

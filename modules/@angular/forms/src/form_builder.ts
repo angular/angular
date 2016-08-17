@@ -53,7 +53,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
  * }
  * ```
  *
- * @experimental
+ * @stable
  */
 @Injectable()
 export class FormBuilder {

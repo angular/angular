@@ -16,19 +16,19 @@ import {FormBuilder} from './form_builder';
 
 /**
  * Shorthand set of providers used for building Angular forms.
- * @experimental
+ * @stable
  */
 export const FORM_PROVIDERS: Type<any>[] = [RadioControlRegistry];
 
 /**
  * Shorthand set of providers used for building reactive Angular forms.
- * @experimental
+ * @stable
  */
 export const REACTIVE_FORM_PROVIDERS: Type<any>[] = [FormBuilder, RadioControlRegistry];
 
 /**
  * The ng module for forms.
- * @experimental
+ * @stable
  */
 @NgModule({
   declarations: TEMPLATE_DRIVEN_DIRECTIVES,
@@ -40,7 +40,7 @@ export class FormsModule {
 
 /**
  * The ng module for reactive forms.
- * @experimental
+ * @stable
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],

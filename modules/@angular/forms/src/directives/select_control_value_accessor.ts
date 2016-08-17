@@ -37,7 +37,7 @@ function _extractId(valueString: string): string {
  * https://bugzilla.mozilla.org/show_bug.cgi?id=1024350
  * https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector:
@@ -100,7 +100,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
  * </select>
  * ```
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: 'option'})
 export class NgSelectOption implements OnDestroy {
