@@ -6,38 +6,43 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor} from '@angular/common';
-import {Component, ContentChildren, Directive, Inject, QueryList, asNativeElements, forwardRef} from '@angular/core';
-import {AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {CommonModule} from '@angular/common';
+import {Component, ContentChildren, Directive, Inject, NgModule, QueryList, asNativeElements, forwardRef} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('forwardRef integration', function() {
-    it('should instantiate components which are declared using forwardRef',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.createAsync(App).then((tc) => {
-               tc.detectChanges();
-               expect(asNativeElements(tc.debugElement.children)).toHaveText('frame(lock)');
-               async.done();
-             });
-           }));
+    beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
+
+    it('should instantiate components which are declared using forwardRef', () => {
+      const a = TestBed.createComponent(App);
+      a.detectChanges();
+      expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
+      expect(TestBed.get(ModuleFrame)).toBeDefined();
+    });
   });
+}
+
+@NgModule({
+  imports: [CommonModule],
+  providers: [forwardRef(() => ModuleFrame)],
+  declarations: [forwardRef(() => Door), forwardRef(() => Lock)],
+  exports: [forwardRef(() => Door), forwardRef(() => Lock)]
+})
+class Module {
 }
 
 @Component({
   selector: 'app',
   viewProviders: [forwardRef(() => Frame)],
   template: `<door><lock></lock></door>`,
-  directives: [forwardRef(() => Door), forwardRef(() => Lock)],
 })
 class App {
 }
 
 @Component({
   selector: 'lock',
-  directives: [NgFor],
   template: `{{frame.name}}(<span *ngFor="let  lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
@@ -49,6 +54,10 @@ class Door {
 
 class Frame {
   name: string = 'frame';
+}
+
+class ModuleFrame {
+  name: string = 'moduleFram';
 }
 
 @Directive({selector: 'lock'})
