@@ -10,7 +10,7 @@ import {AnimationMetadata, animate, group, sequence, style, transition, trigger}
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {StringMapWrapper} from '../../../platform-browser-dynamic/src/facade/collection';
-import {AnimationCompiler, CompiledAnimation} from '../../src/animation/animation_compiler';
+import {AnimationCompiler, CompiledAnimationTriggerResult} from '../../src/animation/animation_compiler';
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
 
@@ -22,9 +22,11 @@ export function main() {
 
     var compiler = new AnimationCompiler();
 
-    var compileAnimations = (component: CompileDirectiveMetadata): CompiledAnimation => {
-      return compiler.compileComponent(component, [])[0];
-    };
+    var compileAnimations =
+        (component: CompileDirectiveMetadata): CompiledAnimationTriggerResult => {
+          var result = compiler.compileComponent(component, []);
+          return result.triggers[0];
+        };
 
     var compileTriggers = (input: any[]) => {
       var entries: CompileAnimationEntryMetadata[] = input.map(entry => {

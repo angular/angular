@@ -846,37 +846,6 @@ function declareTests({useJit}: {useJit: boolean}) {
                      });
                })));
       });
-
-      describe('[ngClass]', () => {
-        it('should persist ngClass class values when a remove element animation is active',
-           inject(
-               [TestComponentBuilder, AnimationDriver],
-               fakeAsync(
-                   (tcb: TestComponentBuilder, driver: InnerContentTrackingAnimationDriver) => {
-                     makeAnimationCmp(
-                         tcb, `<div [ngClass]="exp2" *ngIf="exp" @trigger></div>`,
-                         [
-                           trigger('trigger', [transition('* => void', [animate(1000)])]),
-                         ],
-                         (fixture: any /** TODO #9100 */) => {
-                           var cmp = fixture.debugElement.componentInstance;
-                           cmp.exp = true;
-                           cmp.exp2 = 'blue';
-                           fixture.detectChanges();
-                           flushMicrotasks();
-
-                           expect(driver.log.length).toEqual(0);
-
-                           cmp.exp = false;
-                           fixture.detectChanges();
-                           flushMicrotasks();
-
-                           var animation = driver.log.pop();
-                           var element = animation['element'];
-                           (<any>expect(element)).toHaveCssClass('blue');
-                         });
-                   })));
-      });
     });
 
     describe('DOM order tracking', () => {
@@ -1005,6 +974,312 @@ function declareTests({useJit}: {useJit: boolean}) {
              })));
     });
 
+    describe('animation output events', () => {
+      it('should fire the associated animation output expression when the animation starts even if no animation is fired',
+         () => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+              <div [@trigger]="exp" (@trigger.start)="callback($event)"></div>
+            `,
+               animations: [
+                 trigger('trigger', [transition('one => two', [animate(1000)])]),
+               ]
+             }
+           });
+
+           inject([AnimationDriver], (driver: AnimationDriver) => {
+             let fixture = TestBed.createComponent(DummyIfCmp);
+             var isAnimationRunning = false;
+             var calls = 0;
+             var cmp = fixture.debugElement.componentInstance;
+             cmp.callback = (e: any) => {
+               isAnimationRunning = e['running'];
+               calls++;
+             };
+
+             cmp.exp = 'one';
+             fixture.detectChanges();
+
+             expect(calls).toEqual(1);
+             expect(isAnimationRunning).toEqual(false);
+
+             cmp.exp = 'two';
+             fixture.detectChanges();
+
+             expect(calls).toEqual(2);
+             expect(isAnimationRunning).toEqual(true);
+           })();
+         });
+
+      it('should fire the associated animation output expression when the animation ends even if no animation is fired',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+              <div [@trigger]="exp" (@trigger.done)="callback($event)"></div>
+            `,
+               animations: [
+                 trigger('trigger', [transition('one => two', [animate(1000)])]),
+               ]
+             }
+           });
+
+           inject([AnimationDriver], (driver: InnerContentTrackingAnimationDriver) => {
+             let fixture = TestBed.createComponent(DummyIfCmp);
+             var isAnimationRunning = false;
+             var calls = 0;
+             var cmp = fixture.debugElement.componentInstance;
+             cmp.callback = (e: any) => {
+               isAnimationRunning = e['running'];
+               calls++;
+             };
+             cmp.exp = 'one';
+             fixture.detectChanges();
+
+             expect(calls).toEqual(0);
+             flushMicrotasks();
+
+             expect(calls).toEqual(1);
+             expect(isAnimationRunning).toEqual(false);
+
+             cmp.exp = 'two';
+             fixture.detectChanges();
+
+             expect(calls).toEqual(1);
+
+             var player = driver.log.shift()['player'];
+             player.finish();
+
+             expect(calls).toEqual(2);
+             expect(isAnimationRunning).toEqual(true);
+           })();
+         }));
+
+      it('should emit the `fromState` and `toState` within the event data when a callback is fired',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+              <div [@trigger]="exp" (@trigger.start)="callback($event)"></div>
+            `,
+               animations: [
+                 trigger('trigger', [transition('one => two', [animate(1000)])]),
+               ]
+             }
+           });
+
+           inject([AnimationDriver], (driver: InnerContentTrackingAnimationDriver) => {
+             let fixture = TestBed.createComponent(DummyIfCmp);
+             var eventData: any = {};
+             var cmp = fixture.debugElement.componentInstance;
+             cmp.callback = (e: any) => { eventData = e; };
+             cmp.exp = 'one';
+             fixture.detectChanges();
+             flushMicrotasks();
+             expect(eventData['fromState']).toEqual('void');
+             expect(eventData['toState']).toEqual('one');
+
+             cmp.exp = 'two';
+             fixture.detectChanges();
+             flushMicrotasks();
+             expect(eventData['fromState']).toEqual('one');
+             expect(eventData['toState']).toEqual('two');
+           })();
+         }));
+
+      it('should throw an error if an animation output is referenced is not defined within the component',
+         () => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+              <div [@something]="exp" (@something.done)="callback($event)"></div>
+            `
+             }
+           });
+
+           var message = '';
+           try {
+             let fixture = TestBed.createComponent(DummyIfCmp);
+             fixture.detectChanges();
+           } catch (e) {
+             message = e.message;
+           }
+
+           expect(message).toMatch(
+               /- Couldn't find the corresponding animation trigger definition for \(@something\)/);
+         });
+
+      it('should throw an error if an animation output is referenced that is not bound to as a property on the same element',
+         () => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+              <div (@trigger.done)="callback($event)"></div>
+            `,
+               animations: [trigger('trigger', [transition('one => two', [animate(1000)])])]
+             }
+           });
+
+           var message = '';
+           try {
+             let fixture = TestBed.createComponent(DummyIfCmp);
+             fixture.detectChanges();
+           } catch (e) {
+             message = e.message;
+           }
+
+           expect(message).toMatch(
+               /- Unable to listen on \(@trigger.done\) because the animation trigger \[@trigger\] isn't being used on the same element/);
+         });
+
+      it('should throw an error if an unsupported animation output phase name is used', () => {
+        TestBed.overrideComponent(DummyIfCmp, {
+          set: {
+            template: `
+              <div (@trigger.jump)="callback($event)"></div>
+            `,
+            animations: [trigger('trigger', [transition('one => two', [animate(1000)])])]
+          }
+        });
+
+        var message = '';
+        try {
+          let fixture = TestBed.createComponent(DummyIfCmp);
+          fixture.detectChanges();
+        } catch (e) {
+          message = e.message;
+        }
+
+        expect(message).toMatch(
+            /The provided animation output phase value "jump" for "@trigger" is not supported \(use start or done\)/);
+      });
+
+      it('should throw an error if the animation output event phase value is missing', () => {
+        TestBed.overrideComponent(DummyIfCmp, {
+          set: {
+            template: `
+              <div (@trigger)="callback($event)"></div>
+            `,
+            animations: [trigger('trigger', [transition('one => two', [animate(1000)])])]
+          }
+        });
+
+        var message = '';
+        try {
+          let fixture = TestBed.createComponent(DummyIfCmp);
+          fixture.detectChanges();
+        } catch (e) {
+          message = e.message;
+        }
+
+        expect(message).toMatch(
+            /The animation trigger output event \(@trigger\) is missing its phase value name \(start or done are currently supported\)/);
+      });
+
+      it('should throw an error when an animation output is referenced but the host-level animation binding is missing',
+         () => {
+           TestBed.overrideComponent(
+               DummyLoadingCmp, {set: {host: {'(@trigger.done)': 'callback($event)'}}});
+
+           var message = '';
+           try {
+             let fixture = TestBed.createComponent(DummyLoadingCmp);
+             fixture.detectChanges();
+           } catch (e) {
+             message = e.message;
+           }
+
+           expect(message).toMatch(
+               /Couldn't find the corresponding host-level animation trigger definition for \(@trigger\)/);
+         });
+
+      it('should allow host and element-level animation bindings to be defined on the same tag/component',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyLoadingCmp, {
+             set: {
+               host: {
+                 '[attr.title]': 'exp',
+                 '[@loading]': 'exp',
+                 '(@loading.start)': 'callback($event)'
+               },
+               animations: [trigger('loading', [transition('* => *', [animate(1000)])])]
+             }
+           });
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <dummy-loading-cmp [@trigger]="exp" (@trigger.start)="callback($event)"></dummy-loading-cmp>
+            `,
+               animations: [trigger('trigger', [transition('* => *', [animate(1000)])])]
+             }
+           });
+
+           inject([AnimationDriver], (driver: InnerContentTrackingAnimationDriver) => {
+             var ifCalls = 0;
+             var loadingCalls = 0;
+             let fixture = TestBed.createComponent(DummyIfCmp);
+             var ifCmp = fixture.debugElement.componentInstance;
+             var loadingCmp = fixture.debugElement.childNodes[1].componentInstance;
+
+             ifCmp.callback = (e: any) => ifCalls++;
+             loadingCmp.callback = (e: any) => loadingCalls++;
+
+             expect(ifCalls).toEqual(0);
+             expect(loadingCalls).toEqual(0);
+
+             ifCmp.exp = 'one';
+             loadingCmp.exp = 'one';
+             fixture.detectChanges();
+             flushMicrotasks();
+
+             expect(ifCalls).toEqual(1);
+             expect(loadingCalls).toEqual(1);
+
+             ifCmp.exp = 'two';
+             loadingCmp.exp = 'two';
+             fixture.detectChanges();
+             flushMicrotasks();
+
+             expect(ifCalls).toEqual(2);
+             expect(loadingCalls).toEqual(2);
+           })();
+         }));
+    });
+
+    describe('ng directives', () => {
+      describe('[ngClass]', () => {
+        it('should persist ngClass class values when a remove element animation is active',
+           inject(
+               [TestComponentBuilder, AnimationDriver],
+               fakeAsync(
+                   (tcb: TestComponentBuilder, driver: InnerContentTrackingAnimationDriver) => {
+                     makeAnimationCmp(
+                         tcb, `<div [ngClass]="exp2" *ngIf="exp" @trigger></div>`,
+                         [
+                           trigger('trigger', [transition('* => void', [animate(1000)])]),
+                         ],
+                         (fixture: any /** TODO #9100 */) => {
+                           var cmp = fixture.debugElement.componentInstance;
+                           cmp.exp = true;
+                           cmp.exp2 = 'blue';
+                           fixture.detectChanges();
+                           flushMicrotasks();
+
+                           expect(driver.log.length).toEqual(0);
+
+                           cmp.exp = false;
+                           fixture.detectChanges();
+                           flushMicrotasks();
+
+                           var animation = driver.log.pop();
+                           var element = animation['element'];
+                           (<any>expect(element)).toHaveCssClass('blue');
+                         });
+                   })));
+      });
+    });
+
     describe('animation states', () => {
       it('should throw an error when an animation is referenced that isn\'t defined within the component annotation',
          inject(
@@ -1020,7 +1295,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                      const message = e.message;
                      expect(message).toMatch(
                          /Animation parsing for DummyIfCmp has failed due to the following errors:/);
-                     expect(message).toMatch(/- couldn't find an animation entry for status/);
+                     expect(message).toMatch(/- Couldn't find an animation entry for status/);
                    });
              })));
 
@@ -1057,7 +1332,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              failureMessage = e.message;
            }
 
-           expect(failureMessage).toMatch(/- couldn't find an animation entry for loading/);
+           expect(failureMessage).toMatch(/- Couldn't find an animation entry for loading/);
          });
 
       it('should retain the destination animation state styles once the animation is complete',
@@ -1387,10 +1662,11 @@ class DummyIfCmp {
   exp = false;
   exp2 = false;
   items = [0, 1, 2, 3, 4];
+  callback: Function = () => {};
 }
 
 @Component({
-  selector: 'if-cmp',
+  selector: 'dummy-loading-cmp',
   host: {'[@loading]': 'exp'},
   directives: [NgIf],
   animations: [trigger('loading', [])],
@@ -1400,4 +1676,21 @@ class DummyIfCmp {
 })
 class DummyLoadingCmp {
   exp = false;
+  callback = () => {};
+}
+
+@Component({
+  selector: 'if-cmp',
+  host: {
+    '(@loading.start)': 'callback($event,"start")',
+    '(@loading.done)': 'callback($event,"done")'
+  },
+  directives: [NgIf],
+  template: `
+    <div>loading...</div>
+  `
+})
+class BrokenDummyLoadingCmp {
+  exp = false;
+  callback = () => {};
 }
