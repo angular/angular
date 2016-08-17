@@ -50,8 +50,6 @@ export class WorkerDomAdapter extends DomAdapter {
   getProperty(el: Element, name: string): any { throw 'not implemented'; }
   invoke(el: Element, methodName: string, args: any[]): any { throw 'not implemented'; }
 
-  getResourceLoader(): Type<any> { throw 'not implemented'; }
-
   get attrToPropMap(): {[key: string]: string} { throw 'not implemented'; }
   set attrToPropMap(value: {[key: string]: string}) { throw 'not implemented'; }
 

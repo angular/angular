@@ -25,14 +25,6 @@ export function _keyValueDiffersFactory() {
 }
 
 /**
- * A default set of providers which should be included in any Angular
- * application, regardless of the platform it runs onto.
- *
- * @deprecated Include `ApplicationModule` instead.
- */
-export const APPLICATION_COMMON_PROVIDERS: Array<Type<any>|{[k: string]: any}|any[]> = [];
-
-/**
  * This module includes the providers of @angular/core that are needed
  * to bootstrap components via `ApplicationRef`.
  *
