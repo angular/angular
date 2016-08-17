@@ -127,11 +127,6 @@ export declare const APP_ID: any;
 /** @experimental */
 export declare const APP_INITIALIZER: any;
 
-/** @deprecated */
-export declare const APPLICATION_COMMON_PROVIDERS: Array<Type<any> | {
-    [k: string]: any;
-} | any[]>;
-
 /** @experimental */
 export declare class ApplicationInitStatus {
     done: boolean;

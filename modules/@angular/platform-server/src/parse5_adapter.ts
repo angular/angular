@@ -69,8 +69,6 @@ export class Parse5DomAdapter extends DomAdapter {
 
   logGroupEnd() {}
 
-  getResourceLoader(): Type<ResourceLoader> { return ResourceLoader; }
-
   get attrToPropMap() { return _attrToPropMap; }
 
   query(selector: any /** TODO #9100 */) { throw _notImplemented('query'); }

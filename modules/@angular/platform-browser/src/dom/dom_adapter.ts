@@ -42,9 +42,6 @@ export abstract class DomAdapter {
   abstract logGroup(error: any /** TODO #9100 */): any /** TODO #9100 */;
   abstract logGroupEnd(): any /** TODO #9100 */;
 
-  /** @deprecated */
-  getResourceLoader(): Type<any> { return this.resourceLoaderType; }
-
   /**
    * Maps attribute names to their corresponding property names for cases
    * where attribute name doesn't match property name.

@@ -25,7 +25,7 @@ export * from './src/testability/testability';
 export * from './src/change_detection';
 export * from './src/platform_core_providers';
 export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID} from './src/i18n/tokens';
-export {APPLICATION_COMMON_PROVIDERS, ApplicationModule} from './src/application_module';
+export {ApplicationModule} from './src/application_module';
 export {wtfCreateScope, wtfLeave, wtfStartTimeRange, wtfEndTimeRange, WtfScopeFn} from './src/profile/profile';
 
 export {Type} from './src/type';

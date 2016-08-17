@@ -249,19 +249,10 @@ export class PlatformRef_ extends PlatformRef {
 
   constructor(private _injector: Injector) { super(); }
 
-  /**
-   * @deprecated
-   */
-  registerDisposeListener(dispose: () => void): void { this.onDestroy(dispose); }
-
   onDestroy(callback: () => void): void { this._destroyListeners.push(callback); }
 
   get injector(): Injector { return this._injector; }
 
-  /**
-   * @deprecated
-   */
-  get disposed() { return this.destroyed; }
   get destroyed() { return this._destroyed; }
 
   destroy() {
@@ -272,11 +263,6 @@ export class PlatformRef_ extends PlatformRef {
     this._destroyListeners.forEach((dispose) => dispose());
     this._destroyed = true;
   }
-
-  /**
-   * @deprecated
-   */
-  dispose(): void { this.destroy(); }
 
   bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>> {
     return this._bootstrapModuleFactoryWithZone(moduleFactory, null);
