@@ -19,7 +19,7 @@ import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AUTO_STYLE, AnimationEntryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {isArray, isPresent} from '../../src/facade/lang';
-import {TestBed, fakeAsync, flushMicrotasks, tick} from '../../testing';
+import {TestBed, async, fakeAsync, flushMicrotasks, tick} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 import {AsyncTestCompleter, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
@@ -32,8 +32,10 @@ function declareTests({useJit}: {useJit: boolean}) {
   describe('animation tests', function() {
     beforeEachProviders(() => {
       TestBed.configureCompiler({useJit: useJit});
-      TestBed.configureTestingModule(
-          {providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]});
+      TestBed.configureTestingModule({
+        declarations: [DummyLoadingCmp, DummyIfCmp],
+        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]
+      });
     });
 
     var makeAnimationCmp =
@@ -1043,6 +1045,21 @@ function declareTests({useJit}: {useJit: boolean}) {
                tick();
              })));
 
+
+      it('should throw an error if a host-level referenced animation is not defined within the component',
+         () => {
+           TestBed.overrideComponent(DummyLoadingCmp, {set: {animations: []}});
+
+           var failureMessage = '';
+           try {
+             inject([AnimationDriver], (driver: AnimationDriver) => {})();
+           } catch (e) {
+             failureMessage = e.message;
+           }
+
+           expect(failureMessage).toMatch(/- couldn't find an animation entry for loading/);
+         });
+
       it('should retain the destination animation state styles once the animation is complete',
          inject(
              [TestComponentBuilder, AnimationDriver],
@@ -1361,6 +1378,7 @@ class InnerContentTrackingAnimationPlayer extends MockAnimationPlayer {
 @Component({
   selector: 'if-cmp',
   directives: [NgIf],
+  animations: [trigger('myAnimation', [])],
   template: `
     <div *ngIf="exp" [@myAnimation]="exp"></div>
   `
@@ -1375,6 +1393,7 @@ class DummyIfCmp {
   selector: 'if-cmp',
   host: {'[@loading]': 'exp'},
   directives: [NgIf],
+  animations: [trigger('loading', [])],
   template: `
     <div>loading...</div>
   `
