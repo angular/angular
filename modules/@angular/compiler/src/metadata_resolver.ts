@@ -255,7 +255,12 @@ export class CompileMetadataResolver {
             }
           }
           if (importedModuleType) {
-            importedModules.push(this.getNgModuleMetadata(importedModuleType, false));
+            let importedMeta = this.getNgModuleMetadata(importedModuleType, false);
+            if (importedMeta === null) {
+              throw new BaseException(
+                  `Unexpected ${this._getTypeDescriptor(importedType)} '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`);
+            }
+            importedModules.push(importedMeta);
           } else {
             throw new BaseException(
                 `Unexpected value '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`);
@@ -280,7 +285,7 @@ export class CompileMetadataResolver {
             exportedModules.push(exportedModuleMeta);
           } else {
             throw new BaseException(
-                `Unexpected value '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`);
+                `Unexpected ${this._getTypeDescriptor(exportedType)} '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`);
           }
         });
       }
@@ -305,7 +310,7 @@ export class CompileMetadataResolver {
                 declaredPipeMeta, moduleType, transitiveModule, declaredPipes, true);
           } else {
             throw new BaseException(
-                `Unexpected value '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`);
+                `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`);
           }
         });
       }
@@ -395,6 +400,20 @@ export class CompileMetadataResolver {
     // are considered as well!
     moduleMeta.declaredDirectives.forEach(
         (dirMeta) => { this._getTransitiveViewDirectivesAndPipes(dirMeta, moduleMeta); });
+  }
+
+  private _getTypeDescriptor(type: Type<any>): string {
+    if (this._directiveResolver.resolve(type, false) !== null) {
+      return 'directive';
+    } else if (this._pipeResolver.resolve(type, false) !== null) {
+      return 'pipe';
+    } else if (this._ngModuleResolver.resolve(type, false) !== null) {
+      return 'module';
+    } else if ((type as any).provide) {
+      return 'provider';
+    } else {
+      return 'value';
+    }
   }
 
   private _addTypeToModule(type: Type<any>, moduleType: Type<any>) {
