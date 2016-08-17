@@ -16,7 +16,8 @@ import {getDOM} from './dom_adapter';
 import {DomAnimatePlayer} from './dom_animate_player';
 
 export class WebAnimationsPlayer implements AnimationPlayer {
-  private _subscriptions: Function[] = [];
+  private _onDoneFns: Function[] = [];
+  private _onStartFns: Function[] = [];
   private _finished = false;
   private _initialized = false;
   private _player: DomAnimatePlayer;
@@ -37,8 +38,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       if (!isPresent(this.parentPlayer)) {
         this.destroy();
       }
-      this._subscriptions.forEach(fn => fn());
-      this._subscriptions = [];
+      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns = [];
     }
   }
 
@@ -66,10 +67,17 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     return <DomAnimatePlayer>element.animate(keyframes, options);
   }
 
-  onDone(fn: Function): void { this._subscriptions.push(fn); }
+  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+
+  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
 
   play(): void {
     this.init();
+    if (!this.hasStarted()) {
+      this._onStartFns.forEach(fn => fn());
+      this._onStartFns = [];
+      this._started = true;
+    }
     this._player.play();
   }
 

@@ -12,7 +12,8 @@ import {Math} from '../facade/math';
 import {AnimationPlayer} from './animation_player';
 
 export class AnimationGroupPlayer implements AnimationPlayer {
-  private _subscriptions: Function[] = [];
+  private _onDoneFns: Function[] = [];
+  private _onStartFns: Function[] = [];
   private _finished = false;
   private _started = false;
 
@@ -41,14 +42,16 @@ export class AnimationGroupPlayer implements AnimationPlayer {
       if (!isPresent(this.parentPlayer)) {
         this.destroy();
       }
-      this._subscriptions.forEach(subscription => subscription());
-      this._subscriptions = [];
+      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns = [];
     }
   }
 
   init(): void { this._players.forEach(player => player.init()); }
 
-  onDone(fn: Function): void { this._subscriptions.push(fn); }
+  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+
+  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
 
   hasStarted() { return this._started; }
 
@@ -56,7 +59,11 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     if (!isPresent(this.parentPlayer)) {
       this.init();
     }
-    this._started = true;
+    if (!this.hasStarted()) {
+      this._onStartFns.forEach(fn => fn());
+      this._onStartFns = [];
+      this._started = true;
+    }
     this._players.forEach(player => player.play());
   }
 
