@@ -129,7 +129,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   private _visitClassField(field: o.ClassField, ctx: EmitterVisitorContext) {
     if (field.hasModifier(o.StmtModifier.Private)) {
-      ctx.print(`private `);
+      ctx.print(`/*private*/ `);
     }
     ctx.print(field.name);
     ctx.print(':');
