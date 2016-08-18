@@ -240,7 +240,7 @@ export function main() {
                    'SomeClass', null,
                    [new o.ClassField('someField', o.INT_TYPE, [o.StmtModifier.Private])], [], null,
                    [])))
-            .toEqual(['class SomeClass {', '  private someField:number;', '}'].join('\n'));
+            .toEqual(['class SomeClass {', '  /*private*/ someField:number;', '}'].join('\n'));
       });
 
       it('should support declaring getters', () => {
