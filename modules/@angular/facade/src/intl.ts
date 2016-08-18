@@ -140,11 +140,15 @@ function hourExtracter(inner: (date: Date, locale: string) => string): (
   };
 }
 
+function intlDateFormat(date: Date, locale: string, options: Intl.DateTimeFormatOptions): string {
+  return new Intl.DateTimeFormat(locale, options).format(date).replace(/[\u200e\u200f]/g, '');
+}
+
 function timeZoneGetter(timezone: string): (date: Date, locale: string) => string {
   // To workaround `Intl` API restriction for single timezone let format with 24 hours
-  const format = {hour: '2-digit', hour12: false, timeZoneName: timezone};
+  const options = {hour: '2-digit', hour12: false, timeZoneName: timezone};
   return function(date: Date, locale: string): string {
-    const result = new Intl.DateTimeFormat(locale, format).format(date);
+    const result = intlDateFormat(date, locale, options);
     // Then extract first 3 letters that related to hours
     return result ? result.substring(3) : '';
   };
@@ -177,9 +181,7 @@ function combine(options: Intl.DateTimeFormatOptions[]): Intl.DateTimeFormatOpti
 
 function datePartGetterFactory(ret: Intl.DateTimeFormatOptions): (date: Date, locale: string) =>
     string {
-  return function(date: Date, locale: string): string {
-    return new Intl.DateTimeFormat(locale, ret).format(date);
-  };
+  return (date: Date, locale: string): string => intlDateFormat(date, locale, ret);
 }
 
 
