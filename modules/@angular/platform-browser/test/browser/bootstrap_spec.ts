@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, createPlatformFactory} from '@angular/core';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -214,6 +214,23 @@ export function main() {
            expect(el).toHaveText('hello world!');
            async.done();
          });
+       }));
+
+    it('should throw a descriptive error if BrowserModule is installed again via a lazily loaded module',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         @NgModule({imports: [BrowserModule]})
+         class AsyncModule {
+         }
+         bootstrap(HelloRootCmp, testProviders)
+             .then((ref: ComponentRef<HelloRootCmp>) => {
+               let compiler: Compiler = ref.injector.get(Compiler);
+               return compiler.compileModuleAsync(AsyncModule).then(factory => {
+                 expect(() => factory.create(ref.injector))
+                     .toThrowError(
+                         `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`);
+               });
+             })
+             .then(() => async.done(), err => async.fail(err));
        }));
 
     it('should support multiple calls to bootstrap',

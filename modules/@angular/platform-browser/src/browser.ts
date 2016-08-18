@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation} from '@angular/common';
-import {ApplicationModule, ExceptionHandler, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, SanitizationService, Testability, createPlatformFactory, platformCore} from '@angular/core';
+import {ApplicationModule, BaseException, ExceptionHandler, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, SanitizationService, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
 
 import {wtfInit} from '../core_private';
 import {AnimationDriver} from '../src/dom/animation_driver';
@@ -93,4 +93,10 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
   exports: [CommonModule, ApplicationModule]
 })
 export class BrowserModule {
+  constructor(@Optional() @SkipSelf() parentModule: BrowserModule) {
+    if (parentModule) {
+      throw new BaseException(
+          `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`);
+    }
+  }
 }
