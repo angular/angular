@@ -23,7 +23,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
  *   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean> {
- *     return this.permissions.canActivate(this.currentUser, this.route.params.id);
+ *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
  *
@@ -66,7 +66,7 @@ export interface CanActivate {
  *
  * ```
  * @Injectable()
- * class CanActivateTeam implements CanActivate {
+ * class CanActivateTeam implements CanActivateChild {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
  *   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean>
@@ -178,7 +178,7 @@ export interface CanDeactivate<T> {
  *   constructor(private backend: Backend) {}
  *
  *   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<any> {
- *     return this.backend.fetchTeam(this.route.params.id);
+ *     return this.backend.fetchTeam(route.params.id);
  *   }
  * }
  *
