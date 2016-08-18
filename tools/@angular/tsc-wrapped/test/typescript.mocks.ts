@@ -29,7 +29,7 @@ export class Host implements ts.LanguageServiceHost {
   getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
 
   private getFileContent(fileName: string): string {
-    const names = fileName.split(path.sep);
+    const names = fileName.split('/');
     if (names[names.length - 1] === 'lib.d.ts') {
       return fs.readFileSync(ts.getDefaultLibFilePath(this.getCompilationSettings()), 'utf8');
     }
