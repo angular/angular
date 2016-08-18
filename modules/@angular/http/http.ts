@@ -84,7 +84,19 @@ export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: Request
  *
  * @experimental
  */
-@NgModule({providers: HTTP_PROVIDERS})
+@NgModule({
+  // TODO(alxhub): switch back to HTTP_PROVIDERS when the metadata collector can inline it
+  providers: [
+    // TODO(pascal): use factory type annotations once supported in DI
+    // issue: https://github.com/angular/angular/issues/3183
+    {provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions]},
+    BrowserXhr,
+    {provide: RequestOptions, useClass: BaseRequestOptions},
+    {provide: ResponseOptions, useClass: BaseResponseOptions},
+    XHRBackend,
+    {provide: XSRFStrategy, useFactory: _createDefaultCookieXSRFStrategy},
+  ],
+})
 export class HttpModule {
 }
 
@@ -93,6 +105,17 @@ export class HttpModule {
  *
  * @experimental
  */
-@NgModule({providers: JSONP_PROVIDERS})
+@NgModule({
+  // TODO(alxhub): switch back to JSONP_PROVIDERS when the metadata collector can inline it
+  providers: [
+    // TODO(pascal): use factory type annotations once supported in DI
+    // issue: https://github.com/angular/angular/issues/3183
+    {provide: Jsonp, useFactory: jsonpFactory, deps: [JSONPBackend, RequestOptions]},
+    BrowserJsonp,
+    {provide: RequestOptions, useClass: BaseRequestOptions},
+    {provide: ResponseOptions, useClass: BaseResponseOptions},
+    {provide: JSONPBackend, useClass: JSONPBackend_},
+  ],
+})
 export class JsonpModule {
 }
