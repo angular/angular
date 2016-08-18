@@ -16,7 +16,7 @@ import {StaticReflectorHost, StaticSymbol} from './static_reflector';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
-const NODE_MODULES = path.sep + 'node_modules' + path.sep;
+const NODE_MODULES = '/node_modules/';
 const IS_GENERATED = /\.(ngfactory|css(\.shim)?)$/;
 
 export interface ReflectorHostContext {
@@ -36,8 +36,8 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       private program: ts.Program, private compilerHost: ts.CompilerHost,
       private options: AngularCompilerOptions, context?: ReflectorHostContext) {
     // normalize the path so that it never ends with '/'.
-    this.basePath = path.normalize(path.join(this.options.basePath, '.'));
-    this.genDir = path.normalize(path.join(this.options.genDir, '.'));
+    this.basePath = path.normalize(path.join(this.options.basePath, '.')).replace(/\\/g, '/');
+    this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
 
     this.context = context || new NodeReflectorHostContext();
     var genPath: string = path.relative(this.basePath, this.genDir);
@@ -135,7 +135,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   }
 
   private dotRelative(from: string, to: string): string {
-    var rPath: string = path.relative(from, to);
+    var rPath: string = path.relative(from, to).replace(/\\/g, '/');
     return rPath.startsWith('.') ? rPath : './' + rPath;
   }
 
