@@ -42,6 +42,14 @@ export function main() {
         expect(headers.get('foo')).toBe('bar');
         expect(headers.getAll('foo')).toEqual(['bar']);
       });
+      it('should not alter the values of a provided header template', () => {
+        // Spec at https://fetch.spec.whatwg.org/#concept-headers-fill
+        // test for https://github.com/angular/angular/issues/6845
+        const firstHeaders = new Headers();
+        const secondHeaders = new Headers(firstHeaders);
+        secondHeaders.append('Content-Type', 'image/jpeg');
+        expect(firstHeaders.has('Content-Type')).toBeFalsy();
+      });
     });
 
 

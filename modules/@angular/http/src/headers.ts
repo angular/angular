@@ -46,7 +46,7 @@ export class Headers {
   _headersMap: Map<string, string[]>;
   constructor(headers?: Headers|{[key: string]: any}) {
     if (headers instanceof Headers) {
-      this._headersMap = (<Headers>headers)._headersMap;
+      this._headersMap = new Map<string, string[]>((<Headers>headers)._headersMap);
       return;
     }
 
