@@ -54,18 +54,35 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     };
   }
 
-  private resolve(m: string, containingFile: string) {
-    const resolved =
-        ts.resolveModuleName(m, containingFile, this.options, this.context).resolvedModule;
-    if (this.options.traceResolution) {
-      console.log('resolve', m, containingFile, '=>', resolved);
+  private getCanonicalFileName(fileName: string): string {
+    if (!fileName) return fileName;
+    for (let dir of this.options.rootDirs || []) {
+      if (fileName.indexOf(dir) === 0) {
+        fileName = fileName.substring(dir.length);
+      }
     }
-    return resolved ? resolved.resolvedFileName : null;
-  };
+    return fileName;
+  }
+
+  private resolve(m: string, containingFile: string) {
+    for (const root of this.options.rootDirs || [""]) {
+      const rootedContainingFile = path.join(root, containingFile);
+      const resolved =
+          ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
+      if (resolved) {
+        const result = this.getCanonicalFileName(resolved.resolvedFileName);
+        if (this.options.traceResolution) {
+          console.log('resolve', m, containingFile, '=>', result);
+        }
+        return result;
+      }
+    }
+  }
 
   private normalizeAssetUrl(url: string): string {
     let assetUrl = AssetUrl.parse(url);
-    return assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
+    const path = assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
+    return this.getCanonicalFileName(path);
   }
 
   private resolveAssetUrl(url: string, containingFile: string): string {
@@ -101,9 +118,14 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     }
 
     // If a file does not yet exist (because we compile it later), we still need to
-    // assume it exists it so that the `resolve` method works!
-    if (!this.compilerHost.fileExists(importedFile)) {
+    // assume it exists so that the `resolve` method works!
+    if (!this.context.fileExists(importedFile)) {
       this.context.assumeFileExists(importedFile);
+    }
+
+    const resolvable = (candidate: string) => {
+      const resolved = this.resolve(candidate, importedFile);
+      return resolved && resolved.replace(EXT, '') === importedFile.replace(EXT, '');
     }
 
     let importModuleName = importedFile.replace(EXT, '');
@@ -111,11 +133,11 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     let foundRelativeImport: string;
     for (let index = parts.length - 1; index >= 0; index--) {
       let candidate = parts.slice(index, parts.length).join(path.sep);
-      if (this.resolve(candidate, containingFile) === importedFile) {
+      if (resolvable(candidate)) {
         return candidate;
       }
       candidate = '.' + path.sep + candidate;
-      if (this.resolve(candidate, containingFile) === importedFile) {
+      if (resolvable(candidate)) {
         if (this.options.writeImportsForRootDirs) {
           foundRelativeImport = candidate;
         } else {
@@ -127,8 +149,8 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     if (foundRelativeImport) return foundRelativeImport;
 
     // Try a relative import
-    let candidate = path.relative(path.dirname(containingFile), importModuleName);
-    if (this.resolve(candidate, containingFile) === importedFile) {
+    const candidate = path.relative(path.dirname(containingFile), importModuleName);
+    if (resolvable(candidate)) {
       return this.fixupGendirRelativePath(containingFile, importedFile);
     }
 
@@ -229,24 +251,28 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   }
 
   getMetadataFor(filePath: string): ModuleMetadata {
-    if (!this.context.fileExists(filePath)) {
-      // If the file doesn't exists then we cannot return metadata for the file.
-      // This will occur if the user refernced a declared module for which no file
-      // exists for the module (i.e. jQuery or angularjs).
-      return;
-    }
-    if (DTS.test(filePath)) {
-      const metadataPath = filePath.replace(DTS, '.metadata.json');
-      if (this.context.fileExists(metadataPath)) {
-        const metadata = this.readMetadata(metadataPath);
-        return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
+    for (const root of this.options.rootDirs || []) {
+      const rootedPath = path.join(root, filePath);
+      if (!this.compilerHost.fileExists(rootedPath)) {
+        // If the file doesn't exists then we cannot return metadata for the file.
+        // This will occur if the user refernced a declared module for which no file
+        // exists for the module (i.e. jQuery or angularjs).
+        continue;
       }
-    } else {
-      const sf = this.program.getSourceFile(filePath);
-      if (!sf) {
-        throw new Error(`Source file ${filePath} not present in program.`);
+      if (DTS.test(rootedPath)) {
+        const metadataPath = rootedPath.replace(DTS, '.metadata.json');
+        if (this.context.fileExists(metadataPath)) {
+          const metadata = this.readMetadata(metadataPath);
+          return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
+        }
+      } else {
+        const sf = this.program.getSourceFile(rootedPath);
+        if (!sf) {
+          throw new Error(`Source file ${rootedPath} not present in program.`);
+        }
+        sf.fileName = this.getCanonicalFileName(sf.fileName);
+        return this.metadataCollector.getMetadata(sf);
       }
-      return this.metadataCollector.getMetadata(sf);
     }
   }
 

@@ -38,6 +38,16 @@ export class CodeGenerator {
       public host: ts.CompilerHost, private staticReflector: StaticReflector,
       private compiler: compiler.OfflineCompiler, private reflectorHost: ReflectorHost) {}
 
+  private getCanonicalFileName(fileName: string): string {
+    if (!fileName) return fileName;
+    for (let dir of this.options.rootDirs || []) {
+      if (fileName.indexOf(dir) === 0) {
+        fileName = fileName.substring(dir.length);
+      }
+    }
+    return fileName;
+  }
+
   private readFileMetadata(absSourcePath: string): FileMetadata {
     const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
     const result: FileMetadata = {components: [], ngModules: [], fileUrl: absSourcePath};
@@ -92,7 +102,7 @@ export class CodeGenerator {
 
   codegen(): Promise<any> {
     const filePaths =
-        this.program.getSourceFiles().map(sf => sf.fileName).filter(f => !GENERATED_FILES.test(f));
+        this.program.getSourceFiles().map(sf => this.getCanonicalFileName(sf.fileName)).filter(f => !GENERATED_FILES.test(f));
     const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
     const ngModules = fileMetas.reduce((ngModules, fileMeta) => {
       ngModules.push(...fileMeta.ngModules);
