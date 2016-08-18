@@ -13,6 +13,7 @@ PKGS=(
   rxjs
   @types/{node,jasmine}
   jasmine
+  @angular2-material/{core,button}
 )
 
 TMPDIR=${TMPDIR:-.}

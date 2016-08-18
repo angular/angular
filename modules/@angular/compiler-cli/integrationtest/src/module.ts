@@ -9,6 +9,7 @@
 import {ApplicationRef, NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
+import {MdButtonModule} from '@angular2-material/button';
 
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
@@ -25,7 +26,10 @@ import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
     CompWithDirectiveChild, CompUsingRootModuleDirectiveAndPipe, CompWithProviders,
     CompWithReferences, CompUsingPipes
   ],
-  imports: [BrowserModule, FormsModule, someLibModuleWithProviders(), ModuleUsingCustomElements],
+  imports: [
+    BrowserModule, FormsModule, someLibModuleWithProviders(), ModuleUsingCustomElements,
+    MdButtonModule
+  ],
   providers: [SomeService],
   entryComponents: [
     AnimateCmp, BasicComp, CompWithEntryComponents, CompWithAnalyzeEntryComponentsProvider,
