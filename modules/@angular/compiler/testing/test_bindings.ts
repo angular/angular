@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementSchemaRegistry, ResourceLoader, UrlResolver} from '@angular/compiler';
-import {createUrlResolverWithoutPackagePrefix} from '@angular/compiler/src/url_resolver';
-import {MockSchemaRegistry} from '@angular/compiler/testing';
-import {MockResourceLoader} from '@angular/compiler/testing/resource_loader_mock';
 import {Provider} from '@angular/core';
+import {ResourceLoader} from '../src/resource_loader';
+import {ElementSchemaRegistry} from '../src/schema/element_schema_registry';
+import {UrlResolver, createUrlResolverWithoutPackagePrefix} from '../src/url_resolver';
+
+import {MockResourceLoader} from './resource_loader_mock';
+import {MockSchemaRegistry} from './schema_registry_mock';
 
 
 // This provider is put here just so that we can access it from multiple
