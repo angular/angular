@@ -60,7 +60,7 @@ function prependTemporaryDecls(
   }
 }
 
-enum _Mode {
+export enum _Mode {
   Statement,
   Expression
 }
