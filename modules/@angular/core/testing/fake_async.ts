@@ -79,6 +79,7 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
       return res;
     } finally {
       _inFakeAsyncCall = false;
+      // TODO: reset delegate
     }
   };
 }
