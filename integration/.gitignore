@@ -1,0 +1,8 @@
+/rxjs/
+built/
+dist/
+vendor/
+*/src/*.d.ts
+*/src/*.js
+**/*.ngfactory.ts
+**/*.ngsummary.json
