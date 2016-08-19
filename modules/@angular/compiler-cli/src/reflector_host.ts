@@ -70,11 +70,10 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       const resolved =
           ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
       if (resolved) {
-        const result = this.getCanonicalFileName(resolved.resolvedFileName);
         if (this.options.traceResolution) {
-          console.log('resolve', m, containingFile, '=>', result);
+          console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
         }
-        return result;
+        return resolved.resolvedFileName;
       }
     }
   }
@@ -88,7 +87,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   private resolveAssetUrl(url: string, containingFile: string): string {
     let assetUrl = this.normalizeAssetUrl(url);
     if (assetUrl) {
-      return this.resolve(assetUrl, containingFile);
+      return this.getCanonicalFileName(this.resolve(assetUrl, containingFile));
     }
     return url;
   }
@@ -124,7 +123,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     }
 
     const resolvable = (candidate: string) => {
-      const resolved = this.resolve(candidate, importedFile);
+      const resolved = this.getCanonicalFileName(this.resolve(candidate, importedFile));
       return resolved && resolved.replace(EXT, '') === importedFile.replace(EXT, '');
     }
 
@@ -196,6 +195,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       const filePath = this.resolve(module, containingFile);
 
       if (!filePath) {
+        console.log("WARNING no resolution for ", module, "making static symbol for ", symbolName);
         // If the file cannot be found the module is probably referencing a declared module
         // for which there is no disambiguating file and we also don't need to track
         // re-exports. Just use the module name.
@@ -205,6 +205,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       const tc = this.program.getTypeChecker();
       const sf = this.program.getSourceFile(filePath);
       if (!sf || !(<any>sf).symbol) {
+        console.log("WARNING no source file for filePath", filePath);
         // The source file was not needed in the compile but we do need the values from
         // the corresponding .ts files stored in the .metadata.json file. Check the file
         // for exports to see if the file is exported.
@@ -221,7 +222,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
         symbol = tc.getAliasedSymbol(symbol);
       }
       const declaration = symbol.getDeclarations()[0];
-      const declarationFile = declaration.getSourceFile().fileName;
+      const declarationFile = this.getCanonicalFileName(declaration.getSourceFile().fileName);
 
       return this.getStaticSymbol(declarationFile, symbol.getName());
     } catch (e) {
@@ -296,7 +297,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
 
   private resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
     const resolveModule = (moduleName: string): string => {
-      const resolvedModulePath = this.resolve(moduleName, filePath);
+      const resolvedModulePath = this.getCanonicalFileName(this.resolve(moduleName, filePath));
       if (!resolvedModulePath) {
         throw new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`);
       }
