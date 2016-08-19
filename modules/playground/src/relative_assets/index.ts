@@ -24,6 +24,6 @@ export function main() {
 export class RelativeApp {
 }
 
-@NgModule({bootstrap: [RelativeApp], imports: [BrowserModule]})
+@NgModule({declarations: [RelativeApp], bootstrap: [RelativeApp], imports: [BrowserModule]})
 class ExampleModule {
 }

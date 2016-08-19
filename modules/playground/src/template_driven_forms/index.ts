@@ -169,7 +169,11 @@ class TemplateDrivenForms {
     print(this.model);
   }
 }
-@NgModule({bootstrap: [TemplateDrivenForms], imports: [BrowserModule]})
+@NgModule({
+  declarations: [TemplateDrivenForms],
+  bootstrap: [TemplateDrivenForms],
+  imports: [BrowserModule]
+})
 class ExampleModule {
 }
 

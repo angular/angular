@@ -198,7 +198,8 @@ class PersonManagementApplication {
 
 @NgModule({
   bootstrap: [PersonManagementApplication],
-  declarations: [FullNameComponent, PersonsComponent, PersonsDetailComponent],
+  declarations:
+      [PersonManagementApplication, FullNameComponent, PersonsComponent, PersonsDetailComponent],
   imports: [BrowserModule, FormsModule]
 })
 class ExampleModule {

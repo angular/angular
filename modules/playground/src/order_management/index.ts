@@ -197,7 +197,8 @@ class OrderManagementApplication {
 
 @NgModule({
   bootstrap: [OrderManagementApplication],
-  declarations: [OrderListComponent, OrderDetailsComponent, OrderItemComponent],
+  declarations:
+      [OrderManagementApplication, OrderListComponent, OrderDetailsComponent, OrderItemComponent],
   imports: [BrowserModule, FormsModule]
 })
 class ExampleModule {

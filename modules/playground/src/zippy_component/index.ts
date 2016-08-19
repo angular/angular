@@ -30,7 +30,7 @@ class ZippyApp {
   pushLog(log: string) { this.logs.push(log); }
 }
 
-@NgModule({bootstrap: [ZippyApp], imports: [BrowserModule]})
+@NgModule({declarations: [ZippyApp], bootstrap: [ZippyApp], imports: [BrowserModule]})
 class ExampleModule {
 }
 

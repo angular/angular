@@ -41,7 +41,7 @@ class KeyEventsApp {
   resetShiftEnter(): void { this.shiftEnter = false; }
 }
 
-@NgModule({bootstrap: [KeyEventsApp], imports: [BrowserModule]})
+@NgModule({declarations: [KeyEventsApp], bootstrap: [KeyEventsApp], imports: [BrowserModule]})
 class ExampleModule {
 }
 

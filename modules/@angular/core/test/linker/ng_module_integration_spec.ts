@@ -263,27 +263,19 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toBe(SomeComp);
       });
 
-      it('should warn and auto declare when using an entryComponent that was neither declared nor imported',
-         () => {
-           @Component({template: '', entryComponents: [SomeComp]})
-           class SomeCompWithEntryComponents {
-           }
+      it('should throw when using an entryComponent that was neither declared nor imported', () => {
+        @Component({template: '', entryComponents: [SomeComp]})
+        class SomeCompWithEntryComponents {
+        }
 
-           @NgModule({entryComponents: [SomeCompWithEntryComponents]})
-           class SomeModule {
-           }
+        @NgModule({entryComponents: [SomeCompWithEntryComponents]})
+        class SomeModule {
+        }
 
-           const ngModule = createModule(SomeModule);
-           expect(ngModule.componentFactoryResolver
-                      .resolveComponentFactory(SomeCompWithEntryComponents)
-                      .componentType)
-               .toBe(SomeCompWithEntryComponents);
-
-           expect(console.warnings).toEqual([
-             `NgModule ${stringify(SomeModule)} uses ${stringify(SomeCompWithEntryComponents)} via "entryComponents" but it was neither declared nor imported! This warning will become an error after final.`,
-             `Component ${stringify(SomeCompWithEntryComponents)} in NgModule ${stringify(SomeModule)} uses ${stringify(SomeComp)} via "entryComponents" but it was neither declared nor imported into the module! This warning will become an error after final.`
-           ]);
-         });
+        expect(() => createModule(SomeModule))
+            .toThrowError(
+                `NgModule ${stringify(SomeModule)} uses ${stringify(SomeCompWithEntryComponents)} via "entryComponents" but it was neither declared nor imported! If ${stringify(SomeCompWithEntryComponents)} is declared in an imported module, make sure it is exported.`);
+      });
 
       it('should create ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
         @NgModule({

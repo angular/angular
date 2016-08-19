@@ -12,7 +12,7 @@ import {platformWorkerAppDynamic} from '@angular/platform-browser-dynamic';
 
 import {App} from './index_common';
 
-@NgModule({imports: [WorkerAppModule], bootstrap: [App]})
+@NgModule({imports: [WorkerAppModule], bootstrap: [App], declarations: [App]})
 class ExampleModule {
 }
 

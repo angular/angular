@@ -158,7 +158,7 @@ class ReactiveForms {
 
 @NgModule({
   bootstrap: [ReactiveForms],
-  declarations: [ShowError],
+  declarations: [ReactiveForms, ShowError],
   imports: [BrowserModule, ReactiveFormsModule]
 })
 class ExampleModule {

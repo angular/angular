@@ -12,7 +12,7 @@ import {platformWorkerAppDynamic} from '@angular/platform-browser-dynamic';
 
 import {ImageDemo} from './index_common';
 
-@NgModule({imports: [WorkerAppModule], bootstrap: [ImageDemo]})
+@NgModule({imports: [WorkerAppModule], bootstrap: [ImageDemo], declarations: [ImageDemo]})
 class ExampleModule {
 }
 

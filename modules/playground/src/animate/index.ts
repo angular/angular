@@ -11,7 +11,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {AnimateApp} from './app/animate-app';
 
-@NgModule({bootstrap: [AnimateApp], imports: [BrowserModule]})
+@NgModule({declarations: [AnimateApp], bootstrap: [AnimateApp], imports: [BrowserModule]})
 class ExampleModule {
 }
 

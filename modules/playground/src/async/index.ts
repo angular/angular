@@ -98,7 +98,8 @@ class AsyncApplication {
   };
 }
 
-@NgModule({bootstrap: [AsyncApplication], imports: [BrowserModule]})
+@NgModule(
+    {declarations: [AsyncApplication], bootstrap: [AsyncApplication], imports: [BrowserModule]})
 class ExampleModule {
 }
 

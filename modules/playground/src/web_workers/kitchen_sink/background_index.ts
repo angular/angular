@@ -12,7 +12,7 @@ import {platformWorkerAppDynamic} from '@angular/platform-browser-dynamic';
 
 import {HelloCmp} from './index_common';
 
-@NgModule({imports: [WorkerAppModule], bootstrap: [HelloCmp]})
+@NgModule({imports: [WorkerAppModule], bootstrap: [HelloCmp], declarations: [HelloCmp]})
 class ExampleModule {
 }
 
