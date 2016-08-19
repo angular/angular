@@ -113,9 +113,9 @@ describe('url serializer', () => {
   it('should parse key only matrix params', () => {
     const tree = url.parse('/one;a');
 
-    expectSegment(tree.root.children[PRIMARY_OUTLET], 'one;a=true');
+    expectSegment(tree.root.children[PRIMARY_OUTLET], 'one;a=');
 
-    expect(url.serialize(tree)).toEqual('/one;a=true');
+    expect(url.serialize(tree)).toEqual('/one;a=');
   });
 
   it('should parse query params (root)', () => {
