@@ -130,14 +130,14 @@ export function main() {
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            expect(() => resolver.getDirectiveMetadata(MyBrokenComp3))
                .toThrowError(
-                   `One or more of providers for "MyBrokenComp3" were not defined: [?, SimpleService, ?].`);
+                   `Invalid providers for "MyBrokenComp3" - only instances of Provider and Type are allowed, got: [SimpleService, ?null?, ...]`);
          }));
 
       it('should throw with descriptive error message when one of viewProviders is not present',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            expect(() => resolver.getDirectiveMetadata(MyBrokenComp4))
                .toThrowError(
-                   `One or more of viewProviders for "MyBrokenComp4" were not defined: [?, SimpleService, ?].`);
+                   `Invalid viewProviders for "MyBrokenComp4" - only instances of Provider and Type are allowed, got: [?null?, ...]`);
          }));
 
       it('should throw an error when the interpolation config has invalid symbols',
@@ -220,7 +220,7 @@ class MyBrokenComp2 {
 class SimpleService {
 }
 
-@Component({selector: 'my-broken-comp', template: '', providers: [null, SimpleService, [null]]})
+@Component({selector: 'my-broken-comp', template: '', providers: [SimpleService, null, [null]]})
 class MyBrokenComp3 {
 }
 
