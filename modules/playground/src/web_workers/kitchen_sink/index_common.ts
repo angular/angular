@@ -19,7 +19,7 @@ export class GreetingService {
 // Directives are light-weight. They don't allow new
 // expression contexts (use @Component for those needs).
 @Directive({selector: '[red]'})
-class RedDec {
+export class RedDec {
   // ElementRef is always injectable and it wraps the element on which the
   // directive was found by the compiler.
   constructor(el: ElementRef, renderer: Renderer) {

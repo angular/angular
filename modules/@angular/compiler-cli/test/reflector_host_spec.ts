@@ -38,6 +38,7 @@ describe('reflector_host', () => {
           genDir: '/tmp/project/src/gen/',
           basePath: '/tmp/project/src',
           skipMetadataEmit: false,
+          strictMetadataEmit: false,
           skipTemplateCodegen: false,
           trace: false
         },
@@ -47,6 +48,7 @@ describe('reflector_host', () => {
           genDir: '/tmp/project/gen',
           basePath: '/tmp/project/src/',
           skipMetadataEmit: false,
+          strictMetadataEmit: false,
           skipTemplateCodegen: false,
           trace: false
         },

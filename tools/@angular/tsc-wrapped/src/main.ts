@@ -50,7 +50,7 @@ export function main(
         // decorators which we want to read or document.
         // Do this emit second since TypeScript will create missing directories for us
         // in the standard emit.
-        const metadataWriter = new MetadataWriterHost(host, newProgram);
+        const metadataWriter = new MetadataWriterHost(host, newProgram, ngOptions);
         tsc.emit(metadataWriter, newProgram);
       }
     });

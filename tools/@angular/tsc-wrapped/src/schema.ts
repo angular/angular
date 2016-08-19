@@ -9,11 +9,13 @@
 
 export const VERSION = 1;
 
+export type MetadataEntry = ClassMetadata | FunctionMetadata | MetadataValue;
+
 export interface ModuleMetadata {
   __symbolic: 'module';
   version: number;
   exports?: ModuleExportMetadata[];
-  metadata: {[name: string]: (ClassMetadata | FunctionMetadata | MetadataValue)};
+  metadata: {[name: string]: MetadataEntry};
 }
 export function isModuleMetadata(value: any): value is ModuleMetadata {
   return value && value.__symbolic === 'module';
@@ -56,7 +58,7 @@ export interface MethodMetadata extends MemberMetadata {
   __symbolic: 'constructor'|'method';
   parameterDecorators?: (MetadataSymbolicExpression|MetadataError)[][];
 }
-export function isMethodMetadata(value: any): value is MemberMetadata {
+export function isMethodMetadata(value: any): value is MethodMetadata {
   return value && (value.__symbolic === 'constructor' || value.__symbolic === 'method');
 }
 

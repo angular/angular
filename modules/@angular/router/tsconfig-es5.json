@@ -24,7 +24,8 @@
   "files": [
     "index.ts",
     "testing.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
 }
-
-

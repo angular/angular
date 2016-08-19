@@ -572,13 +572,13 @@ function expandedMessage(error: any): string {
   switch (error.message) {
     case 'Reference to non-exported class':
       if (error.context && error.context.className) {
-        return `Reference to a non-exported class ${error.context.className}`;
+        return `Reference to a non-exported class ${error.context.className}. Consider exporting the class`;
       }
       break;
     case 'Variable not initialized':
-      return 'Only initialized variables and constants can be referenced';
+      return 'Only initialized variables and constants can be referenced because the value of this variable is needed by the template compiler';
     case 'Destructuring not supported':
-      return 'Referencing an exported destructured variable or constant is not supported';
+      return 'Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring';
     case 'Could not resolve type':
       if (error.context && error.context.typeName) {
         return `Could not resolve type ${error.context.typeName}`;

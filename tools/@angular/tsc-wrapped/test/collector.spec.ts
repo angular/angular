@@ -25,6 +25,9 @@ describe('Collector', () => {
       'exported-enum.ts',
       'exported-consts.ts',
       'local-symbol-ref.ts',
+      'local-function-ref.ts',
+      'local-symbol-ref-func.ts',
+      'local-symbol-ref-func-dynamic.ts',
       'private-enum.ts',
       're-exports.ts',
       'static-field-reference.ts',
@@ -230,10 +233,10 @@ describe('Collector', () => {
       version: 1,
       metadata: {
         a: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 16},
-        b: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 18},
+        b: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 19},
         c: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 16},
-        d: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 18},
-        e: {__symbolic: 'error', message: 'Variable not initialized', line: 3, character: 14}
+        d: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 19},
+        e: {__symbolic: 'error', message: 'Variable not initialized', line: 3, character: 15}
       }
     });
   });
@@ -247,8 +250,8 @@ describe('Collector', () => {
     expect(parameter).toEqual({
       __symbolic: 'error',
       message: 'Reference to non-exported class',
-      line: 1,
-      character: 45,
+      line: 3,
+      character: 4,
       context: {className: 'Foo'}
     });
   });
@@ -506,7 +509,7 @@ describe('Collector', () => {
         __symbolic: 'error',
         message: 'Reference to a local symbol',
         line: 3,
-        character: 9,
+        character: 8,
         context: {name: 'REQUIRED'}
       },
       SomeComponent: {
@@ -519,6 +522,65 @@ describe('Collector', () => {
       }
     });
   });
+
+  it('should collect an error symbol if collecting a reference to a non-exported function', () => {
+    let source = program.getSourceFile('/local-function-ref.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({
+      REQUIRED_VALIDATOR: {
+        __symbolic: 'error',
+        message: 'Reference to a non-exported function',
+        line: 3,
+        character: 13,
+        context: {name: 'required'}
+      },
+      SomeComponent: {
+        __symbolic: 'class',
+        decorators: [{
+          __symbolic: 'call',
+          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+          arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
+        }]
+      }
+    })
+  });
+
+  it('should collect an error for a simple function that references a local variable', () => {
+    let source = program.getSourceFile('/local-symbol-ref-func.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({
+      foo: {
+        __symbolic: 'function',
+        parameters: ['index'],
+        value: {
+          __symbolic: 'error',
+          message: 'Reference to a local symbol',
+          line: 1,
+          character: 8,
+          context: {name: 'localSymbol'}
+        }
+      }
+    })
+  });
+
+  describe('in strict mode', () => {
+    it('should throw if an error symbol is collecting a reference to a non-exported symbol', () => {
+      let source = program.getSourceFile('/local-symbol-ref.ts');
+      expect(() => collector.getMetadata(source, true)).toThrowError(/Reference to a local symbol/);
+    });
+
+    it('should throw if an error if collecting a reference to a non-exported function', () => {
+      let source = program.getSourceFile('/local-function-ref.ts');
+      expect(() => collector.getMetadata(source, true))
+          .toThrowError(/Reference to a non-exported function/);
+    });
+
+    it('should throw for references to unexpected types', () => {
+      let unsupported1 = program.getSourceFile('/unsupported-2.ts');
+      expect(() => collector.getMetadata(unsupported1, true))
+          .toThrowError(/Reference to non-exported class/);
+    });
+  })
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -835,7 +897,7 @@ const FILES: Directory = {
   'local-symbol-ref.ts': `
     import {Component, Validators} from 'angular2/core';
 
-    const REQUIRED = Validators.required;
+    var REQUIRED;
 
     export const REQUIRED_VALIDATOR: any = {
       provide: 'SomeToken',
@@ -851,6 +913,29 @@ const FILES: Directory = {
   'private-enum.ts': `
     export enum PublicEnum { a, b, c }
     enum PrivateEnum { e, f, g }
+  `,
+  'local-function-ref.ts': `
+    import {Component, Validators} from 'angular2/core';
+
+    function required() {}
+
+    export const REQUIRED_VALIDATOR: any = {
+      provide: 'SomeToken',
+      useValue: required,
+      multi: true
+    };
+
+    @Component({
+      providers: [REQUIRED_VALIDATOR]
+    })
+    export class SomeComponent {}
+  `,
+  'local-symbol-ref-func.ts': `
+    var localSymbol: any[];
+
+    export function foo(index: number): string {
+      return localSymbol[index];
+    }
   `,
   'node_modules': {
     'angular2': {

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgZone} from '@angular/core';
 import {getDOM} from '../src/dom/dom_adapter';
 import {ListWrapper} from '../src/facade/collection';
 import {RegExp, StringWrapper, global, isPresent, isString} from '../src/facade/lang';
@@ -129,3 +130,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 }
 
 export var browserDetection: BrowserDetection = new BrowserDetection(null);
+
+export function createNgZone(): NgZone {
+  return new NgZone({enableLongStackTrace: true});
+}
