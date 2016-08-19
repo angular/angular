@@ -7,7 +7,7 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
-import {CUSTOM_ELEMENTS_SCHEMA, SecurityContext} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
@@ -57,6 +57,11 @@ export function main() {
 
     it('should return true for custom-like elements if the CUSTOM_ELEMENTS_SCHEMA was used', () => {
       expect(registry.hasProperty('custom-like', 'unknown', [CUSTOM_ELEMENTS_SCHEMA])).toBeTruthy();
+    });
+
+    it('should return true for all elements if the NO_ERRORS_SCHEMA was used', () => {
+      expect(registry.hasProperty('custom-like', 'unknown', [NO_ERRORS_SCHEMA])).toBeTruthy();
+      expect(registry.hasProperty('a', 'unknown', [NO_ERRORS_SCHEMA])).toBeTruthy();
     });
 
     it('should re-map property names that are specified in DOM facade',

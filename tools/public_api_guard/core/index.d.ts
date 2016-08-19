@@ -840,6 +840,9 @@ export declare class NgZone {
     static isInAngularZone(): boolean;
 }
 
+/** @experimental */
+export declare const NO_ERRORS_SCHEMA: SchemaMetadata;
+
 /** @stable */
 export declare class NoAnnotationError extends BaseException {
     constructor(typeOrFunc: Type<any> | Function, params: any[][]);

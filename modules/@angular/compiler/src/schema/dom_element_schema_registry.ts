@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CUSTOM_ELEMENTS_SCHEMA, Injectable, SchemaMetadata, SecurityContext} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '@angular/core';
 
 import {StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
@@ -270,6 +270,10 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
+    if (schemaMetas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name)) {
+      return true;
+    }
+
     if (tagName.indexOf('-') !== -1) {
       if (tagName === 'ng-container' || tagName === 'ng-content') {
         return false;
@@ -280,6 +284,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
         return true;
       }
     }
+
     var elementProperties = this.schema[tagName.toLowerCase()];
     if (!isPresent(elementProperties)) {
       elementProperties = this.schema['unknown'];
