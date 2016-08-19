@@ -8,9 +8,14 @@
 
 import {BaseException} from '../index';
 
-let _FakeAsyncTestZoneSpecType = (Zone as any /** TODO #9100 */)['FakeAsyncTestZoneSpec'];
 
-let _fakeAsyncZone: Zone = null;
+const FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
+type ProxyZoneSpec = {
+  setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
+};
+const ProxyZoneSpec: {get(): ProxyZoneSpec; assertPresent: () => ProxyZoneSpec} =
+    (Zone as any)['ProxyZoneSpec'];
+
 let _fakeAsyncTestZoneSpec: any = null;
 
 /**
@@ -20,8 +25,8 @@ let _fakeAsyncTestZoneSpec: any = null;
  * @experimental
  */
 export function resetFakeAsyncZone() {
-  _fakeAsyncZone = null;
   _fakeAsyncTestZoneSpec = null;
+  ProxyZoneSpec.assertPresent().resetDelegate();
 }
 
 let _inFakeAsyncCall = false;
@@ -45,26 +50,30 @@ let _inFakeAsyncCall = false;
  * @experimental
  */
 export function fakeAsync(fn: Function): (...args: any[]) => any {
-  return function(...args: any[] /** TODO #9100 */) {
+  return function(...args: any[]) {
+    const proxyZoneSpec = ProxyZoneSpec.assertPresent();
     if (_inFakeAsyncCall) {
       throw new BaseException('fakeAsync() calls can not be nested');
     }
     _inFakeAsyncCall = true;
     try {
-      if (!_fakeAsyncZone) {
-        if (Zone.current.get('FakeAsyncTestZoneSpec') != null) {
+      if (!_fakeAsyncTestZoneSpec) {
+        if (proxyZoneSpec.getDelegate() instanceof FakeAsyncTestZoneSpec) {
           throw new BaseException('fakeAsync() calls can not be nested');
         }
 
-        _fakeAsyncTestZoneSpec = new _FakeAsyncTestZoneSpecType();
-        _fakeAsyncZone = Zone.current.fork(_fakeAsyncTestZoneSpec);
+        _fakeAsyncTestZoneSpec = new FakeAsyncTestZoneSpec();
       }
 
-      let res = _fakeAsyncZone.run(() => {
-        let res = fn(...args);
+      let res: any;
+      const lastProxyZoneSpec = proxyZoneSpec.getDelegate();
+      proxyZoneSpec.setDelegate(_fakeAsyncTestZoneSpec);
+      try {
+        res = fn(...args);
         flushMicrotasks();
-        return res;
-      });
+      } finally {
+        proxyZoneSpec.setDelegate(lastProxyZoneSpec);
+      }
 
       if (_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
         throw new BaseException(
