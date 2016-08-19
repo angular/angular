@@ -6,7 +6,7 @@ var JasmineRunner = require('jasmine');
 var path = require('path');
 // require('es6-shim/es6-shim.js');
 require('zone.js/dist/long-stack-trace-zone.js');
-require('zone.js/dist/proxy-zone.js');
+require('zone.js/dist/proxy.js');
 require('zone.js/dist/sync-test.js');
 require('zone.js/dist/async-test.js');
 require('zone.js/dist/fake-async-test.js');
