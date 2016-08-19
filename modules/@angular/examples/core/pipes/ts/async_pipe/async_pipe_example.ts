@@ -55,7 +55,6 @@ class Task {
 
 @Component({
   selector: 'example-app',
-  directives: [AsyncPipeExample],
   template: `
     <h1>AsyncPipe Example</h1>
     <async-example></async-example>
@@ -64,7 +63,8 @@ class Task {
 export class AppCmp {
 }
 
-@NgModule({imports: [BrowserModule], bootstrap: [AppCmp]})
+@NgModule(
+    {declarations: [AsyncPipeExample, AppCmp, Task], imports: [BrowserModule], bootstrap: [AppCmp]})
 class AppModule {
 }
 

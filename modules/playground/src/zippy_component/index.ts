@@ -21,8 +21,7 @@ import {Zippy} from './app/zippy';
     <ul>
       <li *ngFor="let  log of logs">{{log}}</li>
     </ul>
-  `,
-  directives: [Zippy]
+  `
 })
 class ZippyApp {
   logs: string[] = [];
@@ -30,7 +29,7 @@ class ZippyApp {
   pushLog(log: string) { this.logs.push(log); }
 }
 
-@NgModule({declarations: [ZippyApp], bootstrap: [ZippyApp], imports: [BrowserModule]})
+@NgModule({declarations: [ZippyApp, Zippy], bootstrap: [ZippyApp], imports: [BrowserModule]})
 class ExampleModule {
 }
 

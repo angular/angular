@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -17,9 +16,7 @@ export function main() {
   describe('ngIf directive', () => {
 
     beforeEach(() => {
-      TestBed.configureTestingModule({
-        declarations: [TestComponent],
-      });
+      TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
     });
 
     it('should work in a template attribute', async(() => {
@@ -171,7 +168,7 @@ export function main() {
   });
 }
 
-@Component({selector: 'test-cmp', directives: [NgIf], template: ''})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   booleanCondition: boolean;
   nestedBooleanCondition: boolean;

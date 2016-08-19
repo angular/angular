@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
@@ -15,11 +15,10 @@ import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
-import {AUTO_STYLE, AnimationEntryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
+import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {isPresent} from '../../src/facade/lang';
 import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
-import {beforeEach, ddescribe, describe, expect, iit, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });
@@ -32,7 +31,8 @@ function declareTests({useJit}: {useJit: boolean}) {
       TestBed.configureCompiler({useJit: useJit});
       TestBed.configureTestingModule({
         declarations: [DummyLoadingCmp, DummyIfCmp],
-        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]
+        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+        imports: [CommonModule]
       });
     });
 
@@ -1639,7 +1639,6 @@ class InnerContentTrackingAnimationPlayer extends MockAnimationPlayer {
 
 @Component({
   selector: 'if-cmp',
-  directives: [NgIf],
   animations: [trigger('myAnimation', [])],
   template: `
     <div *ngIf="exp" [@myAnimation]="exp"></div>

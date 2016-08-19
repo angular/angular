@@ -41,7 +41,6 @@ export class SlicePipeListExample {
 
 @Component({
   selector: 'example-app',
-  directives: [SlicePipeListExample, SlicePipeStringExample],
   template: `
     <h1>SlicePipe Examples</h1>
     <slice-list-example></slice-list-example>

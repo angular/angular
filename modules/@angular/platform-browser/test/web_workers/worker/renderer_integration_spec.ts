@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgIf} from '@angular/common';
-import {Component, ComponentRef, Injectable, Injector, ReflectiveInjector, getPlatform} from '@angular/core';
+import {Component, ComponentRef, Injectable, Injector} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
-import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
@@ -206,7 +204,7 @@ export function main() {
 }
 
 
-@Component({selector: 'my-comp', directives: []})
+@Component({selector: 'my-comp'})
 @Injectable()
 class MyComp2 {
   ctxProp: string;

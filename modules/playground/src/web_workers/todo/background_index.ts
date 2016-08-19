@@ -7,12 +7,13 @@
  */
 
 import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {WorkerAppModule} from '@angular/platform-browser';
 import {platformWorkerAppDynamic} from '@angular/platform-browser-dynamic';
 
 import {TodoApp} from './index_common';
 
-@NgModule({imports: [WorkerAppModule], bootstrap: [TodoApp], declarations: [TodoApp]})
+@NgModule({imports: [WorkerAppModule, FormsModule], bootstrap: [TodoApp], declarations: [TodoApp]})
 class ExampleModule {
 }
 

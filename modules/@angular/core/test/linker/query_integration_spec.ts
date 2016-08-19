@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {AsyncTestCompleter, TestComponentBuilder, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {isPresent, stringify} from '../../src/facade/lang';
@@ -748,7 +746,7 @@ class NeedsQueryDesc {
   @ContentChildren(TextDirective, {descendants: true}) query: QueryList<TextDirective>;
 }
 
-@Component({selector: 'needs-query-by-ref-binding', directives: [], template: '<ng-content>'})
+@Component({selector: 'needs-query-by-ref-binding', template: '<ng-content>'})
 class NeedsQueryByLabel {
   @ContentChildren('textLabel', {descendants: true}) query: QueryList<any>;
 }
@@ -758,7 +756,7 @@ class NeedsViewQueryByLabel {
   @ViewChildren('textLabel') query: QueryList<any>;
 }
 
-@Component({selector: 'needs-query-by-ref-bindings', directives: [], template: '<ng-content>'})
+@Component({selector: 'needs-query-by-ref-bindings', template: '<ng-content>'})
 class NeedsQueryByTwoLabels {
   @ContentChildren('textLabel1,textLabel2', {descendants: true}) query: QueryList<any>;
 }

@@ -32,8 +32,7 @@ export class CompWithProviders {
   template: `
     <input #a>{{a.value}}
     <div *ngIf="true">{{a.value}}</div>
-  `,
-  directives: [wrapInArray(common.NgIf)]
+  `
 })
 export class CompWithReferences {
 }
@@ -51,6 +50,6 @@ export class CompUsingPipes {
 export class CompUsingCustomElements {
 }
 
-@NgModule({schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: [CompUsingCustomElements]})
+@NgModule({schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: wrapInArray(CompUsingCustomElements)})
 export class ModuleUsingCustomElements {
 }

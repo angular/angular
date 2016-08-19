@@ -13,11 +13,8 @@ import {Component, Directive, QueryList, ViewChild, ViewChildren} from '@angular
 export class CompForChildQuery {
 }
 
-@Component({
-  selector: 'comp-with-child-query',
-  template: '<comp-for-child-query></comp-for-child-query>',
-  directives: [CompForChildQuery]
-})
+@Component(
+    {selector: 'comp-with-child-query', template: '<comp-for-child-query></comp-for-child-query>'})
 export class CompWithChildQuery {
   @ViewChild(CompForChildQuery) child: CompForChildQuery;
   @ViewChildren(CompForChildQuery) children: QueryList<CompForChildQuery>;
@@ -29,7 +26,6 @@ export class DirectiveForQuery {
 
 @Component({
   selector: 'comp-with-directive-child',
-  directives: [DirectiveForQuery, NgFor],
   template: `<div>
      <div *ngFor="let data of divData" directive-for-query>{{data}}</div>
   </div>`

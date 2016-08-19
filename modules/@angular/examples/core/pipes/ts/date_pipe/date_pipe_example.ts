@@ -26,7 +26,6 @@ export class DatePipeExample {
 
 @Component({
   selector: 'example-app',
-  directives: [DatePipeExample],
   template: `
     <h1>DatePipe Example</h1>
     <date-example></date-example>
@@ -35,7 +34,7 @@ export class DatePipeExample {
 export class AppCmp {
 }
 
-@NgModule({imports: [BrowserModule], bootstrap: [AppCmp]})
+@NgModule({declarations: [DatePipeExample, AppCmp], imports: [BrowserModule], bootstrap: [AppCmp]})
 class AppModule {
 }
 

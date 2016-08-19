@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgLocalization, NgPlural, NgPluralCase} from '@angular/common';
+import {CommonModule, NgLocalization} from '@angular/common';
 import {Component, Injectable} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
@@ -18,7 +17,8 @@ export function main() {
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [TestComponent],
-        providers: [{provide: NgLocalization, useClass: TestLocalization}]
+        providers: [{provide: NgLocalization, useClass: TestLocalization}],
+        imports: [CommonModule]
       });
     });
 
@@ -139,7 +139,7 @@ class TestLocalization extends NgLocalization {
   }
 }
 
-@Component({selector: 'test-cmp', directives: [NgPlural, NgPluralCase], template: ''})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   switchValue: number = null;
 }

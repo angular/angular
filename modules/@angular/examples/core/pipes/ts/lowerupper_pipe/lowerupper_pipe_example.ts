@@ -27,7 +27,6 @@ export class LowerUpperPipeExample {
 
 @Component({
   selector: 'example-app',
-  directives: [LowerUpperPipeExample],
   template: `
     <h1>LowercasePipe &amp; UppercasePipe Example</h1>
     <lowerupper-example></lowerupper-example>

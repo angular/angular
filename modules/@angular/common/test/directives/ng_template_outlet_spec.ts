@@ -6,19 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgTemplateOutlet} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, QueryList, TemplateRef} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('insert', () => {
 
     beforeEach(() => {
-      TestBed.configureTestingModule({
-        declarations: [TestComponent],
-      });
+      TestBed.configureTestingModule(
+          {declarations: [TestComponent, CaptureTplRefs], imports: [CommonModule]});
     });
 
     it('should do nothing if templateRef is null', async(() => {
@@ -160,7 +158,7 @@ class CaptureTplRefs {
   @ContentChildren(TemplateRef) tplRefs: QueryList<TemplateRef<any>>;
 }
 
-@Component({selector: 'test-cmp', directives: [NgTemplateOutlet, CaptureTplRefs], template: ''})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   currentTplRef: TemplateRef<any>;
   context: any = {foo: 'bar'};

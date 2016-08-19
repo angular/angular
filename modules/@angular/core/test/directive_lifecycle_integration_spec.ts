@@ -8,14 +8,12 @@
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnInit} from '@angular/core';
 import {Component, Directive} from '@angular/core/src/metadata';
-import {ViewMetadata} from '@angular/core/src/metadata/view';
-import {TestBed} from '@angular/core/testing';
-import {AsyncTestCompleter, Log, TestComponentBuilder, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {TestBed, inject} from '@angular/core/testing';
+import {Log} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('directive lifecycle integration spec', () => {
     let log: Log;
-    beforeEachProviders(() => { return [Log]; });
 
     beforeEach(() => {
       TestBed
@@ -24,7 +22,8 @@ export function main() {
               LifecycleCmp,
               LifecycleDir,
               MyComp5,
-            ]
+            ],
+            providers: [Log]
           })
           .overrideComponent(MyComp5, {set: {template: '<div [field]="123" lifecycle></div>'}});
     });

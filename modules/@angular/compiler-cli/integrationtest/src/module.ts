@@ -11,20 +11,22 @@ import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {MdButtonModule} from '@angular2-material/button';
 
+import {MultipleComponentsMyComp, NextComp} from './a/multiple_components';
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
 import {CompUsingPipes, CompWithProviders, CompWithReferences, ModuleUsingCustomElements} from './features';
 import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomePipeInRootModule, SomeService, someLibModuleWithProviders} from './module_fixtures';
-import {ProjectingComp} from './projection';
-import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
+import {CompWithNgContent, ProjectingComp} from './projection';
+import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, DirectiveForQuery} from './queries';
 
 @NgModule({
   declarations: [
-    SomeDirectiveInRootModule, SomePipeInRootModule, AnimateCmp, BasicComp, CompWithEntryComponents,
-    CompWithAnalyzeEntryComponentsProvider, ProjectingComp, CompWithChildQuery,
-    CompWithDirectiveChild, CompUsingRootModuleDirectiveAndPipe, CompWithProviders,
-    CompWithReferences, CompUsingPipes
+    SomeDirectiveInRootModule, SomePipeInRootModule, AnimateCmp, BasicComp, CompForChildQuery,
+    CompWithEntryComponents, CompWithAnalyzeEntryComponentsProvider, ProjectingComp,
+    CompWithChildQuery, CompWithDirectiveChild, CompWithNgContent,
+    CompUsingRootModuleDirectiveAndPipe, CompWithProviders, CompWithReferences, CompUsingPipes,
+    MultipleComponentsMyComp, DirectiveForQuery, NextComp
   ],
   imports: [
     BrowserModule, FormsModule, someLibModuleWithProviders(), ModuleUsingCustomElements,

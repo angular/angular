@@ -8,7 +8,6 @@
 
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler-cli/src/static_reflector';
 import {HostListenerMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import {ListWrapper} from '@angular/facade/src/collection';
 import {isBlank} from '@angular/facade/src/lang';
 import {MetadataCollector} from '@angular/tsc-wrapped';
@@ -65,8 +64,6 @@ describe('StaticReflector', () => {
     expect(annotations.length).toEqual(1);
     let annotation = annotations[0];
     expect(annotation.selector).toEqual('my-hero-detail');
-    expect(annotation.directives).toEqual([[host.findDeclaration(
-        'angular2/src/common/directives/ng_for', 'NgFor')]]);
     expect(annotation.animations).toEqual([trigger('myAnimation', [
       state('state1', style({'background': 'white'})),
       transition(
@@ -596,13 +593,6 @@ class MockReflectorHost implements StaticReflectorHost {
                     'selector': 'my-hero-detail',
                     'template':
                         '\n  <div *ngIf="hero">\n    <h2>{{hero.name}} details!</h2>\n    <div><label>id: </label>{{hero.id}}</div>\n    <div>\n      <label>name: </label>\n      <input [(ngModel)]="hero.name" placeholder="name"/>\n    </div>\n  </div>\n',
-                    'directives': [
-                      {
-                        '__symbolic': 'reference',
-                        'name': 'FORM_DIRECTIVES',
-                        'module': 'angular2/src/common/forms-deprecated/directives'
-                      }
-                    ],
                     'animations': [{
                       '__symbolic': 'call',
                       'expression': {
@@ -755,7 +745,7 @@ class MockReflectorHost implements StaticReflectorHost {
                 },
                 arguments: [
                   {
-                    directives: [
+                    entryComponents: [
                       {
                         __symbolic: 'reference',
                         module: 'src/error-references',
@@ -957,14 +947,14 @@ class MockReflectorHost implements StaticReflectorHost {
 
         @Component({
           selector: 'my-component',
-          directives: [someFunction([NgIf])]
+          entryComponents: [someFunction([NgIf])]
         })
         export class MyComponent {}
 
         @someFunction()
         @Component({
           selector: 'my-component',
-          directives: [NgIf]
+          entryComponents: [NgIf]
         })
         export class MyOtherComponent { }
       `,

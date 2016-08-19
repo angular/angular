@@ -6,18 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor} from '@angular/common';
 import {Component} from '@angular/core';
-import {FORM_DIRECTIVES} from '@angular/forms';
 
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
-@Component({
-  selector: 'todo-app',
-  viewProviders: [Store, TodoFactory],
-  templateUrl: 'todo.html',
-  directives: [NgFor, FORM_DIRECTIVES]
-})
+@Component({selector: 'todo-app', viewProviders: [Store, TodoFactory], templateUrl: 'todo.html'})
 export class TodoApp {
   todoEdit: Todo = null;
   inputValue: string;

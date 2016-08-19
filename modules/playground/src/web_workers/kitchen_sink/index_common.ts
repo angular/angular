@@ -46,12 +46,7 @@ export class RedDec {
   // context of the HelloCmp class below.
   template: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
            <button class="changeButton" (click)="changeGreeting()">change greeting</button>
-           <div (keydown)="onKeyDown($event)" class="sample-area" tabindex="0">{{lastKey}}</div><br>`,
-  // All directives used in the template need to be specified. This allows for
-  // modularity (RedDec can only be used in this template)
-  // and better tooling (the template can be invalidated if the attribute is
-  // misspelled).
-  directives: [RedDec]
+           <div (keydown)="onKeyDown($event)" class="sample-area" tabindex="0">{{lastKey}}</div><br>`
 })
 export class HelloCmp {
   greeting: string;

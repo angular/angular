@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {JsonPipe} from '@angular/common';
+import {CommonModule, JsonPipe} from '@angular/common';
 import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {Json, StringWrapper} from '../../src/facade/lang';
@@ -56,10 +55,13 @@ export function main() {
 
     describe('integration', () => {
 
+      @Component({selector: 'test-comp', template: '{{data | json}}'})
+      class TestComp {
+        data: any;
+      }
+
       beforeEach(() => {
-        TestBed.configureTestingModule({
-          declarations: [TestComp],
-        });
+        TestBed.configureTestingModule({declarations: [TestComp], imports: [CommonModule]});
       });
 
       it('should work with mutable objects', async(() => {
@@ -76,9 +78,4 @@ export function main() {
          }));
     });
   });
-}
-
-@Component({selector: 'test-comp', template: '{{data | json}}', pipes: [JsonPipe]})
-class TestComp {
-  data: any;
 }

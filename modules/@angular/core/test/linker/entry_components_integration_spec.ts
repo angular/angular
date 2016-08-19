@@ -9,7 +9,7 @@
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, NoComponentFactoryError, forwardRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Console} from '../../src/console';
-import {stringify} from '../../src/facade/lang';
+
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });
@@ -44,7 +44,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     it('should resolve ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
       TestBed.resetTestingModule();
-      TestBed.configureTestingModule({declarations: [CompWithAnalyzeEntryComponentsProvider]});
+      TestBed.configureTestingModule(
+          {declarations: [CompWithAnalyzeEntryComponentsProvider, NestedChildComp, ChildComp]});
       let compFixture = TestBed.createComponent(CompWithAnalyzeEntryComponentsProvider);
       let mainComp: CompWithAnalyzeEntryComponentsProvider = compFixture.componentInstance;
       let cfr: ComponentFactoryResolver =

@@ -450,7 +450,7 @@ export function main() {
     });
 
     it('should allow to switch the order of nested components via ng-content', () => {
-      TestBed.configureTestingModule({declarations: [CmpA, CmpB]});
+      TestBed.configureTestingModule({declarations: [CmpA, CmpB, CmpD, CmpC]});
       TestBed.overrideComponent(MainComp, {set: {template: `<cmp-a><cmp-b></cmp-b></cmp-a>`}});
       const main = TestBed.createComponent(MainComp);
 
@@ -555,7 +555,7 @@ class SimpleNative1 {
 class SimpleNative2 {
 }
 
-@Component({selector: 'empty', template: '', directives: []})
+@Component({selector: 'empty', template: ''})
 class Empty {
 }
 
@@ -670,30 +670,28 @@ class CmpC {
 }
 
 
-@Component(
-    {selector: 'cmp-b', template: `<ng-content></ng-content><cmp-d></cmp-d>`, directives: [CmpD]})
+@Component({selector: 'cmp-b', template: `<ng-content></ng-content><cmp-d></cmp-d>`})
 class CmpB {
 }
 
 
-@Component(
-    {selector: 'cmp-a', template: `<ng-content></ng-content><cmp-c></cmp-c>`, directives: [CmpC]})
+@Component({selector: 'cmp-a', template: `<ng-content></ng-content><cmp-c></cmp-c>`})
 class CmpA {
 }
 
-@Component({selector: 'cmp-b11', template: `{{'b11'}}`, directives: []})
+@Component({selector: 'cmp-b11', template: `{{'b11'}}`})
 class CmpB11 {
 }
 
-@Component({selector: 'cmp-b12', template: `{{'b12'}}`, directives: []})
+@Component({selector: 'cmp-b12', template: `{{'b12'}}`})
 class CmpB12 {
 }
 
-@Component({selector: 'cmp-b21', template: `{{'b21'}}`, directives: []})
+@Component({selector: 'cmp-b21', template: `{{'b21'}}`})
 class CmpB21 {
 }
 
-@Component({selector: 'cmp-b22', template: `{{'b22'}}`, directives: []})
+@Component({selector: 'cmp-b22', template: `{{'b22'}}`})
 class CmpB22 {
 }
 

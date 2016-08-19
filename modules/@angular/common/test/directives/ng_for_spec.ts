@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {Component, ContentChild, TemplateRef} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -23,9 +22,8 @@ export function main() {
         '<div><copy-me template="ngFor let item of items">{{item.toString()}};</copy-me></div>';
 
     beforeEach(() => {
-      TestBed.configureTestingModule({
-        declarations: [TestComponent, ComponentUsingTestComponent],
-      });
+      TestBed.configureTestingModule(
+          {declarations: [TestComponent, ComponentUsingTestComponent], imports: [CommonModule]});
     });
 
     it('should reflect initial elements', async(() => {
@@ -420,7 +418,7 @@ class Foo {
   toString() { return 'foo'; }
 }
 
-@Component({selector: 'test-cmp', directives: [NgFor, NgIf], template: ''})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   @ContentChild(TemplateRef) contentTpl: TemplateRef<Object>;
   items: any;
@@ -430,7 +428,7 @@ class TestComponent {
   trackByContext(): void { thisArg = this; }
 }
 
-@Component({selector: 'outer-cmp', directives: [TestComponent], template: ''})
+@Component({selector: 'outer-cmp', template: ''})
 class ComponentUsingTestComponent {
   items: any;
   constructor() { this.items = [1, 2]; }

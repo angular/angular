@@ -6,26 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveResolver, ResourceLoader, i18n} from '@angular/compiler';
-import {MockDirectiveResolver} from '@angular/compiler/testing';
-import {Compiler, Component, DebugElement, Injector, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
-import {TestBed, fakeAsync} from '@angular/core/testing';
-import {beforeEach, TestComponentBuilder, ddescribe, describe, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {SpyResourceLoader} from '../spies';
 import {NgLocalization} from '@angular/common';
+import {ResourceLoader, i18n} from '@angular/compiler';
+import {Component, DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
+import {TestBed, async} from '@angular/core/testing';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {stringifyElement} from '@angular/platform-browser/testing/browser_util';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {SpyResourceLoader} from '../spies';
 
 export function main() {
   describe('i18n integration spec', () => {
-    let compiler: Compiler;
-    let xhr: SpyResourceLoader;
-    let tcb: TestComponentBuilder;
-    let dirResolver: MockDirectiveResolver;
-    let injector: Injector;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
       TestBed.configureCompiler({
         providers: [
           {provide: ResourceLoader, useClass: SpyResourceLoader},
@@ -34,21 +28,15 @@ export function main() {
           {provide: TRANSLATIONS_FORMAT, useValue: 'xtb'},
         ]
       });
-    });
 
-    beforeEach(fakeAsync(inject(
-        [Compiler, TestComponentBuilder, ResourceLoader, DirectiveResolver, Injector],
-        (_compiler: Compiler, _tcb: TestComponentBuilder, _xhr: SpyResourceLoader,
-         _dirResolver: MockDirectiveResolver, _injector: Injector) => {
-          compiler = _compiler;
-          tcb = _tcb;
-          xhr = _xhr;
-          dirResolver = _dirResolver;
-          injector = _injector;
-        })));
+      TestBed.configureTestingModule({declarations: [I18nComponent]});
+
+      TestBed.compileComponents();
+    }));
+
 
     it('translate templates', () => {
-      const tb = tcb.createSync(I18nComponent);
+      const tb = TestBed.createComponent(I18nComponent);
       const cmp = tb.componentInstance;
       const el = tb.debugElement;
 

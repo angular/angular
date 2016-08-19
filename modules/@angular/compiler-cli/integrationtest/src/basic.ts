@@ -17,7 +17,6 @@ import {MultipleComponentsMyComp} from './a/multiple_components';
   templateUrl: './basic.html',
   styles: ['.red { color: red }'],
   styleUrls: ['./basic.css'],
-  directives: [MultipleComponentsMyComp, FORM_DIRECTIVES, NgIf, NgFor]
 })
 export class BasicComp {
   ctxProp: string;

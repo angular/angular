@@ -57,6 +57,6 @@ export class HelloCmp {
   changeGreeting(): void { this.greeting = 'howdy'; }
 }
 
-@NgModule({bootstrap: [HelloCmp], declarations: [HelloCmp, RedDec], imports: [BrowserModule]})
+@NgModule({declarations: [HelloCmp, RedDec], bootstrap: [HelloCmp], imports: [BrowserModule]})
 class ExampleModule {
 }

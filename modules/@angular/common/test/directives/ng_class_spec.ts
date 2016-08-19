@@ -378,7 +378,7 @@ export function main() {
   });
 }
 
-@Component({selector: 'test-cmp', directives: [NgClass, NgFor], template: ''})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   condition: boolean = true;
   items: any[];

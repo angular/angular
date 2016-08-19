@@ -27,7 +27,6 @@ export class JsonPipeExample {
 
 @Component({
   selector: 'example-app',
-  directives: [JsonPipeExample],
   template: `
     <h1>JsonPipe Example</h1>
     <json-example></json-example>

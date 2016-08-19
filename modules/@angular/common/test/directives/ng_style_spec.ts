@@ -6,12 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, it, xit,} from '@angular/core/testing/testing_internal';
-import {async, TestBed, ComponentFixture} from '@angular/core/testing';
-
+import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
-
-import {NgStyle} from '@angular/common/src/directives/ng_style';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
 function expectNativeEl(fixture: ComponentFixture<any>) {
   return <any>expect(fixture.debugElement.children[0].nativeElement);
@@ -21,9 +18,7 @@ export function main() {
   describe('binding to CSS styles', () => {
 
     beforeEach(() => {
-      TestBed.configureTestingModule({
-        declarations: [TestComponent],
-      });
+      TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
     });
 
     it('should add styles specified in an object literal', async(() => {
@@ -154,7 +149,7 @@ export function main() {
   });
 }
 
-@Component({selector: 'test-cmp', directives: [NgStyle], template: ''})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   expr: any;
 }

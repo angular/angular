@@ -9,7 +9,6 @@
 import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TestBed, async} from '@angular/core/testing';
-import {beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -18,7 +17,7 @@ export function main() {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [TestComponent],
+        declarations: [TestComponent, TestDirective],
       });
     });
 
@@ -58,7 +57,7 @@ class TestDirective {
   constructor(el: ElementRef) { getDOM().addClass(el.nativeElement, 'compiled'); }
 }
 
-@Component({selector: 'test-cmp', directives: [TestDirective], template: ''})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   text: string;
   constructor() { this.text = 'foo'; }

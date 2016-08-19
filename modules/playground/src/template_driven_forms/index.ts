@@ -9,7 +9,7 @@
 import {NgFor, NgIf} from '@angular/common';
 import {Component, Directive, Host, NgModule} from '@angular/core';
 import {isPresent, print} from '@angular/core/src/facade/lang';
-import {FORM_DIRECTIVES, FormGroup, NG_VALIDATORS, NgControl, NgForm, Validators} from '@angular/forms';
+import {FormGroup, FormsModule, NG_VALIDATORS, NgControl, NgForm, Validators} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -71,8 +71,7 @@ class CreditCardValidator {
   inputs: ['controlPath: control', 'errorTypes: errors'],
   template: `
     <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
-  `,
-  directives: [NgIf]
+  `
 })
 class ShowError {
   formDir: any /** TODO #9100 */;
@@ -157,8 +156,7 @@ class ShowError {
 
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
-  `,
-  directives: [FORM_DIRECTIVES, NgFor, CreditCardValidator, ShowError]
+  `
 })
 class TemplateDrivenForms {
   model = new CheckoutModel();
@@ -170,9 +168,9 @@ class TemplateDrivenForms {
   }
 }
 @NgModule({
-  declarations: [TemplateDrivenForms],
+  declarations: [TemplateDrivenForms, CreditCardValidator, ShowError],
   bootstrap: [TemplateDrivenForms],
-  imports: [BrowserModule]
+  imports: [BrowserModule, FormsModule]
 })
 class ExampleModule {
 }

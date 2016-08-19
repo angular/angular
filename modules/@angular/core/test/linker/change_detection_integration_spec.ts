@@ -6,15 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncPipe, NgFor} from '@angular/common';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentMetadata, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewContainerRef, WrappedValue, forwardRef} from '@angular/core';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
-import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
-import {TestComponentBuilder, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';

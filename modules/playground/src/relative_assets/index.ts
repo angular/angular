@@ -18,12 +18,11 @@ export function main() {
 
 @Component({
   selector: 'relative-app',
-  directives: [MyCmp],
   template: `component = <my-cmp></my-cmp>`,
 })
 export class RelativeApp {
 }
 
-@NgModule({declarations: [RelativeApp], bootstrap: [RelativeApp], imports: [BrowserModule]})
+@NgModule({declarations: [RelativeApp, MyCmp], bootstrap: [RelativeApp], imports: [BrowserModule]})
 class ExampleModule {
 }

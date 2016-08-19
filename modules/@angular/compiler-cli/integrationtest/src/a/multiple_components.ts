@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 
-@Component({selector: 'my-comp', template: '<div></div>', directives: [NextComp]})
+@Component({selector: 'my-comp', template: '<div></div>'})
 export class MultipleComponentsMyComp {
 }
 

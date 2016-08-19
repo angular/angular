@@ -56,7 +56,6 @@ export class CurrencyPipeExample {
 
 @Component({
   selector: 'example-app',
-  directives: [NumberPipeExample, PercentPipeExample, CurrencyPipeExample],
   template: `
     <h1>Numeric Pipe Examples</h1>
     <h2>NumberPipe Example</h2>
