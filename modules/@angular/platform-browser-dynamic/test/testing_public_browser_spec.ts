@@ -118,7 +118,7 @@ export function main() {
       }, 10000);
     });
 
-    describe('test component builder', function() {
+    describe('TestBed createComponent', function() {
       it('should allow an external templateUrl', async(() => {
            TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
            TestBed.compileComponents().then(() => {
@@ -128,7 +128,8 @@ export function main() {
                  .toEqual('from external template\n');
            });
          }),
-         10000);  // Long timeout here because this test makes an actual ResourceLoader, and is slow
+         10000);  // Long timeout here because this test makes an actual ResourceLoader request, and
+                  // is slow
                   // on Edge.
     });
   });
