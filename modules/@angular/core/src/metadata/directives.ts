@@ -481,8 +481,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    *   selector: 'app',
    *   template: `
    *     <bank-account bank-name="RBC" account-id="4747"></bank-account>
-   *   `,
-   *   directives: [BankAccount]
+   *   `
    * })
    * class App {}
    * ```
@@ -525,8 +524,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    *   template: `
    *     <interval-dir (everySecond)="everySecond()" (everyFiveSeconds)="everyFiveSeconds()">
    *     </interval-dir>
-   *   `,
-   *   directives: [IntervalDir]
+   *   `
    * })
    * class App {
    *   everySecond() { console.log('second'); }
@@ -578,8 +576,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    *
    * @Component({
    *   selector: 'app',
-   *   template: `<button counting>Increment</button>`,
-   *   directives: [CountClicks]
+   *   template: `<button counting>Increment</button>`
    * })
    * class App {}
    * ```
@@ -612,8 +609,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    *
    * @Component({
    *   selector: 'app',
-   *   template: `<input [(ngModel)]="prop">`,
-   *   directives: [FORM_DIRECTIVES, NgModelStatus]
+   *   template: `<input [(ngModel)]="prop">`
    * })
    * class App {
    *   prop;
@@ -690,8 +686,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    *
    * @Component({
    *   selector: 'main',
-   *   template: `<child-dir #c="child"></child-dir>`,
-   *   directives: [ChildDir]
+   *   template: `<child-dir #c="child"></child-dir>`
    * })
    * class MainComponent {
    * }
@@ -716,8 +711,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    *     contentChildren: new ContentChildren(ChildDirective),
    *     viewChildren: new ViewChildren(ChildDirective)
    *   },
-   *   template: '<child-directive></child-directive>',
-   *   directives: [ChildDirective]
+   *   template: '<child-directive></child-directive>'
    * })
    * class SomeDir {
    *   contentChildren: QueryList<ChildDirective>,
@@ -761,8 +755,6 @@ export interface ComponentMetadataType extends DirectiveMetadataType {
   styleUrls?: string[];
   styles?: string[];
   animations?: AnimationEntryMetadata[];
-  directives?: Array<Type<any>|any[]>;
-  pipes?: Array<Type<any>|any[]>;
   encapsulation?: ViewEncapsulation;
   interpolation?: [string, string];
   entryComponents?: Array<Type<any>|any[]>;
@@ -836,8 +828,7 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    *   viewProviders: [
    *     Greeter
    *   ],
-   *   template: `<needs-greeter></needs-greeter>`,
-   *   directives: [NeedsGreeter]
+   *   template: `<needs-greeter></needs-greeter>`
    * })
    * class HelloWorld {
    * }
@@ -969,10 +960,6 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    */
   animations: AnimationEntryMetadata[];
 
-  directives: Array<Type<any>|any[]>;
-
-  pipes: Array<Type<any>|any[]>;
-
   /**
    * Specify how the template and the styles should be encapsulated.
    * The default is {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} if the view
@@ -991,13 +978,11 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    */
   entryComponents: Array<Type<any>|any[]>;
 
-  constructor({selector,      inputs,         outputs,
-               host,          exportAs,       moduleId,
-               providers,     viewProviders,  changeDetection = ChangeDetectionStrategy.Default,
-               queries,       templateUrl,    template,
-               styleUrls,     styles,         animations,
-               directives,    pipes,          encapsulation,
-               interpolation, entryComponents}: ComponentMetadataType = {}) {
+  constructor(
+      {selector, inputs, outputs, host, exportAs, moduleId, providers, viewProviders,
+       changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template, styleUrls,
+       styles, animations, encapsulation, interpolation,
+       entryComponents}: ComponentMetadataType = {}) {
     super({
       selector: selector,
       inputs: inputs,
@@ -1014,8 +999,6 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
     this.template = template;
     this.styleUrls = styleUrls;
     this.styles = styles;
-    this.directives = directives;
-    this.pipes = pipes;
     this.encapsulation = encapsulation;
     this.moduleId = moduleId;
     this.animations = animations;
@@ -1092,9 +1075,9 @@ export class PipeMetadata extends InjectableMetadata implements PipeMetadataType
  *   selector: 'app',
  *   template: `
  *     <bank-account bank-name="RBC" account-id="4747"></bank-account>
- *   `,
- *   directives: [BankAccount]
+ *   `
  * })
+ *
  * class App {}
  * ```
  * @stable
@@ -1138,8 +1121,7 @@ export class InputMetadata {
  *   template: `
  *     <interval-dir (everySecond)="everySecond()" (everyFiveSeconds)="everyFiveSeconds()">
  *     </interval-dir>
- *   `,
- *   directives: [IntervalDir]
+ *   `
  * })
  * class App {
  *   everySecond() { console.log('second'); }
@@ -1177,8 +1159,7 @@ export class OutputMetadata {
  *
  * @Component({
  *   selector: 'app',
- *   template: `<input [(ngModel)]="prop">`,
- *   directives: [FORM_DIRECTIVES, NgModelStatus]
+ *   template: `<input [(ngModel)]="prop">`
  * })
  * class App {
  *   prop;
@@ -1216,8 +1197,7 @@ export class HostBindingMetadata {
  *
  * @Component({
  *   selector: 'app',
- *   template: `<button counting>Increment</button>`,
- *   directives: [CountClicks]
+ *   template: `<button counting>Increment</button>`
  * })
  * class App {}
  * ```

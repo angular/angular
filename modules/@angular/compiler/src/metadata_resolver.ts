@@ -8,12 +8,11 @@
 
 import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, InjectMetadata, Injectable, ModuleWithProviders, OptionalMetadata, Provider, QueryMetadata, SchemaMetadata, SelfMetadata, SkipSelfMetadata, Type, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
 
-import {Console, LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector} from '../core_private';
+import {LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector} from '../core_private';
 import {StringMapWrapper} from '../src/facade/collection';
 
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
-import {CompilerConfig} from './config';
 import {DirectiveResolver} from './directive_resolver';
 import {BaseException} from './facade/exceptions';
 import {isArray, isBlank, isPresent, isString, stringify} from './facade/lang';
@@ -36,8 +35,7 @@ export class CompileMetadataResolver {
 
   constructor(
       private _ngModuleResolver: NgModuleResolver, private _directiveResolver: DirectiveResolver,
-      private _pipeResolver: PipeResolver, private _config: CompilerConfig,
-      private _console: Console, private _schemaRegistry: ElementSchemaRegistry,
+      private _pipeResolver: PipeResolver, private _schemaRegistry: ElementSchemaRegistry,
       private _reflector: ReflectorReader = reflector) {}
 
   private sanitizeTokenName(token: any): string {
@@ -124,9 +122,7 @@ export class CompileMetadataResolver {
       var changeDetectionStrategy: ChangeDetectionStrategy = null;
       var viewProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
       var moduleUrl = staticTypeModuleUrl(directiveType);
-      var viewDirectiveTypes: cpl.CompileTypeMetadata[] = [];
-      var viewPipeTypes: cpl.CompileTypeMetadata[] = [];
-      var entryComponentTypes: cpl.CompileTypeMetadata[] = [];
+      var entryComponentMetadata: cpl.CompileTypeMetadata[] = [];
       let selector = dirMeta.selector;
       if (dirMeta instanceof ComponentMetadata) {
         var cmpMeta = <ComponentMetadata>dirMeta;
@@ -150,32 +146,15 @@ export class CompileMetadataResolver {
         changeDetectionStrategy = cmpMeta.changeDetection;
         if (isPresent(dirMeta.viewProviders)) {
           viewProviders = this.getProvidersMetadata(
-              verifyNonBlankProviders(directiveType, dirMeta.viewProviders, 'viewProviders'), []);
+              verifyNonBlankProviders(directiveType, dirMeta.viewProviders, 'viewProviders'),
+              entryComponentMetadata);
         }
         moduleUrl = componentModuleUrl(this._reflector, directiveType, cmpMeta);
         if (cmpMeta.entryComponents) {
-          entryComponentTypes =
+          entryComponentMetadata =
               flattenArray(cmpMeta.entryComponents)
-                  .map((type) => this.getTypeMetadata(type, staticTypeModuleUrl(type)));
-        }
-        if (cmpMeta.directives) {
-          viewDirectiveTypes = flattenArray(cmpMeta.directives).map((type) => {
-            if (!type) {
-              throw new BaseException(
-                  `Unexpected directive value '${type}' on the View of component '${stringify(directiveType)}'`);
-            }
-
-            return this.getTypeMetadata(type, staticTypeModuleUrl(type));
-          });
-        }
-        if (cmpMeta.pipes) {
-          viewPipeTypes = flattenArray(cmpMeta.pipes).map((type) => {
-            if (!type) {
-              throw new BaseException(
-                  `Unexpected pipe value '${type}' on the View of component '${stringify(directiveType)}'`);
-            }
-            return this.getTypeMetadata(type, staticTypeModuleUrl(type));
-          });
+                  .map((type) => this.getTypeMetadata(type, staticTypeModuleUrl(type)))
+                  .concat(entryComponentMetadata);
         }
         if (!selector) {
           selector = this._schemaRegistry.getDefaultComponentElementName();
@@ -191,7 +170,7 @@ export class CompileMetadataResolver {
       if (isPresent(dirMeta.providers)) {
         providers = this.getProvidersMetadata(
             verifyNonBlankProviders(directiveType, dirMeta.providers, 'providers'),
-            entryComponentTypes);
+            entryComponentMetadata);
       }
       var queries: cpl.CompileQueryMetadata[] = [];
       var viewQueries: cpl.CompileQueryMetadata[] = [];
@@ -213,9 +192,7 @@ export class CompileMetadataResolver {
         viewProviders: viewProviders,
         queries: queries,
         viewQueries: viewQueries,
-        viewDirectives: viewDirectiveTypes,
-        viewPipes: viewPipeTypes,
-        entryComponents: entryComponentTypes
+        entryComponents: entryComponentMetadata
       });
       this._directiveCache.set(directiveType, meta);
     }
@@ -359,19 +336,6 @@ export class CompileMetadataResolver {
     return compileMeta;
   }
 
-  addComponentToModule(moduleType: Type<any>, compType: Type<any>) {
-    const moduleMeta = this.getNgModuleMetadata(moduleType);
-    // Collect @Component.directives/pipes/entryComponents into our declared directives/pipes.
-    const compMeta = this.getDirectiveMetadata(compType, false);
-    this._addDirectiveToModule(
-        compMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule,
-        moduleMeta.declaredDirectives);
-
-    moduleMeta.transitiveModule.entryComponents.push(compMeta.type);
-    moduleMeta.entryComponents.push(compMeta.type);
-
-    this._verifyModule(moduleMeta);
-  }
 
   private _verifyModule(moduleMeta: cpl.CompileNgModuleMetadata) {
     moduleMeta.exportedDirectives.forEach((dirMeta) => {
@@ -386,17 +350,6 @@ export class CompileMetadataResolver {
             `Can't export pipe ${stringify(pipeMeta.type.runtime)} from ${stringify(moduleMeta.type.runtime)} as it was neither declared nor imported!`);
       }
     });
-    moduleMeta.entryComponents.forEach((entryComponentType) => {
-      if (!moduleMeta.transitiveModule.directivesSet.has(entryComponentType.runtime)) {
-        throw new BaseException(
-            `NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponentType.runtime)} via "entryComponents" but it was neither declared nor imported! If ${stringify(entryComponentType.runtime)} is declared in an imported module, make sure it is exported.`);
-      }
-    });
-    // Collect @Component.directives/pipes/entryComponents into our declared
-    // directives/pipes. Do this last so that directives added by previous steps
-    // are considered as well!
-    moduleMeta.declaredDirectives.forEach(
-        (dirMeta) => { this._getTransitiveViewDirectivesAndPipes(dirMeta, moduleMeta); });
   }
 
   private _getTypeDescriptor(type: Type<any>): string {
@@ -420,41 +373,6 @@ export class CompileMetadataResolver {
           `Type ${stringify(type)} is part of the declarations of 2 modules: ${stringify(oldModule)} and ${stringify(moduleType)}!`);
     }
     this._ngModuleOfTypes.set(type, moduleType);
-  }
-
-
-  private _getTransitiveViewDirectivesAndPipes(
-      compMeta: cpl.CompileDirectiveMetadata, moduleMeta: cpl.CompileNgModuleMetadata) {
-    if (!compMeta.isComponent) {
-      return;
-    }
-    const addPipe = (pipeType: Type<any>) => {
-      const pipeMeta = this.getPipeMetadata(pipeType);
-      this._addPipeToModule(
-          pipeMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule, moduleMeta.declaredPipes);
-    };
-
-    const addDirective = (dirType: Type<any>) => {
-      const dirMeta = this.getDirectiveMetadata(dirType);
-      if (this._addDirectiveToModule(
-              dirMeta, moduleMeta.type.runtime, moduleMeta.transitiveModule,
-              moduleMeta.declaredDirectives)) {
-        this._getTransitiveViewDirectivesAndPipes(dirMeta, moduleMeta);
-      }
-    };
-    if (compMeta.viewPipes) {
-      compMeta.viewPipes.forEach((cplType) => addPipe(cplType.runtime));
-    }
-    if (compMeta.viewDirectives) {
-      compMeta.viewDirectives.forEach((cplType) => addDirective(cplType.runtime));
-    }
-    compMeta.entryComponents.forEach((entryComponentType) => {
-      if (!moduleMeta.transitiveModule.directivesSet.has(entryComponentType.runtime)) {
-        this._console.warn(
-            `Component ${stringify(compMeta.type.runtime)} in NgModule ${stringify(moduleMeta.type.runtime)} uses ${stringify(entryComponentType.runtime)} via "entryComponents" but it was neither declared nor imported into the module! This warning will become an error after final.`);
-        addDirective(entryComponentType.runtime);
-      }
-    });
   }
 
   private _getTransitiveNgModuleMetadata(

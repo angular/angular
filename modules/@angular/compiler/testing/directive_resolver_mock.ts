@@ -11,8 +11,7 @@ import {ViewMetadata} from '../core_private';
 
 import {DirectiveResolver} from '../src/directive_resolver';
 import {Map} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
-import {isArray, isPresent, stringify} from '../src/facade/lang';
+import {isArray, isPresent} from '../src/facade/lang';
 
 
 
@@ -28,7 +27,6 @@ export class MockDirectiveResolver extends DirectiveResolver {
   private _views = new Map<Type<any>, ViewMetadata>();
   private _inlineTemplates = new Map<Type<any>, string>();
   private _animations = new Map<Type<any>, AnimationEntryMetadata[]>();
-  private _directiveOverrides = new Map<Type<any>, Map<Type<any>, Type<any>>>();
 
   constructor(private _injector: Injector) { super(); }
 
@@ -67,13 +65,8 @@ export class MockDirectiveResolver extends DirectiveResolver {
         view = metadata;
       }
 
-      const directives: any[] = [];
-      if (isPresent(view.directives)) {
-        flattenArray(view.directives, directives);
-      }
       let animations = view.animations;
       let templateUrl = view.templateUrl;
-      const directiveOverrides = this._directiveOverrides.get(type);
 
       const inlineAnimations = this._animations.get(type);
       if (isPresent(inlineAnimations)) {
@@ -85,17 +78,6 @@ export class MockDirectiveResolver extends DirectiveResolver {
         templateUrl = null;
       } else {
         inlineTemplate = view.template;
-      }
-
-      if (isPresent(directiveOverrides) && isPresent(view.directives)) {
-        directiveOverrides.forEach((to, from) => {
-          var srcIndex = directives.indexOf(from);
-          if (srcIndex == -1) {
-            throw new BaseException(
-                `Overriden directive ${stringify(from)} not found in the template of ${stringify(type)}`);
-          }
-          directives[srcIndex] = to;
-        });
       }
 
       return new ComponentMetadata({
@@ -112,11 +94,9 @@ export class MockDirectiveResolver extends DirectiveResolver {
         entryComponents: metadata.entryComponents,
         template: inlineTemplate,
         templateUrl: templateUrl,
-        directives: directives.length > 0 ? directives : null,
         animations: animations,
         styles: view.styles,
         styleUrls: view.styleUrls,
-        pipes: view.pipes,
         encapsulation: view.encapsulation,
         interpolation: view.interpolation
       });
@@ -168,21 +148,6 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
   setAnimations(component: Type<any>, animations: AnimationEntryMetadata[]): void {
     this._animations.set(component, animations);
-    this._clearCacheFor(component);
-  }
-
-  /**
-   * Overrides a directive from the component {@link ViewMetadata}.
-   */
-  overrideViewDirective(component: Type<any>, from: Type<any>, to: Type<any>): void {
-    var overrides = this._directiveOverrides.get(component);
-
-    if (!overrides) {
-      overrides = new Map<Type<any>, Type<any>>();
-      this._directiveOverrides.set(component, overrides);
-    }
-
-    overrides.set(from, to);
     this._clearCacheFor(component);
   }
 }

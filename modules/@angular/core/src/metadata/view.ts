@@ -104,30 +104,6 @@ export class ViewMetadata {
   styles: string[];
 
   /**
-   * Specifies a list of directives that can be used within a template.
-   *
-   * Directives must be listed explicitly to provide proper component encapsulation.
-   *
-   * ### Example
-   *
-   * ```javascript
-   * @Component({
-   *   selector: 'my-component',
-   *   directives: [NgFor]
-   *   template: '
-   *   <ul>
-   *     <li *ngFor="let item of items">{{item}}</li>
-   *   </ul>'
-   * })
-   * class MyComponent {
-   * }
-   * ```
-   */
-  directives: Array<Type<any>|any[]>;
-
-  pipes: Array<Type<any>|any[]>;
-
-  /**
    * Specify how the template and the styles should be encapsulated.
    * The default is {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} if the view
    * has styles,
@@ -140,12 +116,9 @@ export class ViewMetadata {
   interpolation: [string, string];
 
   constructor(
-      {templateUrl, template, directives, pipes, encapsulation, styles, styleUrls, animations,
-       interpolation}: {
+      {templateUrl, template, encapsulation, styles, styleUrls, animations, interpolation}: {
         templateUrl?: string,
         template?: string,
-        directives?: Array<Type<any>|any[]>,
-        pipes?: Array<Type<any>|any[]>,
         encapsulation?: ViewEncapsulation,
         styles?: string[],
         styleUrls?: string[],
@@ -156,8 +129,6 @@ export class ViewMetadata {
     this.template = template;
     this.styleUrls = styleUrls;
     this.styles = styles;
-    this.directives = directives;
-    this.pipes = pipes;
     this.encapsulation = encapsulation;
     this.animations = animations;
     this.interpolation = interpolation;

@@ -104,16 +104,7 @@ class SomeDirectiveWithViewChild {
   c: any;
 }
 
-class SomeDir {}
-class SomePipe {}
-
-@Component({
-  selector: 'sample',
-  template: 'some template',
-  directives: [SomeDir],
-  pipes: [SomePipe],
-  styles: ['some styles']
-})
+@Component({selector: 'sample', template: 'some template', styles: ['some styles']})
 class ComponentWithTemplate {
 }
 
@@ -236,8 +227,6 @@ export function main() {
       it('should read out the template related metadata from the Component metadata', () => {
         var compMetadata = <ComponentMetadata>resolver.resolve(ComponentWithTemplate);
         expect(compMetadata.template).toEqual('some template');
-        expect(compMetadata.directives).toEqual([SomeDir]);
-        expect(compMetadata.pipes).toEqual([SomePipe]);
         expect(compMetadata.styles).toEqual(['some styles']);
       });
     });

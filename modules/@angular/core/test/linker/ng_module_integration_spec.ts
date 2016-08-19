@@ -8,8 +8,7 @@
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, SelfMetadata, Type, forwardRef} from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {BaseException} from '../../src/facade/exceptions';
@@ -263,19 +262,34 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toBe(SomeComp);
       });
 
-      it('should throw when using an entryComponent that was neither declared nor imported', () => {
-        @Component({template: '', entryComponents: [SomeComp]})
+      it('should throw if we cannot find a module associated with a module-level entryComponent', () => {
+        @Component({template: ''})
         class SomeCompWithEntryComponents {
         }
 
-        @NgModule({entryComponents: [SomeCompWithEntryComponents]})
+        @NgModule({declarations: [], entryComponents: [SomeCompWithEntryComponents]})
         class SomeModule {
         }
 
         expect(() => createModule(SomeModule))
             .toThrowError(
-                `NgModule ${stringify(SomeModule)} uses ${stringify(SomeCompWithEntryComponents)} via "entryComponents" but it was neither declared nor imported! If ${stringify(SomeCompWithEntryComponents)} is declared in an imported module, make sure it is exported.`);
+                'Component SomeCompWithEntryComponents is not part of any NgModule or the module has not been imported into your module.');
       });
+
+      it('should throw if we cannot find a module associated with a component-level entryComponent',
+         () => {
+           @Component({template: '', entryComponents: [SomeComp]})
+           class SomeCompWithEntryComponents {
+           }
+
+           @NgModule({declarations: [SomeCompWithEntryComponents]})
+           class SomeModule {
+           }
+
+           expect(() => createModule(SomeModule))
+               .toThrowError(
+                   'Component SomeComp is not part of any NgModule or the module has not been imported into your module.');
+         });
 
       it('should create ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
         @NgModule({
@@ -417,61 +431,6 @@ function declareTests({useJit}: {useJit: boolean}) {
           expect(compFixture.debugElement.children[0].children[0].properties['title'])
               .toBe('transformed someValue');
         });
-
-        it('should hoist @Component.directives/pipes into the module', () => {
-          @Component({
-            selector: 'parent',
-            template: '<comp></comp>',
-            directives: [CompUsingModuleDirectiveAndPipe, SomeDirective],
-            pipes: [SomePipe]
-          })
-          class ParentCompUsingModuleDirectiveAndPipe {
-          }
-
-          @NgModule({
-            declarations: [ParentCompUsingModuleDirectiveAndPipe],
-            entryComponents: [ParentCompUsingModuleDirectiveAndPipe]
-          })
-          class SomeModule {
-          }
-
-          const compFixture = createComp(ParentCompUsingModuleDirectiveAndPipe, SomeModule);
-          compFixture.detectChanges();
-          expect(compFixture.debugElement.children[0].children[0].properties['title'])
-              .toBe('transformed someValue');
-        });
-
-        it('should allow to use directives/pipes via @Component.directives/pipes that were already imported from another module',
-           () => {
-             @Component({
-               selector: 'parent',
-               template: '<comp></comp>',
-               directives: [CompUsingModuleDirectiveAndPipe, SomeDirective],
-               pipes: [SomePipe]
-             })
-             class ParentCompUsingModuleDirectiveAndPipe {
-             }
-
-             @NgModule({
-               declarations: [SomeDirective, SomePipe, CompUsingModuleDirectiveAndPipe],
-               exports: [SomeDirective, SomePipe, CompUsingModuleDirectiveAndPipe]
-             })
-             class SomeImportedModule {
-             }
-
-             @NgModule({
-               declarations: [ParentCompUsingModuleDirectiveAndPipe],
-               imports: [SomeImportedModule],
-               entryComponents: [ParentCompUsingModuleDirectiveAndPipe]
-             })
-             class SomeModule {
-             }
-
-             const compFixture = createComp(ParentCompUsingModuleDirectiveAndPipe, SomeModule);
-             compFixture.detectChanges();
-             expect(compFixture.debugElement.children[0].children[0].properties['title'])
-                 .toBe('transformed someValue');
-           });
       });
 
       describe('import/export', () => {
@@ -603,24 +562,6 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
     });
 
-    describe('bound compiler', () => {
-      it('should provide a Compiler instance that uses the directives/pipes of the module', () => {
-        @NgModule({declarations: [SomeDirective, SomePipe]})
-        class SomeModule {
-        }
-
-        const ngModule = createModule(SomeModule);
-        const boundCompiler: Compiler = ngModule.injector.get(Compiler);
-        const cf = boundCompiler.compileComponentSync(CompUsingModuleDirectiveAndPipe);
-        const compFixture = new ComponentFixture(cf.create(injector), null, false);
-        compFixture.detectChanges();
-        expect(compFixture.debugElement.children[0].properties['title'])
-            .toBe('transformed someValue');
-
-        // compile again should produce the same result
-        expect(boundCompiler.compileComponentSync(CompUsingModuleDirectiveAndPipe)).toBe(cf);
-      });
-    });
 
     describe('providers', function() {
       let moduleType: any = null;

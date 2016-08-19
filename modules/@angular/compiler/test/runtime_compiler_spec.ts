@@ -140,12 +140,12 @@ export function main() {
 
       it('should throw when using a templateUrl in a nested component that has not been compiled before',
          () => {
-           @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
+           @NgModule({declarations: [SomeComp, ChildComp], entryComponents: [SomeComp]})
            class SomeModule {
            }
 
            resourceLoader.spy('get').andCallFake(() => Promise.resolve(''));
-           dirResolver.setView(SomeComp, new ViewMetadata({template: '', directives: [ChildComp]}));
+           dirResolver.setView(SomeComp, new ViewMetadata({template: ''}));
            dirResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
            expect(() => compiler.compileModuleSync(SomeModule))
                .toThrowError(

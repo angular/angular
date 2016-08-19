@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Compiler, ComponentFactory, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {BaseException, Compiler, ComponentFactory, ComponentFactoryResolver, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from './angular_js';
@@ -117,10 +116,10 @@ export class UpgradeAdapter {
 
   // the ng2AppModule param should be required once the deprecated @Component.directives prop is
   // removed
-  constructor(private ng2AppModule?: Type<any>) {
-    if (arguments.length && !ng2AppModule) {
+  constructor(private ng2AppModule: Type<any>) {
+    if (!ng2AppModule) {
       throw new BaseException(
-          'UpgradeAdapter constructor called with undefined instead of a ng module type');
+          'UpgradeAdapter cannot be instantiated without an NgModule of the Angular 2 app.');
     }
   }
 
@@ -394,10 +393,21 @@ export class UpgradeAdapter {
                         {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)},
                         this.providers
                       ],
-                      imports: this.ng2AppModule ? [this.ng2AppModule] : [BrowserModule]
-                    }).Class({constructor: function() {}, ngDoBootstrap: function() {}});
+                      imports: [this.ng2AppModule]
+                    }).Class({
+                      constructor: function DynamicNgUpgradeModule() {},
+                      ngDoBootstrap: function() {}
+                    });
+
                 (platformBrowserDynamic() as any)
-                    ._bootstrapModuleWithZone(DynamicNgUpgradeModule, undefined, ngZone)
+                    ._bootstrapModuleWithZone(
+                        DynamicNgUpgradeModule, undefined, ngZone,
+                        (componentFactories: ComponentFactory<any>[]) => {
+                          componentFactories.forEach((componentFactory) => {
+                            componentFactoryRefMap[getComponentInfo(componentFactory.componentType)
+                                                       .selector] = componentFactory;
+                          });
+                        })
                     .then((ref: NgModuleRef<any>) => {
                       moduleRef = ref;
                       angular.element(element).data(
@@ -417,7 +427,7 @@ export class UpgradeAdapter {
     windowAngular.resumeBootstrap = undefined;
 
     ngZone.run(() => { angular.bootstrap(element, [this.idPrefix], config); });
-    ng1BootstrapPromise = new Promise((resolve, reject) => {
+    ng1BootstrapPromise = new Promise((resolve) => {
       if (windowAngular.resumeBootstrap) {
         var originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
         windowAngular.resumeBootstrap = function() {
@@ -430,23 +440,18 @@ export class UpgradeAdapter {
       }
     });
 
-    Promise.all([ng1BootstrapPromise, ng1compilePromise])
-        .then(() => {
-          return this.compileNg2Components(
-              moduleRef.injector.get(Compiler), componentFactoryRefMap);
-        })
-        .then(() => {
-          moduleRef.injector.get(NgZone).run(() => {
-            if (rootScopePrototype) {
-              rootScopePrototype.$apply = original$applyFn;  // restore original $apply
-              while (delayApplyExps.length) {
-                rootScope.$apply(delayApplyExps.shift());
-              }
-              (<any>upgrade)._bootstrapDone(moduleRef, ng1Injector);
-              rootScopePrototype = null;
-            }
-          });
-        }, onError);
+    Promise.all([ng1BootstrapPromise, ng1compilePromise]).then(() => {
+      moduleRef.injector.get(NgZone).run(() => {
+        if (rootScopePrototype) {
+          rootScopePrototype.$apply = original$applyFn;  // restore original $apply
+          while (delayApplyExps.length) {
+            rootScope.$apply(delayApplyExps.shift());
+          }
+          (<any>upgrade)._bootstrapDone(moduleRef, ng1Injector);
+          rootScopePrototype = null;
+        }
+      });
+    }, onError);
     return upgrade;
   }
 
@@ -517,23 +522,6 @@ export class UpgradeAdapter {
     var factory = function(injector: Injector) { return injector.get(token); };
     (<any>factory).$inject = [NG2_INJECTOR];
     return factory;
-  }
-
-  /* @internal */
-  private compileNg2Components(compiler: Compiler, componentFactoryRefMap: ComponentFactoryRefMap):
-      Promise<ComponentFactoryRefMap> {
-    var promises: Array<Promise<ComponentFactory<any>>> = [];
-    var types = this.upgradedComponents;
-    for (var i = 0; i < types.length; i++) {
-      promises.push(compiler.compileComponentAsync(<any>types[i], this.ng2AppModule));
-    }
-    return Promise.all(promises).then((componentFactories: Array<ComponentFactory<any>>) => {
-      var types = this.upgradedComponents;
-      for (var i = 0; i < componentFactories.length; i++) {
-        componentFactoryRefMap[getComponentInfo(types[i]).selector] = componentFactories[i];
-      }
-      return componentFactoryRefMap;
-    }, onError);
   }
 }
 

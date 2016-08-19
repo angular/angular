@@ -46,8 +46,7 @@ export class RuntimeCompiler implements Compiler {
       private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
       private _templateNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _ngModuleCompiler: NgModuleCompiler, private _compilerConfig: CompilerConfig,
-      private _console: Console) {}
+      private _ngModuleCompiler: NgModuleCompiler, private _compilerConfig: CompilerConfig) {}
 
   get injector(): Injector { return this._injector; }
 
@@ -66,23 +65,6 @@ export class RuntimeCompiler implements Compiler {
   compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
       Promise<ModuleWithComponentFactories<T>> {
     return this._compileModuleAndAllComponents(moduleType, false).asyncResult;
-  }
-
-  compileComponentAsync<T>(compType: Type<T>, ngModule: Type<any> = null):
-      Promise<ComponentFactory<T>> {
-    if (!ngModule) {
-      throw new BaseException(
-          `Calling compileComponentAsync on the root compiler without a module is not allowed! (Compiling component ${stringify(compType)})`);
-    }
-    return this._compileComponentInModule(compType, false, ngModule).asyncResult;
-  }
-
-  compileComponentSync<T>(compType: Type<T>, ngModule: Type<any> = null): ComponentFactory<T> {
-    if (!ngModule) {
-      throw new BaseException(
-          `Calling compileComponentSync on the root compiler without a module is not allowed! (Compiling component ${stringify(compType)})`);
-    }
-    return this._compileComponentInModule(compType, true, ngModule).syncResult;
   }
 
   private _compileModuleAndComponents<T>(moduleType: Type<T>, isSync: boolean):
@@ -146,17 +128,6 @@ export class RuntimeCompiler implements Compiler {
     return ngModuleFactory;
   }
 
-  private _compileComponentInModule<T>(compType: Type<T>, isSync: boolean, moduleType: Type<any>):
-      SyncAsyncResult<ComponentFactory<T>> {
-    this._metadataResolver.addComponentToModule(moduleType, compType);
-
-    const componentPromise = this._compileComponents(moduleType, isSync);
-    const componentFactory: ComponentFactory<T> =
-        this._assertComponentKnown(compType, true).proxyComponentFactory;
-
-    return new SyncAsyncResult(componentFactory, componentPromise.then(() => componentFactory));
-  }
-
   /**
    * @internal
    */
@@ -172,10 +143,13 @@ export class RuntimeCompiler implements Compiler {
           dirMeta.entryComponents.forEach((entryComponentType) => {
             templates.add(this._createCompiledHostTemplate(entryComponentType.runtime));
           });
+          // TODO: what about entryComponents of entryComponents? maybe skip here and just do the
+          // below?
         }
       });
       localModuleMeta.entryComponents.forEach((entryComponentType) => {
         templates.add(this._createCompiledHostTemplate(entryComponentType.runtime));
+        // TODO: what about entryComponents of entryComponents?
       });
     });
     templates.forEach((template) => {
@@ -248,8 +222,13 @@ export class RuntimeCompiler implements Compiler {
     const compiledTemplate = isHost ? this._compiledHostTemplateCache.get(compType) :
                                       this._compiledTemplateCache.get(compType);
     if (!compiledTemplate) {
-      throw new BaseException(
-          `Illegal state: CompiledTemplate for ${stringify(compType)} (isHost: ${isHost}) does not exist!`);
+      if (isHost) {
+        throw new BaseException(
+            `Illegal state: Compiled view for component ${stringify(compType)} does not exist!`);
+      } else {
+        throw new BaseException(
+            `Component ${stringify(compType)} is not part of any NgModule or the module has not been imported into your module.`);
+      }
     }
     return compiledTemplate;
   }
@@ -402,15 +381,6 @@ class ModuleBoundCompiler implements Compiler {
   constructor(private _delegate: RuntimeCompiler, private _ngModule: Type<any>) {}
 
   get _injector(): Injector { return this._delegate.injector; }
-
-  compileComponentAsync<T>(compType: Type<T>, ngModule: Type<any> = null):
-      Promise<ComponentFactory<T>> {
-    return this._delegate.compileComponentAsync(compType, ngModule ? ngModule : this._ngModule);
-  }
-
-  compileComponentSync<T>(compType: Type<T>, ngModule: Type<any> = null): ComponentFactory<T> {
-    return this._delegate.compileComponentSync(compType, ngModule ? ngModule : this._ngModule);
-  }
 
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
     return this._delegate.compileModuleSync(moduleType);

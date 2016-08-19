@@ -227,8 +227,6 @@ export declare class CollectionChangeRecord {
 export declare class Compiler {
     clearCache(): void;
     clearCacheFor(type: Type<any>): void;
-    compileComponentAsync<T>(component: Type<T>, ngModule?: Type<any>): Promise<ComponentFactory<T>>;
-    compileComponentSync<T>(component: Type<T>, ngModule?: Type<any>): ComponentFactory<T>;
     compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>): Promise<ModuleWithComponentFactories<T>>;
     compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
@@ -276,18 +274,16 @@ export declare abstract class ComponentFactoryResolver {
 export declare class ComponentMetadata extends DirectiveMetadata implements ComponentMetadataType {
     animations: AnimationEntryMetadata[];
     changeDetection: ChangeDetectionStrategy;
-    directives: Array<Type<any> | any[]>;
     encapsulation: ViewEncapsulation;
     entryComponents: Array<Type<any> | any[]>;
     interpolation: [string, string];
     moduleId: string;
-    pipes: Array<Type<any> | any[]>;
     styleUrls: string[];
     styles: string[];
     template: string;
     templateUrl: string;
     viewProviders: any[];
-    constructor({selector, inputs, outputs, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, directives, pipes, encapsulation, interpolation, entryComponents}?: ComponentMetadataType);
+    constructor({selector, inputs, outputs, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, encapsulation, interpolation, entryComponents}?: ComponentMetadataType);
 }
 
 /** @stable */
@@ -300,12 +296,10 @@ export interface ComponentMetadataFactory {
 export interface ComponentMetadataType extends DirectiveMetadataType {
     animations?: AnimationEntryMetadata[];
     changeDetection?: ChangeDetectionStrategy;
-    directives?: Array<Type<any> | any[]>;
     encapsulation?: ViewEncapsulation;
     entryComponents?: Array<Type<any> | any[]>;
     interpolation?: [string, string];
     moduleId?: string;
-    pipes?: Array<Type<any> | any[]>;
     styleUrls?: string[];
     styles?: string[];
     template?: string;

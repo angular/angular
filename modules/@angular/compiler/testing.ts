@@ -7,7 +7,6 @@
  */
 
 export * from './testing/schema_registry_mock';
-export * from './testing/test_component_builder';
 export * from './testing/directive_resolver_mock';
 export * from './testing/ng_module_resolver_mock';
 export * from './testing/pipe_resolver_mock';
@@ -39,13 +38,7 @@ export class TestingCompilerImpl implements TestingCompiler {
       private _compiler: RuntimeCompiler, private _directiveResolver: MockDirectiveResolver,
       private _pipeResolver: MockPipeResolver, private _moduleResolver: MockNgModuleResolver) {}
   get injector(): Injector { return this._compiler.injector; }
-  compileComponentAsync<T>(component: Type<T>, ngModule: Type<any> = null):
-      Promise<ComponentFactory<T>> {
-    return this._compiler.compileComponentAsync(component, <any>ngModule);
-  }
-  compileComponentSync<T>(component: Type<T>, ngModule: Type<any> = null): ComponentFactory<T> {
-    return this._compiler.compileComponentSync(component, <any>ngModule);
-  }
+
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
     return this._compiler.compileModuleSync(moduleType);
   }

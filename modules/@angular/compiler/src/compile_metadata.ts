@@ -410,7 +410,7 @@ export class CompileTemplateMetadata {
 export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   static create(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host, providers,
-       viewProviders, queries, viewQueries, entryComponents, viewDirectives, viewPipes, template}: {
+       viewProviders, queries, viewQueries, entryComponents, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -479,8 +479,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
       queries,
       viewQueries,
       entryComponents,
-      viewDirectives,
-      viewPipes,
       template,
     });
   }
@@ -500,17 +498,13 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   viewQueries: CompileQueryMetadata[];
   // Note: Need to keep types here to prevent cycles!
   entryComponents: CompileTypeMetadata[];
-  // Note: Need to keep types here to prevent cycles!
-  viewDirectives: CompileTypeMetadata[];
-  // Note: Need to keep types here to prevent cycles!
-  viewPipes: CompileTypeMetadata[];
 
   template: CompileTemplateMetadata;
 
   constructor(
       {type, isComponent, selector, exportAs, changeDetection, inputs, outputs, hostListeners,
        hostProperties, hostAttributes, providers, viewProviders, queries, viewQueries,
-       entryComponents, viewDirectives, viewPipes, template}: {
+       entryComponents, template}: {
         type?: CompileTypeMetadata,
         isComponent?: boolean,
         selector?: string,
@@ -547,8 +541,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
     this.queries = _normalizeArray(queries);
     this.viewQueries = _normalizeArray(viewQueries);
     this.entryComponents = _normalizeArray(entryComponents);
-    this.viewDirectives = _normalizeArray(viewDirectives);
-    this.viewPipes = _normalizeArray(viewPipes);
 
     this.template = template;
   }
