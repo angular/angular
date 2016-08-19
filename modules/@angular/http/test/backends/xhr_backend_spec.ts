@@ -124,11 +124,11 @@ export function main() {
           backend.createConnection(sampleRequest);
           expect(sampleRequest.headers.get('X-XSRF-TOKEN')).toBe('magic XSRF value');
         });
-        it('respects existing headers', () => {
+        it('should allow overwriting of existing headers', () => {
           getDOM().setCookie('XSRF-TOKEN', 'magic XSRF value');
           sampleRequest.headers.set('X-XSRF-TOKEN', 'already set');
           backend.createConnection(sampleRequest);
-          expect(sampleRequest.headers.get('X-XSRF-TOKEN')).toBe('already set');
+          expect(sampleRequest.headers.get('X-XSRF-TOKEN')).toBe('magic XSRF value');
         });
 
         describe('configuration', () => {

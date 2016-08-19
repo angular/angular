@@ -187,7 +187,7 @@ export class CookieXSRFStrategy implements XSRFStrategy {
 
   configureRequest(req: Request) {
     let xsrfToken = __platform_browser_private__.getDOM().getCookie(this._cookieName);
-    if (xsrfToken && !req.headers.has(this._headerName)) {
+    if (xsrfToken) {
       req.headers.set(this._headerName, xsrfToken);
     }
   }
