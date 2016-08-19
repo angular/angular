@@ -31,7 +31,7 @@ export abstract class NgModuleRef<T> {
 
   /**
    * The ComponentFactoryResolver to get hold of the ComponentFactories
-   * delcared in the `entryComponents` property of the module.
+   * declared in the `entryComponents` property of the module.
    */
   get componentFactoryResolver(): ComponentFactoryResolver { return unimplemented(); }
 
@@ -57,9 +57,9 @@ export abstract class NgModuleRef<T> {
 export class NgModuleFactory<T> {
   constructor(
       private _injectorClass: {new (parentInjector: Injector): NgModuleInjector<T>},
-      private _moduleype: Type<T>) {}
+      private _moduleType: Type<T>) {}
 
-  get moduleType(): Type<T> { return this._moduleype; }
+  get moduleType(): Type<T> { return this._moduleType; }
 
   create(parentInjector: Injector): NgModuleRef<T> {
     if (!parentInjector) {

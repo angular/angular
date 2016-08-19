@@ -774,7 +774,7 @@ export declare class NgModuleFactory<T> {
     moduleType: Type<T>;
     constructor(_injectorClass: {
         new (parentInjector: Injector): NgModuleInjector<T>;
-    }, _moduleype: Type<T>);
+    }, _moduleType: Type<T>);
     create(parentInjector: Injector): NgModuleRef<T>;
 }
 
