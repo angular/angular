@@ -1,6 +1,3 @@
-@import 'default-theme';
-@import 'variables';
-
 .demo-basic {
   padding: 0;
 }
@@ -16,13 +13,6 @@
   height: inherit;
   vertical-align: top;
   width: inherit;
-}
-
-.demo-transform {
-  transition: color $swift-ease-out-duration $swift-ease-out-timing-function;
-}
-.demo-primary {
-  color: md-color($md-primary);
 }
 
 .demo-card {

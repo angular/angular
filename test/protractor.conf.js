@@ -13,13 +13,12 @@ const config = {
   useAllAngular2AppRoots: true,
   specs: [ path.join(__dirname, '../e2e/**/*.e2e.ts') ],
   baseUrl: E2E_BASE_URL,
-  allScriptsTimeout: 30000,
-  getPageTimeout: 30000,
+  allScriptsTimeout: 120000,
+  getPageTimeout: 120000,
   jasmineNodeOpts: {
-    defaultTimeoutInterval: 60000,
+    defaultTimeoutInterval: 120000,
   }
 };
-
 
 if (process.env['TRAVIS']) {
   const key = require('../scripts/sauce/sauce_config');

@@ -3,31 +3,33 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "lib": ["es6", "es2015", "dom"],
     "mapRoot": "",
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
     "outDir": "../../dist/",
-    "rootDir": "..",
     "sourceMap": true,
     "target": "es5",
-    "inlineSources": true,
     "stripInternal": true,
     "baseUrl": "",
+    "typeRoots": [
+      "../../node_modules/@types",
+      "../../node_modules"
+    ],
     "paths": {
-      "@angular2-material/core/*": [
-        "./core/*",
-        "../core/*"
-      ],
       "@angular2-material/*": [
-        "./components/*",
-        "../components/*"
+        "../../dist/@angular2-material/*"
       ]
-    }
+    },
+    "types": [
+      "hammerjs"
+    ]
   },
-  "files": [
-    "main.ts",
-    "typings.d.ts"
-  ]
+  "angularCompilerOptions": {
+    "genDir": "../../dist",
+    "skipTemplateCodegen": true,
+    "debug": true
+  }
 }

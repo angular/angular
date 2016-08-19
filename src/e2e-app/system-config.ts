@@ -2,9 +2,6 @@
  * User Configuration.
  **********************************************************************************************/
 
-System.defaultJSExtensions = true;
-
-
 const components = [
   'all',
   'button',
@@ -29,17 +26,15 @@ const components = [
 ];
 
 
-/** Map relative paths to URLs. */
-const map: any = {
-  '@angular2-material/core': 'core',
-};
-components.forEach(name => map[`@angular2-material/${name}`] = `components/${name}`);
-
-
 /** User packages configuration. */
 const packages: any = {
   '@angular2-material/core': {
     format: 'cjs',
+    defaultExtension: 'js'
+  },
+  // Set the default extension for the root package, because otherwise the demo-app can't
+  // be built within the production mode. Due to missing file extensions.
+  '.': {
     defaultExtension: 'js'
   }
 };
@@ -50,6 +45,7 @@ components.forEach(name => {
   };
 });
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************
  * Everything underneath this line is managed by the CLI.
@@ -58,9 +54,9 @@ const barrels: string[] = [
   // Angular specific barrels.
   '@angular/core',
   '@angular/common',
-  '@angular/forms',
   '@angular/compiler',
   '@angular/http',
+  '@angular/forms',
   '@angular/router',
   '@angular/platform-browser',
   '@angular/platform-browser-dynamic',
@@ -69,7 +65,13 @@ const barrels: string[] = [
   'rxjs',
 
   // App specific barrels.
-  'e2e-app',
+  'demo-app',
+  'button-toggle',
+  'gestures',
+  'live-announcer',
+  'portal',
+  'overlay',
+  ...components
   /** @cli-barrel */
 ];
 
@@ -92,4 +94,4 @@ System.config({
 });
 
 // Apply the user's configuration.
-System.config({ map, packages });
+System.config({ packages });

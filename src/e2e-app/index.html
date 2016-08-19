@@ -1,19 +1,14 @@
 <!doctype html>
-{{!-- This file is an handlebar file that gets filled at build time. --}}
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Material2</title>
-  <base href=".">
-
-  {{#unless environment.production}}
-  <script src="/ember-cli-live-reload.js" type="text/javascript"></script>
-  {{/unless}}
+  <base href="/">
 
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="main.css" rel="stylesheet">
+  <link href="@angular2-material/core/style/core.css" rel="stylesheet">
 
   <!-- FontAwesome for md-icon demo. -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -21,9 +16,10 @@
 <body>
   <e2e-app>Loading...</e2e-app>
 
-  {{#each scripts.polyfills}}
-  <script src="{{.}}"></script>
-  {{/each}}
+  <script src="vendor/core-js/client/core.js"></script>
+  <script src="vendor/systemjs/dist/system.src.js"></script>
+  <script src="vendor/zone.js/dist/zone.js"></script>
+  <script src="vendor/hammerjs/hammer.min.js"></script>
 
   <script>
     System.import('system-config.js').then(function () {

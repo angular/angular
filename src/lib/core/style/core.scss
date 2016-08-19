@@ -1,0 +1,14 @@
+// Core styles that can be used to apply material design treatments to any element.
+@import '../a11y/live-announcer';
+@import 'elevation';
+@import '../overlay/overlay';
+@import 'ripple';
+
+// Provides external CSS classes for each elevation value. Each CSS class is formatted as
+// `md-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
+// elevated.
+@for $zValue from 0 through 24 {
+  .md-elevation-z#{$zValue} {
+    @include md-elevation($zValue);
+  }
+}

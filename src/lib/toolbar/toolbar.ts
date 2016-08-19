@@ -1,0 +1,55 @@
+import {
+  NgModule,
+  Component,
+  ChangeDetectionStrategy,
+  Input,
+  ViewEncapsulation
+} from '@angular/core';
+import {Renderer} from '@angular/core';
+import {ElementRef} from '@angular/core';
+
+@Component({
+  selector: 'md-toolbar',
+  templateUrl: 'toolbar.html',
+  styleUrls: ['toolbar.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
+})
+export class MdToolbar {
+
+  private _color: string;
+
+  constructor(private elementRef: ElementRef, private renderer: Renderer) { }
+
+  @Input()
+  get color(): string {
+    return this._color;
+  }
+
+  set color(value: string) {
+    this._updateColor(value);
+  }
+
+  private _updateColor(newColor: string) {
+    this._setElementColor(this._color, false);
+    this._setElementColor(newColor, true);
+    this._color = newColor;
+  }
+
+  private _setElementColor(color: string, isAdd: boolean) {
+    if (color != null && color != '') {
+      this.renderer.setElementClass(this.elementRef.nativeElement, `md-${color}`, isAdd);
+    }
+  }
+
+}
+
+/** @deprecated */
+export const MD_TOOLBAR_DIRECTIVES = [MdToolbar];
+
+
+@NgModule({
+  exports: MD_TOOLBAR_DIRECTIVES,
+  declarations: MD_TOOLBAR_DIRECTIVES,
+})
+export class MdToolbarModule { }

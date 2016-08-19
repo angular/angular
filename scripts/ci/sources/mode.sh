@@ -9,10 +9,6 @@ is_lint() {
   [[ "$MODE" = lint ]]
 }
 
-is_circular_deps_check() {
-  [[ "$MODE" = circular_deps ]]
-}
-
 is_extract_metadata() {
   [[ "$MODE" = extract_metadata ]]
 }
