@@ -37,6 +37,15 @@ export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
 };
 
 /**
+ * Defines a schema that will allow any property on any element.
+ *
+ * @experimental
+ */
+export const NO_ERRORS_SCHEMA: SchemaMetadata = {
+  name: 'no-errors-schema'
+};
+
+/**
  * Interface for creating {@link NgModuleMetadata}
  * @experimental
  */
