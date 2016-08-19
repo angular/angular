@@ -59,7 +59,7 @@ export class PortalHostDirective extends BasePortalHost {
   }
 
   /** Attach the given ComponentPortal to this PortlHost using the ComponentFactoryResolver. */
-  attachComponentPortal<T>(portal: ComponentPortal<T>): Promise<ComponentRef<T>> {
+  attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     portal.setAttachedHost(this);
 
     // If the portal specifies an origin, use that as the logical location of the component
@@ -75,30 +75,30 @@ export class PortalHostDirective extends BasePortalHost {
         portal.injector || viewContainerRef.parentInjector);
 
     this.setDisposeFn(() => ref.destroy());
-    return Promise.resolve(ref);
+    return ref;
   }
 
   /** Attach the given TemplatePortal to this PortlHost as an embedded View. */
-  attachTemplatePortal(portal: TemplatePortal): Promise<Map<string, any>> {
+  attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
     portal.setAttachedHost(this);
 
     this._viewContainerRef.createEmbeddedView(portal.templateRef);
     this.setDisposeFn(() => this._viewContainerRef.clear());
 
     // TODO(jelbourn): return locals from view
-    return Promise.resolve(new Map<string, any>());
+    return new Map<string, any>();
   }
 
   /** Detatches the currently attached Portal (if there is one) and attaches the given Portal. */
   private _replaceAttachedPortal(p: Portal<any>): void {
-    let maybeDetach = this.hasAttached() ? this.detach() : Promise.resolve(null);
+    if (this.hasAttached()) {
+      this.detach();
+    }
 
-    maybeDetach.then(() => {
-      if (p) {
-        this.attach(p);
-        this._portal = p;
-      }
-    });
+    if (p) {
+      this.attach(p);
+      this._portal = p;
+    }
   }
 }
 

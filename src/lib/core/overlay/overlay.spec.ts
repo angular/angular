@@ -1,10 +1,9 @@
-import {inject, fakeAsync, flushMicrotasks, TestBed, async} from '@angular/core/testing';
+import {inject, TestBed, async} from '@angular/core/testing';
 import {NgModule, Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {TemplatePortalDirective, PortalModule} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
 import {Overlay} from './overlay';
 import {OverlayContainer} from './overlay-container';
-import {OverlayRef} from './overlay-ref';
 import {OverlayState} from './overlay-state';
 import {PositionStrategy} from './position/position-strategy';
 import {OverlayModule} from './overlay-directives';
@@ -30,68 +29,43 @@ describe('Overlay', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(fakeAsync(inject([Overlay], (o: Overlay) => {
+  beforeEach(inject([Overlay], (o: Overlay) => {
     overlay = o;
 
     let fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
     fixture.detectChanges();
     templatePortal = fixture.componentInstance.templatePortal;
     componentPortal = new ComponentPortal(PizzaMsg, fixture.componentInstance.viewContainerRef);
+  }));
 
-    flushMicrotasks();
-  })));
-
-  it('should load a component into an overlay', fakeAsync(() => {
-    let overlayRef: OverlayRef;
-
-    overlay.create().then(ref => {
-      overlayRef = ref;
-      overlayRef.attach(componentPortal);
-    });
-
-    flushMicrotasks();
+  it('should load a component into an overlay', () => {
+    let overlayRef = overlay.create();
+    overlayRef.attach(componentPortal);
 
     expect(overlayContainerElement.textContent).toContain('Pizza');
 
     overlayRef.dispose();
     expect(overlayContainerElement.childNodes.length).toBe(0);
     expect(overlayContainerElement.textContent).toBe('');
-  }));
+  });
 
-  it('should load a template portal into an overlay', fakeAsync(() => {
-    let overlayRef: OverlayRef;
-
-    overlay.create().then(ref => {
-      overlayRef = ref;
-      overlayRef.attach(templatePortal);
-    });
-
-    flushMicrotasks();
+  it('should load a template portal into an overlay', () => {
+    let overlayRef = overlay.create();
+    overlayRef.attach(templatePortal);
 
     expect(overlayContainerElement.textContent).toContain('Cake');
 
     overlayRef.dispose();
     expect(overlayContainerElement.childNodes.length).toBe(0);
     expect(overlayContainerElement.textContent).toBe('');
-  }));
+  });
 
-  it('should open multiple overlays', fakeAsync(() => {
-    let pizzaOverlayRef: OverlayRef;
-    let cakeOverlayRef: OverlayRef;
+  it('should open multiple overlays', () => {
+    let pizzaOverlayRef = overlay.create();
+    pizzaOverlayRef.attach(componentPortal);
 
-    overlay.create().then(ref => {
-      pizzaOverlayRef = ref;
-      pizzaOverlayRef.attach(componentPortal);
-    });
-
-    flushMicrotasks();
-
-    overlay.create().then(ref => {
-      cakeOverlayRef = ref;
-      cakeOverlayRef.attach(templatePortal);
-    });
-
-    flushMicrotasks();
+    let cakeOverlayRef = overlay.create();
+    cakeOverlayRef.attach(templatePortal);
 
     expect(overlayContainerElement.childNodes.length).toBe(2);
     expect(overlayContainerElement.textContent).toContain('Pizza');
@@ -104,7 +78,7 @@ describe('Overlay', () => {
     cakeOverlayRef.dispose();
     expect(overlayContainerElement.childNodes.length).toBe(0);
     expect(overlayContainerElement.textContent).toBe('');
-  }));
+  });
 
   describe('applyState', () => {
     let state: OverlayState;
@@ -113,17 +87,13 @@ describe('Overlay', () => {
       state = new OverlayState();
     });
 
-    it('should apply the positioning strategy', fakeAsync(() => {
+    it('should apply the positioning strategy', () => {
       state.positionStrategy = new FakePositionStrategy();
 
-      overlay.create(state).then(ref => {
-        ref.attach(componentPortal);
-      });
-
-      flushMicrotasks();
+      overlay.create(state).attach(componentPortal);
 
       expect(overlayContainerElement.querySelectorAll('.fake-positioned').length).toBe(1);
-    }));
+    });
   });
 });
 

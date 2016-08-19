@@ -93,10 +93,8 @@ export class ConnectedOverlayDirective implements OnInit, OnDestroy {
             {originX: this.positions[0].overlayX, originY: this.positions[0].originY},
             {overlayX: this.positions[0].overlayX, overlayY: this.positions[0].overlayY});
 
-    this._overlay.create(overlayConfig).then(ref => {
-      this._overlayRef = ref;
-      this._overlayRef.attach(this._templatePortal);
-    });
+    this._overlayRef = this._overlay.create(overlayConfig);
+    this._overlayRef.attach(this._templatePortal);
   }
 
   /** Destroys the overlay created by this directive. */

@@ -21,13 +21,11 @@ export class DialogDemo {
     let config = new MdDialogConfig();
     config.viewContainerRef = this.viewContainerRef;
 
-    this.dialog.open(JazzDialog, config).then(ref => {
-      this.dialogRef = ref;
+    this.dialogRef = this.dialog.open(JazzDialog, config);
 
-      this.dialogRef.afterClosed().subscribe(result => {
-        this.lastCloseResult = result;
-        this.dialogRef = null;
-      });
+    this.dialogRef.afterClosed().subscribe(result => {
+      this.lastCloseResult = result;
+      this.dialogRef = null;
     });
   }
 }

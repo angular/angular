@@ -58,21 +58,21 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   get menuOpen(): boolean { return this._menuOpen; }
 
   @HostListener('click')
-  toggleMenu(): Promise<void> {
+  toggleMenu(): void {
     return this._menuOpen ? this.closeMenu() : this.openMenu();
   }
 
-  openMenu(): Promise<void> {
-    return this._createOverlay()
-      .then(() => this._overlayRef.attach(this._portal))
-      .then(() => this._setIsMenuOpen(true));
+  openMenu(): void {
+    this._createOverlay();
+    this._overlayRef.attach(this._portal);
+    this._setIsMenuOpen(true);
   }
 
-  closeMenu(): Promise<void> {
-    if (!this._overlayRef) { return Promise.resolve(); }
-
-    return this._overlayRef.detach()
-        .then(() => this._setIsMenuOpen(false));
+  closeMenu(): void {
+    if (this._overlayRef) {
+      this._overlayRef.detach();
+      this._setIsMenuOpen(false);
+    }
   }
 
   destroyMenu(): void {
@@ -103,12 +103,11 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
    *  This method creates the overlay from the provided menu's template and saves its
    *  OverlayRef so that it can be attached to the DOM when openMenu is called.
    */
-  private _createOverlay(): Promise<any> {
-    if (this._overlayRef) { return Promise.resolve(); }
-
-    this._portal = new TemplatePortal(this.menu.templateRef, this._viewContainerRef);
-    return this._overlay.create(this._getOverlayConfig())
-        .then(overlay => this._overlayRef = overlay);
+  private _createOverlay(): void {
+    if (!this._overlayRef) {
+      this._portal = new TemplatePortal(this.menu.templateRef, this._viewContainerRef);
+      this._overlayRef = this._overlay.create(this._getOverlayConfig());
+    }
   }
 
   /**

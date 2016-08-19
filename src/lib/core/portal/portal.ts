@@ -25,7 +25,7 @@ export abstract class Portal<T> {
   private _attachedHost: PortalHost;
 
   /** Attach this portal to a host. */
-  attach(host: PortalHost): Promise<T> {
+  attach(host: PortalHost): T {
     if (host == null) {
       throw new MdNullPortalHostError();
     }
@@ -35,11 +35,11 @@ export abstract class Portal<T> {
     }
 
     this._attachedHost = host;
-    return <Promise<T>> host.attach(this);
+    return <T> host.attach(this);
   }
 
   /** Detach this portal from its host */
-  detach(): Promise<void> {
+  detach(): void {
     let host = this._attachedHost;
     if (host == null) {
       throw new MdNoPortalAttachedError();
@@ -121,12 +121,12 @@ export class TemplatePortal extends Portal<Map<string, any>> {
     return this.templateRef.elementRef;
   }
 
-  attach(host: PortalHost, locals?: Map<string, any>): Promise<Map<string, any>> {
+  attach(host: PortalHost, locals?: Map<string, any>): Map<string, any> {
     this.locals = locals == null ? new Map<string, any>() : locals;
     return super.attach(host);
   }
 
-  detach(): Promise<void> {
+  detach(): void {
     this.locals = new Map<string, any>();
     return super.detach();
   }
@@ -137,9 +137,9 @@ export class TemplatePortal extends Portal<Map<string, any>> {
  * A `PortalHost` is an space that can contain a single `Portal`.
  */
 export interface PortalHost {
-  attach(portal: Portal<any>): Promise<any>;
+  attach(portal: Portal<any>): any;
 
-  detach(): Promise<any>;
+  detach(): any;
 
   dispose(): void;
 
@@ -166,7 +166,7 @@ export abstract class BasePortalHost implements PortalHost {
     return this._attachedPortal != null;
   }
 
-  attach(portal: Portal<any>): Promise<any> {
+  attach(portal: Portal<any>): any {
     if (portal == null) {
       throw new MdNullPortalError();
     }
@@ -190,11 +190,11 @@ export abstract class BasePortalHost implements PortalHost {
     throw new MdUnknownPortalTypeError();
   }
 
-  abstract attachComponentPortal<T>(portal: ComponentPortal<T>): Promise<ComponentRef<T>>;
+  abstract attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
 
-  abstract attachTemplatePortal(portal: TemplatePortal): Promise<Map<string, any>>;
+  abstract attachTemplatePortal(portal: TemplatePortal): Map<string, any>;
 
-  detach(): Promise<void> {
+  detach(): void {
     if (this._attachedPortal) { this._attachedPortal.setAttachedHost(null); }
 
     this._attachedPortal = null;
@@ -202,8 +202,6 @@ export abstract class BasePortalHost implements PortalHost {
       this._disposeFn();
       this._disposeFn = null;
     }
-
-    return Promise.resolve(null);
   }
 
   dispose() {

@@ -1,4 +1,4 @@
-import {inject, fakeAsync, async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {inject, async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
 import {MdDialog, MdDialogModule} from './dialog';
 import {OverlayContainer} from '@angular2-material/core/overlay/overlay-container';
@@ -27,9 +27,9 @@ describe('MdDialog', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MdDialog], fakeAsync((d: MdDialog) => {
+  beforeEach(inject([MdDialog], (d: MdDialog) => {
     dialog = d;
-  })));
+  }));
 
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
@@ -38,72 +38,58 @@ describe('MdDialog', () => {
     testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
   });
 
-  it('should open a dialog with a component', async(() => {
+  it('should open a dialog with a component', () => {
     let config = new MdDialogConfig();
     config.viewContainerRef = testViewContainerRef;
 
-    dialog.open(PizzaMsg, config).then(dialogRef => {
-      expect(overlayContainerElement.textContent).toContain('Pizza');
-      expect(dialogRef.componentInstance).toEqual(jasmine.any(PizzaMsg));
-      expect(dialogRef.componentInstance.dialogRef).toBe(dialogRef);
+    let dialogRef = dialog.open(PizzaMsg, config);
 
-      viewContainerFixture.detectChanges();
-      let dialogContainerElement = overlayContainerElement.querySelector('md-dialog-container');
-      expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
-    });
+    viewContainerFixture.detectChanges();
 
-    detectChangesForDialogOpen(viewContainerFixture);
-  }));
+    expect(overlayContainerElement.textContent).toContain('Pizza');
+    expect(dialogRef.componentInstance).toEqual(jasmine.any(PizzaMsg));
+    expect(dialogRef.componentInstance.dialogRef).toBe(dialogRef);
 
-  it('should apply the configured role to the dialog element', async(() => {
+    viewContainerFixture.detectChanges();
+    let dialogContainerElement = overlayContainerElement.querySelector('md-dialog-container');
+    expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
+  });
+
+  it('should apply the configured role to the dialog element', () => {
     let config = new MdDialogConfig();
     config.viewContainerRef = testViewContainerRef;
     config.role = 'alertdialog';
 
-    dialog.open(PizzaMsg, config).then(dialogRef => {
-      viewContainerFixture.detectChanges();
+    dialog.open(PizzaMsg, config);
 
-      let dialogContainerElement = overlayContainerElement.querySelector('md-dialog-container');
-      expect(dialogContainerElement.getAttribute('role')).toBe('alertdialog');
-    });
+    viewContainerFixture.detectChanges();
 
-    detectChangesForDialogOpen(viewContainerFixture);
-  }));
+    let dialogContainerElement = overlayContainerElement.querySelector('md-dialog-container');
+    expect(dialogContainerElement.getAttribute('role')).toBe('alertdialog');
+  });
 
-  it('should close a dialog and get back a result', async(() => {
+  it('should close a dialog and get back a result', () => {
     let config = new MdDialogConfig();
     config.viewContainerRef = testViewContainerRef;
 
-    dialog.open(PizzaMsg, config).then(dialogRef => {
-      viewContainerFixture.detectChanges();
+    let dialogRef = dialog.open(PizzaMsg, config);
 
-      let afterCloseResult: string;
-      dialogRef.afterClosed().subscribe(result => {
-        afterCloseResult = result;
-      });
+    viewContainerFixture.detectChanges();
 
-      dialogRef.close('Charmander');
+    viewContainerFixture.detectChanges();
 
-      viewContainerFixture.whenStable().then(() => {
-        expect(afterCloseResult).toBe('Charmander');
-        expect(overlayContainerElement.childNodes.length).toBe(0);
-      });
+    let afterCloseResult: string;
+    dialogRef.afterClosed().subscribe(result => {
+      afterCloseResult = result;
     });
 
-    detectChangesForDialogOpen(viewContainerFixture);
-  }));
+    dialogRef.close('Charmander');
+
+    expect(afterCloseResult).toBe('Charmander');
+    expect(overlayContainerElement.querySelector('md-dialog-container')).toBeNull();
+  });
 });
 
-
-/** Runs the necessary detectChanges for a dialog to complete its opening. */
-function detectChangesForDialogOpen(fixture: ComponentFixture<ComponentWithChildViewContainer>) {
-  // TODO(jelbourn): figure out why the test zone is "stable" when there are still pending
-  // tasks, such that we have to use `setTimeout` to run the second round of change detection.
-  // Two rounds of change detection are necessary: one to *create* the dialog container, and
-  // another to cause the lifecycle events of the container to run and load the dialog content.
-  fixture.detectChanges();
-  setTimeout(() => fixture.detectChanges(), 50);
-}
 
 @Directive({selector: 'dir-with-view-container'})
 class DirectiveWithViewContainer {
@@ -123,10 +109,7 @@ class ComponentWithChildViewContainer {
 }
 
 /** Simple component for testing ComponentPortal. */
-@Component({
-  selector: 'pizza-msg',
-  template: '<p>Pizza</p>',
-})
+@Component({template: '<p>Pizza</p>'})
 class PizzaMsg {
   constructor(public dialogRef: MdDialogRef<PizzaMsg>) { }
 }

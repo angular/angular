@@ -186,10 +186,7 @@ describe('Portals', () => {
     it('should attach and detach a component portal', fakeAsync(() => {
       let portal = new ComponentPortal(PizzaMsg, someViewContainerRef);
 
-      let componentInstance: PizzaMsg;
-      portal.attach(host).then(ref => {
-        componentInstance = ref.instance;
-      });
+      let componentInstance: PizzaMsg = portal.attach(host).instance;
 
       flushMicrotasks();
 
@@ -210,10 +207,7 @@ describe('Portals', () => {
       let chocolateInjector = new ChocolateInjector(someInjector);
       let portal = new ComponentPortal(PizzaMsg, someViewContainerRef, chocolateInjector);
 
-      let componentInstance: PizzaMsg;
-      portal.attach(host).then(ref => {
-        componentInstance = ref.instance;
-      });
+      let componentInstance: PizzaMsg = portal.attach(host).instance;
 
       flushMicrotasks();
       fixture.detectChanges();

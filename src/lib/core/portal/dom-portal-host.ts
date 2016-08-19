@@ -17,7 +17,7 @@ export class DomPortalHost extends BasePortalHost {
   }
 
   /** Attach the given ComponentPortal to DOM element using the ComponentFactoryResolver. */
-  attachComponentPortal<T>(portal: ComponentPortal<T>): Promise<ComponentRef<T>> {
+  attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     if (portal.viewContainerRef == null) {
       throw new MdComponentPortalAttachedToDomWithoutOriginError();
     }
@@ -32,10 +32,10 @@ export class DomPortalHost extends BasePortalHost {
     this._hostDomElement.appendChild(hostView.rootNodes[0]);
     this.setDisposeFn(() => ref.destroy());
 
-    return Promise.resolve(ref);
+    return ref;
   }
 
-  attachTemplatePortal(portal: TemplatePortal): Promise<Map<string, any>> {
+  attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
     let viewContainer = portal.viewContainerRef;
     let viewRef = viewContainer.createEmbeddedView(portal.templateRef);
 
@@ -49,7 +49,7 @@ export class DomPortalHost extends BasePortalHost {
     }));
 
     // TODO(jelbourn): Return locals from view.
-    return Promise.resolve(new Map<string, any>());
+    return new Map<string, any>();
   }
 
   dispose(): void {

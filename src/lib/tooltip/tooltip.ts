@@ -1,7 +1,6 @@
 import {
     NgModule,
     Component,
-    ComponentRef,
     Directive,
     Input,
     ElementRef,
@@ -74,7 +73,8 @@ export class MdTooltip {
     if (this._overlayRef) {
       if (this.visible) {
         // if visible, hide before destroying
-        this.hide().then(() => this._createOverlay());
+        this.hide();
+        this._createOverlay();
       } else {
         // if not visible, dispose and recreate
         this._overlayRef.dispose();
@@ -87,9 +87,8 @@ export class MdTooltip {
       let strategy = this._overlay.position().connectedTo(this._elementRef, origin, position);
       let config = new OverlayState();
       config.positionStrategy = strategy;
-      this._overlay.create(config).then(ref => {
-        this._overlayRef = ref;
-      });
+
+      this._overlayRef = this._overlay.create(config);
     }
   }
 
@@ -136,37 +135,35 @@ export class MdTooltip {
   /**
    * Shows the tooltip and returns a promise that will resolve when the tooltip is visible
    */
-  show(): Promise<any> {
+  show(): void {
     if (!this.visible && this._overlayRef && !this._overlayRef.hasAttached()) {
       this.visible = true;
-      let promise = this._overlayRef.attach(new ComponentPortal(TooltipComponent,
-          this._viewContainerRef));
-      promise.then((ref: ComponentRef<TooltipComponent>) => {
-        ref.instance.message = this.message;
-        this._updatePosition();
-      });
-      return promise;
+
+      let portal = new ComponentPortal(TooltipComponent, this._viewContainerRef);
+      let tooltipRef = this._overlayRef.attach(portal);
+      tooltipRef.instance.message = this.message;
+      this._updatePosition();
     }
   }
 
   /**
    * Hides the tooltip and returns a promise that will resolve when the tooltip is hidden
    */
-  hide(): Promise<any> {
+  hide(): void {
     if (this.visible && this._overlayRef && this._overlayRef.hasAttached()) {
       this.visible = false;
-      return this._overlayRef.detach();
+      this._overlayRef.detach();
     }
   }
 
   /**
    * Shows/hides the tooltip and returns a promise that will resolve when it is done
    */
-  toggle(): Promise<any> {
+  toggle(): void {
     if (this.visible) {
-      return this.hide();
+      this.hide();
     } else {
-      return this.show();
+      this.show();
     }
   }
 

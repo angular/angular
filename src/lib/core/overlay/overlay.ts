@@ -36,8 +36,8 @@ export class Overlay {
    * @param state State to apply to the overlay.
    * @returns A reference to the created overlay.
    */
-  create(state: OverlayState = defaultState): Promise<OverlayRef> {
-    return this._createPaneElement().then(pane => this._createOverlayRef(pane, state));
+  create(state: OverlayState = defaultState): OverlayRef {
+    return this._createOverlayRef(this._createPaneElement(), state);
   }
 
   /**
@@ -52,14 +52,14 @@ export class Overlay {
    * Creates the DOM element for an overlay and appends it to the overlay container.
    * @returns Promise resolving to the created element.
    */
-  private _createPaneElement(): Promise<HTMLElement> {
+  private _createPaneElement(): HTMLElement {
     var pane = document.createElement('div');
     pane.id = `md-overlay-${nextUniqueId++}`;
     pane.classList.add('md-overlay-pane');
 
     this._overlayContainer.getContainerElement().appendChild(pane);
 
-    return Promise.resolve(pane);
+    return pane;
   }
 
   /**

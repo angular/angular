@@ -44,9 +44,8 @@ export class OverlayDemo {
 
     this.nextPosition += 30;
 
-    this.overlay.create(config).then(ref => {
-      ref.attach(new ComponentPortal(RotiniPanel, this.viewContainerRef));
-    });
+    let overlayRef = this.overlay.create(config);
+    overlayRef.attach(new ComponentPortal(RotiniPanel, this.viewContainerRef));
   }
 
   openFusilliPanel() {
@@ -59,9 +58,8 @@ export class OverlayDemo {
 
     this.nextPosition += 30;
 
-    this.overlay.create(config).then(ref => {
-      ref.attach(this.templatePortals.first);
-    });
+    let overlayRef = this.overlay.create(config);
+    overlayRef.attach(this.templatePortals.first);
   }
 
   openSpaghettiPanel() {
@@ -75,9 +73,8 @@ export class OverlayDemo {
     let config = new OverlayState();
     config.positionStrategy = strategy;
 
-    this.overlay.create(config).then(ref => {
-      ref.attach(new ComponentPortal(SpagettiPanel, this.viewContainerRef));
-    });
+    let overlayRef = this.overlay.create(config);
+    overlayRef.attach(new ComponentPortal(SpagettiPanel, this.viewContainerRef));
   }
 }
 
