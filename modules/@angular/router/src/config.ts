@@ -9,6 +9,7 @@
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
+
 /**
  * `Routes` is an array of route configurations. Each one has the following properties:
  *

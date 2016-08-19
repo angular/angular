@@ -10,7 +10,7 @@ Routing and navigation
 @cheatsheetItem
 syntax(ts):
 `const routes: Routes = [
-  { path: '', HomeComponent },
+  { path: '', component: HomeComponent },
   { path: 'path/:routeParam', component: MyComponent },
   { path: 'staticPath', component: ... },
   { path: '**', component: ... },
@@ -21,7 +21,7 @@ syntax(ts):
 const routing = RouterModule.forRoot(routes);`|`Routes`
 syntax(js):
 `var routes = [
-  { path: '', HomeComponent },
+  { path: '', component: HomeComponent },
   { path: ':routeParam', component: MyComponent },
   { path: 'staticPath', component: ... },
   { path: '**', component: ... },
@@ -32,15 +32,23 @@ syntax(js):
 var routing = ng.router.RouterModule.forRoot(routes);`|`ng.router.Routes`
 syntax(dart):
 `@RouteConfig(const [
-  const Route(path: 'path', component: MyComponent, name: 'MyCmp' ),
-])`|`@RouteConfig`
+  const Route(path: '', component: HomeComponent, name: 'Home'),
+  const Route(path: ':routeParam', component: MyComponent, name: 'MyCmp'),
+  const Route(path: 'staticPath', component: ..., name: 'StaticCmp'),
+  const Route(path: '**', component: ..., name: 'WildcardCmp'),
+  const Route(path: '/oldPath', redirectTo: ['/StaticCmp']),
+  const Route(path: ..., component: ..., data: { message: 'Custom' })
+])class MyComponent() {}`|`@RouteConfig`
 description:
-Configures routes for the application. Supports static, parameterized, redirect and wildcard routes. Also supports custom route data and resolve.
+Configures routes for the application. Supports static, parameterized, redirect and wildcard routes. Also supports custom route data{@target ts js} and resolve{@endtarget}.
 
 
 @cheatsheetItem
 syntax:
-`<router-outlet></router-outlet>`|`router-outlet`
+`
+<router-outlet></router-outlet>
+<router-outlet name="aux"></router-outlet>
+`|`router-outlet`
 description:
 Marks the location to load the component of the active route.
 
@@ -55,7 +63,10 @@ syntax(ts js):
 <a [routerLink]="[ '/path' ]" fragment="anchor">
 `|`[routerLink]`
 syntax(dart):
-`<a [routerLink]="[ '/MyCmp', { routeParam: 'value' } ]">Link</a>`|`[routerLink]`
+`
+<a [routerLink]="[ '/MyCmp', { routeParam: 'value' } ]">
+<a [routerLink]="[ '/MyCmp', { matrixParam: 'value' } ]">
+`|`[routerLink]`
 description:
 Creates a link to a different view based on a route instruction consisting of a route path, required and optional parameters, query parameters and a fragment. Add the '/' prefix to navigate to a root route; add the './' prefix for a child route; add the '../sibling' prefix for a sibling or parent route.
 
@@ -63,7 +74,7 @@ Creates a link to a different view based on a route instruction consisting of a 
 syntax(ts js):
 `<a [routerLink]="[ '/path' ]" routerLinkActive="active">`
 syntax(dart):
-`<a [routerLink]="[ '/MyCmp', { myParam: 'value' } ]">`|`[routerLink]`
+`<a [routerLink]="[ '/MyCmp', { myParam: 'value' } ]">`|`routerLink`
 description:
 The provided class(es) will be added to the element when the routerLink becomes the current active route.
 
@@ -73,14 +84,14 @@ syntax(ts):
     canActivate(
       route: ActivatedRouteSnapshot,
       state: RouterStateSnapshot
-    ): Observable<boolean> | boolean { ... }
+    ): Observable<boolean>|Promise<boolean>|boolean { ... }
 }
 
 { path: ..., canActivate: [CanActivateGuard] }`|`CanActivate`
 syntax(js):
 `var CanActivateGuard = ng.core.Class({
   canActivate: function(route, state) {
-    // return Observable boolean or boolean
+    // return Observable/Promise boolean or boolean
   }
 });
 
@@ -88,7 +99,7 @@ syntax(js):
 syntax(dart):
 `@CanActivate(() => ...)class MyComponent() {}`|`@CanActivate`
 description:
-{@target js ts}An interface for defining a class that the router should call first to determine if it should activate this component. Should return a boolean or a Observable that resolves a boolean{@endtarget}
+{@target js ts}An interface for defining a class that the router should call first to determine if it should activate this component. Should return an Observable/Promise that resolves a boolean or a boolean{@endtarget}
 {@target dart}A component decorator defining a function that the router should call first to determine if it should activate this component. Should return a boolean or a future.{@endtarget}
 
 @cheatsheetItem
@@ -98,14 +109,14 @@ syntax(ts):
       component: T,
       route: ActivatedRouteSnapshot,
       state: RouterStateSnapshot
-    ): Observable<boolean> | boolean { ... }
+    ): Observable<boolean>|Promise<boolean>|boolean { ... }
 }
 
 { path: ..., canDeactivate: [CanDeactivateGuard] }`|`CanDeactivate`
 syntax(js):
 `var CanDeactivateGuard = ng.core.Class({
   canDeactivate: function(component, route, state) {
-    // return Observable boolean or boolean
+    // return Observable/Promise boolean or boolean
   }
 });
 
@@ -113,10 +124,30 @@ syntax(js):
 syntax(dart):
 `routerCanDeactivate(nextInstruction, prevInstruction) { ... }`|`routerCanDeactivate`
 description:
-{@target js ts}An interface for defining a class that the router should call first to determine if it should deactivate this component after a navigation. Should return a boolean or a Observable that resolves a boolean{@endtarget}
+{@target js ts}An interface for defining a class that the router should call first to determine if it should deactivate this component after a navigation. Should return an Observable/Promise that resolves a boolean or a boolean{@endtarget}
 {@target dart}
 The router calls the routerCanDeactivate methods (if defined) of every component that would be removed after a navigation. The navigation proceeds if and only if all such methods return true or a future that completes successfully{@endtarget}.
 
+@cheatsheetItem
+syntax(ts):
+`class CanActivateChildGuard implements CanActivateChild {
+    canActivateChild(
+      route: ActivatedRouteSnapshot,
+      state: RouterStateSnapshot
+    ): Observable<boolean>|Promise<boolean>|boolean { ... }
+}
+
+{ path: ..., canActivateChild: [CanActivateGuard], children: ... }`|`CanActivateChild`
+syntax(js):
+`var CanActivateChildGuard = ng.core.Class({
+  canActivateChild: function(route, state) {
+    // return Observable/Promise boolean or boolean
+  }
+});
+
+{ path: ..., canActivateChild: [CanActivateChildGuard], children: ... }`|`CanActivateChild`
+description:
+{@target js ts}An interface for defining a class that the router should call first to determine if it should activate the child route. Should return an Observable/Promise that resolves a boolean or a boolean{@endtarget}
 
 @cheatsheetItem
 syntax(ts):
@@ -124,20 +155,40 @@ syntax(ts):
     resolve(
       route: ActivatedRouteSnapshot,
       state: RouterStateSnapshot
-    ): Observable<any> | any { ... }
+    ): Observable<any>|Promise<any>|any { ... }
 }
 
 { path: ..., resolve: [ResolveGuard] }`|`Resolve`
 syntax(js):
 `var ResolveGuard = ng.core.Class({
   resolve: function(route, state) {
-    // return Observable value or value
+    // return Observable/Promise value or value
   }
 });
 
 { path: ..., resolve: [ResolveGuard] }`|`Resolve`
 description:
-{@target js ts}An interface for defining a class that the router should call first to resolve route data before rendering the route. Should return a value or an Observable that resolves a value{@endtarget}
+{@target js ts}An interface for defining a class that the router should call first to resolve route data before rendering the route. Should return an Observable/Promise that resolves a value or a value{@endtarget}
+
+@cheatsheetItem
+syntax(ts):
+`class CanLoadGuard implements CanLoad {
+    canLoad(
+      route: Route
+    ): Observable<boolean>|Promise<boolean>|boolean { ... }
+}
+
+{ path: ..., canLoad: [CanLoadGuard], loadChildren: ... }`|`CanLoad`
+syntax(js):
+`var CanLoadGuard = ng.core.Class({
+  canLoad: function(route) {
+    // return Observable/Promise boolean or boolean
+  }
+});
+
+{ path: ..., canLoad: [CanLoadGuard], loadChildren: ... }`|`CanLoad`
+description:
+{@target js ts}An interface for defining a class that the router should call first to check if the lazy loaded module should be loaded. Should return an Observable/Promise that resolves a boolean or a boolean{@endtarget}
 
 @cheatsheetItem
 syntax(dart):
