@@ -1,0 +1,11 @@
+# This prevents the compiler codegen step from requiring certain packages from
+# being built twice -- one for host and one for target.
+#
+# In any case, since we don't have architecture dependent outputs, setting this
+# to false will not be a problem.
+build --distinct_host_configuration=false
+
+build --verbose_failures --show_task_finish
+test --test_output=errors --keep_going
+
+build --strategy=TypeScriptCompile=worker --worker_max_instances=2
