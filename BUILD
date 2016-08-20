@@ -654,6 +654,7 @@ karma_test(
         ":angular",
         "browser-providers.conf.js",
         "tools/karma/reporter.js",
+        "tools/karma/ibazel_watcher.js",
     ],
     config = "karma-js.conf.js",
     local = True,
@@ -667,6 +668,7 @@ karma_test(
     ],
     data = KARMA_DATA + [
         "browser-providers.conf.js",
+        "tools/karma/ibazel_watcher.js",
     ],
     config = "modules/@angular/router/karma.conf.js",
     size = "small",

@@ -1,4 +1,5 @@
 var browserProvidersConf = require('../../../browser-providers.conf.js');
+var ibazelWatcher = require('../../../tools/karma/ibazel_watcher.js');
 
 // Karma configuration
 module.exports = function(config) {
@@ -6,7 +7,7 @@ module.exports = function(config) {
 
     basePath: '../../../',
 
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'ibazel_watcher'],
 
     files: [
       // Polyfills.
@@ -65,7 +66,8 @@ module.exports = function(config) {
       'karma-browserstack-launcher',
       'karma-sauce-launcher',
       'karma-chrome-launcher',
-      'karma-sourcemap-loader'
+      'karma-sourcemap-loader',
+      ibazelWatcher
     ],
 
     preprocessors: {

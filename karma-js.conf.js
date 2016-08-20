@@ -1,12 +1,13 @@
 var browserProvidersConf = require('./browser-providers.conf.js');
 var internalAngularReporter = require('./tools/karma/reporter.js');
+var ibazelWatcher = require('./tools/karma/ibazel_watcher.js');
 
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
 module.exports = function(config) {
   config.set({
 
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'ibazel_watcher'],
 
     files: [
       // Sources and specs.
@@ -54,7 +55,8 @@ module.exports = function(config) {
       'karma-sauce-launcher',
       'karma-chrome-launcher',
       'karma-sourcemap-loader',
-      internalAngularReporter
+      internalAngularReporter,
+      ibazelWatcher
     ],
 
     preprocessors: {
