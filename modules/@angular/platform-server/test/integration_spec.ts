@@ -42,7 +42,7 @@ export function main() {
            expect(getDOM().getText(body)).toEqual('Works!');
          });
        }),
-       500);
+       2000);
   });
 }
 
