@@ -119,7 +119,7 @@ export function main() {
          expect(componentFixture.nativeElement).toHaveText('11');
        }));
 
-    fit('should signal through whenStable when the fixture is stable (autoDetectChanges)',
+    it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
         async(() => {
           let componentFixture = TestBed.createComponent(AsyncComp);
           componentFixture.autoDetectChanges();
