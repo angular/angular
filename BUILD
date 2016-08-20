@@ -2,6 +2,7 @@ package(default_visibility=["//visibility:public"])
 
 load("//build_defs:nodejs.bzl", "nodejs_binary", "nodejs_test")
 load("//build_defs:typescript.bzl", "ts_library", "ts_ext_library")
+load("//build_defs:jasmine.bzl", "jasmine_node_test")
 # This imports node_modules targets from a generated file.
 load("//build_defs:node_modules_index.bzl", "node_modules_index")
 node_modules_index(glob)
@@ -53,6 +54,24 @@ nodejs_binary(
 ###############################################################################
 # Packages
 ###############################################################################
+ts_library(
+    name = "jasmine_helper",
+    srcs = [
+        "modules/jasmine_helper.ts"
+    ],
+    deps = [
+        "//:core",
+        "//:platform-server",
+    ],
+    data = [
+        "//:source-map-support",
+        "//:reflect-metadata",
+        "//:zone.js",
+        "//:parse5",
+    ],
+    tsconfig = "modules/tsconfig.json",
+)
+
 ts_ext_library(
     name = "es6-subset",
     declarations = ["modules/es6-subset.d.ts"],
@@ -95,6 +114,30 @@ ts_library(
 )
 
 ts_library(
+    name = "common_test_module",
+    srcs = glob(["modules/@angular/common/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:core",
+        "//:common",
+        "//:compiler",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:platform-server",
+        "//:facade",
+        "//:es6-subset",
+    ],
+    deps_use_internal = [
+        "//:common",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/common/test",
+    is_leaf = True,
+)
+
+ts_library(
     name = "compiler-cli",
     srcs = glob(
         ["modules/@angular/compiler-cli/**/*.ts"],
@@ -118,6 +161,28 @@ ts_library(
 )
 
 ts_library(
+    name = "compiler-cli_test_module",
+    srcs = glob(["modules/@angular/compiler-cli/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:core",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:compiler-cli",
+        "//:tsc-wrapped",
+        "//:facade",
+    ],
+    deps_use_internal = [
+        "//:compiler-cli",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/compiler-cli/test",
+    is_leaf = True,
+)
+
+ts_library(
     name = "compiler",
     srcs = glob(
         ["modules/@angular/compiler/**/*.ts"],
@@ -128,6 +193,30 @@ ts_library(
     ],
     tsconfig = "modules/@angular/compiler/tsconfig-es5.json",
     module_name = "@angular/compiler",
+)
+
+ts_library(
+    name = "compiler_test_module",
+    srcs = glob(["modules/@angular/compiler/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:core",
+        "//:common",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:compiler",
+        "//:facade",
+        "//:es6-subset",
+    ],
+    deps_use_internal = [
+        "//:compiler",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/compiler/test",
+    # Required for compiling codegen.
+    module_name = "@angular/compiler/test",
 )
 
 ts_library(
@@ -147,6 +236,29 @@ ts_library(
 )
 
 ts_library(
+    name = "core_test_module",
+    srcs = glob(["modules/@angular/core/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:common",
+        "//:compiler",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:core",
+        "//:facade",
+        "//:es6-subset",
+    ],
+    deps_use_internal = [
+        "//:core",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/core/test",
+    is_leaf = True,
+)
+
+ts_library(
     name = "forms",
     srcs = glob(
         ["modules/@angular/forms/**/*.ts"],
@@ -159,6 +271,29 @@ ts_library(
     ],
     tsconfig = "modules/@angular/forms/tsconfig-es5.json",
     module_name = "@angular/forms",
+)
+
+ts_library(
+    name = "forms_test_module",
+    srcs = glob(
+        ["modules/@angular/forms/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:core",
+        "//:common",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:forms",
+        "//:facade",
+    ],
+    deps_use_internal = [
+        "//:forms",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/forms/test",
+    is_leaf = True,
 )
 
 ts_library(
@@ -196,6 +331,55 @@ ts_library(
 )
 
 ts_library(
+    name = "platform-browser_test_module",
+    srcs = glob(["modules/@angular/platform-browser/test/**/*.ts"]),
+    data = glob(
+        [
+            "modules/@angular/platform-browser/test/static_assets/**",
+            "modules/@angular/platform-browser/test/browser/static_assets/**",
+        ]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:common",
+        "//:compiler",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:core",
+    ],
+    deps_use_internal = [
+        "//:core",
+        "//:platform-browser",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/platform-browser/test",
+    is_leaf = True,
+)
+
+ts_library(
+    name = "http_test_module",
+    srcs = glob(["modules/@angular/http/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:core",
+        "//:common",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:http",
+        "//:facade",
+    ],
+    deps_use_internal = [
+        "//:http",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/http/test",
+    is_leaf = True,
+)
+
+ts_library(
     name = "platform-browser-dynamic",
     srcs = glob(
         ["modules/@angular/platform-browser-dynamic/**/*.ts"],
@@ -210,6 +394,27 @@ ts_library(
     ],
     tsconfig = "modules/@angular/platform-browser-dynamic/tsconfig-es5.json",
     module_name = "@angular/platform-browser-dynamic",
+)
+
+ts_library(
+    name = "platform-browser-dynamic_test_module",
+    srcs = glob(["modules/@angular/platform-browser-dynamic/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:core",
+        "//:compiler",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:facade",
+    ],
+    deps_use_internal = [
+        "//:platform-browser-dynamic",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/platform-browser-dynamic/test",
+    is_leaf = True,
 )
 
 ts_library(
@@ -235,6 +440,27 @@ ts_library(
 )
 
 ts_library(
+    name = "platform-server_test_module",
+    srcs = glob(["modules/@angular/platform-server/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:core",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:platform-server",
+        "//:facade",
+    ],
+    deps_use_internal = [
+        "//:platform-server",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/platform-server/test",
+    is_leaf = True,
+)
+
+ts_library(
     name = "router",
     srcs = glob(
         ["modules/@angular/router/**/*.ts"],
@@ -254,6 +480,27 @@ ts_library(
 )
 
 ts_library(
+    name = "router_test_module",
+    srcs = glob(["modules/@angular/router/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:core",
+        "//:common",
+        "//:router",
+        "//:platform-browser",
+        "//:facade",
+    ],
+    deps_use_internal = [
+        "//:router",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/router/test",
+    is_leaf = True,
+)
+
+ts_library(
     name = "upgrade",
     srcs = glob(
         ["modules/@angular/upgrade/**/*.ts"],
@@ -268,4 +515,60 @@ ts_library(
     ],
     tsconfig = "modules/@angular/upgrade/tsconfig-es5.json",
     module_name = "@angular/upgrade",
+)
+
+ts_library(
+    name = "upgrade_test_module",
+    srcs = glob(["modules/@angular/upgrade/test/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_jasmine",
+        "//:zone.js",
+        "//:core",
+        "//:platform-browser",
+        "//:upgrade",
+        "//:facade",
+    ],
+    deps_use_internal = [
+        "//:upgrade",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/@angular/upgrade/test",
+    is_leaf = True,
+)
+
+jasmine_node_test(
+    name = "compiler_test",
+    srcs = [":compiler_test_module"],
+    helpers = [":jasmine_helper"],
+    size = "small",
+    args = ["--node_path=modules:tools"],
+)
+
+JASMINE_TESTABLE = [
+    "core",
+    "common",
+    "compiler",
+    "compiler-cli",
+    "http",
+    "platform-server",
+    "router",
+]
+
+[
+    jasmine_node_test(
+        name = pkg + "_test",
+        srcs = [":{}_test_module".format(pkg)],
+        helpers = [":jasmine_helper"],
+        size = "small",
+        args = ["--node_path=modules:tools"],
+        flaky = pkg == "platform-server",
+    )
+    for pkg in JASMINE_TESTABLE
+    if pkg != "compiler"
+]
+
+test_suite(
+    name = "jasmine_tests",
+    tests = [":{}_test".format(p) for p in JASMINE_TESTABLE],
 )
