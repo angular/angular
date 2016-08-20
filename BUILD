@@ -853,3 +853,29 @@ public_api_test(
     public_api = ":public_api",
     size = "small",
 )
+
+nodejs_test(
+    name = "check_cycle_test",
+    srcs = [
+        "//build_defs:check_cycle.js",
+    ],
+    deps = [
+        ":madge",
+    ],
+    entry_point = "check_cycle.js",
+    data = [
+        ":core",
+        ":common",
+        ":compiler",
+        ":compiler-cli",
+        ":forms",
+        ":http",
+        ":platform-browser",
+        ":platform-browser-dynamic",
+        ":platform-server",
+        ":router",
+        ":upgrade",
+        ":tsc-wrapped",
+    ],
+    size = "small",
+)
