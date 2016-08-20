@@ -1,5 +1,5 @@
+import {Tsc} from '@angular/tsc-wrapped/src/tsc';
 import * as ts from 'typescript';
-import {Tsc} from '../src/tsc';
 
 describe('options parsing', () => {
 

@@ -1,8 +1,7 @@
+import {Evaluator} from '@angular/tsc-wrapped/src/evaluator';
+import {Symbols} from '@angular/tsc-wrapped/src/symbols';
 import * as fs from 'fs';
 import * as ts from 'typescript';
-
-import {Evaluator} from '../src/evaluator';
-import {Symbols} from '../src/symbols';
 
 import {Directory, Host, expectNoDiagnostics, findVar} from './typescript.mocks';
 
