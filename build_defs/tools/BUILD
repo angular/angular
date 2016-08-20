@@ -31,3 +31,22 @@ nodejs_binary(
     data = ["//:source-map", "//:tsc_bin"],
     entry_point = "flatten_sourcemap.js",
 )
+
+nodejs_binary(
+    name = "copy",
+    srcs = ["copy.js"],
+    deps = [
+        "//:minimist",
+    ],
+    entry_point = "copy.js",
+)
+
+nodejs_binary(
+    name = "downlevel_declaration",
+    srcs = ["downlevel_declaration.js"],
+    deps = [
+        "//:minimist",
+        "//:tsc-wrapped",
+    ],
+    entry_point = "downlevel_declaration.js",
+)

@@ -2,10 +2,13 @@ package(default_visibility=["//visibility:public"])
 
 load("//build_defs:nodejs.bzl", "nodejs_binary", "nodejs_test")
 load("//build_defs:typescript.bzl", "ts_library", "ts_ext_library")
+load("//build_defs:ts_compat.bzl", "ts_compat")
 load("//build_defs:jasmine.bzl", "jasmine_node_test")
 load("//build_defs:karma.bzl", "karma_test")
 load("//build_defs:bundle.bzl", "js_bundle")
 load("//build_defs:protractor.bzl", "protractor_test")
+load("//build_defs:npm_package.bzl", "ts_npm_package")
+
 # This imports node_modules targets from a generated file.
 load("//build_defs:node_modules_index.bzl", "node_modules_index")
 node_modules_index(glob)
@@ -702,6 +705,39 @@ ALL_PACKAGES = ESM_PACKAGES + NON_ESM_PACKAGES + ["tsc-wrapped"]
     )
     for pkg in ESM_PACKAGES
 ]
+
+ts_npm_package(
+    name = "tsc-wrapped_package",
+    srcs = [":tsc-wrapped"],
+    manifest = "tools/@angular/tsc-wrapped/package.json",
+    module_name = "@angular/tsc-wrapped",
+    strip_prefix = "/tools/@angular/tsc-wrapped",
+    esm = False,
+)
+
+[
+    (
+        ts_compat(
+            name = pkg + "_compat",
+            srcs = [":" + pkg],
+        ),
+        ts_npm_package(
+            name = pkg + "_package",
+            srcs = [":{}_compat".format(pkg)],
+            manifest = "modules/@angular/{}/package.json".format(pkg),
+            module_name = "@angular/" + pkg,
+            # Prefix / avoids bug https://github.com/bazelbuild/bazel/issues/1604
+            strip_prefix = "/modules/@angular/" + pkg,
+            esm = pkg in ESM_PACKAGES,
+        ),
+    )
+    for pkg in ESM_PACKAGES + NON_ESM_PACKAGES
+]
+
+filegroup(
+    name = "all_packages",
+    srcs = [":{}_package".format(p) for p in ALL_PACKAGES],
+)
 
 ts_library(
     name = "playground",
