@@ -7,6 +7,7 @@ load("//build_defs:jasmine.bzl", "jasmine_node_test")
 load("//build_defs:karma.bzl", "karma_test")
 load("//build_defs:bundle.bzl", "js_bundle")
 load("//build_defs:protractor.bzl", "protractor_test")
+load("//build_defs:ts_api_guardian.bzl", "public_api", "public_api_test")
 load("//build_defs:npm_package.bzl", "ts_npm_package")
 
 # This imports node_modules targets from a generated file.
@@ -803,4 +804,52 @@ protractor_test(
     config = "protractor-bazel.conf.js",
     local = True,
     args = ["--node_path=modules:tools"],
+)
+
+public_api(
+    name = "public_api",
+    srcs = [
+        ":core_compat",
+        ":common_compat",
+        ":platform-browser_compat",
+        ":platform-browser-dynamic_compat",
+        ":platform-server_compat",
+        ":http_compat",
+        ":forms_compat",
+        ":router_compat",
+        ":upgrade_compat",
+    ],
+    entry_points = [
+        "modules/@angular/core/compat/index.d.ts",
+        "modules/@angular/core/compat/testing.d.ts",
+        "modules/@angular/common/compat/index.d.ts",
+        "modules/@angular/common/compat/testing.d.ts",
+        "modules/@angular/upgrade/compat/index.d.ts",
+        "modules/@angular/platform-browser/compat/index.d.ts",
+        "modules/@angular/platform-browser/compat/testing.d.ts",
+        "modules/@angular/platform-browser-dynamic/compat/index.d.ts",
+        "modules/@angular/platform-browser-dynamic/compat/testing.d.ts",
+        "modules/@angular/platform-server/compat/index.d.ts",
+        "modules/@angular/platform-server/compat/testing.d.ts",
+        "modules/@angular/http/compat/index.d.ts",
+        "modules/@angular/http/compat/testing.d.ts",
+        "modules/@angular/forms/compat/index.d.ts",
+        "modules/@angular/router/compat/index.d.ts",
+    ],
+    root_dir = "modules/@angular",
+    out_dir = "tools/public_api_guard",
+    arguments = [
+        "--stripExportPattern ^__",
+        "--allowModuleIdentifiers jasmine",
+        "--allowModuleIdentifiers protractor",
+        "--allowModuleIdentifiers angular",
+        "--onStabilityMissing error",
+    ],
+)
+
+public_api_test(
+    name = "public_api_test",
+    srcs = glob(["tools/public_api_guard/**/*"]),
+    public_api = ":public_api",
+    size = "small",
 )
