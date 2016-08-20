@@ -20,6 +20,33 @@ def normalize_path(path):
   return "/".join(segments)
 
 
+def drop_dir(path, directory):
+  if not path.startswith(directory):
+    fail("Path \"%s\" does not reside in directory \"%s\"" % (path, directory))
+  if directory:
+    return path[len(directory) + 1:]
+  else:
+    return path
+
+
+def map_files(ctx, files, root_dir, out_dir, ext=None):
+  """Creates a list of output files given directory and the extension.
+
+  root_dir and out_dir are specified relative to the package.
+  """
+  ret = []
+  for f in files:
+    path_in_package = drop_dir(f.short_path, ctx.label.package)
+    if ext != None:
+      path_in_package_without_ext = path_in_package[:path_in_package.rfind(".")]
+      filename = join_paths(out_dir, drop_dir(path_in_package_without_ext, root_dir) + ext)
+    else:
+      filename = join_paths(out_dir, drop_dir(path_in_package, root_dir))
+    ret.append(ctx.new_file(filename))
+
+  return ret
+
+
 def pick_file(files, base_label, path, attr=None):
   """Returns the file within the target which matches the specified package-
   relative path.
@@ -74,3 +101,51 @@ def pick_file_in_dir(files, base_label, path, attr=None):
   remainder_path = short_path[len(matches[0].short_path) + 1:]
 
   return (matches[0], remainder_path)
+
+
+def pseudo_json_encode(dictionary):
+  # We abuse the fact that str() of a dict is almost a valid JSON object, and
+  # that we do not use characters requiring escaping.
+  return str(dictionary).replace("True", "true").replace("False", "false")
+
+
+def _pick_provider_impl(ctx):
+  """pick_provider
+
+  Rule that serves as an escape hatch for complex Skylark-based rules to easily
+  expose multiple targets that correspond to a subset of the provider. This
+  allows genrules or macros to build upon these targets.
+
+  Args:
+    srcs: The targets to pick the provider from.
+    providers: A list of dotted keys to pick under the target. The files in that
+      path will be collected.
+  """
+  files = set()
+
+  for src in ctx.attr.srcs:
+    for provider in ctx.attr.providers:
+      keys = provider.split(".")
+      out = src
+      for k in keys:
+        if not hasattr(out, k):
+          fail("Target {} does not have provider \"{}\"".format(src.label, provider), "srcs")
+        out = getattr(out, k)
+      files += out
+
+  return struct(
+      files = files,
+      runfiles = ctx.runfiles(
+          files = list(files),
+          collect_default = True,
+          collect_data = True,
+      ),
+  )
+
+pick_provider = rule(
+    _pick_provider_impl,
+    attrs = {
+        "srcs": attr.label_list(mandatory=True),
+        "providers": attr.string_list(mandatory=True),
+    },
+)
