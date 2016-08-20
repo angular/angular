@@ -14,10 +14,6 @@ import {assetUrl} from '@angular/compiler/src/util';
 
 import {SimpleJsImportGenerator, codegenExportsVars, codegenStmts} from './output_emitter_util';
 
-export function getExpressions(): any {
-  throw new Error('unimplemented');
-}
-
 // Generator
 export function emit() {
   var emitter = new JavaScriptEmitter(new SimpleJsImportGenerator());

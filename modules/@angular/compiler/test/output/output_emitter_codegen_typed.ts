@@ -13,15 +13,7 @@ import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {print} from '@angular/facade/src/lang';
 import {assetUrl} from '@angular/compiler/src/util';
 
-function unimplemented(): any {
-  throw new Error('unimplemented');
-}
-
 import {SimpleJsImportGenerator, codegenExportsVars, codegenStmts} from './output_emitter_util';
-
-export function getExpressions(): any {
-  return unimplemented();
-}
 
 // Generator
 export function emit() {

@@ -219,6 +219,41 @@ ts_library(
     module_name = "@angular/compiler/test",
 )
 
+nodejs_binary(
+    name = "compiler_test_codegen_bin",
+    srcs = [":compiler_test_module"],
+    deps = [
+        "reflect-metadata",
+    ],
+    entry_point = "modules/@angular/compiler/test/output/output_emitter_codegen.js",
+)
+
+genrule(
+    name = "compiler_test_codegen_ts",
+    outs = [
+        "modules/@angular/compiler/test/output/output_emitter_generated_typed.ts",
+        "modules/@angular/compiler/test/output/output_emitter_generated_untyped.ts",
+    ],
+    tools = [
+        # This has to be put in tools so that its runfiles tree is also built.
+        ":compiler_test_codegen_bin",
+    ],
+    cmd = "$(location :compiler_test_codegen_bin) --node_path=modules/ $(OUTS)",
+    output_to_bindir = True,
+)
+
+ts_library(
+    name = "compiler_test_codegen_js",
+    srcs = [":compiler_test_codegen_ts"],
+    deps = [
+        ":core",
+        ":compiler",
+        ":compiler_test_module",
+    ],
+    tsconfig = "tools/cjs-jasmine/tsconfig-output_emitter_codegen.json",
+    root_dir = "modules/@angular/compiler/test",
+)
+
 ts_library(
     name = "core",
     srcs = glob(
@@ -539,7 +574,7 @@ ts_library(
 
 jasmine_node_test(
     name = "compiler_test",
-    srcs = [":compiler_test_module"],
+    srcs = [":compiler_test_module", ":compiler_test_codegen_js"],
     helpers = [":jasmine_helper"],
     size = "small",
     args = ["--node_path=modules:tools"],
