@@ -3,6 +3,7 @@ package(default_visibility=["//visibility:public"])
 load("//build_defs:nodejs.bzl", "nodejs_binary", "nodejs_test")
 load("//build_defs:typescript.bzl", "ts_library", "ts_ext_library")
 load("//build_defs:jasmine.bzl", "jasmine_node_test")
+load("//build_defs:karma.bzl", "karma_test")
 # This imports node_modules targets from a generated file.
 load("//build_defs:node_modules_index.bzl", "node_modules_index")
 node_modules_index(glob)
@@ -606,4 +607,62 @@ JASMINE_TESTABLE = [
 test_suite(
     name = "jasmine_tests",
     tests = [":{}_test".format(p) for p in JASMINE_TESTABLE],
+)
+
+ts_library(
+    name = "empty_module",
+    srcs = ["modules/empty.ts"],
+    tsconfig = "modules/tsconfig.json",
+)
+
+KARMA_DATA = [
+    ":es6-shim",
+    ":karma-browserstack-launcher",
+    ":karma-chrome-launcher",
+    ":karma-jasmine",
+    ":karma-sauce-launcher",
+    ":karma-sourcemap-loader",
+    ":reflect-metadata",
+    ":source-map",
+    ":systemjs",
+]
+
+karma_test(
+    name = "karma_test",
+    srcs = [
+        ":core_test_module",
+        ":common_test_module",
+        ":compiler_test_module",
+        ":compiler_test_codegen_js",
+        ":forms_test_module",
+        ":http_test_module",
+        ":platform-browser_test_module",
+        ":platform-browser-dynamic_test_module",
+        ":platform-server_test_module",
+        ":upgrade_test_module",
+        ":empty_module",
+        "shims_for_IE.js",
+        "test-main.js",
+    ],
+    data = KARMA_DATA + [
+        ":angular",
+        "browser-providers.conf.js",
+        "tools/karma/reporter.js",
+    ],
+    config = "karma-js.conf.js",
+    local = True,
+)
+
+karma_test(
+    name = "router_karma_test",
+    srcs = [
+        ":router_test_module",
+        "modules/@angular/router/karma-test-shim.js",
+    ],
+    data = KARMA_DATA + [
+        "browser-providers.conf.js",
+    ],
+    config = "modules/@angular/router/karma.conf.js",
+    size = "small",
+    local = True,
 )

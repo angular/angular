@@ -11,7 +11,8 @@ module.exports = function(config) {
     files: [
       // Sources and specs.
       // Loaded through the System loader, in `test-main.js`.
-      {pattern: 'dist/all/@angular/**/*.js', included: false, watched: true},
+      {pattern: 'modules/@angular/**/*.js', included: false, watched: true},
+      {pattern: 'modules/@angular/**/*.js.map', included: false, watched: true},
 
       'node_modules/core-js/client/core.js',
       // include Angular v1 for upgrade module testing
@@ -30,20 +31,19 @@ module.exports = function(config) {
       'node_modules/systemjs/dist/system.src.js',
       {pattern: 'node_modules/rxjs/**', included: false, watched: false, served: true},
       'node_modules/reflect-metadata/Reflect.js',
-      'tools/build/file2modulename.js',
+      // 'tools/build/file2modulename.js',
       'test-main.js',
-      {pattern: 'dist/all/empty.*', included: false, watched: false},
+      {pattern: 'modules/empty.*', included: false, watched: false},
       {pattern: 'modules/@angular/platform-browser/test/static_assets/**', included: false, watched: false},
       {pattern: 'modules/@angular/platform-browser/test/browser/static_assets/**', included: false, watched: false}
     ],
 
     exclude: [
-      'dist/all/@angular/**/e2e_test/**',
-      'dist/all/@angular/examples/**',
-      'dist/all/@angular/router/**',
-      'dist/all/@angular/compiler-cli/**',
-      'dist/all/angular1_router.js',
-      'dist/all/@angular/platform-browser/testing/e2e_util.js'
+      'modules/@angular/**/e2e_test/**',
+      'modules/@angular/examples/**',
+      'modules/@angular/compiler-cli/**',
+      'modules/angular1_router.js',
+      'modules/@angular/platform-browser/testing/e2e_util.js'
     ],
 
     customLaunchers: browserProvidersConf.customLaunchers,

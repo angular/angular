@@ -12,7 +12,6 @@ module.exports = function(config) {
       // Polyfills.
       'node_modules/core-js/client/core.js',
       'node_modules/reflect-metadata/Reflect.js',
-      'shims_for_IE.js',
 
       // System.js for module loading
       'node_modules/systemjs/dist/system-polyfills.js',
@@ -35,28 +34,28 @@ module.exports = function(config) {
       {pattern: 'modules/@angular/router/karma-test-shim.js', included: true, watched: true },
 
       // Angular modules
-      {pattern: 'dist/all/@angular/core/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/core/src/**/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/core/testing/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/core/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/core/src/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/core/testing/**/*.js', included: false, watched: false},
 
-      {pattern: 'dist/all/@angular/common/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/common/src/**/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/common/testing/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/common/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/common/src/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/common/testing/**/*.js', included: false, watched: false},
 
-      {pattern: 'dist/all/@angular/compiler/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/compiler/src/**/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/compiler/testing/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/compiler/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/compiler/src/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/compiler/testing/**/*.js', included: false, watched: false},
 
-      {pattern: 'dist/all/@angular/platform-browser/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/platform-browser/src/**/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/platform-browser/testing/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/platform-browser/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/platform-browser/src/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/platform-browser/testing/**/*.js', included: false, watched: false},
 
-      {pattern: 'dist/all/@angular/platform-browser-dynamic/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/platform-browser-dynamic/src/**/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/platform-browser-dynamic/testing/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/platform-browser-dynamic/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/platform-browser-dynamic/src/**/*.js', included: false, watched: false},
+      {pattern: 'modules/@angular/platform-browser-dynamic/testing/**/*.js', included: false, watched: false},
 
       // Router
-      {pattern: 'dist/all/@angular/router/**/*.js', included: false, watched: true}
+      {pattern: 'modules/@angular/router/**/*.js', included: false, watched: true}
     ],
 
     customLaunchers: browserProvidersConf.customLaunchers,
@@ -77,12 +76,7 @@ module.exports = function(config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
     browsers: ['Chrome'],
-    singleRun: false,
-    captureTimeout: 60000,
-    browserDisconnectTimeout : 60000,
-    browserDisconnectTolerance : 3,
-    browserNoActivityTimeout : 60000
-  });
+    singleRun: false
+  })
 };
