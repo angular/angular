@@ -19,7 +19,7 @@ describe('routing inbox-app', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    var URL = 'all/playground/src/routing/';
+    var URL = 'modules/playground/src/routing/';
 
     it('should list out the current collection of items', () => {
       browser.get(URL);

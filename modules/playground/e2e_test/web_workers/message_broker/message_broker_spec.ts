@@ -8,7 +8,7 @@
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
-var URL = 'all/playground/src/web_workers/message_broker/index.html';
+var URL = 'modules/playground/src/web_workers/message_broker/index.html';
 
 describe('MessageBroker', function() {
 

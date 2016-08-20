@@ -11,7 +11,7 @@ import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 // TODO(i): reenable once we are using a version of protractor containing the
 // change in https://github.com/angular/protractor/pull/3403
 xdescribe('ngUpgrade', function() {
-  var URL = 'all/playground/src/upgrade/index.html';
+  var URL = 'modules/playground/src/upgrade/index.html';
 
   beforeEach(function() {
     browser.rootEl = 'body';

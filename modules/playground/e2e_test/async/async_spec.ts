@@ -9,7 +9,7 @@
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 describe('async', () => {
-  var URL = 'all/playground/src/async/index.html';
+  var URL = 'modules/playground/src/async/index.html';
 
   beforeEach(() => browser.get(URL));
 

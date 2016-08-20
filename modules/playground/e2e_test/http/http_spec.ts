@@ -13,7 +13,7 @@ describe('http', function() {
   afterEach(verifyNoBrowserErrors);
 
   describe('fetching', function() {
-    var URL = 'all/playground/src/http/index.html';
+    var URL = 'modules/playground/src/http/index.html';
 
     it('should fetch and display people', function() {
       browser.get(URL);

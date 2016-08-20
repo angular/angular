@@ -5,6 +5,7 @@ load("//build_defs:typescript.bzl", "ts_library", "ts_ext_library")
 load("//build_defs:jasmine.bzl", "jasmine_node_test")
 load("//build_defs:karma.bzl", "karma_test")
 load("//build_defs:bundle.bzl", "js_bundle")
+load("//build_defs:protractor.bzl", "protractor_test")
 # This imports node_modules targets from a generated file.
 load("//build_defs:node_modules_index.bzl", "node_modules_index")
 node_modules_index(glob)
@@ -701,3 +702,69 @@ ALL_PACKAGES = ESM_PACKAGES + NON_ESM_PACKAGES + ["tsc-wrapped"]
     )
     for pkg in ESM_PACKAGES
 ]
+
+ts_library(
+    name = "playground",
+    srcs = glob(["modules/playground/src/**/*.ts"]),
+    deps = [
+        "//:core",
+        "//:common",
+        "//:forms",
+        "//:http",
+        "//:platform-browser",
+        "//:platform-browser-dynamic",
+        "//:router",
+        "//:upgrade",
+        "//:facade",
+    ],
+    data = glob(
+        ["modules/playground/src/**/*"],
+        exclude = ["modules/playground/src/**/*.ts"],
+    ),
+    tsconfig = "modules/tsconfig.json",
+)
+
+ts_library(
+    name = "e2e_util",
+    srcs = glob(["modules/e2e_util/**/*.ts"]),
+    deps = [
+        "//:_types_node",
+        "//:_types_protractor",
+        "//:_types_selenium-webdriver",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    root_dir = "modules/e2e_util",
+    module_name = "e2e_util",
+)
+
+ts_library(
+    name = "playground_test_module",
+    srcs = glob(["modules/playground/e2e_test/**/*.ts"]),
+    deps = [
+        "//:_types_jasmine",
+        "//:e2e_util",
+    ],
+    tsconfig = "modules/tsconfig.json",
+    is_leaf = True,
+)
+
+protractor_test(
+    name = "playground_test",
+    srcs = [":playground_test_module"],
+    data = [":{}_bundle".format(p) for p in ESM_PACKAGES] + [
+        ":core",  # Needed for @angular/core/src/facade
+        ":facade",
+        ":playground",
+        ":core-js",
+        ":zone.js",
+        ":systemjs",
+        ":base64-js",
+        ":reflect-metadata",
+        ":rxjs",
+        ":angular",
+        "favicon.ico",
+    ],
+    config = "protractor-bazel.conf.js",
+    local = True,
+    args = ["--node_path=modules:tools"],
+)

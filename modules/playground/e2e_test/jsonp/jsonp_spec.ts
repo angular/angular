@@ -13,7 +13,7 @@ describe('jsonp', function() {
   afterEach(verifyNoBrowserErrors);
 
   describe('fetching', function() {
-    var URL = 'all/playground/src/jsonp/index.html';
+    var URL = 'modules/playground/src/jsonp/index.html';
 
     it('should fetch and display people', function() {
       browser.get(URL);
