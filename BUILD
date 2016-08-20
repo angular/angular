@@ -881,3 +881,16 @@ nodejs_test(
     ],
     size = "small",
 )
+
+sh_test(
+    name = "offline_compiler_test",
+    srcs = ["scripts/ci-lite/offline_compiler_test.sh"],
+    data = [
+        "//:all_packages",
+        "package.json",
+    ] + glob(["modules/@angular/compiler-cli/integrationtest/**"]),
+    # This currently uses external npm, so we need an unsandboxed environment.
+    # If your npm is not in the standard PATH, you will also need to pass the
+    # flag --test_env=PATH to "bazel test".
+    local = True,
+)
