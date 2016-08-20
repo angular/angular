@@ -8,3 +8,16 @@ nodejs_binary(
     deps = ["//:typescript"],
     entry_point = "merge_tsconfig.js",
 )
+
+sh_binary(
+    name = "uglifyjs_wrapped",
+    srcs = ["uglifyjs_wrapped.sh"],
+    data = ["//:uglifyjs_bin"],
+)
+
+nodejs_binary(
+    name = "flatten_sourcemap",
+    srcs = ["flatten_sourcemap.js"],
+    data = ["//:source-map", "//:tsc_bin"],
+    entry_point = "flatten_sourcemap.js",
+)

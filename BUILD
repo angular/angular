@@ -4,6 +4,7 @@ load("//build_defs:nodejs.bzl", "nodejs_binary", "nodejs_test")
 load("//build_defs:typescript.bzl", "ts_library", "ts_ext_library")
 load("//build_defs:jasmine.bzl", "jasmine_node_test")
 load("//build_defs:karma.bzl", "karma_test")
+load("//build_defs:bundle.bzl", "js_bundle")
 # This imports node_modules targets from a generated file.
 load("//build_defs:node_modules_index.bzl", "node_modules_index")
 node_modules_index(glob)
@@ -666,3 +667,37 @@ karma_test(
     size = "small",
     local = True,
 )
+
+###############################################################################
+# Packaging and end to end tests
+###############################################################################
+ESM_PACKAGES = [
+    "core",
+    "common",
+    "compiler",
+    "forms",
+    "http",
+    "platform-browser",
+    "platform-browser-dynamic",
+    "platform-server",
+    "router",
+    "upgrade",
+]
+
+NON_ESM_PACKAGES = [
+    "compiler-cli",
+]
+
+ALL_PACKAGES = ESM_PACKAGES + NON_ESM_PACKAGES + ["tsc-wrapped"]
+
+[
+    js_bundle(
+        name = pkg + "_bundle",
+        srcs = [":" + pkg],
+        output = "modules/@angular/{}/{}.umd.js".format(pkg, pkg),
+        entry_point = "modules/@angular/{}/esm/index.js".format(pkg),
+        rollup_config = "modules/@angular/{}/rollup.config.js".format(pkg),
+        banner = "modules/@angular/license-banner.txt",
+    )
+    for pkg in ESM_PACKAGES
+]
