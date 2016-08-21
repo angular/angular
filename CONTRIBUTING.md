@@ -21,7 +21,7 @@ If you have questions about how to *use* Angular, please direct them to the [Goo
 discussion list or [StackOverflow][stackoverflow]. Please note that Angular 2 is still in early developer preview, and the core team's capacity to answer usage questions is limited. We are also available on [Gitter][gitter].
 
 ## <a name="issue"></a> Found an Issue?
-If you find a bug in the source code or a mistake in the documentation, you can help us by
+If you find a bug in the source code, you can help us by
 [submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
 [submit a Pull Request](#submit-pr) with a fix.
 
