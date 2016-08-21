@@ -7,7 +7,7 @@ import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit
 @Component({
   selector: 'test-cmp',
   directives: [NgFocus],
-  template: '  <input class="test-input" [focus]="inFocus"> '
+  template: '  <input class="test-input" [ngFocus]="inFocus"> '
 })
 class TestComponent {
   inFocus: boolean;
