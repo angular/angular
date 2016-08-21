@@ -31,6 +31,10 @@ if [[ ${TRAVIS} ]]; then
 fi
 
 
+echo 'travis_fold:start:cleanup.bazel'
+bazel shutdown || true
+echo 'travis_fold:end:cleanup.bazel'
+
 echo 'travis_fold:start:cleanup.printLogs'
 ./scripts/ci/print-logs.sh
 echo 'travis_fold:end:cleanup.printLogs'

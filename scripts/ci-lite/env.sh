@@ -9,8 +9,15 @@ CHROMIUM_VERSION=386251 # Chrome 50 linux stable, see https://www.chromium.org/d
 SAUCE_CONNECT_VERSION=4.3.11
 
 
+# Make nvm less noisy
+set +x
+echo "source ~/.nvm/nvm.sh"
+source ~/.nvm/nvm.sh
+set -x
 
-if [[ ${TRAVIS} ]]; then
+# Do not initialize these test environmental variables during install phase,
+# since we don't have a good version of node.
+if [[ -z "${INSTALL_PHASE}" ]] && [[ ${TRAVIS} ]]; then
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
   # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
@@ -45,9 +52,12 @@ fi
 
 # GLOBALS
 
-# Append dist/all to the NODE_PATH so that cjs module resolver finds find the packages that use
-# absolute module ids (e.g. @angular/core)
-export NODE_PATH=${NODE_PATH}:$(pwd)/../../dist/all:$(pwd)/../../dist/tools
+###############################################################################
+# WARNING: By default, these environmental variables are NOT available to tests
+# that run in Bazel. You need to pass it down as arguments manually when you
+# call "bazel test", e.g. "--test_env=DISPLAY".
+###############################################################################
+
 export LOGS_DIR=/tmp/angular-build/logs
 
 if [[ ${TRAVIS} ]]; then
@@ -65,4 +75,3 @@ if [[ ${TRAVIS} ]]; then
   export BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   export CHROME_BIN=${HOME}/.chrome/chromium/chrome-linux/chrome
 fi
-

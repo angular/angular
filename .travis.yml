@@ -1,7 +1,9 @@
-language: node_js
+# We have to use the Java image to get access to java 8, which is required for
+# bazel.
+language: java
 sudo: false
-node_js:
-  - '5.4.1'
+jdk:
+  - oraclejdk8
 
 addons:
 #  firefox: "38.0"
@@ -11,6 +13,10 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
+      # The following are needed for bazel.
+      - pkg-config
+      - zip
+      - unzip
 
 branches:
   except:
@@ -20,6 +26,7 @@ cache:
   directories:
      - ./node_modules
      - ./.chrome/chromium
+     - $HOME/bazel-cache
 #    - $HOME/.pub-cache
 
 
@@ -43,8 +50,8 @@ env:
    - CI_MODE=e2e
    - CI_MODE=saucelabs_required
    - CI_MODE=browserstack_required
-   - CI_MODE=saucelabs_optional
-   - CI_MODE=browserstack_optional
+   # - CI_MODE=saucelabs_optional
+   # - CI_MODE=browserstack_optional
 
 matrix:
   fast_finish: true
@@ -60,7 +67,7 @@ before_script:
 
 
 script:
-  - ./scripts/ci-lite/build.sh && ./scripts/ci-lite/test.sh
+  - ./scripts/ci-lite/test.sh
 
 after_script:
   - ./scripts/ci-lite/cleanup.sh
