@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/checkbox",
-  "version": "2.0.0-alpha.7-3",
+  "version": "2.0.0-alpha.7-5",
   "description": "Angular 2 Material checkbox",
   "main": "./checkbox.js",
   "typings": "./checkbox.d.ts",
@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.7-3",
+    "@angular2-material/core": "2.0.0-alpha.7-5",
     "@angular/forms": "^0.3.0"
   }
 }

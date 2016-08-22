@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/menu",
-  "version": "2.0.0-alpha.7-3",
+  "version": "2.0.0-alpha.7-5",
   "description": "Angular 2 Material menu",
   "main": "./menu.js",
   "typings": "./menu.d.ts",
@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.7-3"
+    "@angular2-material/core": "2.0.0-alpha.7-5"
   }
 }
