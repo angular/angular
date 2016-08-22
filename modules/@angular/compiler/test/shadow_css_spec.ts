@@ -10,8 +10,6 @@ import {CssRule, ShadowCss, processRules} from '@angular/compiler/src/shadow_css
 import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import {normalizeCSS} from '@angular/platform-browser/testing/browser_util';
 
-import {StringWrapper, isPresent} from '../src/facade/lang';
-
 export function main() {
   describe('ShadowCss', function() {
 
@@ -19,7 +17,7 @@ export function main() {
       const shadowCss = new ShadowCss();
       const shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
       const nlRegexp = /\n/g;
-      return normalizeCSS(StringWrapper.replaceAll(shim, nlRegexp, ''));
+      return normalizeCSS(shim.replace(nlRegexp, ''));
     }
 
     it('should handle empty string', () => { expect(s('', 'a')).toEqual(''); });
@@ -99,15 +97,17 @@ export function main() {
 
     it('should handle :host', () => {
       expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}');
+
       expect(s(':host(.x,.y) {}', 'a', 'a-host')).toEqual('[a-host].x, [a-host].y {}');
+
       expect(s(':host(.x,.y) > .z {}', 'a', 'a-host'))
-          .toEqual('[a-host].x > .z, [a-host].y > .z {}');
+          .toEqual('[a-host].x > .z[a], [a-host].y > .z[a] {}');
     });
 
     it('should handle :host-context', () => {
       expect(s(':host-context(.x) {}', 'a', 'a-host')).toEqual('[a-host].x, .x [a-host] {}');
       expect(s(':host-context(.x) > .y {}', 'a', 'a-host'))
-          .toEqual('[a-host].x > .y, .x [a-host] > .y {}');
+          .toEqual('[a-host].x > .y[a], .x [a-host] > .y[a] {}');
     });
 
     it('should support polyfill-next-selector', () => {
@@ -120,10 +120,10 @@ export function main() {
 
     it('should support polyfill-unscoped-rule', () => {
       let css = s('polyfill-unscoped-rule {content: \'#menu > .bar\';color: blue;}', 'a');
-      expect(StringWrapper.contains(css, '#menu > .bar {;color:blue;}')).toBeTruthy();
+      expect(css).toContain('#menu > .bar {;color:blue;}');
 
       css = s('polyfill-unscoped-rule {content: "#menu > .bar";color: blue;}', 'a');
-      expect(StringWrapper.contains(css, '#menu > .bar {;color:blue;}')).toBeTruthy();
+      expect(css).toContain('#menu > .bar {;color:blue;}');
     });
 
     it('should support multiple instances polyfill-unscoped-rule', () => {
@@ -131,16 +131,16 @@ export function main() {
           s('polyfill-unscoped-rule {content: \'foo\';color: blue;}' +
                 'polyfill-unscoped-rule {content: \'bar\';color: blue;}',
             'a');
-      expect(StringWrapper.contains(css, 'foo {;color:blue;}')).toBeTruthy();
-      expect(StringWrapper.contains(css, 'bar {;color:blue;}')).toBeTruthy();
+      expect(css).toContain('foo {;color:blue;}');
+      expect(css).toContain('bar {;color:blue;}');
     });
 
     it('should support polyfill-rule', () => {
       let css = s('polyfill-rule {content: \':host.foo .bar\';color: blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {;color:blue;}');
+      expect(css).toEqual('[a-host].foo .bar[a] {;color:blue;}');
 
       css = s('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {;color:blue;}');
+      expect(css).toEqual('[a-host].foo .bar[a] {;color:blue;}');
     });
 
     it('should handle ::shadow', () => {
