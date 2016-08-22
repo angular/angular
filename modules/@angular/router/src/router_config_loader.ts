@@ -15,6 +15,9 @@ import {LoadChildren, Route} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 
+/**
+ * @experimental
+ */
 export const ROUTES = new OpaqueToken('ROUTES');
 
 export class LoadedRouterConfig {
