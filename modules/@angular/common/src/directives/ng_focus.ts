@@ -41,11 +41,9 @@ export class NgFocus {
 
   protected ngOnChanges() {
     if (this.focus) {
-      this.renderer.invokeElementMethod(
-        this.elementRef.nativeElement, 'focus', []);
+      this.renderer.invokeElementMethod(this.elementRef.nativeElement, 'focus', []);
+    } else {
+      this.renderer.invokeElementMethod(this.elementRef.nativeElement, 'blur', []);
     }
-    else
-    {this.renderer.invokeElementMethod(
-      this.elementRef.nativeElement, 'blur', []);}
   }
 }
