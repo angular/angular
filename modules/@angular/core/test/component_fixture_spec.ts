@@ -120,23 +120,23 @@ export function main() {
        }));
 
     it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
-        async(() => {
-          let componentFixture = TestBed.createComponent(AsyncComp);
-          componentFixture.autoDetectChanges();
-          expect(componentFixture.nativeElement).toHaveText('1');
+       async(() => {
+         let componentFixture = TestBed.createComponent(AsyncComp);
+         componentFixture.autoDetectChanges();
+         expect(componentFixture.nativeElement).toHaveText('1');
 
-          let element = componentFixture.debugElement.children[0];
-          dispatchEvent(element.nativeElement, 'click');
-          expect(componentFixture.nativeElement).toHaveText('1');
+         let element = componentFixture.debugElement.children[0];
+         dispatchEvent(element.nativeElement, 'click');
+         expect(componentFixture.nativeElement).toHaveText('1');
 
-          // Component is updated asynchronously. Wait for the fixture to become stable
-          // before checking for new value.
-          expect(componentFixture.isStable()).toBe(false);
-          componentFixture.whenStable().then((waited) => {
-            expect(waited).toBe(true);
-            expect(componentFixture.nativeElement).toHaveText('11');
-          });
-        }));
+         // Component is updated asynchronously. Wait for the fixture to become stable
+         // before checking for new value.
+         expect(componentFixture.isStable()).toBe(false);
+         componentFixture.whenStable().then((waited) => {
+           expect(waited).toBe(true);
+           expect(componentFixture.nativeElement).toHaveText('11');
+         });
+       }));
 
     it('should signal through isStable when the fixture is stable (no autoDetectChanges)',
        async(() => {
