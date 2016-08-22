@@ -10,7 +10,8 @@ import {AnimationPlayer} from '../src/animation/animation_player';
 import {isPresent} from '../src/facade/lang';
 
 export class MockAnimationPlayer implements AnimationPlayer {
-  private _subscriptions: any[] /** TODO #9100 */ = [];
+  private _onDoneFns: Function[] = [];
+  private _onStartFns: Function[] = [];
   private _finished = false;
   private _destroyed = false;
   private _started: boolean = false;
@@ -19,13 +20,13 @@ export class MockAnimationPlayer implements AnimationPlayer {
 
   public log: any[] /** TODO #9100 */ = [];
 
-  private _onfinish(): void {
+  private _onFinish(): void {
     if (!this._finished) {
       this._finished = true;
       this.log.push('finish');
 
-      this._subscriptions.forEach((entry) => { entry(); });
-      this._subscriptions = [];
+      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns = [];
       if (!isPresent(this.parentPlayer)) {
         this.destroy();
       }
@@ -34,12 +35,18 @@ export class MockAnimationPlayer implements AnimationPlayer {
 
   init(): void { this.log.push('init'); }
 
-  onDone(fn: Function): void { this._subscriptions.push(fn); }
+  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+
+  onStart(fn: () => void): void { this._onStartFns.push(fn); }
 
   hasStarted() { return this._started; }
 
   play(): void {
-    this._started = true;
+    if (!this.hasStarted()) {
+      this._onStartFns.forEach(fn => fn());
+      this._onStartFns = [];
+      this._started = true;
+    }
     this.log.push('play');
   }
 
@@ -47,7 +54,7 @@ export class MockAnimationPlayer implements AnimationPlayer {
 
   restart(): void { this.log.push('restart'); }
 
-  finish(): void { this._onfinish(); }
+  finish(): void { this._onFinish(); }
 
   reset(): void { this.log.push('reset'); }
 

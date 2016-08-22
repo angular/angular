@@ -29,5 +29,17 @@ export function main() {
          player.restart();
          player.destroy();
        }));
+
+    it('should run the onStart method when started but only once', fakeAsync(() => {
+         var player = new NoOpAnimationPlayer();
+         var calls = 0;
+         player.onStart(() => calls++);
+         expect(calls).toEqual(0);
+         player.play();
+         expect(calls).toEqual(1);
+         player.pause();
+         player.play();
+         expect(calls).toEqual(1);
+       }));
   });
 }

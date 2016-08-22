@@ -69,7 +69,8 @@ export declare abstract class AnimationPlayer {
     abstract getPosition(): number;
     abstract hasStarted(): boolean;
     abstract init(): void;
-    abstract onDone(fn: Function): void;
+    abstract onDone(fn: () => void): void;
+    abstract onStart(fn: () => void): void;
     abstract pause(): void;
     abstract play(): void;
     abstract reset(): void;
