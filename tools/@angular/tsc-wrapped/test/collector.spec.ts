@@ -25,6 +25,7 @@ describe('Collector', () => {
       'exported-enum.ts',
       'exported-consts.ts',
       'local-symbol-ref.ts',
+      'private-enum.ts',
       're-exports.ts',
       'static-field-reference.ts',
       'static-method.ts',
@@ -337,6 +338,15 @@ describe('Collector', () => {
     let metadata = collector.getMetadata(enumSource);
     let someEnum: any = metadata.metadata['SomeEnum'];
     expect(someEnum).toEqual({A: 0, B: 1, C: 100, D: 101});
+  });
+
+  it('should ignore a non-export enum', () => {
+    let enumSource = program.getSourceFile('/private-enum.ts');
+    let metadata = collector.getMetadata(enumSource);
+    let publicEnum: any = metadata.metadata['PublicEnum'];
+    let privateEnum: any = metadata.metadata['PrivateEnum'];
+    expect(publicEnum).toEqual({a: 0, b: 1, c: 2});
+    expect(privateEnum).toBeUndefined();
   });
 
   it('should be able to collect enums initialized from consts', () => {
@@ -837,6 +847,10 @@ const FILES: Directory = {
       providers: [REQUIRED_VALIDATOR]
     })
     export class SomeComponent {}
+  `,
+  'private-enum.ts': `
+    export enum PublicEnum { a, b, c }
+    enum PrivateEnum { e, f, g }
   `,
   'node_modules': {
     'angular2': {
