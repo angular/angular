@@ -19,12 +19,12 @@ PKGS=(
   @angular2-material/{core,button}
 )
 
-# Need to use deference since TypeScript notoriously resolves symlinks, making
-# sources inside rootDir check fail.
-cp --dereference -R -v modules/@angular/compiler-cli/integrationtest/* "${TEST_TMPDIR}"
+# Need to use -L (--deference) since TypeScript notoriously resolves symlinks,
+# making sources inside rootDir check fail.
+cp -L -R -v modules/@angular/compiler-cli/integrationtest/* "${TEST_TMPDIR}"
 # Try to use the same versions as angular, in particular, this will
 # cause us to install the same rxjs version.
-cp --dereference -v package.json "${TEST_TMPDIR}"
+cp -L -v package.json "${TEST_TMPDIR}"
 
 # run in subshell to avoid polluting cwd
 (

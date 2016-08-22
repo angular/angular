@@ -1,20 +1,36 @@
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
+load("//build_defs:utils.bzl", "join_paths")
 
 def _ts_npm_package_impl(ctx):
   files = set()
 
-  for src in ctx.attr.srcs:
-    files += src.files
-    files += src.typescript.declarations
-    files += src.typescript.metadata
-    if ctx.attr.esm:
-      files += src.typescript.esm.files
-      files += src.typescript.esm.declarations
-      files += src.typescript.esm.metadata
-    # TODO: add data from ts_library
+  if len(ctx.attr.srcs) != 1:
+    fail("srcs must be a singleton list", "srcs")
+
+  src = ctx.attr.srcs[0]
+  files += src.files
+  files += src.typescript.declarations
+  files += src.typescript.metadata
+  if ctx.attr.esm:
+    files += src.typescript.esm.files
+    files += src.typescript.esm.declarations
+    files += src.typescript.esm.metadata
+  # TODO: add data from ts_library
 
   files += ctx.files.data
-  files += ctx.files.manifest
+
+  # Copy manifest if it is not in the right location
+  manifest_path = join_paths(src.label.workspace_root, src.label.package,
+                             src.typescript.package_dir, "package.json")
+  input_manifest = ctx.file.manifest
+  if input_manifest.short_path != manifest_path:
+    output_manifest = ctx.new_file(join_paths(src.typescript.package_dir, "package.json"))
+    ctx.action(inputs=[input_manifest], outputs=[output_manifest],
+               command=["cp", input_manifest.path, output_manifest.path])
+  else:
+    output_manifest = ctx.file.manifest
+
+  files += [output_manifest]
 
   return struct(
       files = set(files),
@@ -28,7 +44,7 @@ _ts_npm_package = rule(
     attrs = {
         "srcs": attr.label_list(providers=["typescript"]),
         "data": attr.label_list(allow_files=True, cfg=DATA_CFG),
-        "manifest": attr.label(allow_files=True, mandatory=True),
+        "manifest": attr.label(allow_files=True, single_file=True, mandatory=True),
         "module_name": attr.string(),
         "esm": attr.bool(default=True),
     },

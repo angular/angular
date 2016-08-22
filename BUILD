@@ -760,7 +760,7 @@ ts_npm_package(
             manifest = "modules/@angular/{}/package.json".format(pkg),
             module_name = "@angular/" + pkg,
             # Prefix / avoids bug https://github.com/bazelbuild/bazel/issues/1604
-            strip_prefix = "/modules/@angular/" + pkg,
+            strip_prefix = "/modules/@angular/{}/compat".format(pkg),
             esm = pkg in ESM_PACKAGES,
         ),
     )

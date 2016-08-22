@@ -77,7 +77,7 @@ def _ts_compat_impl(ctx):
           # The declarations of the current module
           declarations = gen_d_ts,
           source_maps = gen_js_map,
-          metadata = ts.metadata,
+          metadata = gen_meta,
           esm = struct(
               files = gen_js_esm,
               source_maps = gen_js_map_esm,
