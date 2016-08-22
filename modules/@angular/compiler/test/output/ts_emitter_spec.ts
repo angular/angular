@@ -290,35 +290,41 @@ export function main() {
 
     it('should support builtin types', () => {
       var writeVarExpr = o.variable('a').set(o.NULL_EXPR);
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.DYNAMIC_TYPE))).toEqual('var a:any = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.BOOL_TYPE))).toEqual('var a:boolean = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.INT_TYPE))).toEqual('var a:number = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.NUMBER_TYPE))).toEqual('var a:number = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.STRING_TYPE))).toEqual('var a:string = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.FUNCTION_TYPE))).toEqual('var a:Function = null;');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.DYNAMIC_TYPE)))
+          .toEqual('var a:any = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.BOOL_TYPE)))
+          .toEqual('var a:boolean = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.INT_TYPE)))
+          .toEqual('var a:number = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.NUMBER_TYPE)))
+          .toEqual('var a:number = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.STRING_TYPE)))
+          .toEqual('var a:string = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.FUNCTION_TYPE)))
+          .toEqual('var a:Function = (null as any);');
     });
 
     it('should support external types', () => {
       var writeVarExpr = o.variable('a').set(o.NULL_EXPR);
       expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(sameModuleIdentifier))))
-          .toEqual('var a:someLocalId = null;');
+          .toEqual('var a:someLocalId = (null as any);');
       expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(externalModuleIdentifier)))).toEqual([
         `import * as import0 from 'somePackage/someOtherPath';`,
-        `var a:import0.someExternalId = null;`
+        `var a:import0.someExternalId = (null as any);`
       ].join('\n'));
     });
 
     it('should support combined types', () => {
       var writeVarExpr = o.variable('a').set(o.NULL_EXPR);
       expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(null))))
-          .toEqual('var a:any[] = null;');
+          .toEqual('var a:any[] = (null as any);');
       expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(o.INT_TYPE))))
-          .toEqual('var a:number[] = null;');
+          .toEqual('var a:number[] = (null as any);');
 
       expect(emitStmt(writeVarExpr.toDeclStmt(new o.MapType(null))))
-          .toEqual('var a:{[key: string]:any} = null;');
+          .toEqual('var a:{[key: string]:any} = (null as any);');
       expect(emitStmt(writeVarExpr.toDeclStmt(new o.MapType(o.INT_TYPE))))
-          .toEqual('var a:{[key: string]:number} = null;');
+          .toEqual('var a:{[key: string]:number} = (null as any);');
     });
   });
 }

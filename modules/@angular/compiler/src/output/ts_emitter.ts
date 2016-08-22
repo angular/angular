@@ -72,6 +72,10 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
   }
 
+  visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
+    super.visitLiteralExpr(ast, ctx, '(null as any)');
+  }
+
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     this._visitIdentifier(ast.value, ast.typeParams, ctx);
     return null;
