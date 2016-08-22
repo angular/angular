@@ -41,7 +41,7 @@ export class ExtractionResult {
   constructor(public messages: i18n.Message[], public errors: I18nError[]) {}
 }
 
-enum _VisitorMode {
+export enum _VisitorMode {
   Extract,
   Merge
 }

@@ -234,7 +234,7 @@ var _splitRe = new RegExp(
  * The index of each URI component in the return value of goog.uri.utils.split.
  * @enum {number}
  */
-enum _ComponentIndex {
+export enum _ComponentIndex {
   Scheme = 1,
   UserInfo,
   Domain,

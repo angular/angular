@@ -16,8 +16,7 @@ import {StaticReflectorHost, StaticSymbol} from './static_reflector';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
-const NODE_MODULES = path.sep + 'node_modules' + path.sep;
-const IS_GENERATED = /\.(ngfactory|css(\.shim)?)$/;
+export const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 
 export interface ReflectorHostContext {
   fileExists(fileName: string): boolean;
@@ -55,21 +54,40 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     };
   }
 
+  private getCanonicalFileName(fileName: string): string {
+    if (!fileName) return fileName;
+    for (let dir of this.options.rootDirs || []) {
+      if (fileName.indexOf(dir) === 0) {
+        fileName = fileName.substring(dir.length);
+      }
+    }
+    return fileName;
+  }
+
   private resolve(m: string, containingFile: string) {
-    const resolved =
-        ts.resolveModuleName(m, containingFile, this.options, this.context).resolvedModule;
-    return resolved ? resolved.resolvedFileName : null;
-  };
+    for (const root of this.options.rootDirs || [""]) {
+      const rootedContainingFile = path.join(root, containingFile);
+      const resolved =
+          ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
+      if (resolved) {
+        if (this.options.traceResolution) {
+          console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
+        }
+        return resolved.resolvedFileName;
+      }
+    }
+  }
 
   private normalizeAssetUrl(url: string): string {
     let assetUrl = AssetUrl.parse(url);
-    return assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
+    const path = assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
+    return this.getCanonicalFileName(path);
   }
 
   private resolveAssetUrl(url: string, containingFile: string): string {
     let assetUrl = this.normalizeAssetUrl(url);
     if (assetUrl) {
-      return this.resolve(assetUrl, containingFile);
+      return this.getCanonicalFileName(this.resolve(assetUrl, containingFile));
     }
     return url;
   }
@@ -79,8 +97,8 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
    * These need to be in a form that system.js can load, so absolute file paths don't work.
    *
    * The `containingFile` is always in the `genDir`, where as the `importedFile` can be in
-   * `genDir`, `node_module` or `basePath`.  The `importedFile` is either a generated file or
-   * existing file.
+   * `genDir`, `node_module` or `rootDir`/`rootDirs`.
+   * The `importedFile` is either a generated file or an existing file.
    *
    *               | genDir   | node_module |  rootDir
    * --------------+----------+-------------+----------
@@ -93,65 +111,69 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     importedFile = this.resolveAssetUrl(importedFile, containingFile);
     containingFile = this.resolveAssetUrl(containingFile, '');
 
+    if (this.options.traceResolution) {
+      console.log(
+          'getImportPath from containingFile', containingFile, 'to importedFile', importedFile);
+    }
+
     // If a file does not yet exist (because we compile it later), we still need to
-    // assume it exists it so that the `resolve` method works!
-    if (!this.compilerHost.fileExists(importedFile)) {
+    // assume it exists so that the `resolve` method works!
+    if (!this.context.fileExists(importedFile)) {
       this.context.assumeFileExists(importedFile);
     }
 
-    containingFile = this.rewriteGenDirPath(containingFile);
-    const containingDir = path.dirname(containingFile);
-    // drop extension
-    importedFile = importedFile.replace(EXT, '');
+    const resolvable = (candidate: string) => {
+      const resolved = this.getCanonicalFileName(this.resolve(candidate, importedFile));
+      return resolved && resolved.replace(EXT, '') === importedFile.replace(EXT, '');
+    }
 
-    var nodeModulesIndex = importedFile.indexOf(NODE_MODULES);
-    const importModule = nodeModulesIndex === -1 ?
-        null :
-        importedFile.substring(nodeModulesIndex + NODE_MODULES.length);
-    const isGeneratedFile = IS_GENERATED.test(importedFile);
-
-    if (isGeneratedFile) {
-      // rewrite to genDir path
-      if (importModule) {
-        // it is generated, therefore we do a relative path to the factory
-        return this.dotRelative(containingDir, this.genDir + NODE_MODULES + importModule);
-      } else {
-        // assume that import is also in `genDir`
-        importedFile = this.rewriteGenDirPath(importedFile);
-        return this.dotRelative(containingDir, importedFile);
+    let importModuleName = importedFile.replace(EXT, '');
+    const parts = importModuleName.split(path.sep).filter(p => !!p);
+    let foundRelativeImport: string;
+    for (let index = parts.length - 1; index >= 0; index--) {
+      let candidate = parts.slice(index, parts.length).join(path.sep);
+      if (resolvable(candidate)) {
+        return candidate;
       }
-    } else {
-      // user code import
-      if (importModule) {
-        return importModule;
-      } else {
-        if (!this.isGenDirChildOfRootDir) {
-          // assume that they are on top of each other.
-          importedFile = importedFile.replace(this.basePath, this.genDir);
+      candidate = '.' + path.sep + candidate;
+      if (resolvable(candidate)) {
+        if (this.options.writeImportsForRootDirs) {
+          foundRelativeImport = candidate;
+        } else {
+          foundRelativeImport = this.fixupGendirRelativePath(containingFile, importedFile);
         }
-        return this.dotRelative(containingDir, importedFile);
       }
     }
+
+    if (foundRelativeImport) return foundRelativeImport;
+
+    // Try a relative import
+    const candidate = path.relative(path.dirname(containingFile), importModuleName);
+    if (resolvable(candidate)) {
+      return this.fixupGendirRelativePath(containingFile, importedFile);
+    }
+
+    throw new Error(
+        `Unable to find any resolvable import for ${importedFile} relative to ${containingFile}`);
+  }
+
+  private fixupGendirRelativePath(containingFile: string, importedFile: string) {
+    let importModuleName = importedFile.replace(EXT, '');
+
+    if (!this.options.writeImportsForRootDirs && this.isGenDirChildOfRootDir) {
+      if (GENERATED_FILES.test(importedFile)) {
+        importModuleName = importModuleName.replace(this.basePath, this.genDir);
+      }
+      if (GENERATED_FILES.test(containingFile)) {
+        containingFile = containingFile.replace(this.basePath, this.genDir);
+      }
+    }
+    return this.dotRelative(path.dirname(containingFile), importModuleName);
   }
 
   private dotRelative(from: string, to: string): string {
     var rPath: string = path.relative(from, to);
     return rPath.startsWith('.') ? rPath : './' + rPath;
-  }
-
-  /**
-   * Moves the path into `genDir` folder while preserving the `node_modules` directory.
-   */
-  private rewriteGenDirPath(filepath: string) {
-    var nodeModulesIndex = filepath.indexOf(NODE_MODULES);
-    if (nodeModulesIndex !== -1) {
-      // If we are in node_modulse, transplant them into `genDir`.
-      return path.join(this.genDir, filepath.substring(nodeModulesIndex));
-    } else {
-      // pretend that containing file is on top of the `genDir` to normalize the paths.
-      // we apply the `genDir` => `rootDir` delta through `rootDirPrefix` later.
-      return filepath.replace(this.basePath, this.genDir);
-    }
   }
 
   findDeclaration(
@@ -173,6 +195,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       const filePath = this.resolve(module, containingFile);
 
       if (!filePath) {
+        console.log("WARNING no resolution for ", module, "making static symbol for ", symbolName);
         // If the file cannot be found the module is probably referencing a declared module
         // for which there is no disambiguating file and we also don't need to track
         // re-exports. Just use the module name.
@@ -182,6 +205,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       const tc = this.program.getTypeChecker();
       const sf = this.program.getSourceFile(filePath);
       if (!sf || !(<any>sf).symbol) {
+        console.log("WARNING no source file for filePath", filePath);
         // The source file was not needed in the compile but we do need the values from
         // the corresponding .ts files stored in the .metadata.json file. Check the file
         // for exports to see if the file is exported.
@@ -198,7 +222,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
         symbol = tc.getAliasedSymbol(symbol);
       }
       const declaration = symbol.getDeclarations()[0];
-      const declarationFile = declaration.getSourceFile().fileName;
+      const declarationFile = this.getCanonicalFileName(declaration.getSourceFile().fileName);
 
       return this.getStaticSymbol(declarationFile, symbol.getName());
     } catch (e) {
@@ -228,24 +252,28 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   }
 
   getMetadataFor(filePath: string): ModuleMetadata {
-    if (!this.context.fileExists(filePath)) {
-      // If the file doesn't exists then we cannot return metadata for the file.
-      // This will occur if the user refernced a declared module for which no file
-      // exists for the module (i.e. jQuery or angularjs).
-      return;
-    }
-    if (DTS.test(filePath)) {
-      const metadataPath = filePath.replace(DTS, '.metadata.json');
-      if (this.context.fileExists(metadataPath)) {
-        const metadata = this.readMetadata(metadataPath);
-        return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
+    for (const root of this.options.rootDirs || []) {
+      const rootedPath = path.join(root, filePath);
+      if (!this.compilerHost.fileExists(rootedPath)) {
+        // If the file doesn't exists then we cannot return metadata for the file.
+        // This will occur if the user refernced a declared module for which no file
+        // exists for the module (i.e. jQuery or angularjs).
+        continue;
       }
-    } else {
-      const sf = this.program.getSourceFile(filePath);
-      if (!sf) {
-        throw new Error(`Source file ${filePath} not present in program.`);
+      if (DTS.test(rootedPath)) {
+        const metadataPath = rootedPath.replace(DTS, '.metadata.json');
+        if (this.context.fileExists(metadataPath)) {
+          const metadata = this.readMetadata(metadataPath);
+          return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
+        }
+      } else {
+        const sf = this.program.getSourceFile(rootedPath);
+        if (!sf) {
+          throw new Error(`Source file ${rootedPath} not present in program.`);
+        }
+        sf.fileName = this.getCanonicalFileName(sf.fileName);
+        return this.metadataCollector.getMetadata(sf);
       }
-      return this.metadataCollector.getMetadata(sf);
     }
   }
 
@@ -269,7 +297,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
 
   private resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
     const resolveModule = (moduleName: string): string => {
-      const resolvedModulePath = this.resolve(moduleName, filePath);
+      const resolvedModulePath = this.getCanonicalFileName(this.resolve(moduleName, filePath));
       if (!resolvedModulePath) {
         throw new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`);
       }
