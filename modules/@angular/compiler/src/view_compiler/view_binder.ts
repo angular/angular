@@ -5,19 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {AnimationOutput} from '../../core_private';
 import {ListWrapper} from '../facade/collection';
 import {identifierToken} from '../identifiers';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView} from './compile_view';
-import {bindDirectiveOutputs, bindRenderOutputs, collectEventListeners} from './event_binder';
+import {CompileElementAnimationOutput, CompileEventListener, bindAnimationOutputs, bindDirectiveOutputs, bindRenderOutputs, collectEventListeners} from './event_binder';
 import {bindDirectiveAfterContentLifecycleCallbacks, bindDirectiveAfterViewLifecycleCallbacks, bindDirectiveDetectChangesLifecycleCallbacks, bindInjectableDestroyLifecycleCallbacks, bindPipeDestroyLifecycleCallbacks} from './lifecycle_binder';
 import {bindDirectiveHostProps, bindDirectiveInputs, bindRenderInputs, bindRenderText} from './property_binder';
 
-export function bindView(view: CompileView, parsedTemplate: TemplateAst[]): void {
-  var visitor = new ViewBinderVisitor(view);
+export function bindView(
+    view: CompileView, parsedTemplate: TemplateAst[], animationOutputs: AnimationOutput[]): void {
+  var visitor = new ViewBinderVisitor(view, animationOutputs);
   templateVisitAll(visitor, parsedTemplate);
   view.pipes.forEach(
       (pipe) => { bindPipeDestroyLifecycleCallbacks(pipe.meta, pipe.instance, pipe.view); });
@@ -25,8 +26,12 @@ export function bindView(view: CompileView, parsedTemplate: TemplateAst[]): void
 
 class ViewBinderVisitor implements TemplateAstVisitor {
   private _nodeIndex: number = 0;
+  private _animationOutputsMap: {[key: string]: AnimationOutput} = {};
 
-  constructor(public view: CompileView) {}
+  constructor(public view: CompileView, animationOutputs: AnimationOutput[]) {
+    animationOutputs.forEach(
+        entry => { this._animationOutputsMap[entry.fullPropertyName] = entry; });
+  }
 
   visitBoundText(ast: BoundTextAst, parent: CompileElement): any {
     var node = this.view.nodes[this._nodeIndex++];
@@ -42,7 +47,23 @@ class ViewBinderVisitor implements TemplateAstVisitor {
 
   visitElement(ast: ElementAst, parent: CompileElement): any {
     var compileElement = <CompileElement>this.view.nodes[this._nodeIndex++];
-    var eventListeners = collectEventListeners(ast.outputs, ast.directives, compileElement);
+    var eventListeners: CompileEventListener[] = [];
+    var animationEventListeners: CompileElementAnimationOutput[] = [];
+    collectEventListeners(ast.outputs, ast.directives, compileElement).forEach(entry => {
+      // TODO: figure out how to abstract this `if` statement elsewhere
+      if (entry.eventName[0] == '@') {
+        let animationOutputName = entry.eventName.substr(1);
+        let output = this._animationOutputsMap[animationOutputName];
+        // no need to report an error here since the parser will
+        // have caught the missing animation trigger definition
+        if (output) {
+          animationEventListeners.push(new CompileElementAnimationOutput(entry, output));
+        }
+      } else {
+        eventListeners.push(entry);
+      }
+    });
+    bindAnimationOutputs(animationEventListeners);
     bindRenderInputs(ast.inputs, compileElement);
     bindRenderOutputs(eventListeners);
     ast.directives.forEach((directiveAst) => {
@@ -90,7 +111,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
       var providerInstance = compileElement.instances.get(providerAst.token);
       bindInjectableDestroyLifecycleCallbacks(providerAst, providerInstance, compileElement);
     });
-    bindView(compileElement.embeddedView, ast.children);
+    bindView(compileElement.embeddedView, ast.children, []);
     return null;
   }
 

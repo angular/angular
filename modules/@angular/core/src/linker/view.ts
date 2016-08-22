@@ -7,7 +7,8 @@
  */
 
 import {AnimationGroupPlayer} from '../animation/animation_group_player';
-import {AnimationPlayer} from '../animation/animation_player';
+import {AnimationOutput} from '../animation/animation_output';
+import {AnimationPlayer, NoOpAnimationPlayer} from '../animation/animation_player';
 import {ViewAnimationMap} from '../animation/view_animation_map';
 import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
@@ -50,6 +51,8 @@ export abstract class AppView<T> {
 
   public animationPlayers = new ViewAnimationMap();
 
+  private _animationListeners = new Map<any, _AnimationOutputWithHandler[]>();
+
   public context: T;
 
   constructor(
@@ -77,9 +80,23 @@ export abstract class AppView<T> {
     }
   }
 
-  queueAnimation(element: any, animationName: string, player: AnimationPlayer): void {
+  queueAnimation(
+      element: any, animationName: string, player: AnimationPlayer, fromState: string,
+      toState: string): void {
+    var actualAnimationDetected = !(player instanceof NoOpAnimationPlayer);
+    var animationData = {
+      'fromState': fromState,
+      'toState': toState,
+      'running': actualAnimationDetected
+    };
     this.animationPlayers.set(element, animationName, player);
-    player.onDone(() => { this.animationPlayers.remove(element, animationName); });
+    player.onDone(() => {
+      // TODO: make this into a datastructure for done|start
+      this.triggerAnimationOutput(element, animationName, 'done', animationData);
+      this.animationPlayers.remove(element, animationName);
+    });
+    player.onStart(
+        () => { this.triggerAnimationOutput(element, animationName, 'start', animationData); });
   }
 
   triggerQueuedAnimations() {
@@ -88,6 +105,32 @@ export abstract class AppView<T> {
         player.play();
       }
     });
+  }
+
+  triggerAnimationOutput(
+      element: any, animationName: string, phase: string, animationData: {[key: string]: any}) {
+    var listeners = this._animationListeners.get(element);
+    if (isPresent(listeners) && listeners.length) {
+      for (let i = 0; i < listeners.length; i++) {
+        let listener = listeners[i];
+        // we check for both the name in addition to the phase in the event
+        // that there may be more than one @trigger on the same element
+        if (listener.output.name == animationName && listener.output.phase == phase) {
+          listener.handler(animationData);
+          break;
+        }
+      }
+    }
+  }
+
+  registerAnimationOutput(element: any, outputEvent: AnimationOutput, eventHandler: Function):
+      void {
+    var entry = new _AnimationOutputWithHandler(outputEvent, eventHandler);
+    var animations = this._animationListeners.get(element);
+    if (!isPresent(animations)) {
+      this._animationListeners.set(element, animations = []);
+    }
+    animations.push(entry);
   }
 
   create(context: T, givenProjectableNodes: Array<any|any[]>, rootSelectorOrNode: string|any):
@@ -432,4 +475,8 @@ function _findLastRenderNode(node: any): any {
     lastNode = node;
   }
   return lastNode;
+}
+
+class _AnimationOutputWithHandler {
+  constructor(public output: AnimationOutput, public handler: Function) {}
 }

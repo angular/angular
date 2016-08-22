@@ -7,7 +7,7 @@
  */
 
 import {ViewType} from '../../core_private';
-import {CompiledAnimation} from '../animation/animation_compiler';
+import {CompiledAnimationTriggerResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMap, CompileIdentifierMetadata, CompilePipeMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {ListWrapper} from '../facade/collection';
@@ -71,7 +71,7 @@ export class CompileView implements NameResolver {
   constructor(
       public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
       public pipeMetas: CompilePipeMetadata[], public styles: o.Expression,
-      public animations: CompiledAnimation[], public viewIndex: number,
+      public animations: CompiledAnimationTriggerResult[], public viewIndex: number,
       public declarationElement: CompileElement, public templateVariableBindings: string[][]) {
     this.createMethod = new CompileMethod(this);
     this.injectorGetMethod = new CompileMethod(this);

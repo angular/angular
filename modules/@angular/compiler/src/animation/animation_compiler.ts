@@ -8,7 +8,7 @@
 
 import {AUTO_STYLE, BaseException} from '@angular/core';
 
-import {ANY_STATE, DEFAULT_STATE, EMPTY_STATE} from '../../core_private';
+import {ANY_STATE, AnimationOutput, DEFAULT_STATE, EMPTY_STATE} from '../../core_private';
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
@@ -17,23 +17,29 @@ import * as o from '../output/output_ast';
 import * as t from '../template_parser/template_ast';
 
 import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from './animation_ast';
-import {AnimationParseError, ParsedAnimationResult, parseAnimationEntry} from './animation_parser';
+import {AnimationParseError, ParsedAnimationResult, parseAnimationEntry, parseAnimationOutputName} from './animation_parser';
 
-const animationCompilationCache = new Map<CompileDirectiveMetadata, CompiledAnimation[]>();
+const animationCompilationCache =
+    new Map<CompileDirectiveMetadata, CompiledAnimationTriggerResult[]>();
 
-export class CompiledAnimation {
+export class CompiledAnimationTriggerResult {
   constructor(
       public name: string, public statesMapStatement: o.Statement,
       public statesVariableName: string, public fnStatement: o.Statement,
       public fnVariable: o.Expression) {}
 }
 
+export class CompiledComponentAnimationResult {
+  constructor(
+      public outputs: AnimationOutput[], public triggers: CompiledAnimationTriggerResult[]) {}
+}
+
 export class AnimationCompiler {
   compileComponent(component: CompileDirectiveMetadata, template: t.TemplateAst[]):
-      CompiledAnimation[] {
-    var compiledAnimations: CompiledAnimation[] = [];
+      CompiledComponentAnimationResult {
+    var compiledAnimations: CompiledAnimationTriggerResult[] = [];
     var groupedErrors: string[] = [];
-    var triggerLookup: {[key: string]: CompiledAnimation} = {};
+    var triggerLookup: {[key: string]: CompiledAnimationTriggerResult} = {};
     var componentName = component.type.name;
 
     component.template.animations.forEach(entry => {
@@ -59,9 +65,8 @@ export class AnimationCompiler {
       }
     });
 
-    _validateAnimationProperties(compiledAnimations, template).forEach(entry => {
-      groupedErrors.push(entry.msg);
-    });
+    var validatedProperties = _validateAnimationProperties(compiledAnimations, template);
+    validatedProperties.errors.forEach(error => { groupedErrors.push(error.msg); });
 
     if (groupedErrors.length > 0) {
       var errorMessageStr =
@@ -71,7 +76,7 @@ export class AnimationCompiler {
     }
 
     animationCompilationCache.set(component, compiledAnimations);
-    return compiledAnimations;
+    return new CompiledComponentAnimationResult(validatedProperties.outputs, compiledAnimations);
   }
 }
 
@@ -292,14 +297,15 @@ class _AnimationBuilder implements AnimationAstVisitor {
                              .toStmt()])])
             .toStmt());
 
-    statements.push(_ANIMATION_FACTORY_VIEW_VAR
-                        .callMethod(
-                            'queueAnimation',
-                            [
-                              _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
-                              _ANIMATION_PLAYER_VAR
-                            ])
-                        .toStmt());
+    statements.push(
+        _ANIMATION_FACTORY_VIEW_VAR
+            .callMethod(
+                'queueAnimation',
+                [
+                  _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
+                  _ANIMATION_PLAYER_VAR, _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR
+                ])
+            .toStmt());
 
     return o.fn(
         [
@@ -313,7 +319,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
         statements);
   }
 
-  build(ast: AnimationAst): CompiledAnimation {
+  build(ast: AnimationAst): CompiledAnimationTriggerResult {
     var context = new _AnimationBuilderContext();
     var fnStatement = ast.visit(this, context).toDeclStmt(this._fnVarName);
     var fnVariable = o.variable(this._fnVarName);
@@ -333,7 +339,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
         });
 
     var compiledStatesMapExpr = this._statesMapVar.set(o.literalMap(lookupMap)).toDeclStmt();
-    return new CompiledAnimation(
+    return new CompiledAnimationTriggerResult(
         this.animationName, compiledStatesMapExpr, this._statesMapVarName, fnStatement, fnVariable);
   }
 }
@@ -385,60 +391,92 @@ function _getStylesArray(obj: any): {[key: string]: any}[] {
 }
 
 function _validateAnimationProperties(
-    compiledAnimations: CompiledAnimation[], template: t.TemplateAst[]): AnimationParseError[] {
+    compiledAnimations: CompiledAnimationTriggerResult[],
+    template: t.TemplateAst[]): AnimationPropertyValidationOutput {
   var visitor = new _AnimationTemplatePropertyVisitor(compiledAnimations);
   t.templateVisitAll(visitor, template);
-  return visitor.errors;
+  return new AnimationPropertyValidationOutput(visitor.outputs, visitor.errors);
+}
+
+export class AnimationPropertyValidationOutput {
+  constructor(public outputs: AnimationOutput[], public errors: AnimationParseError[]) {}
 }
 
 class _AnimationTemplatePropertyVisitor implements t.TemplateAstVisitor {
   private _animationRegistry: {[key: string]: boolean};
   public errors: AnimationParseError[] = [];
+  public outputs: AnimationOutput[] = [];
 
-  constructor(animations: CompiledAnimation[]) {
+  constructor(animations: CompiledAnimationTriggerResult[]) {
     this._animationRegistry = this._buildCompileAnimationLookup(animations);
   }
 
-  private _buildCompileAnimationLookup(animations: CompiledAnimation[]): {[key: string]: boolean} {
+  private _buildCompileAnimationLookup(animations: CompiledAnimationTriggerResult[]):
+      {[key: string]: boolean} {
     var map: {[key: string]: boolean} = {};
     animations.forEach(entry => { map[entry.name] = true; });
     return map;
   }
 
-  visitElement(ast: t.ElementAst, ctx: any): any {
-    var inputAsts: t.BoundElementPropertyAst[] = ast.inputs;
-    var componentAnimationRegistry = this._animationRegistry;
-
-    var componentOnElement: t.DirectiveAst =
-        ast.directives.find(directive => directive.directive.isComponent);
-    if (componentOnElement) {
-      inputAsts = componentOnElement.hostProperties;
-      let cachedComponentAnimations = animationCompilationCache.get(componentOnElement.directive);
-      if (cachedComponentAnimations) {
-        componentAnimationRegistry = this._buildCompileAnimationLookup(cachedComponentAnimations);
-      }
-    }
-
+  private _validateAnimationInputOutputPairs(
+      inputAsts: t.BoundElementPropertyAst[], outputAsts: t.BoundEventAst[],
+      animationRegistry: {[key: string]: any}, isHostLevel: boolean): void {
+    var detectedAnimationInputs: {[key: string]: boolean} = {};
     inputAsts.forEach(input => {
       if (input.type == t.PropertyBindingType.Animation) {
-        var animationName = input.name;
-        if (!isPresent(componentAnimationRegistry[animationName])) {
+        var triggerName = input.name;
+        if (isPresent(animationRegistry[triggerName])) {
+          detectedAnimationInputs[triggerName] = true;
+        } else {
           this.errors.push(
-              new AnimationParseError(`couldn't find an animation entry for ${animationName}`));
+              new AnimationParseError(`Couldn't find an animation entry for ${triggerName}`));
         }
       }
     });
 
+    outputAsts.forEach(output => {
+      if (output.name[0] == '@') {
+        var normalizedOutputData = parseAnimationOutputName(output.name.substr(1), this.errors);
+        let triggerName = normalizedOutputData.name;
+        let triggerEventPhase = normalizedOutputData.phase;
+        if (!animationRegistry[triggerName]) {
+          this.errors.push(new AnimationParseError(
+              `Couldn't find the corresponding ${isHostLevel ? 'host-level ' : '' }animation trigger definition for (@${triggerName})`));
+        } else if (!detectedAnimationInputs[triggerName]) {
+          this.errors.push(new AnimationParseError(
+              `Unable to listen on (@${triggerName}.${triggerEventPhase}) because the animation trigger [@${triggerName}] isn't being used on the same element`));
+        } else {
+          this.outputs.push(normalizedOutputData);
+        }
+      }
+    });
+  }
+
+  visitElement(ast: t.ElementAst, ctx: any): any {
+    this._validateAnimationInputOutputPairs(
+        ast.inputs, ast.outputs, this._animationRegistry, false);
+
+    var componentOnElement: t.DirectiveAst =
+        ast.directives.find(directive => directive.directive.isComponent);
+    if (componentOnElement) {
+      let cachedComponentAnimations = animationCompilationCache.get(componentOnElement.directive);
+      if (cachedComponentAnimations) {
+        this._validateAnimationInputOutputPairs(
+            componentOnElement.hostProperties, componentOnElement.hostEvents,
+            this._buildCompileAnimationLookup(cachedComponentAnimations), true);
+      }
+    }
+
     t.templateVisitAll(this, ast.children);
   }
 
+  visitEvent(ast: t.BoundEventAst, ctx: any): any {}
   visitBoundText(ast: t.BoundTextAst, ctx: any): any {}
   visitText(ast: t.TextAst, ctx: any): any {}
   visitEmbeddedTemplate(ast: t.EmbeddedTemplateAst, ctx: any): any {}
   visitNgContent(ast: t.NgContentAst, ctx: any): any {}
   visitAttr(ast: t.AttrAst, ctx: any): any {}
   visitDirective(ast: t.DirectiveAst, ctx: any): any {}
-  visitEvent(ast: t.BoundEventAst, ctx: any): any {}
   visitReference(ast: t.ReferenceAst, ctx: any): any {}
   visitVariable(ast: t.VariableAst, ctx: any): any {}
   visitDirectiveProperty(ast: t.BoundDirectivePropertyAst, ctx: any): any {}

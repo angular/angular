@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANY_STATE, FILL_STYLE_FLAG} from '../../core_private';
+import {ANY_STATE, AnimationOutput, FILL_STYLE_FLAG} from '../../core_private';
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {NumberWrapper, isArray, isBlank, isPresent, isString, isStringMap} from '../facade/lang';
@@ -51,6 +51,32 @@ export function parseAnimationEntry(entry: CompileAnimationEntryMetadata): Parse
 
   var ast = new AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
   return new ParsedAnimationResult(ast, errors);
+}
+
+export function parseAnimationOutputName(
+    outputName: string, errors: AnimationParseError[]): AnimationOutput {
+  var values = outputName.split('.');
+  var name: string;
+  var phase: string = '';
+  if (values.length > 1) {
+    name = values[0];
+    let parsedPhase = values[1];
+    switch (parsedPhase) {
+      case 'start':
+      case 'done':
+        phase = parsedPhase;
+        break;
+
+      default:
+        errors.push(new AnimationParseError(
+            `The provided animation output phase value "${parsedPhase}" for "@${name}" is not supported (use start or done)`));
+    }
+  } else {
+    name = outputName;
+    errors.push(new AnimationParseError(
+        `The animation trigger output event (@${name}) is missing its phase value name (start or done are currently supported)`));
+  }
+  return new AnimationOutput(name, phase, outputName);
 }
 
 function _parseAnimationDeclarationStates(
