@@ -37,12 +37,15 @@ export class NgFocus {
   @Input()
   focus: boolean;
 
-  constructor(@Inject(ElementRef) private element: ElementRef) {}
+  constructor(public renderer: Renderer, public elementRef: ElementRef) {}
 
   protected ngOnChanges() {
-    if (this.focus)
-      this.element.nativeElement.focus();
+    if (this.focus) {
+      this.renderer.invokeElementMethod(
+        this.elementRef.nativeElement, 'focus', []);
+    }
     else
-      this.element.nativeElement.blur();
+    {this.renderer.invokeElementMethod(
+      this.elementRef.nativeElement, 'blur', []);}
   }
 }
