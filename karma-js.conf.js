@@ -70,8 +70,8 @@ module.exports = function(config) {
       recordScreenshots: false,
       options: {
         'selenium-version': '2.53.0',
-        'command-timeout': 600,
-        'idle-timeout': 600,
+        'command-timeout': 1200,
+        'idle-timeout': 1200,
         'max-duration': 5400
       }
     },
@@ -87,10 +87,10 @@ module.exports = function(config) {
     browsers: ['Chrome'],
 
     port: 9876,
-    captureTimeout: 60000,
-    browserDisconnectTimeout : 60000,
+    captureTimeout: 120000,
+    browserDisconnectTimeout : 120000,
     browserDisconnectTolerance : 3,
-    browserNoActivityTimeout : 60000,
+    browserNoActivityTimeout : 120000,
   });
 
   if (process.env.TRAVIS) {
