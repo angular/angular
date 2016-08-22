@@ -10,7 +10,9 @@ import {Component, animate, group, keyframes, sequence, state, style, transition
 
 @Component({
   host: {
-    '[@backgroundAnimation]': 'bgStatus'
+    '[@backgroundAnimation]': 'bgStatus',
+    '(@backgroundAnimation.start)': 'bgStatusChanged($event, "started")',
+    '(@backgroundAnimation.done)': 'bgStatusChanged($event, "completed")'
   },
   selector: 'animate-app',
   styleUrls: ['css/animate-app.css'],
@@ -78,6 +80,10 @@ export class AnimateApp {
     this.items.splice(Math.floor(Math.random() * this.items.length), 1);
     this.items.splice(Math.floor(Math.random() * this.items.length), 1);
     this.items[Math.floor(Math.random() * this.items.length)] = 99;
+  }
+
+  bgStatusChanged(data: {[key: string]: any}, phase: string) {
+    alert(`backgroundAnimation has ${phase} from ${data['fromState']} to ${data['toState']}`);
   }
 
   get state() { return this._state; }

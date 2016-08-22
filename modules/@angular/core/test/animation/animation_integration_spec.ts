@@ -1020,7 +1020,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                      const message = e.message;
                      expect(message).toMatch(
                          /Animation parsing for DummyIfCmp has failed due to the following errors:/);
-                     expect(message).toMatch(/- couldn't find an animation entry for status/);
+                     expect(message).toMatch(/- Couldn't find an animation entry for status/);
                    });
              })));
 
@@ -1057,7 +1057,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              failureMessage = e.message;
            }
 
-           expect(failureMessage).toMatch(/- couldn't find an animation entry for loading/);
+           expect(failureMessage).toMatch(/- Couldn't find an animation entry for loading/);
          });
 
       it('should retain the destination animation state styles once the animation is complete',
