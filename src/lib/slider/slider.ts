@@ -36,6 +36,7 @@ export const MD_SLIDER_VALUE_ACCESSOR: any = {
 };
 
 @Component({
+  moduleId: module.id,
   selector: 'md-slider',
   providers: [MD_SLIDER_VALUE_ACCESSOR],
   host: {

@@ -95,6 +95,7 @@ export class MdHint {
  * improve on its behaviour, along with styling it according to the Material Design.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-input',
   templateUrl: 'input.html',
   styleUrls: ['input.css'],

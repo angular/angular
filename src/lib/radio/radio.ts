@@ -236,6 +236,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
 
 @Component({
+  moduleId: module.id,
   selector: 'md-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],

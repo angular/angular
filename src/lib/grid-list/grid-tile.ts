@@ -12,6 +12,7 @@ import { MdLine, MdLineSetter } from '@angular2-material/core/line/line';
 import {coerceToNumber} from './grid-list-measure';
 
 @Component({
+  moduleId: module.id,
   selector: 'md-grid-tile',
   host: { 'role': 'listitem' },
   templateUrl: 'grid-tile.html',
@@ -53,6 +54,7 @@ export class MdGridTile {
 }
 
 @Component({
+  moduleId: module.id,
   selector: 'md-grid-tile-header, md-grid-tile-footer',
   templateUrl: 'grid-tile-text.html'
 })

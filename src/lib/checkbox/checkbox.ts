@@ -56,6 +56,7 @@ export class MdCheckboxChange {
  * See: https://www.google.com/design/spec/components/selection-controls.html
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-checkbox',
   templateUrl: 'checkbox.html',
   styleUrls: ['checkbox.css'],

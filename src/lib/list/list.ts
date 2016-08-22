@@ -13,6 +13,7 @@ import {
 import {MdLine, MdLineSetter, MdLineModule} from '@angular2-material/core/line/line';
 
 @Component({
+  moduleId: module.id,
   selector: 'md-list, md-nav-list',
   host: {'role': 'list'},
   template: '<ng-content></ng-content>',
@@ -26,6 +27,7 @@ export class MdList {}
 export class MdListAvatar {}
 
 @Component({
+  moduleId: module.id,
   selector: 'md-list-item, a[md-list-item]',
   host: {
     'role': 'listitem',

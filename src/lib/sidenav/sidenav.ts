@@ -34,6 +34,7 @@ export class MdDuplicatedSidenavError extends MdError {
  * Please refer to README.md for examples on how to use it.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-sidenav',
   template: '<ng-content></ng-content>',
   host: {
@@ -222,6 +223,7 @@ export class MdSidenav {
  * and coordinate the backdrop and content styling.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-sidenav-layout',
   // Do not use ChangeDetectionStrategy.OnPush. It does not work for this component because
   // technically it is a sibling of MdSidenav (on the content tree) and isn't updated when MdSidenav

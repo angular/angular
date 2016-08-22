@@ -32,6 +32,7 @@ type EasingFn = (currentTime: number, startValue: number,
  * <md-progress-circle> component.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-progress-circle',
   host: {
     'role': 'progressbar',
@@ -218,6 +219,7 @@ export class MdProgressCircle implements OnDestroy {
  * indeterminate <md-progress-circle> instance.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-spinner',
   host: {
     'role': 'progressbar',

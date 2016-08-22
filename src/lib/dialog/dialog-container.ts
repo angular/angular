@@ -13,6 +13,7 @@ import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
  * Internal component that wraps user-provided dialog content.
  */
 @Component({
+  moduleId: module.id,
   selector: 'md-dialog-container',
   templateUrl: 'dialog-container.html',
   styleUrls: ['dialog-container.css'],
