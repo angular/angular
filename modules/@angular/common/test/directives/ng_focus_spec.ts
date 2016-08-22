@@ -9,7 +9,7 @@ import {describe, expect, iit, inject, it} from '@angular/core/testing/testing_i
   directives: [NgFocus],
   template: '  <input class="test-input" [ngFocus]="inFocus"> '
 })
-class TestComponent {
+export class TestComponent {
   inFocus: boolean;
 }
 
