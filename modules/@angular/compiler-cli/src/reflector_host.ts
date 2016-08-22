@@ -27,14 +27,14 @@ export interface ReflectorHostContext {
 }
 
 export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
-  private metadataCollector = new MetadataCollector();
-  private context: ReflectorHostContext;
+  protected metadataCollector = new MetadataCollector();
+  protected context: ReflectorHostContext;
   private isGenDirChildOfRootDir: boolean;
-  private basePath: string;
+  protected basePath: string;
   private genDir: string;
   constructor(
-      private program: ts.Program, private compilerHost: ts.CompilerHost,
-      private options: AngularCompilerOptions, context?: ReflectorHostContext) {
+      protected program: ts.Program, protected compilerHost: ts.CompilerHost,
+      protected options: AngularCompilerOptions, context?: ReflectorHostContext) {
     // normalize the path so that it never ends with '/'.
     this.basePath = path.normalize(path.join(this.options.basePath, '.'));
     this.genDir = path.normalize(path.join(this.options.genDir, '.'));
@@ -55,21 +55,25 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     };
   }
 
-  private resolve(m: string, containingFile: string) {
+  // We use absolute paths on disk as canonical.
+  getCanonicalFileName(fileName: string): string { return fileName; }
+
+  protected resolve(m: string, containingFile: string) {
     const resolved =
         ts.resolveModuleName(m, containingFile, this.options, this.context).resolvedModule;
     return resolved ? resolved.resolvedFileName : null;
   };
 
-  private normalizeAssetUrl(url: string): string {
+  protected normalizeAssetUrl(url: string): string {
     let assetUrl = AssetUrl.parse(url);
-    return assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
+    const path = assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
+    return this.getCanonicalFileName(path);
   }
 
-  private resolveAssetUrl(url: string, containingFile: string): string {
+  protected resolveAssetUrl(url: string, containingFile: string): string {
     let assetUrl = this.normalizeAssetUrl(url);
     if (assetUrl) {
-      return this.resolve(assetUrl, containingFile);
+      return this.getCanonicalFileName(this.resolve(assetUrl, containingFile));
     }
     return url;
   }
@@ -198,7 +202,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
         symbol = tc.getAliasedSymbol(symbol);
       }
       const declaration = symbol.getDeclarations()[0];
-      const declarationFile = declaration.getSourceFile().fileName;
+      const declarationFile = this.getCanonicalFileName(declaration.getSourceFile().fileName);
 
       return this.getStaticSymbol(declarationFile, symbol.getName());
     } catch (e) {
@@ -267,9 +271,9 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     return metadata;
   }
 
-  private resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
+  protected resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
     const resolveModule = (moduleName: string): string => {
-      const resolvedModulePath = this.resolve(moduleName, filePath);
+      const resolvedModulePath = this.getCanonicalFileName(this.resolve(moduleName, filePath));
       if (!resolvedModulePath) {
         throw new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`);
       }

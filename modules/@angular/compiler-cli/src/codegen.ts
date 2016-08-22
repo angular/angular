@@ -18,6 +18,7 @@ import * as ts from 'typescript';
 
 import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleCompiler, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './compiler_private';
 import {Console} from './core_private';
+import {PathMappedReflectorHost} from './path_mapped_reflector_host';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector, StaticSymbol} from './static_reflector';
@@ -93,8 +94,9 @@ export class CodeGenerator {
   }
 
   codegen(): Promise<any> {
-    const filePaths =
-        this.program.getSourceFiles().map(sf => sf.fileName).filter(f => !GENERATED_FILES.test(f));
+    const filePaths = this.program.getSourceFiles()
+                          .map(sf => this.reflectorHost.getCanonicalFileName(sf.fileName))
+                          .filter(f => !GENERATED_FILES.test(f));
     const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
     const ngModules = fileMetas.reduce((ngModules, fileMeta) => {
       ngModules.push(...fileMeta.ngModules);
@@ -141,7 +143,10 @@ export class CodeGenerator {
     }
 
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
-    const reflectorHost = new ReflectorHost(program, compilerHost, options, reflectorHostContext);
+    const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
+    const reflectorHost = usePathMapping ?
+        new PathMappedReflectorHost(program, compilerHost, options, reflectorHostContext) :
+        new ReflectorHost(program, compilerHost, options, reflectorHostContext);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser =
