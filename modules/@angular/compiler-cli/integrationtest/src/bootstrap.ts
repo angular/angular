@@ -10,4 +10,4 @@ import {platformBrowser} from '@angular/platform-browser';
 import {BasicComp} from './basic';
 import {MainModuleNgFactory} from './module.ngfactory';
 
-MainModuleNgFactory.create(null).instance.appRef.bootstrap(BasicComp);
+MainModuleNgFactory.create(null as any).instance.appRef.bootstrap(BasicComp);
