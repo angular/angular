@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, Input} from '@angular/core';
+import {Directive, ElementRef, Inject, Input, Renderer} from '@angular/core';
 
 /**
  * The `NgFocus` directive conditionally set focus on your HTML element based on
