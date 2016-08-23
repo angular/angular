@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/icon",
-  "version": "2.0.0-alpha.7-5",
+  "version": "2.0.0-alpha.7-7",
   "description": "Angular 2 Material icon",
   "main": "./icon.js",
   "typings": "./icon.d.ts",
@@ -22,6 +22,6 @@
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
     "@angular/http": "2.0.0-rc.5",
-    "@angular2-material/core": "2.0.0-alpha.7-5"
+    "@angular2-material/core": "2.0.0-alpha.7-7"
   }
 }
