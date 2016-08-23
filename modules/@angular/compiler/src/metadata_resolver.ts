@@ -146,8 +146,8 @@ export class CompileMetadataResolver {
         changeDetectionStrategy = cmpMeta.changeDetection;
         if (isPresent(dirMeta.viewProviders)) {
           viewProviders = this.getProvidersMetadata(
-              verifyNonBlankProviders(directiveType, dirMeta.viewProviders, 'viewProviders'),
-              entryComponentMetadata);
+              dirMeta.viewProviders, entryComponentMetadata,
+              `viewProviders for "${stringify(directiveType)}"`);
         }
         moduleUrl = componentModuleUrl(this._reflector, directiveType, cmpMeta);
         if (cmpMeta.entryComponents) {
@@ -169,8 +169,8 @@ export class CompileMetadataResolver {
       var providers: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
       if (isPresent(dirMeta.providers)) {
         providers = this.getProvidersMetadata(
-            verifyNonBlankProviders(directiveType, dirMeta.providers, 'providers'),
-            entryComponentMetadata);
+            dirMeta.providers, entryComponentMetadata,
+            `providers for "${stringify(directiveType)}"`);
       }
       var queries: cpl.CompileQueryMetadata[] = [];
       var viewQueries: cpl.CompileQueryMetadata[] = [];
@@ -227,8 +227,9 @@ export class CompileMetadataResolver {
             const moduleWithProviders: ModuleWithProviders = importedType;
             importedModuleType = moduleWithProviders.ngModule;
             if (moduleWithProviders.providers) {
-              providers.push(
-                  ...this.getProvidersMetadata(moduleWithProviders.providers, entryComponents));
+              providers.push(...this.getProvidersMetadata(
+                  moduleWithProviders.providers, entryComponents,
+                  `provider for the NgModule '${stringify(importedModuleType)}'`));
             }
           }
           if (importedModuleType) {
@@ -295,7 +296,9 @@ export class CompileMetadataResolver {
       // The providers of the module have to go last
       // so that they overwrite any other provider we already added.
       if (meta.providers) {
-        providers.push(...this.getProvidersMetadata(meta.providers, entryComponents));
+        providers.push(...this.getProvidersMetadata(
+            meta.providers, entryComponents,
+            `provider for the NgModule '${stringify(moduleType)}'`));
       }
       if (meta.entryComponents) {
         entryComponents.push(
@@ -550,17 +553,18 @@ export class CompileMetadataResolver {
     return compileToken;
   }
 
-  getProvidersMetadata(providers: Provider[], targetEntryComponents: cpl.CompileTypeMetadata[]):
-      Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> {
+  getProvidersMetadata(
+      providers: Provider[], targetEntryComponents: cpl.CompileTypeMetadata[],
+      debugInfo?: string): Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> {
     const compileProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
-    providers.forEach((provider: any) => {
+    providers.forEach((provider: any, providerIdx: number) => {
       provider = resolveForwardRef(provider);
       if (provider && typeof provider == 'object' && provider.hasOwnProperty('provide')) {
         provider = new cpl.ProviderMeta(provider.provide, provider);
       }
       let compileProvider: cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[];
       if (isArray(provider)) {
-        compileProvider = this.getProvidersMetadata(provider, targetEntryComponents);
+        compileProvider = this.getProvidersMetadata(provider, targetEntryComponents, debugInfo);
       } else if (provider instanceof cpl.ProviderMeta) {
         let tokenMeta = this.getTokenMetadata(provider.token);
         if (tokenMeta.equalsTo(identifierToken(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS))) {
@@ -571,8 +575,22 @@ export class CompileMetadataResolver {
       } else if (isValidType(provider)) {
         compileProvider = this.getTypeMetadata(provider, staticTypeModuleUrl(provider));
       } else {
+        let providersInfo = (<string[]>providers.reduce(
+                                 (soFar: string[], seenProvider: any, seenProviderIdx: number) => {
+                                   if (seenProviderIdx < providerIdx) {
+                                     soFar.push(`${stringify(seenProvider)}`);
+                                   } else if (seenProviderIdx == providerIdx) {
+                                     soFar.push(`?${stringify(seenProvider)}?`);
+                                   } else if (seenProviderIdx == providerIdx + 1) {
+                                     soFar.push('...');
+                                   }
+                                   return soFar;
+                                 },
+                                 []))
+                                .join(', ');
+
         throw new BaseException(
-            `Invalid provider - only instances of Provider and Type are allowed, got: ${stringify(provider)}`);
+            `Invalid ${debugInfo ? debugInfo : 'provider'} - only instances of Provider and Type are allowed, got: [${providersInfo}]`);
       }
       if (compileProvider) {
         compileProviders.push(compileProvider);
@@ -694,23 +712,6 @@ function flattenArray(tree: any[], out: Array<any> = []): Array<any> {
     }
   }
   return out;
-}
-
-function verifyNonBlankProviders(
-    directiveType: Type<any>, providersTree: any[], providersType: string): any[] {
-  var flat: any[] = [];
-  var errMsg: string;
-
-  flattenArray(providersTree, flat);
-  for (var i = 0; i < flat.length; i++) {
-    if (isBlank(flat[i])) {
-      errMsg = flat.map(provider => isBlank(provider) ? '?' : stringify(provider)).join(', ');
-      throw new BaseException(
-          `One or more of ${providersType} for "${stringify(directiveType)}" were not defined: [${errMsg}].`);
-    }
-  }
-
-  return providersTree;
 }
 
 function isValidType(value: any): boolean {

@@ -732,7 +732,13 @@ function declareTests({useJit}: {useJit: boolean}) {
       it('should throw when given invalid providers', () => {
         expect(() => createInjector(<any>['blah']))
             .toThrowError(
-                'Invalid provider - only instances of Provider and Type are allowed, got: blah');
+                `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?blah?]`);
+      });
+
+      it('should throw when given blank providers', () => {
+        expect(() => createInjector(<any>[null, {provide: 'token', useValue: 'value'}]))
+            .toThrowError(
+                `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?null?, ...]`);
       });
 
       it('should provide itself', () => {
@@ -1104,6 +1110,20 @@ function declareTests({useJit}: {useJit: boolean}) {
              const injector = createModule(SomeModule).injector;
              expect(injector.get('token1')).toBe('imported2');
            });
+
+        it('should throw when given invalid providers in an imported ModuleWithProviders', () => {
+          @NgModule()
+          class ImportedModule1 {
+          }
+
+          @NgModule({imports: [{ngModule: ImportedModule1, providers: [<any>'broken']}]})
+          class SomeModule {
+          }
+
+          expect(() => createModule(SomeModule).injector)
+              .toThrowError(
+                  `Invalid provider for the NgModule 'ImportedModule1' - only instances of Provider and Type are allowed, got: [?broken?]`);
+        });
       });
     });
   });
