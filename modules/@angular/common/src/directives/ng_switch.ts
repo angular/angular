@@ -76,7 +76,7 @@ export class SwitchView {
  * }
  * ```
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
@@ -177,7 +177,7 @@ export class NgSwitch {
  *
  * See {@link NgSwitch} for more details and example.
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: '[ngSwitchCase]'})
 export class NgSwitchCase {
@@ -208,7 +208,7 @@ export class NgSwitchCase {
  *
  * See {@link NgSwitch} for more details and example.
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: '[ngSwitchDefault]'})
 export class NgSwitchDefault {

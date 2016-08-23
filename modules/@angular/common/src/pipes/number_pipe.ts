@@ -86,7 +86,7 @@ function formatNumber(
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='NumberPipe'}
  *
- * @experimental
+ * @stable
  */
 @Pipe({name: 'number'})
 export class DecimalPipe implements PipeTransform {
@@ -112,7 +112,7 @@ export class DecimalPipe implements PipeTransform {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='PercentPipe'}
  *
- * @experimental
+ * @stable
  */
 @Pipe({name: 'percent'})
 export class PercentPipe implements PipeTransform {
@@ -143,7 +143,7 @@ export class PercentPipe implements PipeTransform {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='CurrencyPipe'}
  *
- * @experimental
+ * @stable
  */
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {
