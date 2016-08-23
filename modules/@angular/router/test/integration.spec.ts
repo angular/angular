@@ -1456,7 +1456,7 @@ describe('Integration', () => {
          advance(fixture);
          expect(location.path()).toEqual('/team/22/link;exact=true');
 
-         const native = fixture.debugElement.nativeElement.querySelector('link-parent');
+         const native = fixture.debugElement.nativeElement.querySelector('#link-parent');
          expect(native.className).toEqual('active');
 
          router.navigateByUrl('/team/22/link/simple');
@@ -1845,9 +1845,9 @@ class LinkInNgIf {
 @Component({
   selector: 'link-cmp',
   template: `<router-outlet></router-outlet>
-                    <link-parent routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
-                      <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
-                    </link-parent>`
+             <div id="link-parent" routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
+               <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
+             </div>`
 })
 class DummyLinkWithParentCmp {
   private exact: boolean;

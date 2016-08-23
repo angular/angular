@@ -19,7 +19,7 @@ let thisArg: any;
 export function main() {
   describe('ngFor', () => {
     const TEMPLATE =
-        '<div><copy-me template="ngFor let item of items">{{item.toString()}};</copy-me></div>';
+        '<div><span template="ngFor let item of items">{{item.toString()}};</span></div>';
 
     beforeEach(() => {
       TestBed.configureTestingModule(
@@ -218,7 +218,7 @@ export function main() {
 
     it('should display indices correctly', async(() => {
          const template =
-             '<div><copy-me template="ngFor: let item of items; let i=index">{{i.toString()}}</copy-me></div>';
+             '<div><span template="ngFor: let item of items; let i=index">{{i.toString()}}</span></div>';
          TestBed.overrideComponent(TestComponent, {set: {template: template}});
          let fixture = TestBed.createComponent(TestComponent);
 
@@ -233,7 +233,7 @@ export function main() {
 
     it('should display first item correctly', async(() => {
          const template =
-             '<div><copy-me template="ngFor: let item of items; let isFirst=first">{{isFirst.toString()}}</copy-me></div>';
+             '<div><span template="ngFor: let item of items; let isFirst=first">{{isFirst.toString()}}</span></div>';
          TestBed.overrideComponent(TestComponent, {set: {template: template}});
          let fixture = TestBed.createComponent(TestComponent);
 
@@ -248,7 +248,7 @@ export function main() {
 
     it('should display last item correctly', async(() => {
          const template =
-             '<div><copy-me template="ngFor: let item of items; let isLast=last">{{isLast.toString()}}</copy-me></div>';
+             '<div><span template="ngFor: let item of items; let isLast=last">{{isLast.toString()}}</span></div>';
          TestBed.overrideComponent(TestComponent, {set: {template: template}});
          let fixture = TestBed.createComponent(TestComponent);
 
@@ -263,7 +263,7 @@ export function main() {
 
     it('should display even items correctly', async(() => {
          const template =
-             '<div><copy-me template="ngFor: let item of items; let isEven=even">{{isEven.toString()}}</copy-me></div>';
+             '<div><span template="ngFor: let item of items; let isEven=even">{{isEven.toString()}}</span></div>';
          TestBed.overrideComponent(TestComponent, {set: {template: template}});
          let fixture = TestBed.createComponent(TestComponent);
 
@@ -278,7 +278,7 @@ export function main() {
 
     it('should display odd items correctly', async(() => {
          const template =
-             '<div><copy-me template="ngFor: let item of items; let isOdd=odd">{{isOdd.toString()}}</copy-me></div>';
+             '<div><span template="ngFor: let item of items; let isOdd=odd">{{isOdd.toString()}}</span></div>';
          TestBed.overrideComponent(TestComponent, {set: {template: template}});
          let fixture = TestBed.createComponent(TestComponent);
 

@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ComponentFactory, Host, Inject, Injectable, Injector, NgModule, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf, SkipSelfMetadata, forwardRef} from '@angular/core';
+import {ComponentFactory, Host, Inject, Injectable, Injector, NO_ERRORS_SCHEMA, NgModule, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf, SkipSelfMetadata} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
@@ -304,7 +304,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       it('should support template directives via `<template>` elements.', () => {
         TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
         const template =
-            '<template some-viewport let-greeting="someTmpl"><copy-me>{{greeting}}</copy-me></template>';
+            '<template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></template>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
@@ -364,7 +364,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       it('should support template directives via `template` attribute.', () => {
         TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
         const template =
-            '<copy-me template="some-viewport: let greeting=someTmpl">{{greeting}}</copy-me>';
+            '<span template="some-viewport: let greeting=someTmpl">{{greeting}}</span>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
@@ -382,7 +382,8 @@ function declareTests({useJit}: {useJit: boolean}) {
           declarations: [
             MyComp, SomeDirective, CompWithHost, ToolbarComponent, ToolbarViewContainer, ToolbarPart
           ],
-          imports: [CommonModule]
+          imports: [CommonModule],
+          schemas: [NO_ERRORS_SCHEMA],
         });
         const template =
             '<some-directive><toolbar><template toolbarpart let-toolbarProp="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></template></toolbar></some-directive>';
@@ -640,7 +641,10 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       it('should create a component that injects an @Host', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, SomeDirective, CompWithHost]});
+        TestBed.configureTestingModule({
+          declarations: [MyComp, SomeDirective, CompWithHost],
+          schemas: [NO_ERRORS_SCHEMA],
+        });
         const template = `
             <some-directive>
               <p>
@@ -656,7 +660,10 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       it('should create a component that injects an @Host through viewcontainer directive', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, SomeDirective, CompWithHost]});
+        TestBed.configureTestingModule({
+          declarations: [MyComp, SomeDirective, CompWithHost],
+          schemas: [NO_ERRORS_SCHEMA],
+        });
         const template = `
             <some-directive>
               <p *ngIf="true">
@@ -879,25 +886,24 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       describe('dynamic ViewContainers', () => {
         beforeEach(() => {
-
           // we need a module to declarate ChildCompUsingService as an entryComponent otherwise the
           // factory doesn't get created
           @NgModule({
             declarations: [MyComp, DynamicViewport, ChildCompUsingService],
-            entryComponents: [ChildCompUsingService]
+            entryComponents: [ChildCompUsingService],
+            schemas: [NO_ERRORS_SCHEMA],
           })
           class MyModule {
           }
-
 
           TestBed.configureTestingModule({imports: [MyModule]});
           TestBed.overrideComponent(
               MyComp, {add: {template: '<div><dynamic-vp #dynamic></dynamic-vp></div>'}});
         });
 
-
         it('should allow to create a ViewContainerRef at any bound location', async(() => {
-             var fixture = TestBed.createComponent(MyComp);
+             var fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                               .createComponent(MyComp);
              var tc = fixture.debugElement.children[0].children[0];
              var dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
              dynamicVp.done.then((_) => {
@@ -945,8 +951,10 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     describe('dependency injection', () => {
       it('should support bindings', () => {
-        TestBed.configureTestingModule(
-            {declarations: [MyComp, DirectiveProvidingInjectable, DirectiveConsumingInjectable]});
+        TestBed.configureTestingModule({
+          declarations: [MyComp, DirectiveProvidingInjectable, DirectiveConsumingInjectable],
+          schemas: [NO_ERRORS_SCHEMA],
+        });
         const template = `
             <directive-providing-injectable >
               <directive-consuming-injectable #consuming>
@@ -962,8 +970,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should support viewProviders', () => {
         TestBed.configureTestingModule({
-          declarations:
-              [MyComp, DirectiveProvidingInjectableInView, DirectiveConsumingInjectable]
+          declarations: [MyComp, DirectiveProvidingInjectableInView, DirectiveConsumingInjectable],
+          schemas: [NO_ERRORS_SCHEMA],
         });
         const template = `
               <directive-consuming-injectable #consuming>
@@ -981,7 +989,8 @@ function declareTests({useJit}: {useJit: boolean}) {
           declarations: [
             MyComp, DirectiveProvidingInjectable, DirectiveContainingDirectiveConsumingAnInjectable,
             DirectiveConsumingInjectableUnbounded
-          ]
+          ],
+          schemas: [NO_ERRORS_SCHEMA],
         });
         const template = `
             <directive-providing-injectable>
@@ -1007,7 +1016,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.configureTestingModule({
           declarations: [
             MyComp, GrandParentProvidingEventBus, ParentProvidingEventBus, ChildConsumingEventBus
-          ]
+          ],
+          schemas: [NO_ERRORS_SCHEMA],
         });
         const template = `
             <grand-parent-providing-event-bus>
@@ -1036,8 +1046,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should instantiate bindings lazily', () => {
         TestBed.configureTestingModule({
-          declarations:
-              [MyComp, DirectiveConsumingInjectable, ComponentProvidingLoggingInjectable]
+          declarations: [MyComp, DirectiveConsumingInjectable, ComponentProvidingLoggingInjectable],
+          schemas: [NO_ERRORS_SCHEMA],
         });
         const template = `
               <component-providing-logging-injectable #providing>
@@ -1138,7 +1148,10 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       it('should provide an error context when an error happens in DI', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, DirectiveThrowingAnError]});
+        TestBed.configureTestingModule({
+          declarations: [MyComp, DirectiveThrowingAnError],
+          schemas: [NO_ERRORS_SCHEMA],
+        });
         const template = `<directive-throwing-error></directive-throwing-error>`;
         TestBed.overrideComponent(MyComp, {set: {template}});
 
@@ -1190,8 +1203,10 @@ function declareTests({useJit}: {useJit: boolean}) {
       if (getDOM().supportsDOMEvents()) {  // this is required to use fakeAsync
         it('should provide an error context when an error happens in an event handler',
            fakeAsync(() => {
-             TestBed.configureTestingModule(
-                 {declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent]});
+             TestBed.configureTestingModule({
+               declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent],
+               schemas: [NO_ERRORS_SCHEMA],
+             });
              const template = `<span emitter listener (event)="throwError()" #local></span>`;
              TestBed.overrideComponent(MyComp, {set: {template}});
              const fixture = TestBed.createComponent(MyComp);
@@ -1366,7 +1381,10 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     describe('property decorators', () => {
       it('should support property decorators', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithPropDecorators]});
+        TestBed.configureTestingModule({
+          declarations: [MyComp, DirectiveWithPropDecorators],
+          schemas: [NO_ERRORS_SCHEMA],
+        });
         const template = '<with-prop-decorators elProp="aaa"></with-prop-decorators>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
@@ -1377,7 +1395,10 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       it('should support host binding decorators', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithPropDecorators]});
+        TestBed.configureTestingModule({
+          declarations: [MyComp, DirectiveWithPropDecorators],
+          schemas: [NO_ERRORS_SCHEMA],
+        });
         const template = '<with-prop-decorators></with-prop-decorators>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
@@ -1393,7 +1414,10 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       if (getDOM().supportsDOMEvents()) {
         it('should support event decorators', fakeAsync(() => {
-             TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithPropDecorators]});
+             TestBed.configureTestingModule({
+               declarations: [MyComp, DirectiveWithPropDecorators],
+               schemas: [NO_ERRORS_SCHEMA],
+             });
              const template = `<with-prop-decorators (elEvent)="ctxProp='called'">`;
              TestBed.overrideComponent(MyComp, {set: {template}});
              const fixture = TestBed.createComponent(MyComp);
@@ -1411,7 +1435,10 @@ function declareTests({useJit}: {useJit: boolean}) {
 
 
         it('should support host listener decorators', () => {
-          TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithPropDecorators]});
+          TestBed.configureTestingModule({
+            declarations: [MyComp, DirectiveWithPropDecorators],
+            schemas: [NO_ERRORS_SCHEMA],
+          });
           const template = '<with-prop-decorators></with-prop-decorators>';
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
@@ -1426,8 +1453,11 @@ function declareTests({useJit}: {useJit: boolean}) {
       }
 
       it('should support defining views in the component decorator', () => {
-        TestBed.configureTestingModule(
-            {declarations: [MyComp, ComponentWithTemplate], imports: [CommonModule]});
+        TestBed.configureTestingModule({
+          declarations: [MyComp, ComponentWithTemplate],
+          imports: [CommonModule],
+          schemas: [NO_ERRORS_SCHEMA],
+        });
         const template = '<component-with-template></component-with-template>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);

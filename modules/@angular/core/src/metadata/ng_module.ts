@@ -27,8 +27,10 @@ export interface ModuleWithProviders {
 export interface SchemaMetadata { name: string; }
 
 /**
- * Defines a schema that will allow any property on elements with a `-` in their name,
- * which is the common rule for custom elements.
+ * Defines a schema that will allow:
+ * - any non-angular elements with a `-` in their name,
+ * - any properties on elements with a `-` in their name which is the common rule for custom
+ * elements.
  *
  * @stable
  */
@@ -161,6 +163,18 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    */
   bootstrap: Array<Type<any>|any[]>;
 
+  /**
+   * Elements and properties that are not angular Components nor Directives have to be declared in
+   * the schema.
+   *
+   * Available schemas:
+   * - `NO_ERRORS_SCHEMA`: any elements and properties are allowed,
+   * - `CUSTOM_ELEMENTS_SCHEMA`: any custom elements (tag name has "-") with any properties are
+   *   allowed.
+   *
+   * @security When using one of `NO_ERRORS_SCHEMA` or `CUSTOM_ELEMENTS_SCHEMA` we're trusting that
+   * allowed elements (and its properties) securely escape inputs.
+   */
   schemas: Array<SchemaMetadata|any[]>;
 
   constructor(options: NgModuleMetadataType = {}) {

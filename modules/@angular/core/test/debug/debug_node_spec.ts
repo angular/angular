@@ -7,7 +7,7 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {Injectable, NO_ERRORS_SCHEMA} from '@angular/core';
 import {Component, Directive, Input} from '@angular/core/src/metadata';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -185,9 +185,8 @@ export function main() {
           TestApp,
           UsingFor,
         ],
-        providers: [
-          Logger,
-        ]
+        providers: [Logger],
+        schemas: [NO_ERRORS_SCHEMA],
       });
     }));
 

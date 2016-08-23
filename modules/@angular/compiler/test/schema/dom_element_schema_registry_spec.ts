@@ -21,6 +21,16 @@ export function main() {
     let registry: DomElementSchemaRegistry;
     beforeEach(() => { registry = new DomElementSchemaRegistry(); });
 
+    it('should detect elements', () => {
+      expect(registry.hasElement('div', [])).toBeTruthy();
+      expect(registry.hasElement('b', [])).toBeTruthy();
+      expect(registry.hasElement('ng-container', [])).toBeTruthy();
+      expect(registry.hasElement('ng-content', [])).toBeTruthy();
+
+      expect(registry.hasElement('my-cmp', [])).toBeFalsy();
+      expect(registry.hasElement('abc', [])).toBeFalsy();
+    });
+
     it('should detect properties on regular elements', () => {
       expect(registry.hasProperty('div', 'id', [])).toBeTruthy();
       expect(registry.hasProperty('div', 'title', [])).toBeTruthy();
@@ -37,7 +47,7 @@ export function main() {
     });
 
     it('should detect different kinds of types', () => {
-      // inheritance: video => media => *
+      // inheritance: video => media => HTMLElement
       expect(registry.hasProperty('video', 'className', [])).toBeTruthy();   // from *
       expect(registry.hasProperty('video', 'id', [])).toBeTruthy();          // string
       expect(registry.hasProperty('video', 'scrollLeft', [])).toBeTruthy();  // number
@@ -57,11 +67,16 @@ export function main() {
 
     it('should return true for custom-like elements if the CUSTOM_ELEMENTS_SCHEMA was used', () => {
       expect(registry.hasProperty('custom-like', 'unknown', [CUSTOM_ELEMENTS_SCHEMA])).toBeTruthy();
+
+      expect(registry.hasElement('custom-like', [CUSTOM_ELEMENTS_SCHEMA])).toBeTruthy();
     });
 
     it('should return true for all elements if the NO_ERRORS_SCHEMA was used', () => {
       expect(registry.hasProperty('custom-like', 'unknown', [NO_ERRORS_SCHEMA])).toBeTruthy();
       expect(registry.hasProperty('a', 'unknown', [NO_ERRORS_SCHEMA])).toBeTruthy();
+
+      expect(registry.hasElement('custom-like', [NO_ERRORS_SCHEMA])).toBeTruthy();
+      expect(registry.hasElement('unknown', [NO_ERRORS_SCHEMA])).toBeTruthy();
     });
 
     it('should re-map property names that are specified in DOM facade',

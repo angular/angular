@@ -81,9 +81,11 @@ export class CssSelector {
   }
 
   isElementSelector(): boolean {
-    return isPresent(this.element) && ListWrapper.isEmpty(this.classNames) &&
-        ListWrapper.isEmpty(this.attrs) && this.notSelectors.length === 0;
+    return this.hasElementSelector() && this.classNames.length == 0 && this.attrs.length == 0 &&
+        this.notSelectors.length === 0;
   }
+
+  hasElementSelector(): boolean { return !!this.element; }
 
   setElement(element: string = null) { this.element = element; }
 
