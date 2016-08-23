@@ -9,17 +9,8 @@ export declare class AsyncPipe implements OnDestroy {
 }
 
 /** @experimental */
-export declare const COMMON_DIRECTIVES: Provider[];
-
-/** @experimental */
-export declare const COMMON_PIPES: (typeof AsyncPipe | typeof SlicePipe | typeof I18nPluralPipe | typeof I18nSelectPipe)[];
-
-/** @experimental */
 export declare class CommonModule {
 }
-
-/** @stable */
-export declare const CORE_DIRECTIVES: Type<any>[];
 
 /** @experimental */
 export declare class CurrencyPipe implements PipeTransform {
