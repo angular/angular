@@ -16,64 +16,22 @@ import {NgModule} from '@angular/core';
 
 import {BrowserJsonp} from './src/backends/browser_jsonp';
 import {BrowserXhr} from './src/backends/browser_xhr';
-import {JSONPBackend, JSONPBackend_, JSONPConnection} from './src/backends/jsonp_backend';
-import {CookieXSRFStrategy, XHRBackend, XHRConnection} from './src/backends/xhr_backend';
+import {JSONPBackend, JSONPBackend_} from './src/backends/jsonp_backend';
+import {CookieXSRFStrategy, XHRBackend} from './src/backends/xhr_backend';
 import {BaseRequestOptions, RequestOptions} from './src/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from './src/base_response_options';
 import {Http, Jsonp} from './src/http';
-import {ConnectionBackend, XSRFStrategy} from './src/interfaces';
+import {XSRFStrategy} from './src/interfaces';
 
-export {BrowserXhr} from './src/backends/browser_xhr';
-export {JSONPBackend, JSONPConnection} from './src/backends/jsonp_backend';
-export {CookieXSRFStrategy, XHRBackend, XHRConnection} from './src/backends/xhr_backend';
-export {BaseRequestOptions, RequestOptions} from './src/base_request_options';
-export {BaseResponseOptions, ResponseOptions} from './src/base_response_options';
-export {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './src/enums';
-export {Headers} from './src/headers';
-export {Http, Jsonp} from './src/http';
-export {Connection, ConnectionBackend, RequestOptionsArgs, ResponseOptionsArgs, XSRFStrategy} from './src/interfaces';
-export {Request} from './src/static_request';
-export {Response} from './src/static_response';
-export {QueryEncoder, URLSearchParams} from './src/url_search_params';
 
-const HTTP_PROVIDERS: any[] = [
-  // TODO(pascal): use factory type annotations once supported in DI
-  // issue: https://github.com/angular/angular/issues/3183
-  {provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions]},
-  BrowserXhr,
-  {provide: RequestOptions, useClass: BaseRequestOptions},
-  {provide: ResponseOptions, useClass: BaseResponseOptions},
-  XHRBackend,
-  {provide: XSRFStrategy, useFactory: _createDefaultCookieXSRFStrategy},
-];
-
-/**
- * @experimental
- */
 export function _createDefaultCookieXSRFStrategy() {
   return new CookieXSRFStrategy();
 }
 
-/**
- * @experimental
- */
 export function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions): Http {
   return new Http(xhrBackend, requestOptions);
 }
 
-const JSONP_PROVIDERS: any[] = [
-  // TODO(pascal): use factory type annotations once supported in DI
-  // issue: https://github.com/angular/angular/issues/3183
-  {provide: Jsonp, useFactory: jsonpFactory, deps: [JSONPBackend, RequestOptions]},
-  BrowserJsonp,
-  {provide: RequestOptions, useClass: BaseRequestOptions},
-  {provide: ResponseOptions, useClass: BaseResponseOptions},
-  {provide: JSONPBackend, useClass: JSONPBackend_},
-];
-
-/**
- * @experimental
- */
 export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: RequestOptions): Jsonp {
   return new Jsonp(jsonpBackend, requestOptions);
 }
@@ -85,7 +43,6 @@ export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: Request
  * @experimental
  */
 @NgModule({
-  // TODO(alxhub): switch back to HTTP_PROVIDERS when the metadata collector can inline it
   providers: [
     // TODO(pascal): use factory type annotations once supported in DI
     // issue: https://github.com/angular/angular/issues/3183
@@ -106,7 +63,6 @@ export class HttpModule {
  * @experimental
  */
 @NgModule({
-  // TODO(alxhub): switch back to JSONP_PROVIDERS when the metadata collector can inline it
   providers: [
     // TODO(pascal): use factory type annotations once supported in DI
     // issue: https://github.com/angular/angular/issues/3183
