@@ -6,21 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {__platform_browser_private__ as r, __platform_browser_private_types__ as t} from '@angular/platform-browser';
+import {__platform_browser_private__ as r, __platform_browser_private_types__ as types} from '@angular/platform-browser';
 
-export type DomAdapter = typeof t.DomAdapter;
-export var DomAdapter: typeof t.DomAdapter = r.DomAdapter;
-export var setRootDomAdapter: typeof t.setRootDomAdapter = r.setRootDomAdapter;
-export var getDOM: typeof t.getDOM = r.getDOM;
-export type DomRootRenderer = typeof t.DomRootRenderer;
-export var DomRootRenderer: typeof t.DomRootRenderer = r.DomRootRenderer;
-export type DomRootRenderer_ = typeof t.DomRootRenderer_;
-export var DomRootRenderer_: typeof t.DomRootRenderer_ = r.DomRootRenderer_;
-export type DomSharedStylesHost = typeof t.DomSharedStylesHost;
-export var DomSharedStylesHost: typeof t.DomSharedStylesHost = r.DomSharedStylesHost;
-export type SharedStylesHost = typeof t.SharedStylesHost;
-export var SharedStylesHost: typeof t.SharedStylesHost = r.SharedStylesHost;
-export type ELEMENT_PROBE_PROVIDERS = typeof t.ELEMENT_PROBE_PROVIDERS;
-export var ELEMENT_PROBE_PROVIDERS: typeof t.ELEMENT_PROBE_PROVIDERS = r.ELEMENT_PROBE_PROVIDERS;
-export type DomEventsPlugin = typeof t.DomEventsPlugin;
-export var DomEventsPlugin: typeof t.DomEventsPlugin = r.DomEventsPlugin;
+export declare let _server_platform_browser_private_types: types;
+
+export type DomAdapter = typeof _server_platform_browser_private_types.DomAdapter;
+export var DomAdapter: typeof r.DomAdapter = r.DomAdapter;
+export var setRootDomAdapter: typeof r.setRootDomAdapter = r.setRootDomAdapter;
+export var getDOM: typeof r.getDOM = r.getDOM;
+export type DomRootRenderer = typeof _server_platform_browser_private_types.DomRootRenderer;
+export var DomRootRenderer: typeof r.DomRootRenderer = r.DomRootRenderer;
+export type DomRootRenderer_ = typeof _server_platform_browser_private_types.DomRootRenderer_;
+export var DomRootRenderer_: typeof r.DomRootRenderer_ = r.DomRootRenderer_;
+export type DomSharedStylesHost = typeof _server_platform_browser_private_types.DomSharedStylesHost;
+export var DomSharedStylesHost: typeof r.DomSharedStylesHost = r.DomSharedStylesHost;
+export type SharedStylesHost = typeof _server_platform_browser_private_types.SharedStylesHost;
+export var SharedStylesHost: typeof r.SharedStylesHost = r.SharedStylesHost;
+export var ELEMENT_PROBE_PROVIDERS: typeof r.ELEMENT_PROBE_PROVIDERS = r.ELEMENT_PROBE_PROVIDERS;
+export type DomEventsPlugin = typeof _server_platform_browser_private_types.DomEventsPlugin;
+export var DomEventsPlugin: typeof r.DomEventsPlugin = r.DomEventsPlugin;

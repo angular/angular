@@ -8,11 +8,9 @@
 
 import * as test_compiler from './test_compiler';
 
-export declare namespace __core_private_testing_types__ {
-  export type TestingCompiler = test_compiler.TestingCompiler;
-  export var TestingCompiler: typeof test_compiler.TestingCompiler;
-  export type TestingCompilerFactory = test_compiler.TestingCompilerFactory;
-  export var TestingCompilerFactory: typeof test_compiler.TestingCompilerFactory;
+export interface __core_private_testing_types__ {
+  TestingCompiler: test_compiler.TestingCompiler;
+  TestingCompilerFactory: test_compiler.TestingCompilerFactory;
 }
 
 export var __core_private_testing__ = {
