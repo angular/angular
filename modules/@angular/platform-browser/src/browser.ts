@@ -44,7 +44,7 @@ export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = [
 ];
 
 /**
- * @experimental API related to bootstrapping are still under review.
+ * @stable
  */
 export const platformBrowser =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
@@ -73,7 +73,7 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
 /**
  * The ng module for the browser.
  *
- * @experimental
+ * @stable
  */
 @NgModule({
   providers: [

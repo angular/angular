@@ -1,6 +1,6 @@
-/** @experimental */
+/** @stable */
 export declare class BrowserTestingModule {
 }
 
-/** @experimental */
+/** @stable */
 export declare const platformBrowserTesting: (extraProviders?: any[]) => PlatformRef;

@@ -2,5 +2,5 @@
 export declare class BrowserDynamicTestingModule {
 }
 
-/** @experimental */
+/** @stable */
 export declare const platformBrowserDynamicTesting: (extraProviders?: any[]) => PlatformRef;
