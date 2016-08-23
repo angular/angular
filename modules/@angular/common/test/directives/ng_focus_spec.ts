@@ -56,7 +56,7 @@ export function main() {
 
 
 
-@Component({selector: 'test-cmp', directives: [NgFocus], template: ' '})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   inFocus: boolean;
 }
