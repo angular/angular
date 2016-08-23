@@ -8,7 +8,7 @@
 
 import {Compiler, Injectable, Injector, NgModuleMetadata, Type} from '@angular/core';
 
-import {NgModuleResolver} from '../index';
+import {NgModuleResolver} from '@angular/compiler';
 import {Map} from './facade/collection';
 
 @Injectable()

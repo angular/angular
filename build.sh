@@ -41,6 +41,7 @@ TSC="node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main"
 # rm -rf ./dist/packages-dist
 
 for PACKAGE in \
+  core \
   compiler \
   common \
   forms \

@@ -8,7 +8,7 @@
 
 import {SchemaMetadata, SecurityContext} from '@angular/core';
 
-import {ElementSchemaRegistry} from '../index';
+import {ElementSchemaRegistry} from '@angular/compiler';
 import {isPresent} from './facade/lang';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {

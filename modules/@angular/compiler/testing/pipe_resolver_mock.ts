@@ -8,7 +8,7 @@
 
 import {Compiler, Injectable, Injector, PipeMetadata, Type} from '@angular/core';
 
-import {PipeResolver} from '../index';
+import {PipeResolver} from '@angular/compiler';
 import {Map} from './facade/collection';
 
 @Injectable()
