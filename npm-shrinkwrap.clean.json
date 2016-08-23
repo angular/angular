@@ -1599,9 +1599,6 @@
     "buffers": {
       "version": "0.1.1"
     },
-    "bufferutil": {
-      "version": "1.2.1"
-    },
     "builtin-modules": {
       "version": "1.1.1"
     },
@@ -4807,7 +4804,7 @@
       "version": "1.1.5"
     },
     "rxjs": {
-      "version": "5.0.0-beta.6"
+      "version": "5.0.0-beta.11"
     },
     "sass-graph": {
       "version": "2.0.1",
@@ -5126,6 +5123,9 @@
     },
     "supports-color": {
       "version": "0.2.0"
+    },
+    "symbol-observable": {
+      "version": "1.0.2"
     },
     "symlink-or-copy": {
       "version": "1.0.1"
