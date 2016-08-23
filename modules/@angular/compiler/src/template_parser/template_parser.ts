@@ -8,7 +8,7 @@
 
 import {BaseException, Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityContext} from '@angular/core';
 
-import {Console, MAX_INTERPOLATION_VALUES} from '../../core_private';
+import {Console, MAX_INTERPOLATION_VALUES} from '../core_private';
 import {CompileDirectiveMetadata, CompilePipeMetadata, CompileTokenMetadata, removeIdentifierDuplicates} from '../compile_metadata';
 import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';

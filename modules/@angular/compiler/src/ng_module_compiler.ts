@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {LifecycleHooks} from '../core_private';
+import {LifecycleHooks} from './core_private';
 
 import {CompileDiDependencyMetadata, CompileIdentifierMap, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata} from './compile_metadata';
 import {isBlank, isPresent} from './facade/lang';

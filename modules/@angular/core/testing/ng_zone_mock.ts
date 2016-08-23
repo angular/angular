@@ -7,7 +7,7 @@
  */
 
 import {Injectable, NgZone} from '@angular/core';
-import {EventEmitter} from '../src/facade/async';
+import {EventEmitter} from './facade/async';
 
 /**
  * A mock implementation of {@link NgZone}.

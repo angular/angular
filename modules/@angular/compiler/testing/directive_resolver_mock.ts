@@ -7,11 +7,11 @@
  */
 
 import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Type, resolveForwardRef} from '@angular/core';
-import {ViewMetadata} from '../core_private';
+import {ViewMetadata} from './core_private';
 
-import {DirectiveResolver} from '../src/directive_resolver';
-import {Map} from '../src/facade/collection';
-import {isArray, isPresent} from '../src/facade/lang';
+import {DirectiveResolver} from '@angular/compiler';
+import {Map} from './facade/collection';
+import {isArray, isPresent} from './facade/lang';
 
 
 

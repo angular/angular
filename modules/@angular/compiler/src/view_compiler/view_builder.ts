@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
-import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../../core_private';
+import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../core_private';
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata, CompileTypeMetadata} from '../compile_metadata';
 import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';

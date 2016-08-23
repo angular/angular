@@ -9,7 +9,7 @@
 import {Compiler, Injectable, Injector, PipeMetadata, Type} from '@angular/core';
 
 import {PipeResolver} from '../index';
-import {Map} from '../src/facade/collection';
+import {Map} from './facade/collection';
 
 @Injectable()
 export class MockPipeResolver extends PipeResolver {

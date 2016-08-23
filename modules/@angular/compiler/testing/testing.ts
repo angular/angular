@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './testing/schema_registry_mock';
-export * from './testing/directive_resolver_mock';
-export * from './testing/ng_module_resolver_mock';
-export * from './testing/pipe_resolver_mock';
+export * from './schema_registry_mock';
+export * from './directive_resolver_mock';
+export * from './ng_module_resolver_mock';
+export * from './pipe_resolver_mock';
 
-import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, ComponentFactory, NgModuleFactory, Injector, NgModuleMetadata, NgModuleMetadataType, ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, PipeMetadata, PipeMetadataType, Type, PlatformRef} from '@angular/core';
-import {MetadataOverride} from '@angular/core/testing';
+import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, ComponentFactory, NgModuleFactory, Injector, NgModuleMetadata, NgModuleMetadataType, ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, PipeMetadata, PipeMetadataType, Type, PlatformRef} from '../../core/index';
+import {MetadataOverride} from '../../core/testing';
 import {TestingCompilerFactory, TestingCompiler} from './core_private_testing';
-import {platformCoreDynamic, RuntimeCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from './index';
-import {MockDirectiveResolver} from './testing/directive_resolver_mock';
-import {MockNgModuleResolver} from './testing/ng_module_resolver_mock';
-import {MockPipeResolver} from './testing/pipe_resolver_mock';
-import {MetadataOverrider} from './testing/metadata_overrider';
+import {platformCoreDynamic, RuntimeCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from '../index';
+import {MockDirectiveResolver} from './directive_resolver_mock';
+import {MockNgModuleResolver} from './ng_module_resolver_mock';
+import {MockPipeResolver} from './pipe_resolver_mock';
+import {MetadataOverrider} from './metadata_overrider';
 
 @Injectable()
 export class TestingCompilerFactoryImpl implements TestingCompilerFactory {

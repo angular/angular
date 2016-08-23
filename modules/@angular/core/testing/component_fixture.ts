@@ -7,8 +7,8 @@
  */
 
 import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, getDebugNode} from '@angular/core';
-import {BaseException} from '../src/facade/exceptions';
-import {scheduleMicroTask} from '../src/facade/lang';
+import {BaseException} from './facade/exceptions';
+import {scheduleMicroTask} from './facade/lang';
 
 import {tick} from './fake_async';
 

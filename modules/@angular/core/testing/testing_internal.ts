@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../src/facade/collection';
-import {Math, global, isPromise} from '../src/facade/lang';
+import {StringMapWrapper} from './facade/collection';
+import {Math, global, isPromise} from './facade/lang';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {TestBed, getTestBed, inject} from './test_bed';

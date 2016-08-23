@@ -40,7 +40,7 @@ import {Lexer} from './expression_parser/lexer';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {NgModuleResolver} from './ng_module_resolver';
-import {Console, Reflector, reflector, ReflectorReader, ReflectionCapabilities} from '../core_private';
+import {Console, Reflector, reflector, ReflectorReader, ReflectionCapabilities} from './core_private';
 import {ResourceLoader} from './resource_loader';
 import * as i18n from './i18n/index';
 

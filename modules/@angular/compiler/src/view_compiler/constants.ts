@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
-import {ChangeDetectorStatus, ViewType} from '../../core_private';
+import {ChangeDetectorStatus, ViewType} from '../core_private';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import {isBlank, resolveEnumToken} from '../facade/lang';
 import {Identifiers} from '../identifiers';

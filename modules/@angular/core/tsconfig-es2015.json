@@ -18,8 +18,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "testing.ts",
+    "core.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     "../../system.d.ts"
   ],

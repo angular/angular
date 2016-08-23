@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANY_STATE, AnimationOutput, FILL_STYLE_FLAG} from '../../core_private';
+import {ANY_STATE, AnimationOutput, FILL_STYLE_FLAG} from '../core_private';
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {NumberWrapper, isArray, isBlank, isPresent, isString, isStringMap} from '../facade/lang';

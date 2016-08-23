@@ -9,8 +9,8 @@
     "moduleResolution": "node",
     "outDir": "../../../dist/packages-dist/compiler",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/core/testing": ["../../../dist/packages-dist/core/testing"]
+      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"],
+      "@angular/core/testing": ["../../../dist/packages-dist/core/testing/index.d.ts"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -20,8 +20,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "testing.ts",
+    "compiler.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]
 }

@@ -7,7 +7,7 @@
  */
 
 import {Compiler, CompilerOptions, ComponentMetadataType, DirectiveMetadataType, Injector, NgModuleMetadataType, PipeMetadataType, Type} from '@angular/core';
-import {unimplemented} from '../src/facade/exceptions';
+import {unimplemented} from './facade/exceptions';
 import {MetadataOverride} from './metadata_override';
 
 /**

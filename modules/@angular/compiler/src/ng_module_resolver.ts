@@ -8,7 +8,7 @@
 
 import {Injectable, NgModuleMetadata, Type} from '@angular/core';
 
-import {ReflectorReader, reflector} from '../core_private';
+import {ReflectorReader, reflector} from './core_private';
 import {BaseException} from '../src/facade/exceptions';
 import {isPresent, stringify} from './facade/lang';
 

@@ -12,7 +12,7 @@ mkdir -p ./dist/all/
 
 TSCONFIG=./tools/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
-$(npm bin)/tsc -p ${TSCONFIG}
+# $(npm bin)/tsc -p ${TSCONFIG}
 cp ./tools/@angular/tsc-wrapped/package.json ./dist/tools/@angular/tsc-wrapped
 
 echo "====== Copying files needed for e2e tests ====="
@@ -36,22 +36,22 @@ TSCONFIG=./modules/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
 # compile ts code
 TSC="node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main"
-$TSC -p modules/tsconfig.json
+# $TSC -p modules/tsconfig.json
 
-rm -rf ./dist/packages-dist
+# rm -rf ./dist/packages-dist
 
 for PACKAGE in \
-  core \
- # compiler \
- # common \
- # forms \
- # platform-browser \
- # platform-browser-dynamic \
- # platform-server \
- # http \
- # router \
- # upgrade \
- # compiler-cli
+  compiler \
+  common \
+  forms \
+  platform-browser \
+  platform-browser-dynamic \
+  platform-server \
+  http \
+  router \
+  upgrade \
+  compiler-cli
+#  core \
 do
   SRCDIR=./modules/@angular/${PACKAGE}
   DESTDIR=./dist/packages-dist/${PACKAGE}
@@ -62,10 +62,11 @@ do
   echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015.json        ====="
   $TSC -p ${SRCDIR}/tsconfig-es2015.json
 
-  # echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es5.json        ====="
-  # $TSC -p ${SRCDIR}/tsconfig-es5.json
+  echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015-testing.json        ====="
+  $TSC -p ${SRCDIR}/tsconfig-es2015-testing.json
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
+  cp ${SRCDIR}/*.d.ts ${DESTDIR}/
 
 
   echo "======      TSC 1.8 d.ts compat for ${DESTDIR}   ====="
@@ -90,6 +91,12 @@ do
       cd  ${SRCDIR}
       echo "..."  # here just to have grep match something and not exit with 1
       ../../../node_modules/.bin/rollup -c rollup.config.js
+    ) 2>&1 | grep -v "as external dependency"
+
+    (
+      cd  ${SRCDIR}
+      echo "..."  # here just to have grep match something and not exit with 1
+      ../../../node_modules/.bin/rollup -c rollup-testing.config.js
     ) 2>&1 | grep -v "as external dependency"
 
   #   $(npm bin)/tsc  \

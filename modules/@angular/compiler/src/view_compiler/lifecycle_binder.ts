@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LifecycleHooks} from '../../core_private';
+import {LifecycleHooks} from '../core_private';
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
 import * as o from '../output/output_ast';
 import {DirectiveAst, ProviderAst} from '../template_parser/template_ast';

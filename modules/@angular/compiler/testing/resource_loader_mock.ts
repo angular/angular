@@ -8,9 +8,9 @@
 
 import {BaseException} from '@angular/core';
 
-import {ResourceLoader} from '../index';
-import {ListWrapper, Map} from '../src/facade/collection';
-import {isBlank, normalizeBlank} from '../src/facade/lang';
+import {ResourceLoader} from '@angular/compiler';
+import {ListWrapper, Map} from './facade/collection';
+import {isBlank, normalizeBlank} from './facade/lang';
 
 
 /**

@@ -8,7 +8,7 @@
 
 import {AUTO_STYLE, BaseException} from '@angular/core';
 
-import {ANY_STATE, AnimationOutput, DEFAULT_STATE, EMPTY_STATE} from '../../core_private';
+import {ANY_STATE, AnimationOutput, DEFAULT_STATE, EMPTY_STATE} from '../core_private';
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';

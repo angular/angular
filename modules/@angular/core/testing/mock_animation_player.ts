@@ -7,7 +7,7 @@
  */
 
 import {AnimationPlayer} from '@angular/core';
-import {isPresent} from '../src/facade/lang';
+import {isPresent} from './facade/lang';
 
 export class MockAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];

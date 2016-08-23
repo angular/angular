@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewType} from '../../core_private';
+import {ViewType} from '../core_private';
 import {CompiledAnimationTriggerResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMap, CompileIdentifierMetadata, CompilePipeMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';

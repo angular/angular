@@ -7,7 +7,7 @@
  */
 
 import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, Type, resolveForwardRef} from '@angular/core';
-import {ReflectorReader, reflector} from '../core_private';
+import {ReflectorReader, reflector} from './core_private';
 import {StringMapWrapper} from './facade/collection';
 import {BaseException} from './facade/exceptions';
 import {isPresent, stringify} from './facade/lang';

@@ -10,7 +10,7 @@ import {CommonModule} from '@angular/common';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
-import {Component} from '../../index';
+import {Component} from '@angular/core';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AnimationPlayer} from '../../src/animation/animation_player';

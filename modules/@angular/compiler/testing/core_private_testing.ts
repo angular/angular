@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {__core_private_testing__ as r, __core_private_testing_types__ as t} from '@angular/core/testing';
+import {__core_private_testing__ as r, __core_private_testing_types__ as t} from '../../core/testing';
 
 export type TestingCompiler = t.TestingCompiler;
 export var TestingCompiler: typeof t.TestingCompiler = r.TestingCompiler;

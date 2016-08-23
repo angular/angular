@@ -4,22 +4,22 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/core/cjs",
+    "outDir": "../../../dist/packages-dist/core",
     "paths": {
-      "rxjs/*": ["../../../node_modules/rxjs/*"]
+      "rxjs/*": ["../../../node_modules/rxjs/*"],
+      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"]
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "lib": ["es2015", "dom"],
     "target": "es5",
+    "lib": ["es2015", "dom"],
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "testing.ts",
+    "testing/index.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     "../../system.d.ts"
   ],
