@@ -114,6 +114,18 @@ export declare class AnimationStyleMetadata extends AnimationMetadata {
 }
 
 /** @experimental */
+export declare class AnimationTransitionEvent {
+    fromState: string;
+    toState: string;
+    totalTime: number;
+    constructor({fromState, toState, totalTime}: {
+        fromState: string;
+        toState: string;
+        totalTime: number;
+    });
+}
+
+/** @experimental */
 export declare abstract class AnimationWithStepsMetadata extends AnimationMetadata {
     steps: AnimationMetadata[];
     constructor();

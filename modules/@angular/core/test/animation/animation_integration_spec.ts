@@ -10,11 +10,13 @@ import {CommonModule} from '@angular/common';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
+
 import {Component} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
+import {AnimationTransitionEvent} from '../../src/animation/animation_transition_event';
 import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {isPresent} from '../../src/facade/lang';
 import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
@@ -980,8 +982,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            var isAnimationRunning = false;
            var calls = 0;
            var cmp = fixture.debugElement.componentInstance;
-           cmp.callback = (e: any) => {
-             isAnimationRunning = e['running'];
+           cmp.callback = (e: AnimationTransitionEvent) => {
+             isAnimationRunning = e.totalTime > 0;
              calls++;
            };
 
@@ -1016,8 +1018,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            var isAnimationRunning = false;
            var calls = 0;
            var cmp = fixture.debugElement.componentInstance;
-           cmp.callback = (e: any) => {
-             isAnimationRunning = e['running'];
+           cmp.callback = (e: AnimationTransitionEvent) => {
+             isAnimationRunning = e.totalTime > 0;
              calls++;
            };
            cmp.exp = 'one';
@@ -1056,20 +1058,56 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
            let fixture = TestBed.createComponent(DummyIfCmp);
-           var eventData: any = {};
+           var eventData: AnimationTransitionEvent = null;
            var cmp = fixture.debugElement.componentInstance;
-           cmp.callback = (e: any) => { eventData = e; };
+           cmp.callback = (e: AnimationTransitionEvent) => { eventData = e; };
            cmp.exp = 'one';
            fixture.detectChanges();
            flushMicrotasks();
-           expect(eventData['fromState']).toEqual('void');
-           expect(eventData['toState']).toEqual('one');
+           expect(eventData.fromState).toEqual('void');
+           expect(eventData.toState).toEqual('one');
 
            cmp.exp = 'two';
            fixture.detectChanges();
            flushMicrotasks();
-           expect(eventData['fromState']).toEqual('one');
-           expect(eventData['toState']).toEqual('two');
+           expect(eventData.fromState).toEqual('one');
+           expect(eventData.toState).toEqual('two');
+         }));
+
+      it('should emit the `totalTime` values for an animation callback', fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+              <div [@trigger]="exp" (@trigger.start)="callback1($event)"></div>
+              <div [@noTrigger]="exp2" (@noTrigger.start)="callback2($event)"></div>
+            `,
+               animations: [
+                 trigger(
+                     'trigger',
+                     [transition(
+                         '* => *',
+                         [animate('1s 750ms', style({})), animate('2000ms 0ms', style({}))])]),
+                 trigger('noTrigger', [])
+               ]
+             }
+           });
+
+           const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
+           let fixture = TestBed.createComponent(DummyIfCmp);
+           var eventData1: AnimationTransitionEvent = null;
+           var eventData2: AnimationTransitionEvent = null;
+           var cmp = fixture.debugElement.componentInstance;
+           cmp.callback1 = (e: AnimationTransitionEvent) => { eventData1 = e; };
+           cmp.callback2 = (e: AnimationTransitionEvent) => { eventData2 = e; };
+           cmp.exp = 'one';
+           fixture.detectChanges();
+           flushMicrotasks();
+           expect(eventData1.totalTime).toEqual(3750);
+
+           cmp.exp2 = 'two';
+           fixture.detectChanges();
+           flushMicrotasks();
+           expect(eventData2.totalTime).toEqual(0);
          }));
 
       it('should throw an error if an animation output is referenced is not defined within the component',
