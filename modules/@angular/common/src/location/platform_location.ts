@@ -34,8 +34,8 @@
  */
 export abstract class PlatformLocation {
   abstract getBaseHrefFromDOM(): string;
-  abstract onPopState(fn: UrlChangeListener): void;
-  abstract onHashChange(fn: UrlChangeListener): void;
+  abstract onPopState(fn: LocationChangeListener): void;
+  abstract onHashChange(fn: LocationChangeListener): void;
 
   get pathname(): string { return null; }
   get search(): string { return null; }
@@ -55,9 +55,9 @@ export abstract class PlatformLocation {
  *
  * @experimental
  */
-export interface UrlChangeEvent { type: string; }
+export interface LocationChangeEvent { type: string; }
 
 /**
  * @experimental
  */
-export interface UrlChangeListener { (e: UrlChangeEvent): any; }
+export interface LocationChangeListener { (e: LocationChangeEvent): any; }

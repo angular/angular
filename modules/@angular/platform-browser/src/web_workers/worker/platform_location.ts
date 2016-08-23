@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlatformLocation, UrlChangeListener} from '@angular/common';
+import {LocationChangeListener, PlatformLocation} from '@angular/common';
 import {BaseException, Injectable} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
@@ -75,9 +75,9 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
         'Attempt to get base href from DOM from WebWorker. You must either provide a value for the APP_BASE_HREF token through DI or use the hash location strategy.');
   }
 
-  onPopState(fn: UrlChangeListener): void { this._popStateListeners.push(fn); }
+  onPopState(fn: LocationChangeListener): void { this._popStateListeners.push(fn); }
 
-  onHashChange(fn: UrlChangeListener): void { this._hashChangeListeners.push(fn); }
+  onHashChange(fn: LocationChangeListener): void { this._hashChangeListeners.push(fn); }
 
   get pathname(): string {
     if (this._location === null) {

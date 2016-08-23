@@ -21,8 +21,8 @@ export declare class BrowserPlatformLocation extends PlatformLocation {
     back(): void;
     forward(): void;
     getBaseHrefFromDOM(): string;
-    onHashChange(fn: UrlChangeListener): void;
-    onPopState(fn: UrlChangeListener): void;
+    onHashChange(fn: LocationChangeListener): void;
+    onPopState(fn: LocationChangeListener): void;
     pushState(state: any, title: string, url: string): void;
     replaceState(state: any, title: string, url: string): void;
 }
