@@ -12,7 +12,7 @@ mkdir -p ./dist/all/
 
 TSCONFIG=./tools/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
-$(npm bin)/tsc -p ${TSCONFIG}
+# $(npm bin)/tsc -p ${TSCONFIG}
 cp ./tools/@angular/tsc-wrapped/package.json ./dist/tools/@angular/tsc-wrapped
 
 echo "====== Copying files needed for e2e tests ====="
@@ -47,6 +47,7 @@ for PACKAGE in \
   forms \
   platform-browser \
   platform-browser-dynamic \
+  platform-server \
   http \
   router \
   upgrade \
@@ -70,6 +71,7 @@ do
 
   echo "======      COPYING: ${TSC} -p ${SRCDIR}/d.ts files        ====="
   cp ${SRCDIR}/package.json ${DESTDIR}/
+  cp ${SRCDIR}/*.d.ts ${DESTDIR}/
 
 
 
@@ -107,6 +109,12 @@ do
   fi
 
 
+
+    (
+      cd  ${SRCDIR}
+      echo "..."  # here just to have grep match something and not exit with 1
+      ../../../node_modules/.bin/rollup -c rollup-testing.config.js
+    ) 2>&1 | grep -v "as external dependency"
 
   #   $(npm bin)/tsc  \
   #       --out ${UMD_ES5_PATH} \

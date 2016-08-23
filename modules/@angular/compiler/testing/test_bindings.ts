@@ -7,7 +7,7 @@
  */
 
 import {ElementSchemaRegistry, ResourceLoader, UrlResolver, createUrlResolverWithoutPackagePrefix} from '@angular/compiler';
-import {MockSchemaRegistry} from 'testing';
+import {MockSchemaRegistry} from './schema_registry_mock';
 import {MockResourceLoader} from './resource_loader_mock';
 
 // This provider is put here just so that we can access it from multiple

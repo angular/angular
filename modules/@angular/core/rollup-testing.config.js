@@ -14,4 +14,3 @@ export default {
 //    nodeResolve({ jsnext: true, main: true }),
   ]
 }
-

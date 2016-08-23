@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {platformCoreDynamicTesting} from '@angular/compiler/testing';
+import {platformCoreDynamicTesting} from '../compiler/testing/testing';
 import {NgModule, PlatformRef, createPlatformFactory} from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
