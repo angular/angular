@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, BaseException, Compiler, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -31,6 +31,8 @@ export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, 
  * @stable
  */
 export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
+
+export const ROUTER_FORROOT_GUARD = new OpaqueToken('ROUTER_FORROOT_GUARD');
 
 const pathLocationStrategy = {
   provide: LocationStrategy,
@@ -81,11 +83,17 @@ export const ROUTER_PROVIDERS: any[] = [
  */
 @NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
 export class RouterModule {
+  constructor(@Optional() @Inject(ROUTER_FORROOT_GUARD) guard: any) {}
+
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
     return {
       ngModule: RouterModule,
       providers: [
-        ROUTER_PROVIDERS, provideRoutes(routes),
+        ROUTER_PROVIDERS, provideRoutes(routes), {
+          provide: ROUTER_FORROOT_GUARD,
+          useFactory: provideForRootGuard,
+          deps: [[Router, new Optional(), new SkipSelf()]]
+        },
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}}, {
           provide: LocationStrategy,
           useFactory: provideLocationStrategy,
@@ -107,6 +115,14 @@ export function provideLocationStrategy(
     platformLocationStrategy: PlatformLocation, baseHref: string, options: ExtraOptions = {}) {
   return options.useHash ? new HashLocationStrategy(platformLocationStrategy, baseHref) :
                            new PathLocationStrategy(platformLocationStrategy, baseHref);
+}
+
+export function provideForRootGuard(router: Router): any {
+  if (router) {
+    throw new BaseException(
+        `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
+  }
+  return 'guarded';
 }
 
 /**

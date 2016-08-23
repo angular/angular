@@ -1411,7 +1411,34 @@ describe('Integration', () => {
                       expect(fixture.debugElement.nativeElement)
                           .toHaveText('lazy-loaded-parent [lazy-loaded-child]');
                     })));
+    it('throws an error when forRoot() is used in a lazy context',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @Component({selector: 'lazy', template: 'should not show'})
+             class LazyLoadedComponent {
+             }
 
+             @NgModule({
+               declarations: [LazyLoadedComponent],
+               imports: [RouterModule.forRoot([{path: 'loaded', component: LazyLoadedComponent}])]
+             })
+             class LoadedModule {
+             }
+
+             loader.stubbedModules = {expected: LoadedModule};
+
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+
+             let recordedError: any = null;
+             router.navigateByUrl('/lazy/loaded').catch(err => recordedError = err);
+             advance(fixture);
+             expect(recordedError.message)
+                 .toEqual(
+                     `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
+           })));
     it('should combine routes from multiple modules into a single configuration',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],
