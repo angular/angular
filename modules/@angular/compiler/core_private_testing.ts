@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {__core_private_testing__ as r, __core_private_testing_types__ as t} from '@angular/core/testing';
+import {__core_private_testing__ as r, __core_private_testing_types__ as types} from '@angular/core/testing';
 
-export type TestingCompiler = t.TestingCompiler;
-export var TestingCompiler: typeof t.TestingCompiler = r.TestingCompiler;
+export declare let _compiler_core_testing_types: types;
 
-export type TestingCompilerFactory = t.TestingCompilerFactory;
-export var TestingCompilerFactory: typeof t.TestingCompilerFactory = r.TestingCompilerFactory;
+export type TestingCompiler = typeof _compiler_core_testing_types.TestingCompiler;
+export var TestingCompiler: typeof r.TestingCompiler = r.TestingCompiler;
+
+export type TestingCompilerFactory = typeof _compiler_core_testing_types.TestingCompilerFactory;
+export var TestingCompilerFactory: typeof r.TestingCompilerFactory = r.TestingCompilerFactory;
