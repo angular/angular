@@ -34,7 +34,7 @@ export interface StaticReflectorHost {
    */
   findDeclaration(modulePath: string, symbolName: string, containingFile?: string): StaticSymbol;
 
-  getStaticSymbol(declarationFile: string, name: string): StaticSymbol;
+  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol;
 
   angularImportLocations(): {
     coreDecorators: string,
@@ -52,7 +52,7 @@ export interface StaticReflectorHost {
  * This token is unique for a filePath and name and can be used as a hash table key.
  */
 export class StaticSymbol {
-  constructor(public filePath: string, public name: string) {}
+  constructor(public filePath: string, public name: string, public members?: string[]) {}
 }
 
 /**
@@ -451,7 +451,12 @@ export class StaticReflector implements ReflectorReader {
                   if (declarationValue && declarationValue.statics) {
                     selectTarget = declarationValue.statics;
                   } else {
-                    return null;
+                    const member: string = expression['member'];
+                    const members = selectTarget.members ?
+                        (selectTarget.members as string[]).concat(member) :
+                        [member];
+                    return _this.host.getStaticSymbol(
+                        selectTarget.filePath, selectTarget.name, members);
                   }
                 }
                 const member = simplify(expression['member']);

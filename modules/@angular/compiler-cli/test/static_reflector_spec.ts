@@ -429,6 +429,13 @@ describe('StaticReflector', () => {
        expect(annotations.length).toBe(1);
        expect(annotations[0].providers).toEqual([['a', true, false]]);
      });
+
+  it('should be able to get metadata with a reference to a static method', () => {
+    const annotations = reflector.annotations(
+        host.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0]._providers[0].useValue.members[0]).toEqual('staticMethod');
+  });
 });
 
 class MockReflectorHost implements StaticReflectorHost {
@@ -447,11 +454,11 @@ class MockReflectorHost implements StaticReflectorHost {
       provider: 'angular2/src/core/di/provider'
     };
   }
-  getStaticSymbol(declarationFile: string, name: string): StaticSymbol {
-    var cacheKey = `${declarationFile}:${name}`;
+  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
+    var cacheKey = `${declarationFile}:${name}${members?'.'+members.join('.'):''}`;
     var result = this.staticTypeCache.get(cacheKey);
     if (isBlank(result)) {
-      result = new StaticSymbol(declarationFile, name);
+      result = new StaticSymbol(declarationFile, name, members);
       this.staticTypeCache.set(cacheKey, result);
     }
     return result;
@@ -1021,6 +1028,22 @@ class MockReflectorHost implements StaticReflectorHost {
           providers: [ { provider: 'a', useValue: MyModule.VALUE } ]
         })
         export class Foo { }
+      `,
+      '/tmp/src/static-method-def.ts': `
+        export class ClassWithStatics {
+          static staticMethod() {}
+        }
+      `,
+      '/tmp/src/static-method-ref.ts': `
+        import {Component} from 'angular2/src/core/metadata';
+        import {ClassWithStatics} from './static-method-def';
+
+        @Component({
+          providers: [ { provider: 'a', useValue: ClassWithStatics.staticMethod}]
+        })
+        export class MethodReference {
+
+        }
       `
     };
 

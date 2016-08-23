@@ -33,7 +33,7 @@ import {CompWithChildQuery, CompWithDirectiveChild} from './queries';
   providers: [SomeService],
   entryComponents: [
     AnimateCmp, BasicComp, CompWithEntryComponents, CompWithAnalyzeEntryComponentsProvider,
-    ProjectingComp, CompWithChildQuery, CompUsingRootModuleDirectiveAndPipe
+    ProjectingComp, CompWithChildQuery, CompUsingRootModuleDirectiveAndPipe, CompWithReferences
   ]
 })
 export class MainModule {
