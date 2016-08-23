@@ -8,7 +8,7 @@
 
 import {Provider} from '@angular/core';
 
-import {CORE_DIRECTIVES} from './directives';
+import {CORE_DIRECTIVES} from './directives/core_directives';
 
 
 /**
