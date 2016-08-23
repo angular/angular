@@ -80,7 +80,7 @@ var defaultLocale: string = 'en-US';
  *
  * {@example core/pipes/ts/date_pipe/date_pipe_example.ts region='DatePipe'}
  *
- * @experimental
+ * @stable
  */
 @Pipe({name: 'date', pure: true})
 export class DatePipe implements PipeTransform {

@@ -8,21 +8,21 @@ export declare class AsyncPipe implements OnDestroy {
     transform(obj: Observable<any> | Promise<any> | EventEmitter<any>): any;
 }
 
-/** @experimental */
+/** @stable */
 export declare class CommonModule {
 }
 
-/** @experimental */
+/** @stable */
 export declare class CurrencyPipe implements PipeTransform {
     transform(value: any, currencyCode?: string, symbolDisplay?: boolean, digits?: string): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class DatePipe implements PipeTransform {
     transform(value: any, pattern?: string): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class DecimalPipe implements PipeTransform {
     transform(value: any, digits?: string): string;
 }
@@ -89,7 +89,7 @@ export declare abstract class LocationStrategy {
     abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class LowerCasePipe implements PipeTransform {
     transform(value: string): string;
 }
@@ -147,18 +147,18 @@ export declare class NgStyle implements DoCheck {
     ngDoCheck(): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgSwitch {
     ngSwitch: any;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgSwitchCase {
     ngSwitchCase: any;
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgSwitchDefault {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, sswitch: NgSwitch);
 }
@@ -184,7 +184,7 @@ export declare class PathLocationStrategy extends LocationStrategy {
     replaceState(state: any, title: string, url: string, queryParams: string): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class PercentPipe implements PipeTransform {
     transform(value: any, digits?: string): string;
 }
@@ -208,7 +208,7 @@ export declare class SlicePipe implements PipeTransform {
     transform(value: any, start: number, end?: number): any;
 }
 
-/** @experimental */
+/** @stable */
 export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
 }

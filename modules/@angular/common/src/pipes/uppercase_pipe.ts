@@ -17,7 +17,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *
  * {@example core/pipes/ts/lowerupper_pipe/lowerupper_pipe_example.ts region='LowerUpperPipe'}
  *
- * @experimental
+ * @stable
  */
 @Pipe({name: 'uppercase'})
 export class UpperCasePipe implements PipeTransform {
