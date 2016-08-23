@@ -1,4 +1,7 @@
 /** @experimental */
+export declare function _createDefaultCookieXSRFStrategy(): CookieXSRFStrategy;
+
+/** @experimental */
 export declare class BaseRequestOptions extends RequestOptions {
     constructor();
 }
@@ -61,32 +64,25 @@ export declare class Http {
     delete(url: string, options?: RequestOptionsArgs): Observable<Response>;
     get(url: string, options?: RequestOptionsArgs): Observable<Response>;
     head(url: string, options?: RequestOptionsArgs): Observable<Response>;
+    options(url: string, options?: RequestOptionsArgs): Observable<Response>;
     patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
     post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
     put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response>;
 }
 
-/** @deprecated */
-export declare const HTTP_BINDINGS: any[];
-
-/** @experimental */
-export declare const HTTP_PROVIDERS: any[];
-
 /** @experimental */
 export declare function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions): Http;
 
-/** @deprecated */
-export declare const JSON_BINDINGS: any[];
+/** @experimental */
+export declare class HttpModule {
+}
 
 /** @experimental */
 export declare class Jsonp extends Http {
     constructor(backend: ConnectionBackend, defaultOptions: RequestOptions);
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response>;
 }
-
-/** @experimental */
-export declare const JSONP_PROVIDERS: any[];
 
 /** @experimental */
 export declare abstract class JSONPBackend extends ConnectionBackend {
@@ -98,6 +94,13 @@ export declare abstract class JSONPConnection implements Connection {
     request: Request;
     response: Observable<Response>;
     abstract finished(data?: any): void;
+}
+
+/** @experimental */
+export declare function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: RequestOptions): Jsonp;
+
+/** @experimental */
+export declare class JsonpModule {
 }
 
 /** @experimental */
@@ -117,18 +120,16 @@ export declare enum ReadyState {
 }
 
 /** @experimental */
-export declare class Request {
+export declare class Request extends Body {
     headers: Headers;
     method: RequestMethod;
+    responseType: ResponseContentType;
     url: string;
     withCredentials: boolean;
     constructor(requestOptions: RequestArgs);
-    arrayBuffer(): ArrayBuffer;
-    blob(): Blob;
     detectContentType(): ContentType;
+    detectContentTypeFromBody(): ContentType;
     getBody(): any;
-    json(): string;
-    text(): string;
 }
 
 /** @experimental */
@@ -147,10 +148,11 @@ export declare class RequestOptions {
     body: any;
     headers: Headers;
     method: RequestMethod | string;
+    responseType: ResponseContentType;
     search: URLSearchParams;
     url: string;
     withCredentials: boolean;
-    constructor({method, headers, body, url, search, withCredentials}?: RequestOptionsArgs);
+    constructor({method, headers, body, url, search, withCredentials, responseType}?: RequestOptionsArgs);
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
@@ -159,13 +161,14 @@ export interface RequestOptionsArgs {
     body?: any;
     headers?: Headers;
     method?: string | RequestMethod;
+    responseType?: ResponseContentType;
     search?: string | URLSearchParams;
     url?: string;
     withCredentials?: boolean;
 }
 
 /** @experimental */
-export declare class Response {
+export declare class Response extends Body {
     bytesLoaded: number;
     headers: Headers;
     ok: boolean;
@@ -175,16 +178,20 @@ export declare class Response {
     type: ResponseType;
     url: string;
     constructor(responseOptions: ResponseOptions);
-    arrayBuffer(): any;
-    blob(): any;
-    json(): any;
-    text(): string;
     toString(): string;
 }
 
 /** @experimental */
+export declare enum ResponseContentType {
+    Text = 0,
+    Json = 1,
+    ArrayBuffer = 2,
+    Blob = 3,
+}
+
+/** @experimental */
 export declare class ResponseOptions {
-    body: string | Object;
+    body: string | Object | ArrayBuffer | Blob;
     headers: Headers;
     status: number;
     url: string;
@@ -194,7 +201,7 @@ export declare class ResponseOptions {
 
 /** @experimental */
 export declare type ResponseOptionsArgs = {
-    body?: string | Object | FormData;
+    body?: string | Object | FormData | ArrayBuffer | Blob;
     status?: number;
     statusText?: string;
     headers?: Headers;

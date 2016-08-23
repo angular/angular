@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ReflectiveInjector, coreLoadAndBootstrap, createPlatform} from '@angular/core';
-import {BROWSER_APP_PROVIDERS, BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
+import {Component, ReflectiveInjector, createPlatformFactory} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 var appProviders: any[] = [];
 
@@ -16,8 +17,6 @@ var appProviders: any[] = [];
 class MyApp {
 }
 
-var platform = createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));
-var appInjector =
-    ReflectiveInjector.resolveAndCreate([BROWSER_APP_PROVIDERS, appProviders], platform.injector);
-coreLoadAndBootstrap(MyApp, appInjector);
+var myPlatformFactory = createPlatformFactory(platformBrowserDynamic, 'myPlatform');
+myPlatformFactory().bootstrapModule(MyApp);
 // #enddocregion

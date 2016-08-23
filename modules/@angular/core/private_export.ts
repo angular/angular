@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from './index';
 import {ANY_STATE as ANY_STATE_, DEFAULT_STATE as DEFAULT_STATE_, EMPTY_STATE as EMPTY_STATE_, FILL_STYLE_FLAG as FILL_STYLE_FLAG_} from './src/animation/animation_constants';
 import {AnimationGroupPlayer as AnimationGroupPlayer_} from './src/animation/animation_group_player';
 import {AnimationKeyframe as AnimationKeyframe_} from './src/animation/animation_keyframe';
+import {AnimationOutput as AnimationOutput_} from './src/animation/animation_output';
 import {AnimationPlayer as AnimationPlayer_, NoOpAnimationPlayer as NoOpAnimationPlayer_} from './src/animation/animation_player';
 import {AnimationSequencePlayer as AnimationSequencePlayer_} from './src/animation/animation_sequence_player';
 import * as animationUtils from './src/animation/animation_style_util';
@@ -18,13 +18,12 @@ import * as change_detection_util from './src/change_detection/change_detection_
 import * as constants from './src/change_detection/constants';
 import * as console from './src/console';
 import * as debug from './src/debug/debug_renderer';
-import * as provider_util from './src/di/provider_util';
+import * as provider from './src/di/provider';
 import * as reflective_provider from './src/di/reflective_provider';
-import * as app_module_factory from './src/linker/app_module_factory';
 import * as component_factory_resolver from './src/linker/component_factory_resolver';
-import * as component_resolver from './src/linker/component_resolver';
 import * as debug_context from './src/linker/debug_context';
 import * as element from './src/linker/element';
+import * as ng_module_factory from './src/linker/ng_module_factory';
 import * as template_ref from './src/linker/template_ref';
 import * as view from './src/linker/view';
 import * as view_type from './src/linker/view_type';
@@ -52,13 +51,12 @@ export declare namespace __core_private_types__ {
   export var LIFECYCLE_HOOKS_VALUES: typeof lifecycle_hooks.LIFECYCLE_HOOKS_VALUES;
   export type ReflectorReader = reflector_reader.ReflectorReader;
   export var ReflectorReader: typeof reflector_reader.ReflectorReader;
-  export var ReflectorComponentResolver: typeof component_resolver.ReflectorComponentResolver;
   export var CodegenComponentFactoryResolver:
       typeof component_factory_resolver.CodegenComponentFactoryResolver;
   export type AppElement = element.AppElement;
   export var AppElement: typeof element.AppElement;
   export var AppView: typeof view.AppView;
-  export var AppModuleInjector: typeof app_module_factory.AppModuleInjector;
+  export var NgModuleInjector: typeof ng_module_factory.NgModuleInjector;
   export type DebugAppView<T> = view.DebugAppView<T>;
   export var DebugAppView: typeof view.DebugAppView;
   export type ViewType = view_type.ViewType;
@@ -69,10 +67,12 @@ export declare namespace __core_private_types__ {
   export var interpolate: typeof view_utils.interpolate;
   export var ViewUtils: typeof view_utils.ViewUtils;
   export var VIEW_ENCAPSULATION_VALUES: typeof metadata_view.VIEW_ENCAPSULATION_VALUES;
+  export type ViewMetadata = metadata_view.ViewMetadata;
+  export var ViewMetadata: typeof metadata_view.ViewMetadata;
   export var DebugContext: typeof debug_context.DebugContext;
   export var StaticNodeDebugInfo: typeof debug_context.StaticNodeDebugInfo;
   export var devModeEqual: typeof change_detection_util.devModeEqual;
-  export var uninitialized: typeof change_detection_util.uninitialized;
+  export var UNINITIALIZED: typeof change_detection_util.UNINITIALIZED;
   export var ValueUnwrapper: typeof change_detection_util.ValueUnwrapper;
   export type RenderDebugInfo = api.RenderDebugInfo;
   export var RenderDebugInfo: typeof api.RenderDebugInfo;
@@ -84,8 +84,6 @@ export declare namespace __core_private_types__ {
   export var makeDecorator: typeof decorators.makeDecorator;
   export type DebugDomRootRenderer = debug.DebugDomRootRenderer;
   export var DebugDomRootRenderer: typeof debug.DebugDomRootRenderer;
-  export var createProvider: typeof provider_util.createProvider;
-  export var isProviderLiteral: typeof provider_util.isProviderLiteral;
   export var EMPTY_ARRAY: typeof view_utils.EMPTY_ARRAY;
   export var EMPTY_MAP: typeof view_utils.EMPTY_MAP;
   export var pureProxy1: typeof view_utils.pureProxy1;
@@ -122,6 +120,8 @@ export declare namespace __core_private_types__ {
   export var collectAndResolveStyles: typeof animationUtils.collectAndResolveStyles;
   export type AnimationStyles = AnimationStyles_;
   export var AnimationStyles: typeof AnimationStyles_;
+  export type AnimationOutput = AnimationOutput_;
+  export var AnimationOutput: typeof AnimationOutput_;
   export var ANY_STATE: typeof ANY_STATE_;
   export var DEFAULT_STATE: typeof DEFAULT_STATE_;
   export var EMPTY_STATE: typeof EMPTY_STATE_;
@@ -136,12 +136,11 @@ export var __core_private__ = {
   LifecycleHooks: lifecycle_hooks.LifecycleHooks,
   LIFECYCLE_HOOKS_VALUES: lifecycle_hooks.LIFECYCLE_HOOKS_VALUES,
   ReflectorReader: reflector_reader.ReflectorReader,
-  ReflectorComponentResolver: component_resolver.ReflectorComponentResolver,
   CodegenComponentFactoryResolver: component_factory_resolver.CodegenComponentFactoryResolver,
   AppElement: element.AppElement,
   AppView: view.AppView,
   DebugAppView: view.DebugAppView,
-  AppModuleInjector: app_module_factory.AppModuleInjector,
+  NgModuleInjector: ng_module_factory.NgModuleInjector,
   ViewType: view_type.ViewType,
   MAX_INTERPOLATION_VALUES: view_utils.MAX_INTERPOLATION_VALUES,
   checkBinding: view_utils.checkBinding,
@@ -149,10 +148,11 @@ export var __core_private__ = {
   interpolate: view_utils.interpolate,
   ViewUtils: view_utils.ViewUtils,
   VIEW_ENCAPSULATION_VALUES: metadata_view.VIEW_ENCAPSULATION_VALUES,
+  ViewMetadata: metadata_view.ViewMetadata,
   DebugContext: debug_context.DebugContext,
   StaticNodeDebugInfo: debug_context.StaticNodeDebugInfo,
   devModeEqual: change_detection_util.devModeEqual,
-  uninitialized: change_detection_util.uninitialized,
+  UNINITIALIZED: change_detection_util.UNINITIALIZED,
   ValueUnwrapper: change_detection_util.ValueUnwrapper,
   RenderDebugInfo: api.RenderDebugInfo,
   TemplateRef_: template_ref.TemplateRef_,
@@ -160,8 +160,6 @@ export var __core_private__ = {
   ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities,
   makeDecorator: decorators.makeDecorator,
   DebugDomRootRenderer: debug.DebugDomRootRenderer,
-  createProvider: provider_util.createProvider,
-  isProviderLiteral: provider_util.isProviderLiteral,
   EMPTY_ARRAY: view_utils.EMPTY_ARRAY,
   EMPTY_MAP: view_utils.EMPTY_MAP,
   pureProxy1: view_utils.pureProxy1,
@@ -190,6 +188,7 @@ export var __core_private__ = {
   renderStyles: animationUtils.renderStyles,
   collectAndResolveStyles: animationUtils.collectAndResolveStyles,
   AnimationStyles: AnimationStyles_,
+  AnimationOutput: AnimationOutput_,
   ANY_STATE: ANY_STATE_,
   DEFAULT_STATE: DEFAULT_STATE_,
   EMPTY_STATE: EMPTY_STATE_,

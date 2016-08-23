@@ -6,27 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SecurityContext} from '@angular/core';
+
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../../core_private';
 import * as cdAst from '../expression_parser/ast';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
-
-import {DetectChangesVars, ViewProperties} from './constants';
-
-import {BoundTextAst, BoundElementPropertyAst, DirectiveAst, PropertyBindingType,} from '../template_ast';
-
-import {CompileView} from './compile_view';
-import {CompileElement, CompileNode} from './compile_element';
-import {CompileMethod} from './compile_method';
-
+import {BoundElementPropertyAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
 import {camelCaseToDashCase} from '../util';
 
-import {convertCdExpressionToIr} from './expression_converter';
-
 import {CompileBinding} from './compile_binding';
-import {BaseException, SecurityContext} from '@angular/core';
-
+import {CompileElement, CompileNode} from './compile_element';
+import {CompileMethod} from './compile_method';
+import {CompileView} from './compile_view';
+import {DetectChangesVars, ViewProperties} from './constants';
+import {convertCdExpressionToIr, temporaryDeclaration} from './expression_converter';
 
 function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
   return o.THIS_EXPR.prop(`_expr_${exprIndex}`);
@@ -36,21 +31,29 @@ function createCurrValueExpr(exprIndex: number): o.ReadVarExpr {
   return o.variable(`currVal_${exprIndex}`);  // fix syntax highlighting: `
 }
 
+const _animationViewCheckedFlagMap = new Map<CompileView, boolean>();
+
 function bind(
     view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,
     parsedExpression: cdAst.AST, context: o.Expression, actions: o.Statement[],
-    method: CompileMethod) {
-  var checkExpression =
-      convertCdExpressionToIr(view, context, parsedExpression, DetectChangesVars.valUnwrapper);
+    method: CompileMethod, bindingIndex: number) {
+  var checkExpression = convertCdExpressionToIr(
+      view, context, parsedExpression, DetectChangesVars.valUnwrapper, bindingIndex);
   if (isBlank(checkExpression.expression)) {
     // e.g. an empty expression was given
     return;
   }
 
+  if (checkExpression.temporaryCount) {
+    for (let i = 0; i < checkExpression.temporaryCount; i++) {
+      method.addStmt(temporaryDeclaration(bindingIndex, i));
+    }
+  }
+
   // private is fine here as no child view will reference the cached value...
   view.fields.push(new o.ClassField(fieldExpr.name, null, [o.StmtModifier.Private]));
   view.createMethod.addStmt(
-      o.THIS_EXPR.prop(fieldExpr.name).set(o.importExpr(Identifiers.uninitialized)).toStmt());
+      o.THIS_EXPR.prop(fieldExpr.name).set(o.importExpr(Identifiers.UNINITIALIZED)).toStmt());
 
   if (checkExpression.needsValueUnwrapper) {
     var initValueUnwrapperStmt = DetectChangesVars.valUnwrapper.callMethod('reset', []).toStmt();
@@ -83,11 +86,12 @@ export function bindRenderText(
       [o.THIS_EXPR.prop('renderer')
            .callMethod('setText', [compileNode.renderNode, currValExpr])
            .toStmt()],
-      view.detectChangesRenderPropertiesMethod);
+      view.detectChangesRenderPropertiesMethod, bindingIndex);
 }
 
 function bindAndWriteToRenderer(
-    boundProps: BoundElementPropertyAst[], context: o.Expression, compileElement: CompileElement) {
+    boundProps: BoundElementPropertyAst[], context: o.Expression, compileElement: CompileElement,
+    isHostProp: boolean) {
   var view = compileElement.view;
   var renderNode = compileElement.renderNode;
   boundProps.forEach((boundProp) => {
@@ -131,6 +135,7 @@ function bindAndWriteToRenderer(
         if (isPresent(boundProp.unit)) {
           strValue = strValue.plus(o.literal(boundProp.unit));
         }
+
         renderValue = renderValue.isBlank().conditional(o.NULL_EXPR, strValue);
         updateStmts.push(
             o.THIS_EXPR.prop('renderer')
@@ -139,11 +144,13 @@ function bindAndWriteToRenderer(
         break;
       case PropertyBindingType.Animation:
         var animationName = boundProp.name;
-        var animation = view.componentView.animations.get(animationName);
-        if (!isPresent(animation)) {
-          throw new BaseException(
-              `Internal Error: couldn't find an animation entry for ${boundProp.name}`);
+        var targetViewExpr: o.Expression = o.THIS_EXPR;
+        if (isHostProp) {
+          targetViewExpr = compileElement.appElement.prop('componentView');
         }
+
+        var animationFnExpr =
+            targetViewExpr.prop('componentType').prop('animations').key(o.literal(animationName));
 
         // it's important to normalize the void value as `void` explicitly
         // so that the styles data can be obtained from the stringmap
@@ -153,30 +160,36 @@ function bindAndWriteToRenderer(
         var oldRenderVar = o.variable('oldRenderVar');
         updateStmts.push(oldRenderVar.set(oldRenderValue).toDeclStmt());
         updateStmts.push(new o.IfStmt(
-            oldRenderVar.equals(o.importExpr(Identifiers.uninitialized)),
+            oldRenderVar.equals(o.importExpr(Identifiers.UNINITIALIZED)),
             [oldRenderVar.set(emptyStateValue).toStmt()]));
 
         // ... => void
         var newRenderVar = o.variable('newRenderVar');
         updateStmts.push(newRenderVar.set(renderValue).toDeclStmt());
         updateStmts.push(new o.IfStmt(
-            newRenderVar.equals(o.importExpr(Identifiers.uninitialized)),
+            newRenderVar.equals(o.importExpr(Identifiers.UNINITIALIZED)),
             [newRenderVar.set(emptyStateValue).toStmt()]));
 
         updateStmts.push(
-            animation.fnVariable.callFn([o.THIS_EXPR, renderNode, oldRenderVar, newRenderVar])
-                .toStmt());
+            animationFnExpr.callFn([o.THIS_EXPR, renderNode, oldRenderVar, newRenderVar]).toStmt());
 
         view.detachMethod.addStmt(
-            animation.fnVariable.callFn([o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue])
+            animationFnExpr.callFn([o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue])
                 .toStmt());
+
+        if (!_animationViewCheckedFlagMap.get(view)) {
+          _animationViewCheckedFlagMap.set(view, true);
+          var triggerStmt = o.THIS_EXPR.callMethod('triggerQueuedAnimations', []).toStmt();
+          view.afterViewLifecycleCallbacksMethod.addStmt(triggerStmt);
+          view.detachMethod.addStmt(triggerStmt);
+        }
 
         break;
     }
 
     bind(
         view, currValExpr, fieldExpr, boundProp.value, context, updateStmts,
-        view.detectChangesRenderPropertiesMethod);
+        view.detectChangesRenderPropertiesMethod, view.bindings.length);
   });
 }
 
@@ -211,13 +224,13 @@ function sanitizedValue(
 
 export function bindRenderInputs(
     boundProps: BoundElementPropertyAst[], compileElement: CompileElement): void {
-  bindAndWriteToRenderer(boundProps, compileElement.view.componentContext, compileElement);
+  bindAndWriteToRenderer(boundProps, compileElement.view.componentContext, compileElement, false);
 }
 
 export function bindDirectiveHostProps(
     directiveAst: DirectiveAst, directiveInstance: o.Expression,
     compileElement: CompileElement): void {
-  bindAndWriteToRenderer(directiveAst.hostProperties, directiveInstance, compileElement);
+  bindAndWriteToRenderer(directiveAst.hostProperties, directiveInstance, compileElement, true);
 }
 
 export function bindDirectiveInputs(
@@ -229,7 +242,7 @@ export function bindDirectiveInputs(
   var detectChangesInInputsMethod = view.detectChangesInInputsMethod;
   detectChangesInInputsMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
 
-  var lifecycleHooks = directiveAst.directive.lifecycleHooks;
+  var lifecycleHooks = directiveAst.directive.type.lifecycleHooks;
   var calcChangesMap = lifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1;
   var isOnPushComp = directiveAst.directive.isComponent &&
       !isDefaultChangeDetectionStrategy(directiveAst.directive.changeDetection);
@@ -267,7 +280,7 @@ export function bindDirectiveInputs(
     }
     bind(
         view, currValExpr, fieldExpr, input.value, view.componentContext, statements,
-        detectChangesInInputsMethod);
+        detectChangesInInputsMethod, bindingIndex);
   });
   if (isOnPushComp) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(DetectChangesVars.changed, [
@@ -278,12 +291,24 @@ export function bindDirectiveInputs(
 
 function logBindingUpdateStmt(
     renderNode: o.Expression, propName: string, value: o.Expression): o.Statement {
-  return o.THIS_EXPR.prop('renderer')
-      .callMethod(
-          'setBindingDebugInfo',
-          [
-            renderNode, o.literal(`ng-reflect-${camelCaseToDashCase(propName)}`),
-            value.isBlank().conditional(o.NULL_EXPR, value.callMethod('toString', []))
-          ])
-      .toStmt();
+  const tryStmt =
+      o.THIS_EXPR.prop('renderer')
+          .callMethod(
+              'setBindingDebugInfo',
+              [
+                renderNode, o.literal(`ng-reflect-${camelCaseToDashCase(propName)}`),
+                value.isBlank().conditional(o.NULL_EXPR, value.callMethod('toString', []))
+              ])
+          .toStmt();
+
+  const catchStmt = o.THIS_EXPR.prop('renderer')
+                        .callMethod(
+                            'setBindingDebugInfo',
+                            [
+                              renderNode, o.literal(`ng-reflect-${camelCaseToDashCase(propName)}`),
+                              o.literal('[ERROR] Exception while trying to serialize the value')
+                            ])
+                        .toStmt();
+
+  return new o.TryCatchStmt([tryStmt], [catchStmt]);
 }

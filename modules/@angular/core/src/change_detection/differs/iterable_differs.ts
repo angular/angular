@@ -45,11 +45,9 @@ export interface IterableDifferFactory {
 
 /**
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
- * @ts2dart_const
  * @stable
  */
 export class IterableDiffers {
-  /*@ts2dart_const*/
   constructor(public factories: IterableDifferFactory[]) {}
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {
@@ -82,7 +80,8 @@ export class IterableDiffers {
    * ```
    */
   static extend(factories: IterableDifferFactory[]): Provider {
-    return new Provider(IterableDiffers, {
+    return {
+      provide: IterableDiffers,
       useFactory: (parent: IterableDiffers) => {
         if (isBlank(parent)) {
           // Typically would occur when calling IterableDiffers.extend inside of dependencies passed
@@ -94,7 +93,7 @@ export class IterableDiffers {
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
       deps: [[IterableDiffers, new SkipSelfMetadata(), new OptionalMetadata()]]
-    });
+    };
   }
 
   find(iterable: any): IterableDifferFactory {

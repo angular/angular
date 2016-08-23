@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, isDevMode} from '@angular/core';
-
-import {unimplemented} from '../src/facade/exceptions';
+import {BaseException, ViewEncapsulation, isDevMode} from '@angular/core';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers} from './identifiers';
+
+function unimplemented(): any {
+  throw new BaseException('unimplemented');
+}
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
@@ -19,28 +21,21 @@ export class CompilerConfig {
   private _genDebugInfo: boolean;
   private _logBindingUpdate: boolean;
   public useJit: boolean;
-  public platformDirectives: any[];
-  public platformPipes: any[];
 
   constructor(
       {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
-       genDebugInfo, logBindingUpdate, useJit = true, platformDirectives = [],
-       platformPipes = []}: {
+       genDebugInfo, logBindingUpdate, useJit = true}: {
         renderTypes?: RenderTypes,
         defaultEncapsulation?: ViewEncapsulation,
         genDebugInfo?: boolean,
         logBindingUpdate?: boolean,
-        useJit?: boolean,
-        platformDirectives?: any[],
-        platformPipes?: any[]
+        useJit?: boolean
       } = {}) {
     this.renderTypes = renderTypes;
     this.defaultEncapsulation = defaultEncapsulation;
     this._genDebugInfo = genDebugInfo;
     this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
-    this.platformDirectives = platformDirectives;
-    this.platformPipes = platformPipes;
   }
 
   get genDebugInfo(): boolean {

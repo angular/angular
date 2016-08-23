@@ -14,21 +14,33 @@ export class Tree<T> {
 
   get root(): T { return this._root.value; }
 
+  /**
+   * @internal
+   */
   parent(t: T): T {
     const p = this.pathFromRoot(t);
     return p.length > 1 ? p[p.length - 2] : null;
   }
 
+  /**
+   * @internal
+   */
   children(t: T): T[] {
     const n = findNode(t, this._root);
     return n ? n.children.map(t => t.value) : [];
   }
 
+  /**
+   * @internal
+   */
   firstChild(t: T): T {
     const n = findNode(t, this._root);
     return n && n.children.length > 0 ? n.children[0].value : null;
   }
 
+  /**
+   * @internal
+   */
   siblings(t: T): T[] {
     const p = findPath(t, this._root, []);
     if (p.length < 2) return [];
@@ -37,9 +49,10 @@ export class Tree<T> {
     return c.filter(cc => cc !== t);
   }
 
+  /**
+   * @internal
+   */
   pathFromRoot(t: T): T[] { return findPath(t, this._root, []).map(s => s.value); }
-
-  contains(tree: Tree<T>): boolean { return contains(this._root, tree._root); }
 }
 
 function findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
@@ -58,22 +71,10 @@ function findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): Tre
   for (let cc of c.children) {
     const cloned = collected.slice(0);
     const r = findPath(expected, cc, cloned);
-    if (r) return r;
+    if (r.length > 0) return r;
   }
 
   return [];
-}
-
-function contains<T>(tree: TreeNode<T>, subtree: TreeNode<T>): boolean {
-  if (tree.value !== subtree.value) return false;
-
-  for (let subtreeNode of subtree.children) {
-    const s = tree.children.filter(child => child.value === subtreeNode.value);
-    if (s.length === 0) return false;
-    if (!contains(s[0], subtreeNode)) return false;
-  }
-
-  return true;
 }
 
 export class TreeNode<T> {

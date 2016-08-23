@@ -41,7 +41,7 @@ System.config({
       main: 'index.js',
       defaultExtension: 'js'
     },
-    '@angular/router-deprecated': {
+    '@angular/router': {
       main: 'index.js',
       defaultExtension: 'js'
     },
@@ -74,11 +74,10 @@ System.config({
 System.import('@angular/core/testing')
   .then(function(coreTesting){
     return System.import('@angular/platform-browser-dynamic/testing')
-      .then(function(browserTesting){
-         coreTesting.setBaseTestProviders(
-          browserTesting.TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
-          browserTesting.TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS
-        );
+      .then(function(browserTesting) {
+         coreTesting.TestBed.initTestEnvironment(
+           browserTesting.BrowserDynamicTestingModule,
+           browserTesting.platformBrowserDynamicTesting());
       });
   })
 .then(function() {

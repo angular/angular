@@ -23,7 +23,7 @@ export function main() {
            var newStyles = {background: 'red'};
            var flag = '*';
            var result = animationUtils.prepareFinalAnimationStyles(styles, newStyles, flag);
-           expect(result).toEqual({opacity: flag, color: flag, background: 'red'})
+           expect(result).toEqual({opacity: flag, color: flag, background: 'red'});
          });
 
       it('should handle an empty set of styles', () => {
@@ -43,7 +43,7 @@ export function main() {
         var newStyles = {color: '*', border: '*'};
         var flag = '*';
         var result = animationUtils.prepareFinalAnimationStyles(styles, newStyles, null);
-        expect(result).toEqual({opacity: null, color: null, border: null})
+        expect(result).toEqual({opacity: null, color: null, border: null});
       });
 
     });

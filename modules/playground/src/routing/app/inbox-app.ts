@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable} from '@angular/core';
-import {ROUTER_DIRECTIVES, ActivatedRoute, Router} from '@angular/router';
-import * as db from './data';
 import {Location} from '@angular/common';
-import {PromiseWrapper, PromiseCompleter} from '@angular/core/src/facade/async';
-import {isPresent, DateWrapper} from '@angular/core/src/facade/lang';
+import {Component, Injectable} from '@angular/core';
+import {DateWrapper, isPresent} from '@angular/core/src/facade/lang';
+import {ActivatedRoute, Router} from '@angular/router';
+
+import * as db from './data';
 
 export class InboxRecord {
   id: string = '';
@@ -59,11 +59,7 @@ export class InboxRecord {
 
 @Injectable()
 export class DbService {
-  getData(): Promise<any[]> {
-    var p = new PromiseCompleter<any[]>();
-    p.resolve(db.data);
-    return p.promise;
-  }
+  getData(): Promise<any[]> { return Promise.resolve(db.data); }
 
   drafts(): Promise<any[]> {
     return this.getData().then(
@@ -72,12 +68,12 @@ export class DbService {
   }
 
   emails(): Promise<any[]> {
-    return this.getData().then((data: any[]): any[] =>
-                                   data.filter(record => !isPresent(record['draft'])));
+    return this.getData().then(
+        (data: any[]): any[] => data.filter(record => !isPresent(record['draft'])));
   }
 
   email(id: any /** TODO #9100 */): Promise<any> {
-    return PromiseWrapper.then(this.getData(), (data: any[]) => {
+    return this.getData().then((data: any[]) => {
       for (var i = 0; i < data.length; i++) {
         var entry = data[i];
         if (entry['id'] == id) {
@@ -89,20 +85,7 @@ export class DbService {
   }
 }
 
-@Component(
-    {selector: 'inbox-detail', directives: ROUTER_DIRECTIVES, templateUrl: 'app/inbox-detail.html'})
-export class InboxDetailCmp {
-  private record: InboxRecord = new InboxRecord();
-  private ready: boolean = false;
-
-  constructor(db: DbService, route: ActivatedRoute) {
-    route.params.forEach(p => {
-      PromiseWrapper.then(db.email(p['id']), (data) => { this.record.setData(data); });
-    });
-  }
-}
-
-@Component({selector: 'inbox', templateUrl: 'app/inbox.html', directives: ROUTER_DIRECTIVES})
+@Component({selector: 'inbox', templateUrl: 'app/inbox.html'})
 export class InboxCmp {
   private items: InboxRecord[] = [];
   private ready: boolean = false;
@@ -110,18 +93,19 @@ export class InboxCmp {
   constructor(public router: Router, db: DbService, route: ActivatedRoute) {
     route.params.forEach(p => {
       const sortType = p['sort'];
-      const sortEmailsByDate = isPresent(sortType) && sortType == "date";
+      const sortEmailsByDate = isPresent(sortType) && sortType == 'date';
 
-      PromiseWrapper.then(db.emails(), (emails: any[]) => {
+      db.emails().then((emails: any[]) => {
         this.ready = true;
         this.items = emails.map(data => new InboxRecord(data));
 
         if (sortEmailsByDate) {
-          this.items.sort((a: InboxRecord, b: InboxRecord) =>
-            DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
-            DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
-              -1 :
-              1);
+          this.items.sort(
+              (a: InboxRecord, b: InboxRecord) =>
+                  DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
+                      DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
+                  -1 :
+                  1);
         }
       });
     });
@@ -129,13 +113,13 @@ export class InboxCmp {
 }
 
 
-@Component({selector: 'drafts', templateUrl: 'app/drafts.html', directives: ROUTER_DIRECTIVES})
+@Component({selector: 'drafts', templateUrl: 'app/drafts.html'})
 export class DraftsCmp {
   private items: InboxRecord[] = [];
   private ready: boolean = false;
 
   constructor(private router: Router, db: DbService) {
-    PromiseWrapper.then(db.drafts(), (drafts: any[]) => {
+    db.drafts().then((drafts: any[]) => {
       this.ready = true;
       this.items = drafts.map(data => new InboxRecord(data));
     });
@@ -143,16 +127,10 @@ export class DraftsCmp {
 }
 
 export const ROUTER_CONFIG = [
-  {path: '', terminal: true, redirectTo: 'inbox'},
-  {path: 'inbox', component: InboxCmp},
-  {path: 'drafts', component: DraftsCmp},
-  {path: 'detail/:id', component: InboxDetailCmp}
+  {path: '', pathMatch: 'full', redirectTo: 'inbox'}, {path: 'inbox', component: InboxCmp},
+  {path: 'drafts', component: DraftsCmp}, {path: 'detail', loadChildren: 'app/inbox-detail.js'}
 ];
 
-@Component({
-  selector: 'inbox-app',
-  viewProviders: [DbService],
-  templateUrl: 'app/inbox-app.html',
-  directives: ROUTER_DIRECTIVES
-})
-export class InboxApp {}
+@Component({selector: 'inbox-app', templateUrl: 'app/inbox-app.html'})
+export class InboxApp {
+}

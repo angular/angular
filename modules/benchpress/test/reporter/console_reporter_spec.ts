@@ -1,24 +1,14 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from '@angular/testing/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {isBlank, isPresent, Date, DateWrapper} from '@angular/facade';
-
-import {
-  SampleState,
-  Reporter,
-  ReflectiveInjector,
-  ConsoleReporter,
-  SampleDescription,
-  MeasureValues
-} from 'benchpress/common';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {Date, DateWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
+import {ConsoleReporter, MeasureValues, ReflectiveInjector, Reporter, SampleDescription, SampleState} from 'benchpress/common';
 
 export function main() {
   describe('console reporter', () => {
@@ -35,12 +25,14 @@ export function main() {
         sampleId = 'null';
       }
       var bindings = [
-        ConsoleReporter.PROVIDERS,
-        {provide: SampleDescription, useValue: new SampleDescription(sampleId, descriptions, metrics)},
+        ConsoleReporter.PROVIDERS, {
+          provide: SampleDescription,
+          useValue: new SampleDescription(sampleId, descriptions, metrics)
+        },
         {provide: ConsoleReporter.PRINT, useValue: (line) => log.push(line)}
       ];
       if (isPresent(columnWidth)) {
-        bindings.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue(columnWidth)};
+        bindings.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue: columnWidth});
       }
       reporter = ReflectiveInjector.resolveAndCreate(bindings).get(ConsoleReporter);
     }

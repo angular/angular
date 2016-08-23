@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {BROWSER_APP_PROVIDERS, BROWSER_PLATFORM_PROVIDERS, BROWSER_SANITIZATION_PROVIDERS, BrowserModule, bootstrapModuleFactory, browserPlatform} from './src/browser';
+export {BROWSER_SANITIZATION_PROVIDERS, BrowserModule, platformBrowser} from './src/browser';
 export {BrowserPlatformLocation} from './src/browser/location/browser_platform_location';
 export {Title} from './src/browser/title';
 export {disableDebugTools, enableDebugTools} from './src/browser/tools/tools';
@@ -25,7 +25,7 @@ export * from './src/web_workers/shared/message_bus';
 export {WORKER_APP_LOCATION_PROVIDERS} from './src/web_workers/worker/location_providers';
 export {WORKER_UI_LOCATION_PROVIDERS} from './src/web_workers/ui/location_providers';
 
+export {NgProbeToken} from './src/dom/debug/ng_probe';
 export * from './src/worker_render';
-export * from './src/worker_app';
-
+export {platformWorkerApp, WorkerAppModule} from './src/worker_app';
 export * from './private_export';

@@ -9,21 +9,21 @@
 import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
-import {XHR} from '@angular/compiler/src/xhr';
-import {MockXHR} from '@angular/compiler/testing/xhr_mock';
+import {ResourceLoader} from '@angular/compiler/src/resource_loader';
+import {MockResourceLoader} from '@angular/compiler/testing/resource_loader_mock';
+import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+import {TestBed} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {SpyXHR} from './spies';
-import {TEST_PROVIDERS} from './test_bindings';
+import {SpyResourceLoader} from './spies';
 
 export function main() {
   describe('DirectiveNormalizer', () => {
     var dirType: CompileTypeMetadata;
     var dirTypeWithHttpUrl: CompileTypeMetadata;
 
-    beforeEachProviders(() => TEST_PROVIDERS);
+    beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 
     beforeEach(() => {
       dirType = new CompileTypeMetadata({moduleUrl: 'package:some/module/a.js', name: 'SomeComp'});
@@ -52,7 +52,7 @@ export function main() {
                                                              templateUrl: null,
                                                              styles: [],
                                                              styleUrls: []
-                                                           }))
+                                                           }));
            expect(template.template).toEqual('a');
            expect(template.templateUrl).toEqual('package:some/module/a.js');
          }));
@@ -65,7 +65,7 @@ export function main() {
                                                              templateUrl: null,
                                                              styles: [],
                                                              styleUrls: ['test.css']
-                                                           }))
+                                                           }));
            expect(template.styleUrls).toEqual(['package:some/module/test.css']);
          }));
 
@@ -78,7 +78,7 @@ export function main() {
                                                   templateUrl: null,
                                                   styles: [],
                                                   styleUrls: []
-                                                }))
+                                                }));
            expect(template.styleUrls).toEqual(['package:some/module/test.css']);
          }));
 
@@ -90,7 +90,7 @@ export function main() {
                                                              templateUrl: null,
                                                              styles: [],
                                                              styleUrls: ['test.css']
-                                                           }))
+                                                           }));
            expect(template.encapsulation).toEqual(ViewEncapsulation.Emulated);
          }));
 
@@ -106,7 +106,7 @@ export function main() {
                                                       templateUrl: null,
                                                       styles: [],
                                                       styleUrls: ['test.css']
-                                                    }))
+                                                    }));
                expect(template.encapsulation).toEqual(ViewEncapsulation.None);
              }));
     });
@@ -115,9 +115,10 @@ export function main() {
 
       it('should load a template from a url that is resolved against moduleUrl',
          inject(
-             [AsyncTestCompleter, DirectiveNormalizer, XHR],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
-               xhr.expect('package:some/module/sometplurl.html', 'a');
+             [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: MockResourceLoader) => {
+               resourceLoader.expect('package:some/module/sometplurl.html', 'a');
                normalizer
                    .normalizeTemplateAsync(dirType, new CompileTemplateMetadata({
                                              encapsulation: null,
@@ -131,14 +132,15 @@ export function main() {
                      expect(template.templateUrl).toEqual('package:some/module/sometplurl.html');
                      async.done();
                    });
-               xhr.flush();
+               resourceLoader.flush();
              }));
 
       it('should resolve styles on the annotation against the moduleUrl',
          inject(
-             [AsyncTestCompleter, DirectiveNormalizer, XHR],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
-               xhr.expect('package:some/module/tpl/sometplurl.html', '');
+             [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: MockResourceLoader) => {
+               resourceLoader.expect('package:some/module/tpl/sometplurl.html', '');
                normalizer
                    .normalizeTemplateAsync(dirType, new CompileTemplateMetadata({
                                              encapsulation: null,
@@ -151,14 +153,15 @@ export function main() {
                      expect(template.styleUrls).toEqual(['package:some/module/test.css']);
                      async.done();
                    });
-               xhr.flush();
+               resourceLoader.flush();
              }));
 
       it('should resolve styles in the template against the templateUrl',
          inject(
-             [AsyncTestCompleter, DirectiveNormalizer, XHR],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
-               xhr.expect(
+             [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: MockResourceLoader) => {
+               resourceLoader.expect(
                    'package:some/module/tpl/sometplurl.html', '<style>@import test.css</style>');
                normalizer
                    .normalizeTemplateAsync(dirType, new CompileTemplateMetadata({
@@ -172,20 +175,24 @@ export function main() {
                      expect(template.styleUrls).toEqual(['package:some/module/tpl/test.css']);
                      async.done();
                    });
-               xhr.flush();
+               resourceLoader.flush();
              }));
 
     });
 
     describe('normalizeExternalStylesheets', () => {
 
-      beforeEachProviders(() => [{provide: XHR, useClass: SpyXHR}]);
+      beforeEach(() => {
+        TestBed.configureCompiler(
+            {providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]});
+      });
 
       it('should load an external stylesheet',
          inject(
-             [AsyncTestCompleter, DirectiveNormalizer, XHR],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: SpyXHR) => {
-               programXhrSpy(xhr, {'package:some/module/test.css': 'a'});
+             [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: SpyResourceLoader) => {
+               programResourceLoaderSpy(resourceLoader, {'package:some/module/test.css': 'a'});
                normalizer
                    .normalizeExternalStylesheets(new CompileTemplateMetadata({
                      template: '',
@@ -205,9 +212,10 @@ export function main() {
 
       it('should load stylesheets referenced by external stylesheets',
          inject(
-             [AsyncTestCompleter, DirectiveNormalizer, XHR],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: SpyXHR) => {
-               programXhrSpy(xhr, {
+             [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: SpyResourceLoader) => {
+               programResourceLoaderSpy(resourceLoader, {
                  'package:some/module/test.css': 'a@import "test2.css"',
                  'package:some/module/test2.css': 'b'
                });
@@ -237,9 +245,10 @@ export function main() {
     describe('caching', () => {
       it('should work for templateUrl',
          inject(
-             [AsyncTestCompleter, DirectiveNormalizer, XHR],
-             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer, xhr: MockXHR) => {
-               xhr.expect('package:some/module/cmp.html', 'a');
+             [AsyncTestCompleter, DirectiveNormalizer, ResourceLoader],
+             (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
+              resourceLoader: MockResourceLoader) => {
+               resourceLoader.expect('package:some/module/cmp.html', 'a');
                var templateMeta = new CompileTemplateMetadata({
                  templateUrl: 'cmp.html',
                });
@@ -253,7 +262,7 @@ export function main() {
                      expect(templates[1].template).toEqual('a');
                      async.done();
                    });
-               xhr.flush();
+               resourceLoader.flush();
              }));
 
     });
@@ -276,7 +285,7 @@ export function main() {
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}), 'a',
                'package:some/module/');
-           expect(template.template).toEqual('a')
+           expect(template.template).toEqual('a');
          }));
 
       it('should collect ngContent',
@@ -425,7 +434,7 @@ export function main() {
   });
 }
 
-function programXhrSpy(spy: SpyXHR, results: {[key: string]: string}) {
+function programResourceLoaderSpy(spy: SpyResourceLoader, results: {[key: string]: string}) {
   spy.spy('get').andCallFake((url: string): Promise<any> => {
     var result = results[url];
     if (result) {

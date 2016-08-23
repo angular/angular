@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
+import {BaseException} from '@angular/core';
 import {StringWrapper, isBlank, isPresent, isString} from '../facade/lang';
 
 import * as o from './output_ast';
@@ -201,7 +201,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       name = this.getBuiltinMethodName(expr.builtin);
       if (isBlank(name)) {
         // some builtins just mean to skip the call.
-        // e.g. `bind` in Dart.
         return null;
       }
     }
@@ -251,12 +250,13 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(`)`);
     return null;
   }
-  visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
+  visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext, absentValue: string = 'null'):
+      any {
     var value = ast.value;
     if (isString(value)) {
       ctx.print(escapeSingleQuoteString(value, this._escapeDollarInStrings));
     } else if (isBlank(value)) {
-      ctx.print('null');
+      ctx.print(absentValue);
     } else {
       ctx.print(`${value}`);
     }
@@ -284,7 +284,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: any): any;
 
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): any {
-    var opStr: any /** TODO #9100 */;
+    var opStr: string;
     switch (ast.operator) {
       case o.BinaryOperator.Equals:
         opStr = '==';

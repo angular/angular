@@ -1,13 +1,20 @@
-import {isPresent, isBlank, Date, DateWrapper} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {Metric} from './metric';
-import {Validator} from './validator';
-import {Reporter} from './reporter';
-import {WebDriverAdapter} from './web_driver_adapter';
+import {Date, DateWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from './common_options';
 import {MeasureValues} from './measure_values';
+import {Metric} from './metric';
+import {Reporter} from './reporter';
+import {Validator} from './validator';
+import {WebDriverAdapter} from './web_driver_adapter';
+
 
 /**
  * The Sampler owns the sample loop:
@@ -21,13 +28,20 @@ export class Sampler {
   // TODO(tbosch): use static values when our transpiler supports them
   static get PROVIDERS(): any[] { return _PROVIDERS; }
 
-  _driver: WebDriverAdapter;
-  _metric: Metric;
-  _reporter: Reporter;
-  _validator: Validator;
-  _prepare: Function;
-  _execute: Function;
-  _now: Function;
+  /** @internal */
+  private _driver: WebDriverAdapter;
+  /** @internal */
+  private _metric: Metric;
+  /** @internal */
+  private _reporter: Reporter;
+  /** @internal */
+  private _validator: Validator;
+  /** @internal */
+  private _prepare: Function;
+  /** @internal */
+  private _execute: Function;
+  /** @internal */
+  private _now: Function;
 
   constructor({driver, metric, reporter, validator, prepare, execute, now}: {
     driver?: WebDriverAdapter,
@@ -61,12 +75,13 @@ export class Sampler {
     return loop(new SampleState([], null));
   }
 
-  _iterate(lastState): Promise<SampleState> {
+  /** @internal */
+  private _iterate(lastState): Promise<SampleState> {
     var resultPromise: Promise<any>;
     if (isPresent(this._prepare)) {
       resultPromise = this._driver.waitFor(this._prepare);
     } else {
-      resultPromise = PromiseWrapper.resolve(null);
+      resultPromise = Promise.resolve(null);
     }
     if (isPresent(this._prepare) || lastState.completeSample.length === 0) {
       resultPromise = resultPromise.then((_) => this._metric.beginMeasure());
@@ -76,14 +91,15 @@ export class Sampler {
         .then((measureValues) => this._report(lastState, measureValues));
   }
 
-  _report(state: SampleState, metricValues: {[key: string]: any}): Promise<SampleState> {
+  /** @internal */
+  private _report(state: SampleState, metricValues: {[key: string]: any}): Promise<SampleState> {
     var measureValues = new MeasureValues(state.completeSample.length, this._now(), metricValues);
     var completeSample = state.completeSample.concat([measureValues]);
     var validSample = this._validator.validate(completeSample);
     var resultPromise = this._reporter.reportMeasureValues(measureValues);
     if (isPresent(validSample)) {
       resultPromise =
-          resultPromise.then((_) => this._reporter.reportSample(completeSample, validSample))
+          resultPromise.then((_) => this._reporter.reportSample(completeSample, validSample));
     }
     return resultPromise.then((_) => new SampleState(completeSample, validSample));
   }
@@ -93,29 +109,21 @@ export class SampleState {
   constructor(public completeSample: any[], public validSample: any[]) {}
 }
 
-var _PROVIDERS = [
-  {
-    provide: Sampler,
-    useFactory: (driver, metric, reporter, validator, prepare, execute, now) => new Sampler({
-      driver: driver,
-      reporter: reporter,
-      validator: validator,
-      metric: metric,
-      // TODO(tbosch): DI right now does not support null/undefined objects
-      // Mostly because the cache would have to be initialized with a
-      // special null object, which is expensive.
-      prepare: prepare !== false ? prepare : null,
-      execute: execute,
-      now: now
-    }),
-    deps: [
-      WebDriverAdapter,
-      Metric,
-      Reporter,
-      Validator,
-      Options.PREPARE,
-      Options.EXECUTE,
-      Options.NOW
-    ]
-  }
-];
+var _PROVIDERS = [{
+  provide: Sampler,
+  useFactory: (driver, metric, reporter, validator, prepare, execute, now) => new Sampler({
+                driver: driver,
+                reporter: reporter,
+                validator: validator,
+                metric: metric,
+                // TODO(tbosch): DI right now does not support null/undefined objects
+                // Mostly because the cache would have to be initialized with a
+                // special null object, which is expensive.
+                prepare: prepare !== false ? prepare : null,
+                execute: execute,
+                now: now
+              }),
+  deps: [
+    WebDriverAdapter, Metric, Reporter, Validator, Options.PREPARE, Options.EXECUTE, Options.NOW
+  ]
+}];

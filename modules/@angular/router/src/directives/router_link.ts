@@ -51,8 +51,21 @@ import {UrlTree} from '../url_tree';
  * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" fragment="education">link to user
  component</a>
  * ```
- *
  * RouterLink will use these to generate this link: `/user/bob#education?debug=true`.
+ *
+ * You can also tell the directive to preserve the current query params and fragment:
+ *
+ * ```
+ * <a [routerLink]="['/user/bob']" preserveQueryParams preserveFragment>link to user
+ component</a>
+ * ```
+ *
+ * The router link directive always treats the provided input as a delta to the current url.
+ *
+ * For instance, if the current url is `/user/(box//aux:team)`.
+ *
+ * Then the following link `<a [routerLink]="['/user/jim']">Jim</a>` will generate the link
+ * `/user/(jim//aux:team)`. See {@link Router.createUrlTree} for more information.
  *
  * @stable
  */
@@ -61,8 +74,8 @@ export class RouterLink {
   private commands: any[] = [];
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
-
-  urlTree: UrlTree;
+  @Input() preserveQueryParams: boolean;
+  @Input() preserveFragment: boolean;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -82,14 +95,18 @@ export class RouterLink {
     if (button !== 0 || ctrlKey || metaKey) {
       return true;
     }
-
-    this.urlTree = this.router.createUrlTreeUsingFutureUrl(
-        this.commands,
-        {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
-
     this.router.navigateByUrl(this.urlTree);
-
     return false;
+  }
+
+  get urlTree(): UrlTree {
+    return this.router.createUrlTree(this.commands, {
+      relativeTo: this.route,
+      queryParams: this.queryParams,
+      fragment: this.fragment,
+      preserveQueryParams: toBool(this.preserveQueryParams),
+      preserveFragment: toBool(this.preserveFragment)
+    });
   }
 }
 
@@ -103,6 +120,9 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   private commands: any[] = [];
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
+  @Input() routerLinkOptions: {preserveQueryParams: boolean, preserveFragment: boolean};
+  @Input() preserveQueryParams: boolean;
+  @Input() preserveFragment: boolean;
   private subscription: Subscription;
 
   // the url displayed on the anchor element.
@@ -110,9 +130,6 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   urlTree: UrlTree;
 
-  /**
-   * @internal
-   */
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {
@@ -150,12 +167,21 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   private updateTargetUrlAndHref(): void {
-    this.urlTree = this.router.createUrlTreeUsingFutureUrl(
-        this.commands,
-        {relativeTo: this.route, queryParams: this.queryParams, fragment: this.fragment});
+    this.urlTree = this.router.createUrlTree(this.commands, {
+      relativeTo: this.route,
+      queryParams: this.queryParams,
+      fragment: this.fragment,
+      preserveQueryParams: toBool(this.preserveQueryParams),
+      preserveFragment: toBool(this.preserveFragment)
+    });
 
     if (this.urlTree) {
       this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
     }
   }
+}
+
+function toBool(s?: any): boolean {
+  if (s === '') return true;
+  return !!s;
 }

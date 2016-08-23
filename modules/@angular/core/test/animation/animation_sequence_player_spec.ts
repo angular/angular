@@ -9,7 +9,7 @@
 import {AnimationSequencePlayer} from '../../src/animation/animation_sequence_player';
 import {isPresent} from '../../src/facade/lang';
 import {fakeAsync, flushMicrotasks} from '../../testing';
-import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
+import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
 
 export function main() {
@@ -32,7 +32,7 @@ export function main() {
           } else {
             expect(actual).not.toEqual(status);
           }
-        }
+        };
 
     var assertPlaying = (player: MockAnimationPlayer, isPlaying: boolean) => {
       assertLastStatus(player, 'play', isPlaying);
@@ -194,6 +194,18 @@ export function main() {
       sequence.finish();
       sequence.restart();
       sequence.destroy();
+    });
+
+    it('should run the onStart method when started but only once', () => {
+      var player = new AnimationSequencePlayer([]);
+      var calls = 0;
+      player.onStart(() => calls++);
+      expect(calls).toEqual(0);
+      player.play();
+      expect(calls).toEqual(1);
+      player.pause();
+      player.play();
+      expect(calls).toEqual(1);
     });
 
     it('should call onDone after the next microtask if no players are provided', fakeAsync(() => {

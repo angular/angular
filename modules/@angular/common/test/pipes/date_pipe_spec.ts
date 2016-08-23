@@ -36,6 +36,9 @@ export function main() {
         it('should support numeric strings',
            () => { expect(() => pipe.transform('123456789')).not.toThrow(); });
 
+        it('should support decimal strings',
+           () => { expect(() => pipe.transform('123456789.11')).not.toThrow(); });
+
         it('should support ISO string',
            () => { expect(() => pipe.transform('2015-06-15T21:43:11Z')).not.toThrow(); });
 
@@ -64,6 +67,7 @@ export function main() {
           expect(pipe.transform(date, 's')).toEqual('1');
           expect(pipe.transform(date, 'mm')).toEqual('03');
           expect(pipe.transform(date, 'ss')).toEqual('01');
+          expect(pipe.transform(date, 'Z')).toBeDefined();
         });
 
         it('should format common multi component patterns', () => {
@@ -93,6 +97,9 @@ export function main() {
           expect(pipe.transform(date, 'mediumTime')).toEqual('9:03:01 AM');
           expect(pipe.transform(date, 'shortTime')).toEqual('9:03 AM');
         });
+
+        it('should remove bidi control characters',
+           () => { expect(pipe.transform(date, 'MM/dd/yyyy').length).toEqual(10); });
       });
     }
   });

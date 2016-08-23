@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseException} from '@angular/core';
+
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {BaseException} from '../facade/exceptions';
 import {isArray, isBlank, isPresent} from '../facade/lang';
 
 import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
@@ -70,10 +71,16 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       ctx.print(defaultType);
     }
   }
+
+  visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
+    super.visitLiteralExpr(ast, ctx, '(null as any)');
+  }
+
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     this._visitIdentifier(ast.value, ast.typeParams, ctx);
     return null;
   }
+
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
     if (ctx.isExportedVar(stmt.name)) {
       ctx.print(`export `);
@@ -90,6 +97,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.println(`;`);
     return null;
   }
+
   visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
     ctx.print(`(<`);
     ast.type.visitType(this, ctx);
@@ -98,6 +106,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.print(`)`);
     return null;
   }
+
   visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     ctx.pushClass(stmt);
     if (ctx.isExportedVar(stmt.name)) {
@@ -121,15 +130,18 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.popClass();
     return null;
   }
+
   private _visitClassField(field: o.ClassField, ctx: EmitterVisitorContext) {
     if (field.hasModifier(o.StmtModifier.Private)) {
-      ctx.print(`private `);
+      // comment out as a workaround for #10967
+      ctx.print(`/*private*/ `);
     }
     ctx.print(field.name);
     ctx.print(':');
     this.visitType(field.type, ctx);
     ctx.println(`;`);
   }
+
   private _visitClassGetter(getter: o.ClassGetter, ctx: EmitterVisitorContext) {
     if (getter.hasModifier(o.StmtModifier.Private)) {
       ctx.print(`private `);
@@ -143,6 +155,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(`}`);
   }
+
   private _visitClassConstructor(stmt: o.ClassStmt, ctx: EmitterVisitorContext) {
     ctx.print(`constructor(`);
     this._visitParams(stmt.constructorMethod.params, ctx);
@@ -152,6 +165,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(`}`);
   }
+
   private _visitClassMethod(method: o.ClassMethod, ctx: EmitterVisitorContext) {
     if (method.hasModifier(o.StmtModifier.Private)) {
       ctx.print(`private `);
@@ -166,6 +180,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(`}`);
   }
+
   visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
     ctx.print(`(`);
     this._visitParams(ast.params, ctx);
@@ -178,6 +193,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.print(`}`);
     return null;
   }
+
   visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
     if (ctx.isExportedVar(stmt.name)) {
       ctx.print(`export `);
@@ -193,6 +209,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.println(`}`);
     return null;
   }
+
   visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any {
     ctx.println(`try {`);
     ctx.incIndent();
@@ -237,15 +254,18 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.print(typeStr);
     return null;
   }
+
   visitExternalType(ast: o.ExternalType, ctx: EmitterVisitorContext): any {
     this._visitIdentifier(ast.value, ast.typeParams, ctx);
     return null;
   }
+
   visitArrayType(type: o.ArrayType, ctx: EmitterVisitorContext): any {
     this.visitType(type.of, ctx);
     ctx.print(`[]`);
     return null;
   }
+
   visitMapType(type: o.MapType, ctx: EmitterVisitorContext): any {
     ctx.print(`{[key: string]:`);
     this.visitType(type.valueType, ctx);
@@ -254,7 +274,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   getBuiltinMethodName(method: o.BuiltinMethod): string {
-    var name: any /** TODO #9100 */;
+    var name: string;
     switch (method) {
       case o.BuiltinMethod.ConcatArray:
         name = 'concat';
@@ -262,7 +282,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       case o.BuiltinMethod.SubscribeObservable:
         name = 'subscribe';
         break;
-      case o.BuiltinMethod.bind:
+      case o.BuiltinMethod.Bind:
         name = 'bind';
         break;
       default:
@@ -270,7 +290,6 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
     return name;
   }
-
 
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
     this.visitAllObjects((param: any /** TODO #9100 */) => {
@@ -299,6 +318,10 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       this.visitAllObjects(
           (type: any /** TODO #9100 */) => type.visitType(this, ctx), typeParams, ctx, ',');
       ctx.print(`>`);
+    }
+    if (value.runtime && value.runtime.members) {
+      ctx.print('.');
+      ctx.print(value.runtime.members.join('.'));
     }
   }
 }

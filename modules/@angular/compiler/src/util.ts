@@ -8,10 +8,10 @@
 
 import {CompileTokenMetadata} from './compile_metadata';
 import {StringMapWrapper} from './facade/collection';
-import {IS_DART, StringWrapper, isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
+import {StringWrapper, isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
 import * as o from './output/output_ast';
 
-export var MODULE_SUFFIX = IS_DART ? '.dart' : '';
+export const MODULE_SUFFIX = '';
 
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 
@@ -21,12 +21,9 @@ export function camelCaseToDashCase(input: string): string {
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
-  var parts = StringWrapper.split(input.trim(), /\s*:\s*/g);
-  if (parts.length > 1) {
-    return parts;
-  } else {
-    return defaultValues;
-  }
+  const colonIndex = input.indexOf(':');
+  if (colonIndex == -1) return defaultValues;
+  return [input.slice(0, colonIndex).trim(), input.slice(colonIndex + 1).trim()];
 }
 
 export function sanitizeIdentifier(name: string): string {
@@ -68,18 +65,10 @@ export class ValueTransformer implements ValueVisitor {
 }
 
 export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {
-  if (IS_DART) {
-    if (path == null) {
-      return `asset:angular2/${pkg}/${pkg}.dart`;
-    } else {
-      return `asset:angular2/lib/${pkg}/src/${path}.dart`;
-    }
+  if (path == null) {
+    return `asset:@angular/lib/${pkg}/index`;
   } else {
-    if (path == null) {
-      return `asset:@angular/lib/${pkg}/index`;
-    } else {
-      return `asset:@angular/lib/${pkg}/src/${path}`;
-    }
+    return `asset:@angular/lib/${pkg}/src/${path}`;
   }
 }
 
@@ -97,7 +86,7 @@ export function createDiTokenExpression(token: CompileTokenMetadata): o.Expressi
 export class SyncAsyncResult<T> {
   constructor(public syncResult: T, public asyncResult: Promise<T> = null) {
     if (!asyncResult) {
-      asyncResult = Promise.resolve(syncResult);
+      this.asyncResult = Promise.resolve(syncResult);
     }
   }
 }

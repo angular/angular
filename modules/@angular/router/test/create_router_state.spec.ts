@@ -1,14 +1,22 @@
-import {RouterConfig} from '../src/config';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Routes} from '../src/config';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
 import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegment, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
 describe('create router state', () => {
   const emptyState = () =>
-      createEmptyState(new UrlTree(new UrlSegment([], {}), {}, null), RootComponent);
+      createEmptyState(new UrlTree(new UrlSegmentGroup([], {}), {}, null), RootComponent);
 
   it('should work create new state', () => {
     const state = createRouterState(
@@ -84,7 +92,7 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
   node.children.forEach(advanceNode);
 }
 
-function createState(config: RouterConfig, url: string): RouterStateSnapshot {
+function createState(config: Routes, url: string): RouterStateSnapshot {
   let res: RouterStateSnapshot;
   recognize(RootComponent, config, tree(url), url).forEach(s => res = s);
   return res;

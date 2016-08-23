@@ -12,7 +12,7 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 
 import {ResponseOptions} from '../base_response_options';
-import {ContentType, ReadyState, RequestMethod, ResponseType} from '../enums';
+import {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from '../enums';
 import {isPresent, isString} from '../facade/lang';
 import {Headers} from '../headers';
 import {getResponseURL, isSuccess} from '../http_utils';
@@ -53,7 +53,8 @@ export class XHRConnection implements Connection {
       // load event handler
       let onLoad = () => {
         // responseText is the old-school way of retrieving response (supported by IE8 & 9)
-        // response/responseType properties were introduced in XHR Level2 spec (supported by
+        // response/responseType properties were introduced in ResourceLoader Level2 spec (supported
+        // by
         // IE10)
         let body = isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
         // Implicitly strip a potential XSSI prefix.
@@ -108,6 +109,26 @@ export class XHRConnection implements Connection {
         req.headers.forEach((values, name) => _xhr.setRequestHeader(name, values.join(',')));
       }
 
+      // Select the correct buffer type to store the response
+      if (isPresent(req.responseType) && isPresent(_xhr.responseType)) {
+        switch (req.responseType) {
+          case ResponseContentType.ArrayBuffer:
+            _xhr.responseType = 'arraybuffer';
+            break;
+          case ResponseContentType.Json:
+            _xhr.responseType = 'json';
+            break;
+          case ResponseContentType.Text:
+            _xhr.responseType = 'text';
+            break;
+          case ResponseContentType.Blob:
+            _xhr.responseType = 'blob';
+            break;
+          default:
+            throw new Error('The selected responseType is not supported');
+        }
+      }
+
       _xhr.addEventListener('load', onLoad);
       _xhr.addEventListener('error', onError);
 
@@ -132,18 +153,18 @@ export class XHRConnection implements Connection {
       case ContentType.NONE:
         break;
       case ContentType.JSON:
-        _xhr.setRequestHeader('Content-Type', 'application/json');
+        _xhr.setRequestHeader('content-type', 'application/json');
         break;
       case ContentType.FORM:
-        _xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+        _xhr.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
         break;
       case ContentType.TEXT:
-        _xhr.setRequestHeader('Content-Type', 'text/plain');
+        _xhr.setRequestHeader('content-type', 'text/plain');
         break;
       case ContentType.BLOB:
         var blob = req.blob();
         if (blob.type) {
-          _xhr.setRequestHeader('Content-Type', blob.type);
+          _xhr.setRequestHeader('content-type', blob.type);
         }
         break;
     }
@@ -152,8 +173,8 @@ export class XHRConnection implements Connection {
 
 /**
  * `XSRFConfiguration` sets up Cross Site Request Forgery (XSRF) protection for the application
- * using a cookie. See https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF) for more
- * information on XSRF.
+ * using a cookie. See {@link https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)}
+ * for more information on XSRF.
  *
  * Applications can configure custom cookie and header names by binding an instance of this class
  * with different `cookieName` and `headerName` values. See the main HTTP documentation for more

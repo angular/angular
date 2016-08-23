@@ -31,8 +31,8 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *  class MyApp {
  *    gender: string = 'male';
  *    inviteMap: any = {
- *      'male': 'Invite her.',
- *      'female': 'Invite him.',
+ *      'male': 'Invite him.',
+ *      'female': 'Invite her.',
  *      'other': 'Invite them.'
  *    }
  *    ...

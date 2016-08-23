@@ -31,13 +31,13 @@ import {NG_VALIDATORS, Validators} from '../validators';
  * }
  * ```
  *
- * @experimental
+ * @stable
  */
 export interface Validator { validate(c: AbstractControl): {[key: string]: any}; }
 
-const REQUIRED = /*@ts2dart_const*/ Validators.required;
+export const REQUIRED = Validators.required;
 
-export const REQUIRED_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const REQUIRED_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useValue: REQUIRED,
   multi: true
@@ -53,7 +53,7 @@ export const REQUIRED_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ 
  * <input name="fullName" ngModel required>
  * ```
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector: '[required][formControlName],[required][formControl],[required][ngModel]',
@@ -63,12 +63,12 @@ export class RequiredValidator {
 }
 
 /**
- * @experimental
+ * @stable
  */
 export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
 
 /**
- * @experimental
+ * @stable
  */
 export interface AsyncValidatorFn {
   (c: AbstractControl): any /*Promise<{[key: string]: any}>|Observable<{[key: string]: any}>*/;
@@ -81,7 +81,7 @@ export interface AsyncValidatorFn {
  *
  * {@example common/forms/ts/validators/validators.ts region='min'}
  */
-export const MIN_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const MIN_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MinLengthValidator),
   multi: true
@@ -91,7 +91,7 @@ export const MIN_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
  * A directive which installs the {@link MinLengthValidator} for any `formControlName`,
  * `formControl`, or control with `ngModel` that also has a `minlength` attribute.
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
@@ -114,7 +114,7 @@ export class MinLengthValidator implements Validator {
  *
  * {@example common/forms/ts/validators/validators.ts region='max'}
  */
-export const MAX_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const MAX_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MaxLengthValidator),
   multi: true
@@ -125,7 +125,7 @@ export const MAX_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
  * `formControl`,
  * or control with `ngModel` that also has a `maxlength` attribute.
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
@@ -142,7 +142,7 @@ export class MaxLengthValidator implements Validator {
 }
 
 
-export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const PATTERN_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => PatternValidator),
   multi: true
@@ -160,7 +160,7 @@ export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
  * ```
  * <input [name]="fullName" pattern="[a-zA-Z ]*" ngModel>
  * ```
- * @experimental
+ * @stable
  */
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',

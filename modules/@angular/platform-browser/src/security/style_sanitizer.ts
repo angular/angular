@@ -86,7 +86,7 @@ export function sanitizeStyle(value: string): string {
 
   // Single url(...) values are supported, but only for URLs that sanitize cleanly. See above for
   // reasoning behind this.
-  let urlMatch = URL_RE.exec(value);
+  const urlMatch = value.match(URL_RE);
   if ((urlMatch && sanitizeUrl(urlMatch[1]) === urlMatch[1]) ||
       value.match(SAFE_STYLE_VALUE) && hasBalancedQuotes(value)) {
     return value;  // Safe style values.

@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {BaseException, Injectable} from '@angular/core';
 
-import {BaseException} from '../facade/exceptions';
-import {Math, RegExpWrapper, isBlank, isPresent} from '../facade/lang';
+import {Math, isBlank, isPresent} from '../facade/lang';
 
 
 // asset:<package-name>/<realm>/<path-to-module>
-var _ASSET_URL_RE = /asset:([^\/]+)\/([^\/]+)\/(.+)/g;
+var _ASSET_URL_RE = /asset:([^\/]+)\/([^\/]+)\/(.+)/;
 
 /**
  * Interface that defines how import statements should be generated.
@@ -26,8 +25,8 @@ export abstract class ImportGenerator {
 
 export class AssetUrl {
   static parse(url: string, allowNonMatching: boolean = true): AssetUrl {
-    var match = RegExpWrapper.firstMatch(_ASSET_URL_RE, url);
-    if (isPresent(match)) {
+    const match = url.match(_ASSET_URL_RE);
+    if (match !== null) {
       return new AssetUrl(match[1], match[2], match[3]);
     }
     if (allowNonMatching) {

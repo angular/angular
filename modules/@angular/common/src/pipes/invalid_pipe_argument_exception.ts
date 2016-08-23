@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
-import {Type, stringify} from '../facade/lang';
+import {BaseException, Type} from '@angular/core';
+import {stringify} from '../facade/lang';
 
 export class InvalidPipeArgumentException extends BaseException {
-  constructor(type: Type, value: Object) {
+  constructor(type: Type<any>, value: Object) {
     super(`Invalid argument '${value}' for pipe '${stringify(type)}'`);
   }
 }

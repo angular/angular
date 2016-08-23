@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, IterableDiffer, IterableDiffers, TemplateRef, TrackByFn, ViewContainerRef} from '@angular/core';
+import {BaseException, ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, Input, IterableDiffer, IterableDiffers, OnChanges, SimpleChanges, TemplateRef, TrackByFn, ViewContainerRef} from '@angular/core';
 
-import {BaseException} from '../facade/exceptions';
 import {getTypeNameForDebugging, isBlank, isPresent} from '../facade/lang';
 
 export class NgForRow {
@@ -63,11 +62,22 @@ export class NgForRow {
  * elements were deleted and all new elements inserted). This is an expensive operation and should
  * be avoided if possible.
  *
+ * To customize the default tracking algorithm, `NgFor` supports `trackBy` option.
+ * `trackBy` takes a function which has two arguments: `index` and `item`.
+ * If `trackBy` is given, Angular tracks changes by the return value of the function.
+ *
  * ### Syntax
  *
- * - `<li *ngFor="let item of items; let i = index">...</li>`
- * - `<li template="ngFor let item of items; let i = index">...</li>`
- * - `<template ngFor let-item [ngForOf]="items" let-i="index"><li>...</li></template>`
+ * - `<li *ngFor="let item of items; let i = index; trackBy: trackByFn">...</li>`
+ * - `<li template="ngFor let item of items; let i = index; trackBy: trackByFn">...</li>`
+ *
+ * With `<template>` element:
+ *
+ * ```
+ * <template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
+ *   <li>...</li>
+ * </template>
+ * ```
  *
  * ### Example
  *
@@ -76,76 +86,76 @@ export class NgForRow {
  *
  * @stable
  */
-@Directive({selector: '[ngFor][ngForOf]', inputs: ['ngForTrackBy', 'ngForOf', 'ngForTemplate']})
-export class NgFor implements DoCheck {
-  /** @internal */
-  _ngForOf: any;
-  /** @internal */
-  _ngForTrackBy: TrackByFn;
+@Directive({selector: '[ngFor][ngForOf]'})
+export class NgFor implements DoCheck, OnChanges {
+  @Input() ngForOf: any;
+  @Input() ngForTrackBy: TrackByFn;
+
   private _differ: IterableDiffer;
 
   constructor(
       private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<NgForRow>,
       private _iterableDiffers: IterableDiffers, private _cdr: ChangeDetectorRef) {}
 
-  set ngForOf(value: any) {
-    this._ngForOf = value;
-    if (isBlank(this._differ) && isPresent(value)) {
-      try {
-        this._differ = this._iterableDiffers.find(value).create(this._cdr, this._ngForTrackBy);
-      } catch (e) {
-        throw new BaseException(
-            `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
-      }
-    }
-  }
-
+  @Input()
   set ngForTemplate(value: TemplateRef<NgForRow>) {
     if (isPresent(value)) {
       this._templateRef = value;
     }
   }
 
-  set ngForTrackBy(value: TrackByFn) { this._ngForTrackBy = value; }
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('ngForOf' in changes) {
+      // React on ngForOf changes only once all inputs have been initialized
+      const value = changes['ngForOf'].currentValue;
+      if (isBlank(this._differ) && isPresent(value)) {
+        try {
+          this._differ = this._iterableDiffers.find(value).create(this._cdr, this.ngForTrackBy);
+        } catch (e) {
+          throw new BaseException(
+              `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+        }
+      }
+    }
+  }
 
   ngDoCheck() {
     if (isPresent(this._differ)) {
-      var changes = this._differ.diff(this._ngForOf);
+      const changes = this._differ.diff(this.ngForOf);
       if (isPresent(changes)) this._applyChanges(changes);
     }
   }
 
   private _applyChanges(changes: DefaultIterableDiffer) {
-    // TODO(rado): check if change detection can produce a change record that is
-    // easier to consume than current.
-    var recordViewTuples: RecordViewTuple[] = [];
-    changes.forEachRemovedItem(
-        (removedRecord: CollectionChangeRecord) =>
-            recordViewTuples.push(new RecordViewTuple(removedRecord, null)));
+    const insertTuples: RecordViewTuple[] = [];
+    changes.forEachOperation(
+        (item: CollectionChangeRecord, adjustedPreviousIndex: number, currentIndex: number) => {
+          if (item.previousIndex == null) {
+            let view = this._viewContainer.createEmbeddedView(
+                this._templateRef, new NgForRow(null, null, null), currentIndex);
+            let tuple = new RecordViewTuple(item, view);
+            insertTuples.push(tuple);
+          } else if (currentIndex == null) {
+            this._viewContainer.remove(adjustedPreviousIndex);
+          } else {
+            let view = this._viewContainer.get(adjustedPreviousIndex);
+            this._viewContainer.move(view, currentIndex);
+            let tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForRow>>view);
+            insertTuples.push(tuple);
+          }
+        });
 
-    changes.forEachMovedItem(
-        (movedRecord: CollectionChangeRecord) =>
-            recordViewTuples.push(new RecordViewTuple(movedRecord, null)));
-
-    var insertTuples = this._bulkRemove(recordViewTuples);
-
-    changes.forEachAddedItem(
-        (addedRecord: CollectionChangeRecord) =>
-            insertTuples.push(new RecordViewTuple(addedRecord, null)));
-
-    this._bulkInsert(insertTuples);
-
-    for (var i = 0; i < insertTuples.length; i++) {
+    for (let i = 0; i < insertTuples.length; i++) {
       this._perViewChange(insertTuples[i].view, insertTuples[i].record);
     }
 
-    for (var i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
+    for (let i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
       var viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
     }
 
-    changes.forEachIdentityChange((record: any /** TODO #9100 */) => {
+    changes.forEachIdentityChange((record: any) => {
       var viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(record.currentIndex);
       viewRef.context.$implicit = record.item;
     });
@@ -154,46 +164,8 @@ export class NgFor implements DoCheck {
   private _perViewChange(view: EmbeddedViewRef<NgForRow>, record: CollectionChangeRecord) {
     view.context.$implicit = record.item;
   }
-
-  private _bulkRemove(tuples: RecordViewTuple[]): RecordViewTuple[] {
-    tuples.sort(
-        (a: RecordViewTuple, b: RecordViewTuple) =>
-            a.record.previousIndex - b.record.previousIndex);
-    var movedTuples: RecordViewTuple[] = [];
-    for (var i = tuples.length - 1; i >= 0; i--) {
-      var tuple = tuples[i];
-      // separate moved views from removed views.
-      if (isPresent(tuple.record.currentIndex)) {
-        tuple.view =
-            <EmbeddedViewRef<NgForRow>>this._viewContainer.detach(tuple.record.previousIndex);
-        movedTuples.push(tuple);
-      } else {
-        this._viewContainer.remove(tuple.record.previousIndex);
-      }
-    }
-    return movedTuples;
-  }
-
-  private _bulkInsert(tuples: RecordViewTuple[]): RecordViewTuple[] {
-    tuples.sort((a, b) => a.record.currentIndex - b.record.currentIndex);
-    for (var i = 0; i < tuples.length; i++) {
-      var tuple = tuples[i];
-      if (isPresent(tuple.view)) {
-        this._viewContainer.insert(tuple.view, tuple.record.currentIndex);
-      } else {
-        tuple.view = this._viewContainer.createEmbeddedView(
-            this._templateRef, new NgForRow(null, null, null), tuple.record.currentIndex);
-      }
-    }
-    return tuples;
-  }
 }
 
 class RecordViewTuple {
-  view: EmbeddedViewRef<NgForRow>;
-  record: any;
-  constructor(record: any, view: EmbeddedViewRef<NgForRow>) {
-    this.record = record;
-    this.view = view;
-  }
+  constructor(public record: any, public view: EmbeddedViewRef<NgForRow>) {}
 }

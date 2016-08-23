@@ -35,7 +35,8 @@ function mergeOptions(
       search: providedOpts.search,
       headers: providedOpts.headers,
       body: providedOpts.body,
-      withCredentials: providedOpts.withCredentials
+      withCredentials: providedOpts.withCredentials,
+      responseType: providedOpts.responseType
     }));
   }
   if (isPresent(method)) {
@@ -184,6 +185,15 @@ export class Http {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Head, url)));
+  }
+
+  /**
+   * Performs a request with `options` http method.
+   */
+  options(url: string, options?: RequestOptionsArgs): Observable<Response> {
+    return httpRequest(
+        this._backend,
+        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Options, url)));
   }
 }
 

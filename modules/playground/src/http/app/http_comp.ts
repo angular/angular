@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import 'rxjs/add/operator/map';
+
 import {Component} from '@angular/core';
 import {Http, Response} from '@angular/http';
-import 'rxjs/add/operator/map';
 
 @Component({
   selector: 'http-app',

@@ -10,10 +10,8 @@ import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata'
 import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportGenerator} from '@angular/compiler/src/output/path_util';
 import {assetUrl} from '@angular/compiler/src/util';
-import {EventEmitter} from '@angular/core';
+import {BaseException, EventEmitter} from '@angular/core';
 import {ViewType} from '@angular/core/src/linker/view_type';
-
-import {BaseException} from '../../src/facade/exceptions';
 
 export class ExternalClass {
   changeable: any;
@@ -115,7 +113,7 @@ var _getExpressionsStmts: o.Statement[] = [
       'invokeMethodExternalInstanceViaBind',
       o.variable('externalInstance')
           .prop('someMethod')
-          .callMethod(o.BuiltinMethod.bind, [o.variable('externalInstance')])
+          .callMethod(o.BuiltinMethod.Bind, [o.variable('externalInstance')])
           .callFn([o.literal('someParam')])
     ],
     [
@@ -126,7 +124,7 @@ var _getExpressionsStmts: o.Statement[] = [
       'invokeMethodDynamicInstanceViaBind',
       o.variable('dynamicInstance')
           .prop('dynamicMethod')
-          .callMethod(o.BuiltinMethod.bind, [o.variable('dynamicInstance')])
+          .callMethod(o.BuiltinMethod.Bind, [o.variable('dynamicInstance')])
           .callFn([o.literal('someParam')])
     ],
     [

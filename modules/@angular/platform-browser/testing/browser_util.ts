@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgZone} from '@angular/core';
 import {getDOM} from '../src/dom/dom_adapter';
 import {ListWrapper} from '../src/facade/collection';
-import {RegExp, RegExpWrapper, StringWrapper, global, isPresent, isString} from '../src/facade/lang';
+import {RegExp, StringWrapper, global, isPresent, isString} from '../src/facade/lang';
 
 export class BrowserDetection {
   private _overrideUa: string;
@@ -28,7 +29,8 @@ export class BrowserDetection {
 
   get isAndroid(): boolean {
     return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
-        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1;
+        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1 &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
@@ -36,11 +38,13 @@ export class BrowserDetection {
   get isIE(): boolean { return this._ua.indexOf('Trident') > -1; }
 
   get isWebkit(): boolean {
-    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1;
+    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1 &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isIOS7(): boolean {
-    return this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1;
+    return (this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1) &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }
@@ -126,3 +130,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 }
 
 export var browserDetection: BrowserDetection = new BrowserDetection(null);
+
+export function createNgZone(): NgZone {
+  return new NgZone({enableLongStackTrace: true});
+}

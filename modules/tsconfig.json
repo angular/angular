@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "declaration": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../dist/all/",
@@ -28,9 +29,6 @@
     "benchpress",
     "payload_tests",
     "rollup-test",
-    "upgrade-ts2dart.d.ts",
-    "zone-ts2dart.d.ts",
-    "@angular/compiler-cli/integrationtest",
-    "@angular/router"
+    "@angular/compiler-cli/integrationtest"
   ]
 }

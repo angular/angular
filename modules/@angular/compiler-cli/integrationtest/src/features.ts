@@ -7,7 +7,7 @@
  */
 
 import * as common from '@angular/common';
-import {Component, Inject, OpaqueToken} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, Inject, NgModule, OpaqueToken} from '@angular/core';
 
 import {wrapInArray} from './funcs';
 
@@ -30,10 +30,27 @@ export class CompWithProviders {
 @Component({
   selector: 'cmp-reference',
   template: `
-    <input #a>{{a.value}}
+    <input #a [(ngModel)]="foo" required>{{a.value}}
     <div *ngIf="true">{{a.value}}</div>
-  `,
-  directives: [wrapInArray(common.NgIf)]
+  `
 })
 export class CompWithReferences {
+  foo: string;
+}
+
+@Component({selector: 'cmp-pipes', template: `<div *ngIf>{{test | somePipe}}</div>`})
+export class CompUsingPipes {
+}
+
+@Component({
+  selector: 'cmp-custom-els',
+  template: `
+    <some-custom-element [someUnknownProp]="true"></some-custom-element>
+  `,
+})
+export class CompUsingCustomElements {
+}
+
+@NgModule({schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: wrapInArray(CompUsingCustomElements)})
+export class ModuleUsingCustomElements {
 }

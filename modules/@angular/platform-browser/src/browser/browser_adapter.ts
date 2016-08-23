@@ -64,6 +64,9 @@ var _chromeNumKeyPadMap = {
 
 /**
  * A `DomAdapter` powered by full browser DOM APIs.
+ *
+ * @security Tread carefully! Interacting with the DOM directly is dangerous and
+ * can introduce XSS risks.
  */
 /* tslint:disable:requireParameterType */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
@@ -398,9 +401,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return window.requestAnimationFrame(callback);
   }
   cancelAnimationFrame(id: number) { window.cancelAnimationFrame(id); }
-  supportsWebAnimation(): boolean {
-    return isFunction((document as any /** TODO #9100 */).body['animate']);
-  }
+  supportsWebAnimation(): boolean { return isFunction((<any>Element).prototype['animate']); }
   performanceNow(): number {
     // performance.now() is not available in all browsers, see
     // http://caniuse.com/#search=performance.now
@@ -445,13 +446,14 @@ function relativePath(url: any /** TODO #9100 */): string {
                                                        '/' + urlParsingNode.pathname;
 }
 
-export function parseCookieValue(cookie: string, name: string): string {
+export function parseCookieValue(cookieStr: string, name: string): string {
   name = encodeURIComponent(name);
-  let cookies = cookie.split(';');
-  for (let cookie of cookies) {
-    let [key, value] = cookie.split('=', 2);
-    if (key.trim() === name) {
-      return decodeURIComponent(value);
+  for (const cookie of cookieStr.split(';')) {
+    const eqIndex = cookie.indexOf('=');
+    const [cookieName, cookieValue]: string[] =
+        eqIndex == -1 ? [cookie, ''] : [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)];
+    if (cookieName.trim() === name) {
+      return decodeURIComponent(cookieValue);
     }
   }
   return null;

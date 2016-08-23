@@ -1,5 +1,13 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {OpaqueToken} from '@angular/core/src/di';
-import {DateWrapper} from '@angular/facade';
+import {DateWrapper} from '@angular/facade/src/lang';
 
 export class Options {
   static get DEFAULT_PROVIDERS(): any[] { return _DEFAULT_PROVIDERS; }
@@ -52,14 +60,9 @@ var _REQUEST_COUNT = new OpaqueToken('Options.requestCount');
 var _CAPTURE_FRAMES = new OpaqueToken('Options.frameCapture');
 
 var _DEFAULT_PROVIDERS = [
-  {provide: _DEFAULT_DESCRIPTION, useValue: {}},
-  {provide: _SAMPLE_DESCRIPTION, useValue: {}},
-  {provide: _FORCE_GC, useValue: false},
-  {provide: _PREPARE, useValue: false},
-  {provide: _MICRO_METRICS, useValue: {}},
-  {provide: _USER_METRICS, useValue: {}},
-  {provide: _NOW, useValue: () => DateWrapper.now()},
-  {provide: _RECEIVED_DATA, useValue: false},
-  {provide: _REQUEST_COUNT, useValue: false},
-  {provide: _CAPTURE_FRAMES, useValue: false}
+  {provide: _DEFAULT_DESCRIPTION, useValue: {}}, {provide: _SAMPLE_DESCRIPTION, useValue: {}},
+  {provide: _FORCE_GC, useValue: false}, {provide: _PREPARE, useValue: false},
+  {provide: _MICRO_METRICS, useValue: {}}, {provide: _USER_METRICS, useValue: {}},
+  {provide: _NOW, useValue: () => DateWrapper.now()}, {provide: _RECEIVED_DATA, useValue: false},
+  {provide: _REQUEST_COUNT, useValue: false}, {provide: _CAPTURE_FRAMES, useValue: false}
 ];

@@ -1,32 +1,58 @@
 /** @stable */
 export declare class ActivatedRoute {
-    component: Type | string;
+    children: ActivatedRoute[];
+    component: Type<any> | string;
     data: Observable<Data>;
+    firstChild: ActivatedRoute;
+    fragment: Observable<string>;
     outlet: string;
     params: Observable<Params>;
+    parent: ActivatedRoute;
+    pathFromRoot: ActivatedRoute[];
+    queryParams: Observable<Params>;
+    root: ActivatedRoute;
+    routeConfig: Route;
     snapshot: ActivatedRouteSnapshot;
-    url: Observable<UrlPathWithParams[]>;
+    url: Observable<UrlSegment[]>;
     toString(): string;
 }
 
 /** @stable */
 export declare class ActivatedRouteSnapshot {
-    component: Type | string;
+    children: ActivatedRouteSnapshot[];
+    component: Type<any> | string;
     data: Data;
+    firstChild: ActivatedRouteSnapshot;
+    fragment: string;
     outlet: string;
     params: Params;
-    url: UrlPathWithParams[];
+    parent: ActivatedRouteSnapshot;
+    pathFromRoot: ActivatedRouteSnapshot[];
+    queryParams: Params;
+    root: ActivatedRouteSnapshot;
+    routeConfig: Route;
+    url: UrlSegment[];
     toString(): string;
 }
 
 /** @stable */
 export interface CanActivate {
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean;
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean;
+}
+
+/** @stable */
+export interface CanActivateChild {
+    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean;
 }
 
 /** @stable */
 export interface CanDeactivate<T> {
-    canDeactivate(component: T, route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean;
+    canDeactivate(component: T, route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean;
+}
+
+/** @stable */
+export interface CanLoad {
+    canLoad(route: Route): Observable<boolean> | Promise<boolean> | boolean;
 }
 
 /** @stable */
@@ -34,19 +60,26 @@ export declare type Data = {
     [name: string]: any;
 };
 
-/** @experimental */
+/** @stable */
 export declare class DefaultUrlSerializer implements UrlSerializer {
     parse(url: string): UrlTree;
     serialize(tree: UrlTree): string;
 }
 
 /** @stable */
-export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError;
+export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
-/** @experimental */
+/** @stable */
 export interface ExtraOptions {
     enableTracing?: boolean;
+    useHash?: boolean;
 }
+
+/** @stable */
+export declare type LoadChildren = string | LoadChildrenCallback;
+
+/** @stable */
+export declare type LoadChildrenCallback = () => Type<any> | Promise<Type<any>> | Observable<Type<any>>;
 
 /** @stable */
 export declare class NavigationCancel {
@@ -74,6 +107,17 @@ export declare class NavigationError {
     toString(): string;
 }
 
+/** @experimental */
+export interface NavigationExtras {
+    fragment?: string;
+    preserveFragment?: boolean;
+    preserveQueryParams?: boolean;
+    queryParams?: Params;
+    relativeTo?: ActivatedRoute;
+    replaceUrl?: boolean;
+    skipLocationChange?: boolean;
+}
+
 /** @stable */
 export declare class NavigationStart {
     id: number;
@@ -82,20 +126,20 @@ export declare class NavigationStart {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare type Params = {
     [key: string]: any;
 };
 
-/** @experimental */
+/** @stable */
 export declare const PRIMARY_OUTLET: string;
 
-/** @experimental */
-export declare function provideRouter(config: RouterConfig, opts?: ExtraOptions): any[];
+/** @stable */
+export declare function provideRoutes(routes: Routes): any;
 
-/** @experimental */
+/** @stable */
 export interface Resolve<T> {
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | any;
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any;
 }
 
 /** @stable */
@@ -105,21 +149,38 @@ export declare type ResolveData = {
 
 /** @stable */
 export interface Route {
+    canActivate?: any[];
+    canActivateChild?: any[];
+    canDeactivate?: any[];
+    canLoad?: any[];
+    children?: Route[];
+    component?: Type<any>;
+    data?: Data;
+    loadChildren?: LoadChildren;
+    outlet?: string;
     path?: string;
-    pathMatch?:
-    /** @deprecated */ terminal?: boolean;
+    pathMatch?: string;
+    redirectTo?: string;
+    resolve?: ResolveData;
+}
 
 /** @stable */
 export declare class Router {
+    config: Routes;
     events: Observable<Event>;
+    /** @experimental */ navigated: boolean;
     routerState: RouterState;
     url: string;
-    constructor(rootComponentType: Type, resolver: ComponentResolver, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, config: RouterConfig);
-    createUrlTree(commands: any[], {relativeTo, queryParams, fragment}?: NavigationExtras): UrlTree;
+    constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
+    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
+    dispose(): void;
+    initialNavigation(): void;
+    isActive(url: string | UrlTree, exact: boolean): boolean;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
-    navigateByUrl(url: string | UrlTree): Promise<boolean>;
+    navigateByUrl(url: string | UrlTree, extras?: NavigationExtras): Promise<boolean>;
+    ngOnDestroy(): void;
     parseUrl(url: string): UrlTree;
-    resetConfig(config: RouterConfig): void;
+    resetConfig(config: Routes): void;
     serializeUrl(url: UrlTree): string;
 }
 
@@ -127,11 +188,10 @@ export declare class Router {
 export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkWithHref | typeof RouterLinkActive)[];
 
 /** @stable */
-export declare type RouterConfig = Route[];
-
-/** @stable */
 export declare class RouterLink {
     fragment: string;
+    preserveFragment: boolean;
+    preserveQueryParams: boolean;
     queryParams: {
         [k: string]: any;
     };
@@ -146,6 +206,9 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
     links: QueryList<RouterLink>;
     linksWithHrefs: QueryList<RouterLinkWithHref>;
     routerLinkActive: string[] | string;
+    routerLinkActiveOptions: {
+        exact: boolean;
+    };
     constructor(router: Router, element: ElementRef, renderer: Renderer);
     ngAfterContentInit(): void;
     ngOnChanges(changes: {}): any;
@@ -156,48 +219,65 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     fragment: string;
     href: string;
+    preserveFragment: boolean;
+    preserveQueryParams: boolean;
     queryParams: {
         [k: string]: any;
     };
     routerLink: any[] | string;
+    routerLinkOptions: {
+        preserveQueryParams: boolean;
+        preserveFragment: boolean;
+    };
     target: string;
     urlTree: UrlTree;
+    constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
     ngOnChanges(changes: {}): any;
     ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
 }
 
 /** @stable */
-export declare class RouterOutlet {
+export declare class RouterModule {
+    constructor(guard: any);
+    static forChild(routes: Routes): ModuleWithProviders;
+    static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders;
+}
+
+/** @stable */
+export declare class RouterOutlet implements OnDestroy {
+    activateEvents: EventEmitter<any>;
     activatedRoute: ActivatedRoute;
     component: Object;
+    deactivateEvents: EventEmitter<any>;
     isActivated: boolean;
     outletMap: RouterOutletMap;
-    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver, name: string);
-    activate(activatedRoute: ActivatedRoute, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
+    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string);
+    activate(activatedRoute: ActivatedRoute, loadedResolver: ComponentFactoryResolver, loadedInjector: Injector, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
     deactivate(): void;
+    ngOnDestroy(): void;
 }
 
 /** @stable */
 export declare class RouterOutletMap {
     registerOutlet(name: string, outlet: RouterOutlet): void;
+    removeOutlet(name: string): void;
 }
 
 /** @stable */
 export declare class RouterState extends Tree<ActivatedRoute> {
-    fragment: Observable<string>;
-    queryParams: Observable<Params>;
     snapshot: RouterStateSnapshot;
     toString(): string;
 }
 
 /** @stable */
 export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
-    fragment: string;
-    queryParams: Params;
     url: string;
     toString(): string;
 }
+
+/** @stable */
+export declare type Routes = Route[];
 
 /** @stable */
 export declare class RoutesRecognized {
@@ -210,7 +290,7 @@ export declare class RoutesRecognized {
 }
 
 /** @stable */
-export declare class UrlPathWithParams {
+export declare class UrlSegment {
     parameters: {
         [key: string]: string;
     };
@@ -221,7 +301,7 @@ export declare class UrlPathWithParams {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class UrlSerializer {
     abstract parse(url: string): UrlTree;
     abstract serialize(tree: UrlTree): string;
@@ -233,6 +313,6 @@ export declare class UrlTree {
     queryParams: {
         [key: string]: string;
     };
-    root: UrlSegment;
+    root: UrlSegmentGroup;
     toString(): string;
 }

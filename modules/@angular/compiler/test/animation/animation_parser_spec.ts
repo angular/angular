@@ -7,7 +7,8 @@
  */
 
 import {AnimationAnimateMetadata, AnimationGroupMetadata, AnimationMetadata, AnimationSequenceMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {FILL_STYLE_FLAG, flattenStyles} from '../../core_private';
 import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from '../../src/animation/animation_ast';
@@ -51,7 +52,7 @@ export function main() {
     };
 
     var getAnimationAstFromEntryAst =
-        (ast: AnimationEntryAst) => { return ast.stateTransitions[0].animation; }
+        (ast: AnimationEntryAst) => { return ast.stateTransitions[0].animation; };
 
     var parseAnimationAst = (data: AnimationMetadata[]) => {
       return getAnimationAstFromEntryAst(parseAnimation(data).ast);

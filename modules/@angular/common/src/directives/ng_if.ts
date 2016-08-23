@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {isBlank} from '../facade/lang';
+
 
 
 /**
@@ -35,14 +36,15 @@ import {isBlank} from '../facade/lang';
  *
  * @stable
  */
-@Directive({selector: '[ngIf]', inputs: ['ngIf']})
+@Directive({selector: '[ngIf]'})
 export class NgIf {
   private _prevCondition: boolean = null;
 
   constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<Object>) {
   }
 
-  set ngIf(newCondition: any /* boolean */) {
+  @Input()
+  set ngIf(newCondition: any) {
     if (newCondition && (isBlank(this._prevCondition) || !this._prevCondition)) {
       this._prevCondition = true;
       this._viewContainer.createEmbeddedView(this._templateRef);

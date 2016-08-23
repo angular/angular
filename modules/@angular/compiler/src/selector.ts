@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper, Map} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
-import {RegExpMatcherWrapper, RegExpWrapper, StringWrapper, isBlank, isPresent} from '../src/facade/lang';
+import {BaseException} from '@angular/core';
 
-const _EMPTY_ATTR_VALUE = /*@ts2dart_const*/ '';
+import {ListWrapper} from './facade/collection';
+import {StringWrapper, isBlank, isPresent} from './facade/lang';
 
-// TODO: Can't use `const` here as
-// in Dart this is not transpiled into `final` yet...
-var _SELECTOR_REGEXP = RegExpWrapper.create(
-    '(\\:not\\()|' +                          //":not("
-    '([-\\w]+)|' +                            // "tag"
-    '(?:\\.([-\\w]+))|' +                     // ".class"
-    '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])|' +  // "[name]", "[name=value]" or "[name*=value]"
-    '(\\))|' +                                // ")"
-    '(\\s*,\\s*)');                           // ","
+const _EMPTY_ATTR_VALUE = '';
+
+const _SELECTOR_REGEXP = new RegExp(
+    '(\\:not\\()|' +                              //":not("
+        '([-\\w]+)|' +                            // "tag"
+        '(?:\\.([-\\w]+))|' +                     // ".class"
+        '(?:\\[([-\\w*]+)(?:=([^\\]]*))?\\])|' +  // "[name]", "[name=value]" or "[name*=value]"
+        '(\\))|' +                                // ")"
+        '(\\s*,\\s*)',                            // ","
+    'g');
 
 /**
  * A css selector contains an element name,
@@ -43,11 +43,11 @@ export class CssSelector {
       res.push(cssSel);
     };
     var cssSelector = new CssSelector();
-    var matcher = RegExpWrapper.matcher(_SELECTOR_REGEXP, selector);
     var match: string[];
     var current = cssSelector;
     var inNot = false;
-    while (isPresent(match = RegExpMatcherWrapper.next(matcher))) {
+    _SELECTOR_REGEXP.lastIndex = 0;
+    while (isPresent(match = _SELECTOR_REGEXP.exec(selector))) {
       if (isPresent(match[1])) {
         if (inNot) {
           throw new BaseException('Nesting :not is not allowed in a selector');

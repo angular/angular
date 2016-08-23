@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {Json, StringWrapper} from '../../src/facade/lang';
-
+import {CommonModule, JsonPipe} from '@angular/common';
 import {Component} from '@angular/core';
-import {JsonPipe} from '@angular/common';
+import {TestBed, async} from '@angular/core/testing';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {Json, StringWrapper} from '../../src/facade/lang';
 
 export function main() {
   describe('JsonPipe', () => {
@@ -55,28 +54,28 @@ export function main() {
     });
 
     describe('integration', () => {
-      it('should work with mutable objects',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               tcb.createAsync(TestComp).then((fixture) => {
-                 let mutable: number[] = [1];
-                 fixture.debugElement.componentInstance.data = mutable;
-                 fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('[\n  1\n]');
 
-                 mutable.push(2);
-                 fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('[\n  1,\n  2\n]');
+      @Component({selector: 'test-comp', template: '{{data | json}}'})
+      class TestComp {
+        data: any;
+      }
 
-                 async.done();
-               });
-             }));
+      beforeEach(() => {
+        TestBed.configureTestingModule({declarations: [TestComp], imports: [CommonModule]});
+      });
+
+      it('should work with mutable objects', async(() => {
+           let fixture = TestBed.createComponent(TestComp);
+           let mutable: number[] = [1];
+           fixture.debugElement.componentInstance.data = mutable;
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('[\n  1\n]');
+
+           mutable.push(2);
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('[\n  1,\n  2\n]');
+
+         }));
     });
   });
-}
-
-@Component({selector: 'test-comp', template: '{{data | json}}', pipes: [JsonPipe]})
-class TestComp {
-  data: any;
 }

@@ -7,17 +7,18 @@
  */
 
 import {Injectable} from '@angular/core/src/di';
-import {inject, describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
 import {Testability} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {AsyncTestCompleter, SpyObject, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+
+import {EventEmitter} from '../../src/facade/async';
 import {normalizeBlank, scheduleMicroTask} from '../../src/facade/lang';
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../src/facade/async';
+
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {
   scheduleMicroTask(() => {
-    // We do double dispatch so that we  can wait for scheduleMicrotas in the Testability when
+    // We do double dispatch so that we  can wait for scheduleMicrotask in the Testability when
     // NgZone becomes stable.
     scheduleMicroTask(fn);
   });
@@ -25,9 +26,11 @@ function microTask(fn: Function): void {
 
 @Injectable()
 class MockNgZone extends NgZone {
+  /** @internal */
   _onUnstableStream: EventEmitter<any>;
   get onUnstable() { return this._onUnstableStream; }
 
+  /** @internal */
   _onStableStream: EventEmitter<any>;
   get onStable() { return this._onStableStream; }
 
@@ -37,9 +40,9 @@ class MockNgZone extends NgZone {
     this._onStableStream = new EventEmitter(false);
   }
 
-  unstable(): void { ObservableWrapper.callEmit(this._onUnstableStream, null); }
+  unstable(): void { this._onUnstableStream.emit(null); }
 
-  stable(): void { ObservableWrapper.callEmit(this._onStableStream, null); }
+  stable(): void { this._onStableStream.emit(null); }
 }
 
 export function main() {

@@ -49,24 +49,15 @@ export abstract class LocationStrategy {
  *
  * ### Example
  *
- * ```
- * import {Component} from '@angular/core';
- * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from '@angular/router';
+ * import {Component, NgModule} from '@angular/core';
  * import {APP_BASE_HREF} from '@angular/common';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   // ...
- * }
- *
- * bootstrap(AppCmp, [
- *   ROUTER_PROVIDERS,
- *   {provide: APP_BASE_HREF, useValue: '/my/app'}
- * ]);
+ * @NgModule({
+ *   providers: [{provide: APP_BASE_HREF, useValue: '/my/app'}]
+ * })
+ * class AppModule {}
  * ```
+ *
  * @stable
  */
-export const APP_BASE_HREF: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('appBaseHref');
+export const APP_BASE_HREF: OpaqueToken = new OpaqueToken('appBaseHref');

@@ -8,7 +8,7 @@
 
 import {Inject, Injectable, PACKAGE_ROOT_URL} from '@angular/core';
 
-import {StringWrapper, isPresent, isBlank, RegExpWrapper,} from '../src/facade/lang';
+import {StringWrapper, isBlank, isPresent} from './facade/lang';
 
 
 const _ASSET_SCHEME = 'asset:';
@@ -211,7 +211,7 @@ function _buildFromEncodedParts(
  * @type {!RegExp}
  * @internal
  */
-var _splitRe = RegExpWrapper.create(
+var _splitRe = new RegExp(
     '^' +
     '(?:' +
     '([^:/?#.]+)' +  // scheme - ignore special characters
@@ -260,7 +260,7 @@ enum _ComponentIndex {
  *     arbitrary strings may still look like path names.
  */
 function _split(uri: string): Array<string|any> {
-  return RegExpWrapper.firstMatch(_splitRe, uri);
+  return uri.match(_splitRe);
 }
 
 /**

@@ -10,10 +10,11 @@ var parse5 = require('parse5/index');
 
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from '../platform_browser_private';
-import {isPresent, isBlank, global, Type, setValueOnPath, DateWrapper} from '../src/facade/lang';
+import {isPresent, isBlank, global, setValueOnPath, DateWrapper} from '../src/facade/lang';
 import {BaseException} from '../src/facade/exceptions';
 import {SelectorMatcher, CssSelector} from '../compiler_private';
-import {XHR} from '@angular/compiler';
+import {Type} from '@angular/core';
+import {ResourceLoader} from '@angular/compiler';
 
 var parser: any /** TODO #9100 */ = null;
 var serializer: any /** TODO #9100 */ = null;
@@ -34,6 +35,12 @@ function _notImplemented(methodName: any /** TODO #9100 */) {
 }
 
 /* tslint:disable:requireParameterType */
+/**
+ * A `DomAdapter` powered by the `parse5` NodeJS module.
+ *
+ * @security Tread carefully! Interacting with the DOM directly is dangerous and
+ * can introduce XSS risks.
+ */
 export class Parse5DomAdapter extends DomAdapter {
   static makeCurrent() {
     parser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
@@ -67,8 +74,6 @@ export class Parse5DomAdapter extends DomAdapter {
   logGroup(error: any /** TODO #9100 */) { console.error(error); }
 
   logGroupEnd() {}
-
-  getXHR(): Type { return XHR; }
 
   get attrToPropMap() { return _attrToPropMap; }
 

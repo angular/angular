@@ -8,9 +8,8 @@
 
 import {ListWrapper} from '../facade/collection';
 import {BaseException, WrappedException} from '../facade/exceptions';
-import {Type, isBlank, stringify} from '../facade/lang';
-
-import {Provider} from './provider';
+import {isBlank, stringify} from '../facade/lang';
+import {Type} from '../type';
 import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';
 
@@ -73,8 +72,8 @@ export class AbstractProviderError extends BaseException {
 }
 
 /**
- * Thrown when trying to retrieve a dependency by `Key` from {@link Injector}, but the
- * {@link Injector} does not have a {@link Provider} for {@link Key}.
+ * Thrown when trying to retrieve a dependency by key from {@link Injector}, but the
+ * {@link Injector} does not have a {@link Provider} for the given key.
  *
  * ### Example ([live demo](http://plnkr.co/edit/vq8D3FRB9aGbnWJqtEPE?p=preview))
  *
@@ -225,11 +224,11 @@ export class InvalidProviderError extends BaseException {
  * @stable
  */
 export class NoAnnotationError extends BaseException {
-  constructor(typeOrFunc: Type|Function, params: any[][]) {
+  constructor(typeOrFunc: Type<any>|Function, params: any[][]) {
     super(NoAnnotationError._genMessage(typeOrFunc, params));
   }
 
-  private static _genMessage(typeOrFunc: Type|Function, params: any[][]) {
+  private static _genMessage(typeOrFunc: Type<any>|Function, params: any[][]) {
     var signature: string[] = [];
     for (var i = 0, ii = params.length; i < ii; i++) {
       var parameter = params[i];
@@ -272,8 +271,8 @@ export class OutOfBoundsError extends BaseException {
  *
  * ```typescript
  * expect(() => Injector.resolveAndCreate([
- *   new Provider("Strings", {useValue: "string1", multi: true}),
- *   new Provider("Strings", {useValue: "string2", multi: false})
+ *   { provide: "Strings", useValue: "string1", multi: true},
+ *   { provide: "Strings", useValue: "string2", multi: false}
  * ])).toThrowError();
  * ```
  */

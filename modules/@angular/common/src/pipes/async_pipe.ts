@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, OnDestroy, Pipe, WrappedValue} from '@angular/core';
-import {EventEmitter, Observable, ObservableWrapper} from '../facade/async';
+import {EventEmitter, Observable} from '../facade/async';
 import {isBlank, isPresent, isPromise} from '../facade/lang';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
@@ -19,12 +19,12 @@ interface SubscriptionStrategy {
 
 class ObservableStrategy implements SubscriptionStrategy {
   createSubscription(async: any, updateLatestValue: any): any {
-    return ObservableWrapper.subscribe(async, updateLatestValue, e => { throw e; });
+    return async.subscribe({next: updateLatestValue, error: (e: any) => { throw e; }});
   }
 
-  dispose(subscription: any): void { ObservableWrapper.dispose(subscription); }
+  dispose(subscription: any): void { subscription.unsubscribe(); }
 
-  onDestroy(subscription: any): void { ObservableWrapper.dispose(subscription); }
+  onDestroy(subscription: any): void { subscription.unsubscribe(); }
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
@@ -125,7 +125,7 @@ export class AsyncPipe implements OnDestroy {
   _selectStrategy(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
     if (isPromise(obj)) {
       return _promiseStrategy;
-    } else if (ObservableWrapper.isObservable(obj)) {
+    } else if ((<any>obj).subscribe) {
       return _observableStrategy;
     } else {
       throw new InvalidPipeArgumentException(AsyncPipe, obj);

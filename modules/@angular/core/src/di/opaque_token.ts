@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injectable} from './decorators';
+
 /**
  * Creates a token that can be used in a DI Provider.
  *
@@ -26,9 +28,9 @@
  *
  * Using an `OpaqueToken` is preferable to using an `Object` as tokens because it provides better
  * error messages.
- * @ts2dart_const
  * @stable
  */
+@Injectable()  // so that metadata is gathered for this class
 export class OpaqueToken {
   constructor(private _desc: string) {}
 

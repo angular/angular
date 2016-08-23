@@ -165,7 +165,10 @@ export class DomSanitizationServiceImpl extends DomSanitizationService {
         this.checkNotSafeValue(value, 'Script');
         throw new Error('unsafe value used in a script context');
       case SecurityContext.URL:
-        if (value instanceof SafeUrlImpl) return value.changingThisBreaksApplicationSecurity;
+        if (value instanceof SafeResourceUrlImpl || value instanceof SafeUrlImpl) {
+          // Allow resource URLs in URL contexts, they are strictly more trusted.
+          return value.changingThisBreaksApplicationSecurity;
+        }
         this.checkNotSafeValue(value, 'URL');
         return sanitizeUrl(String(value));
       case SecurityContext.RESOURCE_URL:

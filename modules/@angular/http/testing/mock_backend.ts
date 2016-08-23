@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {BaseException, Injectable} from '@angular/core';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
 import {Subject} from 'rxjs/Subject';
 import {take} from 'rxjs/operator/take';
 
 import {ReadyState} from '../src/enums';
-import {BaseException} from '../src/facade/exceptions';
 import {isPresent} from '../src/facade/lang';
 import {Connection, ConnectionBackend} from '../src/interfaces';
 import {Request} from '../src/static_request';
 import {Response} from '../src/static_response';
+
 
 
 /**
@@ -27,7 +27,7 @@ import {Response} from '../src/static_response';
  */
 export class MockConnection implements Connection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
-  // descriptive than XHR states.
+  // descriptive than ResourceLoader states.
   /**
    * Describes the state of the connection, based on `XMLHttpRequest.readyState`, but with
    * additional states. For example, state 5 indicates an aborted connection.
@@ -105,7 +105,7 @@ export class MockConnection implements Connection {
    *
    */
   mockError(err?: Error) {
-    // Matches XHR semantics
+    // Matches ResourceLoader semantics
     this.readyState = ReadyState.Done;
     this.response.error(err);
   }

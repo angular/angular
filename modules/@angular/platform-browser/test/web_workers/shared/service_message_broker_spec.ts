@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, describe, it, iit, expect, beforeEach, beforeEachProviders,} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
-import {createPairedMessageBuses} from './web_worker_test_util';
-import {Serializer, PRIMITIVE} from '@angular/platform-browser/src/web_workers/shared/serializer';
-import {ServiceMessageBroker, ServiceMessageBroker_} from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
-import {ObservableWrapper, PromiseWrapper} from '../../../src/facade/async';
-import {provide} from '@angular/core';
+import {beforeEach, beforeEachProviders, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {ON_WEB_WORKER} from '@angular/platform-browser/src/web_workers/shared/api';
 import {RenderStore} from '@angular/platform-browser/src/web_workers/shared/render_store';
+import {PRIMITIVE, Serializer} from '@angular/platform-browser/src/web_workers/shared/serializer';
+import {ServiceMessageBroker, ServiceMessageBroker_} from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+
+import {createPairedMessageBuses} from './web_worker_test_util';
 
 export function main() {
   const CHANNEL = 'UIMessageBroker Test Channel';
@@ -41,29 +40,31 @@ export function main() {
            expect(arg1).toEqual(PASSED_ARG_1);
            expect(arg2).toEqual(PASSED_ARG_2);
          });
-         ObservableWrapper.callEmit(
-             messageBuses.worker.to(CHANNEL),
+         messageBuses.worker.to(CHANNEL).emit(
              {'method': TEST_METHOD, 'args': [PASSED_ARG_1, PASSED_ARG_2]});
        }));
 
-    // TODO(pkozlowski): this fails only in Edge with
-    //   "No provider for RenderStore! (Serializer -> RenderStore)"
-    if (!browserDetection.isEdge) {
-      it('should return promises to the worker', inject([Serializer], (serializer: Serializer) => {
-           var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
-           broker.registerMethod(TEST_METHOD, [PRIMITIVE], (arg1) => {
-             expect(arg1).toEqual(PASSED_ARG_1);
-             return PromiseWrapper.wrap(() => { return RESULT; });
+    it('should return promises to the worker', inject([Serializer], (serializer: Serializer) => {
+         var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
+         broker.registerMethod(TEST_METHOD, [PRIMITIVE], (arg1) => {
+           expect(arg1).toEqual(PASSED_ARG_1);
+           return new Promise((res, rej) => {
+             try {
+               res(RESULT);
+             } catch (e) {
+               rej(e);
+             }
            });
-           ObservableWrapper.callEmit(
-               messageBuses.worker.to(CHANNEL),
-               {'method': TEST_METHOD, 'id': ID, 'args': [PASSED_ARG_1]});
-           ObservableWrapper.subscribe(messageBuses.worker.from(CHANNEL), (data: any) => {
+         });
+         messageBuses.worker.to(CHANNEL).emit(
+             {'method': TEST_METHOD, 'id': ID, 'args': [PASSED_ARG_1]});
+         messageBuses.worker.from(CHANNEL).subscribe({
+           next: (data: any) => {
              expect(data.type).toEqual('result');
              expect(data.id).toEqual(ID);
              expect(data.value).toEqual(RESULT);
-           });
-         }));
-    }
+           },
+         });
+       }));
   });
 }

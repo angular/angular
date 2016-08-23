@@ -13,9 +13,7 @@ import {TreeNode} from './utils/tree';
 
 export function createRouterState(curr: RouterStateSnapshot, prevState: RouterState): RouterState {
   const root = createNode(curr._root, prevState ? prevState._root : undefined);
-  const queryParams = prevState ? prevState.queryParams : new BehaviorSubject(curr.queryParams);
-  const fragment = prevState ? prevState.fragment : new BehaviorSubject(curr.fragment);
-  return new RouterState(root, queryParams, fragment, curr);
+  return new RouterState(root, curr);
 }
 
 function createNode(curr: TreeNode<ActivatedRouteSnapshot>, prevState?: TreeNode<ActivatedRoute>):
@@ -48,8 +46,8 @@ function createOrReuseChildren(
 
 function createActivatedRoute(c: ActivatedRouteSnapshot) {
   return new ActivatedRoute(
-      new BehaviorSubject(c.url), new BehaviorSubject(c.params), new BehaviorSubject(c.data),
-      c.outlet, c.component, c);
+      new BehaviorSubject(c.url), new BehaviorSubject(c.params), new BehaviorSubject(c.queryParams),
+      new BehaviorSubject(c.fragment), new BehaviorSubject(c.data), c.outlet, c.component, c);
 }
 
 function equalRouteSnapshots(a: ActivatedRouteSnapshot, b: ActivatedRouteSnapshot): boolean {

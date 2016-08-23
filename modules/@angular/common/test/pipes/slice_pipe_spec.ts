@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, inject,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
-
+import {CommonModule, SlicePipe} from '@angular/common';
 import {Component} from '@angular/core';
-import {SlicePipe} from '@angular/common';
+import {TestBed, async} from '@angular/core/testing';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('SlicePipe', () => {
@@ -89,28 +87,27 @@ export function main() {
     });
 
     describe('integration', () => {
-      it('should work with mutable arrays',
-         inject(
-             [TestComponentBuilder, AsyncTestCompleter],
-             (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-               tcb.createAsync(TestComp).then((fixture) => {
-                 let mutable: number[] = [1, 2];
-                 fixture.debugElement.componentInstance.data = mutable;
-                 fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('2');
 
-                 mutable.push(3);
-                 fixture.detectChanges();
-                 expect(fixture.debugElement.nativeElement).toHaveText('2,3');
+      @Component({selector: 'test-comp', template: '{{(data | slice:1).join(",") }}'})
+      class TestComp {
+        data: any;
+      }
 
-                 async.done();
-               });
-             }));
+      beforeEach(() => {
+        TestBed.configureTestingModule({declarations: [TestComp], imports: [CommonModule]});
+      });
+
+      it('should work with mutable arrays', async(() => {
+           let fixture = TestBed.createComponent(TestComp);
+           let mutable: number[] = [1, 2];
+           fixture.debugElement.componentInstance.data = mutable;
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('2');
+
+           mutable.push(3);
+           fixture.detectChanges();
+           expect(fixture.debugElement.nativeElement).toHaveText('2,3');
+         }));
     });
   });
-}
-
-@Component({selector: 'test-comp', template: '{{(data | slice:1).join(",") }}', pipes: [SlicePipe]})
-class TestComp {
-  data: any;
 }

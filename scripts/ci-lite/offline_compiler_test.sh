@@ -3,7 +3,7 @@ set -ex -o pipefail
 
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,core,compiler,compiler-cli,platform-{browser,server}}
+  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic}
   $(pwd)/dist/tools/@angular/tsc-wrapped
 )
 PKGS=(
@@ -13,6 +13,7 @@ PKGS=(
   rxjs
   @types/{node,jasmine}
   jasmine
+  @angular2-material/{core,button}
 )
 
 TMPDIR=${TMPDIR:-.}
@@ -33,8 +34,11 @@ cp -v package.json $TMP
 
   ./node_modules/.bin/tsc --version
   # Compile the compiler-cli integration tests
-  ./node_modules/.bin/ngc
-  ./node_modules/.bin/ng-xi18n
+  # TODO(vicb): restore the test for .xtb
+  #./node_modules/.bin/ngc --i18nFile=src/messages.fi.xtb --locale=fi --i18nFormat=xtb
+  ./node_modules/.bin/ngc --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
+  ./node_modules/.bin/ng-xi18n --i18nFormat=xlf
+  ./node_modules/.bin/ng-xi18n --i18nFormat=xmb
 
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node

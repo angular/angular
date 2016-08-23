@@ -9,8 +9,8 @@
 import {BaseException, unimplemented} from '../facade/exceptions';
 import {stringify} from '../facade/lang';
 
-const _THROW_IF_NOT_FOUND = /*@ts2dart_const*/ new Object();
-export const THROW_IF_NOT_FOUND = /*@ts2dart_const*/ _THROW_IF_NOT_FOUND;
+const _THROW_IF_NOT_FOUND = new Object();
+export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
 class _NullInjector implements Injector {
   get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {

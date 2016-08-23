@@ -7,11 +7,10 @@
  */
 
 import {PlatformLocation, UrlChangeListener} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {BaseException, Injectable} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {StringWrapper} from '../../facade/lang';
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
@@ -35,21 +34,23 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
     this._broker = brokerFactory.createMessageBroker(ROUTER_CHANNEL);
 
     this._channelSource = bus.from(ROUTER_CHANNEL);
-    ObservableWrapper.subscribe(this._channelSource, (msg: {[key: string]: any}) => {
-      var listeners: Array<Function> = null;
-      if (StringMapWrapper.contains(msg, 'event')) {
-        let type: string = msg['event']['type'];
-        if (StringWrapper.equals(type, 'popstate')) {
-          listeners = this._popStateListeners;
-        } else if (StringWrapper.equals(type, 'hashchange')) {
-          listeners = this._hashChangeListeners;
-        }
+    this._channelSource.subscribe({
+      next: (msg: {[key: string]: any}) => {
+        var listeners: Array<Function> = null;
+        if (StringMapWrapper.contains(msg, 'event')) {
+          let type: string = msg['event']['type'];
+          if (StringWrapper.equals(type, 'popstate')) {
+            listeners = this._popStateListeners;
+          } else if (StringWrapper.equals(type, 'hashchange')) {
+            listeners = this._hashChangeListeners;
+          }
 
-        if (listeners !== null) {
-          let e = deserializeGenericEvent(msg['event']);
-          // There was a popState or hashChange event, so the location object thas been updated
-          this._location = this._serializer.deserialize(msg['location'], LocationType);
-          listeners.forEach((fn: Function) => fn(e));
+          if (listeners !== null) {
+            let e = deserializeGenericEvent(msg['event']);
+            // There was a popState or hashChange event, so the location object thas been updated
+            this._location = this._serializer.deserialize(msg['location'], LocationType);
+            listeners.forEach((fn: Function) => fn(e));
+          }
         }
       }
     });
@@ -60,12 +61,12 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
     var args: UiArguments = new UiArguments('getLocation');
 
     var locationPromise: Promise<LocationType> = this._broker.runOnService(args, LocationType);
-    return PromiseWrapper.then(
-        locationPromise, (val: LocationType):
-                             boolean => {
-                               this._location = val;
-                               return true;
-                             },
+    return locationPromise.then(
+        (val: LocationType):
+            boolean => {
+              this._location = val;
+              return true;
+            },
         (err): boolean => { throw new BaseException(err); });
   }
 

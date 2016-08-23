@@ -6,30 +6,39 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
-import {BaseException} from '../facade/exceptions';
+import {Pipe, PipeTransform, Type} from '@angular/core';
+
 import {NumberFormatStyle, NumberFormatter} from '../facade/intl';
-import {NumberWrapper, RegExpWrapper, Type, isBlank, isNumber, isPresent} from '../facade/lang';
+import {NumberWrapper, isBlank, isNumber, isPresent, isString} from '../facade/lang';
+
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 var defaultLocale: string = 'en-US';
-const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/g;
+const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/;
 
-/**
- * Internal function to format numbers used by Decimal, Percent and Date pipes.
- */
 function formatNumber(
-    pipe: Type, value: number, style: NumberFormatStyle, digits: string, currency: string = null,
-    currencyAsSymbol: boolean = false): string {
+    pipe: Type<any>, value: number | string, style: NumberFormatStyle, digits: string,
+    currency: string = null, currencyAsSymbol: boolean = false): string {
   if (isBlank(value)) return null;
+  // Convert strings to numbers
+  value = isString(value) && NumberWrapper.isNumeric(value) ? +value : value;
   if (!isNumber(value)) {
     throw new InvalidPipeArgumentException(pipe, value);
   }
-  var minInt = 1, minFraction = 0, maxFraction = 3;
+  let minInt: number;
+  let minFraction: number;
+  let maxFraction: number;
+  if (style !== NumberFormatStyle.Currency) {
+    // rely on Intl default for currency
+    minInt = 1;
+    minFraction = 0;
+    maxFraction = 3;
+  }
+
   if (isPresent(digits)) {
-    var parts = RegExpWrapper.firstMatch(_NUMBER_FORMAT_REGEXP, digits);
-    if (isBlank(parts)) {
-      throw new BaseException(`${digits} is not a valid digit info for number pipes`);
+    var parts = digits.match(_NUMBER_FORMAT_REGEXP);
+    if (parts === null) {
+      throw new Error(`${digits} is not a valid digit info for number pipes`);
     }
     if (isPresent(parts[1])) {  // min integer digits
       minInt = NumberWrapper.parseIntAutoRadix(parts[1]);
@@ -41,7 +50,7 @@ function formatNumber(
       maxFraction = NumberWrapper.parseIntAutoRadix(parts[5]);
     }
   }
-  return NumberFormatter.format(value, defaultLocale, style, {
+  return NumberFormatter.format(value as number, defaultLocale, style, {
     minimumIntegerDigits: minInt,
     minimumFractionDigits: minFraction,
     maximumFractionDigits: maxFraction,

@@ -45,7 +45,7 @@ import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT} from "
 import {platform} from "angular2/core";
 
 platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+.application([WORKER_RENDER_APPLICATION, {provide: WORKER_SCRIPT, useValue: "loader.js"};
 ```
 ```JavaScript
 // loader.js
@@ -125,7 +125,7 @@ class HelloWorld {
 
 main(List<String> args, SendPort replyTo) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  platform([WORKER_APP_PLATFORM, new Provider(RENDER_SEND_PORT, useValue: replyTo)])
+  platform([WORKER_APP_PLATFORM, {provide: RENDER_SEND_PORT, useValue: replyTo}])
   .application([WORKER_APP_APPLICATION])
   .bootstrap(RootComponent);
 }
@@ -144,8 +144,6 @@ but should use the angular 2 transformer to remove it in your final JS code. Not
 with running the transformer on your UI code (#3971). You can (and should) pass the file where you call
 `bootstrap` as an entry point to the transformer, but you should not pass your UI index file
 to the transformer until that bug is fixed.
-* In dart we call `asyncApplication` instead of `application` from the render thread because starting an isolate in Dart is asyncronous
- whereas starting a new WebWorker in JavaScript is a synchronous operation.
 
 ## Writing WebWorker Compatible Components
 You can do almost everything in a WebWorker component that you can do in a typical Angular 2 Component.
@@ -221,7 +219,7 @@ import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, Messag
 import {platform} from "angular2/core";
 
 let appRef = platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+.application([WORKER_RENDER_APPLICATION, {provide: WORKER_SCRIPT, useValue: "loader.js"};
 let bus = appRef.injector.get(MessageBus);
 bus.initChannel("My Custom Channel");
 ```
@@ -245,7 +243,7 @@ import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, Messag
 import {platform} from "angular2/core";
 
 let appRef = platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+.application([WORKER_RENDER_APPLICATION, {provide: WORKER_SCRIPT, useValue: "loader.js"};
 let bus = appRef.injector.get(MessageBus);
 bus.initChannel("My Custom Channel");
 bus.to("My Custom Channel").emit("Hello from the UI");
@@ -306,9 +304,6 @@ If you use the MessageBus directly, you are responsible for serializing your mes
 In JavaScript / TypeScript this means they must be serializable via JavaScript's
 [structured cloning algorithim](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm).
 
-In Dart this means they must be valid messages that can be passed through a
-[SendPort](https://api.dartlang.org/1.12.1/dart-isolate/SendPort/send.html).
-
 
 ### MessageBus and Zones
 The MessageBus API includes support for [zones](http://www.github.com/angular/zone.js).
@@ -333,42 +328,14 @@ if you do this, you don't need to implement zone or channel support yourself. Yo
 `MessageBusSink` that extends `GenericMessageBusSink` and a `MessageBusSource` that extends
 `GenericMessageBusSource`. The `MessageBusSink` must override the `sendMessages` method. This method is
 given a list of serialized messages that it is required to send through the sink.
-The `MessageBusSource` needs to provide a [Stream](https://api.dartlang.org/1.12.1/dart-async/Stream-class.html)
-of incoming messages (either by passing the stream to `GenericMessageBusSource's` constructor or by calling
-attachTo() with the stream). It also needs to override the abstract `decodeMessages` method. This method is
-given a List of serialized messages received by the source and should perform any decoding work that needs to be
-done before the application can read the messages.
 
-For example, if your MessageBus sends and receives JSON data you would do the following:
-```Dart
-import 'package:angular2/src/web_workers/shared/generic_message_bus.dart';
-import 'dart:convert';
-
-class JsonMessageBusSink extends GenericMessageBusSink {
-  @override
-  void sendMessages(List<dynamic> messages) {
-    String encodedMessages = JSON.encode(messages);
-    // Send encodedMessages here
-  }
-}
-
-class JsonMessageBusSource extends GenericMessageBuSource {
-  JsonMessageBusSource(Stream incomingMessages) : super (incomingMessages);
-
-  @override
-  List<dynamic> decodeMessages(dynamic messages) {
-    return JSON.decode(messages);
-  }
-}
-```
-
-Once you've implemented your custom MessageBus in either TypeScript or Dart, you must provide it through DI 
+Once you've implemented your custom MessageBus in either TypeScript, you must provide it through DI 
 during bootstrap like so:
 
 In TypeScript:
 ```TypeScript
 // index.ts, running on the UI side
-import {platform, Provider, APP_INITIALIZER, Injector} from 'angular2/core';
+import {platform, APP_INITIALIZER, Injector} from 'angular2/core';
 import {
     WORKER_RENDER_PLATFORM,
     WORKER_RENDER_APPLICATION_COMMON,
@@ -378,18 +345,18 @@ import {
 
 var bus = new MyAwesomeMessageBus();
 platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION_COMMON, new Provider(MessageBus, {useValue: bus}),
-  new Provider(APP_INITIALIZER, {
+.application([WORKER_RENDER_APPLICATION_COMMON, {provide: MessageBus, useValue: bus},
+  { provide: APP_INITIALIZER, 
     useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
     deps: [Injector],
     multi: true
-  })
+  }
 ]);
 ```
 ```TypeScript
 // background_index.ts, running on the application side
 import {WORKER_APP_PLATFORM, genericWorkerAppProviders} from "angular2/platform/worker_app";
-import {NgZone, platform, Provider} from "angular/core";
+import {NgZone, platform} from "angular/core";
 import {MyApp} from './app';
 
 /**
@@ -398,57 +365,11 @@ import {MyApp} from './app';
  */
 
 platform([WORKER_APP_PLATFORM_PROVIDERS])
-.application([WORKER_APP_APPLICATION_COMMON, new Provider(MessageBus, {useValue: bus}),
-new Provider(APP_INITIALIZER, {useFactory: (zone, bus) => () => initAppThread(zone, bus), multi: true, deps: [NgZone, MessageBus]})])
+.application([WORKER_APP_APPLICATION_COMMON, {provide: MessageBus, useValue: bus},
+{provide: APP_INITIALIZER, useFactory: (zone, bus) => () => initAppThread(zone, bus), multi: true, deps: [NgZone, MessageBus]}])
 .bootstrap(MyApp);
 
 function initAppThread(zone: NgZone, bus: MyAwesomeMessageBus): void{
-  /**
-   * Here you can do any initilization work that requires the app providers to be initialized.
-   * At a minimum, you must attach your bus to the zone and setup a DOM adapter.
-   * Depending on your environment you may choose to do more work here.
-  */
-}
-```
-In Dart:
-```Dart
-// index.dart, running on the UI side
-import 'package:angular2/core.dart';
-import 'package:angular2/platform/worker_render.dart';
-
-main() {
-  var bus = new MyAwesomeMessageBus();
-  platform([WORKER_RENDER_PLATFORM])
-  .application([WORKER_RENDER_APPLICATION_COMMON, new Provider(MessageBus, useValue: bus),
-    new Provider(APP_INITIALIZER, 
-      useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
-      deps: [Injector],
-      multi: true
-    )
-  ]);
-}
-
-```
-```Dart
-// background_index.dart, running on the application side
-import "package:angular2/platform/worker_app.dart";
-import "package:angular2/core.dart";
-import "./app.dart" show MyApp;
-
-main() {
-  /**
-   * Do initialization work here to set up the app thread and MessageBus;
-   * Once you have a working MessageBus you should bootstrap your app.
-   */
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-  platform([WORKER_APP_PLATFORM_PROVIDERS])
-  .application([WORKER_APP_APPLICATION_COMMON, new Provider(MessageBus, useValue: bus),
-new Provider(APP_INITIALIZER, useFactory: (zone, bus) => () => initAppThread(zone, bus), multi: true, deps: [NgZone, MessageBus])])
-  .bootstrap(MyApp);
-} 
-
-
-void initAppThread(NgZone zone) {
   /**
    * Here you can do any initilization work that requires the app providers to be initialized.
    * At a minimum, you must attach your bus to the zone and setup a DOM adapter.
@@ -485,7 +406,7 @@ import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, Servic
 import {platform} from "angular2/core";
 
 let appRef = platform([WORKER_RENDER_PLATFORM])
-.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+.application([WORKER_RENDER_APPLICATION, {provide: WORKER_SCRIPT, useValue: "loader.js"};
 let injector = instance.injector;
 var broker = injector.get(ServiceMessageBrokerFactory).createMessageBroker("My Broker Channel");
 

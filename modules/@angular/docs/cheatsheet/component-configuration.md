@@ -1,11 +1,17 @@
 @cheatsheetSection
 Component configuration
-@cheatsheetIndex 6
+@cheatsheetIndex 7
 @description
 {@target js}`ng.core.Component` extends `ng.core.Directive`,
 so the `ng.core.Directive` configuration applies to components as well{@endtarget}
 {@target ts dart}`@Component` extends `@Directive`,
 so the `@Directive` configuration applies to components as well{@endtarget}
+
+@cheatsheetItem
+syntax(ts js):
+`moduleId: module.id`|`moduleId:`
+description:
+If set, the `templateUrl` and `styleUrl` is resolved relative to the component.
 
 @cheatsheetItem
 syntax(ts dart):
@@ -30,17 +36,3 @@ syntax:
 styleUrls: ['my-component.css']`|`styles:`|`styleUrls:`
 description:
 List of inline CSS styles / external stylesheet URLs for styling component’s view.
-
-
-@cheatsheetItem
-syntax:
-`directives: [MyDirective, MyComponent]`|`directives:`
-description:
-List of directives used in the the component’s template.
-
-
-@cheatsheetItem
-syntax:
-`pipes: [MyPipe, OtherPipe]`|`pipes:`
-description:
-List of pipes used in the component's template.

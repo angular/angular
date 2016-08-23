@@ -6,17 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component} from '@angular/core';
-import {NgFor} from '@angular/common';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+
 import {Store, Todo, TodoFactory} from './app/TodoStore';
 
-@Component({
-  selector: 'todo-app',
-  viewProviders: [Store, TodoFactory],
-  templateUrl: 'todo.html',
-  directives: [NgFor]
-})
+@Component({selector: 'todo-app', viewProviders: [Store, TodoFactory], templateUrl: 'todo.html'})
 class TodoApp {
   todoEdit: Todo = null;
 
@@ -55,6 +51,10 @@ class TodoApp {
   clearCompleted(): void { this.todoStore.removeBy((todo: Todo) => todo.completed); }
 }
 
+@NgModule({declarations: [TodoApp], bootstrap: [TodoApp], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(TodoApp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

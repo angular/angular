@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component, Injectable} from '@angular/core';
-import {NgIf, NgFor, FORM_DIRECTIVES} from '@angular/common';
+import {Component, Injectable, NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 /**
  * You can find the Angular 1 implementation of this example here:
@@ -50,16 +51,11 @@ class DataService {
 
   constructor() {
     this.persons = [
-      new Person('Victor', 'Savkin', 1930),
-      new Person('Igor', 'Minar', 1920),
-      new Person('John', 'Papa', 1910),
-      new Person('Nancy', 'Duarte', 1910),
-      new Person('Jack', 'Papa', 1910),
-      new Person('Jill', 'Papa', 1910),
-      new Person('Ward', 'Bell', 1910),
-      new Person('Robert', 'Bell', 1910),
-      new Person('Tracy', 'Ward', 1910),
-      new Person('Dan', 'Wahlin', 1910)
+      new Person('Victor', 'Savkin', 1930), new Person('Igor', 'Minar', 1920),
+      new Person('John', 'Papa', 1910), new Person('Nancy', 'Duarte', 1910),
+      new Person('Jack', 'Papa', 1910), new Person('Jill', 'Papa', 1910),
+      new Person('Ward', 'Bell', 1910), new Person('Robert', 'Bell', 1910),
+      new Person('Tracy', 'Ward', 1910), new Person('Dan', 'Wahlin', 1910)
     ];
 
     this.persons[0].friends = [0, 1, 2, 6, 9].map(_ => this.persons[_]);
@@ -104,8 +100,7 @@ class DataService {
           </div>
       </form>
     </div>
-  `,
-  directives: [FORM_DIRECTIVES]
+  `
 })
 class FullNameComponent {
   constructor(private _service: DataService) {}
@@ -152,8 +147,7 @@ class FullNameComponent {
 				</div>
       </form>
     </div>
-  `,
-  directives: [FORM_DIRECTIVES, NgIf]
+  `
 })
 class PersonsDetailComponent {
   constructor(private _service: DataService) {}
@@ -173,8 +167,7 @@ class PersonsDetailComponent {
 
      <person-detail-cmp></person-detail-cmp>
     </div>
-  `,
-  directives: [FORM_DIRECTIVES, PersonsDetailComponent, NgFor]
+  `
 })
 class PersonsComponent {
   persons: Person[];
@@ -194,8 +187,7 @@ class PersonsComponent {
 
     <full-name-cmp *ngIf="mode == 'editName'"></full-name-cmp>
     <persons-cmp *ngIf="mode == 'personList'"></persons-cmp>
-  `,
-  directives: [FullNameComponent, PersonsComponent, NgIf]
+  `
 })
 class PersonManagementApplication {
   mode: string;
@@ -204,6 +196,15 @@ class PersonManagementApplication {
   switchToPersonList(): void { this.mode = 'personList'; }
 }
 
+@NgModule({
+  bootstrap: [PersonManagementApplication],
+  declarations:
+      [PersonManagementApplication, FullNameComponent, PersonsComponent, PersonsDetailComponent],
+  imports: [BrowserModule, FormsModule]
+})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(PersonManagementApplication);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

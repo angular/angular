@@ -9,7 +9,7 @@
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {AppView} from './view';
 
-const _UNDEFINED = /*@ts2dart_const*/ new Object();
+const _UNDEFINED = new Object();
 
 export class ElementInjector extends Injector {
   constructor(private _view: AppView<any>, private _nodeIndex: number) { super(); }

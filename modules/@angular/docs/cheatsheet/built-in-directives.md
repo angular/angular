@@ -1,9 +1,9 @@
 @cheatsheetSection
 Built-in directives
-@cheatsheetIndex 2
+@cheatsheetIndex 3
 @description
-{@target ts}`import {NgIf, ...} from '@angular/common';`{@endtarget}
-{@target js}Available from the `ng.common` namespace{@endtarget}
+{@target ts}`import { CommonModule } from '@angular/common';`{@endtarget}
+{@target js}Available from the `ng.common.CommonModule` namespace{@endtarget}
 {@target dart}Available using `platform_directives` in pubspec{@endtarget}
 
 @cheatsheetItem

@@ -6,55 +6,43 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LocationStrategy} from '@angular/common';
-import {APP_ID, NgZone, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER} from '@angular/core';
+import {APP_ID, NgModule, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, createPlatformFactory, platformCore} from '@angular/core';
 
-import {BROWSER_APP_PROVIDERS} from '../src/browser';
+import {BrowserModule} from '../src/browser';
 import {BrowserDomAdapter} from '../src/browser/browser_adapter';
 import {AnimationDriver} from '../src/dom/animation_driver';
 import {ELEMENT_PROBE_PROVIDERS} from '../src/dom/debug/ng_probe';
 
-import {BrowserDetection} from './browser_util';
-
-
-
-/**
- * Default platform providers for testing without a compiler.
- */
-const TEST_BROWSER_STATIC_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  PLATFORM_COMMON_PROVIDERS,
-  {provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true}
-];
-
-const ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  {provide: APP_ID, useValue: 'a'}, ELEMENT_PROBE_PROVIDERS,
-  {provide: NgZone, useFactory: createNgZone},
-  {provide: AnimationDriver, useValue: AnimationDriver.NOOP}
-];
-
+import {BrowserDetection, createNgZone} from './browser_util';
 
 function initBrowserTests() {
   BrowserDomAdapter.makeCurrent();
   BrowserDetection.setup();
 }
 
-function createNgZone(): NgZone {
-  return new NgZone({enableLongStackTrace: true});
+const _TEST_BROWSER_PLATFORM_PROVIDERS: Provider[] =
+    [{provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true}];
+
+/**
+ * Platform for testing
+ *
+ * @experimental API related to bootstrapping are still under review.
+ */
+export const platformBrowserTesting =
+    createPlatformFactory(platformCore, 'browserTesting', _TEST_BROWSER_PLATFORM_PROVIDERS);
+
+/**
+ * NgModule for testing.
+ *
+ * @experimental
+ */
+@NgModule({
+  exports: [BrowserModule],
+  providers: [
+    {provide: APP_ID, useValue: 'a'}, ELEMENT_PROBE_PROVIDERS,
+    {provide: NgZone, useFactory: createNgZone},
+    {provide: AnimationDriver, useValue: AnimationDriver.NOOP}
+  ]
+})
+export class BrowserTestingModule {
 }
-
-
-/**
- * Default platform providers for testing.
- *
- * @stable
- */
-export const TEST_BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    TEST_BROWSER_STATIC_PLATFORM_PROVIDERS;
-
-/**
- * Default application providers for testing without a compiler.
- *
- * @stable
- */
-export const TEST_BROWSER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    [BROWSER_APP_PROVIDERS, ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS];

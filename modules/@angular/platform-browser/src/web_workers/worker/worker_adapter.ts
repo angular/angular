@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '@angular/core';
+
 import {DomAdapter, setRootDomAdapter} from '../../dom/dom_adapter';
-import {Type} from '../../facade/lang';
+
 
 
 /**
@@ -47,8 +49,6 @@ export class WorkerDomAdapter extends DomAdapter {
   setProperty(el: Element, name: string, value: any) { throw 'not implemented'; }
   getProperty(el: Element, name: string): any { throw 'not implemented'; }
   invoke(el: Element, methodName: string, args: any[]): any { throw 'not implemented'; }
-
-  getXHR(): Type { throw 'not implemented'; }
 
   get attrToPropMap(): {[key: string]: string} { throw 'not implemented'; }
   set attrToPropMap(value: {[key: string]: string}) { throw 'not implemented'; }

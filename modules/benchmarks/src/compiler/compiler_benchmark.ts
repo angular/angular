@@ -1,19 +1,20 @@
 import {bootstrap} from '@angular/platform-browser';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {PromiseWrapper} from '@angular/facade';
-import {ListWrapper, Map, MapWrapper} from '@angular/facade';
-import {DateWrapper, Type, print, isPresent} from '@angular/facade';
+import {PromiseWrapper} from '@angular/facade/src/async';
+import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
+import {DateWrapper, Type, print, isPresent} from '@angular/facade/src/lang';
 
 import {
   ComponentResolver,
   Component,
   Directive,
   ViewContainerRef,
-  ViewMetadata
 } from '@angular/core';
 
-import {CompilerConfig, ViewResolver} from '@angular/compiler';
+import {ViewMetadata} from '@angular/core/src/metadata/view';
+
+import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
 
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
@@ -21,8 +22,8 @@ function _createBindings(): any[] {
   var multiplyTemplatesBy = getIntParameter('elements');
   return [
     {
-      provide: ViewResolver,
-      useFactory: () => new MultiplyViewResolver(
+      provide: DirectiveResolver,
+      useFactory: () => new MultiplyDirectiveResolver(
                               multiplyTemplatesBy,
                               [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
       deps: []
@@ -59,7 +60,7 @@ function measureWrapper(func, desc) {
 }
 
 
-class MultiplyViewResolver extends ViewResolver {
+class MultiplyDirectiveResolver extends DirectiveResolver {
   _multiplyBy: number;
   _cache = new Map<Type, ViewMetadata>();
 

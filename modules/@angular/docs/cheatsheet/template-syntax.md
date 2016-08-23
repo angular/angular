@@ -1,6 +1,6 @@
 @cheatsheetSection
 Template syntax
-@cheatsheetIndex 1
+@cheatsheetIndex 2
 @description
 
 @cheatsheetItem

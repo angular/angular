@@ -23,7 +23,7 @@ import {AUTO_STYLE, Component, animate, state, style, transition, trigger} from 
     <button (click)="setAsClosed()">Closed</button>
     <button (click)="setAsSomethingElse()">Something Else</button>
     <hr />
-    <div @openClose="stateExpression">
+    <div [@openClose]="stateExpression">
       Look at this box
     </div>
   `

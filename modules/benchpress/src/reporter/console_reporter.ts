@@ -1,13 +1,21 @@
-import {print, isPresent, isBlank, NumberWrapper} from '@angular/facade';
-import {StringMapWrapper, ListWrapper} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
-import {Math} from '@angular/facade';
-import {OpaqueToken} from '@angular/core/src/di';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {Statistic} from '../statistic';
+import {OpaqueToken} from '@angular/core/src/di';
+import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
+import {NumberWrapper, isBlank, isPresent, print} from '@angular/facade/src/lang';
+import {Math} from '@angular/facade/src/math';
+
+import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
-import {MeasureValues} from '../measure_values';
+import {Statistic} from '../statistic';
+
 
 /**
  * A reporter for the console
@@ -21,7 +29,8 @@ export class ConsoleReporter extends Reporter {
   static get PROVIDERS(): any[] { return _PROVIDERS; }
 
 
-  static _lpad(value, columnWidth, fill = ' ') {
+  /** @internal */
+  private static _lpad(value, columnWidth, fill = ' ') {
     var result = '';
     for (var i = 0; i < columnWidth - value.length; i++) {
       result += fill;
@@ -29,15 +38,18 @@ export class ConsoleReporter extends Reporter {
     return result + value;
   }
 
-  static _formatNum(n) { return NumberWrapper.toFixed(n, 2); }
+  /** @internal */
+  private static _formatNum(n) { return NumberWrapper.toFixed(n, 2); }
 
-  static _sortedProps(obj) {
+  /** @internal */
+  private static _sortedProps(obj) {
     var props = [];
     StringMapWrapper.forEach(obj, (value, prop) => props.push(prop));
     props.sort();
     return props;
   }
 
+  /** @internal */
   private _metricNames: string[];
 
   constructor(private _columnWidth: number, sampleDescription, private _print: Function) {
@@ -46,7 +58,8 @@ export class ConsoleReporter extends Reporter {
     this._printDescription(sampleDescription);
   }
 
-  _printDescription(sampleDescription) {
+  /** @internal */
+  private _printDescription(sampleDescription) {
     this._print(`BENCHMARK ${sampleDescription.id}`);
     this._print('Description:');
     var props = ConsoleReporter._sortedProps(sampleDescription.description);
@@ -66,7 +79,7 @@ export class ConsoleReporter extends Reporter {
       return ConsoleReporter._formatNum(value);
     });
     this._printStringRow(formattedValues);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 
   reportSample(completeSample: MeasureValues[], validSamples: MeasureValues[]): Promise<any> {
@@ -75,17 +88,16 @@ export class ConsoleReporter extends Reporter {
       var samples = validSamples.map(measureValues => measureValues.values[metricName]);
       var mean = Statistic.calculateMean(samples);
       var cv = Statistic.calculateCoefficientOfVariation(samples, mean);
-      var formattedMean = ConsoleReporter._formatNum(mean)
-                              // Note: Don't use the unicode character for +- as it might cause
-                              // hickups for consoles...
-                              return NumberWrapper.isNaN(cv) ?
-                              formattedMean :
-                              `${formattedMean}+-${Math.floor(cv)}%`;
+      var formattedMean = ConsoleReporter._formatNum(mean);
+      // Note: Don't use the unicode character for +- as it might cause
+      // hickups for consoles...
+      return NumberWrapper.isNaN(cv) ? formattedMean : `${formattedMean}+-${Math.floor(cv)}%`;
     }));
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 
-  _printStringRow(parts: any[], fill = ' ') {
+  /** @internal */
+  private _printStringRow(parts: any[], fill = ' ') {
     this._print(
         parts.map(part => ConsoleReporter._lpad(part, this._columnWidth, fill)).join(' | '));
   }
@@ -97,9 +109,8 @@ var _PROVIDERS = [
   {
     provide: ConsoleReporter,
     useFactory: (columnWidth, sampleDescription, print) =>
-                     new ConsoleReporter(columnWidth, sampleDescription, print),
+                    new ConsoleReporter(columnWidth, sampleDescription, print),
     deps: [_COLUMN_WIDTH, SampleDescription, _PRINT]
   },
-  {provide: _COLUMN_WIDTH, useValue: 18},
-  {provide: _PRINT, useValue: print}
+  {provide: _COLUMN_WIDTH, useValue: 18}, {provide: _PRINT, useValue: print}
 ];

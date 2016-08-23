@@ -6,20 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component, Directive, Host} from '@angular/core';
-import {
-  ControlGroup,
-  NgIf,
-  NgFor,
-  NG_VALIDATORS,
-  FORM_DIRECTIVES,
-  NgControl,
-  Validators,
-  NgForm
-} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
+import {Component, Directive, Host, NgModule} from '@angular/core';
+import {isPresent, print} from '@angular/core/src/facade/lang';
+import {FormGroup, FormsModule, NG_VALIDATORS, NgControl, NgForm, Validators} from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {RegExpWrapper, print, isPresent} from '@angular/core/src/facade/lang';
+
 
 /**
  * A domain model we are binding the form controls to.
@@ -28,7 +22,7 @@ class CheckoutModel {
   firstName: string;
   middleName: string;
   lastName: string;
-  country: string = "Canada";
+  country: string = 'Canada';
 
   creditCard: string;
   amount: number;
@@ -40,14 +34,14 @@ class CheckoutModel {
  * Custom validator.
  */
 function creditCardValidator(c: any /** TODO #9100 */): {[key: string]: boolean} {
-  if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
+  if (isPresent(c.value) && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
-    return {"invalidCreditCard": true};
+    return {'invalidCreditCard': true};
   }
 }
 
-const creditCardValidatorBinding = /** @ts2dart_const */ /** @ts2dart_Provider */ {
+const creditCardValidatorBinding = {
   provide: NG_VALIDATORS,
   useValue: creditCardValidator,
   multi: true
@@ -77,8 +71,7 @@ class CreditCardValidator {
   inputs: ['controlPath: control', 'errorTypes: errors'],
   template: `
     <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
-  `,
-  directives: [NgIf]
+  `
 })
 class ShowError {
   formDir: any /** TODO #9100 */;
@@ -88,8 +81,8 @@ class ShowError {
   constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
 
   get errorMessage(): string {
-    var form: ControlGroup = this.formDir.form;
-    var control = form.find(this.controlPath);
+    var form: FormGroup = this.formDir.form;
+    var control = form.get(this.controlPath);
     if (isPresent(control) && control.touched) {
       for (var i = 0; i < this.errorTypes.length; ++i) {
         if (control.hasError(this.errorTypes[i])) {
@@ -115,67 +108,73 @@ class ShowError {
     <form (ngSubmit)="onSubmit()" #f="ngForm">
       <p>
         <label for="firstName">First Name</label>
-        <input type="text" id="firstName" ngControl="firstName" [(ngModel)]="model.firstName" required>
+        <input type="text" id="firstName" name="firstName" [(ngModel)]="model.firstName" required>
         <show-error control="firstName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="middleName">Middle Name</label>
-        <input type="text" id="middleName" ngControl="middleName" [(ngModel)]="model.middleName">
+        <input type="text" id="middleName" name="middleName" [(ngModel)]="model.middleName">
       </p>
 
       <p>
         <label for="lastName">Last Name</label>
-        <input type="text" id="lastName" ngControl="lastName" [(ngModel)]="model.lastName" required>
+        <input type="text" id="lastName" name="lastName" [(ngModel)]="model.lastName" required>
         <show-error control="lastName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="country">Country</label>
-        <select id="country" ngControl="country" [(ngModel)]="model.country">
+        <select id="country" name="country" [(ngModel)]="model.country">
           <option *ngFor="let c of countries" [value]="c">{{c}}</option>
         </select>
       </p>
 
       <p>
         <label for="creditCard">Credit Card</label>
-        <input type="text" id="creditCard" ngControl="creditCard" [(ngModel)]="model.creditCard" required credit-card>
+        <input type="text" id="creditCard" name="creditCard" [(ngModel)]="model.creditCard" required credit-card>
         <show-error control="creditCard" [errors]="['required', 'invalidCreditCard']"></show-error>
       </p>
 
       <p>
         <label for="amount">Amount</label>
-        <input type="number" id="amount" ngControl="amount" [(ngModel)]="model.amount" required>
+        <input type="number" id="amount" name="amount" [(ngModel)]="model.amount" required>
         <show-error control="amount" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="email">Email</label>
-        <input type="email" id="email" ngControl="email" [(ngModel)]="model.email" required>
+        <input type="email" id="email" name="email" [(ngModel)]="model.email" required>
         <show-error control="email" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="comments">Comments</label>
-        <textarea id="comments" ngControl="comments" [(ngModel)]="model.comments">
+        <textarea id="comments" name="comments" [(ngModel)]="model.comments">
         </textarea>
       </p>
 
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
-  `,
-  directives: [FORM_DIRECTIVES, NgFor, CreditCardValidator, ShowError]
+  `
 })
 class TemplateDrivenForms {
   model = new CheckoutModel();
   countries = ['US', 'Canada'];
 
   onSubmit(): void {
-    print("Submitting:");
+    print('Submitting:');
     print(this.model);
   }
 }
+@NgModule({
+  declarations: [TemplateDrivenForms, CreditCardValidator, ShowError],
+  bootstrap: [TemplateDrivenForms],
+  imports: [BrowserModule, FormsModule]
+})
+class ExampleModule {
+}
 
 export function main() {
-  bootstrap(TemplateDrivenForms);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
+import {BaseException} from '@angular/core';
 import {isPresent} from '../facade/lang';
 
 import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext} from './abstract_emitter';
@@ -157,7 +157,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
       case o.BuiltinMethod.SubscribeObservable:
         name = 'subscribe';
         break;
-      case o.BuiltinMethod.bind:
+      case o.BuiltinMethod.Bind:
         name = 'bind';
         break;
       default:

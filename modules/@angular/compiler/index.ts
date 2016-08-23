@@ -6,4 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './compiler';
+/**
+ * @module
+ * @description
+ * Starting point to import all compiler APIs.
+ */
+import * as i18n from './src/i18n/index';
+
+export {COMPILER_PROVIDERS, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileFactoryMetadata, CompileIdentifierMetadata, CompileMetadataWithIdentifier, CompilePipeMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, CompilerConfig, DEFAULT_PACKAGE_URL_PROVIDER, DirectiveResolver, NgModuleResolver, OfflineCompiler, PipeResolver, RenderTypes, ResourceLoader, RuntimeCompiler, SourceModule, TEMPLATE_TRANSFORMS, UrlResolver, analyzeAppProvidersForDeprecatedConfiguration, createOfflineCompileUrlResolver, platformCoreDynamic} from './src/compiler';
+export {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './src/ml_parser/interpolation_config';
+export {ElementSchemaRegistry} from './src/schema/element_schema_registry';
+export {i18n};
+
+export * from './src/template_parser/template_ast';
+export * from './private_export';

@@ -10,3 +10,16 @@ Read the overview of the Router [here](http://victorsavkin.com/post/145672529346
 
 ## Guide
 Read the dev guide [here](https://angular.io/docs/ts/latest/guide/router.html).
+
+## Local development
+
+```
+# keep @angular/router fresh
+$ ./scripts/karma.sh
+
+# keep @angular/core fresh
+$ ../../../node_modules/.bin/tsc -p modules --emitDecoratorMetadata -w
+
+# start karma
+$ ./scripts/karma.sh
+```

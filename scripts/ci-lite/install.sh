@@ -61,6 +61,4 @@ $(npm bin)/webdriver-manager update
 # TODO: install bower packages
 # bower install
 
-# TODO: install dart packages
-
 echo 'travis_fold:end:INSTALL'

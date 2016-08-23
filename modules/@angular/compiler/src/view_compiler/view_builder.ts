@@ -15,7 +15,7 @@ import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isPresent} from '../facade/lang';
 import {Identifiers, identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ProviderAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_ast';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ProviderAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 import {createDiTokenExpression} from '../util';
 
 import {CompileElement, CompileNode} from './compile_element';
@@ -193,13 +193,16 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var htmlAttrs = _readHtmlAttrs(ast.attrs);
     var attrNameAndValues = _mergeHtmlAndDirectiveAttrs(htmlAttrs, directives);
     for (var i = 0; i < attrNameAndValues.length; i++) {
-      var attrName = attrNameAndValues[i][0];
-      var attrValue = attrNameAndValues[i][1];
-      this.view.createMethod.addStmt(
-          ViewProperties.renderer
-              .callMethod(
-                  'setElementAttribute', [renderNode, o.literal(attrName), o.literal(attrValue)])
-              .toStmt());
+      const attrName = attrNameAndValues[i][0];
+      if (ast.name !== NG_CONTAINER_TAG) {
+        // <ng-container> are not rendered in the DOM
+        const attrValue = attrNameAndValues[i][1];
+        this.view.createMethod.addStmt(
+            ViewProperties.renderer
+                .callMethod(
+                    'setElementAttribute', [renderNode, o.literal(attrName), o.literal(attrValue)])
+                .toStmt());
+      }
     }
     var compileElement = new CompileElement(
         parent, this.view, nodeIndex, renderNode, ast, component, directives, ast.providers,
@@ -211,13 +214,13 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
           new CompileIdentifierMetadata({name: getViewFactoryName(component, 0)});
       this.targetDependencies.push(
           new ViewFactoryDependency(component.type, nestedComponentIdentifier));
-      let precompileComponentIdentifiers =
-          component.precompile.map((precompileComp: CompileIdentifierMetadata) => {
-            var id = new CompileIdentifierMetadata({name: precompileComp.name});
-            this.targetDependencies.push(new ComponentFactoryDependency(precompileComp, id));
+      let entryComponentIdentifiers =
+          component.entryComponents.map((entryComponent: CompileIdentifierMetadata) => {
+            var id = new CompileIdentifierMetadata({name: entryComponent.name});
+            this.targetDependencies.push(new ComponentFactoryDependency(entryComponent, id));
             return id;
           });
-      compileElement.createComponentFactoryResolver(precompileComponentIdentifiers);
+      compileElement.createComponentFactoryResolver(entryComponentIdentifiers);
 
       compViewExpr = o.variable(`compView_${nodeIndex}`);  // fix highlighting: `
       compileElement.setComponentView(compViewExpr);
@@ -275,12 +278,12 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
         ast.hasViewContainer, true, ast.references);
     this.view.nodes.push(compileElement);
 
-    var compiledAnimations = this._animationCompiler.compileComponent(this.view.component);
+    var compiledAnimations = this._animationCompiler.compileComponent(this.view.component, [ast]);
 
     this.nestedViewCount++;
     var embeddedView = new CompileView(
         this.view.component, this.view.genConfig, this.view.pipeMetas, o.NULL_EXPR,
-        compiledAnimations, this.view.viewIndex + this.nestedViewCount, compileElement,
+        compiledAnimations.triggers, this.view.viewIndex + this.nestedViewCount, compileElement,
         templateVariableBindings);
     this.nestedViewCount += buildView(embeddedView, ast.children, this.targetDependencies);
 
@@ -500,6 +503,7 @@ function createViewFactory(
     templateUrlInfo = view.component.template.templateUrl;
   }
   if (view.viewIndex === 0) {
+    var animationsExpr = o.literalMap(view.animations.map(entry => [entry.name, entry.fnVariable]));
     initRenderCompTypeStmts = [new o.IfStmt(renderCompTypeVar.identical(o.NULL_EXPR), [
       renderCompTypeVar
           .set(ViewConstructorVars.viewUtils.callMethod(
@@ -507,7 +511,8 @@ function createViewFactory(
               [
                 o.literal(templateUrlInfo),
                 o.literal(view.component.template.ngContentSelectors.length),
-                ViewEncapsulationEnum.fromValue(view.component.template.encapsulation), view.styles
+                ViewEncapsulationEnum.fromValue(view.component.template.encapsulation), view.styles,
+                animationsExpr
               ]))
           .toStmt()
     ])];

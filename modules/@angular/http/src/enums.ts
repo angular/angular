@@ -61,3 +61,14 @@ export enum ContentType {
   BLOB,
   ARRAY_BUFFER
 }
+
+/**
+ * Define which buffer to use to store the response
+ * @experimental
+ */
+export enum ResponseContentType {
+  Text,
+  Json,
+  ArrayBuffer,
+  Blob
+}

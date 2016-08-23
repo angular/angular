@@ -1,25 +1,33 @@
-import {ReflectiveInjector} from '@angular/core';
-import {isPresent, isBlank} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {Sampler, SampleState} from './sampler';
+import {ReflectiveInjector} from '@angular/core';
+import {isBlank, isPresent} from '@angular/facade/src/lang';
+
+import {Options} from './common_options';
+import {Metric} from './metric';
+import {MultiMetric} from './metric/multi_metric';
+import {PerflogMetric} from './metric/perflog_metric';
+import {UserMetric} from './metric/user_metric';
+import {Reporter} from './reporter';
 import {ConsoleReporter} from './reporter/console_reporter';
 import {MultiReporter} from './reporter/multi_reporter';
+import {SampleDescription} from './sample_description';
+import {SampleState, Sampler} from './sampler';
+import {Validator} from './validator';
 import {RegressionSlopeValidator} from './validator/regression_slope_validator';
 import {SizeValidator} from './validator/size_validator';
-import {Validator} from './validator';
-import {PerflogMetric} from './metric/perflog_metric';
-import {MultiMetric} from './metric/multi_metric';
-import {UserMetric} from './metric/user_metric';
+import {WebDriverAdapter} from './web_driver_adapter';
+import {WebDriverExtension} from './web_driver_extension';
 import {ChromeDriverExtension} from './webdriver/chrome_driver_extension';
 import {FirefoxDriverExtension} from './webdriver/firefox_driver_extension';
 import {IOsDriverExtension} from './webdriver/ios_driver_extension';
-import {WebDriverExtension} from './web_driver_extension';
-import {SampleDescription} from './sample_description';
-import {WebDriverAdapter} from './web_driver_adapter';
-import {Reporter} from './reporter';
-import {Metric} from './metric';
-import {Options} from './common_options';
+
 
 /**
  * The Runner is the main entry point for executing a sample run.
@@ -34,13 +42,16 @@ export class Runner {
     this._defaultProviders = defaultProviders;
   }
 
-  sample({id, execute, prepare, microMetrics, providers, userMetrics}:
-             {id: string, execute?: any, prepare?: any, microMetrics?: any, providers?: any, userMetrics?: any}):
-      Promise<SampleState> {
+  sample({id, execute, prepare, microMetrics, providers, userMetrics}: {
+    id: string,
+    execute?: any,
+    prepare?: any,
+    microMetrics?: any,
+    providers?: any,
+    userMetrics?: any
+  }): Promise<SampleState> {
     var sampleProviders = [
-      _DEFAULT_PROVIDERS,
-      this._defaultProviders,
-      {provide: Options.SAMPLE_ID, useValue: id},
+      _DEFAULT_PROVIDERS, this._defaultProviders, {provide: Options.SAMPLE_ID, useValue: id},
       {provide: Options.EXECUTE, useValue: execute}
     ];
     if (isPresent(prepare)) {
@@ -59,7 +70,7 @@ export class Runner {
     var inj = ReflectiveInjector.resolveAndCreate(sampleProviders);
     var adapter = inj.get(WebDriverAdapter);
 
-    return PromiseWrapper
+    return Promise
         .all([adapter.capabilities(), adapter.executeScript('return window.navigator.userAgent;')])
         .then((args) => {
           var capabilities = args[0];
@@ -71,8 +82,7 @@ export class Runner {
           // TODO vsavkin consider changing it when toAsyncFactory is added back or when child
           // injectors are handled better.
           var injector = ReflectiveInjector.resolveAndCreate([
-            sampleProviders,
-            {provide: Options.CAPABILITIES, useValue: capabilities},
+            sampleProviders, {provide: Options.CAPABILITIES, useValue: capabilities},
             {provide: Options.USER_AGENT, useValue: userAgent},
             {provide: WebDriverAdapter, useValue: adapter}
           ]);
@@ -93,7 +103,7 @@ var _DEFAULT_PROVIDERS = [
   FirefoxDriverExtension.PROVIDERS,
   IOsDriverExtension.PROVIDERS,
   PerflogMetric.PROVIDERS,
-  UserMetric.BINDINGS,
+  UserMetric.PROVIDERS,
   SampleDescription.PROVIDERS,
   MultiReporter.createBindings([ConsoleReporter]),
   MultiMetric.createBindings([PerflogMetric, UserMetric]),

@@ -6,55 +6,80 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {OpaqueToken} from '../di';
 import {BaseException} from '../facade/exceptions';
-import {ConcreteType, Type, stringify} from '../facade/lang';
-import {AppModuleMetadata} from '../metadata/app_module';
+import {stringify} from '../facade/lang';
+import {ViewEncapsulation} from '../metadata';
+import {Type} from '../type';
 
-import {AppModuleFactory} from './app_module_factory';
 import {ComponentFactory} from './component_factory';
+import {NgModuleFactory} from './ng_module_factory';
+
 
 
 /**
- * Low-level service for running the angular compiler duirng runtime
+ * Indicates that a component is still being loaded in a synchronous compile.
+ *
+ * @stable
+ */
+export class ComponentStillLoadingError extends BaseException {
+  constructor(public compType: Type<any>) {
+    super(`Can't compile synchronously as ${stringify(compType)} is still being loaded!`);
+  }
+}
+
+/**
+ * Combination of NgModuleFactory and ComponentFactorys.
+ *
+ * @experimental
+ */
+export class ModuleWithComponentFactories<T> {
+  constructor(
+      public ngModuleFactory: NgModuleFactory<T>,
+      public componentFactories: ComponentFactory<any>[]) {}
+}
+
+
+function _throwError() {
+  throw new BaseException(`Runtime compiler is not loaded`);
+}
+
+/**
+ * Low-level service for running the angular compiler during runtime
  * to create {@link ComponentFactory}s, which
  * can later be used to create and render a Component instance.
  *
- * Each `@AppModule` provides an own `Compiler` to its injector,
- * that will use the directives/pipes of the app module for compilation
+ * Each `@NgModule` provides an own `Compiler` to its injector,
+ * that will use the directives/pipes of the ng module for compilation
  * of components.
  * @stable
  */
 export class Compiler {
   /**
-   * Loads the template and styles of a component and returns the associated `ComponentFactory`.
+   * Compiles the given NgModule and all of its components. All templates of the components listed
+   * in `entryComponents`
+   * have to be inlined. Otherwise throws a {@link ComponentStillLoadingError}.
    */
-  compileComponentAsync<T>(component: ConcreteType<T>): Promise<ComponentFactory<T>> {
-    throw new BaseException(
-        `Runtime compiler is not loaded. Tried to compile ${stringify(component)}`);
-  }
+  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> { throw _throwError(); }
+
   /**
-   * Compiles the given component. All templates have to be either inline or compiled via
-   * `compileComponentAsync` before.
+   * Compiles the given NgModule and all of its components
    */
-  compileComponentSync<T>(component: ConcreteType<T>): ComponentFactory<T> {
-    throw new BaseException(
-        `Runtime compiler is not loaded. Tried to compile ${stringify(component)}`);
-  }
+  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> { throw _throwError(); }
+
   /**
-   * Compiles the given App Module. All templates of the components listed in `precompile`
-   * have to be either inline or compiled before via `compileComponentAsync` /
-   * `compileAppModuleAsync`.
+   * Same as {@link compileModuleSync} put also creates ComponentFactories for all components.
    */
-  compileAppModuleSync<T>(moduleType: ConcreteType<T>, metadata: AppModuleMetadata = null):
-      AppModuleFactory<T> {
-    throw new BaseException(
-        `Runtime compiler is not loaded. Tried to compile ${stringify(moduleType)}`);
+  compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
+    throw _throwError();
   }
 
-  compileAppModuleAsync<T>(moduleType: ConcreteType<T>, metadata: AppModuleMetadata = null):
-      Promise<AppModuleFactory<T>> {
-    throw new BaseException(
-        `Runtime compiler is not loaded. Tried to compile ${stringify(moduleType)}`);
+  /**
+   * Same as {@link compileModuleAsync} put also creates ComponentFactories for all components.
+   */
+  compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
+      Promise<ModuleWithComponentFactories<T>> {
+    throw _throwError();
   }
 
   /**
@@ -63,7 +88,35 @@ export class Compiler {
   clearCache(): void {}
 
   /**
-   * Clears the cache for the given component/appModule.
+   * Clears the cache for the given component/ngModule.
    */
-  clearCacheFor(type: Type) {}
+  clearCacheFor(type: Type<any>) {}
+}
+
+/**
+ * Options for creating a compiler
+ *
+ * @experimental
+ */
+export type CompilerOptions = {
+  useDebug?: boolean,
+  useJit?: boolean,
+  defaultEncapsulation?: ViewEncapsulation,
+  providers?: any[],
+};
+
+/**
+ * Token to provide CompilerOptions in the platform injector.
+ *
+ * @experimental
+ */
+export const COMPILER_OPTIONS = new OpaqueToken('compilerOptions');
+
+/**
+ * A factory for creating a Compiler
+ *
+ * @experimental
+ */
+export abstract class CompilerFactory {
+  abstract createCompiler(options?: CompilerOptions[]): Compiler;
 }

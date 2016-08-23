@@ -1,17 +1,5 @@
 /** @stable */
-export declare function addProviders(providers: Array<any>): void;
-
-/** @deprecated */
-export declare var afterEach: Function;
-
-/** @stable */
 export declare function async(fn: Function): (done: any) => any;
-
-/** @deprecated */
-export declare var beforeEach: any;
-
-/** @deprecated */
-export declare function beforeEachProviders(fn: () => Array<any>): void;
 
 /** @stable */
 export declare class ComponentFixture<T> {
@@ -37,68 +25,72 @@ export declare var ComponentFixtureAutoDetect: OpaqueToken;
 /** @experimental */
 export declare var ComponentFixtureNoNgZone: OpaqueToken;
 
-/** @deprecated */
-export declare var ddescribe: any;
-
-/** @deprecated */
-export declare var describe: Function;
-
 /** @experimental */
 export declare function discardPeriodicTasks(): void;
 
-/** @deprecated */
-export declare var expect: Function;
-
 /** @experimental */
 export declare function fakeAsync(fn: Function): (...args: any[]) => any;
-
-/** @deprecated */
-export declare var fdescribe: any;
-
-/** @deprecated */
-export declare var fit: any;
 
 /** @experimental */
 export declare function flushMicrotasks(): void;
 
 /** @experimental */
-export declare function getTestInjector(): TestInjector;
-
-/** @deprecated */
-export declare var iit: any;
+export declare function getTestBed(): TestBed;
 
 /** @stable */
 export declare function inject(tokens: any[], fn: Function): () => any;
 
 /** @experimental */
 export declare class InjectSetupWrapper {
-    constructor(_providers: () => any);
+    constructor(_moduleDef: () => TestModuleMetadata);
     inject(tokens: any[], fn: Function): () => any;
 }
 
-/** @deprecated */
-export declare var it: any;
+/** @experimental */
+export declare type MetadataOverride<T> = {
+    add?: T;
+    remove?: T;
+    set?: T;
+};
 
 /** @experimental */
-export declare function resetBaseTestProviders(): void;
+export declare function resetFakeAsyncZone(): void;
 
 /** @experimental */
-export declare function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>, applicationProviders: Array<Type | Provider | any[]>): void;
-
-/** @stable */
-export declare class TestComponentBuilder {
-    protected _injector: Injector;
-    constructor(_injector: Injector);
-    createAsync<T>(rootComponentType: ConcreteType<T>): Promise<ComponentFixture<T>>;
-    createFakeAsync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T>;
-    protected createFromFactory<C>(ngZone: NgZone, componentFactory: ComponentFactory<C>): ComponentFixture<C>;
-    createSync<T>(rootComponentType: ConcreteType<T>): ComponentFixture<T>;
-    overrideAnimations(componentType: Type, animations: AnimationEntryMetadata[]): TestComponentBuilder;
-    overrideDirective(componentType: Type, from: Type, to: Type): TestComponentBuilder;
-    overrideProviders(type: Type, providers: any[]): TestComponentBuilder;
-    overrideTemplate(componentType: Type, template: string): TestComponentBuilder;
-    overrideView(componentType: Type, view: ViewMetadata): TestComponentBuilder;
-    overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder;
+export declare class TestBed implements Injector {
+    ngModule: Type<any>;
+    platform: PlatformRef;
+    compileComponents(): Promise<any>;
+    configureCompiler(config: {
+        providers?: any[];
+        useJit?: boolean;
+    }): void;
+    configureTestingModule(moduleDef: TestModuleMetadata): void;
+    createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    execute(tokens: any[], fn: Function): any;
+    get(token: any, notFoundValue?: any): any;
+    /** @experimental */ initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): void;
+    overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>): void;
+    overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): void;
+    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>): void;
+    overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>): void;
+    /** @experimental */ resetTestEnvironment(): void;
+    resetTestingModule(): void;
+    static compileComponents(): Promise<any>;
+    static configureCompiler(config: {
+        providers?: any[];
+        useJit?: boolean;
+    }): typeof TestBed;
+    static configureTestingModule(moduleDef: TestModuleMetadata): typeof TestBed;
+    static createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    static get(token: any, notFoundValue?: any): any;
+    /** @experimental */ static initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): TestBed;
+    static overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>): typeof TestBed;
+    static overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): typeof TestBed;
+    static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>): typeof TestBed;
+    static overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>): typeof TestBed;
+    /** @experimental */ static resetTestEnvironment(): void;
+    static resetTestingModule(): typeof TestBed;
 }
 
 /** @experimental */
@@ -107,24 +99,15 @@ export declare class TestComponentRenderer {
 }
 
 /** @experimental */
-export declare class TestInjector {
-    applicationProviders: Array<Type | Provider | any[] | any>;
-    platformProviders: Array<Type | Provider | any[] | any>;
-    addProviders(providers: Array<Type | Provider | any[] | any>): void;
-    createInjector(): ReflectiveInjector;
-    execute(tokens: any[], fn: Function): any;
-    get(token: any): any;
-    reset(): void;
-}
+export declare type TestModuleMetadata = {
+    providers?: any[];
+    declarations?: any[];
+    imports?: any[];
+    schemas?: Array<SchemaMetadata | any[]>;
+};
 
 /** @experimental */
 export declare function tick(millis?: number): void;
 
 /** @experimental */
-export declare function withProviders(providers: () => any): InjectSetupWrapper;
-
-/** @deprecated */
-export declare var xdescribe: Function;
-
-/** @deprecated */
-export declare var xit: any;
+export declare function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;

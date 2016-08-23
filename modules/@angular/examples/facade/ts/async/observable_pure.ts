@@ -7,7 +7,8 @@
  */
 
 // #docregion Observable
-import {Observable, Subscriber} from 'rxjs/Rx';
+import {Observable} from 'rxjs/Observable';
+import {Subscriber} from 'rxjs/Subscriber';
 import {map} from 'rxjs/operator/map';
 
 var obs = new Observable<number>((sub: Subscriber<number>) => {

@@ -7,13 +7,13 @@
  */
 
 import {PlatformLocation} from '@angular/common';
-import {ComponentRef, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, Type, assertPlatform, coreLoadAndBootstrap, createPlatform, getPlatform} from '@angular/core';
+import {analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
+import {ApplicationRef, ComponentRef, NgModule, PLATFORM_INITIALIZER, PlatformRef, Type, createPlatformFactory, platformCore} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import {ReflectionCapabilities, reflector, wtfInit} from '../core_private';
+import {Console, ReflectionCapabilities, reflector, wtfInit} from '../core_private';
 
 import {Parse5DomAdapter} from './parse5_adapter';
-
-const SERVER_PLATFORM_MARKER = new OpaqueToken('ServerPlatformMarker');
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
@@ -32,18 +32,10 @@ class ServerPlatformLocation extends PlatformLocation {
   back(): void { notSupported('back'); };
 }
 
-/**
- * A set of providers to initialize the Angular platform in a server.
- *
- * Used automatically by `serverBootstrap`, or can be passed to {@link platform}.
- * @experimental
- */
-export const SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  {provide: SERVER_PLATFORM_MARKER, useValue: true}, PLATFORM_COMMON_PROVIDERS,
+export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   {provide: PLATFORM_INITIALIZER, useValue: initParse5Adapter, multi: true},
-  {provide: PlatformLocation, useClass: ServerPlatformLocation}
+  {provide: PlatformLocation, useClass: ServerPlatformLocation},
 ];
-
 
 function initParse5Adapter() {
   Parse5DomAdapter.makeCurrent();
@@ -51,35 +43,24 @@ function initParse5Adapter() {
 }
 
 /**
+ * The ng module for the server.
+ *
  * @experimental
  */
-export function serverPlatform(): PlatformRef {
-  if (!getPlatform()) {
-    createPlatform(ReflectiveInjector.resolveAndCreate(SERVER_PLATFORM_PROVIDERS));
-  }
-  return assertPlatform(SERVER_PLATFORM_MARKER);
+@NgModule({imports: [BrowserModule]})
+export class ServerModule {
 }
 
 /**
- * Used to bootstrap Angular in server environment (such as node).
- *
- * This version of bootstrap only creates platform injector and does not define anything for
- * application injector. It is expected that application providers are imported from other
- * packages such as `@angular/platform-browser` or `@angular/platform-browser-dynamic`.
- *
- * ```
- * import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
- * import {BROWSER_APP_COMPILER_PROVIDERS} from '@angular/platform-browser-dynamic';
- *
- * serverBootstrap(..., [BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS])
- * ```
+ * @experimental
+ */
+export const platformServer =
+    createPlatformFactory(platformCore, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
+
+/**
+ * The server platform that supports the runtime compiler.
  *
  * @experimental
  */
-export function serverBootstrap(
-    appComponentType: Type,
-    providers: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef<any>> {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-  var appInjector = ReflectiveInjector.resolveAndCreate(providers, serverPlatform().injector);
-  return coreLoadAndBootstrap(appComponentType, appInjector);
-}
+export const platformDynamicServer =
+    createPlatformFactory(platformCoreDynamic, 'serverDynamic', INTERNAL_SERVER_PLATFORM_PROVIDERS);

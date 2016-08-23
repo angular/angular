@@ -48,12 +48,10 @@ var defaultLocale: string = 'en-US';
  *  | second    |   s    | -            | -                 | s (9)     | ss (09)   |
  *  | timezone  |   z    | -            | z (Pacific Standard Time)| -  | -         |
  *  | timezone  |   Z    | Z (GMT-8:00) | -                 | -         | -         |
+ *  | timezone  |   a    | a (PM)       | -                 | -         | -         |
  *
  * In javascript, only the components specified will be respected (not the ordering,
  * punctuations, ...) and details of the formatting will be dependent on the locale.
- * On the other hand in Dart version, you can also include quoted text as well as some extra
- * date/time components such as quarter. For more information see:
- * https://www.dartdocs.org/documentation/intl/0.13.0/intl/DateFormat-class.html
  *
  * `format` can also be one of the following predefined formats:
  *
@@ -107,7 +105,7 @@ export class DatePipe implements PipeTransform {
     }
 
     if (NumberWrapper.isNumeric(value)) {
-      value = DateWrapper.fromMillis(NumberWrapper.parseInt(value, 10));
+      value = DateWrapper.fromMillis(parseFloat(value));
     } else if (isString(value)) {
       value = DateWrapper.fromISOString(value);
     }

@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {BaseException, WrappedException} from '../facade/exceptions';
+
 
 /**
  * An error thrown if application changes model breaking the top-down data flow.
@@ -44,9 +46,14 @@ import {BaseException, WrappedException} from '../facade/exceptions';
  */
 export class ExpressionChangedAfterItHasBeenCheckedException extends BaseException {
   constructor(oldValue: any, currValue: any, context: any) {
-    super(
-        `Expression has changed after it was checked. ` +
-        `Previous value: '${oldValue}'. Current value: '${currValue}'`);
+    let msg =
+        `Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
+    if (oldValue === UNINITIALIZED) {
+      msg +=
+          ` It seems like the view has been created after its parent and its children have been dirty checked.` +
+          ` Has it been created in a change detection hook ?`;
+    }
+    super(msg);
   }
 }
 

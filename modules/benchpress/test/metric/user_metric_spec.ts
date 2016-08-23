@@ -1,41 +1,23 @@
-import {ReflectiveInjector} from "angular2/core";
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from 'angular2/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {TimerWrapper} from 'angular2/src/facade/async';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {PromiseWrapper} from 'angular2/src/facade/async';
-import {isPresent, isBlank, Json} from 'angular2/src/facade/lang';
-
-import {
-  Metric,
-  MultiMetric,
-  PerflogMetric,
-  UserMetric,
-  WebDriverAdapter,
-  WebDriverExtension,
-  PerfLogFeatures,
-  bind,
-  provide,
-  Injector,
-  Options
-} from 'benchpress/common';
+import {Provider, ReflectiveInjector} from '@angular/core';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {StringMapWrapper} from '@angular/facade/src/collection';
+import {Json, isBlank, isPresent} from '@angular/facade/src/lang';
+import {Injector, Metric, MultiMetric, Options, PerfLogFeatures, PerflogMetric, UserMetric, WebDriverAdapter, WebDriverExtension} from 'benchpress/common';
 
 export function main() {
   var wdAdapter: MockDriverAdapter;
 
-  function createMetric(perfLogs, perfLogFeatures,
-                        {userMetrics}: {userMetrics?: {[key: string]: string}} = {}): UserMetric {
+  function createMetric(
+      perfLogs, perfLogFeatures,
+      {userMetrics}: {userMetrics?: {[key: string]: string}} = {}): UserMetric {
     if (isBlank(perfLogFeatures)) {
       perfLogFeatures =
           new PerfLogFeatures({render: true, gc: true, frameCapture: true, userTiming: true});
@@ -44,11 +26,10 @@ export function main() {
       userMetrics = StringMapWrapper.create();
     }
     wdAdapter = new MockDriverAdapter();
-    var bindings = [
-      Options.DEFAULT_PROVIDERS,
-      UserMetric.BINDINGS,
-      bind(Options.USER_METRICS).toValue(userMetrics),
-      provide(WebDriverAdapter, {useValue: wdAdapter})
+    var bindings: Provider[] = [
+      Options.DEFAULT_PROVIDERS, UserMetric.PROVIDERS,
+      {provide: Options.USER_METRICS, useValue: userMetrics},
+      {provide: WebDriverAdapter, useValue: wdAdapter}
     ];
     return ReflectiveInjector.resolveAndCreate(bindings).get(UserMetric);
   }
@@ -56,8 +37,9 @@ export function main() {
   describe('user metric', () => {
 
     it('should describe itself based on userMetrics', () => {
-      expect(createMetric([[]], new PerfLogFeatures(), {userMetrics: {'loadTime': 'time to load'}})
-                 .describe())
+      expect(createMetric([[]], new PerfLogFeatures(), {
+               userMetrics: {'loadTime': 'time to load'}
+             }).describe())
           .toEqual({'loadTime': 'time to load'});
     });
 
@@ -77,7 +59,7 @@ export function main() {
 
            wdAdapter.data['loadTime'] = 25;
            // Wait before setting 2nd property.
-           TimerWrapper.setTimeout(() => { wdAdapter.data['content'] = 250; }, 50);
+           setTimeout(() => { wdAdapter.data['content'] = 250; }, 50);
 
          }), 600);
     });
@@ -91,11 +73,11 @@ class MockDriverAdapter extends WebDriverAdapter {
     // Just handles `return window.propName` ignores `delete window.propName`.
     if (script.indexOf('return window.') == 0) {
       let metricName = script.substring('return window.'.length);
-      return PromiseWrapper.resolve(this.data[metricName]);
+      return Promise.resolve(this.data[metricName]);
     } else if (script.indexOf('delete window.') == 0) {
-      return PromiseWrapper.resolve(null);
+      return Promise.resolve(null);
     } else {
-      return PromiseWrapper.reject(`Unexpected syntax: ${script}`, null);
+      return Promise.reject(`Unexpected syntax: ${script}`);
     }
   }
 }

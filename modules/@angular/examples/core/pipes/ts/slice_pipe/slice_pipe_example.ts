@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion SlicePipe_string
 @Component({
@@ -40,7 +41,6 @@ export class SlicePipeListExample {
 
 @Component({
   selector: 'example-app',
-  directives: [SlicePipeListExample, SlicePipeStringExample],
   template: `
     <h1>SlicePipe Examples</h1>
     <slice-list-example></slice-list-example>
@@ -50,6 +50,10 @@ export class SlicePipeListExample {
 export class AppCmp {
 }
 
+@NgModule({imports: [BrowserModule], bootstrap: [AppCmp]})
+class AppModule {
+}
+
 export function main() {
-  bootstrap(AppCmp);
+  platformBrowserDynamic().bootstrapModule(AppModule);
 }

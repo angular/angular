@@ -10,6 +10,7 @@
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/common": ["../../../dist/packages-dist/common"],
+      "@angular/common/testing": ["../../../dist/packages-dist/common/testing"],
       "@angular/compiler": ["../../../dist/packages-dist/compiler"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
       "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"]
@@ -21,6 +22,10 @@
     "target": "es6"
   },
   "files": [
-    "index.ts"
-  ]
+    "index.ts",
+    "testing.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
 }

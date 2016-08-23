@@ -8,7 +8,7 @@
 
 import {Injectable, Type} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper, PromiseCompleter, PromiseWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
 import {DateWrapper, StringWrapper, isPresent, print, stringify} from '../../facade/lang';
 
@@ -47,11 +47,16 @@ export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
  * @experimental WebWorker support in Angular is experimental.
  */
 export abstract class ClientMessageBroker {
-  abstract runOnService(args: UiArguments, returnType: Type): Promise<any>;
+  abstract runOnService(args: UiArguments, returnType: Type<any>): Promise<any>;
+}
+
+interface PromiseCompleter {
+  resolve: (result: any) => void;
+  reject: (err: any) => void;
 }
 
 export class ClientMessageBroker_ extends ClientMessageBroker {
-  private _pending: Map<string, PromiseCompleter<any>> = new Map<string, PromiseCompleter<any>>();
+  private _pending: Map<string, PromiseCompleter> = new Map<string, PromiseCompleter>();
   private _sink: EventEmitter<any>;
   /** @internal */
   public _serializer: Serializer;
@@ -62,8 +67,8 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     this._sink = messageBus.to(channel);
     this._serializer = _serializer;
     var source = messageBus.from(channel);
-    ObservableWrapper.subscribe(
-        source, (message: {[key: string]: any}) => this._handleMessage(message));
+
+    source.subscribe({next: (message: {[key: string]: any}) => this._handleMessage(message)});
   }
 
   private _generateMessageId(name: string): string {
@@ -77,7 +82,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     return id;
   }
 
-  runOnService(args: UiArguments, returnType: Type): Promise<any> {
+  runOnService(args: UiArguments, returnType: Type<any>): Promise<any> {
     var fnArgs: any[] /** TODO #9100 */ = [];
     if (isPresent(args.args)) {
       args.args.forEach(argument => {
@@ -92,15 +97,16 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     var promise: Promise<any>;
     var id: string = null;
     if (returnType != null) {
-      var completer: PromiseCompleter<any> = PromiseWrapper.completer();
+      let completer: PromiseCompleter;
+      promise = new Promise((resolve, reject) => { completer = {resolve, reject}; });
       id = this._generateMessageId(args.method);
       this._pending.set(id, completer);
-      PromiseWrapper.catchError(completer.promise, (err, stack?) => {
+      promise.catch((err) => {
         print(err);
-        completer.reject(err, stack);
+        completer.reject(err);
       });
 
-      promise = PromiseWrapper.then(completer.promise, (value: any) => {
+      promise = promise.then((value: any) => {
         if (this._serializer == null) {
           return value;
         } else {
@@ -116,7 +122,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     if (id != null) {
       (message as any /** TODO #9100 */)['id'] = id;
     }
-    ObservableWrapper.callEmit(this._sink, message);
+    this._sink.emit(message);
 
     return promise;
   }
@@ -130,7 +136,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
         if (StringWrapper.equals(data.type, 'result')) {
           this._pending.get(id).resolve(data.value);
         } else {
-          this._pending.get(id).reject(data.value, null);
+          this._pending.get(id).reject(data.value);
         }
         this._pending.delete(id);
       }
@@ -166,7 +172,7 @@ class MessageData {
  * @experimental WebWorker support in Angular is experimental.
  */
 export class FnArg {
-  constructor(public value: any /** TODO #9100 */, public type: Type) {}
+  constructor(public value: any /** TODO #9100 */, public type: Type<any>) {}
 }
 
 /**

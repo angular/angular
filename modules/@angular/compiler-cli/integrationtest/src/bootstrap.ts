@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {browserPlatform} from '@angular/platform-browser';
+import {platformBrowser} from '@angular/platform-browser';
 import {BasicComp} from './basic';
 import {MainModuleNgFactory} from './module.ngfactory';
 
-MainModuleNgFactory.create().instance.appRef.bootstrap(BasicComp);
+MainModuleNgFactory.create(null).instance.appRef.bootstrap(BasicComp);

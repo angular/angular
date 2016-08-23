@@ -6,16 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {expect} from '@angular/core/testing';
-import {UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
-import {ClientMessageBroker, ClientMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
+import {ClientMessageBroker, ClientMessageBrokerFactory_, UiArguments} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
 import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-browser/src/web_workers/shared/message_bus';
-
-import {PromiseWrapper} from '../../../src/facade/async';
 import {ListWrapper, StringMapWrapper} from '../../../src/facade/collection';
-import {BaseException, WrappedException} from '../../../src/facade/exceptions';
-import {Type, isPresent} from '../../../src/facade/lang';
+import {BaseException} from '../../../src/facade/exceptions';
+import {isPresent} from '../../../src/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
 
 import {MockEventEmitter} from './mock_event_emitter';
@@ -49,15 +46,15 @@ export function createPairedMessageBuses(): PairedMessageBuses {
 export function expectBrokerCall(
     broker: SpyMessageBroker, methodName: string, vals?: Array<any>,
     handler?: (..._: any[]) => Promise<any>| void): void {
-  broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type) => {
+  broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type<any>) => {
     expect(args.method).toEqual(methodName);
     if (isPresent(vals)) {
       expect(args.args.length).toEqual(vals.length);
-      ListWrapper.forEachWithIndex(vals, (v, i) => {expect(v).toEqual(args.args[i].value)});
+      ListWrapper.forEachWithIndex(vals, (v, i) => { expect(v).toEqual(args.args[i].value); });
     }
     var promise: any /** TODO #9100 */ = null;
     if (isPresent(handler)) {
-      let givenValues = args.args.map((arg) => {arg.value});
+      let givenValues = args.args.map((arg) => arg.value);
       if (givenValues.length > 0) {
         promise = handler(givenValues);
       } else {
@@ -65,7 +62,13 @@ export function expectBrokerCall(
       }
     }
     if (promise == null) {
-      promise = PromiseWrapper.wrap(() => {});
+      promise = new Promise((res, rej) => {
+        try {
+          res();
+        } catch (e) {
+          rej(e);
+        }
+      });
     }
     return promise;
   });

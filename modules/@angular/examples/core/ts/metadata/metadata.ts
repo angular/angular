@@ -8,10 +8,10 @@
 
 import {Attribute, Component, Directive, Pipe} from '@angular/core';
 
-var CustomDirective: Function;
+class CustomDirective {};
 
 // #docregion component
-@Component({selector: 'greet', template: 'Hello {{name}}!', directives: [CustomDirective]})
+@Component({selector: 'greet', template: 'Hello {{name}}!'})
 class Greet {
   name: string = 'World';
 }

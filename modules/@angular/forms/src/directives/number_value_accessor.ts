@@ -8,11 +8,11 @@
 
 import {Directive, ElementRef, Renderer, forwardRef} from '@angular/core';
 
-import {NumberWrapper} from '../facade/lang';
+import {NumberWrapper, isBlank} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const NUMBER_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const NUMBER_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => NumberValueAccessor),
   multi: true
@@ -44,7 +44,9 @@ export class NumberValueAccessor implements ControlValueAccessor {
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
   writeValue(value: number): void {
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', value);
+    // The value needs to be normalized for IE9, otherwise it is set to 'null' when null
+    const normalizedValue = isBlank(value) ? '' : value;
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', normalizedValue);
   }
 
   registerOnChange(fn: (_: number) => void): void {

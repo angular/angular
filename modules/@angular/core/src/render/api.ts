@@ -13,14 +13,15 @@ import {Injector} from '../di/injector';
 import {unimplemented} from '../facade/exceptions';
 import {ViewEncapsulation} from '../metadata/view';
 
-
 /**
  * @experimental
  */
+// TODO (matsko): add typing for the animation function
 export class RenderComponentType {
   constructor(
       public id: string, public templateUrl: string, public slotCount: number,
-      public encapsulation: ViewEncapsulation, public styles: Array<string|any[]>) {}
+      public encapsulation: ViewEncapsulation, public styles: Array<string|any[]>,
+      public animations: {[key: string]: Function}) {}
 }
 
 export abstract class RenderDebugInfo {
@@ -69,16 +70,13 @@ export abstract class Renderer {
   abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string):
       void;
 
-  abstract setElementClass(renderElement: any, className: string, isAdd: boolean): any
-      /** TODO #9100 */;
+  abstract setElementClass(renderElement: any, className: string, isAdd: boolean): void;
 
-  abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): any
-      /** TODO #9100 */;
+  abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): void;
 
-  abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): any
-      /** TODO #9100 */;
+  abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): void;
 
-  abstract setText(renderNode: any, text: string): any /** TODO #9100 */;
+  abstract setText(renderNode: any, text: string): void;
 
   abstract animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],

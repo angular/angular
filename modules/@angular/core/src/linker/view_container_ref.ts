@@ -11,7 +11,6 @@ import {ListWrapper} from '../facade/collection';
 import {unimplemented} from '../facade/exceptions';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
-
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {AppElement} from './element';
 import {ElementRef} from './element_ref';
@@ -79,7 +78,7 @@ export abstract class ViewContainerRef {
    * specified `index`.
    *
    * The component is instantiated using its {@link ComponentFactory} which can be
-   * obtained via {@link ComponentResolver#resolveComponent}.
+   * obtained via {@link ComponentFactoryResolver#resolveComponentFactory}.
    *
    * If `index` is not specified, the new View will be inserted as the last View in the container.
    *
@@ -99,6 +98,13 @@ export abstract class ViewContainerRef {
    * Returns the inserted {@link ViewRef}.
    */
   abstract insert(viewRef: ViewRef, index?: number): ViewRef;
+
+  /**
+   * Moves a View identified by a {@link ViewRef} into the container at the specified `index`.
+   *
+   * Returns the inserted {@link ViewRef}.
+   */
+  abstract move(viewRef: ViewRef, currentIndex: number): ViewRef;
 
   /**
    * Returns the index of the View, specified via {@link ViewRef}, within the current container or
@@ -168,6 +174,14 @@ export class ViewContainerRef_ implements ViewContainerRef {
     if (index == -1) index = this.length;
     var viewRef_ = <ViewRef_<any>>viewRef;
     this._element.attachView(viewRef_.internalView, index);
+    return wtfLeave(s, viewRef_);
+  }
+
+  move(viewRef: ViewRef, currentIndex: number): ViewRef {
+    var s = this._insertScope();
+    if (currentIndex == -1) return;
+    var viewRef_ = <ViewRef_<any>>viewRef;
+    this._element.moveView(viewRef_.internalView, currentIndex);
     return wtfLeave(s, viewRef_);
   }
 

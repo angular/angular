@@ -1,29 +1,14 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/testing/testing_internal';
-import {
-  Runner,
-  Sampler,
-  SampleDescription,
-  Validator,
-  ReflectiveInjector,
-  Injector,
-  Metric,
-  Options,
-  WebDriverAdapter,
-  SampleState
-} from 'benchpress/common';
-import {isBlank} from '@angular/facade';
-import {PromiseWrapper} from '@angular/facade';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {isBlank} from '@angular/facade/src/lang';
+import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from 'benchpress/common';
 
 export function main() {
   describe('runner', () => {
@@ -35,8 +20,7 @@ export function main() {
         defaultBindings = [];
       }
       runner = new Runner([
-        defaultBindings,
-        {
+        defaultBindings, {
           provide: Sampler,
           useFactory: (_injector) => {
             injector = _injector;
@@ -44,9 +28,9 @@ export function main() {
           },
           deps: [Injector]
         },
-        { provide: Metric, useFactory: () => new MockMetric(), deps: []},
-        { provide: Validator, useFactory: () => new MockValidator(), deps: []},
-        { provide: WebDriverAdapter, useFactory: () => new MockWebDriverAdapter(), deps: []}
+        {provide: Metric, useFactory: () => new MockMetric(), deps: []},
+        {provide: Validator, useFactory: () => new MockValidator(), deps: []},
+        {provide: WebDriverAdapter, useFactory: () => new MockWebDriverAdapter(), deps: []}
       ]);
       return runner;
     }
@@ -63,7 +47,10 @@ export function main() {
 
     it('should merge SampleDescription.description', inject([AsyncTestCompleter], (async) => {
          createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
-             .sample({id: 'someId', providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {'b': 2}}]})
+             .sample({
+               id: 'someId',
+               providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {'b': 2}}]
+             })
              .then((_) => injector.get(SampleDescription))
              .then((desc) => {
                expect(desc.description)
@@ -87,31 +74,25 @@ export function main() {
 
     it('should bind Options.EXECUTE', inject([AsyncTestCompleter], (async) => {
          var execute = () => {};
-         createRunner()
-             .sample({id: 'someId', execute: execute})
-             .then((_) => {
-               expect(injector.get(Options.EXECUTE)).toEqual(execute);
-               async.done();
-             });
+         createRunner().sample({id: 'someId', execute: execute}).then((_) => {
+           expect(injector.get(Options.EXECUTE)).toEqual(execute);
+           async.done();
+         });
        }));
 
     it('should bind Options.PREPARE', inject([AsyncTestCompleter], (async) => {
          var prepare = () => {};
-         createRunner()
-             .sample({id: 'someId', prepare: prepare})
-             .then((_) => {
-               expect(injector.get(Options.PREPARE)).toEqual(prepare);
-               async.done();
-             });
+         createRunner().sample({id: 'someId', prepare: prepare}).then((_) => {
+           expect(injector.get(Options.PREPARE)).toEqual(prepare);
+           async.done();
+         });
        }));
 
     it('should bind Options.MICRO_METRICS', inject([AsyncTestCompleter], (async) => {
-         createRunner()
-             .sample({id: 'someId', microMetrics: {'a': 'b'}})
-             .then((_) => {
-               expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
-               async.done();
-             });
+         createRunner().sample({id: 'someId', microMetrics: {'a': 'b'}}).then((_) => {
+           expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
+           async.done();
+         });
        }));
 
     it('should overwrite bindings per sample call', inject([AsyncTestCompleter], (async) => {
@@ -133,7 +114,7 @@ export function main() {
 }
 
 class MockWebDriverAdapter extends WebDriverAdapter {
-  executeScript(script): Promise<string> { return PromiseWrapper.resolve('someUserAgent'); }
+  executeScript(script): Promise<string> { return Promise.resolve('someUserAgent'); }
   capabilities() { return null; }
 }
 
@@ -149,5 +130,5 @@ class MockMetric extends Metric {
 
 class MockSampler extends Sampler {
   constructor() { super(); }
-  sample(): Promise<SampleState> { return PromiseWrapper.resolve(new SampleState([], [])); }
+  sample(): Promise<SampleState> { return Promise.resolve(new SampleState([], [])); }
 }

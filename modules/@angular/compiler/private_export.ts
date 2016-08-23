@@ -6,23 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as app_module_compiler from './src/app_module_compiler';
 import * as directive_normalizer from './src/directive_normalizer';
 import * as lexer from './src/expression_parser/lexer';
 import * as parser from './src/expression_parser/parser';
-import * as html_parser from './src/html_parser';
-import * as i18n_html_parser from './src/i18n/i18n_html_parser';
-import * as i18n_message from './src/i18n/message';
-import * as i18n_extractor from './src/i18n/message_extractor';
-import * as xmb_serializer from './src/i18n/xmb_serializer';
 import * as metadata_resolver from './src/metadata_resolver';
+import * as html_parser from './src/ml_parser/html_parser';
+import * as interpolation_config from './src/ml_parser/interpolation_config';
+import * as ng_module_compiler from './src/ng_module_compiler';
 import * as path_util from './src/output/path_util';
 import * as ts_emitter from './src/output/ts_emitter';
 import * as parse_util from './src/parse_util';
 import * as dom_element_schema_registry from './src/schema/dom_element_schema_registry';
 import * as selector from './src/selector';
 import * as style_compiler from './src/style_compiler';
-import * as template_parser from './src/template_parser';
+import * as template_parser from './src/template_parser/template_parser';
 import * as view_compiler from './src/view_compiler/view_compiler';
 
 export namespace __compiler_private__ {
@@ -44,22 +41,8 @@ export var CompileMetadataResolver = metadata_resolver.CompileMetadataResolver;
 export type HtmlParser = html_parser.HtmlParser;
 export var HtmlParser = html_parser.HtmlParser;
 
-export type I18nHtmlParser = i18n_html_parser.I18nHtmlParser;
-export var I18nHtmlParser = i18n_html_parser.I18nHtmlParser;
-
-export type ExtractionResult = i18n_extractor.ExtractionResult;
-export var ExtractionResult = i18n_extractor.ExtractionResult;
-
-export type Message = i18n_message.Message;
-export var Message = i18n_message.Message;
-
-export type MessageExtractor = i18n_extractor.MessageExtractor;
-export var MessageExtractor = i18n_extractor.MessageExtractor;
-
-export var removeDuplicates = i18n_extractor.removeDuplicates;
-
-export var serializeXmb = xmb_serializer.serializeXmb;
-export var deserializeXmb = xmb_serializer.deserializeXmb;
+export type InterpolationConfig = interpolation_config.InterpolationConfig;
+export var InterpolationConfig = interpolation_config.InterpolationConfig;
 
 export type DirectiveNormalizer = directive_normalizer.DirectiveNormalizer;
 export var DirectiveNormalizer = directive_normalizer.DirectiveNormalizer;
@@ -99,8 +82,8 @@ export var StyleCompiler = style_compiler.StyleCompiler;
 export type ViewCompiler = view_compiler.ViewCompiler;
 export var ViewCompiler = view_compiler.ViewCompiler;
 
-export type AppModuleCompiler = app_module_compiler.AppModuleCompiler;
-export var AppModuleCompiler = app_module_compiler.AppModuleCompiler;
+export type NgModuleCompiler = ng_module_compiler.NgModuleCompiler;
+export var NgModuleCompiler = ng_module_compiler.NgModuleCompiler;
 
 export type TypeScriptEmitter = ts_emitter.TypeScriptEmitter;
 export var TypeScriptEmitter = ts_emitter.TypeScriptEmitter;

@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '../di/decorators';
-import {ObservableWrapper} from '../facade/async';
 import {Map, MapWrapper} from '../facade/collection';
 import {BaseException} from '../facade/exceptions';
 import {scheduleMicroTask} from '../facade/lang';
@@ -40,18 +39,22 @@ export class Testability {
 
   /** @internal */
   _watchAngularEvents(): void {
-    ObservableWrapper.subscribe(this._ngZone.onUnstable, (_) => {
-      this._didWork = true;
-      this._isZoneStable = false;
+    this._ngZone.onUnstable.subscribe({
+      next: () => {
+        this._didWork = true;
+        this._isZoneStable = false;
+      }
     });
 
     this._ngZone.runOutsideAngular(() => {
-      ObservableWrapper.subscribe(this._ngZone.onStable, (_) => {
-        NgZone.assertNotInAngularZone();
-        scheduleMicroTask(() => {
-          this._isZoneStable = true;
-          this._runCallbacksIfReady();
-        });
+      this._ngZone.onStable.subscribe({
+        next: () => {
+          NgZone.assertNotInAngularZone();
+          scheduleMicroTask(() => {
+            this._isZoneStable = true;
+            this._runCallbacksIfReady();
+          });
+        }
       });
     });
   }
@@ -148,7 +151,6 @@ export interface GetTestability {
       Testability;
 }
 
-/* @ts2dart_const */
 class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
   findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
@@ -165,4 +167,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-var _testabilityGetter: GetTestability = /*@ts2dart_const*/ new _NoopGetTestability();
+var _testabilityGetter: GetTestability = new _NoopGetTestability();

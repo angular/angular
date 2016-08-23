@@ -6,18 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChange} from '@angular/core/src/change_detection';
+import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {Log, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-
-import {fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
+import {CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, Validator, Validators} from '@angular/forms';
+import {composeValidators, selectValueAccessor} from '@angular/forms/src/directives/shared';
 
 import {SpyNgControl, SpyValueAccessor} from './spies';
-
-import {FormGroup, FormControl, FormArray, FormArrayName, FormControlName, FormGroupName, NgModelGroup, FormGroupDirective, ControlValueAccessor, Validators, NgForm, NgModel, FormControlDirective, NgControl, DefaultValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor, Validator} from '@angular/forms';
-
-import {selectValueAccessor, composeValidators} from '@angular/forms/src/directives/shared';
-import {TimerWrapper} from '../src/facade/async';
-import {PromiseWrapper} from '../src/facade/promise';
-import {SimpleChange} from '@angular/core/src/change_detection';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue: any;
@@ -34,14 +29,15 @@ class CustomValidatorDirective implements Validator {
 
 function asyncValidator(expected: any /** TODO #9100 */, timeout = 0) {
   return (c: any /** TODO #9100 */) => {
-    var completer = PromiseWrapper.completer();
+    var resolve: (result: any) => void;
+    var promise = new Promise(res => { resolve = res; });
     var res = c.value != expected ? {'async': true} : null;
     if (timeout == 0) {
-      completer.resolve(res);
+      resolve(res);
     } else {
-      TimerWrapper.setTimeout(() => { completer.resolve(res); }, timeout);
+      setTimeout(() => { resolve(res); }, timeout);
     }
-    return completer.promise;
+    return promise;
   };
 }
 
@@ -151,6 +147,8 @@ export function main() {
         expect(form.control).toBe(formModel);
         expect(form.value).toBe(formModel.value);
         expect(form.valid).toBe(formModel.valid);
+        expect(form.invalid).toBe(formModel.invalid);
+        expect(form.pending).toBe(formModel.pending);
         expect(form.errors).toBe(formModel.errors);
         expect(form.pristine).toBe(formModel.pristine);
         expect(form.dirty).toBe(formModel.dirty);
@@ -166,15 +164,26 @@ export function main() {
           dir.name = 'invalidName';
 
           expect(() => form.addControl(dir))
-              .toThrowError(new RegExp('Cannot find control \'invalidName\''));
+              .toThrowError(new RegExp(`Cannot find control with name: 'invalidName'`));
         });
 
-        it('should throw when no value accessor', () => {
-          var dir = new FormControlName(form, null, null, null);
+        it('should throw for a named control when no value accessor', () => {
+          const dir = new FormControlName(form, null, null, null);
           dir.name = 'login';
 
           expect(() => form.addControl(dir))
-              .toThrowError(new RegExp('No value accessor for \'login\''));
+              .toThrowError(new RegExp(`No value accessor for form control with name: 'login'`));
+        });
+
+        it('should throw when no value accessor with path', () => {
+          const group = new FormGroupName(form, null, null);
+          const dir = new FormControlName(group, null, null, null);
+          group.name = 'passwords';
+          dir.name = 'password';
+
+          expect(() => form.addControl(dir))
+              .toThrowError(new RegExp(
+                  `No value accessor for form control with path: 'passwords -> password'`));
         });
 
         it('should set up validators', fakeAsync(() => {
@@ -184,7 +193,7 @@ export function main() {
              expect(formModel.hasError('required', ['login'])).toBe(true);
              expect(formModel.hasError('async', ['login'])).toBe(false);
 
-             (<FormControl>formModel.find(['login'])).updateValue('invalid value');
+             (<FormControl>formModel.get('login')).setValue('invalid value');
 
              // sync validator passes, running async validators
              expect(formModel.pending).toBe(true);
@@ -196,7 +205,7 @@ export function main() {
            }));
 
         it('should write value to the DOM', () => {
-          (<FormControl>formModel.find(['login'])).updateValue('initValue');
+          (<FormControl>formModel.get(['login'])).setValue('initValue');
 
           form.addControl(loginControlDir);
 
@@ -224,17 +233,17 @@ export function main() {
              group.name = 'passwords';
              form.addFormGroup(group);
 
-             (<FormControl>formModel.find(['passwords', 'password'])).updateValue('somePassword');
-             (<FormControl>formModel.find([
+             (<FormControl>formModel.get(['passwords', 'password'])).setValue('somePassword');
+             (<FormControl>formModel.get([
                'passwords', 'passwordConfirm'
-             ])).updateValue('someOtherPassword');
+             ])).setValue('someOtherPassword');
 
              // sync validators are set
              expect(formModel.hasError('differentPasswords', ['passwords'])).toEqual(true);
 
-             (<FormControl>formModel.find([
+             (<FormControl>formModel.get([
                'passwords', 'passwordConfirm'
-             ])).updateValue('somePassword');
+             ])).setValue('somePassword');
 
              // sync validators pass, running async validators
              expect(formModel.pending).toBe(true);
@@ -257,7 +266,7 @@ export function main() {
         it('should update dom values of all the directives', () => {
           form.addControl(loginControlDir);
 
-          (<FormControl>formModel.find(['login'])).updateValue('new value');
+          (<FormControl>formModel.get(['login'])).setValue('new value');
 
           form.ngOnChanges({});
 
@@ -307,6 +316,8 @@ export function main() {
         expect(form.control).toBe(formModel);
         expect(form.value).toBe(formModel.value);
         expect(form.valid).toBe(formModel.valid);
+        expect(form.invalid).toBe(formModel.invalid);
+        expect(form.pending).toBe(formModel.pending);
         expect(form.errors).toBe(formModel.errors);
         expect(form.pristine).toBe(formModel.pristine);
         expect(form.dirty).toBe(formModel.dirty);
@@ -323,7 +334,7 @@ export function main() {
 
              flushMicrotasks();
 
-             expect(formModel.find(['person', 'login'])).not.toBeNull;
+             expect(formModel.get(['person', 'login'])).not.toBeNull;
            }));
 
         // should update the form's value and validity
@@ -339,8 +350,8 @@ export function main() {
 
              flushMicrotasks();
 
-             expect(formModel.find(['person'])).toBeNull();
-             expect(formModel.find(['person', 'login'])).toBeNull();
+             expect(formModel.get(['person'])).toBeNull();
+             expect(formModel.get(['person', 'login'])).toBeNull();
            }));
 
         // should update the form's value and validity
@@ -381,6 +392,8 @@ export function main() {
         expect(controlGroupDir.control).toBe(formModel);
         expect(controlGroupDir.value).toBe(formModel.value);
         expect(controlGroupDir.valid).toBe(formModel.valid);
+        expect(controlGroupDir.invalid).toBe(formModel.invalid);
+        expect(controlGroupDir.pending).toBe(formModel.pending);
         expect(controlGroupDir.errors).toBe(formModel.errors);
         expect(controlGroupDir.pristine).toBe(formModel.pristine);
         expect(controlGroupDir.dirty).toBe(formModel.dirty);
@@ -407,6 +420,8 @@ export function main() {
         expect(formArrayDir.control).toBe(formModel);
         expect(formArrayDir.value).toBe(formModel.value);
         expect(formArrayDir.valid).toBe(formModel.valid);
+        expect(formArrayDir.invalid).toBe(formModel.invalid);
+        expect(formArrayDir.pending).toBe(formModel.pending);
         expect(formArrayDir.errors).toBe(formModel.errors);
         expect(formArrayDir.pristine).toBe(formModel.pristine);
         expect(formArrayDir.dirty).toBe(formModel.dirty);
@@ -422,6 +437,8 @@ export function main() {
         expect(controlDir.control).toBe(control);
         expect(controlDir.value).toBe(control.value);
         expect(controlDir.valid).toBe(control.valid);
+        expect(controlDir.invalid).toBe(control.invalid);
+        expect(controlDir.pending).toBe(control.pending);
         expect(controlDir.errors).toBe(control.errors);
         expect(controlDir.pristine).toBe(control.pristine);
         expect(controlDir.dirty).toBe(control.dirty);
@@ -473,6 +490,8 @@ export function main() {
         expect(ngModel.control).toBe(control);
         expect(ngModel.value).toBe(control.value);
         expect(ngModel.valid).toBe(control.valid);
+        expect(ngModel.invalid).toBe(control.invalid);
+        expect(ngModel.pending).toBe(control.pending);
         expect(ngModel.errors).toBe(control.errors);
         expect(ngModel.pristine).toBe(control.pristine);
         expect(ngModel.dirty).toBe(control.dirty);
@@ -482,6 +501,22 @@ export function main() {
         expect(ngModel.valueChanges).toBe(control.valueChanges);
       });
 
+      it('should throw when no value accessor with named control', () => {
+        const namedDir = new NgModel(null, null, null, null);
+        namedDir.name = 'one';
+
+        expect(() => namedDir.ngOnChanges({}))
+            .toThrowError(new RegExp(`No value accessor for form control with name: 'one'`));
+      });
+
+      it('should throw when no value accessor with unnamed control', () => {
+        const unnamedDir = new NgModel(null, null, null, null);
+
+        expect(() => unnamedDir.ngOnChanges({}))
+            .toThrowError(
+                new RegExp(`No value accessor for form control with unspecified name attribute`));
+      });
+
       it('should set up validator', fakeAsync(() => {
            // this will add the required validator and recalculate the validity
            ngModel.ngOnChanges({});
@@ -489,7 +524,7 @@ export function main() {
 
            expect(ngModel.control.errors).toEqual({'required': true});
 
-           ngModel.control.updateValue('someValue');
+           ngModel.control.setValue('someValue');
            tick();
 
            expect(ngModel.control.errors).toEqual({'async': true});
@@ -513,6 +548,8 @@ export function main() {
         expect(controlNameDir.control).toBe(formModel);
         expect(controlNameDir.value).toBe(formModel.value);
         expect(controlNameDir.valid).toBe(formModel.valid);
+        expect(controlNameDir.invalid).toBe(formModel.invalid);
+        expect(controlNameDir.pending).toBe(formModel.pending);
         expect(controlNameDir.errors).toBe(formModel.errors);
         expect(controlNameDir.pristine).toBe(formModel.pristine);
         expect(controlNameDir.dirty).toBe(formModel.dirty);

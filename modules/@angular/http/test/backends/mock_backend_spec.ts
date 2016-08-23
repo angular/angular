@@ -6,20 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {ObservableWrapper} from '../../src/facade/async';
-import {BrowserXhr} from '../../src/backends/browser_xhr';
-import {MockConnection, MockBackend} from '../../testing/mock_backend';
-import {provide, Injector, ReflectiveInjector} from '@angular/core';
+import {ReflectiveInjector} from '@angular/core';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
+
+import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
-import {Headers} from '../../src/headers';
-import {Map} from '../../src/facade/collection';
-import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
-import {ResponseType} from '../../src/enums';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {MockBackend, MockConnection} from '../../testing/mock_backend';
 
 export function main() {
   describe('MockBackend', () => {
@@ -41,10 +37,11 @@ export function main() {
       sampleResponse2 = new Response(new ResponseOptions({body: 'response2'}));
     });
 
-    it('should create a new MockBackend', () => {expect(backend).toBeAnInstanceOf(MockBackend)});
+    it('should create a new MockBackend', () => { expect(backend).toBeAnInstanceOf(MockBackend); });
 
-    it('should create a new MockConnection',
-       () => {expect(backend.createConnection(sampleRequest1)).toBeAnInstanceOf(MockConnection)});
+    it('should create a new MockConnection', () => {
+      expect(backend.createConnection(sampleRequest1)).toBeAnInstanceOf(MockConnection);
+    });
 
     it('should create a new connection and allow subscription', () => {
       let connection: MockConnection = backend.createConnection(sampleRequest1);

@@ -6,15 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Host, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {ListWrapper, Map} from '../facade/collection';
+import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent, normalizeBlank} from '../facade/lang';
 
-const _CASE_DEFAULT = /*@ts2dart_const*/ new Object();
-
-// TODO: remove when fully deprecated
-let _warned: boolean = false;
+const _CASE_DEFAULT = new Object();
 
 export class SwitchView {
   constructor(
@@ -28,7 +25,7 @@ export class SwitchView {
 /**
  * Adds or removes DOM sub-trees when their match expressions match the switch expression.
  *
- * Elements within `NgSwitch` but without `ngSwitchCase` or `NgSwitchDefault` directives will be
+ * Elements within `NgSwitch` but without `NgSwitchCase` or `NgSwitchDefault` directives will be
  * preserved at the location as specified in the template.
  *
  * `NgSwitch` simply inserts nested elements based on which match expression matches the value
@@ -68,7 +65,7 @@ export class SwitchView {
  *       <template ngSwitchDefault>&gt; 2, STOP!</template>
  *     </p>
  *   `,
- *   directives: [NgSwitch, ngSwitchCase, NgSwitchDefault]
+ *   directives: [NgSwitch, NgSwitchCase, NgSwitchDefault]
  * })
  * export class App {
  *   value = 'init';
@@ -77,19 +74,18 @@ export class SwitchView {
  *     this.value = this.value === 'init' ? 0 : this.value + 1;
  *   }
  * }
- *
- * bootstrap(App).catch(err => console.error(err));
  * ```
  *
  * @experimental
  */
-@Directive({selector: '[ngSwitch]', inputs: ['ngSwitch']})
+@Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
   private _switchValue: any;
   private _useDefault: boolean = false;
   private _valueViews = new Map<any, SwitchView[]>();
   private _activeViews: SwitchView[] = [];
 
+  @Input()
   set ngSwitch(value: any) {
     // Empty the currently active ViewContainers
     this._emptyAllActiveViews();
@@ -183,7 +179,7 @@ export class NgSwitch {
  *
  * @experimental
  */
-@Directive({selector: '[ngSwitchCase],[ngSwitchWhen]', inputs: ['ngSwitchCase', 'ngSwitchWhen']})
+@Directive({selector: '[ngSwitchCase]'})
 export class NgSwitchCase {
   // `_CASE_DEFAULT` is used as a marker for a not yet initialized value
   /** @internal */
@@ -199,16 +195,8 @@ export class NgSwitchCase {
     this._view = new SwitchView(viewContainer, templateRef);
   }
 
+  @Input()
   set ngSwitchCase(value: any) {
-    this._switch._onCaseValueChanged(this._value, value, this._view);
-    this._value = value;
-  }
-
-  set ngSwitchWhen(value: any) {
-    if (!_warned) {
-      _warned = true;
-      console.warn('*ngSwitchWhen is deprecated and will be removed. Use *ngSwitchCase instead');
-    }
     this._switch._onCaseValueChanged(this._value, value, this._view);
     this._value = value;
   }

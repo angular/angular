@@ -1,27 +1,19 @@
 /** @experimental */
+export declare const _WORKER_UI_PLATFORM_PROVIDERS: Provider[];
+
+/** @experimental */
 export declare abstract class AnimationDriver {
     abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
     static NOOP: AnimationDriver;
 }
 
-/** @stable */
-export declare function bootstrapModuleFactory<M>(moduleFactory: AppModuleFactory<M>): AppModuleRef<M>;
-
-/** @experimental */
-export declare const BROWSER_APP_PROVIDERS: Array<any>;
-
-/** @experimental */
-export declare const BROWSER_PLATFORM_PROVIDERS: Array<any>;
-
 /** @experimental */
 export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
 
-/** @stable */
-export declare class BrowserModule {
-}
-
 /** @experimental */
-export declare function browserPlatform(): PlatformRef;
+export declare class BrowserModule {
+    constructor(parentModule: BrowserModule);
+}
 
 /** @stable */
 export declare class BrowserPlatformLocation extends PlatformLocation {
@@ -42,12 +34,12 @@ export declare class BrowserPlatformLocation extends PlatformLocation {
 export declare class By {
     static all(): Predicate<DebugElement>;
     static css(selector: string): Predicate<DebugElement>;
-    static directive(type: Type): Predicate<DebugElement>;
+    static directive(type: Type<any>): Predicate<DebugElement>;
 }
 
 /** @experimental */
 export declare abstract class ClientMessageBroker {
-    abstract runOnService(args: UiArguments, returnType: Type): Promise<any>;
+    abstract runOnService(args: UiArguments, returnType: Type<any>): Promise<any>;
 }
 
 /** @experimental */
@@ -87,9 +79,9 @@ export declare class EventManager {
 
 /** @experimental */
 export declare class FnArg {
-    type: Type;
+    type: Type<any>;
     value: any;
-    constructor(value: any, type: Type);
+    constructor(value: any, type: Type<any>);
 }
 
 /** @experimental */
@@ -127,7 +119,21 @@ export interface MessageBusSource {
 }
 
 /** @experimental */
-export declare const PRIMITIVE: Type;
+export declare class NgProbeToken {
+    constructor(name: string, token: any);
+}
+
+/** @experimental */
+export declare const platformBrowser: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
+export declare const platformWorkerApp: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
+export declare const platformWorkerUi: (extraProviders?: any[]) => PlatformRef;
+
+/** @experimental */
+export declare const PRIMITIVE: Type<any>;
 
 /** @experimental */
 export declare class ReceivedMessage {
@@ -162,7 +168,7 @@ export interface SafeUrl extends SafeValue {
 
 /** @experimental */
 export declare abstract class ServiceMessageBroker {
-    abstract registerMethod(methodName: string, signature: Type[], method: Function, returnType?: Type): void;
+    abstract registerMethod(methodName: string, signature: Type<any>[], method: Function, returnType?: Type<any>): void;
 }
 
 /** @experimental */
@@ -190,9 +196,6 @@ export declare class WebWorkerInstance {
 }
 
 /** @experimental */
-export declare const WORKER_APP_APPLICATION_PROVIDERS: Array<any>;
-
-/** @experimental */
 export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     provide: typeof PlatformLocation;
     useClass: typeof WebWorkerPlatformLocation;
@@ -204,13 +207,7 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
 })[];
 
 /** @experimental */
-export declare const WORKER_APP_PLATFORM_PROVIDERS: Array<any>;
-
-/** @experimental */
 export declare const WORKER_SCRIPT: OpaqueToken;
-
-/** @experimental */
-export declare const WORKER_UI_APPLICATION_PROVIDERS: Array<any>;
 
 /** @experimental */
 export declare const WORKER_UI_LOCATION_PROVIDERS: (typeof MessageBasedPlatformLocation | typeof BrowserPlatformLocation | {
@@ -221,13 +218,8 @@ export declare const WORKER_UI_LOCATION_PROVIDERS: (typeof MessageBasedPlatformL
 })[];
 
 /** @experimental */
-export declare const WORKER_UI_PLATFORM_PROVIDERS: Array<any>;
-
-/** @experimental */
 export declare const WORKER_UI_STARTABLE_MESSAGING_SERVICE: OpaqueToken;
 
 /** @experimental */
-export declare function workerAppPlatform(): PlatformRef;
-
-/** @experimental */
-export declare function workerUiPlatform(): PlatformRef;
+export declare class WorkerAppModule {
+}

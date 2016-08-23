@@ -1,24 +1,11 @@
 /** @experimental */
-export declare function bootstrap<C>(appComponentType: ConcreteType<C>, customProviders?: Array<any>): Promise<ComponentRef<C>>;
-
-/** @stable */
-export declare function bootstrapModule<M>(moduleType: ConcreteType<M>, compiler?: Compiler): Promise<AppModuleRef<M>>;
+export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Provider[]): Promise<PlatformRef>;
 
 /** @experimental */
-export declare function bootstrapWorkerApp(appComponentType: Type, customProviders?: Array<any>): Promise<ComponentRef<any>>;
+export declare const platformBrowserDynamic: (extraProviders?: any[]) => PlatformRef;
 
 /** @experimental */
-export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Array<any>): Promise<ApplicationRef>;
+export declare const platformWorkerAppDynamic: (extraProviders?: any[]) => PlatformRef;
 
 /** @experimental */
-export declare const BROWSER_APP_COMPILER_PROVIDERS: Array<any>;
-
-/** @stable */
-export declare function browserCompiler({useDebug, useJit, providers}?: {
-    useDebug?: boolean;
-    useJit?: boolean;
-    providers?: Array<any>;
-}): Compiler;
-
-/** @experimental */
-export declare const CACHED_TEMPLATE_PROVIDER: Array<any>;
+export declare const RESOURCE_CACHE_PROVIDER: Provider[];

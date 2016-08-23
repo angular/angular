@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ClassProvider, ExistingProvider, FactoryProvider, TypeProvider, ValueProvider} from '@angular/core';
+
 import * as browser from './src/browser';
 import * as ng_proble from './src/dom/debug/ng_probe';
 import * as dom_adapter from './src/dom/dom_adapter';
@@ -42,5 +44,6 @@ export var __platform_browser_private__ = {
   SharedStylesHost: shared_styles_host.SharedStylesHost,
   ELEMENT_PROBE_PROVIDERS: ng_proble.ELEMENT_PROBE_PROVIDERS,
   DomEventsPlugin: dom_events.DomEventsPlugin,
-  initDomAdapter: browser.initDomAdapter
+  initDomAdapter: browser.initDomAdapter,
+  INTERNAL_BROWSER_PLATFORM_PROVIDERS: browser.INTERNAL_BROWSER_PLATFORM_PROVIDERS
 };

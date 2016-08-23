@@ -1,6 +1,6 @@
 **I'm submitting a ...**  (check one with "x")
 ```
-[ ] bug report
+[ ] bug report => search github for a similar issue or PR before submitting
 [ ] feature request
 [ ] support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
 ```
@@ -30,4 +30,4 @@ If the current behavior is a bug or you can illustrate your feature request bett
  
 * **Browser:** [all | Chrome XX | Firefox XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ] 
  
-* **Language:** [all | TypeScript X.X | ES6/7 | ES5 | Dart] 
+* **Language:** [all | TypeScript X.X | ES6/7 | ES5] 

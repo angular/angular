@@ -6,20 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {BaseException, Inject, Injectable, OpaqueToken, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
+import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
-import {BaseException} from '../facade/exceptions';
-import {Json, RegExpWrapper, StringWrapper, isArray, isBlank, isPresent, isString, stringify} from '../facade/lang';
+import {Json, StringWrapper, isArray, isBlank, isPresent, isString, stringify} from '../facade/lang';
 
-import {DomSharedStylesHost} from './shared_styles_host';
-
-import {AnimationKeyframe, AnimationStyles, AnimationPlayer, RenderDebugInfo,} from '../../core_private';
-
-import {EventManager} from './events/event_manager';
-import {DOCUMENT} from './dom_tokens';
-import {getDOM} from './dom_adapter';
 import {AnimationDriver} from './animation_driver';
+import {getDOM} from './dom_adapter';
+import {DOCUMENT} from './dom_tokens';
+import {EventManager} from './events/event_manager';
+import {DomSharedStylesHost} from './shared_styles_host';
 import {camelCaseToDashCase} from './util';
 
 const NAMESPACE_URIS = {
@@ -28,7 +25,7 @@ const NAMESPACE_URIS = {
   'xhtml': 'http://www.w3.org/1999/xhtml'
 };
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
-var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
+var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;
 
 export abstract class DomRootRenderer implements RootRenderer {
   protected registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();
@@ -197,9 +194,8 @@ export class DomRenderer implements Renderer {
   setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string): void {
     var dashCasedPropertyName = camelCaseToDashCase(propertyName);
     if (getDOM().isCommentNode(renderElement)) {
-      var existingBindings = RegExpWrapper.firstMatch(
-          TEMPLATE_BINDINGS_EXP,
-          StringWrapper.replaceAll(getDOM().getText(renderElement), /\n/g, ''));
+      const existingBindings = StringWrapper.replaceAll(getDOM().getText(renderElement), /\n/g, '')
+                                   .match(TEMPLATE_BINDINGS_EXP);
       var parsedBindings = Json.parse(existingBindings[1]);
       (parsedBindings as any /** TODO #9100 */)[dashCasedPropertyName] = propertyValue;
       getDOM().setText(
@@ -298,12 +294,12 @@ function _flattenStyles(compId: string, styles: Array<any|any[]>, target: string
   return target;
 }
 
-var NS_PREFIX_RE = /^:([^:]+):(.+)/g;
+const NS_PREFIX_RE = /^:([^:]+):(.+)$/;
 
 function splitNamespace(name: string): string[] {
   if (name[0] != ':') {
     return [null, name];
   }
-  let match = RegExpWrapper.firstMatch(NS_PREFIX_RE, name);
+  const match = name.match(NS_PREFIX_RE);
   return [match[1], match[2]];
 }

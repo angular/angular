@@ -9,6 +9,8 @@
 export * from './testing/async';
 export * from './testing/component_fixture';
 export * from './testing/fake_async';
-export * from './testing/test_component_builder';
-export * from './testing/test_injector';
+export * from './testing/test_bed';
 export * from './testing/testing';
+export * from './testing/metadata_override';
+
+export * from './private_export_testing';

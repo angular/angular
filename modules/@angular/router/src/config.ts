@@ -7,9 +7,11 @@
  */
 
 import {Type} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+
 
 /**
- * `RouterConfig` is an array of route configurations. Each one has the following properties:
+ * `Routes` is an array of route configurations. Each one has the following properties:
  *
  * - *`path`* is a string that uses the route matcher DSL.
  * - `pathMatch` is a string that specifies the matching strategy.
@@ -18,6 +20,9 @@ import {Type} from '@angular/core';
  * - `outlet` is the name of the outlet the component should be placed into.
  * - `canActivate` is an array of DI tokens used to look up CanActivate handlers. See {@link
  * CanActivate} for more info.
+ * - `canActivateChild` is an array of DI tokens used to look up CanActivateChild handlers. See
+ * {@link
+ * CanActivateChild} for more info.
  * - `canDeactivate` is an array of DI tokens used to look up CanDeactivate handlers. See {@link
  * CanDeactivate} for more info.
  * - `data` is additional data provided to the component via `ActivatedRoute`.
@@ -227,12 +232,12 @@ import {Type} from '@angular/core';
  * With this configuration in place, navigating to '/parent/10' will create the main child and aux
  * components.
  *
- * @stable
+ * @stable use Routes
  */
-export type RouterConfig = Route[];
+export type Routes = Route[];
 
 /**
- * See {@link RouterConfig} for more details.
+ * See {@link Routes} for more details.
  * @stable
  */
 export type Data = {
@@ -240,7 +245,7 @@ export type Data = {
 };
 
 /**
- * See {@link RouterConfig} for more details.
+ * See {@link Routes} for more details.
  * @stable
  */
 export type ResolveData = {
@@ -248,43 +253,63 @@ export type ResolveData = {
 };
 
 /**
- * See {@link RouterConfig} for more details.
+ * @stable
+ */
+export type LoadChildrenCallback = () => Type<any>| Promise<Type<any>>| Observable<Type<any>>;
+
+/**
+ * @stable
+ */
+export type LoadChildren = string | LoadChildrenCallback;
+
+/**
+ * See {@link Routes} for more details.
  * @stable
  */
 export interface Route {
   path?: string;
-
-  /**
-   * @deprecated - use `pathMatch` instead
-   */
-  terminal?: boolean;
-  pathMatch?: 'full'|'prefix';
-  component?: Type|string;
+  pathMatch?: string;
+  component?: Type<any>;
   redirectTo?: string;
   outlet?: string;
   canActivate?: any[];
+  canActivateChild?: any[];
   canDeactivate?: any[];
+  canLoad?: any[];
   data?: Data;
   resolve?: ResolveData;
   children?: Route[];
+  loadChildren?: LoadChildren;
 }
 
-export function validateConfig(config: RouterConfig): void {
+export function validateConfig(config: Routes): void {
   config.forEach(validateNode);
 }
 
 function validateNode(route: Route): void {
+  if (Array.isArray(route)) {
+    throw new Error(`Invalid route configuration: Array cannot be specified`);
+  }
   if (!!route.redirectTo && !!route.children) {
     throw new Error(
         `Invalid configuration of route '${route.path}': redirectTo and children cannot be used together`);
+  }
+  if (!!route.redirectTo && !!route.loadChildren) {
+    throw new Error(
+        `Invalid configuration of route '${route.path}': redirectTo and loadChildren cannot be used together`);
+  }
+  if (!!route.children && !!route.loadChildren) {
+    throw new Error(
+        `Invalid configuration of route '${route.path}': children and loadChildren cannot be used together`);
   }
   if (!!route.redirectTo && !!route.component) {
     throw new Error(
         `Invalid configuration of route '${route.path}': redirectTo and component cannot be used together`);
   }
-  if (route.redirectTo === undefined && !route.component && !route.children) {
+  if (route.redirectTo === undefined && !route.component && !route.children &&
+      !route.loadChildren) {
     throw new Error(
-        `Invalid configuration of route '${route.path}': component, redirectTo, children must be provided`);
+        `Invalid configuration of route '${route.path}': one of the following must be provided (component or redirectTo or children or loadChildren)`);
   }
   if (route.path === undefined) {
     throw new Error(`Invalid route configuration: routes must have path specified`);
@@ -293,11 +318,14 @@ function validateNode(route: Route): void {
     throw new Error(
         `Invalid route configuration of route '${route.path}': path cannot start with a slash`);
   }
-  if (route.path === '' && route.redirectTo !== undefined &&
-      (route.terminal === undefined && route.pathMatch === undefined)) {
+  if (route.path === '' && route.redirectTo !== undefined && route.pathMatch === undefined) {
     const exp =
         `The default value of 'pathMatch' is 'prefix', but often the intent is to use 'full'.`;
     throw new Error(
         `Invalid route configuration of route '{path: "${route.path}", redirectTo: "${route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
+  }
+  if (route.pathMatch !== undefined && route.pathMatch !== 'full' && route.pathMatch !== 'prefix') {
+    throw new Error(
+        `Invalid configuration of route '${route.path}': pathMatch can only be set to 'prefix' or 'full'`);
   }
 }

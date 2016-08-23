@@ -1,5 +1,5 @@
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {window, document, gc} from '@angular/facade';
+import {window, document, gc} from '@angular/facade/src/browser';
 import {
   getIntParameter,
   getStringParameter,
@@ -9,11 +9,11 @@ import {
 } from '@angular/testing/src/benchmark_util';
 import {bootstrap} from '@angular/platform-browser';
 import {Component} from '@angular/core';
-import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
+import {NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
-import {ListWrapper} from '@angular/facade';
+import {ListWrapper} from '@angular/facade/src/collection';
 
 import {Inject} from '@angular/core/src/di/decorators';
 import {reflector} from '@angular/core/src/reflection/reflection';
@@ -37,12 +37,12 @@ function setupReflector() {
   reflector.registerGetters({
     'benchmarktype': (o) => o.benchmarktype,
     'switch': (o) => null,
-    'switchWhen': (o) => o.switchWhen
+    'switchCase': (o) => o.switchCase
   });
   reflector.registerSetters({
     'benchmarktype': (o, v) => o.benchmarktype = v,
     'switch': (o, v) => null,
-    'switchWhen': (o, v) => o.switchWhen = v
+    'switchCase': (o, v) => o.switchCase = v
   });
 }
 
@@ -210,24 +210,24 @@ class CellData {
 @Component({
   selector: 'largetable',
   inputs: ['data', 'benchmarkType'],
-  directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
+  directives: [NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault],
   template: `
       <table [ngSwitch]="benchmarkType">
-        <tbody template="ngSwitchWhen 'interpolation'">
+        <tbody template="ngSwitchCase 'interpolation'">
           <tr template="ngFor let row of data">
             <td template="ngFor let column of row">
               {{column.i}}:{{column.j}}|
             </td>
           </tr>
         </tbody>
-        <tbody template="ngSwitchWhen 'interpolationAttr'">
+        <tbody template="ngSwitchCase 'interpolationAttr'">
           <tr template="ngFor let row of data">
             <td template="ngFor let column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
               i,j attrs
             </td>
           </tr>
         </tbody>
-        <tbody template="ngSwitchWhen 'interpolationFn'">
+        <tbody template="ngSwitchCase 'interpolationFn'">
           <tr template="ngFor let row of data">
             <td template="ngFor let column of row">
               {{column.iFn()}}:{{column.jFn()}}|

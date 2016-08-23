@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, it, expect, beforeEach, ddescribe, iit, xit,} from '@angular/core/testing/testing_internal';
-import {fakeAsync, tick,} from '@angular/core/testing';
+import {QueryList} from '@angular/core/src/linker/query_list';
+import {fakeAsync, tick} from '@angular/core/testing';
+import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+
 import {iterateListLike} from '../../src/facade/collection';
 import {StringWrapper} from '../../src/facade/lang';
-import {ObservableWrapper} from '../../src/facade/async';
-import {QueryList} from '@angular/core/src/linker/query_list';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 interface _JsQueryList {
   filter(c: any): any;
@@ -124,7 +124,7 @@ export function main() {
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
              var fires = 0;
-             ObservableWrapper.subscribe(queryList.changes, (_) => { fires += 1; });
+             queryList.changes.subscribe({next: (_) => { fires += 1; }});
 
              queryList.notifyOnChanges();
              tick();
@@ -139,7 +139,7 @@ export function main() {
 
         it('should provides query list as an argument', fakeAsync(() => {
              var recorded: any /** TODO #9100 */;
-             ObservableWrapper.subscribe(queryList.changes, (v: any) => { recorded = v; });
+             queryList.changes.subscribe({next: (v: any) => { recorded = v; }});
 
              queryList.reset(['one']);
              queryList.notifyOnChanges();

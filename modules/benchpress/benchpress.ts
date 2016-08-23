@@ -1,4 +1,11 @@
-import {bind} from '@angular/core/src/di';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Options} from './common';
 
 export * from './common';
@@ -22,5 +29,5 @@ function writeFile(filename, content): Promise<any> {
         resolve();
       }
     });
-  })
+  });
 }

@@ -2,6 +2,7 @@ import {writeFileSync} from 'fs';
 import {convertDecorators} from 'tsickle';
 import * as ts from 'typescript';
 
+import NgOptions from './options';
 import {MetadataCollector} from './collector';
 
 
@@ -66,14 +67,18 @@ const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
 
 export class MetadataWriterHost extends DelegatingHost {
   private metadataCollector = new MetadataCollector();
-  constructor(delegate: ts.CompilerHost, private program: ts.Program) { super(delegate); }
+  constructor(
+      delegate: ts.CompilerHost, private program: ts.Program, private ngOptions: NgOptions) {
+    super(delegate);
+  }
 
   private writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
     // TODO: replace with DTS filePath when https://github.com/Microsoft/TypeScript/pull/8412 is
     // released
     if (/*DTS*/ /\.js$/.test(emitFilePath)) {
       const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
-      const metadata = this.metadataCollector.getMetadata(sourceFile);
+      const metadata =
+          this.metadataCollector.getMetadata(sourceFile, !!this.ngOptions.strictMetadataEmit);
       if (metadata && metadata.metadata) {
         const metadataText = JSON.stringify(metadata);
         writeFileSync(path, metadataText, {encoding: 'utf-8'});

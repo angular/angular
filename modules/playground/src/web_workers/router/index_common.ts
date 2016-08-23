@@ -6,17 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {Start} from './components/start';
+import {HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {Component, NgModule} from '@angular/core';
+import {WORKER_APP_LOCATION_PROVIDERS, WorkerAppModule} from '@angular/platform-browser';
+import {Router, RouterModule, provideRoutes} from '@angular/router';
+
 import {About} from './components/about';
 import {Contact} from './components/contact';
-import {ROUTER_DIRECTIVES, RouteConfig, Route} from '@angular/router-deprecated';
+import {Start} from './components/start';
 
-@Component({selector: 'app', directives: [ROUTER_DIRECTIVES], templateUrl: 'app.html'})
-@RouteConfig([
-  new Route({path: '/', component: Start, name: "Start"}),
-  new Route({path: '/contact', component: Contact, name: "Contact"}),
-  new Route({path: '/about', component: About, name: "About"})
-])
+@Component({selector: 'app', templateUrl: 'app.html'})
 export class App {
+}
+
+export const ROUTES = [
+  {path: '', component: Start}, {path: 'contact', component: Contact},
+  {path: 'about', component: About}
+];
+
+@NgModule({
+  imports: [WorkerAppModule, RouterModule.forRoot(ROUTES, {useHash: true})],
+  providers: [WORKER_APP_LOCATION_PROVIDERS],
+  bootstrap: [App],
+  declarations: [App, Start, Contact, About]
+})
+export class AppModule {
 }

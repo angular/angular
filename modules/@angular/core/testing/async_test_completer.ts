@@ -6,16 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PromiseCompleter} from '../src/facade/promise';
-
 /**
  * Injectable completer that allows signaling completion of an asynchronous test. Used internally.
  */
 export class AsyncTestCompleter {
-  private _completer = new PromiseCompleter<any>();
-  done(value?: any) { this._completer.resolve(value); }
+  private _resolve: (result: any) => void;
+  private _reject: (err: any) => void;
+  private _promise: Promise<any> = new Promise((res, rej) => {
+    this._resolve = res;
+    this._reject = rej;
+  });
+  done(value?: any) { this._resolve(value); }
 
-  fail(error?: any, stackTrace?: string) { this._completer.reject(error, stackTrace); }
+  fail(error?: any, stackTrace?: string) { this._reject(error); }
 
-  get promise(): Promise<any> { return this._completer.promise; }
+  get promise(): Promise<any> { return this._promise; }
 }

@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Log, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
-
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {NgZone, NgZoneError} from '@angular/core/src/zone/ng_zone';
+import {BaseException} from '@angular/core';
+import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {AsyncTestCompleter, Log, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
-import {ObservableWrapper, PromiseCompleter, PromiseWrapper, TimerWrapper} from '../../src/facade/async';
-import {BaseException} from '../../src/facade/exceptions';
-import {IS_DART, isPresent, scheduleMicroTask} from '../../src/facade/lang';
+import {isPresent, scheduleMicroTask} from '../../src/facade/lang';
 
 var needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
 var resultTimer = 1000;
@@ -22,7 +20,7 @@ var testTimeout = browserDetection.isEdge ? 1200 : 500;
 // Schedules a macrotask (using a timer)
 function macroTask(fn: (...args: any[]) => void, timer = 1): void {
   // adds longer timers for passing tests in IE and Edge
-  TimerWrapper.setTimeout(fn, needsLongerTimers ? timer : 1);
+  setTimeout(fn, needsLongerTimers ? timer : 1);
 }
 
 var _log: Log;
@@ -30,23 +28,27 @@ var _errors: any[];
 var _traces: any[];
 var _zone: NgZone;
 
+const resolvedPromise = Promise.resolve(null);
+
 function logOnError() {
-  ObservableWrapper.subscribe(_zone.onError, (ngErr: NgZoneError) => {
-    _errors.push(ngErr.error);
-    _traces.push(ngErr.stackTrace);
+  _zone.onError.subscribe({
+    next: (error: any) => {
+      _errors.push(error);
+      _traces.push(error.stack);
+    }
   });
 }
 
 function logOnUnstable() {
-  ObservableWrapper.subscribe(_zone.onUnstable, _log.fn('onUnstable'));
+  _zone.onUnstable.subscribe({next: _log.fn('onUnstable')});
 }
 
 function logOnMicrotaskEmpty() {
-  ObservableWrapper.subscribe(_zone.onMicrotaskEmpty, _log.fn('onMicrotaskEmpty'));
+  _zone.onMicrotaskEmpty.subscribe({next: _log.fn('onMicrotaskEmpty')});
 }
 
 function logOnStable() {
-  ObservableWrapper.subscribe(_zone.onStable, _log.fn('onStable'));
+  _zone.onStable.subscribe({next: _log.fn('onStable')});
 }
 
 function runNgZoneNoLog(fn: () => any) {
@@ -86,18 +88,19 @@ export function main() {
       it('should produce long stack traces',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            macroTask(() => {
-             var c: PromiseCompleter<any> = PromiseWrapper.completer();
+             let resolve: (result: any) => void;
+             let promise: Promise<any> = new Promise((res) => { resolve = res; });
 
              _zone.run(() => {
-               TimerWrapper.setTimeout(() => {
-                 TimerWrapper.setTimeout(() => {
-                   c.resolve(null);
+               setTimeout(() => {
+                 setTimeout(() => {
+                   resolve(null);
                    throw new BaseException('ccc');
                  }, 0);
                }, 0);
              });
 
-             c.promise.then((_) => {
+             promise.then((_) => {
                expect(_traces.length).toBe(1);
                expect(_traces[0].length).toBeGreaterThan(1);
                async.done();
@@ -108,18 +111,19 @@ export function main() {
       it('should produce long stack traces (when using microtasks)',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            macroTask(() => {
-             var c: PromiseCompleter<any> = PromiseWrapper.completer();
+             let resolve: (result: any) => void;
+             let promise: Promise<any> = new Promise((res) => { resolve = res; });
 
              _zone.run(() => {
                scheduleMicroTask(() => {
                  scheduleMicroTask(() => {
-                   c.resolve(null);
+                   resolve(null);
                    throw new BaseException('ddd');
                  });
                });
              });
 
-             c.promise.then((_) => {
+             promise.then((_) => {
                expect(_traces.length).toBe(1);
                expect(_traces[0].length).toBeGreaterThan(1);
                async.done();
@@ -142,18 +146,19 @@ export function main() {
       it('should disable long stack traces',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            macroTask(() => {
-             var c: PromiseCompleter<any> = PromiseWrapper.completer();
+             let resolve: (result: any) => void;
+             let promise: Promise<any> = new Promise((res) => { resolve = res; });
 
              _zone.run(() => {
-               TimerWrapper.setTimeout(() => {
-                 TimerWrapper.setTimeout(() => {
-                   c.resolve(null);
+               setTimeout(() => {
+                 setTimeout(() => {
+                   resolve(null);
                    throw new BaseException('ccc');
                  }, 0);
                }, 0);
              });
 
-             c.promise.then((_) => {
+             promise.then((_) => {
                expect(_traces.length).toBe(1);
                if (isPresent(_traces[0])) {
                  // some browsers don't have stack traces.
@@ -181,7 +186,7 @@ function commonTests() {
     it('should be false', () => { expect(_zone.hasPendingMacrotasks).toBe(false); });
 
     it('should be true', () => {
-      runNgZoneNoLog(() => { TimerWrapper.setTimeout(() => {}, 0); });
+      runNgZoneNoLog(() => { setTimeout(() => {}, 0); });
       expect(_zone.hasPendingMacrotasks).toBe(true);
     });
   });
@@ -195,7 +200,7 @@ function commonTests() {
     });
 
     it('should be true when timer is scheduled', () => {
-      runNgZoneNoLog(() => { TimerWrapper.setTimeout(() => {}, 0); });
+      runNgZoneNoLog(() => { setTimeout(() => {}, 0); });
       expect(_zone.hasPendingMacrotasks).toBe(true);
     });
   });
@@ -232,12 +237,14 @@ function commonTests() {
          runNgZoneNoLog(() => macroTask(_log.fn('run')));
 
          var times = 0;
-         ObservableWrapper.subscribe(_zone.onMicrotaskEmpty, (_) => {
-           times++;
-           _log.add(`onMicrotaskEmpty ${times}`);
-           if (times < 2) {
-             // Scheduling a microtask causes a second digest
-             runNgZoneNoLog(() => { scheduleMicroTask(() => {}); });
+         _zone.onMicrotaskEmpty.subscribe({
+           next: () => {
+             times++;
+             _log.add(`onMicrotaskEmpty ${times}`);
+             if (times < 2) {
+               // Scheduling a microtask causes a second digest
+               runNgZoneNoLog(() => { scheduleMicroTask(() => {}); });
+             }
            }
          });
 
@@ -266,27 +273,33 @@ function commonTests() {
           // then verifies that those microtasks do not cause additional digests.
 
           var turnStart = false;
-          ObservableWrapper.subscribe(_zone.onUnstable, (_) => {
-            if (turnStart) throw 'Should not call this more than once';
-            _log.add('onUnstable');
-            scheduleMicroTask(() => {});
-            turnStart = true;
+          _zone.onUnstable.subscribe({
+            next: () => {
+              if (turnStart) throw 'Should not call this more than once';
+              _log.add('onUnstable');
+              scheduleMicroTask(() => {});
+              turnStart = true;
+            }
           });
 
           var turnDone = false;
-          ObservableWrapper.subscribe(_zone.onMicrotaskEmpty, (_) => {
-            if (turnDone) throw 'Should not call this more than once';
-            _log.add('onMicrotaskEmpty');
-            scheduleMicroTask(() => {});
-            turnDone = true;
+          _zone.onMicrotaskEmpty.subscribe({
+            next: () => {
+              if (turnDone) throw 'Should not call this more than once';
+              _log.add('onMicrotaskEmpty');
+              scheduleMicroTask(() => {});
+              turnDone = true;
+            }
           });
 
           var eventDone = false;
-          ObservableWrapper.subscribe(_zone.onStable, (_) => {
-            if (eventDone) throw 'Should not call this more than once';
-            _log.add('onStable');
-            scheduleMicroTask(() => {});
-            eventDone = true;
+          _zone.onStable.subscribe({
+            next: () => {
+              if (eventDone) throw 'Should not call this more than once';
+              _log.add('onStable');
+              scheduleMicroTask(() => {});
+              eventDone = true;
+            }
           });
 
           macroTask(() => { _zone.run(_log.fn('run')); });
@@ -304,11 +317,13 @@ function commonTests() {
          // the only practical use-case to run a callback inside the zone is
          // change detection after "onMicrotaskEmpty". That's the only case tested.
          var turnDone = false;
-         ObservableWrapper.subscribe(_zone.onMicrotaskEmpty, (_) => {
-           _log.add('onMyMicrotaskEmpty');
-           if (turnDone) return;
-           _zone.run(() => { scheduleMicroTask(() => {}); });
-           turnDone = true;
+         _zone.onMicrotaskEmpty.subscribe({
+           next: () => {
+             _log.add('onMyMicrotaskEmpty');
+             if (turnDone) return;
+             _zone.run(() => { scheduleMicroTask(() => {}); });
+             turnDone = true;
+           }
          });
 
          macroTask(() => {
@@ -324,9 +339,11 @@ function commonTests() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          runNgZoneNoLog(() => macroTask(_log.fn('run')));
 
-         ObservableWrapper.subscribe(_zone.onStable, (_) => {
-           NgZone.assertNotInAngularZone();
-           _log.add('onMyTaskDone');
+         _zone.onStable.subscribe({
+           next: () => {
+             NgZone.assertNotInAngularZone();
+             _log.add('onMyTaskDone');
+           }
          });
 
          macroTask(() => {
@@ -379,10 +396,12 @@ function commonTests() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          runNgZoneNoLog(() => macroTask(_log.fn('start run')));
 
-         ObservableWrapper.subscribe(_zone.onMicrotaskEmpty, (_) => {
-           _log.add('onMicrotaskEmpty:started');
-           _zone.run(() => _log.add('nested run'));
-           _log.add('onMicrotaskEmpty:finished');
+         _zone.onMicrotaskEmpty.subscribe({
+           next: () => {
+             _log.add('onMicrotaskEmpty:started');
+             _zone.run(() => _log.add('nested run'));
+             _log.add('onMicrotaskEmpty:finished');
+           }
          });
 
          macroTask(() => {
@@ -408,24 +427,26 @@ function commonTests() {
 
     it('should call onUnstable and onMicrotaskEmpty before and after each turn',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var a: PromiseCompleter<string>;
-         var b: PromiseCompleter<string>;
+         var aResolve: (result: string) => void;
+         var aPromise: Promise<string>;
+         var bResolve: (result: string) => void;
+         var bPromise: Promise<string>;
 
          runNgZoneNoLog(() => {
            macroTask(() => {
-             a = PromiseWrapper.completer();
-             b = PromiseWrapper.completer();
+             aPromise = new Promise(res => { aResolve = res; });
+             bPromise = new Promise(res => { bResolve = res; });
 
              _log.add('run start');
-             a.promise.then(_log.fn('a then'));
-             b.promise.then(_log.fn('b then'));
+             aPromise.then(_log.fn('a then'));
+             bPromise.then(_log.fn('b then'));
            });
          });
 
          runNgZoneNoLog(() => {
            macroTask(() => {
-             a.resolve('a');
-             b.resolve('b');
+             aResolve('a');
+             bResolve('b');
            });
          });
 
@@ -443,30 +464,31 @@ function commonTests() {
 
          macroTask(() => {
            expect(_log.result()).toEqual('run');
-           async.done()
+           async.done();
          });
        }), testTimeout);
 
     it('should call onUnstable and onMicrotaskEmpty when an inner microtask is scheduled from outside angular',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var completer: PromiseCompleter<any>;
+         var resolve: (result: string) => void;
+         var promise: Promise<string>;
 
          macroTask(() => {
            NgZone.assertNotInAngularZone();
-           completer = PromiseWrapper.completer();
+           promise = new Promise(res => { resolve = res; });
          });
 
          runNgZoneNoLog(() => {
            macroTask(() => {
              NgZone.assertInAngularZone();
-             completer.promise.then(_log.fn('executedMicrotask'));
+             promise.then(_log.fn('executedMicrotask'));
            });
          });
 
          macroTask(() => {
            NgZone.assertNotInAngularZone();
            _log.add('scheduling a microtask');
-           completer.resolve(null);
+           resolve(null);
          });
 
          macroTask(() => {
@@ -489,19 +511,21 @@ function commonTests() {
          runNgZoneNoLog(() => macroTask(_log.fn('run')));
 
          var ran = false;
-         ObservableWrapper.subscribe(_zone.onMicrotaskEmpty, (_) => {
-           _log.add('onMicrotaskEmpty(begin)');
+         _zone.onMicrotaskEmpty.subscribe({
+           next: () => {
+             _log.add('onMicrotaskEmpty(begin)');
 
-           if (!ran) {
-             _zone.run(() => {
-               scheduleMicroTask(() => {
-                 ran = true;
-                 _log.add('executedMicrotask');
+             if (!ran) {
+               _zone.run(() => {
+                 scheduleMicroTask(() => {
+                   ran = true;
+                   _log.add('executedMicrotask');
+                 });
                });
-             });
-           }
+             }
 
-           _log.add('onMicrotaskEmpty(end)');
+             _log.add('onMicrotaskEmpty(end)');
+           }
          });
 
          macroTask(() => {
@@ -526,18 +550,20 @@ function commonTests() {
          });
 
          var ran = false;
-         ObservableWrapper.subscribe(_zone.onMicrotaskEmpty, (_) => {
-           _log.add('onMicrotaskEmpty(begin)');
-           if (!ran) {
-             _log.add('onMicrotaskEmpty(scheduleMicroTask)');
-             _zone.run(() => {
-               scheduleMicroTask(() => {
-                 ran = true;
-                 _log.add('onMicrotaskEmpty(executeMicrotask)');
+         _zone.onMicrotaskEmpty.subscribe({
+           next: () => {
+             _log.add('onMicrotaskEmpty(begin)');
+             if (!ran) {
+               _log.add('onMicrotaskEmpty(scheduleMicroTask)');
+               _zone.run(() => {
+                 scheduleMicroTask(() => {
+                   ran = true;
+                   _log.add('onMicrotaskEmpty(executeMicrotask)');
+                 });
                });
-             });
+             }
+             _log.add('onMicrotaskEmpty(end)');
            }
-           _log.add('onMicrotaskEmpty(end)');
          });
 
          macroTask(() => {
@@ -556,11 +582,11 @@ function commonTests() {
          runNgZoneNoLog(() => {
            macroTask(() => {
              _log.add('run start');
-             PromiseWrapper.resolve(null)
+             resolvedPromise
                  .then((_) => {
                    _log.add('promise then');
-                   PromiseWrapper.resolve(null).then(_log.fn('promise foo'));
-                   return PromiseWrapper.resolve(null);
+                   resolvedPromise.then(_log.fn('promise foo'));
+                   return Promise.resolve(null);
                  })
                  .then(_log.fn('promise bar'));
              _log.add('run end');
@@ -570,24 +596,28 @@ function commonTests() {
          var donePromiseRan = false;
          var startPromiseRan = false;
 
-         ObservableWrapper.subscribe(_zone.onUnstable, (_) => {
-           _log.add('onUnstable(begin)');
-           if (!startPromiseRan) {
-             _log.add('onUnstable(schedulePromise)');
-             _zone.run(() => { scheduleMicroTask(_log.fn('onUnstable(executePromise)')); });
-             startPromiseRan = true;
+         _zone.onUnstable.subscribe({
+           next: () => {
+             _log.add('onUnstable(begin)');
+             if (!startPromiseRan) {
+               _log.add('onUnstable(schedulePromise)');
+               _zone.run(() => { scheduleMicroTask(_log.fn('onUnstable(executePromise)')); });
+               startPromiseRan = true;
+             }
+             _log.add('onUnstable(end)');
            }
-           _log.add('onUnstable(end)');
          });
 
-         ObservableWrapper.subscribe(_zone.onMicrotaskEmpty, (_) => {
-           _log.add('onMicrotaskEmpty(begin)');
-           if (!donePromiseRan) {
-             _log.add('onMicrotaskEmpty(schedulePromise)');
-             _zone.run(() => { scheduleMicroTask(_log.fn('onMicrotaskEmpty(executePromise)')); });
-             donePromiseRan = true;
+         _zone.onMicrotaskEmpty.subscribe({
+           next: () => {
+             _log.add('onMicrotaskEmpty(begin)');
+             if (!donePromiseRan) {
+               _log.add('onMicrotaskEmpty(schedulePromise)');
+               _zone.run(() => { scheduleMicroTask(_log.fn('onMicrotaskEmpty(executePromise)')); });
+               donePromiseRan = true;
+             }
+             _log.add('onMicrotaskEmpty(end)');
            }
-           _log.add('onMicrotaskEmpty(end)');
          });
 
          macroTask(() => {
@@ -609,22 +639,24 @@ function commonTests() {
 
     it('should call onUnstable and onMicrotaskEmpty before and after each turn, respectively',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var completerA: PromiseCompleter<any>;
-         var completerB: PromiseCompleter<any>;
+         var aResolve: (result: string) => void;
+         var aPromise: Promise<string>;
+         var bResolve: (result: string) => void;
+         var bPromise: Promise<string>;
 
          runNgZoneNoLog(() => {
            macroTask(() => {
-             completerA = PromiseWrapper.completer();
-             completerB = PromiseWrapper.completer();
-             completerA.promise.then(_log.fn('a then'));
-             completerB.promise.then(_log.fn('b then'));
+             aPromise = new Promise(res => { aResolve = res; });
+             bPromise = new Promise(res => { bResolve = res; });
+             aPromise.then(_log.fn('a then'));
+             bPromise.then(_log.fn('b then'));
              _log.add('run start');
            });
          });
 
-         runNgZoneNoLog(() => { macroTask(() => { completerA.resolve(null); }, 10); });
+         runNgZoneNoLog(() => { macroTask(() => { aResolve(null); }, 10); });
 
-         runNgZoneNoLog(() => { macroTask(() => { completerB.resolve(null); }, 20); });
+         runNgZoneNoLog(() => { macroTask(() => { bResolve(null); }, 20); });
 
          macroTask(() => {
            expect(_log.result())
@@ -666,9 +698,8 @@ function commonTests() {
 
          runNgZoneNoLog(() => {
            macroTask(() => {
-             _zone.runOutsideAngular(() => {
-               promise = PromiseWrapper.resolve(4).then((x) => PromiseWrapper.resolve(x));
-             });
+             _zone.runOutsideAngular(
+                 () => { promise = Promise.resolve(4).then((x) => Promise.resolve(x)); });
 
              promise.then(_log.fn('promise then'));
              _log.add('zone run');
@@ -722,5 +753,45 @@ function commonTests() {
            async.done();
          }, resultTimer);
        }), testTimeout);
+  });
+
+  describe('bugs', () => {
+    describe('#10503', () => {
+      let ngZone: NgZone;
+
+      beforeEach(inject([NgZone], (_ngZone: NgZone) => {
+        // Create a zone outside the fakeAsync.
+        ngZone = _ngZone;
+      }));
+
+      it('should fakeAsync even if the NgZone was created outside.', fakeAsync(() => {
+           let result: string = null;
+           // try to escape the current fakeAsync zone by using NgZone which was created outside.
+           ngZone.run(() => {
+             Promise.resolve('works').then((v) => result = v);
+             flushMicrotasks();
+           });
+           expect(result).toEqual('works');
+         }));
+
+      describe('async', () => {
+        let asyncResult: string;
+        const waitLongerThenTestFrameworkAsyncTimeout = 5;
+
+        beforeEach(() => { asyncResult = null; });
+
+        it('should async even if the NgZone was created outside.', async(() => {
+             // try to escape the current async zone by using NgZone which was created outside.
+             ngZone.run(() => {
+               setTimeout(() => {
+                 Promise.resolve('works').then((v) => asyncResult = v);
+               }, waitLongerThenTestFrameworkAsyncTimeout);
+             });
+           }));
+
+        afterEach(() => { expect(asyncResult).toEqual('works'); });
+
+      });
+    });
   });
 }

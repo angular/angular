@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
+import {Directive, DoCheck, ElementRef, Input, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
 
 import {isBlank, isPresent} from '../facade/lang';
+
 
 
 /**
@@ -20,7 +21,8 @@ import {isBlank, isPresent} from '../facade/lang';
  *
  * ### Syntax
  *
- * - `<div [ngStyle]="{'font-style': style}"></div>`
+ * - `<div [ngStyle]="{'font-style': styleExp}"></div>`
+ * - `<div [ngStyle]="{'max-width.px': widthExp}"></div>`
  * - `<div [ngStyle]="styleExp"></div>` - here the `styleExp` must evaluate to an object
  *
  * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
@@ -64,26 +66,27 @@ import {isBlank, isPresent} from '../facade/lang';
  *
  * @stable
  */
-@Directive({selector: '[ngStyle]', inputs: ['rawStyle: ngStyle']})
+@Directive({selector: '[ngStyle]'})
 export class NgStyle implements DoCheck {
   /** @internal */
-  _rawStyle: {[key: string]: string};
+  _ngStyle: {[key: string]: string};
   /** @internal */
   _differ: KeyValueDiffer;
 
   constructor(
       private _differs: KeyValueDiffers, private _ngEl: ElementRef, private _renderer: Renderer) {}
 
-  set rawStyle(v: {[key: string]: string}) {
-    this._rawStyle = v;
+  @Input()
+  set ngStyle(v: {[key: string]: string}) {
+    this._ngStyle = v;
     if (isBlank(this._differ) && isPresent(v)) {
-      this._differ = this._differs.find(this._rawStyle).create(null);
+      this._differ = this._differs.find(this._ngStyle).create(null);
     }
   }
 
   ngDoCheck() {
     if (isPresent(this._differ)) {
-      var changes = this._differ.diff(this._rawStyle);
+      var changes = this._differ.diff(this._ngStyle);
       if (isPresent(changes)) {
         this._applyChanges(changes);
       }
@@ -91,15 +94,19 @@ export class NgStyle implements DoCheck {
   }
 
   private _applyChanges(changes: any): void {
+    changes.forEachRemovedItem(
+        (record: KeyValueChangeRecord) => { this._setStyle(record.key, null); });
     changes.forEachAddedItem(
         (record: KeyValueChangeRecord) => { this._setStyle(record.key, record.currentValue); });
     changes.forEachChangedItem(
         (record: KeyValueChangeRecord) => { this._setStyle(record.key, record.currentValue); });
-    changes.forEachRemovedItem(
-        (record: KeyValueChangeRecord) => { this._setStyle(record.key, null); });
   }
 
   private _setStyle(name: string, val: string): void {
-    this._renderer.setElementStyle(this._ngEl.nativeElement, name, val);
+    const nameParts = name.split('.');
+    const nameToSet = nameParts[0];
+    const valToSet = isPresent(val) && nameParts.length === 2 ? `${val}${nameParts[1]}` : val;
+
+    this._renderer.setElementStyle(this._ngEl.nativeElement, nameToSet, valToSet);
   }
 }

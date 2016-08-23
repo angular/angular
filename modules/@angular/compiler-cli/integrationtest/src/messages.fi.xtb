@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE translationbundle [<!ELEMENT translationbundle (translation)*>
+<!ATTLIST translationbundle lang CDATA #REQUIRED>
+<!ELEMENT translation (#PCDATA|ph)*>
+<!ATTLIST translation id CDATA #REQUIRED>
+<!ELEMENT ph EMPTY>
+<!ATTLIST ph name CDATA #REQUIRED>
+]>
+<translationbundle>
+  <translation id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4">käännä teksti</translation>
+  <translation id="65cc4ab3b4c438e07c89be2b677d08369fb62da2">tervetuloa</translation>
+</translationbundle>

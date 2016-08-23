@@ -8,7 +8,7 @@
 
 import {Directive, Inject, Optional, Self, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../facade/async';
+import {EventEmitter} from '../facade/async';
 import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {AbstractControl, FormControl, FormGroup} from '../model';
@@ -21,8 +21,12 @@ import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
 import {composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from './shared';
 
-export const formDirectiveProvider: any =
-    /*@ts2dart_const*/ {provide: ControlContainer, useExisting: forwardRef(() => NgForm)};
+export const formDirectiveProvider: any = {
+  provide: ControlContainer,
+  useExisting: forwardRef(() => NgForm)
+};
+
+const resolvedPromise = Promise.resolve(null);
 
 /**
  * If `NgForm` is bound in a component, `<form>` elements in that component will be
@@ -30,7 +34,7 @@ export const formDirectiveProvider: any =
  *
  * ### Typical Use
  *
- * Include `FORM_DIRECTIVES` in the `directives` section of a {@link View} annotation
+ * Include `FORM_DIRECTIVES` in the `directives` section of a {@link Component} annotation
  * to use `NgForm` and its associated controls.
  *
  * ### Structure
@@ -81,14 +85,12 @@ export const formDirectiveProvider: any =
  * }
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({
   selector: 'form:not([ngNoForm]):not([formGroup]),ngForm,[ngForm]',
   providers: [formDirectiveProvider],
-  host: {
-    '(submit)': 'onSubmit()',
-  },
+  host: {'(submit)': 'onSubmit()', '(reset)': 'onReset()'},
   outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
@@ -117,7 +119,7 @@ export class NgForm extends ControlContainer implements Form {
   get controls(): {[key: string]: AbstractControl} { return this.form.controls; }
 
   addControl(dir: NgModel): void {
-    PromiseWrapper.scheduleMicrotask(() => {
+    resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
       dir._control = <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
@@ -125,10 +127,10 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
-  getControl(dir: NgModel): FormControl { return <FormControl>this.form.find(dir.path); }
+  getControl(dir: NgModel): FormControl { return <FormControl>this.form.get(dir.path); }
 
   removeControl(dir: NgModel): void {
-    PromiseWrapper.scheduleMicrotask(() => {
+    resolvedPromise.then(() => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
         container.removeControl(dir.name);
@@ -137,7 +139,7 @@ export class NgForm extends ControlContainer implements Form {
   }
 
   addFormGroup(dir: NgModelGroup): void {
-    PromiseWrapper.scheduleMicrotask(() => {
+    resolvedPromise.then(() => {
       var container = this._findContainer(dir.path);
       var group = new FormGroup({});
       setUpFormContainer(group, dir);
@@ -147,7 +149,7 @@ export class NgForm extends ControlContainer implements Form {
   }
 
   removeFormGroup(dir: NgModelGroup): void {
-    PromiseWrapper.scheduleMicrotask(() => {
+    resolvedPromise.then(() => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
         container.removeControl(dir.name);
@@ -155,24 +157,33 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
-  getFormGroup(dir: NgModelGroup): FormGroup { return <FormGroup>this.form.find(dir.path); }
+  getFormGroup(dir: NgModelGroup): FormGroup { return <FormGroup>this.form.get(dir.path); }
 
   updateModel(dir: NgControl, value: any): void {
-    PromiseWrapper.scheduleMicrotask(() => {
-      var ctrl = <FormControl>this.form.find(dir.path);
-      ctrl.updateValue(value);
+    resolvedPromise.then(() => {
+      var ctrl = <FormControl>this.form.get(dir.path);
+      ctrl.setValue(value);
     });
   }
 
+  setValue(value: {[key: string]: any}): void { this.control.setValue(value); }
+
   onSubmit(): boolean {
     this._submitted = true;
-    ObservableWrapper.callEmit(this.ngSubmit, null);
+    this.ngSubmit.emit(null);
     return false;
+  }
+
+  onReset(): void { this.resetForm(); }
+
+  resetForm(value: any = undefined): void {
+    this.form.reset(value);
+    this._submitted = false;
   }
 
   /** @internal */
   _findContainer(path: string[]): FormGroup {
     path.pop();
-    return ListWrapper.isEmpty(path) ? this.form : <FormGroup>this.form.find(path);
+    return ListWrapper.isEmpty(path) ? this.form : <FormGroup>this.form.get(path);
   }
 }

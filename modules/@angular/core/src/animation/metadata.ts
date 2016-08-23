@@ -520,7 +520,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *
  * ```html
  * <!-- somewhere inside of my-component-tpl.html -->
- * <div @myAnimationTrigger="myStatusExp">...</div>
+ * <div [@myAnimationTrigger]="myStatusExp">...</div>
  * ```
  *
  * #### The final `animate` call
@@ -569,7 +569,7 @@ export function transition(stateChangeExpr: string, steps: AnimationMetadata | A
  * {@link ComponentMetadata#animations-anchor animations section}. An animation trigger can
  * be placed on an element within a template by referencing the name of the
  * trigger followed by the expression value that the trigger is bound to
- * (in the form of `@triggerName="expression"`.
+ * (in the form of `[@triggerName]="expression"`.
  *
  * ### Usage
  *
@@ -601,7 +601,7 @@ export function transition(stateChangeExpr: string, steps: AnimationMetadata | A
  *
  * ```html
  * <!-- somewhere inside of my-component-tpl.html -->
- * <div @myAnimationTrigger="myStatusExp">...</div>
+ * <div [@myAnimationTrigger]="myStatusExp">...</div>
  * ```
  *
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))

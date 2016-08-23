@@ -22,8 +22,8 @@ export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
 
 export {Injector} from './di/injector';
 export {ReflectiveInjector} from './di/reflective_injector';
-export {Binding, ProviderBuilder, bind, Provider, provide} from './di/provider';
-export {ResolvedReflectiveBinding, ResolvedReflectiveFactory, ResolvedReflectiveProvider} from './di/reflective_provider';
+export {Provider, TypeProvider, ValueProvider, ClassProvider, ExistingProvider, FactoryProvider} from './di/provider';
+export {ResolvedReflectiveFactory, ResolvedReflectiveProvider} from './di/reflective_provider';
 export {ReflectiveKey} from './di/reflective_key';
 export {NoProviderError, AbstractProviderError, CyclicDependencyError, InstantiationError, InvalidProviderError, NoAnnotationError, OutOfBoundsError} from './di/reflective_exceptions';
 export {OpaqueToken} from './di/opaque_token';

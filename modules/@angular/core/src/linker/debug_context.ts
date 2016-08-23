@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di';
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {RenderDebugInfo} from '../render/api';
 
@@ -15,7 +15,6 @@ import {DebugAppView} from './view';
 import {ViewType} from './view_type';
 
 
-/* @ts2dart_const */
 export class StaticNodeDebugInfo {
   constructor(
       public providerTokens: any[], public componentToken: any,
@@ -51,7 +50,7 @@ export class DebugContext implements RenderDebugInfo {
   }
   get injector(): Injector { return this._view.injector(this._nodeIndex); }
   get renderNode(): any {
-    if (isPresent(this._nodeIndex) && isPresent(this._view.allNodes)) {
+    if (isPresent(this._nodeIndex) && this._view.allNodes) {
       return this._view.allNodes[this._nodeIndex];
     } else {
       return null;
@@ -69,17 +68,15 @@ export class DebugContext implements RenderDebugInfo {
     var staticNodeInfo = this._staticNodeInfo;
     if (isPresent(staticNodeInfo)) {
       var refs = staticNodeInfo.refTokens;
-      StringMapWrapper.forEach(
-          refs, (refToken: any /** TODO #9100 */, refName: any /** TODO #9100 */) => {
-            var varValue: any /** TODO #9100 */;
-            if (isBlank(refToken)) {
-              varValue =
-                  isPresent(this._view.allNodes) ? this._view.allNodes[this._nodeIndex] : null;
-            } else {
-              varValue = this._view.injectorGet(refToken, this._nodeIndex, null);
-            }
-            varValues[refName] = varValue;
-          });
+      StringMapWrapper.forEach(refs, (refToken: any, refName: string) => {
+        let varValue: any;
+        if (isBlank(refToken)) {
+          varValue = this._view.allNodes ? this._view.allNodes[this._nodeIndex] : null;
+        } else {
+          varValue = this._view.injectorGet(refToken, this._nodeIndex, null);
+        }
+        varValues[refName] = varValue;
+      });
     }
     return varValues;
   }

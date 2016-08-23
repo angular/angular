@@ -2,8 +2,9 @@
 
 cd `dirname $0`
 
-while read PACKAGE
+while read RAW_PACKAGE
 do
+  PACKAGE=${RAW_PACKAGE: : -1}
   DESTDIR=./../../modules/\@angular/${PACKAGE}/src
   rm ${DESTDIR}/facade
   mv ${DESTDIR}/facade.old ${DESTDIR}/facade

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APPLICATION_COMMON_PROVIDERS, APP_INITIALIZER, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_COMMON_PROVIDERS, PLATFORM_INITIALIZER, PlatformRef, ReflectiveInjector, RootRenderer, Testability, assertPlatform, createPlatform, getPlatform} from '@angular/core';
+import {BaseException, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 import {wtfInit} from '../core_private';
 
@@ -22,8 +22,6 @@ import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {HAMMER_GESTURE_CONFIG, HammerGestureConfig, HammerGesturesPlugin} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
-import {BaseException} from './facade/exceptions';
-import {isBlank} from './facade/lang';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
 import {MessageBus} from './web_workers/shared/message_bus';
@@ -33,7 +31,7 @@ import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
 import {MessageBasedRenderer} from './web_workers/ui/renderer';
 
-const WORKER_RENDER_PLATFORM_MARKER = new OpaqueToken('WorkerRenderPlatformMarker');
+
 
 /**
  * Wrapper class that exposes the Worker
@@ -71,16 +69,8 @@ export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
 /**
  * @experimental WebWorker support is currently experimental.
  */
-export const WORKER_UI_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  PLATFORM_COMMON_PROVIDERS, {provide: WORKER_RENDER_PLATFORM_MARKER, useValue: true},
-  {provide: PLATFORM_INITIALIZER, useValue: initWebWorkerRenderPlatform, multi: true}
-];
-
-/**
- * @experimental WebWorker support is currently experimental.
- */
-export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  APPLICATION_COMMON_PROVIDERS,
+export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
+  {provide: NgZone, useFactory: createNgZone, deps: []},
   MessageBasedRenderer,
   {provide: WORKER_UI_STARTABLE_MESSAGING_SERVICE, useExisting: MessageBasedRenderer, multi: true},
   BROWSER_SANITIZATION_PROVIDERS,
@@ -97,7 +87,7 @@ export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
   {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
-  {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver},
+  {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver, deps: []},
   Serializer,
   {provide: ON_WEB_WORKER, useValue: false},
   RenderStore,
@@ -105,7 +95,12 @@ export const WORKER_UI_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[
   Testability,
   EventManager,
   WebWorkerInstance,
-  {provide: APP_INITIALIZER, useFactory: initWebWorkerAppFn, multi: true, deps: [Injector]},
+  {
+    provide: PLATFORM_INITIALIZER,
+    useFactory: initWebWorkerRenderPlatform,
+    multi: true,
+    deps: [Injector]
+  },
   {provide: MessageBus, useFactory: messageBusFactory, deps: [WebWorkerInstance]}
 ];
 
@@ -123,32 +118,11 @@ function messageBusFactory(instance: WebWorkerInstance): MessageBus {
   return instance.bus;
 }
 
-function initWebWorkerRenderPlatform(): void {
-  BrowserDomAdapter.makeCurrent();
-  wtfInit();
-  BrowserGetTestability.init();
-}
-
-/**
- * @experimental WebWorker support is currently experimental.
- */
-export function workerUiPlatform(): PlatformRef {
-  if (isBlank(getPlatform())) {
-    createPlatform(ReflectiveInjector.resolveAndCreate(WORKER_UI_PLATFORM_PROVIDERS));
-  }
-  return assertPlatform(WORKER_RENDER_PLATFORM_MARKER);
-}
-
-function _exceptionHandler(): ExceptionHandler {
-  return new ExceptionHandler(getDOM());
-}
-
-function _document(): any {
-  return getDOM().defaultDoc();
-}
-
-function initWebWorkerAppFn(injector: Injector): () => void {
+function initWebWorkerRenderPlatform(injector: Injector): () => void {
   return () => {
+    BrowserDomAdapter.makeCurrent();
+    wtfInit();
+    BrowserGetTestability.init();
     var scriptUri: string;
     try {
       scriptUri = injector.get(WORKER_SCRIPT);
@@ -162,6 +136,24 @@ function initWebWorkerAppFn(injector: Injector): () => void {
 
     initializeGenericWorkerRenderer(injector);
   };
+}
+
+/**
+ * @experimental WebWorker support is currently experimental.
+ */
+export const platformWorkerUi =
+    createPlatformFactory(platformCore, 'workerUi', _WORKER_UI_PLATFORM_PROVIDERS);
+
+function _exceptionHandler(): ExceptionHandler {
+  return new ExceptionHandler(getDOM());
+}
+
+function _document(): any {
+  return getDOM().defaultDoc();
+}
+
+function createNgZone(): NgZone {
+  return new NgZone({enableLongStackTrace: isDevMode()});
 }
 
 /**

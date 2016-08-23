@@ -7,7 +7,7 @@
  */
 
 import {LowerCasePipe, NgIf} from '@angular/common';
-import {AppModule, Component, ComponentFactoryResolver, Injectable} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Directive, Inject, Injectable, Input, ModuleWithProviders, NgModule, OpaqueToken, Pipe} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 @Injectable()
@@ -16,40 +16,65 @@ export class SomeService {
 }
 
 @Injectable()
-export class NestedService {
+export class ServiceUsingLibModule {
 }
 
-@Component({
-  selector: 'cmp',
-  template: `<div  [title]="'HELLO' | lowercase"></div><div *ngIf="true"></div>`
+@Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
+export class SomeDirectiveInRootModule {
+  @Input()
+  someDir: string;
+}
+
+@Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
+export class SomeDirectiveInLibModule {
+  @Input()
+  someDir: string;
+}
+
+@Pipe({name: 'somePipe'})
+export class SomePipeInRootModule {
+  transform(value: string): any { return `transformed ${value}`; }
+}
+
+@Pipe({name: 'somePipe'})
+export class SomePipeInLibModule {
+  transform(value: string): any { return `transformed ${value}`; }
+}
+
+@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
+export class CompUsingRootModuleDirectiveAndPipe {
+}
+
+@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
+export class CompUsingLibModuleDirectiveAndPipe {
+}
+
+export const SOME_TOKEN = new OpaqueToken('someToken');
+
+export function provideValueWithEntryComponents(value: any) {
+  return [
+    {provide: SOME_TOKEN, useValue: value},
+    {provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: value, multi: true},
+  ];
+}
+
+@NgModule({
+  declarations: [SomeDirectiveInLibModule, SomePipeInLibModule, CompUsingLibModuleDirectiveAndPipe],
+  exports: [CompUsingLibModuleDirectiveAndPipe],
+  entryComponents: [CompUsingLibModuleDirectiveAndPipe],
 })
-export class SomeComp {
-  constructor() {}
+export class SomeLibModule {
 }
 
-@Component({selector: 'parent', template: `<cmp></cmp>`, directives: [SomeComp]})
-export class ParentComp {
-}
-
-@AppModule({providers: [NestedService]})
-export class NestedModule {
-}
-
-@AppModule({
-  directives: [NgIf],
-  pipes: [LowerCasePipe],
-  providers: [SomeService],
-  precompile: [SomeComp],
-  modules: [NestedModule, BrowserModule]
-})
-export class SomeModule {
-}
-
-@AppModule({
-  directives: [NgIf],
-  pipes: [LowerCasePipe],
-  precompile: [ParentComp],
-  modules: [BrowserModule]
-})
-export class SomeModuleUsingParentComp {
+// TODO(tbosch): Make this a static method in `SomeLibModule` once
+// our static reflector supports it.
+// See https://github.com/angular/angular/issues/10266.
+export function someLibModuleWithProviders(): ModuleWithProviders {
+  return {
+    ngModule: SomeLibModule,
+    providers: [
+      ServiceUsingLibModule,
+      provideValueWithEntryComponents([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
+    ]
+  };
 }

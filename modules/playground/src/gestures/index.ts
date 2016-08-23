@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({selector: 'gestures-app', templateUrl: 'template.html'})
 class GesturesCmp {
@@ -15,13 +16,19 @@ class GesturesCmp {
   pinchScale: number = 1;
   rotateAngle: number = 0;
 
-  onSwipe(event: any /** TODO #9100 */): void { this.swipeDirection = event.deltaX > 0 ? 'right' : 'left'; }
+  onSwipe(event: any /** TODO #9100 */): void {
+    this.swipeDirection = event.deltaX > 0 ? 'right' : 'left';
+  }
 
   onPinch(event: any /** TODO #9100 */): void { this.pinchScale = event.scale; }
 
   onRotate(event: any /** TODO #9100 */): void { this.rotateAngle = event.rotation; }
 }
 
+@NgModule({declarations: [GesturesCmp], bootstrap: [GesturesCmp], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(GesturesCmp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

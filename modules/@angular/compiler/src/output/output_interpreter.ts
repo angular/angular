@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ObservableWrapper} from '../facade/async';
-import {ListWrapper} from '../facade/collection';
-import {BaseException, unimplemented} from '../facade/exceptions';
-import {IS_DART, isPresent} from '../facade/lang';
+import {BaseException} from '@angular/core';
 
-import {debugOutputAstAsDart} from './dart_emitter';
+import {ListWrapper} from '../facade/collection';
+import {isPresent} from '../facade/lang';
+
 import * as o from './output_ast';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 
@@ -63,7 +62,7 @@ function createDynamicClass(
     };
   });
   _classStmt.methods.forEach(function(method: o.ClassMethod) {
-    var paramNames = method.params.map(param => param.name);
+    const paramNames = method.params.map(param => param.name);
     // Note: use `function` instead of arrow function to capture `this`
     propertyDescriptors[method.name] = {
       writable: false,
@@ -89,9 +88,7 @@ function createDynamicClass(
 }
 
 class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
-  debugAst(ast: o.Expression|o.Statement|o.Type): string {
-    return IS_DART ? debugOutputAstAsDart(ast) : debugOutputAstAsTypeScript(ast);
-  }
+  debugAst(ast: o.Expression|o.Statement|o.Type): string { return debugOutputAstAsTypeScript(ast); }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: _ExecutionContext): any {
     ctx.vars.set(stmt.name, stmt.value.visitExpression(this, ctx));
@@ -160,14 +157,10 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
           result = ListWrapper.concat(receiver, args[0]);
           break;
         case o.BuiltinMethod.SubscribeObservable:
-          result = ObservableWrapper.subscribe(receiver, args[0]);
+          result = receiver.subscribe({next: args[0]});
           break;
-        case o.BuiltinMethod.bind:
-          if (IS_DART) {
-            result = receiver;
-          } else {
-            result = receiver.bind(args[0]);
-          }
+        case o.BuiltinMethod.Bind:
+          result = receiver.bind(args[0]);
           break;
         default:
           throw new BaseException(`Unknown builtin method ${expr.builtin}`);

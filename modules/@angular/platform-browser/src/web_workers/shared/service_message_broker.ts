@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, Type} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {ListWrapper, Map} from '../../facade/collection';
-import {FunctionWrapper, Type, isPresent} from '../../facade/lang';
+import {FunctionWrapper, isPresent} from '../../facade/lang';
 import {MessageBus} from '../shared/message_bus';
 import {Serializer} from '../shared/serializer';
 
@@ -50,7 +50,7 @@ export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
  */
 export abstract class ServiceMessageBroker {
   abstract registerMethod(
-      methodName: string, signature: Type[], method: Function, returnType?: Type): void;
+      methodName: string, signature: Type<any>[], method: Function, returnType?: Type<any>): void;
 }
 
 export class ServiceMessageBroker_ extends ServiceMessageBroker {
@@ -63,12 +63,12 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     super();
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);
-    ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
+    source.subscribe({next: (message: any) => this._handleMessage(message)});
   }
 
   registerMethod(
-      methodName: string, signature: Type[], method: (..._: any[]) => Promise<any>| void,
-      returnType?: Type): void {
+      methodName: string, signature: Type<any>[], method: (..._: any[]) => Promise<any>| void,
+      returnType?: Type<any>): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       var serializedArgs = message.args;
       let numArgs = signature === null ? 0 : signature.length;
@@ -92,10 +92,9 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     }
   }
 
-  private _wrapWebWorkerPromise(id: string, promise: Promise<any>, type: Type): void {
-    PromiseWrapper.then(promise, (result: any) => {
-      ObservableWrapper.callEmit(
-          this._sink,
+  private _wrapWebWorkerPromise(id: string, promise: Promise<any>, type: Type<any>): void {
+    promise.then((result: any) => {
+      this._sink.emit(
           {'type': 'result', 'value': this._serializer.serialize(result, type), 'id': id});
     });
   }

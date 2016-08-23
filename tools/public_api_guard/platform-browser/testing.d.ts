@@ -1,5 +1,6 @@
-/** @stable */
-export declare const TEST_BROWSER_APPLICATION_PROVIDERS: Array<any>;
+/** @experimental */
+export declare class BrowserTestingModule {
+}
 
-/** @stable */
-export declare const TEST_BROWSER_PLATFORM_PROVIDERS: Array<any>;
+/** @experimental */
+export declare const platformBrowserTesting: (extraProviders?: any[]) => PlatformRef;

@@ -1,11 +1,10 @@
-import {bootstrap} from '@angular/platform-browser';
 import {NgIf} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {reflector} from '@angular/core/src/reflection/reflection';
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {window, document, gc} from '@angular/facade';
+import {window, document, gc} from '@angular/facade/src/browser';
 import {
   getIntParameter,
   getStringParameter,
@@ -14,6 +13,8 @@ import {
   windowProfileEnd
 } from '@angular/testing/src/benchmark_util';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule} from '@angular/platform-browser';
 
 function createBindings(): any[] {
   return [];
@@ -82,8 +83,16 @@ export function main() {
     appRef.tick();
   }
 
+  @NgModule({
+    imports: [BrowserModule],
+    bootstrap: [AppComponentWithStaticTree],
+    providers: createBindings()
+  })
+  class AppModule {
+  }
+
   function initNg2() {
-    bootstrap(AppComponentWithStaticTree, createBindings())
+    platformBrowserDynamic().bootstrapModule(AppModule)
         .then((ref) => {
           var injector = ref.injector;
           appRef = injector.get(ApplicationRef);

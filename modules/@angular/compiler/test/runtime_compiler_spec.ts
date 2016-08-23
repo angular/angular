@@ -1,13 +1,24 @@
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {Injectable, Component, Input, ViewMetadata, Compiler, ComponentFactory, Injector, AppModule, AppModuleMetadata, AppModuleFactory} from '@angular/core';
-import {ConcreteType, stringify} from '../src/facade/lang';
-import {fakeAsync, tick, TestComponentBuilder, ComponentFixture} from '@angular/core/testing';
-import {XHR, ViewResolver} from '@angular/compiler';
-import {MockViewResolver} from '@angular/compiler/testing';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {SpyXHR} from './spies';
+import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
+import {MockDirectiveResolver} from '@angular/compiler/testing';
+import {Compiler, Component, ComponentFactory, Injectable, Injector, Input, NgModule, NgModuleFactory, Type} from '@angular/core';
+import {ComponentFixture, TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
+import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
-@Component({selector: 'child-cmp', template: 'childComp'})
+import {ViewMetadata} from '../core_private';
+import {stringify} from '../src/facade/lang';
+
+import {SpyResourceLoader} from './spies';
+
+@Component({selector: 'child-cmp'})
 class ChildComp {
 }
 
@@ -19,139 +30,143 @@ class SomeComp {
 class SomeCompWithUrlTemplate {
 }
 
-@AppModule({})
-class SomeModule {
-}
-
 export function main() {
   describe('RuntimeCompiler', () => {
+
+    describe('compilerComponentSync', () => {
+      describe('never resolving loader', () => {
+        class StubResourceLoader {
+          get(url: string) { return new Promise(() => {}); }
+        }
+
+        beforeEach(() => {
+          TestBed.configureCompiler(
+              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader}]});
+        });
+
+        it('should throw when using a templateUrl that has not been compiled before', async(() => {
+             TestBed.configureTestingModule({declarations: [SomeCompWithUrlTemplate]});
+             TestBed.compileComponents().then(() => {
+               expect(() => TestBed.createComponent(SomeCompWithUrlTemplate))
+                   .toThrowError(
+                       `Can't compile synchronously as ${stringify(SomeCompWithUrlTemplate)} is still being loaded!`);
+             });
+           }));
+
+        it('should throw when using a templateUrl in a nested component that has not been compiled before',
+           () => {
+             TestBed.configureTestingModule({declarations: [SomeComp, ChildComp]});
+             TestBed.overrideComponent(ChildComp, {set: {templateUrl: '/someTpl.html'}});
+             TestBed.overrideComponent(SomeComp, {set: {template: '<child-cmp></child-cmp>'}});
+             TestBed.compileComponents().then(() => {
+               expect(() => TestBed.createComponent(SomeComp))
+                   .toThrowError(
+                       `Can't compile synchronously as ${stringify(ChildComp)} is still being loaded!`);
+             });
+           });
+      });
+
+      describe('resolving loader', () => {
+        class StubResourceLoader {
+          get(url: string) { return Promise.resolve('hello'); }
+        }
+
+        beforeEach(() => {
+          TestBed.configureCompiler(
+              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader}]});
+        });
+
+        it('should allow to use templateUrl components that have been loaded before', async(() => {
+             TestBed.configureTestingModule({declarations: [SomeCompWithUrlTemplate]});
+             TestBed.compileComponents().then(() => {
+               const fixture = TestBed.createComponent(SomeCompWithUrlTemplate);
+               expect(fixture.nativeElement).toHaveText('hello');
+             });
+           }));
+      });
+    });
+  });
+
+  describe('RuntimeCompiler', () => {
     let compiler: Compiler;
-    let xhr: SpyXHR;
-    let tcb: TestComponentBuilder;
-    let viewResolver: MockViewResolver;
+    let resourceLoader: SpyResourceLoader;
+    let dirResolver: MockDirectiveResolver;
     let injector: Injector;
 
-    beforeEachProviders(() => [{provide: XHR, useValue: new SpyXHR()}]);
+    beforeEach(() => {
+      TestBed.configureCompiler(
+          {providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]});
+    });
 
-    beforeEach(inject(
-        [Compiler, TestComponentBuilder, XHR, ViewResolver, Injector],
-        (_compiler: Compiler, _tcb: TestComponentBuilder, _xhr: SpyXHR,
-         _viewResolver: MockViewResolver, _injector: Injector) => {
+    beforeEach(fakeAsync(inject(
+        [Compiler, ResourceLoader, DirectiveResolver, Injector],
+        (_compiler: Compiler, _resourceLoader: SpyResourceLoader,
+         _dirResolver: MockDirectiveResolver, _injector: Injector) => {
           compiler = _compiler;
-          tcb = _tcb;
-          xhr = _xhr;
-          viewResolver = _viewResolver;
+          resourceLoader = _resourceLoader;
+          dirResolver = _dirResolver;
           injector = _injector;
-        }));
+        })));
 
-    describe('clearCacheFor', () => {
-      it('should support changing the content of a template referenced via templateUrl',
-         fakeAsync(() => {
-           xhr.spy('get').andCallFake(() => Promise.resolve('init'));
-           let compFixture =
-               tcb.overrideView(SomeComp, new ViewMetadata({templateUrl: '/myComp.html'}))
-                   .createFakeAsync(SomeComp);
-           expect(compFixture.nativeElement).toHaveText('init');
-
-           xhr.spy('get').andCallFake(() => Promise.resolve('new content'));
-           // Note: overrideView is calling .clearCacheFor...
-           compFixture = tcb.overrideView(SomeComp, new ViewMetadata({templateUrl: '/myComp.html'}))
-                             .createFakeAsync(SomeComp);
-           expect(compFixture.nativeElement).toHaveText('new content');
-         }));
-
-      it('should support overwriting inline templates', () => {
-        let componentFixture = tcb.createSync(SomeComp);
-        expect(componentFixture.nativeElement).toHaveText('someComp');
-
-        componentFixture = tcb.overrideTemplate(SomeComp, 'test').createSync(SomeComp);
-        expect(componentFixture.nativeElement).toHaveText('test');
-      });
-
-      it('should not update existing compilation results', () => {
-        viewResolver.setView(
-            SomeComp,
-            new ViewMetadata({template: '<child-cmp></child-cmp>', directives: [ChildComp]}));
-        viewResolver.setInlineTemplate(ChildComp, 'oldChild');
-        let compFactory = compiler.compileComponentSync(SomeComp);
-        viewResolver.setInlineTemplate(ChildComp, 'newChild');
-        compiler.compileComponentSync(SomeComp);
-        let compRef = compFactory.create(injector);
-        expect(compRef.location.nativeElement).toHaveText('oldChild');
-      });
-    });
-
-    describe('compileComponentSync', () => {
-      it('should throw when using a templateUrl that has not been compiled before', () => {
-        xhr.spy('get').andCallFake(() => Promise.resolve(''));
-        expect(() => tcb.createSync(SomeCompWithUrlTemplate))
-            .toThrowError(
-                `Can't compile synchronously as ${stringify(SomeCompWithUrlTemplate)} is still being loaded!`);
-      });
-
-      it('should throw when using a templateUrl in a nested component that has not been compiled before',
-         () => {
-           xhr.spy('get').andCallFake(() => Promise.resolve(''));
-           let localTcb =
-               tcb.overrideView(SomeComp, new ViewMetadata({template: '', directives: [ChildComp]}))
-                   .overrideView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
-           expect(() => localTcb.createSync(SomeComp))
-               .toThrowError(
-                   `Can't compile synchronously as ${stringify(ChildComp)} is still being loaded!`);
-         });
-
-      it('should allow to use templateUrl components that have been loaded before',
-         fakeAsync(() => {
-           xhr.spy('get').andCallFake(() => Promise.resolve('hello'));
-           tcb.createFakeAsync(SomeCompWithUrlTemplate);
-           let compFixture = tcb.createSync(SomeCompWithUrlTemplate);
-           expect(compFixture.nativeElement).toHaveText('hello');
-         }));
-    });
-
-    describe('compileAppModuleAsync', () => {
+    describe('compileModuleAsync', () => {
       it('should allow to use templateUrl components', fakeAsync(() => {
-           xhr.spy('get').andCallFake(() => Promise.resolve('hello'));
-           let appModuleFactory: AppModuleFactory<any>;
-           compiler
-               .compileAppModuleAsync(
-                   SomeModule, new AppModuleMetadata({precompile: [SomeCompWithUrlTemplate]}))
-               .then((f) => appModuleFactory = f);
+           @NgModule({
+             declarations: [SomeCompWithUrlTemplate],
+             entryComponents: [SomeCompWithUrlTemplate]
+           })
+           class SomeModule {
+           }
+
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve('hello'));
+           let ngModuleFactory: NgModuleFactory<any>;
+           compiler.compileModuleAsync(SomeModule).then((f) => ngModuleFactory = f);
            tick();
-           expect(appModuleFactory.moduleType).toBe(SomeModule);
+           expect(ngModuleFactory.moduleType).toBe(SomeModule);
          }));
     });
 
-    describe('compileAppModuleSync', () => {
+    describe('compileModuleSync', () => {
       it('should throw when using a templateUrl that has not been compiled before', () => {
-        xhr.spy('get').andCallFake(() => Promise.resolve(''));
-        expect(
-            () => compiler.compileAppModuleSync(
-                SomeModule, new AppModuleMetadata({precompile: [SomeCompWithUrlTemplate]})))
+        @NgModule(
+            {declarations: [SomeCompWithUrlTemplate], entryComponents: [SomeCompWithUrlTemplate]})
+        class SomeModule {
+        }
+
+        resourceLoader.spy('get').andCallFake(() => Promise.resolve(''));
+        expect(() => compiler.compileModuleSync(SomeModule))
             .toThrowError(
                 `Can't compile synchronously as ${stringify(SomeCompWithUrlTemplate)} is still being loaded!`);
       });
 
       it('should throw when using a templateUrl in a nested component that has not been compiled before',
          () => {
-           xhr.spy('get').andCallFake(() => Promise.resolve(''));
-           viewResolver.setView(
-               SomeComp, new ViewMetadata({template: '', directives: [ChildComp]}));
-           viewResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
-           expect(
-               () => compiler.compileAppModuleSync(
-                   SomeModule, new AppModuleMetadata({precompile: [SomeComp]})))
+           @NgModule({declarations: [SomeComp, ChildComp], entryComponents: [SomeComp]})
+           class SomeModule {
+           }
+
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve(''));
+           dirResolver.setView(SomeComp, new ViewMetadata({template: ''}));
+           dirResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
+           expect(() => compiler.compileModuleSync(SomeModule))
                .toThrowError(
                    `Can't compile synchronously as ${stringify(ChildComp)} is still being loaded!`);
          });
 
       it('should allow to use templateUrl components that have been loaded before',
          fakeAsync(() => {
-           xhr.spy('get').andCallFake(() => Promise.resolve('hello'));
-           tcb.createFakeAsync(SomeCompWithUrlTemplate);
-           let appModuleFactory = compiler.compileAppModuleSync(
-               SomeModule, new AppModuleMetadata({precompile: [SomeCompWithUrlTemplate]}));
-           expect(appModuleFactory).toBeTruthy();
+           @NgModule({
+             declarations: [SomeCompWithUrlTemplate],
+             entryComponents: [SomeCompWithUrlTemplate]
+           })
+           class SomeModule {
+           }
+
+           resourceLoader.spy('get').andCallFake(() => Promise.resolve('hello'));
+           compiler.compileModuleAsync(SomeModule);
+           tick();
+
+           let ngModuleFactory = compiler.compileModuleSync(SomeModule);
+           expect(ngModuleFactory).toBeTruthy();
          }));
     });
   });

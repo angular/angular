@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
+import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 describe('hello world', function() {
 
@@ -32,11 +32,14 @@ describe('hello world', function() {
 });
 
 function getComponentText(selector: any /** TODO #9100 */, innerSelector: any /** TODO #9100 */) {
-  return browser.executeScript('return document.querySelector("' + selector + '").querySelector("' +
-                               innerSelector + '").textContent');
+  return browser.executeScript(
+      'return document.querySelector("' + selector + '").querySelector("' + innerSelector +
+      '").textContent');
 }
 
-function clickComponentButton(selector: any /** TODO #9100 */, innerSelector: any /** TODO #9100 */) {
-  return browser.executeScript('return document.querySelector("' + selector + '").querySelector("' +
-                               innerSelector + '").click()');
+function clickComponentButton(
+    selector: any /** TODO #9100 */, innerSelector: any /** TODO #9100 */) {
+  return browser.executeScript(
+      'return document.querySelector("' + selector + '").querySelector("' + innerSelector +
+      '").click()');
 }

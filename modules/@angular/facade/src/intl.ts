@@ -15,7 +15,7 @@ export enum NumberFormatStyle {
 export class NumberFormatter {
   static format(
       num: number, locale: string, style: NumberFormatStyle,
-      {minimumIntegerDigits = 1, minimumFractionDigits = 0, maximumFractionDigits = 3, currency,
+      {minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, currency,
        currencyAsSymbol = false}: {
         minimumIntegerDigits?: number,
         minimumFractionDigits?: number,
@@ -23,21 +23,22 @@ export class NumberFormatter {
         currency?: string,
         currencyAsSymbol?: boolean
       } = {}): string {
-    var intlOptions: Intl.NumberFormatOptions = {
-      minimumIntegerDigits: minimumIntegerDigits,
-      minimumFractionDigits: minimumFractionDigits,
-      maximumFractionDigits: maximumFractionDigits
+    let options: Intl.NumberFormatOptions = {
+      minimumIntegerDigits,
+      minimumFractionDigits,
+      maximumFractionDigits,
+      style: NumberFormatStyle[style].toLowerCase()
     };
-    intlOptions.style = NumberFormatStyle[style].toLowerCase();
+
     if (style == NumberFormatStyle.Currency) {
-      intlOptions.currency = currency;
-      intlOptions.currencyDisplay = currencyAsSymbol ? 'symbol' : 'code';
+      options.currency = currency;
+      options.currencyDisplay = currencyAsSymbol ? 'symbol' : 'code';
     }
-    return new Intl.NumberFormat(locale, intlOptions).format(num);
+    return new Intl.NumberFormat(locale, options).format(num);
   }
 }
 var DATE_FORMATS_SPLIT =
-    /((?:[^yMLdHhmsaZEwGjJ']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|J+|j+|m+|s+|a|Z|G+|w+))(.*)/;
+    /((?:[^yMLdHhmsazZEwGjJ']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|J+|j+|m+|s+|a|z|Z|G+|w+))(.*)/;
 
 var PATTERN_ALIASES = {
   yMMMdjms: datePartGetterFactory(combine([
@@ -99,8 +100,8 @@ var DATE_FORMATS = {
   EE: datePartGetterFactory(nameCondition('weekday', 2)),
   E: datePartGetterFactory(nameCondition('weekday', 1)),
   a: hourClockExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), true))),
-  Z: datePartGetterFactory({timeZoneName: 'long'}),
-  z: datePartGetterFactory({timeZoneName: 'short'}),
+  Z: timeZoneGetter('short'),
+  z: timeZoneGetter('long'),
   ww: datePartGetterFactory({}),  // Week of year, padded (00-53). Week 01 is the week with the
                                   // first Thursday of the year. not support ?
   w: datePartGetterFactory({}),   // Week of year (0-53). Week 1 is the week with the first Thursday
@@ -139,6 +140,20 @@ function hourExtracter(inner: (date: Date, locale: string) => string): (
   };
 }
 
+function intlDateFormat(date: Date, locale: string, options: Intl.DateTimeFormatOptions): string {
+  return new Intl.DateTimeFormat(locale, options).format(date).replace(/[\u200e\u200f]/g, '');
+}
+
+function timeZoneGetter(timezone: string): (date: Date, locale: string) => string {
+  // To workaround `Intl` API restriction for single timezone let format with 24 hours
+  const options = {hour: '2-digit', hour12: false, timeZoneName: timezone};
+  return function(date: Date, locale: string): string {
+    const result = intlDateFormat(date, locale, options);
+    // Then extract first 3 letters that related to hours
+    return result ? result.substring(3) : '';
+  };
+}
+
 function hour12Modify(
     options: Intl.DateTimeFormatOptions, value: boolean): Intl.DateTimeFormatOptions {
   options.hour12 = value;
@@ -166,9 +181,7 @@ function combine(options: Intl.DateTimeFormatOptions[]): Intl.DateTimeFormatOpti
 
 function datePartGetterFactory(ret: Intl.DateTimeFormatOptions): (date: Date, locale: string) =>
     string {
-  return function(date: Date, locale: string): string {
-    return new Intl.DateTimeFormat(locale, ret).format(date);
-  };
+  return (date: Date, locale: string): string => intlDateFormat(date, locale, ret);
 }
 
 
@@ -187,7 +200,7 @@ function dateFormatter(format: string, date: Date, locale: string): string {
   if (datePartsFormatterCache.has(format)) {
     parts = datePartsFormatterCache.get(format);
   } else {
-    var matchs = DATE_FORMATS_SPLIT.exec(format);
+    const matches = DATE_FORMATS_SPLIT.exec(format);
 
     while (format) {
       match = DATE_FORMATS_SPLIT.exec(format);
