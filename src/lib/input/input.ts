@@ -142,23 +142,23 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   @Input() @BooleanFieldValue() floatingPlaceholder: boolean = true;
   @Input() hintLabel: string = '';
 
-  @Input() autoComplete: string;
-  @Input() autoCorrect: string;
-  @Input() autoCapitalize: string;
-  @Input() @BooleanFieldValue() autoFocus: boolean = false;
+  @Input() autocomplete: string;
+  @Input() autocorrect: string;
+  @Input() autocapitalize: string;
+  @Input() @BooleanFieldValue() autofocus: boolean = false;
   @Input() @BooleanFieldValue() disabled: boolean = false;
   @Input() id: string = `md-input-${nextUniqueId++}`;
   @Input() list: string = null;
   @Input() max: string | number = null;
-  @Input() maxLength: number = null;
+  @Input() maxlength: number = null;
   @Input() min: string | number = null;
-  @Input() minLength: number = null;
+  @Input() minlength: number = null;
   @Input() placeholder: string = null;
-  @Input() @BooleanFieldValue() readOnly: boolean = false;
+  @Input() @BooleanFieldValue() readonly: boolean = false;
   @Input() @BooleanFieldValue() required: boolean = false;
-  @Input() @BooleanFieldValue() spellCheck: boolean = false;
+  @Input() @BooleanFieldValue() spellcheck: boolean = false;
   @Input() step: number = null;
-  @Input() tabIndex: number = null;
+  @Input() tabindex: number = null;
   @Input() type: string = 'text';
   @Input() name: string = null;
 

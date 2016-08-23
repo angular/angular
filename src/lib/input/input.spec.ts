@@ -269,7 +269,7 @@ describe('MdInput', function () {
     expect(el).not.toBeNull();
     expect(el.getAttribute('autocomplete')).toBeNull();
 
-    input.autoComplete = 'on';
+    input.autocomplete = 'on';
     fixture.detectChanges();
     expect(el.getAttribute('autocomplete')).toEqual('on');
   });
@@ -284,7 +284,7 @@ describe('MdInput', function () {
     expect(el).not.toBeNull();
     expect(el.getAttribute('autocorrect')).toBeNull();
 
-    input.autoCorrect = 'on';
+    input.autocorrect = 'on';
     fixture.detectChanges();
     expect(el.getAttribute('autocorrect')).toEqual('on');
   });
@@ -299,7 +299,7 @@ describe('MdInput', function () {
     expect(el).not.toBeNull();
     expect(el.getAttribute('autocapitalize')).toBeNull();
 
-    input.autoCapitalize = 'on';
+    input.autocapitalize = 'on';
     fixture.detectChanges();
     expect(el.getAttribute('autocapitalize')).toEqual('on');
   });
@@ -334,7 +334,7 @@ describe('MdInput', function () {
     expect(el).not.toBeNull();
     expect(el.getAttribute('autofocus')).toBeNull();
 
-    input.autoFocus = true;
+    input.autofocus = true;
     fixture.detectChanges();
     expect(el.getAttribute('autofocus')).toEqual('');
   });
@@ -442,7 +442,7 @@ describe('MdInput', function () {
     expect(el).not.toBeNull();
     expect(el.getAttribute('readonly')).toBeNull();
 
-    input.readOnly = true;
+    input.readonly = true;
     fixture.detectChanges();
     expect(el.getAttribute('readonly')).toEqual('');
   });
@@ -492,7 +492,7 @@ describe('MdInput', function () {
     expect(el).not.toBeNull();
     expect(el.getAttribute('spellcheck')).toEqual('false');
 
-    input.spellCheck = true;
+    input.spellcheck = true;
     fixture.detectChanges();
     expect(el.getAttribute('spellcheck')).toEqual('true');
   });
@@ -532,7 +532,7 @@ describe('MdInput', function () {
     expect(el).not.toBeNull();
     expect(el.getAttribute('tabindex')).toEqual(null);
 
-    input.tabIndex = 1;
+    input.tabindex = 1;
     fixture.detectChanges();
     expect(el.getAttribute('tabindex')).toEqual('1');
   });
@@ -630,43 +630,43 @@ class MdInputWithBlurAndFocusEvents {
 @Component({template: `<md-input name="some-name"></md-input>`})
 class MdInputWithNameTestController { }
 
-@Component({template: `<md-input [autoComplete]="autoComplete"></md-input>`})
+@Component({template: `<md-input [autocomplete]="autoComplete"></md-input>`})
 class MdInputWithAutocomplete { }
 
-@Component({template: `<md-input autoComplete></md-input>`})
+@Component({template: `<md-input autocomplete></md-input>`})
 class MdInputWithUnboundAutocomplete { }
 
-@Component({template: `<md-input autoComplete="name"></md-input>`})
+@Component({template: `<md-input autocomplete="name"></md-input>`})
 class MdInputWithUnboundAutocompleteWithValue { }
 
-@Component({template: `<md-input [autoCorrect]="autoCorrect"></md-input>`})
+@Component({template: `<md-input [autocorrect]="autoCorrect"></md-input>`})
 class MdInputWithAutocorrect { }
 
-@Component({template: `<md-input autoCorrect></md-input>`})
+@Component({template: `<md-input autocorrect></md-input>`})
 class MdInputWithUnboundAutocorrect { }
 
-@Component({template: `<md-input [autoCapitalize]="autoCapitalize"></md-input>`})
+@Component({template: `<md-input [autocapitalize]="autoCapitalize"></md-input>`})
 class MdInputWithAutocapitalize { }
 
-@Component({template: `<md-input autoCapitalize></md-input>`})
+@Component({template: `<md-input autocapitalize></md-input>`})
 class MdInputWithUnboundAutocapitalize { }
 
-@Component({template: `<md-input [autoFocus]="autoFocus"></md-input>`})
+@Component({template: `<md-input [autofocus]="autoFocus"></md-input>`})
 class MdInputWithAutofocus { }
 
-@Component({template: `<md-input autoFocus></md-input>`})
+@Component({template: `<md-input autofocus></md-input>`})
 class MdInputWithUnboundAutofocus { }
 
-@Component({template: `<md-input [readOnly]="readOnly"></md-input>`})
+@Component({template: `<md-input [readonly]="readOnly"></md-input>`})
 class MdInputWithReadonly { }
 
-@Component({template: `<md-input readOnly></md-input>`})
+@Component({template: `<md-input readonly></md-input>`})
 class MdInputWithUnboundReadonly { }
 
-@Component({template: `<md-input [spellCheck]="spellcheck"></md-input>`})
+@Component({template: `<md-input [spellcheck]="spellcheck"></md-input>`})
 class MdInputWithSpellcheck { }
 
-@Component({template: `<md-input spellCheck></md-input>`})
+@Component({template: `<md-input spellcheck></md-input>`})
 class MdInputWithUnboundSpellcheck { }
 
 @Component({template: `<md-input [disabled]="disabled"></md-input>`})
@@ -695,5 +695,5 @@ class MdInputWithMin { }
 @Component({template: `<md-input [step]="step"></md-input>`})
 class MdInputWithStep { }
 
-@Component({template: `<md-input [tabIndex]="tabIndex"></md-input>`})
+@Component({template: `<md-input [tabindex]="tabIndex"></md-input>`})
 class MdInputWithTabindex { }

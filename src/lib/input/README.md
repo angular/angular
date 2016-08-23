@@ -51,7 +51,7 @@ Specifying a side twice will result in an exception during initialization.
 A simple character counter can be made like the following:
 
 ```html
-<md-input placeholder="Character count (100 max)" maxLength="100" class="demo-full-width"
+<md-input placeholder="Character count (100 max)" maxlength="100" class="demo-full-width"
           value="Hello world. How are you?"
           #characterCountHintExample>
   <md-hint align="end">{{characterCountHintExample.characterCount}} / 100</md-hint>
@@ -105,7 +105,7 @@ You can make a full form using inputs, and it will support autofill natively.
       <table style="width: 100%" cellspacing="0"><tr>
         <td><md-input class="demo-full-width" placeholder="City"></md-input></td>
         <td><md-input class="demo-full-width" placeholder="State"></md-input></td>
-        <td><md-input #postalCode class="demo-full-width" maxLength="5"
+        <td><md-input #postalCode class="demo-full-width" maxlength="5"
                       placeholder="Postal Code"
                       value="94043">
           <md-hint align="end">{{postalCode.characterCount}} / 5</md-hint>
