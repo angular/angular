@@ -9,13 +9,13 @@
 import {Type} from '../facade/lang';
 
 import {NgClass} from './ng_class';
+import {NgFocus} from './ng_focus';
 import {NgFor} from './ng_for';
 import {NgIf} from './ng_if';
 import {NgPlural, NgPluralCase} from './ng_plural';
 import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
 import {NgTemplateOutlet} from './ng_template_outlet';
-import {NgFocus} from "./ng_focus";
 
 
 
