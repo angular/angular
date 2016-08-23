@@ -7,9 +7,7 @@
  */
 
 import {EventEmitter, Injectable} from '@angular/core';
-
-import {Location} from '../index';
-import {LocationStrategy} from '../src/location/location_strategy';
+import {Location, LocationStrategy} from '@angular/common';
 
 
 /**

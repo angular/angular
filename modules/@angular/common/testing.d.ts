@@ -6,5 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {SpyLocation} from './testing/location_mock';
-export {MockLocationStrategy} from './testing/mock_location_strategy';
+export * from './testing/index'

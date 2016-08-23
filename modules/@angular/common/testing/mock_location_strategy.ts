@@ -8,8 +8,8 @@
 
 import {Injectable} from '@angular/core';
 
-import {LocationStrategy} from '../index';
-import {EventEmitter} from '../src/facade/async';
+import {LocationStrategy} from '@angular/common';
+import {EventEmitter} from './facade/async';
 
 
 

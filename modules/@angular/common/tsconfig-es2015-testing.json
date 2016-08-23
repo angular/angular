@@ -4,11 +4,12 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/common/cjs",
+    "outDir": "../../../dist/packages-dist/common",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core/"]
+      "@angular/core": ["../../../dist/packages-dist/core"],
+      "@angular/common": ["../../../dist/packages-dist/common"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -18,8 +19,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "testing.ts",
+    "testing/index.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {
