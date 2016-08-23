@@ -12,7 +12,8 @@ import {isBlank} from '../facade/lang';
 
 import {Location} from './location';
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
-import {PlatformLocation, UrlChangeListener} from './platform_location';
+import {LocationChangeListener, PlatformLocation} from './platform_location';
+
 
 
 /**
@@ -59,7 +60,7 @@ export class PathLocationStrategy extends LocationStrategy {
     this._baseHref = href;
   }
 
-  onPopState(fn: UrlChangeListener): void {
+  onPopState(fn: LocationChangeListener): void {
     this._platformLocation.onPopState(fn);
     this._platformLocation.onHashChange(fn);
   }

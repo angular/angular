@@ -7,7 +7,7 @@
  */
 
 import {OpaqueToken} from '@angular/core';
-import {UrlChangeListener} from './platform_location';
+import {LocationChangeListener} from './platform_location';
 
 /**
  * `LocationStrategy` is responsible for representing and reading route state
@@ -34,7 +34,7 @@ export abstract class LocationStrategy {
   abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
   abstract forward(): void;
   abstract back(): void;
-  abstract onPopState(fn: UrlChangeListener): void;
+  abstract onPopState(fn: LocationChangeListener): void;
   abstract getBaseHref(): string;
 }
 

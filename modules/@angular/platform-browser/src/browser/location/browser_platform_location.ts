@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlatformLocation, UrlChangeListener} from '@angular/common';
+import {LocationChangeListener, PlatformLocation} from '@angular/common';
 import {Injectable} from '@angular/core';
 
 import {getDOM} from '../../dom/dom_adapter';
@@ -45,11 +45,11 @@ export class BrowserPlatformLocation extends PlatformLocation {
 
   getBaseHrefFromDOM(): string { return getDOM().getBaseHref(); }
 
-  onPopState(fn: UrlChangeListener): void {
+  onPopState(fn: LocationChangeListener): void {
     getDOM().getGlobalEventTarget('window').addEventListener('popstate', fn, false);
   }
 
-  onHashChange(fn: UrlChangeListener): void {
+  onHashChange(fn: LocationChangeListener): void {
     getDOM().getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
   }
 

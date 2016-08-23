@@ -33,7 +33,7 @@ export declare class HashLocationStrategy extends LocationStrategy {
     back(): void;
     forward(): void;
     getBaseHref(): string;
-    onPopState(fn: UrlChangeListener): void;
+    onPopState(fn: LocationChangeListener): void;
     path(includeHash?: boolean): string;
     prepareExternalUrl(internal: string): string;
     pushState(state: any, title: string, path: string, queryParams: string): void;
@@ -77,12 +77,22 @@ export declare class Location {
     static stripTrailingSlash(url: string): string;
 }
 
+/** @experimental */
+export interface LocationChangeEvent {
+    type: string;
+}
+
+/** @experimental */
+export interface LocationChangeListener {
+    (e: LocationChangeEvent): any;
+}
+
 /** @stable */
 export declare abstract class LocationStrategy {
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHref(): string;
-    abstract onPopState(fn: UrlChangeListener): void;
+    abstract onPopState(fn: LocationChangeListener): void;
     abstract path(includeHash?: boolean): string;
     abstract prepareExternalUrl(internal: string): string;
     abstract pushState(state: any, title: string, url: string, queryParams: string): void;
@@ -177,7 +187,7 @@ export declare class PathLocationStrategy extends LocationStrategy {
     back(): void;
     forward(): void;
     getBaseHref(): string;
-    onPopState(fn: UrlChangeListener): void;
+    onPopState(fn: LocationChangeListener): void;
     path(includeHash?: boolean): string;
     prepareExternalUrl(internal: string): string;
     pushState(state: any, title: string, url: string, queryParams: string): void;
@@ -197,8 +207,8 @@ export declare abstract class PlatformLocation {
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHrefFromDOM(): string;
-    abstract onHashChange(fn: UrlChangeListener): void;
-    abstract onPopState(fn: UrlChangeListener): void;
+    abstract onHashChange(fn: LocationChangeListener): void;
+    abstract onPopState(fn: LocationChangeListener): void;
     abstract pushState(state: any, title: string, url: string): void;
     abstract replaceState(state: any, title: string, url: string): void;
 }
@@ -211,14 +221,4 @@ export declare class SlicePipe implements PipeTransform {
 /** @stable */
 export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
-}
-
-/** @experimental */
-export interface UrlChangeEvent {
-    type: string;
-}
-
-/** @experimental */
-export interface UrlChangeListener {
-    (e: UrlChangeEvent): any;
 }
