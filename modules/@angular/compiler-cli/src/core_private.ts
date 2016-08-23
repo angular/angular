@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {__core_private__ as r, __core_private_types__ as t} from '@angular/core';
+import {__core_private__ as r, __core_private_types__ as types} from '@angular/core';
 
-export type ReflectorReader = t.ReflectorReader;
-export var ReflectorReader: typeof t.ReflectorReader = r.ReflectorReader;
+export declare let _compiler_cli_core_private_types: types;
 
-export type ReflectionCapabilities = t.ReflectionCapabilities;
-export var ReflectionCapabilities: typeof t.ReflectionCapabilities = r.ReflectionCapabilities;
+export type ReflectorReader = typeof _compiler_cli_core_private_types.ReflectorReader;
+export var ReflectorReader: typeof r.ReflectorReader = r.ReflectorReader;
 
-export type Console = t.Console;
-export var Console: typeof t.Console = r.Console;
+export type ReflectionCapabilities = typeof _compiler_cli_core_private_types.ReflectionCapabilities;
+export var ReflectionCapabilities: typeof r.ReflectionCapabilities = r.ReflectionCapabilities;
 
-export var reflector: typeof t.reflector = r.reflector;
+export type Console = typeof _compiler_cli_core_private_types.Console;
+export var Console: typeof r.Console = r.Console;
+
+export var reflector: typeof r.reflector = r.reflector;

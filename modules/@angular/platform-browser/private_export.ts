@@ -15,23 +15,13 @@ import * as dom_renderer from './src/dom/dom_renderer';
 import * as dom_events from './src/dom/events/dom_events';
 import * as shared_styles_host from './src/dom/shared_styles_host';
 
-export declare namespace __platform_browser_private_types__ {
-  export type DomAdapter = dom_adapter.DomAdapter;
-  export var DomAdapter: typeof dom_adapter.DomAdapter;
-  export var getDOM: typeof dom_adapter.getDOM;
-  export var setRootDomAdapter: typeof dom_adapter.setRootDomAdapter;
-  export type DomRootRenderer = dom_renderer.DomRootRenderer;
-  export var DomRootRenderer: typeof dom_renderer.DomRootRenderer;
-  export type DomRootRenderer_ = dom_renderer.DomRootRenderer_;
-  export var DomRootRenderer_: typeof dom_renderer.DomRootRenderer_;
-  export type DomSharedStylesHost = shared_styles_host.DomSharedStylesHost;
-  export var DomSharedStylesHost: typeof shared_styles_host.DomSharedStylesHost;
-  export type SharedStylesHost = shared_styles_host.SharedStylesHost;
-  export var SharedStylesHost: typeof shared_styles_host.SharedStylesHost;
-  export var ELEMENT_PROBE_PROVIDERS: typeof ng_proble.ELEMENT_PROBE_PROVIDERS;
-  export type DomEventsPlugin = dom_events.DomEventsPlugin;
-  export var DomEventsPlugin: typeof dom_events.DomEventsPlugin;
-  export var initDomAdapter: typeof browser.initDomAdapter;
+export interface __platform_browser_private_types__ {
+  DomAdapter: dom_adapter.DomAdapter;
+  DomRootRenderer: dom_renderer.DomRootRenderer;
+  DomRootRenderer_: dom_renderer.DomRootRenderer_;
+  DomSharedStylesHost: shared_styles_host.DomSharedStylesHost;
+  SharedStylesHost: shared_styles_host.SharedStylesHost;
+  DomEventsPlugin: dom_events.DomEventsPlugin;
 }
 
 export var __platform_browser_private__ = {
