@@ -48,6 +48,7 @@ var defaultLocale: string = 'en-US';
  *  | second    |   s    | -            | -                 | s (9)     | ss (09)   |
  *  | timezone  |   z    | -            | z (Pacific Standard Time)| -  | -         |
  *  | timezone  |   Z    | Z (GMT-8:00) | -                 | -         | -         |
+ *  | timezone  |   a    | a (PM)       | -                 | -         | -         |
  *
  * In javascript, only the components specified will be respected (not the ordering,
  * punctuations, ...) and details of the formatting will be dependent on the locale.
