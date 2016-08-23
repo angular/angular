@@ -1,7 +1,7 @@
 /** @experimental */
 export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Provider[]): Promise<PlatformRef>;
 
-/** @experimental */
+/** @stable */
 export declare const platformBrowserDynamic: (extraProviders?: any[]) => PlatformRef;
 
 /** @experimental */

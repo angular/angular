@@ -4,10 +4,7 @@ export declare abstract class AnimationDriver {
     static NOOP: AnimationDriver;
 }
 
-/** @experimental */
-export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
-
-/** @experimental */
+/** @stable */
 export declare class BrowserModule {
     constructor(parentModule: BrowserModule);
 }
@@ -120,7 +117,7 @@ export declare class NgProbeToken {
     constructor(name: string, token: any);
 }
 
-/** @experimental */
+/** @stable */
 export declare const platformBrowser: (extraProviders?: any[]) => PlatformRef;
 
 /** @experimental */
