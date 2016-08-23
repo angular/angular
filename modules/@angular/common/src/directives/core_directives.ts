@@ -15,6 +15,7 @@ import {NgPlural, NgPluralCase} from './ng_plural';
 import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
 import {NgTemplateOutlet} from './ng_template_outlet';
+import {NgFocus} from "./ng_focus";
 
 
 
@@ -62,6 +63,7 @@ import {NgTemplateOutlet} from './ng_template_outlet';
  */
 export const CORE_DIRECTIVES: Type[] = /*@ts2dart_const*/[
   NgClass,
+  NgFocus,
   NgFor,
   NgIf,
   NgTemplateOutlet,
