@@ -24,7 +24,7 @@ describe('Evaluator', () => {
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
     symbols = new Symbols(null);
-    evaluator = new Evaluator(symbols);
+    evaluator = new Evaluator(symbols, new Map());
   });
 
   it('should not have typescript errors in test data', () => {
@@ -138,7 +138,7 @@ describe('Evaluator', () => {
 
   it('should return new expressions', () => {
     symbols.define('Value', {__symbolic: 'reference', module: './classes', name: 'Value'});
-    evaluator = new Evaluator(symbols);
+    evaluator = new Evaluator(symbols, new Map());
     const newExpression = program.getSourceFile('newExpression.ts');
     expect(evaluator.evaluateNode(findVar(newExpression, 'someValue').initializer)).toEqual({
       __symbolic: 'new',
@@ -167,13 +167,13 @@ describe('Evaluator', () => {
     const fDecl = findVar(errors, 'f');
     expect(evaluator.evaluateNode(fDecl.initializer))
         .toEqual(
-            {__symbolic: 'error', message: 'Function call not supported', line: 1, character: 11});
+            {__symbolic: 'error', message: 'Function call not supported', line: 1, character: 12});
     const eDecl = findVar(errors, 'e');
     expect(evaluator.evaluateNode(eDecl.type)).toEqual({
       __symbolic: 'error',
       message: 'Could not resolve type',
       line: 2,
-      character: 10,
+      character: 11,
       context: {typeName: 'NotFound'}
     });
     const sDecl = findVar(errors, 's');
@@ -181,7 +181,7 @@ describe('Evaluator', () => {
       __symbolic: 'error',
       message: 'Name expected',
       line: 3,
-      character: 13,
+      character: 14,
       context: {received: '1'}
     });
     const tDecl = findVar(errors, 't');
@@ -189,7 +189,7 @@ describe('Evaluator', () => {
       __symbolic: 'error',
       message: 'Expression form not supported',
       line: 4,
-      character: 11
+      character: 12
     });
   });
 

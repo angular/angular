@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 
-import {MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
+import {MetadataEntry, MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
 import {Symbols} from './symbols';
 
 function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): boolean {
@@ -70,7 +70,8 @@ export function errorSymbol(
   if (node) {
     sourceFile = sourceFile || getSourceFileOfNode(node);
     if (sourceFile) {
-      let {line, character} = ts.getLineAndCharacterOfPosition(sourceFile, node.pos);
+      let {line, character} =
+          ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile));
       result = {__symbolic: 'error', message, line, character};
     };
   }
@@ -88,7 +89,7 @@ export function errorSymbol(
  * possible.
  */
 export class Evaluator {
-  constructor(private symbols: Symbols) {}
+  constructor(private symbols: Symbols, private nodeMap: Map<MetadataEntry, ts.Node>) {}
 
   nameOf(node: ts.Node): string|MetadataError {
     if (node.kind == ts.SyntaxKind.Identifier) {
@@ -203,7 +204,14 @@ export class Evaluator {
    * tree are folded. For example, a node representing `1 + 2` is folded into `3`.
    */
   public evaluateNode(node: ts.Node): MetadataValue {
+    const t = this;
     let error: MetadataError|undefined;
+
+    function recordEntry<T extends MetadataEntry>(entry: T, node: ts.Node): T {
+      t.nodeMap.set(entry, node);
+      return entry;
+    }
+
     switch (node.kind) {
       case ts.SyntaxKind.ObjectLiteralExpression:
         let obj: {[name: string]: any} = {};
@@ -258,14 +266,14 @@ export class Evaluator {
       case ts.SyntaxKind.SpreadElementExpression:
         let spread = <ts.SpreadElementExpression>node;
         let spreadExpression = this.evaluateNode(spread.expression);
-        return {__symbolic: 'spread', expression: spreadExpression};
+        return recordEntry({__symbolic: 'spread', expression: spreadExpression}, node);
       case ts.SyntaxKind.CallExpression:
         const callExpression = <ts.CallExpression>node;
         if (isCallOf(callExpression, 'forwardRef') && callExpression.arguments.length === 1) {
           const firstArgument = callExpression.arguments[0];
           if (firstArgument.kind == ts.SyntaxKind.ArrowFunction) {
             const arrowFunction = <ts.ArrowFunction>firstArgument;
-            return this.evaluateNode(arrowFunction.body);
+            return recordEntry(this.evaluateNode(arrowFunction.body), node);
           }
         }
         const args = callExpression.arguments.map(arg => this.evaluateNode(arg));
@@ -282,65 +290,66 @@ export class Evaluator {
         }
         // Always fold a CONST_EXPR even if the argument is not foldable.
         if (isCallOf(callExpression, 'CONST_EXPR') && callExpression.arguments.length === 1) {
-          return args[0];
+          return recordEntry(args[0], node);
         }
         const expression = this.evaluateNode(callExpression.expression);
         if (isMetadataError(expression)) {
-          return expression;
+          return recordEntry(expression, node);
         }
         let result: MetadataSymbolicCallExpression = {__symbolic: 'call', expression: expression};
         if (args && args.length) {
           result.arguments = args;
         }
-        return result;
+        return recordEntry(result, node);
       case ts.SyntaxKind.NewExpression:
         const newExpression = <ts.NewExpression>node;
         const newArgs = newExpression.arguments.map(arg => this.evaluateNode(arg));
         if (newArgs.some(isMetadataError)) {
-          return newArgs.find(isMetadataError);
+          return recordEntry(newArgs.find(isMetadataError), node);
         }
         const newTarget = this.evaluateNode(newExpression.expression);
         if (isMetadataError(newTarget)) {
-          return newTarget;
+          return recordEntry(newTarget, node);
         }
         const call: MetadataSymbolicCallExpression = {__symbolic: 'new', expression: newTarget};
         if (newArgs.length) {
           call.arguments = newArgs;
         }
-        return call;
+        return recordEntry(call, node);
       case ts.SyntaxKind.PropertyAccessExpression: {
         const propertyAccessExpression = <ts.PropertyAccessExpression>node;
         const expression = this.evaluateNode(propertyAccessExpression.expression);
         if (isMetadataError(expression)) {
-          return expression;
+          return recordEntry(expression, node);
         }
         const member = this.nameOf(propertyAccessExpression.name);
         if (isMetadataError(member)) {
-          return member;
+          return recordEntry(member, node);
         }
         if (expression && this.isFoldable(propertyAccessExpression.expression))
           return (<any>expression)[<string>member];
         if (isMetadataModuleReferenceExpression(expression)) {
           // A select into a module refrence and be converted into a reference to the symbol
           // in the module
-          return {__symbolic: 'reference', module: expression.module, name: member};
+          return recordEntry(
+              {__symbolic: 'reference', module: expression.module, name: member}, node);
         }
-        return {__symbolic: 'select', expression, member};
+        return recordEntry({__symbolic: 'select', expression, member}, node);
       }
       case ts.SyntaxKind.ElementAccessExpression: {
         const elementAccessExpression = <ts.ElementAccessExpression>node;
         const expression = this.evaluateNode(elementAccessExpression.expression);
         if (isMetadataError(expression)) {
-          return expression;
+          return recordEntry(expression, node);
         }
         const index = this.evaluateNode(elementAccessExpression.argumentExpression);
         if (isMetadataError(expression)) {
-          return expression;
+          return recordEntry(expression, node);
         }
         if (this.isFoldable(elementAccessExpression.expression) &&
             this.isFoldable(elementAccessExpression.argumentExpression))
           return (<any>expression)[<string|number>index];
-        return {__symbolic: 'index', expression, index};
+        return recordEntry({__symbolic: 'index', expression, index}, node);
       }
       case ts.SyntaxKind.Identifier:
         const identifier = <ts.Identifier>node;
@@ -348,7 +357,7 @@ export class Evaluator {
         const reference = this.symbols.resolve(name);
         if (reference === undefined) {
           // Encode as a global reference. StaticReflector will check the reference.
-          return { __symbolic: 'reference', name }
+          return recordEntry({__symbolic: 'reference', name}, node);
         }
         return reference;
       case ts.SyntaxKind.TypeReference:
@@ -360,9 +369,13 @@ export class Evaluator {
                 const qualifiedName = <ts.QualifiedName>node;
                 const left = this.evaluateNode(qualifiedName.left);
                 if (isMetadataModuleReferenceExpression(left)) {
-                  return <MetadataImportedSymbolReferenceExpression> {
-                    __symbolic: 'reference', module: left.module, name: qualifiedName.right.text
-                  }
+                  return recordEntry(
+                      <MetadataImportedSymbolReferenceExpression>{
+                        __symbolic: 'reference',
+                        module: left.module,
+                        name: qualifiedName.right.text
+                      },
+                      node)
                 }
                 // Record a type reference to a declared type as a select.
                 return {__symbolic: 'select', expression: left, member: qualifiedName.right.text};
@@ -370,14 +383,15 @@ export class Evaluator {
                 const identifier = <ts.Identifier>typeNameNode;
                 let symbol = this.symbols.resolve(identifier.text);
                 if (isMetadataError(symbol) || isMetadataSymbolicReferenceExpression(symbol)) {
-                  return symbol;
+                  return recordEntry(symbol, node);
                 }
-                return errorSymbol('Could not resolve type', node, {typeName: identifier.text});
+                return recordEntry(
+                    errorSymbol('Could not resolve type', node, {typeName: identifier.text}), node);
               }
             };
         const typeReference = getReference(typeNameNode);
         if (isMetadataError(typeReference)) {
-          return typeReference;
+          return recordEntry(typeReference, node);
         }
         if (!isMetadataModuleReferenceExpression(typeReference) &&
             typeReferenceNode.typeArguments && typeReferenceNode.typeArguments.length) {
@@ -386,7 +400,7 @@ export class Evaluator {
           // Some versions of 1.9 do not infer this correctly.
           (<MetadataImportedSymbolReferenceExpression>typeReference).arguments = args;
         }
-        return typeReference;
+        return recordEntry(typeReference, node);
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
         return (<ts.LiteralExpression>node).text;
       case ts.SyntaxKind.StringLiteral:
@@ -394,20 +408,22 @@ export class Evaluator {
       case ts.SyntaxKind.NumericLiteral:
         return parseFloat((<ts.LiteralExpression>node).text);
       case ts.SyntaxKind.AnyKeyword:
-        return {__symbolic: 'reference', name: 'any'};
+        return recordEntry({__symbolic: 'reference', name: 'any'}, node);
       case ts.SyntaxKind.StringKeyword:
-        return {__symbolic: 'reference', name: 'string'};
+        return recordEntry({__symbolic: 'reference', name: 'string'}, node);
       case ts.SyntaxKind.NumberKeyword:
-        return {__symbolic: 'reference', name: 'number'};
+        return recordEntry({__symbolic: 'reference', name: 'number'}, node);
       case ts.SyntaxKind.BooleanKeyword:
-        return {__symbolic: 'reference', name: 'boolean'};
+        return recordEntry({__symbolic: 'reference', name: 'boolean'}, node);
       case ts.SyntaxKind.ArrayType:
         const arrayTypeNode = <ts.ArrayTypeNode>node;
-        return {
-          __symbolic: 'reference',
-          name: 'Array',
-          arguments: [this.evaluateNode(arrayTypeNode.elementType)]
-        };
+        return recordEntry(
+            {
+              __symbolic: 'reference',
+              name: 'Array',
+              arguments: [this.evaluateNode(arrayTypeNode.elementType)]
+            },
+            node);
       case ts.SyntaxKind.NullKeyword:
         return null;
       case ts.SyntaxKind.TrueKeyword:
@@ -452,7 +468,7 @@ export class Evaluator {
           default:
             return undefined;
         }
-        return {__symbolic: 'pre', operator: operatorText, operand: operand};
+        return recordEntry({__symbolic: 'pre', operator: operatorText, operand: operand}, node);
       case ts.SyntaxKind.BinaryExpression:
         const binaryExpression = <ts.BinaryExpression>node;
         const left = this.evaluateNode(binaryExpression.left);
@@ -503,12 +519,14 @@ export class Evaluator {
               case ts.SyntaxKind.PercentToken:
                 return <any>left % <any>right;
             }
-          return {
-            __symbolic: 'binop',
-            operator: binaryExpression.operatorToken.getText(),
-            left: left,
-            right: right
-          };
+          return recordEntry(
+              {
+                __symbolic: 'binop',
+                operator: binaryExpression.operatorToken.getText(),
+                left: left,
+                right: right
+              },
+              node);
         }
         break;
       case ts.SyntaxKind.ConditionalExpression:
@@ -519,12 +537,12 @@ export class Evaluator {
         if (isPrimitive(condition)) {
           return condition ? thenExpression : elseExpression;
         }
-        return {__symbolic: 'if', condition, thenExpression, elseExpression};
+        return recordEntry({__symbolic: 'if', condition, thenExpression, elseExpression}, node);
       case ts.SyntaxKind.FunctionExpression:
       case ts.SyntaxKind.ArrowFunction:
-        return errorSymbol('Function call not supported', node);
+        return recordEntry(errorSymbol('Function call not supported', node), node);
     }
-    return errorSymbol('Expression form not supported', node);
+    return recordEntry(errorSymbol('Expression form not supported', node), node);
   }
 }
 

@@ -1,9 +1,8 @@
 import * as ts from 'typescript';
 
 import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isMetadataError, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
-
 
 
 /**
@@ -16,14 +15,20 @@ export class MetadataCollector {
    * Returns a JSON.stringify friendly form describing the decorators of the exported classes from
    * the source file that is expected to correspond to a module.
    */
-  public getMetadata(sourceFile: ts.SourceFile): ModuleMetadata {
+  public getMetadata(sourceFile: ts.SourceFile, strict: boolean = false): ModuleMetadata {
     const locals = new Symbols(sourceFile);
-    const evaluator = new Evaluator(locals);
+    const nodeMap = new Map<MetadataValue|ClassMetadata|FunctionMetadata, ts.Node>();
+    const evaluator = new Evaluator(locals, nodeMap);
     let metadata: {[name: string]: MetadataValue | ClassMetadata | FunctionMetadata}|undefined;
     let exports: ModuleExportMetadata[];
 
     function objFromDecorator(decoratorNode: ts.Decorator): MetadataSymbolicExpression {
       return <MetadataSymbolicExpression>evaluator.evaluateNode(decoratorNode.expression);
+    }
+
+    function recordEntry<T extends MetadataEntry>(entry: T, node: ts.Node): T {
+      nodeMap.set(entry, node);
+      return entry;
     }
 
     function errorSym(
@@ -53,7 +58,7 @@ export class MetadataCollector {
                 func.defaults = functionDeclaration.parameters.map(
                     p => p.initializer && evaluator.evaluateNode(p.initializer));
               }
-              return { func, name: functionName }
+              return recordEntry({func, name: functionName}, functionDeclaration);
             }
           }
         }
@@ -183,10 +188,11 @@ export class MetadataCollector {
         result.statics = statics;
       }
 
-      return result.decorators || members || statics ? result : undefined;
+      return result.decorators || members || statics ? recordEntry(result, classDeclaration) :
+                                                       undefined;
     }
 
-    // Predeclare classes
+    // Predeclare classes and functions
     ts.forEachChild(sourceFile, node => {
       switch (node.kind) {
         case ts.SyntaxKind.ClassDeclaration:
@@ -197,6 +203,16 @@ export class MetadataCollector {
           } else {
             locals.define(
                 className, errorSym('Reference to non-exported class', node, {className}));
+          }
+          break;
+        case ts.SyntaxKind.FunctionDeclaration:
+          if (!(node.flags & ts.NodeFlags.Export)) {
+            // Report references to this function as an error.
+            const functionDeclaration = <ts.FunctionDeclaration>node;
+            const nameNode = functionDeclaration.name;
+            locals.define(
+                nameNode.text,
+                errorSym('Reference to a non-exported function', nameNode, {name: nameNode.text}));
           }
           break;
       }
@@ -236,15 +252,14 @@ export class MetadataCollector {
         case ts.SyntaxKind.FunctionDeclaration:
           // Record functions that return a single value. Record the parameter
           // names substitution will be performed by the StaticReflector.
+          const functionDeclaration = <ts.FunctionDeclaration>node;
           if (node.flags & ts.NodeFlags.Export) {
-            const functionDeclaration = <ts.FunctionDeclaration>node;
             const maybeFunc = maybeGetSimpleFunction(functionDeclaration);
             if (maybeFunc) {
               if (!metadata) metadata = {};
-              metadata[maybeFunc.name] = maybeFunc.func;
+              metadata[maybeFunc.name] = recordEntry(maybeFunc.func, node);
             }
           }
-          // Otherwise don't record the function.
           break;
         case ts.SyntaxKind.EnumDeclaration:
           if (node.flags & ts.NodeFlags.Export) {
@@ -275,16 +290,17 @@ export class MetadataCollector {
                   operator: '+',
                   left: {
                     __symbolic: 'select',
-                    expression: {__symbolic: 'reference', name: enumName}, name
+                    expression: recordEntry({__symbolic: 'reference', name: enumName}, node), name
                   }
                 }
               } else {
-                nextDefaultValue = errorSym('Unsuppported enum member name', member.name);
+                nextDefaultValue =
+                    recordEntry(errorSym('Unsuppported enum member name', member.name), node);
               };
             }
             if (writtenMembers) {
               if (!metadata) metadata = {};
-              metadata[enumName] = enumValueHolder;
+              metadata[enumName] = recordEntry(enumValueHolder, node);
             }
           }
           break;
@@ -297,21 +313,27 @@ export class MetadataCollector {
               if (variableDeclaration.initializer) {
                 varValue = evaluator.evaluateNode(variableDeclaration.initializer);
               } else {
-                varValue = errorSym('Variable not initialized', nameNode);
+                varValue = recordEntry(errorSym('Variable not initialized', nameNode), nameNode);
               }
               let exported = false;
               if (variableStatement.flags & ts.NodeFlags.Export ||
                   variableDeclaration.flags & ts.NodeFlags.Export) {
                 if (!metadata) metadata = {};
-                metadata[nameNode.text] = varValue;
+                metadata[nameNode.text] = recordEntry(varValue, node);
                 exported = true;
               }
               if (isPrimitive(varValue)) {
                 locals.define(nameNode.text, varValue);
               } else if (!exported) {
-                locals.define(
-                    nameNode.text,
-                    errorSym('Reference to a local symbol', nameNode, {name: nameNode.text}));
+                if (varValue && !isMetadataError(varValue)) {
+                  locals.define(nameNode.text, recordEntry(varValue, node));
+                } else {
+                  locals.define(
+                      nameNode.text,
+                      recordEntry(
+                          errorSym('Reference to a local symbol', nameNode, {name: nameNode.text}),
+                          node));
+                }
               }
             } else {
               // Destructuring (or binding) declarations are not supported,
@@ -349,12 +371,159 @@ export class MetadataCollector {
     });
 
     if (metadata || exports) {
-      if (!metadata) metadata = {};
+      if (!metadata)
+        metadata = {};
+      else if (strict) {
+        validateMetadata(sourceFile, nodeMap, metadata);
+      }
       const result: ModuleMetadata = {__symbolic: 'module', version: VERSION, metadata};
       if (exports) result.exports = exports;
       return result;
     }
   }
+}
+
+// This will throw if the metadata entry given contains an error node.
+function validateMetadata(
+    sourceFile: ts.SourceFile, nodeMap: Map<MetadataEntry, ts.Node>,
+    metadata: {[name: string]: MetadataEntry}) {
+  let locals: Set<string> = new Set(['Array', 'Object', 'Set', 'Map', 'string', 'number', 'any']);
+
+  function validateExpression(
+      expression: MetadataValue | MetadataSymbolicExpression | MetadataError) {
+    if (!expression) {
+      return;
+    } else if (Array.isArray(expression)) {
+      expression.forEach(validateExpression);
+    } else if (typeof expression === 'object' && !expression.hasOwnProperty('__symbolic')) {
+      Object.getOwnPropertyNames(expression).forEach(v => validateExpression((<any>expression)[v]));
+    } else if (isMetadataError(expression)) {
+      reportError(expression);
+    } else if (isMetadataGlobalReferenceExpression(expression)) {
+      if (!locals.has(expression.name)) {
+        const reference = <MetadataValue>metadata[expression.name];
+        if (reference) {
+          validateExpression(reference);
+        }
+      }
+    } else if (isFunctionMetadata(expression)) {
+      validateFunction(<any>expression);
+    } else if (isMetadataSymbolicExpression(expression)) {
+      switch (expression.__symbolic) {
+        case 'binary':
+          const binaryExpression = <MetadataSymbolicBinaryExpression>expression;
+          validateExpression(binaryExpression.left);
+          validateExpression(binaryExpression.right);
+          break;
+        case 'call':
+        case 'new':
+          const callExpression = <MetadataSymbolicCallExpression>expression;
+          validateExpression(callExpression.expression);
+          if (callExpression.arguments) callExpression.arguments.forEach(validateExpression);
+          break;
+        case 'index':
+          const indexExpression = <MetadataSymbolicIndexExpression>expression;
+          validateExpression(indexExpression.expression);
+          validateExpression(indexExpression.index);
+          break;
+        case 'pre':
+          const prefixExpression = <MetadataSymbolicPrefixExpression>expression;
+          validateExpression(prefixExpression.operand);
+          break;
+        case 'select':
+          const selectExpression = <MetadataSymbolicSelectExpression>expression;
+          validateExpression(selectExpression.expression);
+          break;
+        case 'spread':
+          const spreadExpression = <MetadataSymbolicSpreadExpression>expression;
+          validateExpression(spreadExpression.expression);
+          break;
+        case 'if':
+          const ifExpression = <MetadataSymbolicIfExpression>expression;
+          validateExpression(ifExpression.condition);
+          validateExpression(ifExpression.elseExpression);
+          validateExpression(ifExpression.thenExpression);
+          break;
+      }
+    }
+  }
+
+  function validateMember(member: MemberMetadata) {
+    if (member.decorators) {
+      member.decorators.forEach(validateExpression);
+    }
+    if (isMethodMetadata(member) && member.parameterDecorators) {
+      member.parameterDecorators.forEach(validateExpression);
+    }
+    if (isConstructorMetadata(member) && member.parameters) {
+      member.parameters.forEach(validateExpression);
+    }
+  }
+
+  function validateClass(classData: ClassMetadata) {
+    if (classData.decorators) {
+      classData.decorators.forEach(validateExpression);
+    }
+    if (classData.members) {
+      Object.getOwnPropertyNames(classData.members)
+          .forEach(name => classData.members[name].forEach(validateMember));
+    }
+  }
+
+  function validateFunction(functionDeclaration: FunctionMetadata) {
+    if (functionDeclaration.value) {
+      const oldLocals = locals;
+      if (functionDeclaration.parameters) {
+        locals = new Set(oldLocals.values());
+        if (functionDeclaration.parameters)
+          functionDeclaration.parameters.forEach(n => locals.add(n));
+      }
+      validateExpression(functionDeclaration.value);
+      locals = oldLocals;
+    }
+  }
+
+  function shouldReportNode(node: ts.Node) {
+    if (node) {
+      const nodeStart = node.getStart();
+      return !(
+          node.pos != nodeStart &&
+          sourceFile.text.substring(node.pos, nodeStart).indexOf('@dynamic') >= 0);
+    }
+    return true;
+  }
+
+  function reportError(error: MetadataError) {
+    const node = nodeMap.get(error);
+    if (shouldReportNode(node)) {
+      const lineInfo = error.line != undefined ?
+          error.character != undefined ? `:${error.line + 1}:${error.character + 1}` :
+                                         `:${error.line + 1}` :
+          '';
+      throw new Error(
+          `${sourceFile.fileName}${lineInfo}: Metadata collected contains an error that will be reported at runtime: ${expandedMessage(error)}.\n  ${JSON.stringify(error)}`);
+    }
+  }
+
+  Object.getOwnPropertyNames(metadata).forEach(name => {
+    const entry = metadata[name];
+    try {
+      if (isClassMetadata(entry)) {
+        validateClass(entry)
+      }
+    } catch (e) {
+      const node = nodeMap.get(entry);
+      if (shouldReportNode(node)) {
+        if (node) {
+          let {line, character} = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+          throw new Error(
+              `${sourceFile.fileName}:${line + 1}:${character + 1}: Error encountered in metadata generated for exported symbol '${name}': \n ${e.message}`);
+        }
+        throw new Error(
+            `Error encountered in metadata generated for exported symbol ${name}: \n ${e.message}`);
+      }
+    }
+  });
 }
 
 // Collect parameter names from a function.
@@ -378,4 +547,33 @@ function namesOf(parameters: ts.NodeArray<ts.ParameterDeclaration>): string[] {
   }
 
   return result;
+}
+
+function expandedMessage(error: any): string {
+  switch (error.message) {
+    case 'Reference to non-exported class':
+      if (error.context && error.context.className) {
+        return `Reference to a non-exported class ${error.context.className}. Consider exporting the class`;
+      }
+      break;
+    case 'Variable not initialized':
+      return 'Only initialized variables and constants can be referenced because the value of this variable is needed by the template compiler';
+    case 'Destructuring not supported':
+      return 'Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring';
+    case 'Could not resolve type':
+      if (error.context && error.context.typeName) {
+        return `Could not resolve type ${error.context.typeName}`;
+      }
+      break;
+    case 'Function call not supported':
+      let prefix =
+          error.context && error.context.name ? `Calling function '${error.context.name}', f` : 'F';
+      return prefix +
+          'unction calls are not supported. Consider replacing the function or lambda with a reference to an exported function';
+    case 'Reference to a local symbol':
+      if (error.context && error.context.name) {
+        return `Reference to a local (non-exported) symbol '${error.context.name}'. Consider exporting the symbol`;
+      }
+  }
+  return error.message;
 }

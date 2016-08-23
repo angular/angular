@@ -27,5 +27,5 @@ export {WORKER_UI_LOCATION_PROVIDERS} from './src/web_workers/ui/location_provid
 
 export {NgProbeToken} from './src/dom/debug/ng_probe';
 export * from './src/worker_render';
-export * from './src/worker_app';
+export {platformWorkerApp, WorkerAppModule} from './src/worker_app';
 export * from './private_export';

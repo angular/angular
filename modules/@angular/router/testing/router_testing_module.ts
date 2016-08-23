@@ -39,7 +39,12 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   }
 }
 
-function setupTestingRouter(
+/**
+ * Router setup factory function used for testing.
+ *
+ * @experimental
+ */
+export function setupTestingRouter(
     urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location,
     loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][]) {
   return new Router(

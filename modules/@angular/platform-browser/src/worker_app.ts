@@ -21,7 +21,12 @@ import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_w
 import {WebWorkerRootRenderer} from './web_workers/worker/renderer';
 import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 
-class PrintLogger {
+/**
+ * Logger for web workers.
+ *
+ * @experimental
+ */
+export class PrintLogger {
   log = print;
   logError = print;
   logGroup = print;
@@ -33,7 +38,12 @@ class PrintLogger {
  */
 export const platformWorkerApp = createPlatformFactory(platformCore, 'workerApp');
 
-function _exceptionHandler(): ExceptionHandler {
+/**
+ * Exception handler factory function.
+ *
+ * @experimental
+ */
+export function exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(new PrintLogger());
 }
 
@@ -44,7 +54,12 @@ let _postMessage = {
   }
 };
 
-function createMessageBus(zone: NgZone): MessageBus {
+/**
+ * MessageBus factory function.
+ *
+ * @experimental
+ */
+export function createMessageBus(zone: NgZone): MessageBus {
   let sink = new PostMessageBusSink(_postMessage);
   let source = new PostMessageBusSource();
   let bus = new PostMessageBus(sink, source);
@@ -52,7 +67,12 @@ function createMessageBus(zone: NgZone): MessageBus {
   return bus;
 }
 
-function setupWebWorker(): void {
+/**
+ * Application initializer for web workers.
+ *
+ * @experimental
+ */
+export function setupWebWorker(): void {
   WorkerDomAdapter.makeCurrent();
 }
 
@@ -68,7 +88,7 @@ function setupWebWorker(): void {
     {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
     WebWorkerRootRenderer, {provide: RootRenderer, useExisting: WebWorkerRootRenderer},
     {provide: ON_WEB_WORKER, useValue: true}, RenderStore,
-    {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
+    {provide: ExceptionHandler, useFactory: exceptionHandler, deps: []},
     {provide: MessageBus, useFactory: createMessageBus, deps: [NgZone]},
     {provide: APP_INITIALIZER, useValue: setupWebWorker, multi: true}
   ],
