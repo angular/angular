@@ -21,7 +21,7 @@ export function main() {
     });
 
     it('Should set focus when the directive get truthy boolean', async(() => {
-         var template = '<div><input class="test-input" [ngFocus]="inFocus" ></div>';
+         var template = '<div class="test-input" [ngFocus]="inFocus" ></div>';
          TestBed.overrideComponent(TestComponent, {set: {template: template}});
          let fixture = TestBed.createComponent(TestComponent);
 
