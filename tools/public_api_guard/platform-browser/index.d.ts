@@ -1,7 +1,4 @@
 /** @experimental */
-export declare const _WORKER_UI_PLATFORM_PROVIDERS: Provider[];
-
-/** @experimental */
 export declare abstract class AnimationDriver {
     abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
     static NOOP: AnimationDriver;
