@@ -35,7 +35,7 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
   providers: [SomeService],
   entryComponents: [
     AnimateCmp, BasicComp, CompWithEntryComponents, CompWithAnalyzeEntryComponentsProvider,
-    ProjectingComp, CompWithChildQuery, CompUsingRootModuleDirectiveAndPipe
+    ProjectingComp, CompWithChildQuery, CompUsingRootModuleDirectiveAndPipe, CompWithReferences
   ]
 })
 export class MainModule {

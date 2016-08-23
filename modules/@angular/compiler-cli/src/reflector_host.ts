@@ -221,11 +221,12 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
    * @param declarationFile the absolute path of the file where the symbol is declared
    * @param name the name of the type.
    */
-  getStaticSymbol(declarationFile: string, name: string): StaticSymbol {
-    let key = `"${declarationFile}".${name}`;
+  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
+    const memberSuffix = members ? `.${ members.join('.')}` : '';
+    const key = `"${declarationFile}".${name}${memberSuffix}`;
     let result = this.typeCache.get(key);
     if (!result) {
-      result = new StaticSymbol(declarationFile, name);
+      result = new StaticSymbol(declarationFile, name, members);
       this.typeCache.set(key, result);
     }
     return result;

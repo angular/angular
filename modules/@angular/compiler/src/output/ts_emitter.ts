@@ -319,5 +319,9 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
           (type: any /** TODO #9100 */) => type.visitType(this, ctx), typeParams, ctx, ',');
       ctx.print(`>`);
     }
+    if (value.runtime && value.runtime.members) {
+      ctx.print('.');
+      ctx.print(value.runtime.members.join('.'));
+    }
   }
 }
