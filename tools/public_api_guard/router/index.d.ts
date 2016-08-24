@@ -186,9 +186,6 @@ export declare class Router {
 }
 
 /** @stable */
-export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkWithHref | typeof RouterLinkActive)[];
-
-/** @stable */
 export declare class RouterLink {
     fragment: string;
     preserveFragment: boolean;
