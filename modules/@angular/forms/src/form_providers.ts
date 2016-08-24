@@ -6,25 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, Type} from '@angular/core';
+import {NgModule} from '@angular/core';
 
 import {InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
 import {RadioControlRegistry} from './directives/radio_control_value_accessor';
 import {FormBuilder} from './form_builder';
 
-
-
-/**
- * Shorthand set of providers used for building Angular forms.
- * @stable
- */
-export const FORM_PROVIDERS: Type<any>[] = [RadioControlRegistry];
-
-/**
- * Shorthand set of providers used for building reactive Angular forms.
- * @stable
- */
-export const REACTIVE_FORM_PROVIDERS: Type<any>[] = [FormBuilder, RadioControlRegistry];
 
 /**
  * The ng module for forms.
@@ -32,7 +19,7 @@ export const REACTIVE_FORM_PROVIDERS: Type<any>[] = [FormBuilder, RadioControlRe
  */
 @NgModule({
   declarations: TEMPLATE_DRIVEN_DIRECTIVES,
-  providers: [FORM_PROVIDERS],
+  providers: [RadioControlRegistry],
   exports: [InternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES]
 })
 export class FormsModule {
@@ -44,7 +31,7 @@ export class FormsModule {
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],
-  providers: [REACTIVE_FORM_PROVIDERS],
+  providers: [FormBuilder, RadioControlRegistry],
   exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
 })
 export class ReactiveFormsModule {

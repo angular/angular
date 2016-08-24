@@ -21,7 +21,6 @@
  */
 
 
-export {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES} from './directives';
 export {AbstractControlDirective} from './directives/abstract_control_directive';
 export {AbstractFormGroupDirective} from './directives/abstract_form_group_directive';
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';

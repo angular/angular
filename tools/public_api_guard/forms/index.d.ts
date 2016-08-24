@@ -140,7 +140,7 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
-/** @experimental */
+/** @stable */
 export interface Form {
     addControl(dir: NgControl): void;
     addFormGroup(dir: AbstractFormGroupDirective): void;
@@ -150,12 +150,6 @@ export interface Form {
     removeFormGroup(dir: AbstractFormGroupDirective): void;
     updateModel(dir: NgControl, value: any): void;
 }
-
-/** @stable */
-export declare const FORM_DIRECTIVES: Type<any>[][];
-
-/** @stable */
-export declare const FORM_PROVIDERS: Type<any>[];
 
 /** @stable */
 export declare class FormArray extends AbstractControl {
@@ -436,12 +430,6 @@ export declare class PatternValidator implements Validator {
         [key: string]: any;
     };
 }
-
-/** @stable */
-export declare const REACTIVE_FORM_DIRECTIVES: Type<any>[][];
-
-/** @stable */
-export declare const REACTIVE_FORM_PROVIDERS: Type<any>[];
 
 /** @stable */
 export declare class ReactiveFormsModule {
