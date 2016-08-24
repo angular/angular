@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, SelfMetadata, Type, forwardRef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, SelfMetadata, Type, forwardRef} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -567,7 +567,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       let moduleType: any = null;
 
 
-      function createInjector(providers: any[], parent: Injector = null): Injector {
+      function createInjector(providers: Provider[], parent: Injector = null): Injector {
         @NgModule({providers: providers})
         class SomeModule {
         }

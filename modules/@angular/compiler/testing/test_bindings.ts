@@ -10,11 +10,13 @@ import {ElementSchemaRegistry, ResourceLoader, UrlResolver} from '@angular/compi
 import {createUrlResolverWithoutPackagePrefix} from '@angular/compiler/src/url_resolver';
 import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {MockResourceLoader} from '@angular/compiler/testing/resource_loader_mock';
+import {Provider} from '@angular/core';
+
 
 // This provider is put here just so that we can access it from multiple
 // internal test packages.
 // TODO: get rid of it or move to a separate @angular/internal_testing package
-export var TEST_COMPILER_PROVIDERS: any[] = [
+export var TEST_COMPILER_PROVIDERS: Provider[] = [
   {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {})},
   {provide: ResourceLoader, useClass: MockResourceLoader},
   {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix}

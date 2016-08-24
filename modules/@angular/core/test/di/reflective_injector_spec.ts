@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectMetadata, Injectable, Injector, Optional, ReflectiveInjector, ReflectiveKey, SelfMetadata, forwardRef} from '@angular/core';
+import {Inject, InjectMetadata, Injectable, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, SelfMetadata, forwardRef} from '@angular/core';
 import {DependencyMetadata} from '@angular/core/src/di/metadata';
 import {ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, ReflectiveInjector_, ReflectiveProtoInjector} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
@@ -93,7 +93,7 @@ export function main() {
     strategyClass: ReflectiveInjectorDynamicStrategy
   }].forEach((context) => {
     function createInjector(
-        providers: any[], parent: ReflectiveInjector = null): ReflectiveInjector_ {
+        providers: Provider[], parent: ReflectiveInjector = null): ReflectiveInjector_ {
       var resolvedProviders = ReflectiveInjector.resolve(providers.concat(context['providers']));
       if (isPresent(parent)) {
         return <ReflectiveInjector_>parent.createChildFromResolved(resolvedProviders);

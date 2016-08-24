@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, ExceptionHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {BaseException, ClassProvider, ExceptionHandler, ExistingProvider, FactoryProvider, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Testability, TypeProvider, ValueProvider, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 import {wtfInit} from '../core_private';
 

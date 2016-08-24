@@ -14,7 +14,7 @@ import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 import {Console} from './console';
-import {Injectable, Injector, OpaqueToken, Optional, ReflectiveInjector} from './di';
+import {Injectable, Injector, OpaqueToken, Optional, Provider, ReflectiveInjector} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryResolver} from './linker/component_factory_resolver';
@@ -81,7 +81,7 @@ export function createPlatform(injector: Injector): PlatformRef {
  *
  * @experimental
  */
-export type PlatformFactory = (extraProviders?: any[]) => PlatformRef;
+export type PlatformFactory = (extraProviders?: Provider[]) => PlatformRef;
 
 /**
  * Creates a factory for a platform
@@ -89,9 +89,10 @@ export type PlatformFactory = (extraProviders?: any[]) => PlatformRef;
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatformFactory(
-    parentPlaformFactory: PlatformFactory, name: string, providers: any[] = []): PlatformFactory {
+    parentPlaformFactory: PlatformFactory, name: string,
+    providers: Provider[] = []): PlatformFactory {
   const marker = new OpaqueToken(`Platform: ${name}`);
-  return (extraProviders: any[] = []) => {
+  return (extraProviders: Provider[] = []) => {
     if (!getPlatform()) {
       if (parentPlaformFactory) {
         parentPlaformFactory(

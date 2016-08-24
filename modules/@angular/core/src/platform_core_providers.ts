@@ -8,7 +8,7 @@
 
 import {PlatformRef, PlatformRef_, createPlatformFactory} from './application_ref';
 import {Console} from './console';
-import {Provider} from './di';
+import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './di';
 import {Reflector, reflector} from './reflection/reflection';
 import {ReflectorReader} from './reflection/reflector_reader';
 import {TestabilityRegistry} from './testability/testability';

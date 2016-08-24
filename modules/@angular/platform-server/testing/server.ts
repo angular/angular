@@ -7,7 +7,8 @@
  */
 
 import {platformCoreDynamicTesting} from '@angular/compiler/testing';
-import {NgModule, PlatformRef, createPlatformFactory} from '@angular/core';
+import {ClassProvider, ExistingProvider, FactoryProvider, NgModule, PlatformRef, TypeProvider, ValueProvider, createPlatformFactory} from '@angular/core';
+
 import {BrowserDynamicTestingModule,} from '@angular/platform-browser-dynamic/testing';
 
 import {INTERNAL_SERVER_PLATFORM_PROVIDERS} from '../src/server';
