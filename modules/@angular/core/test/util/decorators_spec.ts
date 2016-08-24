@@ -132,6 +132,10 @@ export function main() {
               .toThrowError(
                   'Class definition \'extends\' property must be a constructor function was: non_type');
         });
+
+        it('should assign an overridden name for anonymous constructor functions', () => {
+          expect((Class({constructor: function() {}}) as any).overriddenName).not.toBeUndefined();
+        });
       });
     });
   });
