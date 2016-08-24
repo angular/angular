@@ -1,11 +1,12 @@
 
 export default {
-  entry: '../../../dist/packages-dist/platform-server/esm/index.js',
-  dest: '../../../dist/packages-dist/platform-server/esm/platform-server.umd.js',
+  entry: '../../../dist/packages-dist/platform-server/platform-server.js',
+  dest: '../../../dist/packages-dist/platform-server/index.js',
   format: 'umd',
   moduleName: 'ng.platformServer',
   globals: {
     '@angular/core': 'ng.core',
+    '@angular/common': 'ng.common',
     '@angular/compiler': 'ng.compiler',
     '@angular/platform-browser': 'ng.platformBrowser',
     'rxjs/Subject': 'Rx',

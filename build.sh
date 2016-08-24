@@ -59,11 +59,15 @@ do
   UMD_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.js
   UMD_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.min.js
 
-  echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es5.json        ====="
-  $TSC -p ${SRCDIR}/tsconfig-es5.json
+  echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig.json        ====="
+  $TSC -p ${SRCDIR}/tsconfig.json
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
 
+  if [[ -e ${SRCDIR}/tsconfig-testing.json ]]; then
+    echo "======      COMPILING TESTING: ${TSC} -p ${SRCDIR}/tsconfig-testing.json"
+    $TSC -p ${SRCDIR}/tsconfig-testing.json
+  fi
 
   echo "======      TSC 1.8 d.ts compat for ${DESTDIR}   ====="
   # safely strips 'readonly' specifier from d.ts files to make them compatible with tsc 1.8
@@ -77,9 +81,6 @@ do
 
   if [[ ${PACKAGE} != compiler-cli ]]; then
 
-    echo "====== (esm)COMPILING: $TSC -p ${SRCDIR}/tsconfig-es2015.json ====="
-    $TSC -p ${SRCDIR}/tsconfig-es2015.json
-
     echo "======      BUNDLING: ${SRCDIR} ====="
     mkdir ${DESTDIR}/bundles
 
@@ -89,14 +90,6 @@ do
       ../../../node_modules/.bin/rollup -c rollup.config.js
     ) 2>&1 | grep -v "as external dependency"
 
-    # $(npm bin)/tsc  \
-    #     --out ${UMD_ES5_PATH} \
-    #     --target es5 \
-    #     --lib "es6,dom" \
-    #     --allowJs \
-    #     ${UMD_ES6_PATH}
-
-    # rm ${UMD_ES6_PATH}
 
     # cat ./modules/@angular/license-banner.txt > ${UMD_ES5_PATH}.tmp
     # cat ${UMD_ES5_PATH} >> ${UMD_ES5_PATH}.tmp

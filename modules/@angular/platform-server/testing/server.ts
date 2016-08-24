@@ -11,7 +11,7 @@ import {ClassProvider, ExistingProvider, FactoryProvider, NgModule, PlatformRef,
 
 import {BrowserDynamicTestingModule,} from '@angular/platform-browser-dynamic/testing';
 
-import {INTERNAL_SERVER_PLATFORM_PROVIDERS} from '../src/server';
+import {INTERNAL_SERVER_PLATFORM_PROVIDERS} from './platform_server_private';
 
 
 /**

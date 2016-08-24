@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgModuleResolver} from '@angular/compiler';
 import {Compiler, Injectable, Injector, NgModuleMetadata, Type} from '@angular/core';
 
-import {NgModuleResolver} from '../index';
-import {Map} from '../src/facade/collection';
+import {Map} from './facade/collection';
 
 @Injectable()
 export class MockNgModuleResolver extends NgModuleResolver {

@@ -67,6 +67,8 @@ var _chromeNumKeyPadMap = {
  *
  * @security Tread carefully! Interacting with the DOM directly is dangerous and
  * can introduce XSS risks.
+ *
+ * @experimental
  */
 /* tslint:disable:requireParameterType */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {

@@ -6,9 +6,10 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/core/",
+    "outDir": "../../../dist/packages-dist/core",
     "paths": {
-      "rxjs/*": ["../../../node_modules/rxjs/*"]
+      "rxjs/*": ["../../../node_modules/rxjs/*"],
+      "@angular/core": ["../../../dist/packages-dist/core"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -18,7 +19,6 @@
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
     "testing.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     "../../system.d.ts"

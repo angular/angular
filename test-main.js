@@ -13,6 +13,7 @@ System.config({
   map: {
     'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
     '@angular': 'dist/all/@angular',
+    '@angular/core': 'dist/all/@angular/core',
     'rxjs': 'node_modules/rxjs',
     'parse5/index': 'dist/all/empty.js',
     '@angular/platform-server/src/parse5_adapter': 'dist/all/empty.js',
@@ -21,19 +22,19 @@ System.config({
   },
   packages: {
     '@angular/core': {
-      main: 'index.js',
+      main: 'core.js',
       defaultExtension: 'js'
     },
     '@angular/compiler': {
-      main: 'index.js',
+      main: 'compiler.js',
       defaultExtension: 'js'
     },
     '@angular/common': {
-      main: 'index.js',
+      main: 'common.js',
       defaultExtension: 'js'
     },
     '@angular/forms': {
-      main: 'index.js',
+      main: 'forms.js',
       defaultExtension: 'js'
     },
     // remove after all tests imports are fixed
@@ -42,27 +43,27 @@ System.config({
       defaultExtension: 'js'
     },
     '@angular/router': {
-      main: 'index.js',
+      main: 'router.js',
       defaultExtension: 'js'
     },
     '@angular/http': {
-      main: 'index.js',
+      main: 'http.js',
       defaultExtension: 'js'
     },
     '@angular/upgrade': {
-      main: 'index.js',
+      main: 'upgrade.js',
       defaultExtension: 'js'
     },
     '@angular/platform-browser': {
-      main: 'index.js',
+      main: 'platform-browser.js',
       defaultExtension: 'js'
     },
     '@angular/platform-browser-dynamic': {
-      main: 'index.js',
+      main: 'platform-browser-dynamic.js',
       defaultExtension: 'js'
     },
     '@angular/platform-server': {
-      main: 'index.js',
+      main: 'platform-server.js',
       defaultExtension: 'js'
     }
   }

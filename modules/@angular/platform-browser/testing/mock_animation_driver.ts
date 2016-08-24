@@ -8,10 +8,10 @@
 
 import {AnimationPlayer} from '@angular/core';
 import {MockAnimationPlayer} from '@angular/core/testing/testing_internal';
+import {AnimationDriver} from '@angular/platform-browser';
 
-import {AnimationKeyframe, AnimationStyles} from '../core_private';
-import {AnimationDriver} from '../src/dom/animation_driver';
-import {StringMapWrapper} from '../src/facade/collection';
+import {AnimationKeyframe, AnimationStyles} from './core_private_testing';
+import {StringMapWrapper} from './facade/collection';
 
 export class MockAnimationDriver extends AnimationDriver {
   public log: {[key: string]: any}[] = [];

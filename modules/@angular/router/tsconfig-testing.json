@@ -4,26 +4,24 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
-    "module": "es2015",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/router/esm",
+    "outDir": "../../../dist/packages-dist/router/",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/common": ["../../../dist/packages-dist/common"],
       "@angular/common/testing": ["../../../dist/packages-dist/common/testing"],
-      "@angular/compiler": ["../../../dist/packages-dist/compiler"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
-      "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"]
+      "@angular/router": ["../../../dist/packages-dist/router"]
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
     "lib": ["es6", "dom"],
-    "target": "es6",
+    "target": "es5",
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
     "testing.ts"
   ],
   "angularCompilerOptions": {

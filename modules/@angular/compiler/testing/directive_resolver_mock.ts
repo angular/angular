@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {DirectiveResolver} from '@angular/compiler'
 import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
-import {ViewMetadata} from '../core_private';
 
-import {DirectiveResolver} from '../src/directive_resolver';
-import {Map} from '../src/facade/collection';
-import {isArray, isPresent} from '../src/facade/lang';
+import {ViewMetadata} from '../core_private_testing';
+
+import {Map} from './facade/collection';
+import {isArray, isPresent} from './facade/lang';
 
 
 

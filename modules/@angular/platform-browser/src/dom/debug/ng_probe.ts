@@ -60,6 +60,8 @@ function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
 
 /**
  * Providers which support debugging Angular applications (e.g. via `ng.probe`).
+ *
+ * @experimental
  */
 export const ELEMENT_PROBE_PROVIDERS: Provider[] = [{
   provide: RootRenderer,

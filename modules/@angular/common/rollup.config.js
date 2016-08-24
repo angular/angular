@@ -1,7 +1,7 @@
 
 export default {
-  entry: '../../../dist/packages-dist/common/esm/index.js',
-  dest: '../../../dist/packages-dist/common/esm/common.umd.js',
+  entry: '../../../dist/packages-dist/common/common.js',
+  dest: '../../../dist/packages-dist/common/index.js',
   format: 'umd',
   moduleName: 'ng.common',
   globals: {

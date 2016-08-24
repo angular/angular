@@ -12,5 +12,3 @@ export * from './fake_async';
 export * from './test_bed';
 export * from './testing';
 export * from './metadata_override';
-
-export * from '../private_export_testing';

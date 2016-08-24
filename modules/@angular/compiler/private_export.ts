@@ -87,4 +87,5 @@ export var NgModuleCompiler = ng_module_compiler.NgModuleCompiler;
 
 export type TypeScriptEmitter = ts_emitter.TypeScriptEmitter;
 export var TypeScriptEmitter = ts_emitter.TypeScriptEmitter;
+
 }

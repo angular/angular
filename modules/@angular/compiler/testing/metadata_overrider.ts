@@ -7,8 +7,8 @@
  */
 
 import {MetadataOverride} from '@angular/core/testing';
-import {BaseException} from '../src/facade/exceptions';
-import {stringify} from '../src/facade/lang';
+import {BaseException} from './facade/exceptions';
+import {stringify} from './facade/lang';
 
 type StringMap = {
   [key: string]: any

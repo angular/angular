@@ -7,16 +7,12 @@
  */
 
 import {BaseException, Injectable} from '@angular/core';
+import {Connection, ConnectionBackend, ReadyState, Request, Response} from '@angular/http';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
 import {Subject} from 'rxjs/Subject';
 import {take} from 'rxjs/operator/take';
 
-import {ReadyState} from '../src/enums';
-import {isPresent} from '../src/facade/lang';
-import {Connection, ConnectionBackend} from '../src/interfaces';
-import {Request} from '../src/static_request';
-import {Response} from '../src/static_response';
-
+import {isPresent} from './facade/lang';
 
 
 /**

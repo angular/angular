@@ -1,7 +1,7 @@
 
 export default {
-  entry: '../../../dist/packages-dist/upgrade/esm/index.js',
-  dest: '../../../dist/packages-dist/upgrade/esm/upgrade.umd.js',
+  entry: '../../../dist/packages-dist/upgrade/upgrade.js',
+  dest: '../../../dist/packages-dist/upgrade/index.js',
   format: 'umd',
   moduleName: 'ng.upgrade',
   globals: {

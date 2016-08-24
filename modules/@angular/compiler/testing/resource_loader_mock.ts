@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ResourceLoader} from '@angular/compiler';
 import {BaseException} from '@angular/core';
 
-import {ResourceLoader} from '../index';
-import {ListWrapper, Map} from '../src/facade/collection';
-import {isBlank, normalizeBlank} from '../src/facade/lang';
+import {ListWrapper, Map} from './facade/collection';
+import {isBlank, normalizeBlank} from './facade/lang';
+
 
 
 /**
