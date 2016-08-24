@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFocus} from '@angular/common';
+import {NgFocus} from '@angular/common/src/directives/ng_focus';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
