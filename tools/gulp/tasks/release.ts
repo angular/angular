@@ -5,10 +5,13 @@ import gulpRunSequence = require('run-sequence');
 import path = require('path');
 import minimist = require('minimist');
 
-import {execTask} from '../task_helpers';
+import {execTask, cleanTask} from '../task_helpers';
 import {DIST_COMPONENTS_ROOT} from '../constants';
 
 const argv = minimist(process.argv.slice(3));
+
+
+task(':build:release:clean-spec', cleanTask('dist/**/*.spec.*'));
 
 
 task('build:release', function(done: () => void) {
@@ -16,7 +19,7 @@ task('build:release', function(done: () => void) {
   gulpRunSequence(
     'clean',
     ':build:components:ngc',
-    [':clean:spec', ':clean:assets'],
+    ':build:release:clean-spec',
     done
   );
 });
