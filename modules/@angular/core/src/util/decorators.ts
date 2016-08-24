@@ -243,7 +243,8 @@ export function Class(clsDef: ClassDefinition): Type<any> {
     Reflect.defineMetadata('annotations', this.annotations, constructor);
   }
 
-  if (!constructor['name']) {
+  const constructorName = constructor['name'];
+  if (!constructorName || constructorName === 'constructor') {
     (constructor as any)['overriddenName'] = `class${_nextClassId++}`;
   }
 
