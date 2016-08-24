@@ -7,7 +7,7 @@
  */
 
 import {NgFocus} from '@angular/common/src/directives/ng_focus';
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
@@ -16,12 +16,12 @@ export function main() {
   describe('Focus Directive', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [TestComponent, NgFocus],
+        declarations: [TestComponent],
       });
     });
 
     it('Should set focus when the directive get truthy boolean', async(() => {
-         var template = '<div class="test-input" [ngClass]="inFocus" ></div>';
+         var template = '<div class="test-input" [ngFocus]="inFocus" ></div>';
          TestBed.overrideComponent(TestComponent, {set: {template: template}});
          let fixture = TestBed.createComponent(TestComponent);
 
@@ -55,7 +55,7 @@ export function main() {
 }
 
 
-
+@NgModule({declarations: [NgFocus], exports: [NgFocus]})
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   inFocus: boolean;
