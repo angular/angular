@@ -2,6 +2,8 @@
 export declare abstract class AbstractControl {
     asyncValidator: AsyncValidatorFn;
     dirty: boolean;
+    disabled: boolean;
+    enabled: boolean;
     errors: {
         [key: string]: any;
     };
@@ -20,6 +22,14 @@ export declare abstract class AbstractControl {
     constructor(validator: ValidatorFn, asyncValidator: AsyncValidatorFn);
     clearAsyncValidators(): void;
     clearValidators(): void;
+    disable({onlySelf, emitEvent}?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    enable({onlySelf, emitEvent}?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
     get(path: Array<string | number> | string): AbstractControl;
     getError(errorCode: string, path?: string[]): any;
     hasError(errorCode: string, path?: string[]): boolean;
@@ -59,6 +69,8 @@ export declare abstract class AbstractControl {
 export declare abstract class AbstractControlDirective {
     control: AbstractControl;
     dirty: boolean;
+    disabled: boolean;
+    enabled: boolean;
     errors: {
         [key: string]: any;
     };
@@ -98,6 +110,7 @@ export declare class CheckboxControlValueAccessor implements ControlValueAccesso
     constructor(_renderer: Renderer, _elementRef: ElementRef);
     registerOnChange(fn: (_: any) => {}): void;
     registerOnTouched(fn: () => {}): void;
+    setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }
 
@@ -112,6 +125,7 @@ export declare class ControlContainer extends AbstractControlDirective {
 export interface ControlValueAccessor {
     registerOnChange(fn: any): void;
     registerOnTouched(fn: any): void;
+    setDisabledState?(isDisabled: boolean): void;
     writeValue(obj: any): void;
 }
 
@@ -122,6 +136,7 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     constructor(_renderer: Renderer, _elementRef: ElementRef);
     registerOnChange(fn: (_: any) => void): void;
     registerOnTouched(fn: () => void): void;
+    setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }
 
@@ -148,6 +163,7 @@ export declare class FormArray extends AbstractControl {
     length: number;
     constructor(controls: AbstractControl[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     at(index: number): AbstractControl;
+    getRawValue(): any[];
     insert(index: number, control: AbstractControl): void;
     patchValue(value: any[], {onlySelf}?: {
         onlySelf?: boolean;
@@ -178,7 +194,7 @@ export declare class FormArrayName extends ControlContainer implements OnInit, O
 /** @stable */
 export declare class FormBuilder {
     array(controlsConfig: any[], validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn): FormArray;
-    control(value: Object, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]): FormControl;
+    control(formState: Object, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]): FormControl;
     group(controlsConfig: {
         [key: string]: any;
     }, extra?: {
@@ -188,7 +204,7 @@ export declare class FormBuilder {
 
 /** @stable */
 export declare class FormControl extends AbstractControl {
-    constructor(value?: any, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]);
+    constructor(formState?: any, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]);
     patchValue(value: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -196,7 +212,8 @@ export declare class FormControl extends AbstractControl {
         emitViewToModelChange?: boolean;
     }): void;
     registerOnChange(fn: Function): void;
-    reset(value?: any, {onlySelf}?: {
+    registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
+    reset(formState?: any, {onlySelf}?: {
         onlySelf?: boolean;
     }): void;
     setValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange}?: {
@@ -211,6 +228,7 @@ export declare class FormControl extends AbstractControl {
 export declare class FormControlDirective extends NgControl implements OnChanges {
     asyncValidator: AsyncValidatorFn;
     control: FormControl;
+    disabled: boolean;
     form: FormControl;
     model: any;
     path: string[];
@@ -226,6 +244,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
 export declare class FormControlName extends NgControl implements OnChanges, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: FormControl;
+    disabled: boolean;
     formDirective: any;
     model: any;
     name: string;
@@ -245,13 +264,10 @@ export declare class FormGroup extends AbstractControl {
     };
     constructor(controls: {
         [key: string]: AbstractControl;
-    }, optionals?: {
-        [key: string]: boolean;
     }, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     addControl(name: string, control: AbstractControl): void;
     contains(controlName: string): boolean;
-    /** @deprecated */ exclude(controlName: string): void;
-    /** @deprecated */ include(controlName: string): void;
+    getRawValue(): Object;
     patchValue(value: {
         [key: string]: any;
     }, {onlySelf}?: {
@@ -380,6 +396,7 @@ export declare class NgForm extends ControlContainer implements Form {
 export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: FormControl;
+    disabled: boolean;
     formDirective: any;
     model: any;
     name: string;
@@ -442,6 +459,7 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
     constructor(_renderer: Renderer, _elementRef: ElementRef);
     registerOnChange(fn: (value: any) => any): void;
     registerOnTouched(fn: () => any): void;
+    setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }
 
@@ -450,9 +468,10 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
     onChange: (_: any) => void;
     onTouched: () => void;
     value: any;
-    constructor();
+    constructor(_renderer: Renderer, _elementRef: ElementRef);
     registerOnChange(fn: (value: any) => any): void;
     registerOnTouched(fn: () => any): void;
+    setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }
 

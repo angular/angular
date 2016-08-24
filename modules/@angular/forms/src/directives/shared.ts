@@ -58,6 +58,11 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
     if (emitModelEvent) dir.viewToModelUpdate(newValue);
   });
 
+  if (dir.valueAccessor.setDisabledState) {
+    control.registerOnDisabledChange(
+        (isDisabled: boolean) => { dir.valueAccessor.setDisabledState(isDisabled); });
+  }
+
   // touched
   dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
 }
@@ -99,6 +104,15 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
   return !looseIdentical(viewModel, change.currentValue);
 }
 
+export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean {
+  return (
+      hasConstructor(valueAccessor, CheckboxControlValueAccessor) ||
+      hasConstructor(valueAccessor, NumberValueAccessor) ||
+      hasConstructor(valueAccessor, SelectControlValueAccessor) ||
+      hasConstructor(valueAccessor, SelectMultipleControlValueAccessor) ||
+      hasConstructor(valueAccessor, RadioControlValueAccessor));
+}
+
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
     dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
@@ -111,11 +125,7 @@ export function selectValueAccessor(
     if (hasConstructor(v, DefaultValueAccessor)) {
       defaultAccessor = v;
 
-    } else if (
-        hasConstructor(v, CheckboxControlValueAccessor) || hasConstructor(v, NumberValueAccessor) ||
-        hasConstructor(v, SelectControlValueAccessor) ||
-        hasConstructor(v, SelectMultipleControlValueAccessor) ||
-        hasConstructor(v, RadioControlValueAccessor)) {
+    } else if (isBuiltInAccessor(v)) {
       if (isPresent(builtinAccessor))
         _throwError(dir, 'More than one built-in value accessor matches form control with');
       builtinAccessor = v;

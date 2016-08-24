@@ -53,4 +53,8 @@ export class NumberValueAccessor implements ControlValueAccessor {
     this.onChange = (value) => { fn(value == '' ? null : NumberWrapper.parseFloat(value)); };
   }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
 }

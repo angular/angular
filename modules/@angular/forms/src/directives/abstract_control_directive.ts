@@ -41,6 +41,10 @@ export abstract class AbstractControlDirective {
 
   get untouched(): boolean { return isPresent(this.control) ? this.control.untouched : null; }
 
+  get disabled(): boolean { return isPresent(this.control) ? this.control.disabled : null; }
+
+  get enabled(): boolean { return isPresent(this.control) ? this.control.enabled : null; }
+
   get statusChanges(): Observable<any> {
     return isPresent(this.control) ? this.control.statusChanges : null;
   }

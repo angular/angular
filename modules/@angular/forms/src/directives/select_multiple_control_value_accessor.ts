@@ -63,7 +63,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   onChange = (_: any) => {};
   onTouched = () => {};
 
-  constructor() {}
+  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
   writeValue(value: any): void {
     this.value = value;
@@ -100,6 +100,10 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
     };
   }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
+
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
 
   /** @internal */
   _registerOption(value: NgSelectMultipleOption): string {

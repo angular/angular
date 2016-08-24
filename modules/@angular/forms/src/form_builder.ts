@@ -64,21 +64,21 @@ export class FormBuilder {
    * See the {@link FormGroup} constructor for more details.
    */
   group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any} = null): FormGroup {
-    var controls = this._reduceControls(controlsConfig);
-    var optionals = <{[key: string]: boolean}>(
-        isPresent(extra) ? StringMapWrapper.get(extra, 'optionals') : null);
-    var validator: ValidatorFn = isPresent(extra) ? StringMapWrapper.get(extra, 'validator') : null;
-    var asyncValidator: AsyncValidatorFn =
+    const controls = this._reduceControls(controlsConfig);
+    const validator: ValidatorFn =
+        isPresent(extra) ? StringMapWrapper.get(extra, 'validator') : null;
+    const asyncValidator: AsyncValidatorFn =
         isPresent(extra) ? StringMapWrapper.get(extra, 'asyncValidator') : null;
-    return new FormGroup(controls, optionals, validator, asyncValidator);
+    return new FormGroup(controls, validator, asyncValidator);
   }
   /**
-   * Construct a new {@link FormControl} with the given `value`,`validator`, and `asyncValidator`.
+   * Construct a new {@link FormControl} with the given `formState`,`validator`, and
+   * `asyncValidator`.
    */
   control(
-      value: Object, validator: ValidatorFn|ValidatorFn[] = null,
+      formState: Object, validator: ValidatorFn|ValidatorFn[] = null,
       asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null): FormControl {
-    return new FormControl(value, validator, asyncValidator);
+    return new FormControl(formState, validator, asyncValidator);
   }
 
   /**
