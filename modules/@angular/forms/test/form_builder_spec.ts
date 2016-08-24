@@ -14,7 +14,7 @@ export function main() {
   function asyncValidator(_: any /** TODO #9100 */) { return Promise.resolve(null); }
 
   describe('Form Builder', () => {
-    var b: any /** TODO #9100 */;
+    let b: FormBuilder;
 
     beforeEach(() => { b = new FormBuilder(); });
 
@@ -22,6 +22,13 @@ export function main() {
       var g = b.group({'login': 'some value'});
 
       expect(g.controls['login'].value).toEqual('some value');
+    });
+
+    it('should create controls from a boxed value', () => {
+      const g = b.group({'login': {value: 'some value', disabled: true}});
+
+      expect(g.controls['login'].value).toEqual('some value');
+      expect(g.controls['login'].disabled).toEqual(true);
     });
 
     it('should create controls from an array', () => {
@@ -40,12 +47,6 @@ export function main() {
       expect(g.controls['login'].value).toEqual('some value');
       expect(g.controls['login'].validator).toBe(syncValidator);
       expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
-    });
-
-    it('should create groups with optional controls', () => {
-      var g = b.group({'login': 'some value'}, {'optionals': {'login': false}});
-
-      expect(g.contains('login')).toEqual(false);
     });
 
     it('should create groups with a custom validator', () => {

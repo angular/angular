@@ -127,6 +127,10 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
 
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
 
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
+
   private _checkName(): void {
     if (this.name && this.formControlName && this.name !== this.formControlName) {
       this._throwNameError();

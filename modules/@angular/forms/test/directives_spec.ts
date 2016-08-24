@@ -74,7 +74,7 @@ export function main() {
         });
 
         it('should return select multiple accessor when provided', () => {
-          const selectMultipleAccessor = new SelectMultipleControlValueAccessor();
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null, null);
           expect(selectValueAccessor(dir, [
             defaultAccessor, selectMultipleAccessor
           ])).toEqual(selectMultipleAccessor);
@@ -95,7 +95,7 @@ export function main() {
 
         it('should return custom accessor when provided with select multiple', () => {
           const customAccessor = new SpyValueAccessor();
-          const selectMultipleAccessor = new SelectMultipleControlValueAccessor();
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null, null);
           expect(selectValueAccessor(
                      dir, <any>[defaultAccessor, customAccessor, selectMultipleAccessor]))
               .toEqual(customAccessor);
@@ -124,9 +124,9 @@ export function main() {
     });
 
     describe('formGroup', () => {
-      var form: any /** TODO #9100 */;
-      var formModel: FormGroup;
-      var loginControlDir: any /** TODO #9100 */;
+      let form: FormGroupDirective;
+      let formModel: FormGroup;
+      let loginControlDir: FormControlName;
 
       beforeEach(() => {
         form = new FormGroupDirective([], []);
@@ -160,7 +160,7 @@ export function main() {
 
       describe('addControl', () => {
         it('should throw when no control found', () => {
-          var dir = new FormControlName(form, null, null, [defaultAccessor]);
+          const dir = new FormControlName(form, null, null, [defaultAccessor]);
           dir.name = 'invalidName';
 
           expect(() => form.addControl(dir))

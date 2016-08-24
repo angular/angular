@@ -7,13 +7,14 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {Component} from '@angular/core';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {Component, Input} from '@angular/core';
+import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
-import {FormsModule, NgForm} from '@angular/forms';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
+
 import {ListWrapper} from '../src/facade/collection';
 
 export function main() {
@@ -24,7 +25,7 @@ export function main() {
         declarations: [
           StandaloneNgModel, NgModelForm, NgModelGroupForm, NgModelValidBinding, NgModelNgIfForm,
           NgModelRadioForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
-          NgModelOptionsStandalone
+          NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper
         ],
         imports: [FormsModule]
       });
@@ -364,6 +365,66 @@ export function main() {
          }));
     });
 
+    describe('disabled controls', () => {
+      it('should not consider disabled controls in value or validation', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelGroupForm);
+           fixture.debugElement.componentInstance.isDisabled = false;
+           fixture.debugElement.componentInstance.first = '';
+           fixture.debugElement.componentInstance.last = 'Drew';
+           fixture.debugElement.componentInstance.email = 'some email';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.value).toEqual({name: {first: '', last: 'Drew'}, email: 'some email'});
+           expect(form.valid).toBe(false);
+           expect(form.control.get('name.first').disabled).toBe(false);
+
+           fixture.componentInstance.isDisabled = true;
+           fixture.detectChanges();
+           tick();
+
+           expect(form.value).toEqual({name: {last: 'Drew'}, email: 'some email'});
+           expect(form.valid).toBe(true);
+           expect(form.control.get('name.first').disabled).toBe(true);
+         }));
+
+      it('should add disabled attribute in the UI if disable() is called programmatically',
+         fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelGroupForm);
+           fixture.debugElement.componentInstance.isDisabled = false;
+           fixture.debugElement.componentInstance.first = 'Nancy';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           form.control.get('name.first').disable();
+           fixture.detectChanges();
+           tick();
+
+           const input = fixture.debugElement.query(By.css(`[name="first"]`));
+           expect(input.nativeElement.disabled).toBe(true);
+         }));
+
+      it('should disable a custom control if disabled attr is added', async(() => {
+           const fixture = TestBed.createComponent(NgModelCustomWrapper);
+           fixture.debugElement.componentInstance.name = 'Nancy';
+           fixture.debugElement.componentInstance.isDisabled = true;
+           fixture.detectChanges();
+           fixture.whenStable().then(() => {
+             fixture.detectChanges();
+             fixture.whenStable().then(() => {
+               const form = fixture.debugElement.children[0].injector.get(NgForm);
+               expect(form.control.get('name').disabled).toBe(true);
+
+               const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
+               expect(customInput.nativeElement.disabled).toEqual(true);
+             });
+           });
+         }));
+
+    });
+
     describe('radio controls', () => {
       it('should support <type=radio>', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelRadioForm);
@@ -488,6 +549,30 @@ export function main() {
          }));
     });
 
+    describe('custom value accessors', () => {
+      it('should support standard writing to view and model', async(() => {
+           const fixture = TestBed.createComponent(NgModelCustomWrapper);
+           fixture.debugElement.componentInstance.name = 'Nancy';
+           fixture.detectChanges();
+           fixture.whenStable().then(() => {
+             fixture.detectChanges();
+             fixture.whenStable().then(() => {
+               // model -> view
+               const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
+               expect(customInput.nativeElement.value).toEqual('Nancy');
+
+               customInput.nativeElement.value = 'Carson';
+               dispatchEvent(customInput.nativeElement, 'input');
+               fixture.detectChanges();
+
+               // view -> model
+               expect(fixture.debugElement.componentInstance.name).toEqual('Carson');
+             });
+           });
+         }));
+
+    });
+
     describe('ngModel corner cases', () => {
       it('should update the view when the model is set back to what used to be in the view',
          fakeAsync(() => {
@@ -541,7 +626,7 @@ class StandaloneNgModel {
 @Component({
   selector: 'ng-model-form',
   template: `
-    <form (ngSubmit)="name='submitted'">
+    <form (ngSubmit)="name='submitted'" (reset)="onReset()">
       <input name="name" [(ngModel)]="name" minlength="10" [ngModelOptions]="options">
     </form>
   `
@@ -549,6 +634,8 @@ class StandaloneNgModel {
 class NgModelForm {
   name: string;
   options = {};
+
+  onReset() {}
 }
 
 @Component({
@@ -556,7 +643,7 @@ class NgModelForm {
   template: `
     <form>
       <div ngModelGroup="name">
-        <input name="first" [(ngModel)]="first" required>
+        <input name="first" [(ngModel)]="first" required [disabled]="isDisabled">
         <input name="last" [(ngModel)]="last">
       </div>
       <input name="email" [(ngModel)]="email">
@@ -567,10 +654,11 @@ class NgModelGroupForm {
   first: string;
   last: string;
   email: string;
+  isDisabled: boolean;
 }
 
 @Component({
-  selector: 'ng-model-group-form',
+  selector: 'ng-model-valid-binding',
   template: `
     <form>
       <div ngModelGroup="name" #group="ngModelGroup">
@@ -666,6 +754,40 @@ class NgModelRadioForm {
 class NgModelSelectForm {
   selectedCity: Object = {};
   cities: any[] = [];
+}
+
+@Component({
+  selector: 'ng-model-custom-comp',
+  template: `
+    <input name="custom" [(ngModel)]="model" (ngModelChange)="changeFn($event)" [disabled]="isDisabled">
+  `,
+  providers: [{provide: NG_VALUE_ACCESSOR, multi: true, useExisting: NgModelCustomComp}]
+})
+class NgModelCustomComp implements ControlValueAccessor {
+  model: string;
+  @Input('disabled') isDisabled: boolean = false;
+  changeFn: (value: any) => void;
+
+  writeValue(value: any) { this.model = value; }
+
+  registerOnChange(fn: (value: any) => void) { this.changeFn = fn; }
+
+  registerOnTouched() {}
+
+  setDisabledState(isDisabled: boolean) { this.isDisabled = isDisabled; }
+}
+
+@Component({
+  selector: 'ng-model-custom-wrapper',
+  template: `
+    <form>
+       <ng-model-custom-comp name="name" [(ngModel)]="name" [disabled]="isDisabled"></ng-model-custom-comp>
+    </form>
+  `
+})
+class NgModelCustomWrapper {
+  name: string;
+  isDisabled = false;
 }
 
 function sortedClassList(el: HTMLElement) {

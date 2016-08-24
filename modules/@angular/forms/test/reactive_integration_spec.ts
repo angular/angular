@@ -161,7 +161,7 @@ export function main() {
     });
 
     describe('programmatic changes', () => {
-      it('should update the value in the DOM when setValue is called', () => {
+      it('should update the value in the DOM when setValue() is called', () => {
         const fixture = TestBed.createComponent(FormGroupComp);
         const login = new FormControl('oldValue');
         const form = new FormGroup({'login': login});
@@ -173,6 +173,89 @@ export function main() {
 
         const input = fixture.debugElement.query(By.css('input'));
         expect(input.nativeElement.value).toEqual('newValue');
+      });
+
+      describe('disabled controls', () => {
+        it('should add disabled attribute to an individual control when instantiated as disabled',
+           () => {
+             const fixture = TestBed.createComponent(FormControlComp);
+             const control = new FormControl({value: 'some value', disabled: true});
+             fixture.debugElement.componentInstance.control = control;
+             fixture.detectChanges();
+
+             const input = fixture.debugElement.query(By.css('input'));
+             expect(input.nativeElement.disabled).toBe(true);
+
+             control.enable();
+             fixture.detectChanges();
+             expect(input.nativeElement.disabled).toBe(false);
+           });
+
+        it('should add disabled attribute to formControlName when instantiated as disabled', () => {
+          const fixture = TestBed.createComponent(FormGroupComp);
+          const control = new FormControl({value: 'some value', disabled: true});
+          fixture.debugElement.componentInstance.form = new FormGroup({login: control});
+          fixture.debugElement.componentInstance.control = control;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input'));
+          expect(input.nativeElement.disabled).toBe(true);
+
+          control.enable();
+          fixture.detectChanges();
+          expect(input.nativeElement.disabled).toBe(false);
+        });
+
+        it('should add disabled attribute to an individual control when disable() is called',
+           () => {
+             const fixture = TestBed.createComponent(FormControlComp);
+             const control = new FormControl('some value');
+             fixture.debugElement.componentInstance.control = control;
+             fixture.detectChanges();
+
+             control.disable();
+             fixture.detectChanges();
+
+             const input = fixture.debugElement.query(By.css('input'));
+             expect(input.nativeElement.disabled).toBe(true);
+
+             control.enable();
+             fixture.detectChanges();
+             expect(input.nativeElement.disabled).toBe(false);
+           });
+
+        it('should add disabled attribute to child controls when disable() is called on group',
+           () => {
+             const fixture = TestBed.createComponent(FormGroupComp);
+             const form = new FormGroup({'login': new FormControl('login')});
+             fixture.debugElement.componentInstance.form = form;
+             fixture.detectChanges();
+
+             form.disable();
+             fixture.detectChanges();
+
+             const inputs = fixture.debugElement.queryAll(By.css('input'));
+             expect(inputs[0].nativeElement.disabled).toBe(true);
+
+             form.enable();
+             fixture.detectChanges();
+             expect(inputs[0].nativeElement.disabled).toBe(false);
+           });
+
+
+        it('should not add disabled attribute to custom controls when disable() is called', () => {
+          const fixture = TestBed.createComponent(MyInputForm);
+          const control = new FormControl('some value');
+          fixture.debugElement.componentInstance.form = new FormGroup({login: control});
+          fixture.detectChanges();
+
+          control.disable();
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('my-input'));
+          expect(input.nativeElement.getAttribute('disabled')).toBe(null);
+        });
+
       });
 
     });
@@ -1203,7 +1286,7 @@ class WrappedValueForm {
   template: `
    <div [formGroup]="form">
       <my-input formControlName="login"></my-input>
-    </div>
+   </div>
   `
 })
 class MyInputForm {
