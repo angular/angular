@@ -2,9 +2,9 @@
   "name": "@angular/http",
   "version": "0.0.0-PLACEHOLDER",
   "description": "",
-  "main": "cjs/index.js",
-  "module": "index.js",
-  "typings": "index.d.ts",
+  "main": "index.js",
+  "module": "http.js",
+  "typings": "http.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

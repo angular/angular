@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {ServerModule, platformDynamicServer, platformServer} from './src/server';
+export {ServerModule, platformDynamicServer, platformServer, INTERNAL_SERVER_PLATFORM_PROVIDERS} from './src/server';

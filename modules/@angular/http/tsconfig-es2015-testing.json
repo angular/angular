@@ -10,8 +10,8 @@
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"],
       "@angular/common": ["../../../dist/packages-dist/common/common.d.ts"],
-      "@angular/http": ["../../../dist/packages-dist/http/http.d.ts"],
-      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"]
+      "@angular/http/*": ["../../../dist/packages-dist/http/*"],
+      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser/platform-browser.d.ts"]
     },
     "rootDir": ".",
     "sourceMap": true,

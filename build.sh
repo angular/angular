@@ -47,12 +47,10 @@ for PACKAGE in \
   forms \
   platform-browser \
   platform-browser-dynamic \
-  platform-server \
   http \
   router \
   upgrade \
   compiler-cli
-#  core \
 do
   SRCDIR=./modules/@angular/${PACKAGE}
   DESTDIR=./dist/packages-dist/${PACKAGE}
@@ -63,13 +61,16 @@ do
   echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015.json        ====="
   $TSC -p ${SRCDIR}/tsconfig-es2015.json
 
+  cp ${SRCDIR}/*.d.ts ${DESTDIR}/
+
   if [[ -e ${SRCDIR}/tsconfig-es2015-testing.json ]]; then
     echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015-testing.json        ====="
     $TSC -p ${SRCDIR}/tsconfig-es2015-testing.json
   fi
 
+  echo "======      COPYING: ${TSC} -p ${SRCDIR}/d.ts files        ====="
   cp ${SRCDIR}/package.json ${DESTDIR}/
-  cp ${SRCDIR}/*.d.ts ${DESTDIR}/
+
 
 
   echo "======      TSC 1.8 d.ts compat for ${DESTDIR}   ====="

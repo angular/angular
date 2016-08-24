@@ -15,7 +15,7 @@ import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_provid
 import {CachedResourceLoader} from './src/resource_loader/resource_loader_cache';
 import {ResourceLoaderImpl} from './src/resource_loader/resource_loader_impl';
 
-
+export {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_providers';
 
 /**
  * @experimental

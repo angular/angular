@@ -23,8 +23,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "testing.ts"
+    "router.ts"
   ],
   "angularCompilerOptions": {
     "strictMetadataEmit": true

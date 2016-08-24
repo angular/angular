@@ -20,6 +20,7 @@ import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {flatten} from './utils/collection';
 
+export {ROUTES} from './router_config_loader'
 
 
 /**

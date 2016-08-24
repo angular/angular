@@ -4,16 +4,18 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/router/cjs",
+    "outDir": "../../../dist/packages-dist/router",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/common": ["../../../dist/packages-dist/common"],
       "@angular/common/testing": ["../../../dist/packages-dist/common/testing"],
       "@angular/compiler": ["../../../dist/packages-dist/compiler"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
-      "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"]
+      "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"],
+      "rxjs/*": ["../../../node_modules/rxjs/*"],
+      "@angular/router": ["../../../dist/packages-dist/router"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -23,8 +25,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "testing.ts"
+    "testing/index.ts"
   ],
   "angularCompilerOptions": {
     "strictMetadataEmit": true

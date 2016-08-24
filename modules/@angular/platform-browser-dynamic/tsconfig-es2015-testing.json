@@ -4,9 +4,9 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/platform-browser-dynamic/cjs",
+    "outDir": "../../../dist/packages-dist/platform-browser-dynamic",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
@@ -16,7 +16,7 @@
       "@angular/compiler/testing": ["../../../dist/packages-dist/compiler/testing"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
       "@angular/platform-browser/testing": ["../../../dist/packages-dist/platform-browser/testing"],
-      "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic/index.d.ts"]
+      "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"]
     },
     "rootDir": ".",
     "sourceMap": true,
