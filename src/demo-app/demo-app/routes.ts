@@ -1,4 +1,4 @@
-import {provideRouter, Routes} from '@angular/router';
+import {Routes} from '@angular/router';
 import {Home} from './demo-app';
 import {ButtonDemo} from '../button/button-demo';
 import {BaselineDemo} from '../baseline/baseline-demo';
@@ -27,7 +27,7 @@ import {DialogDemo} from '../dialog/dialog-demo';
 import {TooltipDemo} from '../tooltip/tooltip-demo';
 
 
-export const routes: Routes = [
+export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: Home},
   {path: 'button', component: ButtonDemo},
   {path: 'card', component: CardDemo},
@@ -55,5 +55,3 @@ export const routes: Routes = [
   {path: 'dialog', component: DialogDemo},
   {path: 'tooltip', component: TooltipDemo},
 ];
-
-export const DEMO_APP_ROUTE_PROVIDER = provideRouter(routes);

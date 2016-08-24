@@ -6,18 +6,15 @@ import {IconE2E} from './icon/icon-e2e';
 import {ButtonE2E} from './button/button-e2e';
 import {MenuE2E} from './menu/menu-e2e';
 import {BasicTabs} from './tabs/tabs-e2e';
-import {E2E_APP_ROUTE_PROVIDER} from './e2e-app/routes';
 import {MaterialModule} from '@angular2-material/all/all';
+import {E2E_APP_ROUTES} from './e2e-app/routes';
 
 
 @NgModule({
   imports: [
     BrowserModule,
     MaterialModule,
-    RouterModule,
-  ],
-  providers: [
-    E2E_APP_ROUTE_PROVIDER,
+    RouterModule.forRoot(E2E_APP_ROUTES),
   ],
   declarations: [
     E2EApp,
