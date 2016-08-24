@@ -8,9 +8,7 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {Component, Inject, LOCALE_ID, TRANSLATIONS_FORMAT} from '@angular/core';
-import {FORM_DIRECTIVES} from '@angular/forms';
 
-import {MultipleComponentsMyComp} from './a/multiple_components';
 
 @Component({
   selector: 'basic',
