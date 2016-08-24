@@ -14,4 +14,7 @@ export default {
 //    nodeResolve({ jsnext: true, main: true }),
   ]
 }
+<<<<<<< 780f4419d356dfc6d02ac98c0c8b40b33dae998b
 
+=======
+>>>>>>> all but platform dynamic working

@@ -12,7 +12,7 @@ mkdir -p ./dist/all/
 
 TSCONFIG=./tools/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
-# $(npm bin)/tsc -p ${TSCONFIG}
+$(npm bin)/tsc -p ${TSCONFIG}
 cp ./tools/@angular/tsc-wrapped/package.json ./dist/tools/@angular/tsc-wrapped
 
 echo "====== Copying files needed for e2e tests ====="
@@ -62,8 +62,11 @@ do
   echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015.json        ====="
   $TSC -p ${SRCDIR}/tsconfig-es2015.json
 
+<<<<<<< 780f4419d356dfc6d02ac98c0c8b40b33dae998b
   cp ${SRCDIR}/*.d.ts ${DESTDIR}/
 
+=======
+>>>>>>> all but platform dynamic working
   if [[ -e ${SRCDIR}/tsconfig-es2015-testing.json ]]; then
     echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015-testing.json        ====="
     $TSC -p ${SRCDIR}/tsconfig-es2015-testing.json
@@ -98,6 +101,7 @@ do
     echo "..."  # here just to have grep match something and not exit with 1
     ../../../node_modules/.bin/rollup -c rollup.config.js
   ) 2>&1 | grep -v "as external dependency"
+<<<<<<< 780f4419d356dfc6d02ac98c0c8b40b33dae998b
 
   if [[ -e ${SRCDIR}/rollup-testing.config.json ]]; then
     echo "======      BUNDLING TESTING: ${SRCDIR} ====="
@@ -109,12 +113,19 @@ do
   fi
 
 
+=======
+>>>>>>> all but platform dynamic working
 
+  if [[ -e ${SRCDIR}/rollup-testing.config.json ]]; then
+    echo "======      BUNDLING TESTING: ${SRCDIR} ====="
     (
       cd  ${SRCDIR}
       echo "..."  # here just to have grep match something and not exit with 1
       ../../../node_modules/.bin/rollup -c rollup-testing.config.js
     ) 2>&1 | grep -v "as external dependency"
+  fi
+
+
 
   #   $(npm bin)/tsc  \
   #       --out ${UMD_ES5_PATH} \
