@@ -23,7 +23,7 @@
     "skipLibCheck": true
    },
   "files": [
-    "index.ts",
+    "forms.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {

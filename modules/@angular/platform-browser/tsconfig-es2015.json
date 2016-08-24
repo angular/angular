@@ -25,8 +25,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "testing.ts",
+    "platform-browser.ts",
     "../../../node_modules/@types/hammerjs/index.d.ts",
     "../../../node_modules/@types/jasmine/index.d.ts",
     "../../../node_modules/@types/protractor/index.d.ts",

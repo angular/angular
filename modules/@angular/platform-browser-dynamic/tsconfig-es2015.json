@@ -25,8 +25,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "testing.ts",
+    "platform-browser-dynamic.ts",
     "../../../node_modules/@types/jasmine/index.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]

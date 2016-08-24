@@ -8,8 +8,8 @@
     "moduleResolution": "node",
     "outDir": "../../../dist/packages-dist/http",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/common": ["../../../dist/packages-dist/common"],
+      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"],
+      "@angular/common": ["../../../dist/packages-dist/common/common.d.ts"],
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"]
     },
     "rootDir": ".",
@@ -21,8 +21,7 @@
 
   },
   "files": [
-    "index.ts",
-    "testing.ts",
+    "http.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {

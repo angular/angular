@@ -12,7 +12,7 @@ mkdir -p ./dist/all/
 
 TSCONFIG=./tools/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
-# $(npm bin)/tsc -p ${TSCONFIG}
+$(npm bin)/tsc -p ${TSCONFIG}
 cp ./tools/@angular/tsc-wrapped/package.json ./dist/tools/@angular/tsc-wrapped
 
 echo "====== Copying files needed for e2e tests ====="
@@ -63,8 +63,10 @@ do
   echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015.json        ====="
   $TSC -p ${SRCDIR}/tsconfig-es2015.json
 
-  echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015-testing.json        ====="
-  $TSC -p ${SRCDIR}/tsconfig-es2015-testing.json
+  if [[ -e ${SRCDIR}/tsconfig-es2015-testing.json ]]; then
+    echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-es2015-testing.json        ====="
+    $TSC -p ${SRCDIR}/tsconfig-es2015-testing.json
+  fi
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
   cp ${SRCDIR}/*.d.ts ${DESTDIR}/
@@ -85,20 +87,25 @@ do
   #   echo "====== (esm)COMPILING: $TSC -p ${SRCDIR}/tsconfig-es2015.json ====="
   #   $TSC -p ${SRCDIR}/tsconfig-es2015.json
 
-  #   echo "======      BUNDLING: ${SRCDIR} ====="
+  echo "======      BUNDLING: ${SRCDIR} ====="
   #   mkdir ${DESTDIR}/bundles
 
-    (
-      cd  ${SRCDIR}
-      echo "..."  # here just to have grep match something and not exit with 1
-      ../../../node_modules/.bin/rollup -c rollup.config.js
-    ) 2>&1 | grep -v "as external dependency"
+  (
+    cd  ${SRCDIR}
+    echo "..."  # here just to have grep match something and not exit with 1
+    ../../../node_modules/.bin/rollup -c rollup.config.js
+  ) 2>&1 | grep -v "as external dependency"
 
+  if [[ -e ${SRCDIR}/rollup-testing.config.json ]]; then
+    echo "======      BUNDLING TESTING: ${SRCDIR} ====="
     (
       cd  ${SRCDIR}
       echo "..."  # here just to have grep match something and not exit with 1
       ../../../node_modules/.bin/rollup -c rollup-testing.config.js
     ) 2>&1 | grep -v "as external dependency"
+  fi
+
+
 
   #   $(npm bin)/tsc  \
   #       --out ${UMD_ES5_PATH} \

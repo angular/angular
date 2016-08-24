@@ -4,14 +4,14 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/platform-browser/cjs",
+    "outDir": "../../../dist/packages-dist/platform-browser",
     "paths": {
-      "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
-      "@angular/common": ["../../../dist/packages-dist/common"],
-      "@angular/common/testing": ["../../../dist/packages-dist/common/testing"],
+      "@angular/core": ["../../../dist/packages-dist/core/core.d.ts"],
+      "@angular/core/testing": ["../../../dist/packages-dist/core/testing.d.ts"],
+      "@angular/common": ["../../../dist/packages-dist/common/common.d.ts"],
+      "@angular/common/testing": ["../../../dist/packages-dist/common/testing.d.ts"],
 
       // workaround for https://github.com/Microsoft/TypeScript/issues/8723
       // we can get rid of this once we update to typescript 1.9.0-dev.20160525-1.0 or newer
@@ -25,8 +25,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "testing.ts",
+    "testing/index.ts",
     "../../../node_modules/@types/hammerjs/index.d.ts",
     "../../../node_modules/@types/jasmine/index.d.ts",
     "../../../node_modules/@types/protractor/index.d.ts",
