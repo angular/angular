@@ -151,7 +151,7 @@ export declare class ApplicationInitStatus {
 export declare class ApplicationModule {
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class ApplicationRef {
     componentTypes: Type<any>[];
     components: ComponentRef<any>[];
@@ -304,7 +304,7 @@ export interface ComponentMetadataFactory {
     new (obj: ComponentMetadataType): ComponentMetadata;
 }
 
-/** @experimental */
+/** @stable */
 export interface ComponentMetadataType extends DirectiveMetadataType {
     animations?: AnimationEntryMetadata[];
     changeDetection?: ChangeDetectionStrategy;
@@ -386,7 +386,7 @@ export declare function createPlatform(injector: Injector): PlatformRef;
 /** @experimental */
 export declare function createPlatformFactory(parentPlaformFactory: PlatformFactory, name: string, providers?: any[]): PlatformFactory;
 
-/** @experimental */
+/** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
 /** @stable */
@@ -489,7 +489,7 @@ export interface DirectiveMetadataFactory {
     new (obj: DirectiveMetadataType): DirectiveMetadata;
 }
 
-/** @experimental */
+/** @stable */
 export interface DirectiveMetadataType {
     exportAs?: string;
     host?: {
@@ -522,7 +522,7 @@ export declare abstract class EmbeddedViewRef<C> extends ViewRef {
     abstract destroy(): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare function enableProdMode(): void;
 
 /** @stable */
@@ -762,13 +762,13 @@ export declare class ModuleWithComponentFactories<T> {
     constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
 }
 
-/** @experimental */
+/** @stable */
 export interface ModuleWithProviders {
     ngModule: Type<any>;
     providers?: any[];
 }
 
-/** @experimental */
+/** @stable */
 export declare var NgModule: NgModuleMetadataFactory;
 
 /** @stable */
@@ -784,12 +784,12 @@ export declare class NgModuleFactory<T> {
     create(parentInjector: Injector): NgModuleRef<T>;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class NgModuleFactoryLoader {
     abstract load(path: string): Promise<NgModuleFactory<any>>;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgModuleMetadata extends InjectableMetadata implements NgModuleMetadataType {
     bootstrap: Array<Type<any> | any[]>;
     declarations: Array<Type<any> | any[]>;
@@ -801,13 +801,13 @@ export declare class NgModuleMetadata extends InjectableMetadata implements NgMo
     constructor(options?: NgModuleMetadataType);
 }
 
-/** @experimental */
+/** @stable */
 export interface NgModuleMetadataFactory {
     (obj?: NgModuleMetadataType): NgModuleDecorator;
     new (obj?: NgModuleMetadataType): NgModuleMetadata;
 }
 
-/** @experimental */
+/** @stable */
 export interface NgModuleMetadataType {
     bootstrap?: Array<Type<any> | any[]>;
     declarations?: Array<Type<any> | any[]>;
@@ -818,7 +818,7 @@ export interface NgModuleMetadataType {
     schemas?: Array<SchemaMetadata | any[]>;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class NgModuleRef<T> {
     componentFactoryResolver: ComponentFactoryResolver;
     injector: Injector;
@@ -940,7 +940,7 @@ export interface PipeMetadataFactory {
     new (obj: PipeMetadataType): any;
 }
 
-/** @experimental */
+/** @stable */
 export interface PipeMetadataType {
     name: string;
     pure?: boolean;
@@ -957,7 +957,7 @@ export declare const PLATFORM_INITIALIZER: any;
 /** @experimental */
 export declare const platformCore: (extraProviders?: any[]) => PlatformRef;
 
-/** @experimental */
+/** @stable */
 export declare abstract class PlatformRef {
     destroyed: boolean;
     injector: Injector;

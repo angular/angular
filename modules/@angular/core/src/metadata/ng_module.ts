@@ -12,7 +12,7 @@ import {Type} from '../type';
 /**
  * A wrapper around a module that also includes the providers.
  *
- * @experimental
+ * @stable
  */
 export interface ModuleWithProviders {
   ngModule: Type<any>;
@@ -30,7 +30,7 @@ export interface SchemaMetadata { name: string; }
  * Defines a schema that will allow any property on elements with a `-` in their name,
  * which is the common rule for custom elements.
  *
- * @experimental
+ * @stable
  */
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
   name: 'custom-elements'
@@ -47,7 +47,7 @@ export const NO_ERRORS_SCHEMA: SchemaMetadata = {
 
 /**
  * Interface for creating {@link NgModuleMetadata}
- * @experimental
+ * @stable
  */
 export interface NgModuleMetadataType {
   providers?: any[];
@@ -61,7 +61,7 @@ export interface NgModuleMetadataType {
 
 /**
  * Declares an Angular Module.
- * @experimental
+ * @stable
  */
 export class NgModuleMetadata extends InjectableMetadata implements NgModuleMetadataType {
   /**

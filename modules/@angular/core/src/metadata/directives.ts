@@ -15,7 +15,7 @@ import {ViewEncapsulation} from './view';
 
 /**
  * Interface for creating {@link DirectiveMetadata}
- * @experimental
+ * @stable
  */
 export interface DirectiveMetadataType {
   selector?: string;
@@ -744,7 +744,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
 
 /**
  * Interface for creating {@link ComponentMetadataType}
- * @experimental
+ * @stable
  */
 export interface ComponentMetadataType extends DirectiveMetadataType {
   changeDetection?: ChangeDetectionStrategy;
@@ -1009,7 +1009,7 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
 
 /**
  * Interface for creating {@link PipeMetadata}
- * @experimental
+ * @stable
  */
 export interface PipeMetadataType {
   name: string;
