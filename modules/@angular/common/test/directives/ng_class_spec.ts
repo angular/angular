@@ -12,7 +12,6 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
-import {NgFocus} from "../../../../../tools/public_api_guard/common/index";
 
 function detectChangesAndCheck(fixture: ComponentFixture<any>, classes: string) {
   fixture.detectChanges();
@@ -23,7 +22,7 @@ export function main() {
   describe('binding to CSS class list', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-          declarations: [TestComponent, NgFocus],
+        declarations: [TestComponent],
       });
     });
 

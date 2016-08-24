@@ -16,7 +16,7 @@ export function main() {
   describe('Focus Directive', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [TestComponent],
+        declarations: [TestComponent, NgFocus],
       });
     });
 
