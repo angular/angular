@@ -19,7 +19,7 @@ import {WrappedError} from './facade/errors';
  *
  * ```javascript
  *
- * class MyExceptionHandler implements ErrorHandler {
+ * class MyErrorHandler implements ErrorHandler {
  *   call(error, stackTrace = null, reason = null) {
  *     // do something with the exception
  *   }

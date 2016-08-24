@@ -10,7 +10,6 @@ import {Component, ComponentRef, Injectable, Injector} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed} from '@angular/core/testing';
-import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRootRenderer, DomRootRenderer_} from '@angular/platform-browser/src/dom/dom_renderer';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/client_message_broker';
@@ -19,10 +18,11 @@ import {Serializer} from '@angular/platform-browser/src/web_workers/shared/seria
 import {ServiceMessageBrokerFactory_} from '@angular/platform-browser/src/web_workers/shared/service_message_broker';
 import {MessageBasedRenderer} from '@angular/platform-browser/src/web_workers/ui/renderer';
 import {WebWorkerRootRenderer} from '@angular/platform-browser/src/web_workers/worker/renderer';
-import {BrowserTestingModule} from '@angular/platform-browser/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
+import {platformBrowserDynamicTesting} from '../../../../platform-browser-dynamic/testing';
 import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
+import {BrowserTestingModule} from '../../../testing';
 import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
 
 export function main() {

@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getDOM} from '../src/dom/dom_adapter';
-import {StringMapWrapper} from '../src/facade/collection';
-import {global, isString} from '../src/facade/lang';
+import {StringMapWrapper} from './facade/collection';
+import {global, isString} from './facade/lang';
+import {getDOM} from './private_import_platform-browser';
+
 
 /**
  * Jasmine matchers that check Angular specific conditions.

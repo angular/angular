@@ -7,9 +7,9 @@
  */
 
 
-import {BrowserDomAdapter} from '../src/browser/browser_adapter';
-import {document, window} from '../src/facade/browser';
-import {NumberWrapper, isBlank} from '../src/facade/lang';
+import {document, window} from './facade/browser';
+import {NumberWrapper, isBlank} from './facade/lang';
+import {BrowserDomAdapter} from './private_import_platform-browser';
 
 var DOM = new BrowserDomAdapter();
 

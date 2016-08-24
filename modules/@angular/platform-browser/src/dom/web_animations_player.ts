@@ -8,9 +8,9 @@
 
 import {AUTO_STYLE} from '@angular/core';
 
-import {AnimationPlayer} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
+import {AnimationPlayer} from '../private_import_core';
 
 import {getDOM} from './dom_adapter';
 import {DomAnimatePlayer} from './dom_animate_player';

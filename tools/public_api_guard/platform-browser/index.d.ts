@@ -118,13 +118,13 @@ export declare class NgProbeToken {
 }
 
 /** @stable */
-export declare const platformBrowser: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
+export declare const platformBrowser: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @experimental */
-export declare const platformWorkerApp: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
+export declare const platformWorkerApp: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @experimental */
-export declare const platformWorkerUi: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
+export declare const platformWorkerUi: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @experimental */
 export declare const PRIMITIVE: Type<any>;
@@ -204,7 +204,7 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
 export declare const WORKER_SCRIPT: OpaqueToken;
 
 /** @experimental */
-export declare const WORKER_UI_LOCATION_PROVIDERS: (typeof MessageBasedPlatformLocation | typeof BrowserPlatformLocation | {
+export declare const WORKER_UI_LOCATION_PROVIDERS: (typeof BrowserPlatformLocation | typeof MessageBasedPlatformLocation | {
     provide: any;
     useFactory: (injector: Injector) => () => void;
     multi: boolean;

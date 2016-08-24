@@ -8,8 +8,6 @@
 
 import {ClassProvider, ErrorHandler, ExistingProvider, FactoryProvider, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Testability, TypeProvider, ValueProvider, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
-import {wtfInit} from '../core_private';
-
 import {BROWSER_SANITIZATION_PROVIDERS} from './browser';
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from './browser/testability';
@@ -121,7 +119,6 @@ function messageBusFactory(instance: WebWorkerInstance): MessageBus {
 function initWebWorkerRenderPlatform(injector: Injector): () => void {
   return () => {
     BrowserDomAdapter.makeCurrent();
-    wtfInit();
     BrowserGetTestability.init();
     var scriptUri: string;
     try {

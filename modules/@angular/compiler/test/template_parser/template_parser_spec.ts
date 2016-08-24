@@ -11,7 +11,6 @@ import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
 import {TEMPLATE_TRANSFORMS, TemplateParser, splitClasses} from '@angular/compiler/src/template_parser/template_parser';
-import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
 import {SchemaMetadata, SecurityContext, Type} from '@angular/core';
 import {Console} from '@angular/core/src/console';
@@ -20,6 +19,7 @@ import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect,
 
 import {Identifiers, identifierToken, resolveIdentifierToken} from '../../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
+import {MockSchemaRegistry} from '../../testing/index';
 import {unparse} from '../expression_parser/unparser';
 
 var someModuleUrl = 'package:someModule';

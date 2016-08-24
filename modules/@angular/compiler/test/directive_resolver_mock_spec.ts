@@ -9,8 +9,9 @@
 import {Component, ComponentMetadata, Directive, Injector} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 
-import {ViewMetadata} from '../core_private';
-import {MockDirectiveResolver} from '../testing';
+import {MockDirectiveResolver} from '../testing/index';
+
+import {ViewMetadata} from './private_import_core';
 
 export function main() {
   describe('MockDirectiveResolver', () => {

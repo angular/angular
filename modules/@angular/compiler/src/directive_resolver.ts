@@ -7,9 +7,10 @@
  */
 
 import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, Type, resolveForwardRef} from '@angular/core';
-import {ReflectorReader, reflector} from '../core_private';
+
 import {StringMapWrapper} from './facade/collection';
 import {isPresent, stringify} from './facade/lang';
+import {ReflectorReader, reflector} from './private_import_core';
 import {splitAtColon} from './util';
 
 function _isDirectiveMetadata(type: any): type is DirectiveMetadata {

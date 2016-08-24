@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseError} from './errors';
-
 export interface BrowserNodeGlobal {
   Object: typeof Object;
   Array: typeof Array;
@@ -94,7 +92,7 @@ export function isNumber(obj: any): boolean {
   return typeof obj === 'number';
 }
 
-export function isString(obj: any): obj is String {
+export function isString(obj: any): obj is string {
   return typeof obj === 'string';
 }
 

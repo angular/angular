@@ -67,9 +67,6 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 }
 
 /** @stable */
-export declare type ErrorHandler = (error: any) => any;
-
-/** @stable */
 export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
 /** @stable */

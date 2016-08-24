@@ -8,9 +8,8 @@
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit, Type} from '@angular/core';
 
-import {LifecycleHooks, reflector} from '../core_private';
-
 import {MapWrapper} from './facade/collection';
+import {LifecycleHooks, reflector} from './private_import_core';
 
 const LIFECYCLE_INTERFACES: Map<any, Type<any>> = MapWrapper.createFromPairs([
   [LifecycleHooks.OnInit, OnInit],

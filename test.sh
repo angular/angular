@@ -6,7 +6,7 @@ if [ $# -eq 0 ]
   then
     echo "Angular test runner. (No platform specified)"
     echo
-    echo "./test.sh [node|browser|browserNoRouter|tools]"
+    echo "./test.sh [node|browser|browserNoRouter|router|tools]"
     echo
 else
   cd `dirname $0`

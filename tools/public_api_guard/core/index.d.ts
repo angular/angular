@@ -363,7 +363,7 @@ export interface ContentChildrenMetadataFactory {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlaformFactory: PlatformFactory, name: string, providers?: Provider[]): PlatformFactory;
+export declare function createPlatformFactory(parentPlaformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
@@ -888,7 +888,7 @@ export interface PipeTransform {
 export declare const PLATFORM_INITIALIZER: any;
 
 /** @experimental */
-export declare const platformCore: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
+export declare const platformCore: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @stable */
 export declare abstract class PlatformRef {
