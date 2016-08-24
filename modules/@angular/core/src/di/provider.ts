@@ -277,7 +277,7 @@ export interface FactoryProvider {
    * A list of `token`s which need to be resolved by the injector. The list of values is than
    * used as arguments to the `useFactory` function.
    */
-  deps: any[];
+  deps?: any[];
 
   /**
    * If true, than injector returns an array of instances. This is useful to allow multiple

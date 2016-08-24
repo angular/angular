@@ -542,7 +542,7 @@ export declare class ExpressionChangedAfterItHasBeenCheckedException extends Bas
 
 /** @stable */
 export interface FactoryProvider {
-    deps: any[];
+    deps?: any[];
     multi?: boolean;
     provide: any;
     useFactory: Function;
