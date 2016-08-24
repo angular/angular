@@ -1230,13 +1230,14 @@ describe('Integration', () => {
 
 
                  // failed navigation
-                 router.navigateByUrl('/lazyFalse/loaded').catch(s => {});
+                 router.navigateByUrl('/lazyFalse/loaded');
                  advance(fixture);
 
                  expect(location.path()).toEqual('/');
 
                  expectEvents(recordedEvents, [
-                   [NavigationStart, '/lazyFalse/loaded'], [NavigationError, '/lazyFalse/loaded']
+                   [NavigationStart, '/lazyFalse/loaded'],
+                   [NavigationCancel, '/lazyFalse/loaded']
                  ]);
 
                  recordedEvents.splice(0);
