@@ -9,6 +9,7 @@
 import {AnimationGroupPlayer} from '../animation/animation_group_player';
 import {AnimationOutput} from '../animation/animation_output';
 import {AnimationPlayer, NoOpAnimationPlayer} from '../animation/animation_player';
+import {AnimationTransitionEvent} from '../animation/animation_transition_event';
 import {ViewAnimationMap} from '../animation/view_animation_map';
 import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
@@ -81,22 +82,17 @@ export abstract class AppView<T> {
   }
 
   queueAnimation(
-      element: any, animationName: string, player: AnimationPlayer, fromState: string,
-      toState: string): void {
-    var actualAnimationDetected = !(player instanceof NoOpAnimationPlayer);
-    var animationData = {
-      'fromState': fromState,
-      'toState': toState,
-      'running': actualAnimationDetected
-    };
+      element: any, animationName: string, player: AnimationPlayer, totalTime: number,
+      fromState: string, toState: string): void {
+    var event = new AnimationTransitionEvent(
+        {'fromState': fromState, 'toState': toState, 'totalTime': totalTime});
     this.animationPlayers.set(element, animationName, player);
     player.onDone(() => {
       // TODO: make this into a datastructure for done|start
-      this.triggerAnimationOutput(element, animationName, 'done', animationData);
+      this.triggerAnimationOutput(element, animationName, 'done', event);
       this.animationPlayers.remove(element, animationName);
     });
-    player.onStart(
-        () => { this.triggerAnimationOutput(element, animationName, 'start', animationData); });
+    player.onStart(() => { this.triggerAnimationOutput(element, animationName, 'start', event); });
   }
 
   triggerQueuedAnimations() {
@@ -108,7 +104,7 @@ export abstract class AppView<T> {
   }
 
   triggerAnimationOutput(
-      element: any, animationName: string, phase: string, animationData: {[key: string]: any}) {
+      element: any, animationName: string, phase: string, event: AnimationTransitionEvent) {
     var listeners = this._animationListeners.get(element);
     if (isPresent(listeners) && listeners.length) {
       for (let i = 0; i < listeners.length; i++) {
@@ -116,7 +112,7 @@ export abstract class AppView<T> {
         // we check for both the name in addition to the phase in the event
         // that there may be more than one @trigger on the same element
         if (listener.output.name == animationName && listener.output.phase == phase) {
-          listener.handler(animationData);
+          listener.handler(event);
           break;
         }
       }
