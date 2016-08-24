@@ -22,7 +22,8 @@
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es2015"
+    "target": "es2015",
+    "skipLibCheck": true
   },
   "files": [
     "index.ts",
