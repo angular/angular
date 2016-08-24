@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader, platformCoreDynamic} from '@angular/compiler';
-import {COMPILER_OPTIONS, PlatformRef, Provider, createPlatformFactory} from '@angular/core';
+import {COMPILER_OPTIONS, ClassProvider, ExistingProvider, FactoryProvider, PlatformRef, Provider, TypeProvider, ValueProvider, createPlatformFactory} from '@angular/core';
 import {WORKER_SCRIPT, platformWorkerUi} from '@angular/platform-browser';
 
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_providers';

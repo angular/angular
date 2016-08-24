@@ -6,15 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, InjectMetadata, Input, Optional, Pipe, PipeTransform, Self, SkipSelfMetadata, TemplateRef, Type, ViewContainerRef, forwardRef} from '@angular/core';
-import {ViewMetadata} from '@angular/core/src/metadata/view';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, ElementRef, Host, Inject, InjectMetadata, Input, Optional, Pipe, PipeTransform, Provider, Self, SkipSelfMetadata, TemplateRef, Type, ViewContainerRef, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {isBlank} from '../../src/facade/lang';
 
 @Directive({selector: '[simpleDirective]'})
 class SimpleDirective {
@@ -194,7 +191,7 @@ class TestComp {
 
 export function main() {
   function createComponentFixture<T>(
-      template: string, providers: any[] = null, comp: Type<T> = null): ComponentFixture<T> {
+      template: string, providers: Provider[] = null, comp: Type<T> = null): ComponentFixture<T> {
     if (!comp) {
       comp = <any>TestComp;
     }
@@ -206,7 +203,7 @@ export function main() {
   }
 
   function createComponent(
-      template: string, providers: any[] = null, comp: Type<any> = null): DebugElement {
+      template: string, providers: Provider[] = null, comp: Type<any> = null): DebugElement {
     const fixture = createComponentFixture(template, providers, comp);
     fixture.detectChanges();
     return fixture.debugElement;

@@ -118,13 +118,13 @@ export declare class NgProbeToken {
 }
 
 /** @stable */
-export declare const platformBrowser: (extraProviders?: any[]) => PlatformRef;
+export declare const platformBrowser: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
 
 /** @experimental */
-export declare const platformWorkerApp: (extraProviders?: any[]) => PlatformRef;
+export declare const platformWorkerApp: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
 
 /** @experimental */
-export declare const platformWorkerUi: (extraProviders?: any[]) => PlatformRef;
+export declare const platformWorkerUi: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
 
 /** @experimental */
 export declare const PRIMITIVE: Type<any>;

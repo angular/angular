@@ -277,7 +277,6 @@ export class ProviderElementContext {
 export class NgModuleProviderAnalyzer {
   private _transformedProviders = new CompileIdentifierMap<CompileTokenMetadata, ProviderAst>();
   private _seenProviders = new CompileIdentifierMap<CompileTokenMetadata, boolean>();
-  private _unparsedProviders: any[] = [];
   private _allProviders: CompileIdentifierMap<CompileTokenMetadata, ProviderAst>;
   private _errors: ProviderError[] = [];
 

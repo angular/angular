@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, DebugNode, NgZone, Optional, RootRenderer, getDebugNode, isDevMode} from '@angular/core';
+import {ApplicationRef, DebugNode, NgZone, Optional, Provider, RootRenderer, getDebugNode, isDevMode} from '@angular/core';
 
 import {DebugDomRootRenderer} from '../../../core_private';
 import {StringMapWrapper} from '../../facade/collection';
@@ -61,7 +61,7 @@ function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
 /**
  * Providers which support debugging Angular applications (e.g. via `ng.probe`).
  */
-export const ELEMENT_PROBE_PROVIDERS: any[] = [{
+export const ELEMENT_PROBE_PROVIDERS: Provider[] = [{
   provide: RootRenderer,
   useFactory: _createConditionalRootRenderer,
   deps: [DomRootRenderer, [NgProbeToken, new Optional()]]

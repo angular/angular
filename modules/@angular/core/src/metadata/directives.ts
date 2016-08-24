@@ -8,7 +8,7 @@
 
 import {AnimationEntryMetadata} from '../animation/metadata';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {InjectableMetadata} from '../di/metadata';
+import {InjectableMetadata, Provider} from '../di';
 import {isPresent} from '../facade/lang';
 import {Type} from '../type';
 import {ViewEncapsulation} from './view';
@@ -668,8 +668,8 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    * }
    * ```
    */
-  get providers(): any[] { return this._providers; }
-  private _providers: any[];
+  get providers(): Provider[] { return this._providers; }
+  private _providers: Provider[];
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -835,8 +835,8 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    *
    * ```
    */
-  get viewProviders(): any[] { return this._viewProviders; }
-  private _viewProviders: any[];
+  get viewProviders(): Provider[] { return this._viewProviders; }
+  private _viewProviders: Provider[];
 
   /**
    * The module id of the module that contains the component.

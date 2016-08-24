@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Type, resolveForwardRef} from '@angular/core';
+import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
 import {ViewMetadata} from '../core_private';
 
 import {DirectiveResolver} from '../src/directive_resolver';
@@ -48,14 +48,15 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
     let providers = metadata.providers;
     if (isPresent(providerOverrides)) {
-      const originalViewProviders: any[] = isPresent(metadata.providers) ? metadata.providers : [];
+      const originalViewProviders: Provider[] =
+          isPresent(metadata.providers) ? metadata.providers : [];
       providers = originalViewProviders.concat(providerOverrides);
     }
 
     if (metadata instanceof ComponentMetadata) {
       let viewProviders = metadata.viewProviders;
       if (isPresent(viewProviderOverrides)) {
-        const originalViewProviders: any[] =
+        const originalViewProviders: Provider[] =
             isPresent(metadata.viewProviders) ? metadata.viewProviders : [];
         viewProviders = originalViewProviders.concat(viewProviderOverrides);
       }
@@ -121,12 +122,12 @@ export class MockDirectiveResolver extends DirectiveResolver {
     this._clearCacheFor(type);
   }
 
-  setProvidersOverride(type: Type<any>, providers: any[]): void {
+  setProvidersOverride(type: Type<any>, providers: Provider[]): void {
     this._providerOverrides.set(type, providers);
     this._clearCacheFor(type);
   }
 
-  setViewProvidersOverride(type: Type<any>, viewProviders: any[]): void {
+  setViewProvidersOverride(type: Type<any>, viewProviders: Provider[]): void {
     this._viewProviderOverrides.set(type, viewProviders);
     this._clearCacheFor(type);
   }

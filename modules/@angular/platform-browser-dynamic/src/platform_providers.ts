@@ -7,13 +7,13 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {COMPILER_OPTIONS} from '@angular/core';
+import {COMPILER_OPTIONS, Provider} from '@angular/core';
 
 import {INTERNAL_BROWSER_PLATFORM_PROVIDERS} from '../platform_browser_private';
 
 import {ResourceLoaderImpl} from './resource_loader/resource_loader_impl';
 
-export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: any[] = [
+export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: Provider[] = [
   INTERNAL_BROWSER_PLATFORM_PROVIDERS,
   {
     provide: COMPILER_OPTIONS,

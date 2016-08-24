@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectiveInjector} from '@angular/core';
+import {Provider, ReflectiveInjector} from '@angular/core';
 import {isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from './common_options';
@@ -34,8 +34,8 @@ import {IOsDriverExtension} from './webdriver/ios_driver_extension';
  * It provides defaults, creates the injector and calls the sampler.
  */
 export class Runner {
-  private _defaultProviders: any[];
-  constructor(defaultProviders: any[] = null) {
+  private _defaultProviders: Provider[];
+  constructor(defaultProviders: Provider[] = null) {
     if (isBlank(defaultProviders)) {
       defaultProviders = [];
     }

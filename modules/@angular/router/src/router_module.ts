@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, BaseException, Compiler, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, BaseException, Compiler, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -43,7 +43,7 @@ const hashLocationStrategy = {
   useClass: HashLocationStrategy
 };
 
-export const ROUTER_PROVIDERS: any[] = [
+export const ROUTER_PROVIDERS: Provider[] = [
   Location, {provide: UrlSerializer, useClass: DefaultUrlSerializer}, {
     provide: Router,
     useFactory: setupRouter,

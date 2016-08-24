@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableMetadata} from '../di/metadata';
+import {InjectableMetadata, Provider} from '../di';
 import {Type} from '../type';
 
 /**
@@ -16,7 +16,7 @@ import {Type} from '../type';
  */
 export interface ModuleWithProviders {
   ngModule: Type<any>;
-  providers?: any[];
+  providers?: Provider[];
 }
 
 /**
@@ -50,7 +50,7 @@ export const NO_ERRORS_SCHEMA: SchemaMetadata = {
  * @stable
  */
 export interface NgModuleMetadataType {
-  providers?: any[];
+  providers?: Provider[];
   declarations?: Array<Type<any>|any[]>;
   imports?: Array<Type<any>|ModuleWithProviders|any[]>;
   exports?: Array<Type<any>|any[]>;
@@ -93,8 +93,8 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * }
    * ```
    */
-  get providers(): any[] { return this._providers; }
-  private _providers: any[];
+  get providers(): Provider[] { return this._providers; }
+  private _providers: Provider[];
 
 
   /**

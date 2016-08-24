@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgClass, NgIf} from '@angular/common';
-import {Component, Injector, OpaqueToken, Pipe, PipeTransform, forwardRef} from '@angular/core';
-import {ViewMetadata} from '@angular/core/src/metadata/view';
+import {Component, Injector, OpaqueToken, Pipe, PipeTransform, Provider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -84,7 +82,7 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
 
     describe('providers', () => {
-      function createInjector(providers: any[]): Injector {
+      function createInjector(providers: Provider[]): Injector {
         TestBed.overrideComponent(MyComp1, {add: {providers}});
         return TestBed.createComponent(MyComp1).componentInstance.injector;
       }

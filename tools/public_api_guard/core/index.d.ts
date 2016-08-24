@@ -294,7 +294,7 @@ export declare class ComponentMetadata extends DirectiveMetadata implements Comp
     styles: string[];
     template: string;
     templateUrl: string;
-    viewProviders: any[];
+    viewProviders: Provider[];
     constructor({selector, inputs, outputs, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, encapsulation, interpolation, entryComponents}?: ComponentMetadataType);
 }
 
@@ -384,7 +384,7 @@ export interface ContentChildrenMetadataFactory {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlaformFactory: PlatformFactory, name: string, providers?: any[]): PlatformFactory;
+export declare function createPlatformFactory(parentPlaformFactory: PlatformFactory, name: string, providers?: Provider[]): PlatformFactory;
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
@@ -475,7 +475,7 @@ export declare class DirectiveMetadata extends InjectableMetadata implements Dir
     };
     inputs: string[];
     outputs: string[];
-    providers: any[];
+    providers: Provider[];
     queries: {
         [key: string]: any;
     };
@@ -765,7 +765,7 @@ export declare class ModuleWithComponentFactories<T> {
 /** @stable */
 export interface ModuleWithProviders {
     ngModule: Type<any>;
-    providers?: any[];
+    providers?: Provider[];
 }
 
 /** @stable */
@@ -796,7 +796,7 @@ export declare class NgModuleMetadata extends InjectableMetadata implements NgMo
     entryComponents: Array<Type<any> | any[]>;
     exports: Array<Type<any> | any[]>;
     imports: Array<Type<any> | ModuleWithProviders | any[]>;
-    providers: any[];
+    providers: Provider[];
     schemas: Array<SchemaMetadata | any[]>;
     constructor(options?: NgModuleMetadataType);
 }
@@ -814,7 +814,7 @@ export interface NgModuleMetadataType {
     entryComponents?: Array<Type<any> | any[]>;
     exports?: Array<Type<any> | any[]>;
     imports?: Array<Type<any> | ModuleWithProviders | any[]>;
-    providers?: any[];
+    providers?: Provider[];
     schemas?: Array<SchemaMetadata | any[]>;
 }
 
@@ -955,7 +955,7 @@ export interface PipeTransform {
 export declare const PLATFORM_INITIALIZER: any;
 
 /** @experimental */
-export declare const platformCore: (extraProviders?: any[]) => PlatformRef;
+export declare const platformCore: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
 
 /** @stable */
 export declare abstract class PlatformRef {

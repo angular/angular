@@ -7,11 +7,11 @@
  */
 
 import {PlatformLocation} from '@angular/common';
-import {analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
-import {ApplicationRef, ComponentRef, NgModule, PLATFORM_INITIALIZER, PlatformRef, Type, createPlatformFactory, platformCore} from '@angular/core';
+import {platformCoreDynamic} from '@angular/compiler';
+import {ClassProvider, ExistingProvider, FactoryProvider, NgModule, PLATFORM_INITIALIZER, PlatformRef, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {Console, ReflectionCapabilities, reflector, wtfInit} from '../core_private';
+import {wtfInit} from '../core_private';
 
 import {Parse5DomAdapter} from './parse5_adapter';
 

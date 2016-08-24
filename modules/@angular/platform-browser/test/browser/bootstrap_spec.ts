@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ResourceLoader} from '@angular/compiler';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, createPlatformFactory} from '@angular/core';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, Provider, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -113,7 +112,7 @@ class DummyConsole implements Console {
 
 
 class TestModule {}
-function bootstrap(cmpType: any, providers: any = []): Promise<any> {
+function bootstrap(cmpType: any, providers: Provider[] = []): Promise<any> {
   @NgModule({
     imports: [BrowserModule],
     declarations: [cmpType],
@@ -128,7 +127,7 @@ function bootstrap(cmpType: any, providers: any = []): Promise<any> {
 
 export function main() {
   var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, el2: any /** TODO #9100 */,
-      testProviders: any /** TODO #9100 */, lightDom: any /** TODO #9100 */;
+      testProviders: Provider[], lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
     let compilerConsole: DummyConsole;

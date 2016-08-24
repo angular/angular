@@ -7,10 +7,10 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ExceptionHandler, NgModule, NgZone, OpaqueToken, PlatformRef, ReflectiveInjector, RootRenderer, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
+import {APP_INITIALIZER, ApplicationModule, ClassProvider, ExceptionHandler, ExistingProvider, FactoryProvider, NgModule, NgZone, PlatformRef, RootRenderer, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
 
 import {BROWSER_SANITIZATION_PROVIDERS} from './browser';
-import {isBlank, print} from './facade/lang';
+import {print} from './facade/lang';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
 import {MessageBus} from './web_workers/shared/message_bus';
@@ -20,6 +20,7 @@ import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
 import {WebWorkerRootRenderer} from './web_workers/worker/renderer';
 import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
+
 
 /**
  * Logger for web workers.
