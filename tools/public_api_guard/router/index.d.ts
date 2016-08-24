@@ -84,8 +84,9 @@ export declare type LoadChildrenCallback = () => Type<any> | Promise<Type<any>> 
 /** @stable */
 export declare class NavigationCancel {
     id: number;
+    reason: string;
     url: string;
-    constructor(id: number, url: string);
+    constructor(id: number, url: string, reason: string);
     toString(): string;
 }
 

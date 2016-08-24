@@ -22,3 +22,12 @@ export const PRIMARY_OUTLET = 'primary';
 export type Params = {
   [key: string]: any
 };
+
+export class NavigationCancelingError extends Error {
+  public stack: any;
+  constructor(public message: string) {
+    super(message);
+    this.stack = (<any>new Error(message)).stack;
+  }
+  toString(): string { return this.message; }
+}
