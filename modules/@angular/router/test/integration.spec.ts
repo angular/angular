@@ -15,7 +15,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, ROUTER_DIRECTIVES, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, provideRoutes} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized} from '../index';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 
