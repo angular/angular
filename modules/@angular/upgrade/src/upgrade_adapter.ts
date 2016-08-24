@@ -95,7 +95,7 @@ var upgradeCount: number = 0;
  *
  * ```
  *
- * @experimental
+ * @stable
  */
 export class UpgradeAdapter {
   /* @internal */
@@ -566,7 +566,7 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
 /**
  * Use `UpgradeAdapterRef` to control a hybrid AngularJS v1 / Angular v2 application.
  *
- * @experimental
+ * @stable
  */
 export class UpgradeAdapterRef {
   /* @internal */
