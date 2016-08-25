@@ -427,6 +427,23 @@ describe('Integration', () => {
        ]);
      })));
 
+  it('should support custom error handlers', fakeAsync(inject([Router], (router: Router) => {
+       router.errorHandler = (error) => 'resolvedValue';
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+
+       const recordedEvents: any[] = [];
+       router.events.forEach(e => recordedEvents.push(e));
+
+       let e: any;
+       router.navigateByUrl('/invalid').then(_ => e = _);
+       advance(fixture);
+       expect(e).toEqual('resolvedValue');
+
+       expectEvents(recordedEvents, [[NavigationStart, '/invalid'], [NavigationError, '/invalid']]);
+     })));
+
   it('should replace state when path is equal to current path',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
        const fixture = createRoot(router, RootCmp);
