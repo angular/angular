@@ -89,21 +89,36 @@ describe('Integration', () => {
        expect(recordedError.message).toEqual('Cannot find primary outlet to load \'BlankCmp\'');
      }));
 
-  it('should update location when navigating',
-     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+  it('should update location when navigating', fakeAsync(() => {
+       @Component({template: `record`})
+       class RecordLocationCmp {
+         private storedPath: string;
+         constructor(loc: Location) { this.storedPath = loc.path(); }
+       }
+
+       @NgModule({declarations: [RecordLocationCmp], entryComponents: [RecordLocationCmp]})
+       class TestModule {
+       }
+
+       TestBed.configureTestingModule({imports: [TestModule]});
+
+       const router = TestBed.get(Router);
+       const location = TestBed.get(Location);
        const fixture = createRoot(router, RootCmp);
 
-       router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+       router.resetConfig([{path: 'record/:id', component: RecordLocationCmp}]);
 
-       router.navigateByUrl('/team/22');
-       advance(fixture);
-       expect(location.path()).toEqual('/team/22');
-
-       router.navigateByUrl('/team/33');
+       router.navigateByUrl('/record/22');
        advance(fixture);
 
-       expect(location.path()).toEqual('/team/33');
-     })));
+       const c = fixture.debugElement.children[1].componentInstance;
+       expect(location.path()).toEqual('/record/22');
+       expect(c.storedPath).toEqual('/record/22');
+
+       router.navigateByUrl('/record/33');
+       advance(fixture);
+       expect(location.path()).toEqual('/record/33');
+     }));
 
   it('should skip location update when using NavigationExtras.skipLocationChange with navigateByUrl',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
