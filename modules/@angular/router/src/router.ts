@@ -572,7 +572,7 @@ export class PreActivation {
         .map(s => {
           if (s instanceof CanActivate) {
             return andObservables(
-                from([this.runCanActivate(s.route), this.runCanActivateChild(s.path)]));
+                from([this.runCanActivateChild(s.path), this.runCanActivate(s.route)]));
           } else if (s instanceof CanDeactivate) {
             // workaround https://github.com/Microsoft/TypeScript/issues/7271
             const s2 = s as CanDeactivate;
