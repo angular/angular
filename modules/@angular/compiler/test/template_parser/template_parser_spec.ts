@@ -838,15 +838,6 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
           ]))).toEqual([[ElementAst, 'div'], [ReferenceAst, 'a', null]]);
         });
 
-        it('should parse references via var-... and report them as deprecated', () => {
-          expect(humanizeTplAst(parse('<div var-a>', [
-          ]))).toEqual([[ElementAst, 'div'], [ReferenceAst, 'a', null]]);
-          expect(console.warnings).toEqual([[
-            'Template parse warnings:',
-            '"var-" on non <template> elements is deprecated. Use "ref-" instead! ("<div [ERROR ->]var-a>"): TestComp@0:5'
-          ].join('\n')]);
-        });
-
         it('should parse camel case references', () => {
           expect(humanizeTplAst(parse('<div ref-someA>', [
           ]))).toEqual([[ElementAst, 'div'], [ReferenceAst, 'someA', null]]);
@@ -960,15 +951,6 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           ]))).toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b']]);
         });
 
-        it('should parse variables via var-... and report them as deprecated', () => {
-          expect(humanizeTplAst(parse('<template var-a="b">', [
-          ]))).toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b']]);
-          expect(console.warnings).toEqual([[
-            'Template parse warnings:',
-            '"var-" on <template> elements is deprecated. Use "let-" instead! ("<template [ERROR ->]var-a="b">"): TestComp@0:10'
-          ].join('\n')]);
-        });
-
         it('should not locate directives in variables', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: '[a]',
@@ -1000,22 +982,9 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           ]);
         });
 
-        it('should parse variables via #... and report them as deprecated', () => {
-          expect(humanizeTplAst(parse('<div *ngIf="#a=b">', [
-          ]))).toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']]);
-          expect(console.warnings).toEqual([[
-            'Template parse warnings:',
-            '"#" inside of expressions is deprecated. Use "let" instead! ("<div [ERROR ->]*ngIf="#a=b">"): TestComp@0:5'
-          ].join('\n')]);
-        });
-
-        it('should parse variables via var ... and report them as deprecated', () => {
-          expect(humanizeTplAst(parse('<div *ngIf="var a=b">', [
-          ]))).toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']]);
-          expect(console.warnings).toEqual([[
-            'Template parse warnings:',
-            '"var" inside of expressions is deprecated. Use "let" instead! ("<div [ERROR ->]*ngIf="var a=b">"): TestComp@0:5'
-          ].join('\n')]);
+        it('should report an error on variables declared with #', () => {
+          expect(() => humanizeTplAst(parse('<div *ngIf="#a=b">', [])))
+              .toThrowError(/Parser Error: Unexpected token # at column 6/);
         });
 
         it('should parse variables via let ...', () => {
