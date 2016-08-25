@@ -196,28 +196,28 @@ describe('reflector_host', () => {
     const symbol = reflectorNestedGenDir.findDeclaration(
         './reexport/reexport.d.ts', 'One', '/tmp/src/main.ts');
     expect(symbol.name).toEqual('One');
-    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1');
   });
 
   it('should be able to trace a renamed export', () => {
     const symbol = reflectorNestedGenDir.findDeclaration(
         './reexport/reexport.d.ts', 'Four', '/tmp/src/main.ts');
     expect(symbol.name).toEqual('Three');
-    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1');
   });
 
   it('should be able to trace an export * export', () => {
     const symbol = reflectorNestedGenDir.findDeclaration(
         './reexport/reexport.d.ts', 'Five', '/tmp/src/main.ts');
     expect(symbol.name).toEqual('Five');
-    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin5.d.ts');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin5');
   });
 
   it('should be able to trace a multi-level re-export', () => {
     const symbol = reflectorNestedGenDir.findDeclaration(
         './reexport/reexport.d.ts', 'Thirty', '/tmp/src/main.ts');
     expect(symbol.name).toEqual('Thirty');
-    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin30.d.ts');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin30');
   });
 });
 
