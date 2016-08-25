@@ -65,7 +65,7 @@ export class NgModel extends NgControl implements OnChanges,
   viewModel: any;
 
   @Input() name: string;
-  @Input() disabled: boolean;
+  @Input('disabled') isDisabled: boolean;
   @Input('ngModel') model: any;
   @Input('ngModelOptions') options: {name?: string, standalone?: boolean};
 
@@ -83,7 +83,7 @@ export class NgModel extends NgControl implements OnChanges,
               ngOnChanges(changes: SimpleChanges) {
                 this._checkForErrors();
                 if (!this._registered) this._setUpControl();
-                if ('disabled' in changes) {
+                if ('isDisabled' in changes) {
                   this._updateDisabled(changes);
                 }
 
@@ -160,7 +160,7 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _updateDisabled(changes: SimpleChanges) {
-                const disabledValue = changes['disabled'].currentValue;
+                const disabledValue = changes['isDisabled'].currentValue;
                 const isDisabled = disabledValue != null && disabledValue != false;
 
                 resolvedPromise.then(() => {
