@@ -82,7 +82,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
   @Output('ngModelChange') update = new EventEmitter();
 
   @Input('disabled')
-  set disabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
+  set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
   constructor(@Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
                   /* Array<Validator|Function> */ any[],

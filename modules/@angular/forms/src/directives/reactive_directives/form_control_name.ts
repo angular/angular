@@ -106,7 +106,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   @Input('ngModel') model: any;
   @Output('ngModelChange') update = new EventEmitter();
   @Input('disabled')
-  set disabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
+  set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
   constructor(
       @Optional() @Host() @SkipSelf() private _parent: ControlContainer,

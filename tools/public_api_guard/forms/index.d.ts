@@ -222,8 +222,8 @@ export declare class FormControl extends AbstractControl {
 export declare class FormControlDirective extends NgControl implements OnChanges {
     asyncValidator: AsyncValidatorFn;
     control: FormControl;
-    disabled: boolean;
     form: FormControl;
+    isDisabled: boolean;
     model: any;
     path: string[];
     update: EventEmitter<{}>;
@@ -238,8 +238,8 @@ export declare class FormControlDirective extends NgControl implements OnChanges
 export declare class FormControlName extends NgControl implements OnChanges, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: FormControl;
-    disabled: boolean;
     formDirective: any;
+    isDisabled: boolean;
     model: any;
     name: string;
     path: string[];
@@ -390,8 +390,8 @@ export declare class NgForm extends ControlContainer implements Form {
 export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     asyncValidator: AsyncValidatorFn;
     control: FormControl;
-    disabled: boolean;
     formDirective: any;
+    isDisabled: boolean;
     model: any;
     name: string;
     options: {
