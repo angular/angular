@@ -3,19 +3,14 @@
  */
 @import 'variables';
 
+md-sidenav {
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
+}
 
-:host {
-  > .md-sidenav-backdrop {
-    &.md-sidenav-shown {
-      transition: background-color $swift-ease-out-duration $swift-ease-out-timing-function;
-    }
-  }
+.md-sidenav-content {
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
+}
 
-  > md-content {
-    transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
-  }
-
-  > md-sidenav {
-    transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
-  }
+.md-sidenav-backdrop.md-sidenav-shown {
+  transition: background-color $swift-ease-out-duration $swift-ease-out-timing-function;
 }

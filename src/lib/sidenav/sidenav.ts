@@ -11,7 +11,8 @@ import {
     QueryList,
     ChangeDetectionStrategy,
     EventEmitter,
-    Renderer
+    Renderer,
+    ViewEncapsulation,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Dir} from '@angular2-material/core/rtl/dir';
@@ -41,6 +42,7 @@ export class MdDuplicatedSidenavError extends MdError {
     '(transitionend)': '_onTransitionEnd($event)',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdSidenav {
   /** Alignment of the sidenav (direction neutral); whether 'start' or 'end'. */
@@ -233,6 +235,7 @@ export class MdSidenav {
     'sidenav.css',
     'sidenav-transitions.css',
   ],
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdSidenavLayout implements AfterContentInit {
   @ContentChildren(MdSidenav) _sidenavs: QueryList<MdSidenav>;

@@ -1,5 +1,4 @@
 import {Component, ViewEncapsulation} from '@angular/core';
-import {AsyncPipe} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
 
 
@@ -8,7 +7,6 @@ import {Observable} from 'rxjs/Observable';
   selector: 'tab-group-demo',
   templateUrl: 'tab-group-demo.html',
   styleUrls: ['tab-group-demo.css'],
-  pipes: [AsyncPipe],
   encapsulation: ViewEncapsulation.None,
 })
 export class TabsDemo {

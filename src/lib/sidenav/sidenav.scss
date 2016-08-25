@@ -42,15 +42,21 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   }
 }
 
-:host {
+md-sidenav-layout {
   // We need a stacking context here so that the backdrop and drawers are clipped to the
   // MdSidenavLayout. This creates a new z-index stack so we use low numbered z-indices.
-  // We create another stacking context in the '<md-content>' and in each sidenav so that
+  // We create another stacking context in the '.md-sidenav-content' and in each sidenav so that
   // the application content does not get messed up with our own CSS.
   @include md-stacking-context();
 
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
+
+  // Need this to take up space in the layout.
+  display: block;
+
+  // Hide the sidenavs when they're closed.
+  overflow: hidden;
 
   // TODO(hansl): Update this with a more robust solution.
   &[fullscreen] {
@@ -60,78 +66,69 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
       overflow: hidden;
     }
   }
+}
 
-  // Need this to take up space in the layout.
+.md-sidenav-backdrop {
+  @include md-fullscreen();
+
   display: block;
 
-  // Hide the sidenavs when they're closed.
-  overflow: hidden;
+  // Because of the new stacking context, the z-index stack is new and we can use our own
+  // numbers.
+  z-index: 2;
 
-  & > .md-sidenav-backdrop {
-    @include md-fullscreen();
+  // We use 'visibility: hidden | visible' because 'display: none' will not animate any
+  // transitions, while visibility will interpolate transitions properly.
+  // see https://developer.mozilla.org/en-US/docs/Web/CSS/visibility, the Interpolation
+  // section.
+  visibility: hidden;
 
-    display: block;
-
-    // Because of the new stacking context, the z-index stack is new and we can use our own
-    // numbers.
-    z-index: 2;
-
-    // We use 'visibility: hidden | visible' because 'display: none' will not animate any
-    // transitions, while visibility will interpolate transitions properly.
-    // see https://developer.mozilla.org/en-US/docs/Web/CSS/visibility, the Interpolation
-    // section.
-    visibility: hidden;
-
-    &.md-sidenav-shown {
-      visibility: visible;
-      background-color: $md-sidenav-backdrop-color;
-    }
-  }
-
-  & > md-content {
-    @include md-stacking-context();
-
-    display: block;
-    height: 100%;
-    overflow: auto;
-  }
-
-  > md-sidenav {
-    @include md-stacking-context();
-
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: 3;
-    min-width: 5%;
-
-    // TODO(kara): revisit scrolling behavior for sidenavs
-    overflow-y: auto;
-
-    background-color: $md-sidenav-background-color;
-
-    @include md-sidenav-transition(0, -100%);
-
-    &.md-sidenav-push {
-      background-color: $md-sidenav-push-background-color;
-    }
-
-    &.md-sidenav-side {
-      z-index: 1;
-    }
-
-    &.md-sidenav-end {
-      right: 0;
-
-      @include md-sidenav-transition(0, 100%);
-    }
+  &.md-sidenav-shown {
+    visibility: visible;
+    background-color: $md-sidenav-backdrop-color;
   }
 }
 
+.md-sidenav-content {
+  @include md-stacking-context();
 
-:host-context([dir='rtl']) {
-  > md-sidenav {
+  display: block;
+  height: 100%;
+  overflow: auto;
+}
+
+md-sidenav {
+  @include md-stacking-context();
+
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  min-width: 5%;
+
+  // TODO(kara): revisit scrolling behavior for sidenavs
+  overflow-y: auto;
+
+  background-color: $md-sidenav-background-color;
+
+  @include md-sidenav-transition(0, -100%);
+
+  &.md-sidenav-push {
+    background-color: $md-sidenav-push-background-color;
+  }
+
+  &.md-sidenav-side {
+    z-index: 1;
+  }
+
+  &.md-sidenav-end {
+    right: 0;
+
+    @include md-sidenav-transition(0, 100%);
+  }
+
+  [dir='rtl'] & {
     @include md-sidenav-transition(0, 100%);
 
     &.md-sidenav-end {
