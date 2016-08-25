@@ -894,7 +894,6 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.configureTestingModule({imports: [MyModule]});
           TestBed.overrideComponent(
               MyComp, {add: {template: '<div><dynamic-vp #dynamic></dynamic-vp></div>'}});
-          return TestBed.compileComponents();
         });
 
 

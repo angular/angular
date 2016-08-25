@@ -30,7 +30,6 @@ export function main() {
           LoginIsEmptyValidator, LoginIsEmptyWrapper, UniqLoginValidator, UniqLoginWrapper
         ]
       });
-      TestBed.compileComponents();
     });
 
     describe('basic functionality', () => {

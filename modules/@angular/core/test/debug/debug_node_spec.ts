@@ -189,7 +189,6 @@ export function main() {
           Logger,
         ]
       });
-      TestBed.compileComponents();
     }));
 
     it('should list all child nodes', () => {

@@ -29,7 +29,6 @@ export function main() {
         ],
         imports: [FormsModule]
       });
-      TestBed.compileComponents();
     });
 
     describe('basic functionality', () => {
