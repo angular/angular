@@ -39,12 +39,12 @@ export const modelGroupProvider: any = {
  *           <p>Last: <input name="last" ngModel required></p>
  *         </div>
  *         <h3>Name value:</h3>
- *         <pre>{{ mgName | json }}</pre>
+ *         <pre>{{ mgName.value | json }}</pre>
  *         <p>Name is {{mgName?.valid ? "valid" : "invalid"}}</p>
  *         <h3>What's your favorite food?</h3>
  *         <p><input name="food" ngModel></p>
  *         <h3>Form value</h3>
- *         <pre>{{ f | json }}</pre>
+ *         <pre>{{ f.value | json }}</pre>
  *       </form>
  *     </div>
  *   `
