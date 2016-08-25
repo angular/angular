@@ -161,11 +161,17 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
     this.formDirective.addFormArray(this);
   }
 
-  ngOnDestroy(): void { this.formDirective.removeFormArray(this); }
+  ngOnDestroy(): void {
+    if (this.formDirective) {
+      this.formDirective.removeFormArray(this);
+    }
+  }
 
   get control(): FormArray { return this.formDirective.getFormArray(this); }
 
-  get formDirective(): FormGroupDirective { return <FormGroupDirective>this._parent.formDirective; }
+  get formDirective(): FormGroupDirective {
+    return this._parent ? <FormGroupDirective>this._parent.formDirective : null;
+  }
 
   get path(): string[] { return controlPath(this.name, this._parent); }
 
