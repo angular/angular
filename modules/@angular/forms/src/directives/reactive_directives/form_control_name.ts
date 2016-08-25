@@ -105,7 +105,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   // TODO(kara):  Replace ngModel with reactive API
   @Input('ngModel') model: any;
   @Output('ngModelChange') update = new EventEmitter();
-
   @Input('disabled')
   set disabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
@@ -133,7 +132,11 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void { this.formDirective.removeControl(this); }
+  ngOnDestroy(): void {
+    if (this.formDirective) {
+      this.formDirective.removeControl(this);
+    }
+  }
 
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
@@ -142,7 +145,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   get path(): string[] { return controlPath(this.name, this._parent); }
 
-  get formDirective(): any { return this._parent.formDirective; }
+  get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
   get validator(): ValidatorFn { return composeValidators(this._validators); }
 

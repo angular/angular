@@ -11,6 +11,7 @@ import {ListWrapper} from '../src/facade/collection';
 import {BaseException} from '../src/facade/exceptions';
 import {FunctionWrapper, stringify} from '../src/facade/lang';
 import {Type} from '../src/type';
+
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -155,6 +156,7 @@ export class TestBed implements Injector {
   private _declarations: Array<Type<any>|any[]|any> = [];
   private _imports: Array<Type<any>|any[]|any> = [];
   private _schemas: Array<SchemaMetadata|any[]> = [];
+  private _activeFixtures: ComponentFixture<any>[] = [];
 
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
@@ -203,6 +205,8 @@ export class TestBed implements Injector {
     this._imports = [];
     this._schemas = [];
     this._instantiated = false;
+    this._activeFixtures.forEach((fixture) => fixture.destroy());
+    this._activeFixtures = [];
   }
 
   platform: PlatformRef = null;
@@ -355,7 +359,9 @@ export class TestBed implements Injector {
       return new ComponentFixture<T>(componentRef, ngZone, autoDetect);
     };
 
-    return ngZone == null ? initComponent() : ngZone.run(initComponent);
+    const fixture = ngZone == null ? initComponent() : ngZone.run(initComponent);
+    this._activeFixtures.push(fixture);
+    return fixture;
   }
 }
 

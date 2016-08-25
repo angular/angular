@@ -57,6 +57,7 @@ export class ComponentFixture<T> {
   private _autoDetect: boolean;
 
   private _isStable: boolean = true;
+  private _isDestroyed: boolean = false;
   private _resolve: (result: any) => void;
   private _promise: Promise<any> = null;
   private _onUnstableSubscription: any /** TODO #9100 */ = null;
@@ -178,22 +179,25 @@ export class ComponentFixture<T> {
    * Trigger component destruction.
    */
   destroy(): void {
-    this.componentRef.destroy();
-    if (this._onUnstableSubscription != null) {
-      this._onUnstableSubscription.unsubscribe();
-      this._onUnstableSubscription = null;
-    }
-    if (this._onStableSubscription != null) {
-      this._onStableSubscription.unsubscribe();
-      this._onStableSubscription = null;
-    }
-    if (this._onMicrotaskEmptySubscription != null) {
-      this._onMicrotaskEmptySubscription.unsubscribe();
-      this._onMicrotaskEmptySubscription = null;
-    }
-    if (this._onErrorSubscription != null) {
-      this._onErrorSubscription.unsubscribe();
-      this._onErrorSubscription = null;
+    if (!this._isDestroyed) {
+      this.componentRef.destroy();
+      if (this._onUnstableSubscription != null) {
+        this._onUnstableSubscription.unsubscribe();
+        this._onUnstableSubscription = null;
+      }
+      if (this._onStableSubscription != null) {
+        this._onStableSubscription.unsubscribe();
+        this._onStableSubscription = null;
+      }
+      if (this._onMicrotaskEmptySubscription != null) {
+        this._onMicrotaskEmptySubscription.unsubscribe();
+        this._onMicrotaskEmptySubscription = null;
+      }
+      if (this._onErrorSubscription != null) {
+        this._onErrorSubscription.unsubscribe();
+        this._onErrorSubscription = null;
+      }
+      this._isDestroyed = true;
     }
   }
 }
