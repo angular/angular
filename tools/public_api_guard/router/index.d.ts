@@ -67,12 +67,16 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 }
 
 /** @stable */
+export declare type ErrorHandler = (error: any) => any;
+
+/** @stable */
 export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
 /** @stable */
 export interface ExtraOptions {
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
+    initialNavigation?: boolean;
     useHash?: boolean;
 }
 
@@ -185,6 +189,7 @@ export declare class Router {
     parseUrl(url: string): UrlTree;
     resetConfig(config: Routes): void;
     serializeUrl(url: UrlTree): string;
+    setUpLocationChangeListener(): void;
 }
 
 /** @stable */

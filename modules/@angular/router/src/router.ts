@@ -263,6 +263,22 @@ export class Router {
   }
 
   /**
+   * Sets up the location change listener
+   */
+  setUpLocationChangeListener(): void {
+    // Zone.current.wrap is needed because of the issue with RxJS scheduler,
+    // which does not work properly with zone.js in IE and Safari
+    this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
+      const tree = this.urlSerializer.parse(change['url']);
+      // we fire multiple events for a single URL change
+      // we should navigate only once
+      return this.currentUrlTree.toString() !== tree.toString() ?
+          this.scheduleNavigation(tree, {skipLocationChange: change['pop'], replaceUrl: true}) :
+          null;
+    }));
+  }
+
+  /**
    * Returns the current route state.
    */
   get routerState(): RouterState { return this.currentRouterState; }
@@ -437,19 +453,6 @@ export class Router {
     this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
     return Promise.resolve().then(
         (_) => this.runNavigate(url, extras.skipLocationChange, extras.replaceUrl, id));
-  }
-
-  private setUpLocationChangeListener(): void {
-    // Zone.current.wrap is needed because of the issue with RxJS scheduler,
-    // which does not work properly with zone.js in IE and Safari
-    this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
-      const tree = this.urlSerializer.parse(change['url']);
-      // we fire multiple events for a single URL change
-      // we should navigate only once
-      return this.currentUrlTree.toString() !== tree.toString() ?
-          this.scheduleNavigation(tree, {skipLocationChange: change['pop'], replaceUrl: true}) :
-          null;
-    }));
   }
 
   private runNavigate(
