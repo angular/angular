@@ -207,10 +207,10 @@ describe('url serializer', () => {
     });
 
     it('should encode/decode fragment', () => {
-      const u = `/one#${encode("one two")}`;
+      const u = `/one#${encodeURI("one two=three four")}`;
       const tree = url.parse(u);
 
-      expect(tree.fragment).toEqual('one two');
+      expect(tree.fragment).toEqual('one two=three four');
       expect(url.serialize(tree)).toEqual(u);
     });
   });
