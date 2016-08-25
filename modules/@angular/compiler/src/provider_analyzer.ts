@@ -10,7 +10,7 @@
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMap, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata} from './compile_metadata';
 import {ListWrapper} from './facade/collection';
 import {isArray, isBlank, isPresent, normalizeBlank} from './facade/lang';
-import {Identifiers, identifierToken} from './identifiers';
+import {Identifiers, resolveIdentifierToken} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
 import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, ReferenceAst, VariableAst} from './template_parser/template_ast';
 
@@ -65,7 +65,7 @@ export class ProviderElementContext {
     refs.forEach((refAst) => {
       this._addQueryReadsTo(new CompileTokenMetadata({value: refAst.name}), queriedTokens);
     });
-    if (isPresent(queriedTokens.get(identifierToken(Identifiers.ViewContainerRef)))) {
+    if (isPresent(queriedTokens.get(resolveIdentifierToken(Identifiers.ViewContainerRef)))) {
       this._hasViewContainer = true;
     }
 
@@ -206,18 +206,18 @@ export class ProviderElementContext {
       // access builtints
       if ((requestingProviderType === ProviderAstType.Directive ||
            requestingProviderType === ProviderAstType.Component)) {
-        if (dep.token.equalsTo(identifierToken(Identifiers.Renderer)) ||
-            dep.token.equalsTo(identifierToken(Identifiers.ElementRef)) ||
-            dep.token.equalsTo(identifierToken(Identifiers.ChangeDetectorRef)) ||
-            dep.token.equalsTo(identifierToken(Identifiers.TemplateRef))) {
+        if (dep.token.equalsTo(resolveIdentifierToken(Identifiers.Renderer)) ||
+            dep.token.equalsTo(resolveIdentifierToken(Identifiers.ElementRef)) ||
+            dep.token.equalsTo(resolveIdentifierToken(Identifiers.ChangeDetectorRef)) ||
+            dep.token.equalsTo(resolveIdentifierToken(Identifiers.TemplateRef))) {
           return dep;
         }
-        if (dep.token.equalsTo(identifierToken(Identifiers.ViewContainerRef))) {
+        if (dep.token.equalsTo(resolveIdentifierToken(Identifiers.ViewContainerRef))) {
           this._hasViewContainer = true;
         }
       }
       // access the injector
-      if (dep.token.equalsTo(identifierToken(Identifiers.Injector))) {
+      if (dep.token.equalsTo(resolveIdentifierToken(Identifiers.Injector))) {
         return dep;
       }
       // access providers
@@ -254,7 +254,7 @@ export class ProviderElementContext {
       // check @Host restriction
       if (isBlank(result)) {
         if (!dep.isHost || this._viewContext.component.type.isHost ||
-            identifierToken(this._viewContext.component.type).equalsTo(dep.token) ||
+            resolveIdentifierToken(this._viewContext.component.type).equalsTo(dep.token) ||
             isPresent(this._viewContext.viewProviders.get(dep.token))) {
           result = dep;
         } else {
@@ -363,8 +363,8 @@ export class NgModuleProviderAnalyzer {
     var foundLocal = false;
     if (!dep.isSkipSelf && isPresent(dep.token)) {
       // access the injector
-      if (dep.token.equalsTo(identifierToken(Identifiers.Injector)) ||
-          dep.token.equalsTo(identifierToken(Identifiers.ComponentFactoryResolver))) {
+      if (dep.token.equalsTo(resolveIdentifierToken(Identifiers.Injector)) ||
+          dep.token.equalsTo(resolveIdentifierToken(Identifiers.ComponentFactoryResolver))) {
         foundLocal = true;
         // access providers
       } else if (isPresent(this._getOrCreateLocalProvider(dep.token, eager))) {

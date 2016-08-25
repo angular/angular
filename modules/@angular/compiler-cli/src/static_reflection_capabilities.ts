@@ -42,6 +42,16 @@ export class StaticAndDynamicReflectionCapabilities {
   setter(name: string) { return this.dynamicDelegate.setter(name); }
   method(name: string) { return this.dynamicDelegate.method(name); }
   importUri(type: any): string { return this.staticDelegate.importUri(type); }
+  resolveType(name: string, moduleUrl: string) {
+    return this.staticDelegate.resolveType(name, moduleUrl);
+  }
+  resolveEnum(enumType: any, name: string): any {
+    if (isStaticType(enumType)) {
+      return this.staticDelegate.resolveEnum(enumType, name);
+    } else {
+      return null;
+    }
+  }
 }
 
 function isStaticType(type: any): boolean {

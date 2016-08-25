@@ -12,7 +12,7 @@ import {LifecycleHooks} from '../core_private';
 
 import {CompileDiDependencyMetadata, CompileIdentifierMap, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata} from './compile_metadata';
 import {isBlank, isPresent} from './facade/lang';
-import {Identifiers, identifierToken} from './identifiers';
+import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from './identifiers';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
@@ -62,12 +62,12 @@ export class NgModuleCompiler {
     var ngModuleFactoryVar = `${ngModuleMeta.type.name}NgFactory`;
     var ngModuleFactoryStmt =
         o.variable(ngModuleFactoryVar)
-            .set(o.importExpr(Identifiers.NgModuleFactory)
+            .set(o.importExpr(resolveIdentifier(Identifiers.NgModuleFactory))
                      .instantiate(
                          [o.variable(injectorClass.name), o.importExpr(ngModuleMeta.type)],
                          o.importType(
-                             Identifiers.NgModuleFactory, [o.importType(ngModuleMeta.type)],
-                             [o.TypeModifier.Const])))
+                             resolveIdentifier(Identifiers.NgModuleFactory),
+                             [o.importType(ngModuleMeta.type)], [o.TypeModifier.Const])))
             .toDeclStmt(null, [o.StmtModifier.Final]);
 
     return new NgModuleCompileResult(
@@ -128,7 +128,9 @@ class _InjectorBuilder {
     ];
 
     var ctor = new o.ClassMethod(
-        null, [new o.FnParam(InjectorProps.parent.name, o.importType(Identifiers.Injector))],
+        null,
+        [new o.FnParam(
+            InjectorProps.parent.name, o.importType(resolveIdentifier(Identifiers.Injector)))],
         [o.SUPER_EXPR
              .callFn([
                o.variable(InjectorProps.parent.name),
@@ -141,8 +143,9 @@ class _InjectorBuilder {
 
     var injClassName = `${this._ngModuleMeta.type.name}Injector`;
     return new o.ClassStmt(
-        injClassName,
-        o.importExpr(Identifiers.NgModuleInjector, [o.importType(this._ngModuleMeta.type)]),
+        injClassName, o.importExpr(
+                          resolveIdentifier(Identifiers.NgModuleInjector),
+                          [o.importType(this._ngModuleMeta.type)]),
         this._fields, this._getters, ctor, methods);
   }
 
@@ -206,8 +209,8 @@ class _InjectorBuilder {
     }
     if (!dep.isSkipSelf) {
       if (dep.token &&
-          (dep.token.equalsTo(identifierToken(Identifiers.Injector)) ||
-           dep.token.equalsTo(identifierToken(Identifiers.ComponentFactoryResolver)))) {
+          (dep.token.equalsTo(resolveIdentifierToken(Identifiers.Injector)) ||
+           dep.token.equalsTo(resolveIdentifierToken(Identifiers.ComponentFactoryResolver)))) {
         result = o.THIS_EXPR;
       }
       if (isBlank(result)) {

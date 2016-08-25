@@ -10,7 +10,7 @@
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMap, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
-import {Identifiers, identifierToken} from '../identifiers';
+import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst} from '../template_parser/template_ast';
@@ -62,11 +62,12 @@ export class CompileElement extends CompileNode {
     this.referenceTokens = {};
     references.forEach(ref => this.referenceTokens[ref.name] = ref.value);
 
-    this.elementRef = o.importExpr(Identifiers.ElementRef).instantiate([this.renderNode]);
-    this.instances.add(identifierToken(Identifiers.ElementRef), this.elementRef);
+    this.elementRef =
+        o.importExpr(resolveIdentifier(Identifiers.ElementRef)).instantiate([this.renderNode]);
+    this.instances.add(resolveIdentifierToken(Identifiers.ElementRef), this.elementRef);
     this.injector = o.THIS_EXPR.callMethod('injector', [o.literal(this.nodeIndex)]);
-    this.instances.add(identifierToken(Identifiers.Injector), this.injector);
-    this.instances.add(identifierToken(Identifiers.Renderer), o.THIS_EXPR.prop('renderer'));
+    this.instances.add(resolveIdentifierToken(Identifiers.Injector), this.injector);
+    this.instances.add(resolveIdentifierToken(Identifiers.Renderer), o.THIS_EXPR.prop('renderer'));
     if (this.hasViewContainer || this.hasEmbeddedView || isPresent(this.component)) {
       this._createAppElement();
     }
@@ -77,16 +78,17 @@ export class CompileElement extends CompileNode {
     var parentNodeIndex = this.isRootElement() ? null : this.parent.nodeIndex;
     // private is fine here as no child view will reference an AppElement
     this.view.fields.push(new o.ClassField(
-        fieldName, o.importType(Identifiers.AppElement), [o.StmtModifier.Private]));
+        fieldName, o.importType(resolveIdentifier(Identifiers.AppElement)),
+        [o.StmtModifier.Private]));
     var statement =
         o.THIS_EXPR.prop(fieldName)
-            .set(o.importExpr(Identifiers.AppElement).instantiate([
+            .set(o.importExpr(resolveIdentifier(Identifiers.AppElement)).instantiate([
               o.literal(this.nodeIndex), o.literal(parentNodeIndex), o.THIS_EXPR, this.renderNode
             ]))
             .toStmt();
     this.view.createMethod.addStmt(statement);
     this.appElement = o.THIS_EXPR.prop(fieldName);
-    this.instances.add(identifierToken(Identifiers.AppElement), this.appElement);
+    this.instances.add(resolveIdentifierToken(Identifiers.AppElement), this.appElement);
   }
 
   public createComponentFactoryResolver(entryComponents: CompileIdentifierMetadata[]) {
@@ -94,12 +96,13 @@ export class CompileElement extends CompileNode {
       return;
     }
     var createComponentFactoryResolverExpr =
-        o.importExpr(Identifiers.CodegenComponentFactoryResolver).instantiate([
+        o.importExpr(resolveIdentifier(Identifiers.CodegenComponentFactoryResolver)).instantiate([
           o.literalArr(entryComponents.map((entryComponent) => o.importExpr(entryComponent))),
-          injectFromViewParentInjector(identifierToken(Identifiers.ComponentFactoryResolver), false)
+          injectFromViewParentInjector(
+              resolveIdentifierToken(Identifiers.ComponentFactoryResolver), false)
         ]);
     var provider = new CompileProviderMetadata({
-      token: identifierToken(Identifiers.ComponentFactoryResolver),
+      token: resolveIdentifierToken(Identifiers.ComponentFactoryResolver),
       useValue: createComponentFactoryResolverExpr
     });
     // Add ComponentFactoryResolver as first provider as it does not have deps on other providers
@@ -122,11 +125,14 @@ export class CompileElement extends CompileNode {
   setEmbeddedView(embeddedView: CompileView) {
     this.embeddedView = embeddedView;
     if (isPresent(embeddedView)) {
-      var createTemplateRefExpr = o.importExpr(Identifiers.TemplateRef_).instantiate([
-        this.appElement, this.embeddedView.viewFactory
-      ]);
-      var provider = new CompileProviderMetadata(
-          {token: identifierToken(Identifiers.TemplateRef), useValue: createTemplateRefExpr});
+      var createTemplateRefExpr =
+          o.importExpr(resolveIdentifier(Identifiers.TemplateRef_)).instantiate([
+            this.appElement, this.embeddedView.viewFactory
+          ]);
+      var provider = new CompileProviderMetadata({
+        token: resolveIdentifierToken(Identifiers.TemplateRef),
+        useValue: createTemplateRefExpr
+      });
       // Add TemplateRef as first provider as it does not have deps on other providers
       this._resolvedProvidersArray.unshift(new ProviderAst(
           provider.token, false, true, [provider], ProviderAstType.Builtin, [],
@@ -137,7 +143,7 @@ export class CompileElement extends CompileNode {
   beforeChildren(): void {
     if (this.hasViewContainer) {
       this.instances.add(
-          identifierToken(Identifiers.ViewContainerRef), this.appElement.prop('vcRef'));
+          resolveIdentifierToken(Identifiers.ViewContainerRef), this.appElement.prop('vcRef'));
     }
 
     this._resolvedProviders = new CompileIdentifierMap<CompileTokenMetadata, ProviderAst>();
@@ -319,7 +325,7 @@ export class CompileElement extends CompileNode {
     if (isPresent(dep.token)) {
       // access builtins with special visibility
       if (isBlank(result)) {
-        if (dep.token.equalsTo(identifierToken(Identifiers.ChangeDetectorRef))) {
+        if (dep.token.equalsTo(resolveIdentifierToken(Identifiers.ChangeDetectorRef))) {
           if (requestingProviderType === ProviderAstType.Component) {
             return this._compViewExpr.prop('ref');
           } else {

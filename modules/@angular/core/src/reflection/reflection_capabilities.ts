@@ -172,6 +172,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // Runtime type
     return `./${stringify(type)}`;
   }
+
+  resolveType(name: string, moduleUrl: string): any { return null; }
+  resolveEnum(enumType: any, name: string): any { return null; }
 }
 
 function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[] {

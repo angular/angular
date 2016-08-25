@@ -32,8 +32,6 @@ export abstract class CompileMetadataWithIdentifier {
 
   get runtimeCacheKey(): any { return unimplemented(); }
 
-  get assetCacheKey(): any { return unimplemented(); }
-
   equalsTo(id2: CompileMetadataWithIdentifier): boolean { return unimplemented(); }
 }
 
@@ -93,7 +91,6 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
   prefix: string;
   moduleUrl: string;
   value: any;
-  private _assetCacheKey: any = UNDEFINED;
 
   constructor(
       {runtime, name, moduleUrl, prefix, value}:
@@ -109,23 +106,9 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
 
   get runtimeCacheKey(): any { return this.identifier.runtime; }
 
-  get assetCacheKey(): any {
-    if (this._assetCacheKey === UNDEFINED) {
-      if (isPresent(this.moduleUrl) && isPresent(getUrlScheme(this.moduleUrl))) {
-        var uri = reflector.importUri({'filePath': this.moduleUrl, 'name': this.name});
-        this._assetCacheKey = `${this.name}|${uri}`;
-      } else {
-        this._assetCacheKey = null;
-      }
-    }
-    return this._assetCacheKey;
-  }
-
   equalsTo(id2: CompileIdentifierMetadata): boolean {
     var rk = this.runtimeCacheKey;
-    var ak = this.assetCacheKey;
-    return (isPresent(rk) && rk == id2.runtimeCacheKey) ||
-        (isPresent(ak) && ak == id2.assetCacheKey);
+    return isPresent(rk) && rk == id2.runtimeCacheKey;
   }
 }
 
@@ -233,19 +216,9 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
     }
   }
 
-  get assetCacheKey(): any {
-    if (isPresent(this.identifier)) {
-      return this.identifier.assetCacheKey;
-    } else {
-      return this.value;
-    }
-  }
-
   equalsTo(token2: CompileTokenMetadata): boolean {
     var rk = this.runtimeCacheKey;
-    var ak = this.assetCacheKey;
-    return (isPresent(rk) && rk == token2.runtimeCacheKey) ||
-        (isPresent(ak) && ak == token2.assetCacheKey);
+    return isPresent(rk) && rk == token2.runtimeCacheKey;
   }
 
   get name(): string {
@@ -275,23 +248,16 @@ export class CompileIdentifierMap<KEY extends CompileMetadataWithIdentifier, VAL
     this._tokens.push(token);
     this._values.push(value);
     var rk = token.runtimeCacheKey;
-    if (isPresent(rk)) {
-      this._valueMap.set(rk, value);
+    if (!isPresent(rk)) {
+      throw new Error(`Cannot find a key for Token: ${token.identifier.name}`);
     }
-    var ak = token.assetCacheKey;
-    if (isPresent(ak)) {
-      this._valueMap.set(ak, value);
-    }
+    this._valueMap.set(rk, value);
   }
   get(token: KEY): VALUE {
     var rk = token.runtimeCacheKey;
-    var ak = token.assetCacheKey;
     var result: VALUE;
     if (isPresent(rk)) {
       result = this._valueMap.get(rk);
-    }
-    if (isBlank(result) && isPresent(ak)) {
-      result = this._valueMap.get(ak);
     }
     return result;
   }
@@ -547,8 +513,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
 
   get runtimeCacheKey(): any { return this.type.runtimeCacheKey; }
 
-  get assetCacheKey(): any { return this.type.assetCacheKey; }
-
   equalsTo(other: CompileMetadataWithIdentifier): boolean {
     return this.type.equalsTo(other.identifier);
   }
@@ -568,6 +532,7 @@ export function createHostComponentMeta(compMeta: CompileDirectiveMetadata):
       isHost: true
     }),
     template: new CompileTemplateMetadata({
+      encapsulation: ViewEncapsulation.None,
       template: template,
       templateUrl: '',
       styles: [],
@@ -605,8 +570,6 @@ export class CompilePipeMetadata implements CompileMetadataWithIdentifier {
   }
   get identifier(): CompileIdentifierMetadata { return this.type; }
   get runtimeCacheKey(): any { return this.type.runtimeCacheKey; }
-
-  get assetCacheKey(): any { return this.type.assetCacheKey; }
 
   equalsTo(other: CompileMetadataWithIdentifier): boolean {
     return this.type.equalsTo(other.identifier);
@@ -667,8 +630,6 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
 
   get identifier(): CompileIdentifierMetadata { return this.type; }
   get runtimeCacheKey(): any { return this.type.runtimeCacheKey; }
-
-  get assetCacheKey(): any { return this.type.assetCacheKey; }
 
   equalsTo(other: CompileMetadataWithIdentifier): boolean {
     return this.type.equalsTo(other.identifier);
