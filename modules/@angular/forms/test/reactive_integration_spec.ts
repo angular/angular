@@ -27,7 +27,8 @@ export function main() {
           FormControlComp, FormGroupComp, FormArrayComp, FormArrayNestedGroup,
           FormControlNameSelect, FormControlNumberInput, FormControlRadioButtons, WrappedValue,
           WrappedValueForm, MyInput, MyInputForm, FormGroupNgModel, FormControlNgModel,
-          LoginIsEmptyValidator, LoginIsEmptyWrapper, UniqLoginValidator, UniqLoginWrapper
+          LoginIsEmptyValidator, LoginIsEmptyWrapper, UniqLoginValidator, UniqLoginWrapper,
+          NestedFormGroupComp
         ]
       });
       TestBed.compileComponents();
@@ -74,7 +75,11 @@ export function main() {
         expect(form.value).toEqual({'login': 'updatedValue'});
       });
 
-      it('should update DOM elements when rebinding the form group', () => {
+    });
+
+    describe('rebound form groups', () => {
+
+      it('should update DOM elements initially', () => {
         const fixture = TestBed.createComponent(FormGroupComp);
         fixture.debugElement.componentInstance.form =
             new FormGroup({'login': new FormControl('oldValue')});
@@ -87,6 +92,148 @@ export function main() {
         const input = fixture.debugElement.query(By.css('input'));
         expect(input.nativeElement.value).toEqual('newValue');
       });
+
+      it('should update model when UI changes', () => {
+        const fixture = TestBed.createComponent(FormGroupComp);
+        fixture.debugElement.componentInstance.form =
+            new FormGroup({'login': new FormControl('oldValue')});
+        fixture.detectChanges();
+
+        const newForm = new FormGroup({'login': new FormControl('newValue')});
+        fixture.debugElement.componentInstance.form = newForm;
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input'));
+        input.nativeElement.value = 'Nancy';
+        dispatchEvent(input.nativeElement, 'input');
+        fixture.detectChanges();
+
+        expect(newForm.value).toEqual({login: 'Nancy'});
+
+        newForm.setValue({login: 'Carson'});
+        fixture.detectChanges();
+        expect(input.nativeElement.value).toEqual('Carson');
+      });
+
+      it('should work with radio buttons when reusing control', () => {
+        const fixture = TestBed.createComponent(FormControlRadioButtons);
+        const food = new FormControl('chicken');
+        fixture.debugElement.componentInstance.form =
+            new FormGroup({'food': food, 'drink': new FormControl('')});
+        fixture.detectChanges();
+
+        const newForm = new FormGroup({'food': food, 'drink': new FormControl('')});
+        fixture.debugElement.componentInstance.form = newForm;
+        fixture.detectChanges();
+
+        newForm.setValue({food: 'fish', drink: ''});
+        fixture.detectChanges();
+        const inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs[0].nativeElement.checked).toBe(false);
+        expect(inputs[1].nativeElement.checked).toBe(true);
+      });
+
+      it('should update nested form group model when UI changes', () => {
+        const fixture = TestBed.createComponent(NestedFormGroupComp);
+        fixture.debugElement.componentInstance.form = new FormGroup(
+            {'signin': new FormGroup({'login': new FormControl(), 'password': new FormControl()})});
+        fixture.detectChanges();
+
+        const newForm = new FormGroup({
+          'signin': new FormGroup(
+              {'login': new FormControl('Nancy'), 'password': new FormControl('secret')})
+        });
+        fixture.debugElement.componentInstance.form = newForm;
+        fixture.detectChanges();
+
+        const inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs[0].nativeElement.value).toEqual('Nancy');
+        expect(inputs[1].nativeElement.value).toEqual('secret');
+
+        inputs[0].nativeElement.value = 'Carson';
+        dispatchEvent(inputs[0].nativeElement, 'input');
+        fixture.detectChanges();
+
+        expect(newForm.value).toEqual({signin: {login: 'Carson', password: 'secret'}});
+
+        newForm.setValue({signin: {login: 'Bess', password: 'otherpass'}});
+        fixture.detectChanges();
+        expect(inputs[0].nativeElement.value).toEqual('Bess');
+      });
+
+      it('should pick up dir validators from nested form groups', () => {
+        const fixture = TestBed.createComponent(NestedFormGroupComp);
+        const form = new FormGroup({
+          'signin':
+              new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
+        });
+        fixture.debugElement.componentInstance.form = form;
+        fixture.detectChanges();
+        expect(form.get('signin').valid).toBe(false);
+
+        const newForm = new FormGroup({
+          'signin':
+              new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
+        });
+        fixture.debugElement.componentInstance.form = newForm;
+        fixture.detectChanges();
+
+        expect(form.get('signin').valid).toBe(false);
+      });
+
+      it('should strip named controls that are not found', () => {
+        const fixture = TestBed.createComponent(NestedFormGroupComp);
+        const form = new FormGroup({
+          'signin':
+              new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
+        });
+        fixture.debugElement.componentInstance.form = form;
+        fixture.detectChanges();
+
+        form.addControl('email', new FormControl('email'));
+        fixture.detectChanges();
+
+        let emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
+        expect(emailInput.nativeElement.value).toEqual('email');
+
+        const newForm = new FormGroup({
+          'signin':
+              new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
+        });
+        fixture.debugElement.componentInstance.form = newForm;
+        fixture.detectChanges();
+
+        emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
+        expect(emailInput).toBe(null);
+      });
+
+      it('should strip array controls that are not found', () => {
+        const fixture = TestBed.createComponent(FormArrayComp);
+        const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+        const form = new FormGroup({cities: cityArray});
+        fixture.debugElement.componentInstance.form = form;
+        fixture.debugElement.componentInstance.cityArray = cityArray;
+        fixture.detectChanges();
+
+        let inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs[2]).not.toBeDefined();
+        cityArray.push(new FormControl('LA'));
+        fixture.detectChanges();
+
+        inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs[2]).toBeDefined();
+
+        const newArr = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+        const newForm = new FormGroup({cities: newArr});
+        fixture.debugElement.componentInstance.form = newForm;
+        fixture.debugElement.componentInstance.cityArray = newArr;
+        fixture.detectChanges();
+
+        inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs[2]).not.toBeDefined();
+      });
+
+
     });
 
     describe('form arrays', () => {
@@ -1075,7 +1222,7 @@ export function main() {
         TestBed.overrideComponent(FormGroupComp, {
           set: {
             template: `
-          <form [formGroup]="form">
+          <form [formGroup]="form">hav
             <input type="radio" formControlName="food" name="drink" value="chicken">
           </form>
         `
@@ -1189,6 +1336,22 @@ class FormControlComp {
 class FormGroupComp {
   form: FormGroup;
   data: string;
+}
+
+@Component({
+  selector: 'nested-form-group-comp',
+  template: `
+    <form [formGroup]="form">
+      <div formGroupName="signin" login-is-empty-validator>
+        <input formControlName="login">
+        <input formControlName="password">
+      </div>
+      <input *ngIf="form.contains('email')" formControlName="email">
+    </form>
+  `
+})
+class NestedFormGroupComp {
+  form: FormGroup;
 }
 
 @Component({
