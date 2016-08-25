@@ -148,6 +148,7 @@ export function provideRoutes(routes: Routes): any {
 export interface ExtraOptions {
   enableTracing?: boolean;
   useHash?: boolean;
+  initialNavigation?: boolean;
   errorHandler?: ErrorHandler;
 }
 
@@ -183,8 +184,14 @@ export function rootRoute(router: Router): ActivatedRoute {
   return router.routerState.root;
 }
 
-export function initialRouterNavigation(router: Router) {
-  return () => { router.initialNavigation(); };
+export function initialRouterNavigation(router: Router, opts: ExtraOptions) {
+  return () => {
+    if (opts.initialNavigation === false) {
+      router.setUpLocationChangeListener();
+    } else {
+      router.initialNavigation();
+    }
+  };
 }
 
 export function provideRouterInitializer() {
@@ -192,6 +199,6 @@ export function provideRouterInitializer() {
     provide: APP_BOOTSTRAP_LISTENER,
     multi: true,
     useFactory: initialRouterNavigation,
-    deps: [Router]
+    deps: [Router, ROUTER_CONFIGURATION]
   };
 }
