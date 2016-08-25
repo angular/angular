@@ -237,15 +237,10 @@ export class _ParseAST {
 
   peekKeywordLet(): boolean { return this.next.isKeywordLet(); }
 
-  peekDeprecatedKeywordVar(): boolean { return this.next.isKeywordDeprecatedVar(); }
-
-  peekDeprecatedOperatorHash(): boolean { return this.next.isOperator('#'); }
-
   expectCharacter(code: number) {
     if (this.optionalCharacter(code)) return;
     this.error(`Missing expected ${StringWrapper.fromCharCode(code)}`);
   }
-
 
   optionalOperator(op: string): boolean {
     if (this.next.isOperator(op)) {
@@ -659,15 +654,7 @@ export class _ParseAST {
     let prefix: string = null;
     let warnings: string[] = [];
     while (this.index < this.tokens.length) {
-      var keyIsVar: boolean = this.peekKeywordLet();
-      if (!keyIsVar && this.peekDeprecatedKeywordVar()) {
-        keyIsVar = true;
-        warnings.push(`"var" inside of expressions is deprecated. Use "let" instead!`);
-      }
-      if (!keyIsVar && this.peekDeprecatedOperatorHash()) {
-        keyIsVar = true;
-        warnings.push(`"#" inside of expressions is deprecated. Use "let" instead!`);
-      }
+      const keyIsVar: boolean = this.peekKeywordLet();
       if (keyIsVar) {
         this.advance();
       }
@@ -688,12 +675,10 @@ export class _ParseAST {
         } else {
           name = '\$implicit';
         }
-      } else if (
-          this.next !== EOF && !this.peekKeywordLet() && !this.peekDeprecatedKeywordVar() &&
-          !this.peekDeprecatedOperatorHash()) {
+      } else if (this.next !== EOF && !this.peekKeywordLet()) {
         const start = this.inputIndex;
-        var ast = this.parsePipe();
-        var source = this.input.substring(start, this.inputIndex);
+        const ast = this.parsePipe();
+        const source = this.input.substring(start, this.inputIndex);
         expression = new ASTWithSource(ast, source, this.location, this.errors);
       }
       bindings.push(new TemplateBinding(key, keyIsVar, name, expression));
@@ -723,7 +708,7 @@ export class _ParseAST {
   // of the '(' begins an '(' <expr> ')' production). The recovery points of grouping symbols
   // must be conditional as they must be skipped if none of the calling productions are not
   // expecting the closing token else we will never make progress in the case of an
-  // extrainious group closing symbol (such as a stray ')'). This is not the case for ';' because
+  // extraneous group closing symbol (such as a stray ')'). This is not the case for ';' because
   // parseChain() is always the root production and it expects a ';'.
 
   // If a production expects one of these token it increments the corresponding nesting count,

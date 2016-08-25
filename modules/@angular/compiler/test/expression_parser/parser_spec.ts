@@ -389,22 +389,6 @@ export function main() {
         expect(bindings[0].expression.location).toEqual('location');
       });
 
-      it('should support var notation with a deprecation warning', () => {
-        var bindings = createParser().parseTemplateBindings('var i', null);
-        expect(keyValues(bindings.templateBindings)).toEqual(['let i=\$implicit']);
-        expect(bindings.warnings).toEqual([
-          '"var" inside of expressions is deprecated. Use "let" instead!'
-        ]);
-      });
-
-      it('should support # notation with a deprecation warning', () => {
-        var bindings = createParser().parseTemplateBindings('#i', null);
-        expect(keyValues(bindings.templateBindings)).toEqual(['let i=\$implicit']);
-        expect(bindings.warnings).toEqual([
-          '"#" inside of expressions is deprecated. Use "let" instead!'
-        ]);
-      });
-
       it('should support let notation', () => {
         var bindings = parseTemplateBindings('let i');
         expect(keyValues(bindings)).toEqual(['let i=\$implicit']);
