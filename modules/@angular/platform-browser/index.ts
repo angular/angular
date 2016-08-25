@@ -15,7 +15,7 @@ export {By} from './src/dom/debug/by';
 export {DOCUMENT} from './src/dom/dom_tokens';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './src/dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './src/dom/events/hammer_gestures';
-export {DomSanitizationService, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl} from './src/security/dom_sanitization_service';
+export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl} from './src/security/dom_sanitization_service';
 // Web Workers
 export {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from './src/web_workers/shared/client_message_broker';
 export {PRIMITIVE} from './src/web_workers/shared/serializer';

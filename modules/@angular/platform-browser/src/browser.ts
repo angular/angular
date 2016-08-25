@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation} from '@angular/common';
-import {ApplicationModule, BaseException, ClassProvider, ExceptionHandler, ExistingProvider, FactoryProvider, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, SanitizationService, SkipSelf, Testability, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {ApplicationModule, BaseException, ClassProvider, ExceptionHandler, ExistingProvider, FactoryProvider, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Sanitizer, SkipSelf, Testability, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
 
 import {wtfInit} from '../core_private';
 import {AnimationDriver} from '../src/dom/animation_driver';
@@ -25,7 +25,7 @@ import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {HAMMER_GESTURE_CONFIG, HammerGestureConfig, HammerGesturesPlugin} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
-import {DomSanitizationService, DomSanitizationServiceImpl} from './security/dom_sanitization_service';
+import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
 
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: Provider[] = [
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
@@ -39,8 +39,8 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: Provider[] = [
  * @experimental
  */
 export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = [
-  {provide: SanitizationService, useExisting: DomSanitizationService},
-  {provide: DomSanitizationService, useClass: DomSanitizationServiceImpl},
+  {provide: Sanitizer, useExisting: DomSanitizer},
+  {provide: DomSanitizer, useClass: DomSanitizerImpl},
 ];
 
 /**

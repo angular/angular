@@ -48,7 +48,7 @@ export declare function disableDebugTools(): void;
 export declare const DOCUMENT: OpaqueToken;
 
 /** @stable */
-export declare abstract class DomSanitizationService implements SanitizationService {
+export declare abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
     abstract bypassSecurityTrustScript(value: string): SafeScript;
