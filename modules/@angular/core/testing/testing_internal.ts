@@ -112,24 +112,6 @@ export function beforeEachProviders(fn: Function): void {
   });
 }
 
-/**
- * Allows overriding default providers of the test injector,
- * which are defined in test_injector.js
- *
- * @deprecated Use `TestBed.configureTestingModule instead.
- */
-export function addProviders(providers: Array<any>): void {
-  if (!providers) return;
-  TestBed.configureTestingModule({providers: providers});
-}
-
-
-/**
- * @deprecated
- */
-export function beforeEachBindings(fn: Function): void {
-  beforeEachProviders(fn);
-}
 
 function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: number): void {
   if (runnerStack.length == 0) {

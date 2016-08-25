@@ -114,8 +114,6 @@ export class UpgradeAdapter {
   /* @internal */
   private providers: Provider[] = [];
 
-  // the ng2AppModule param should be required once the deprecated @Component.directives prop is
-  // removed
   constructor(private ng2AppModule: Type<any>) {
     if (!ng2AppModule) {
       throw new BaseException(

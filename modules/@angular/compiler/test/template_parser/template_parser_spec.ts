@@ -301,21 +301,6 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
                      /Assigning animation triggers via @prop="exp" attributes with an expression is invalid. Use property bindings \(e.g. \[@prop\]="exp"\) or use an attribute without a value \(e.g. @prop\) instead. \("<div \[ERROR ->\]@something="value2">"\): TestComp@0:5/);
            });
 
-        it('should throw an error when host attributes contain a non property-bound animation trigger',
-           () => {
-             expect(() => {
-               var dirA = CompileDirectiveMetadata.create({
-                 selector: 'div',
-                 type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
-                 host: {'@prop': 'expr'}
-               });
-
-               humanizeTplAst(parse('<div></div>', [dirA]));
-             })
-                 .toThrowError(
-                     /Assigning animation triggers within host data as attributes such as "@prop": "exp" is invalid. Use host bindings \(e.g. "\[@prop\]": "exp"\) instead. \("\[ERROR ->\]<div><\/div>"\): TestComp@0:0, Directive DirA/);
-           });
-
         it('should not issue a warning when host attributes contain a valid property-bound animation trigger',
            () => {
              var dirA = CompileDirectiveMetadata.create({
