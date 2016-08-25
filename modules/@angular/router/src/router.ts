@@ -500,8 +500,6 @@ export class Router {
             this.currentUrlTree = appliedUrl;
             this.currentRouterState = state;
 
-            new ActivateRoutes(state, storedState).activate(this.outletMap);
-
             if (!shouldPreventPushState) {
               let path = this.urlSerializer.serialize(appliedUrl);
               if (this.location.isCurrentPathEqualTo(path) || shouldReplaceUrl) {
@@ -510,6 +508,9 @@ export class Router {
                 this.location.go(path);
               }
             }
+
+            new ActivateRoutes(state, storedState).activate(this.outletMap);
+
             navigationIsSuccessful = true;
           })
           .then(
@@ -536,6 +537,7 @@ export class Router {
                 }
                 this.currentRouterState = storedState;
                 this.currentUrlTree = storedUrl;
+                this.location.replaceState(this.serializeUrl(storedUrl));
               });
     });
   }
