@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 import {Json, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {WebDriverAdapter} from '../web_driver_adapter';
@@ -18,7 +17,7 @@ export class IOsDriverExtension extends WebDriverExtension {
 
   constructor(private _driver: WebDriverAdapter) { super(); }
 
-  gc(): Promise<any> { throw new BaseException('Force GC is not supported on iOS'); }
+  gc(): Promise<any> { throw new Error('Force GC is not supported on iOS'); }
 
   timeBegin(name: string): Promise<any> {
     return this._driver.executeScript(`console.time('${name}');`);

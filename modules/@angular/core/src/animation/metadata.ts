@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
 import {NumberWrapper, isArray, isPresent, isString} from '../facade/lang';
 
 /**
@@ -102,7 +101,7 @@ export class AnimationAnimateMetadata extends AnimationMetadata {
  */
 export abstract class AnimationWithStepsMetadata extends AnimationMetadata {
   constructor() { super(); }
-  get steps(): AnimationMetadata[] { throw new BaseException('NOT IMPLEMENTED: Base Class'); }
+  get steps(): AnimationMetadata[] { throw new Error('NOT IMPLEMENTED: Base Class'); }
 }
 
 /**

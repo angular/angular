@@ -7,7 +7,6 @@
  */
 
 import {Map, MapWrapper, Set, SetWrapper, StringMapWrapper} from '../facade/collection';
-import {BaseException} from '../facade/exceptions';
 import {isPresent} from '../facade/lang';
 import {Type} from '../type';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -67,7 +66,7 @@ export class Reflector extends ReflectorReader {
    */
   listUnusedKeys(): any[] {
     if (this._usedKeys == null) {
-      throw new BaseException('Usage tracking is disabled');
+      throw new Error('Usage tracking is disabled');
     }
     var allTypes = MapWrapper.keys(this._injectableInfo);
     return allTypes.filter(key => !SetWrapper.has(this._usedKeys, key));

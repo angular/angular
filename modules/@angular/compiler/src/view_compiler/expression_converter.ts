@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import * as cdAst from '../expression_parser/ast';
 import {isArray, isBlank, isPresent} from '../facade/lang';
@@ -67,13 +66,13 @@ enum _Mode {
 
 function ensureStatementMode(mode: _Mode, ast: cdAst.AST) {
   if (mode !== _Mode.Statement) {
-    throw new BaseException(`Expected a statement, but saw ${ast}`);
+    throw new Error(`Expected a statement, but saw ${ast}`);
   }
 }
 
 function ensureExpressionMode(mode: _Mode, ast: cdAst.AST) {
   if (mode !== _Mode.Expression) {
-    throw new BaseException(`Expected an expression, but saw ${ast}`);
+    throw new Error(`Expected an expression, but saw ${ast}`);
   }
 }
 
@@ -145,7 +144,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         op = o.BinaryOperator.BiggerEquals;
         break;
       default:
-        throw new BaseException(`Unsupported operation ${ast.operation}`);
+        throw new Error(`Unsupported operation ${ast.operation}`);
     }
 
     return convertToStatementIfNeeded(
@@ -273,7 +272,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     if (receiver === this._implicitReceiver) {
       var varExpr = this._nameResolver.getLocal(ast.name);
       if (isPresent(varExpr)) {
-        throw new BaseException('Cannot assign to a reference or variable!');
+        throw new Error('Cannot assign to a reference or variable!');
       }
     }
     return convertToStatementIfNeeded(
@@ -291,7 +290,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   visitAll(asts: cdAst.AST[], mode: _Mode): any { return asts.map(ast => this.visit(ast, mode)); }
 
   visitQuote(ast: cdAst.Quote, mode: _Mode): any {
-    throw new BaseException('Quotes are not supported for evaluation!');
+    throw new Error('Quotes are not supported for evaluation!');
   }
 
   private visit(ast: cdAst.AST, mode: _Mode): any {
@@ -466,7 +465,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   private releaseTemporary(temporary: o.ReadVarExpr) {
     this._currentTemporary--;
     if (temporary.name != temporaryName(this.bindingIndex, this._currentTemporary)) {
-      throw new BaseException(`Temporary ${temporary.name} released out of order`);
+      throw new Error(`Temporary ${temporary.name} released out of order`);
     }
   }
 }

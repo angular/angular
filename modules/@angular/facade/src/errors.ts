@@ -6,59 +6,52 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseWrappedException} from './base_wrapped_exception';
-import {ExceptionHandler} from './exception_handler';
-
-export {ExceptionHandler} from './exception_handler';
-
-/**
- * @stable
- */
-export class BaseException extends Error {
-  public stack: any;
-  constructor(public message: string = '--') {
-    super(message);
-    this.stack = (<any>new Error(message)).stack;
-  }
-
-  toString(): string { return this.message; }
-}
-
-/**
- * Wraps an exception and provides additional context or information.
- * @stable
- */
-export class WrappedException extends BaseWrappedException {
-  private _wrapperStack: any;
-
-  constructor(
-      private _wrapperMessage: string, private _originalException: any /** TODO #9100 */,
-      private _originalStack?: any /** TODO #9100 */, private _context?: any /** TODO #9100 */) {
-    super(_wrapperMessage);
-    this._wrapperStack = (<any>new Error(_wrapperMessage)).stack;
-  }
-
-  get wrapperMessage(): string { return this._wrapperMessage; }
-
-  get wrapperStack(): any { return this._wrapperStack; }
-
-
-  get originalException(): any { return this._originalException; }
-
-  get originalStack(): any { return this._originalStack; }
-
-
-  get context(): any { return this._context; }
-
-  get message(): string { return ExceptionHandler.exceptionToString(this); }
-
-  toString(): string { return this.message; }
-}
-
-export function makeTypeError(message?: string): Error {
-  return new TypeError(message);
-}
-
 export function unimplemented(): any {
-  throw new BaseException('unimplemented');
+  throw new Error('unimplemented');
+}
+
+/**
+ * @stable
+ */
+export class BaseError extends Error {
+  /**
+   * @internal
+   */
+  _nativeError: Error;
+
+  constructor(message: string) {
+    // Errors don't use current this, instead they create a new instance.
+    // We have to do forward all of our api to the nativeInstance.
+    var nativeError = super(message) as any as Error;
+    this._nativeError = nativeError;
+  }
+
+  get message() { return this._nativeError.message; }
+  set message(message) { this._nativeError.message = message; }
+  get name() { return this._nativeError.name; }
+  get stack() { return (this._nativeError as any).stack; }
+  set stack(value) { (this._nativeError as any).stack = value; }
+  toString() { return this._nativeError.toString(); }
+}
+
+/**
+ * @stable
+ */
+export class WrappedError extends BaseError {
+  originalError: any;
+
+  /**
+   * @internal
+   */
+  _nativeError: Error;
+
+  constructor(message: string, error: any) {
+    super(`${message} caused by: ${error instanceof Error ? error.message: error }`);
+    this.originalError = error;
+  }
+
+  get stack() {
+    return ((this.originalError instanceof Error ? this.originalError : this._nativeError) as any)
+        .stack;
+  }
 }

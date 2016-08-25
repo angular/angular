@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
+import {BaseError} from '../facade/errors';
 import {stringify} from '../facade/lang';
 import {Type} from '../type';
 
 import {ComponentFactory} from './component_factory';
 
 
+
 /**
  * @stable
  */
-export class NoComponentFactoryError extends BaseException {
+export class NoComponentFactoryError extends BaseError {
   constructor(public component: Function) {
     super(`No component factory found for ${stringify(component)}`);
   }

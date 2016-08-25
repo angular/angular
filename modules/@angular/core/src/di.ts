@@ -25,5 +25,4 @@ export {ReflectiveInjector} from './di/reflective_injector';
 export {Provider, TypeProvider, ValueProvider, ClassProvider, ExistingProvider, FactoryProvider} from './di/provider';
 export {ResolvedReflectiveFactory, ResolvedReflectiveProvider} from './di/reflective_provider';
 export {ReflectiveKey} from './di/reflective_key';
-export {NoProviderError, AbstractProviderError, CyclicDependencyError, InstantiationError, InvalidProviderError, NoAnnotationError, OutOfBoundsError} from './di/reflective_exceptions';
 export {OpaqueToken} from './di/opaque_token';

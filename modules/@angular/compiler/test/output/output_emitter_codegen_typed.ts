@@ -9,13 +9,12 @@
 // ATTENTION: This file will be overwritten with generated code by main()
 import * as o from '@angular/compiler/src/output/output_ast';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
-import {BaseException} from '@angular/core';
 
 import {print} from '../../src/facade/lang';
 import {assetUrl} from '../../src/util';
 
 function unimplemented(): any {
-  throw new BaseException('unimplemented');
+  throw new Error('unimplemented');
 }
 
 import {SimpleJsImportGenerator, codegenExportsVars, codegenStmts} from './output_emitter_util';

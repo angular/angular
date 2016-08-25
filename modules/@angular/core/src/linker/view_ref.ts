@@ -8,7 +8,7 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ChangeDetectorStatus} from '../change_detection/constants';
-import {unimplemented} from '../facade/exceptions';
+import {unimplemented} from '../facade/errors';
 import {AppView} from './view';
 
 /**

@@ -7,7 +7,6 @@
  */
 
 import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
-import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 import {Json, NumberWrapper, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from '../common_options';
@@ -77,7 +76,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
               events.push(message['params']);
             }
             if (StringWrapper.equals(message['method'], 'Tracing.bufferUsage')) {
-              throw new BaseException('The DevTools trace buffer filled during the test!');
+              throw new Error('The DevTools trace buffer filled during the test!');
             }
           });
           return this._convertPerfRecordsToEvents(events);
@@ -108,7 +107,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
         //               always available if something is rendered
         var frameCount = event['args']['data']['frame_count'];
         if (frameCount > 1) {
-          throw new BaseException('multi-frame render stats not supported');
+          throw new Error('multi-frame render stats not supported');
         }
         if (frameCount == 1) {
           normalizedEvents.push(normalizeEvent(event, {'name': 'frame'}));

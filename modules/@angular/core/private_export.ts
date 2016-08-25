@@ -20,6 +20,7 @@ import * as console from './src/console';
 import * as debug from './src/debug/debug_renderer';
 import * as provider from './src/di/provider';
 import * as reflective_provider from './src/di/reflective_provider';
+import {ComponentStillLoadingError} from './src/linker/compiler';
 import * as component_factory_resolver from './src/linker/component_factory_resolver';
 import * as debug_context from './src/linker/debug_context';
 import * as element from './src/linker/element';
@@ -39,6 +40,7 @@ import * as reflector_reader from './src/reflection/reflector_reader';
 import * as api from './src/render/api';
 import * as security from './src/security';
 import * as decorators from './src/util/decorators';
+
 
 // These generic types can't be exported within the __core_private_types__
 // interface because the generic type info will be lost. So just exporting
@@ -110,6 +112,7 @@ export interface __core_private_types__ {
   DEFAULT_STATE: typeof DEFAULT_STATE_;
   EMPTY_STATE: typeof EMPTY_STATE_;
   FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_;
+  ComponentStillLoadingError: typeof ComponentStillLoadingError;
 }
 
 export var __core_private__ = {
@@ -176,5 +179,6 @@ export var __core_private__ = {
   ANY_STATE: ANY_STATE_,
   DEFAULT_STATE: DEFAULT_STATE_,
   EMPTY_STATE: EMPTY_STATE_,
-  FILL_STYLE_FLAG: FILL_STYLE_FLAG_
+  FILL_STYLE_FLAG: FILL_STYLE_FLAG_,
+  ComponentStillLoadingError: ComponentStillLoadingError
 };

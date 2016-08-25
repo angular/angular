@@ -7,7 +7,6 @@
  */
 
 import {isListLikeIterable, iterateListLike} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {getMapKey, isArray, isBlank, isPresent, looseIdentical, stringify} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -150,7 +149,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   diff(collection: any): DefaultIterableDiffer {
     if (isBlank(collection)) collection = [];
     if (!isListLikeIterable(collection)) {
-      throw new BaseException(`Error trying to diff '${collection}'`);
+      throw new Error(`Error trying to diff '${collection}'`);
     }
 
     if (this.check(collection)) {

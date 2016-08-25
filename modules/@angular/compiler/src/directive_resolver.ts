@@ -9,7 +9,6 @@
 import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, Type, resolveForwardRef} from '@angular/core';
 import {ReflectorReader, reflector} from '../core_private';
 import {StringMapWrapper} from './facade/collection';
-import {BaseException} from './facade/exceptions';
 import {isPresent, stringify} from './facade/lang';
 import {splitAtColon} from './util';
 
@@ -41,7 +40,7 @@ export class DirectiveResolver {
       }
     }
     if (throwIfNotFound) {
-      throw new BaseException(`No Directive annotation found on ${stringify(type)}`);
+      throw new Error(`No Directive annotation found on ${stringify(type)}`);
     }
     return null;
   }
@@ -98,7 +97,7 @@ export class DirectiveResolver {
       inputs.forEach((inputDef: string) => {
         const publicName = this._extractPublicName(inputDef);
         if (inputNames.indexOf(publicName) > -1) {
-          throw new BaseException(
+          throw new Error(
               `Input '${publicName}' defined multiple times in '${stringify(directiveType)}'`);
         }
       });
@@ -116,7 +115,7 @@ export class DirectiveResolver {
       outputs.forEach((outputDef: string) => {
         const publicName = this._extractPublicName(outputDef);
         if (outputNames.indexOf(publicName) > -1) {
-          throw new BaseException(
+          throw new Error(
               `Output event '${publicName}' defined multiple times in '${stringify(directiveType)}'`);
         }
       });

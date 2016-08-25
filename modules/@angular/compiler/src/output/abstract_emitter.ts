@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 import {StringWrapper, isBlank, isPresent, isString} from '../facade/lang';
 
 import * as o from './output_ast';
@@ -236,7 +235,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
           varName = CATCH_STACK_VAR.name;
           break;
         default:
-          throw new BaseException(`Unknown builtin variable ${ast.builtin}`);
+          throw new Error(`Unknown builtin variable ${ast.builtin}`);
       }
     }
     ctx.print(varName);
@@ -332,7 +331,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
         opStr = '>=';
         break;
       default:
-        throw new BaseException(`Unknown operator ${ast.operator}`);
+        throw new Error(`Unknown operator ${ast.operator}`);
     }
     ctx.print(`(`);
     ast.lhs.visitExpression(this, ctx);

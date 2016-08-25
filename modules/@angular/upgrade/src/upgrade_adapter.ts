@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Compiler, ComponentFactory, ComponentFactoryResolver, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentFactoryResolver, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from './angular_js';
@@ -116,7 +116,7 @@ export class UpgradeAdapter {
 
   constructor(private ng2AppModule: Type<any>) {
     if (!ng2AppModule) {
-      throw new BaseException(
+      throw new Error(
           'UpgradeAdapter cannot be instantiated without an NgModule of the Angular 2 app.');
     }
   }

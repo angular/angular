@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseError} from './errors';
+
 export interface BrowserNodeGlobal {
   Object: typeof Object;
   Array: typeof Array;
@@ -240,14 +242,6 @@ export class StringJoiner {
   toString(): string { return this.parts.join(''); }
 }
 
-export class NumberParseError extends Error {
-  name: string;
-
-  constructor(public message: string) { super(); }
-
-  toString(): string { return this.message; }
-}
-
 
 export class NumberWrapper {
   static toFixed(n: number, fractionDigits: number): string { return n.toFixed(fractionDigits); }
@@ -257,7 +251,7 @@ export class NumberWrapper {
   static parseIntAutoRadix(text: string): number {
     var result: number = parseInt(text);
     if (isNaN(result)) {
-      throw new NumberParseError('Invalid integer literal when parsing ' + text);
+      throw new Error('Invalid integer literal when parsing ' + text);
     }
     return result;
   }
@@ -277,8 +271,7 @@ export class NumberWrapper {
         return result;
       }
     }
-    throw new NumberParseError(
-        'Invalid integer literal when parsing ' + text + ' in base ' + radix);
+    throw new Error('Invalid integer literal when parsing ' + text + ' in base ' + radix);
   }
 
   // TODO: NaN is a valid literal but is returned by parseFloat to indicate an error.

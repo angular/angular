@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 
 import {Math, isBlank, isPresent} from '../facade/lang';
 
@@ -32,7 +32,7 @@ export class AssetUrl {
     if (allowNonMatching) {
       return null;
     }
-    throw new BaseException(`Url ${url} is not a valid asset: url`);
+    throw new Error(`Url ${url} is not a valid asset: url`);
   }
 
   constructor(public packageName: string, public firstLevelDir: string, public modulePath: string) {

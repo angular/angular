@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, getDebugNode} from '../index';
-import {BaseException} from '../src/facade/exceptions';
 import {scheduleMicroTask} from '../src/facade/lang';
 
 import {tick} from './fake_async';
@@ -146,7 +145,7 @@ export class ComponentFixture<T> {
    */
   autoDetectChanges(autoDetect: boolean = true) {
     if (this.ngZone == null) {
-      throw new BaseException('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set');
+      throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set');
     }
     this._autoDetect = autoDetect;
     this.detectChanges();

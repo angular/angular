@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, SchemaMetadata} from '@angular/core';
+import {SchemaMetadata} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileTokenMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
@@ -73,8 +73,7 @@ export class OfflineCompiler {
           const compMeta = this._metadataResolver.getDirectiveMetadata(<any>compType);
           const ngModule = ngModulesSummary.ngModuleByComponent.get(compType);
           if (!ngModule) {
-            throw new BaseException(
-                `Cannot determine the module for component ${compMeta.type.name}!`);
+            throw new Error(`Cannot determine the module for component ${compMeta.type.name}!`);
           }
           return Promise
               .all([compMeta, ...ngModule.transitiveModule.directives].map(
@@ -217,7 +216,7 @@ function _stylesModuleUrl(stylesheetUrl: string, shim: boolean, suffix: string):
 
 function _assertComponent(meta: CompileDirectiveMetadata) {
   if (!meta.isComponent) {
-    throw new BaseException(`Could not compile '${meta.type.name}' because it is not a component.`);
+    throw new Error(`Could not compile '${meta.type.name}' because it is not a component.`);
   }
 }
 
