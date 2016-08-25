@@ -19,6 +19,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Even
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 
+
 describe('Integration', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -1270,6 +1271,65 @@ describe('Integration', () => {
                  ]);
                })));
       });
+    });
+
+    describe('order', () => {
+
+      class Logger {
+        logs: string[] = [];
+        add(thing: string) { this.logs.push(thing); }
+      }
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [
+            Logger, {
+              provide: 'canActivateChild_parent',
+              useFactory: (logger: Logger) => () => (logger.add('canActivateChild_parent'), true),
+              deps: [Logger]
+            },
+            {
+              provide: 'canActivate_team',
+              useFactory: (logger: Logger) => () => (logger.add('canActivate_team'), true),
+              deps: [Logger]
+            },
+            {
+              provide: 'canDeactivate_team',
+              useFactory: (logger: Logger) => () => (logger.add('canDeactivate_team'), true),
+              deps: [Logger]
+            }
+          ]
+        });
+      });
+
+      it('should call guards in the right order',
+         fakeAsync(inject(
+             [Router, Location, Logger], (router: Router, location: Location, logger: Logger) => {
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([{
+                 path: '',
+                 canActivateChild: ['canActivateChild_parent'],
+                 children: [{
+                   path: 'team/:id',
+                   canActivate: ['canActivate_team'],
+                   canDeactivate: ['canDeactivate_team'],
+                   component: TeamCmp
+                 }]
+               }]);
+
+               router.navigateByUrl('/team/22');
+               advance(fixture);
+
+               router.navigateByUrl('/team/33');
+               advance(fixture);
+
+               expect(logger.logs).toEqual([
+                 'canActivateChild_parent', 'canActivate_team',
+
+                 'canDeactivate_team', 'canActivateChild_parent', 'canActivate_team'
+               ]);
+             })));
     });
   });
 
