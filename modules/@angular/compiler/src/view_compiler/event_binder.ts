@@ -10,7 +10,7 @@ import {AnimationOutput} from '../../core_private';
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isBlank, isPresent} from '../facade/lang';
-import {Identifiers, identifierToken} from '../identifiers';
+import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
 
@@ -130,7 +130,7 @@ export class CompileEventListener {
                        'registerAnimationOutput',
                        [
                          this.compileElement.renderNode,
-                         o.importExpr(Identifiers.AnimationOutput).instantiate([
+                         o.importExpr(resolveIdentifier(Identifiers.AnimationOutput)).instantiate([
                            o.literal(output.name), o.literal(output.phase)
                          ]),
                          outputListener

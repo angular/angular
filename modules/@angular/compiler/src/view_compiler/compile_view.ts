@@ -12,7 +12,7 @@ import {CompileDirectiveMetadata, CompileIdentifierMap, CompileIdentifierMetadat
 import {CompilerConfig} from '../config';
 import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
-import {Identifiers} from '../identifiers';
+import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {createDiTokenExpression} from '../util';
 
@@ -150,7 +150,7 @@ export class CompileView implements NameResolver {
 
   createLiteralArray(values: o.Expression[]): o.Expression {
     if (values.length === 0) {
-      return o.importExpr(Identifiers.EMPTY_ARRAY);
+      return o.importExpr(resolveIdentifier(Identifiers.EMPTY_ARRAY));
     }
     var proxyExpr = o.THIS_EXPR.prop(`_arr_${this.literalArrayCount++}`);
     var proxyParams: o.FnParam[] = [];
@@ -170,7 +170,7 @@ export class CompileView implements NameResolver {
 
   createLiteralMap(entries: Array<Array<string|o.Expression>>): o.Expression {
     if (entries.length === 0) {
-      return o.importExpr(Identifiers.EMPTY_MAP);
+      return o.importExpr(resolveIdentifier(Identifiers.EMPTY_MAP));
     }
     var proxyExpr = o.THIS_EXPR.prop(`_map_${this.literalMapCount++}`);
     var proxyParams: o.FnParam[] = [];

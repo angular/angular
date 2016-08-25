@@ -11,7 +11,7 @@ import {SchemaMetadata} from '@angular/core';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileTokenMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {ListWrapper} from './facade/collection';
-import {Identifiers} from './identifiers';
+import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {NgModuleCompiler} from './ng_module_compiler';
 import {OutputEmitter} from './output/abstract_emitter';
@@ -108,12 +108,10 @@ export class OfflineCompiler {
   private _compileModule(ngModuleType: StaticSymbol, targetStatements: o.Statement[]): string {
     const ngModule = this._metadataResolver.getNgModuleMetadata(<any>ngModuleType);
     let appCompileResult = this._ngModuleCompiler.compile(ngModule, [
+      new CompileProviderMetadata(
+          {token: resolveIdentifierToken(Identifiers.LOCALE_ID), useValue: this._localeId}),
       new CompileProviderMetadata({
-        token: new CompileTokenMetadata({identifier: Identifiers.LOCALE_ID}),
-        useValue: this._localeId
-      }),
-      new CompileProviderMetadata({
-        token: new CompileTokenMetadata({identifier: Identifiers.TRANSLATIONS_FORMAT}),
+        token: resolveIdentifierToken(Identifiers.TRANSLATIONS_FORMAT),
         useValue: this._translationFormat
       })
     ]);
@@ -134,15 +132,16 @@ export class OfflineCompiler {
     var compFactoryVar = _componentFactoryName(compMeta.type);
     targetStatements.push(
         o.variable(compFactoryVar)
-            .set(o.importExpr(Identifiers.ComponentFactory, [o.importType(compMeta.type)])
+            .set(o.importExpr(resolveIdentifier(Identifiers.ComponentFactory), [o.importType(
+                                                                                   compMeta.type)])
                      .instantiate(
                          [
                            o.literal(compMeta.selector), o.variable(hostViewFactoryVar),
                            o.importExpr(compMeta.type)
                          ],
                          o.importType(
-                             Identifiers.ComponentFactory, [o.importType(compMeta.type)],
-                             [o.TypeModifier.Const])))
+                             resolveIdentifier(Identifiers.ComponentFactory),
+                             [o.importType(compMeta.type)], [o.TypeModifier.Const])))
             .toDeclStmt(null, [o.StmtModifier.Final]));
     return compFactoryVar;
   }
