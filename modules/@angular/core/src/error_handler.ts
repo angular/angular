@@ -6,22 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseWrappedException} from './base_wrapped_exception';
-import {isListLikeIterable} from './collection';
-import {isBlank, isPresent} from './lang';
-
-class _ArrayLogger {
-  res: any[] = [];
-  log(s: any): void { this.res.push(s); }
-  logError(s: any): void { this.res.push(s); }
-  logGroup(s: any): void { this.res.push(s); }
-  logGroupEnd(){};
-}
+import {WrappedError} from './facade/errors';
 
 /**
  * Provides a hook for centralized exception handling.
  *
- * The default implementation of `ExceptionHandler` prints error messages to the `Console`. To
+ * The default implementation of `ErrorHandler` prints error messages to the `Console`. To
  * intercept error handling,
  * write a custom exception handler that replaces this default as appropriate for your app.
  *
@@ -29,112 +19,95 @@ class _ArrayLogger {
  *
  * ```javascript
  *
- * class MyExceptionHandler implements ExceptionHandler {
+ * class MyExceptionHandler implements ErrorHandler {
  *   call(error, stackTrace = null, reason = null) {
  *     // do something with the exception
  *   }
  * }
  *
  * @NgModule({
- *   providers: [{provide: ExceptionHandler, useClass: MyExceptionHandler}]
+ *   providers: [{provide: ErrorHandler, useClass: MyErrorHandler}]
  * })
  * class MyModule {}
  * ```
  * @stable
  */
-export class ExceptionHandler {
-  constructor(private _logger: any, private _rethrowException: boolean = true) {}
+export class ErrorHandler {
+  /**
+   * @internal
+   */
+  _console: Console = console;
 
-  static exceptionToString(exception: any, stackTrace: any = null, reason: string = null): string {
-    var l = new _ArrayLogger();
-    var e = new ExceptionHandler(l, false);
-    e.call(exception, stackTrace, reason);
-    return l.res.join('\n');
+  /**
+   * @internal
+   */
+  rethrowError: boolean;
+
+  constructor(rethrowError: boolean = true) {
+    this.rethrowError = rethrowError;
   }
 
-  call(exception: any, stackTrace: any = null, reason: string = null): void {
-    var originalException = this._findOriginalException(exception);
-    var originalStack = this._findOriginalStack(exception);
-    var context = this._findContext(exception);
+  handleError(error: any): void {
+    var originalError = this._findOriginalError(error);
+    var originalStack = this._findOriginalStack(error);
+    var context = this._findContext(error);
 
-    this._logger.logGroup(`EXCEPTION: ${this._extractMessage(exception)}`);
+    this._console.error(`EXCEPTION: ${this._extractMessage(error)}`);
 
-    if (isPresent(stackTrace) && isBlank(originalStack)) {
-      this._logger.logError('STACKTRACE:');
-      this._logger.logError(this._longStackTrace(stackTrace));
+    if (originalError) {
+      this._console.error(`ORIGINAL EXCEPTION: ${this._extractMessage(originalError)}`);
     }
 
-    if (isPresent(reason)) {
-      this._logger.logError(`REASON: ${reason}`);
+    if (originalStack) {
+      this._console.error('ORIGINAL STACKTRACE:');
+      this._console.error(originalStack);
     }
 
-    if (isPresent(originalException)) {
-      this._logger.logError(`ORIGINAL EXCEPTION: ${this._extractMessage(originalException)}`);
+    if (context) {
+      this._console.error('ERROR CONTEXT:');
+      this._console.error(context);
     }
-
-    if (isPresent(originalStack)) {
-      this._logger.logError('ORIGINAL STACKTRACE:');
-      this._logger.logError(this._longStackTrace(originalStack));
-    }
-
-    if (isPresent(context)) {
-      this._logger.logError('ERROR CONTEXT:');
-      this._logger.logError(context);
-    }
-
-    this._logger.logGroupEnd();
 
     // We rethrow exceptions, so operations like 'bootstrap' will result in an error
-    // when an exception happens. If we do not rethrow, bootstrap will always succeed.
-    if (this._rethrowException) throw exception;
+    // when an error happens. If we do not rethrow, bootstrap will always succeed.
+    if (this.rethrowError) throw error;
   }
 
   /** @internal */
-  _extractMessage(exception: any): string {
-    return exception instanceof BaseWrappedException ? exception.wrapperMessage :
-                                                       exception.toString();
+  _extractMessage(error: any): string {
+    return error instanceof Error ? error.message : error.toString();
   }
 
   /** @internal */
-  _longStackTrace(stackTrace: any): any {
-    return isListLikeIterable(stackTrace) ? (<any[]>stackTrace).join('\n\n-----async gap-----\n') :
-                                            stackTrace.toString();
-  }
-
-  /** @internal */
-  _findContext(exception: any): any {
-    try {
-      if (!(exception instanceof BaseWrappedException)) return null;
-      return isPresent(exception.context) ? exception.context :
-                                            this._findContext(exception.originalException);
-    } catch (e) {
-      // exception.context can throw an exception. if it happens, we ignore the context.
+  _findContext(error: any): any {
+    if (error) {
+      return error.context ? error.context :
+                             this._findContext((error as WrappedError).originalError);
+    } else {
       return null;
     }
   }
 
   /** @internal */
-  _findOriginalException(exception: any): any {
-    if (!(exception instanceof BaseWrappedException)) return null;
-
-    var e = exception.originalException;
-    while (e instanceof BaseWrappedException && isPresent(e.originalException)) {
-      e = e.originalException;
+  _findOriginalError(error: any): any {
+    var e = (error as WrappedError).originalError;
+    while (e && (e as WrappedError).originalError) {
+      e = (e as WrappedError).originalError;
     }
 
     return e;
   }
 
   /** @internal */
-  _findOriginalStack(exception: any): any {
-    if (!(exception instanceof BaseWrappedException)) return null;
+  _findOriginalStack(error: any): string {
+    if (!(error instanceof Error)) return null;
 
-    var e = exception;
-    var stack = exception.originalStack;
-    while (e instanceof BaseWrappedException && isPresent(e.originalException)) {
-      e = e.originalException;
-      if (e instanceof BaseWrappedException && isPresent(e.originalException)) {
-        stack = e.originalStack;
+    var e: any = error;
+    var stack: string = e.stack;
+    while (e instanceof Error && (e as WrappedError).originalError) {
+      e = (e as WrappedError).originalError;
+      if (e instanceof Error && e.stack) {
+        stack = e.stack;
       }
     }
 

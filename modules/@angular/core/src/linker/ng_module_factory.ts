@@ -7,7 +7,7 @@
  */
 
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
-import {BaseException, unimplemented} from '../facade/exceptions';
+import {unimplemented} from '../facade/errors';
 import {stringify} from '../facade/lang';
 import {Type} from '../type';
 import {ComponentFactory} from './component_factory';
@@ -107,7 +107,7 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
 
   destroy(): void {
     if (this._destroyed) {
-      throw new BaseException(
+      throw new Error(
           `The ng module ${stringify(this.instance.constructor)} has already been destroyed.`);
     }
     this._destroyed = true;

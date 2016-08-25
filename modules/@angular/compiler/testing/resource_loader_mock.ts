@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {ResourceLoader} from '../index';
 import {ListWrapper, Map} from '../src/facade/collection';
@@ -54,7 +53,7 @@ export class MockResourceLoader extends ResourceLoader {
    */
   flush() {
     if (this._requests.length === 0) {
-      throw new BaseException('No pending requests to flush');
+      throw new Error('No pending requests to flush');
     }
 
     do {
@@ -76,7 +75,7 @@ export class MockResourceLoader extends ResourceLoader {
       urls.push(expectation.url);
     }
 
-    throw new BaseException(`Unsatisfied requests: ${urls.join(', ')}`);
+    throw new Error(`Unsatisfied requests: ${urls.join(', ')}`);
   }
 
   private _processRequest(request: _PendingRequest) {
@@ -97,7 +96,7 @@ export class MockResourceLoader extends ResourceLoader {
       return;
     }
 
-    throw new BaseException(`Unexpected request ${url}`);
+    throw new Error(`Unexpected request ${url}`);
   }
 }
 

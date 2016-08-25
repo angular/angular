@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
 import {CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssSelectorRuleAst, CssStyleSheetAst, CssStyleValueAst} from '../../src/css_parser/css_ast';
@@ -29,7 +28,7 @@ export function main() {
       var output = parse(css);
       var errors = output.errors;
       if (errors.length > 0) {
-        throw new BaseException(errors.map((error: CssParseError) => error.msg).join(', '));
+        throw new Error(errors.map((error: CssParseError) => error.msg).join(', '));
       }
       return output.ast;
     }

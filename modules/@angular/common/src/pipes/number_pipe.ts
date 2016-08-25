@@ -11,7 +11,7 @@ import {Inject, LOCALE_ID, Pipe, PipeTransform, Type} from '@angular/core';
 import {NumberFormatStyle, NumberFormatter} from '../facade/intl';
 import {NumberWrapper, isBlank, isNumber, isPresent, isString} from '../facade/lang';
 
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/;
 
@@ -22,7 +22,7 @@ function formatNumber(
   // Convert strings to numbers
   value = isString(value) && NumberWrapper.isNumeric(value) ? +value : value;
   if (!isNumber(value)) {
-    throw new InvalidPipeArgumentException(pipe, value);
+    throw new InvalidPipeArgumentError(pipe, value);
   }
   let minInt: number;
   let minFraction: number;

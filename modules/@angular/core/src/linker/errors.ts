@@ -7,7 +7,10 @@
  */
 
 import {UNINITIALIZED} from '../change_detection/change_detection_util';
-import {BaseException, WrappedException} from '../facade/exceptions';
+import {BaseError, WrappedError} from '../facade/errors';
+
+import {DebugContext} from './debug_context';
+
 
 
 /**
@@ -37,15 +40,15 @@ import {BaseException, WrappedException} from '../facade/exceptions';
  *
  *   set prop(v) {
  *     // this updates the parent property, which is disallowed during change detection
- *     // this will result in ExpressionChangedAfterItHasBeenCheckedException
+ *     // this will result in ExpressionChangedAfterItHasBeenCheckedError
  *     this.parent.parentProp = "updated";
  *   }
  * }
  * ```
  * @stable
  */
-export class ExpressionChangedAfterItHasBeenCheckedException extends BaseException {
-  constructor(oldValue: any, currValue: any, context: any) {
+export class ExpressionChangedAfterItHasBeenCheckedError extends BaseError {
+  constructor(oldValue: any, currValue: any) {
     let msg =
         `Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
     if (oldValue === UNINITIALIZED) {
@@ -64,9 +67,15 @@ export class ExpressionChangedAfterItHasBeenCheckedException extends BaseExcepti
  * be useful for debugging.
  * @stable
  */
-export class ViewWrappedException extends WrappedException {
-  constructor(originalException: any, originalStack: any, context: any) {
-    super(`Error in ${context.source}`, originalException, originalStack, context);
+export class ViewWrappedError extends WrappedError {
+  /**
+   * DebugContext
+   */
+  context: DebugContext;
+
+  constructor(originalError: any, context: DebugContext) {
+    super(`Error in ${context.source}`, originalError);
+    this.context = context;
   }
 }
 
@@ -78,6 +87,6 @@ export class ViewWrappedException extends WrappedException {
  * This is an internal Angular error.
  * @stable
  */
-export class ViewDestroyedException extends BaseException {
+export class ViewDestroyedError extends BaseError {
   constructor(details: string) { super(`Attempt to use a destroyed view: ${details}`); }
 }

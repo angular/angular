@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
 import {Subject} from 'rxjs/Subject';
 import {take} from 'rxjs/operator/take';
@@ -68,7 +68,7 @@ export class MockConnection implements Connection {
    */
   mockRespond(res: Response) {
     if (this.readyState === ReadyState.Done || this.readyState === ReadyState.Cancelled) {
-      throw new BaseException('Connection has already been resolved');
+      throw new Error('Connection has already been resolved');
     }
     this.readyState = ReadyState.Done;
     this.response.next(res);
@@ -214,7 +214,7 @@ export class MockBackend implements ConnectionBackend {
   verifyNoPendingRequests() {
     let pending = 0;
     this.pendingConnections.subscribe((c: MockConnection) => pending++);
-    if (pending > 0) throw new BaseException(`${pending} pending connections to be resolved`);
+    if (pending > 0) throw new Error(`${pending} pending connections to be resolved`);
   }
 
   /**
@@ -233,7 +233,7 @@ export class MockBackend implements ConnectionBackend {
    */
   createConnection(req: Request): MockConnection {
     if (!isPresent(req) || !(req instanceof Request)) {
-      throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
+      throw new Error(`createConnection requires an instance of Request, got ${req}`);
     }
     let connection = new MockConnection(req);
     this.connections.next(connection);

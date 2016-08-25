@@ -1,11 +1,4 @@
 /** @stable */
-export declare class AbstractProviderError extends BaseException {
-    context: any;
-    constructor(injector: ReflectiveInjector, key: ReflectiveKey, constructResolvingMessage: Function);
-    addKey(injector: ReflectiveInjector, key: ReflectiveKey): void;
-}
-
-/** @stable */
 export declare abstract class AfterContentChecked {
     abstract ngAfterContentChecked(): void;
 }
@@ -186,14 +179,6 @@ export interface AttributeMetadataFactory {
 export declare const AUTO_STYLE: string;
 
 /** @stable */
-export declare class BaseException extends Error {
-    message: string;
-    stack: any;
-    constructor(message?: string);
-    toString(): string;
-}
-
-/** @stable */
 export declare enum ChangeDetectionStrategy {
     OnPush = 0,
     Default = 1,
@@ -332,12 +317,6 @@ export declare abstract class ComponentRef<C> {
 }
 
 /** @stable */
-export declare class ComponentStillLoadingError extends BaseException {
-    compType: Type<any>;
-    constructor(compType: Type<any>);
-}
-
-/** @stable */
 export declare var ContentChild: ContentChildMetadataFactory;
 
 /** @stable */
@@ -388,11 +367,6 @@ export declare function createPlatformFactory(parentPlaformFactory: PlatformFact
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
-
-/** @stable */
-export declare class CyclicDependencyError extends AbstractProviderError {
-    constructor(injector: ReflectiveInjector, key: ReflectiveKey);
-}
 
 /** @experimental */
 export declare class DebugElement extends DebugNode {
@@ -526,6 +500,12 @@ export declare abstract class EmbeddedViewRef<C> extends ViewRef {
 export declare function enableProdMode(): void;
 
 /** @stable */
+export declare class ErrorHandler {
+    constructor(rethrowError?: boolean);
+    handleError(error: any): void;
+}
+
+/** @stable */
 export declare class EventEmitter<T> extends Subject<T> {
     __isAsync: boolean;
     constructor(isAsync?: boolean);
@@ -534,22 +514,10 @@ export declare class EventEmitter<T> extends Subject<T> {
 }
 
 /** @stable */
-export declare class ExceptionHandler {
-    constructor(_logger: any, _rethrowException?: boolean);
-    call(exception: any, stackTrace?: any, reason?: string): void;
-    static exceptionToString(exception: any, stackTrace?: any, reason?: string): string;
-}
-
-/** @stable */
 export interface ExistingProvider {
     multi?: boolean;
     provide: any;
     useExisting: any;
-}
-
-/** @stable */
-export declare class ExpressionChangedAfterItHasBeenCheckedException extends BaseException {
-    constructor(oldValue: any, currValue: any, context: any);
 }
 
 /** @stable */
@@ -679,20 +647,6 @@ export declare class InputMetadata {
 export interface InputMetadataFactory {
     (bindingPropertyName?: string): any;
     new (bindingPropertyName?: string): any;
-}
-
-/** @stable */
-export declare class InstantiationError extends WrappedException {
-    causeKey: ReflectiveKey;
-    context: any;
-    wrapperMessage: string;
-    constructor(injector: ReflectiveInjector, originalException: any, originalStack: any, key: ReflectiveKey);
-    addKey(injector: ReflectiveInjector, key: ReflectiveKey): void;
-}
-
-/** @stable */
-export declare class InvalidProviderError extends BaseException {
-    constructor(provider: any);
 }
 
 /** @experimental */
@@ -851,22 +805,6 @@ export declare class NgZone {
 export declare const NO_ERRORS_SCHEMA: SchemaMetadata;
 
 /** @stable */
-export declare class NoAnnotationError extends BaseException {
-    constructor(typeOrFunc: Type<any> | Function, params: any[][]);
-}
-
-/** @stable */
-export declare class NoComponentFactoryError extends BaseException {
-    component: Function;
-    constructor(component: Function);
-}
-
-/** @stable */
-export declare class NoProviderError extends AbstractProviderError {
-    constructor(injector: ReflectiveInjector, key: ReflectiveKey);
-}
-
-/** @stable */
 export declare abstract class OnChanges {
     abstract ngOnChanges(changes: SimpleChanges): void;
 }
@@ -899,11 +837,6 @@ export declare class OptionalMetadata {
 export interface OptionalMetadataFactory {
     (): any;
     new (): OptionalMetadata;
-}
-
-/** @stable */
-export declare class OutOfBoundsError extends BaseException {
-    constructor(index: number);
 }
 
 /** @stable */
@@ -1326,18 +1259,6 @@ export declare class ViewQueryMetadata extends QueryMetadata {
 export declare abstract class ViewRef {
     destroyed: boolean;
     abstract onDestroy(callback: Function): any;
-}
-
-/** @stable */
-export declare class WrappedException extends BaseWrappedException {
-    context: any;
-    message: string;
-    originalException: any;
-    originalStack: any;
-    wrapperMessage: string;
-    wrapperStack: any;
-    constructor(_wrapperMessage: string, _originalException: any, _originalStack?: any, _context?: any);
-    toString(): string;
 }
 
 /** @stable */

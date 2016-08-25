@@ -7,13 +7,13 @@
  */
 
 import {ListWrapper} from '../facade/collection';
-import {BaseException, unimplemented} from '../facade/exceptions';
+import {unimplemented} from '../facade/errors';
 import {Type} from '../type';
 
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
 import {SelfMetadata, SkipSelfMetadata} from './metadata';
 import {Provider} from './provider';
-import {AbstractProviderError, CyclicDependencyError, InstantiationError, NoProviderError, OutOfBoundsError} from './reflective_exceptions';
+import {AbstractProviderError, CyclicDependencyError, InstantiationError, NoProviderError, OutOfBoundsError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
 import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
 
@@ -797,7 +797,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
               d19);
           break;
         default:
-          throw new BaseException(
+          throw new Error(
               `Cannot instantiate '${provider.key.displayName}' because it has more than 20 dependencies`);
       }
     } catch (e) {

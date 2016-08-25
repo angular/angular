@@ -7,8 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ClassProvider, ExceptionHandler, ExistingProvider, FactoryProvider, NgModule, NgZone, PlatformRef, RootRenderer, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
-
+import {APP_INITIALIZER, ApplicationModule, ClassProvider, ErrorHandler, ExistingProvider, FactoryProvider, NgModule, NgZone, OpaqueToken, PlatformRef, ReflectiveInjector, RootRenderer, TypeProvider, ValueProvider, assertPlatform, createPlatform, createPlatformFactory, getPlatform, platformCore} from '@angular/core';
 import {BROWSER_SANITIZATION_PROVIDERS} from './browser';
 import {print} from './facade/lang';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
@@ -23,18 +22,6 @@ import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 
 
 /**
- * Logger for web workers.
- *
- * @experimental
- */
-export class PrintLogger {
-  log = print;
-  logError = print;
-  logGroup = print;
-  logGroupEnd() {}
-}
-
-/**
  * @experimental
  */
 export const platformWorkerApp = createPlatformFactory(platformCore, 'workerApp');
@@ -44,8 +31,8 @@ export const platformWorkerApp = createPlatformFactory(platformCore, 'workerApp'
  *
  * @experimental
  */
-export function exceptionHandler(): ExceptionHandler {
-  return new ExceptionHandler(new PrintLogger());
+export function errorHandler(): ErrorHandler {
+  return new ErrorHandler();
 }
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
@@ -89,7 +76,7 @@ export function setupWebWorker(): void {
     {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
     WebWorkerRootRenderer, {provide: RootRenderer, useExisting: WebWorkerRootRenderer},
     {provide: ON_WEB_WORKER, useValue: true}, RenderStore,
-    {provide: ExceptionHandler, useFactory: exceptionHandler, deps: []},
+    {provide: ErrorHandler, useFactory: errorHandler, deps: []},
     {provide: MessageBus, useFactory: createMessageBus, deps: [NgZone]},
     {provide: APP_INITIALIZER, useValue: setupWebWorker, multi: true}
   ],

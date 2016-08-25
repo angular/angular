@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, Input, IterableDiffer, IterableDiffers, OnChanges, SimpleChanges, TemplateRef, TrackByFn, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, Input, IterableDiffer, IterableDiffers, OnChanges, SimpleChanges, TemplateRef, TrackByFn, ViewContainerRef} from '@angular/core';
 
 import {getTypeNameForDebugging, isBlank, isPresent} from '../facade/lang';
 
@@ -112,7 +112,7 @@ export class NgFor implements DoCheck, OnChanges {
         try {
           this._differ = this._iterableDiffers.find(value).create(this._cdr, this.ngForTrackBy);
         } catch (e) {
-          throw new BaseException(
+          throw new Error(
               `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
         }
       }

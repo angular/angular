@@ -8,15 +8,13 @@
 
 import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ChangeDetectorRef, CompilerFactory, Component, Injector, NgModule, PlatformRef, Type} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
-import {Console} from '@angular/core/src/console';
+import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {ExceptionHandler} from '../src/facade/exception_handler';
-import {BaseException} from '../src/facade/exceptions';
 import {TestBed, async, inject, withModule} from '../testing';
 
 import {SpyChangeDetectorRef} from './spies';
@@ -27,14 +25,14 @@ class SomeComponent {
 
 export function main() {
   describe('bootstrap', () => {
-    var errorLogger: _ArrayLogger;
+    var mockConsole: MockConsole;
     var fakeDoc: Document;
 
     beforeEach(() => {
       fakeDoc = getDOM().createHtmlDocument();
       const el = getDOM().createElement('comp', fakeDoc);
       getDOM().appendChild(fakeDoc.body, el);
-      errorLogger = new _ArrayLogger();
+      mockConsole = new MockConsole();
     });
 
     type CreateModuleOptions = {providers?: any[], ngDoBootstrap?: any, bootstrap?: any[]};
@@ -48,12 +46,13 @@ export function main() {
       } else {
         options = providersOrOptions || {};
       }
+      const errorHandler = new ErrorHandler(false);
+      errorHandler._console = mockConsole as any;
 
       @NgModule({
         providers: [
-          {provide: Console, useValue: new _MockConsole()},
-          {provide: ExceptionHandler, useValue: new ExceptionHandler(errorLogger, false)},
-          {provide: DOCUMENT, useValue: fakeDoc}, options.providers || []
+          {provide: ErrorHandler, useValue: errorHandler}, {provide: DOCUMENT, useValue: fakeDoc},
+          options.providers || []
         ],
         imports: [BrowserModule],
         declarations: [SomeComponent],
@@ -153,7 +152,7 @@ export function main() {
                  // we don't have an injector and therefore no way of
                  // getting the exception handler. So
                  // the error is only rethrown but not logged via the exception handler.
-                 expect(errorLogger.res).toEqual([]);
+                 expect(mockConsole.res).toEqual([]);
                });
          }));
 
@@ -165,7 +164,7 @@ export function main() {
                ]))
                .then(() => expect(false).toBe(true), (e) => {
                  expect(e).toBe('Test');
-                 expect(errorLogger.res).toEqual(['EXCEPTION: Test']);
+                 expect(mockConsole.res).toEqual(['EXCEPTION: Test']);
                });
          }));
 
@@ -206,7 +205,7 @@ export function main() {
                  const expectedErrMsg =
                      `The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
                  expect(e.message).toEqual(expectedErrMsg);
-                 expect(errorLogger.res).toEqual(['EXCEPTION: ' + expectedErrMsg]);
+                 expect(mockConsole.res[0]).toEqual('EXCEPTION: ' + expectedErrMsg);
                });
          }));
     });
@@ -243,7 +242,7 @@ export function main() {
            // we don't have an injector and therefore no way of
            // getting the exception handler. So
            // the error is only rethrown but not logged via the exception handler.
-           expect(errorLogger.res).toEqual([]);
+           expect(mockConsole.res).toEqual([]);
          }));
 
       it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
@@ -255,7 +254,7 @@ export function main() {
            defaultPlatform.bootstrapModuleFactory(moduleFactory)
                .then(() => expect(false).toBe(true), (e) => {
                  expect(e).toBe('Test');
-                 expect(errorLogger.res).toEqual(['EXCEPTION: Test']);
+                 expect(mockConsole.res).toEqual(['EXCEPTION: Test']);
                });
          }));
     });
@@ -266,15 +265,8 @@ export function main() {
 class MyComp6 {
 }
 
-class _ArrayLogger {
+class MockConsole {
   res: any[] = [];
   log(s: any): void { this.res.push(s); }
-  logError(s: any): void { this.res.push(s); }
-  logGroup(s: any): void { this.res.push(s); }
-  logGroupEnd(){};
-}
-
-class _MockConsole implements Console {
-  log(message: string) {}
-  warn(message: string) {}
+  error(s: any): void { this.res.push(s); }
 }

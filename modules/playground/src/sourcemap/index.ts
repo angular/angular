@@ -7,7 +7,6 @@
  */
 
 import {Component, NgModule} from '@angular/core';
-import {BaseException} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -17,7 +16,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
            <button class="errorButton" (click)="createError()">create error</button>`
 })
 export class ErrorComponent {
-  createError(): void { throw new BaseException('Sourcemap test'); }
+  createError(): void { throw new Error('Sourcemap test'); }
 }
 
 @NgModule({declarations: [ErrorComponent], bootstrap: [ErrorComponent], imports: [BrowserModule]})

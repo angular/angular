@@ -9,7 +9,7 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {StringWrapper, isBlank, isStringMap} from '../facade/lang';
 import {NgLocalization, getPluralCategory} from '../localization';
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 const _INTERPOLATION_REGEXP: RegExp = /#/g;
 
@@ -58,7 +58,7 @@ export class I18nPluralPipe implements PipeTransform {
     if (isBlank(value)) return '';
 
     if (!isStringMap(pluralMap)) {
-      throw new InvalidPipeArgumentException(I18nPluralPipe, pluralMap);
+      throw new InvalidPipeArgumentError(I18nPluralPipe, pluralMap);
     }
 
     const key = getPluralCategory(value, Object.keys(pluralMap), this._localization);

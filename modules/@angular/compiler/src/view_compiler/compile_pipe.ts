@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {CompilePipeMetadata} from '../compile_metadata';
 import {isBlank, isPresent} from '../facade/lang';
@@ -86,7 +85,7 @@ function _findPipeMeta(view: CompileView, name: string): CompilePipeMetadata {
     }
   }
   if (isBlank(pipeMeta)) {
-    throw new BaseException(
+    throw new Error(
         `Illegal state: Could not find pipe ${name} although the parser should have detected this error!`);
   }
   return pipeMeta;

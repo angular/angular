@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 import {PromiseObservable} from 'rxjs/observable/PromiseObservable';
 
 import {composeAsyncValidators, composeValidators} from './directives/shared';
@@ -645,13 +644,13 @@ export class FormGroup extends AbstractControl {
   /** @internal */
   _throwIfControlMissing(name: string): void {
     if (!Object.keys(this.controls).length) {
-      throw new BaseException(`
+      throw new Error(`
         There are no form controls registered with this group yet.  If you're using ngModel,
         you may want to check next tick (e.g. use setTimeout).
       `);
     }
     if (!this.controls[name]) {
-      throw new BaseException(`Cannot find form control with name: ${name}.`);
+      throw new Error(`Cannot find form control with name: ${name}.`);
     }
   }
 
@@ -710,7 +709,7 @@ export class FormGroup extends AbstractControl {
   _checkAllValuesPresent(value: any): void {
     this._forEachChild((control: AbstractControl, name: string) => {
       if (value[name] === undefined) {
-        throw new BaseException(`Must supply a value for form control with name: '${name}'.`);
+        throw new Error(`Must supply a value for form control with name: '${name}'.`);
       }
     });
   }
@@ -817,13 +816,13 @@ export class FormArray extends AbstractControl {
   /** @internal */
   _throwIfControlMissing(index: number): void {
     if (!this.controls.length) {
-      throw new BaseException(`
+      throw new Error(`
         There are no form controls registered with this array yet.  If you're using ngModel,
         you may want to check next tick (e.g. use setTimeout).
       `);
     }
     if (!this.at(index)) {
-      throw new BaseException(`Cannot find form control at index ${index}`);
+      throw new Error(`Cannot find form control at index ${index}`);
     }
   }
 
@@ -852,7 +851,7 @@ export class FormArray extends AbstractControl {
   _checkAllValuesPresent(value: any): void {
     this._forEachChild((control: AbstractControl, i: number) => {
       if (value[i] === undefined) {
-        throw new BaseException(`Must supply a value for form control at index: ${i}.`);
+        throw new Error(`Must supply a value for form control at index: ${i}.`);
       }
     });
   }

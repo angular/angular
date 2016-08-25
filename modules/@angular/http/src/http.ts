@@ -9,7 +9,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
-import {makeTypeError} from '../src/facade/exceptions';
 import {isPresent, isString} from '../src/facade/lang';
 
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
@@ -125,7 +124,7 @@ export class Http {
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
     } else {
-      throw makeTypeError('First argument must be a url string or Request instance.');
+      throw new Error('First argument must be a url string or Request instance.');
     }
     return responseObservable;
   }
@@ -229,11 +228,11 @@ export class Jsonp extends Http {
     }
     if (url instanceof Request) {
       if (url.method !== RequestMethod.Get) {
-        makeTypeError('JSONP requests must use GET request method.');
+        throw new Error('JSONP requests must use GET request method.');
       }
       responseObservable = httpRequest(this._backend, url);
     } else {
-      throw makeTypeError('First argument must be a url string or Request instance.');
+      throw new Error('First argument must be a url string or Request instance.');
     }
     return responseObservable;
   }

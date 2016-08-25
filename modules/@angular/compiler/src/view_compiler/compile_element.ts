@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMap, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';

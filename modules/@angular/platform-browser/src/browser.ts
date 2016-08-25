@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation} from '@angular/common';
-import {ApplicationModule, BaseException, ClassProvider, ExceptionHandler, ExistingProvider, FactoryProvider, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Sanitizer, SkipSelf, Testability, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {ApplicationModule, ClassProvider, ErrorHandler, ExistingProvider, FactoryProvider, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Sanitizer, SkipSelf, Testability, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
 
 import {wtfInit} from '../core_private';
 import {AnimationDriver} from '../src/dom/animation_driver';
@@ -55,8 +55,8 @@ export function initDomAdapter() {
   BrowserGetTestability.init();
 }
 
-export function _exceptionHandler(): ExceptionHandler {
-  return new ExceptionHandler(getDOM());
+export function errorHandler(): ErrorHandler {
+  return new ErrorHandler();
 }
 
 export function _document(): any {
@@ -77,8 +77,7 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
  */
 @NgModule({
   providers: [
-    BROWSER_SANITIZATION_PROVIDERS,
-    {provide: ExceptionHandler, useFactory: _exceptionHandler, deps: []},
+    BROWSER_SANITIZATION_PROVIDERS, {provide: ErrorHandler, useFactory: errorHandler, deps: []},
     {provide: DOCUMENT, useFactory: _document, deps: []},
     {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
@@ -95,7 +94,7 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
 export class BrowserModule {
   constructor(@Optional() @SkipSelf() parentModule: BrowserModule) {
     if (parentModule) {
-      throw new BaseException(
+      throw new Error(
           `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`);
     }
   }

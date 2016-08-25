@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {isBlank, isPresent} from '../facade/lang';
@@ -28,7 +27,7 @@ export function getPropertyInView(
       viewProp = viewProp.prop('parent');
     }
     if (currView !== definedView) {
-      throw new BaseException(
+      throw new Error(
           `Internal error: Could not calculate a property in a parent view: ${property}`);
     }
     if (property instanceof o.ReadPropExpr) {
@@ -86,7 +85,7 @@ export function createPureProxy(
   var pureProxyId =
       argCount < Identifiers.pureProxies.length ? Identifiers.pureProxies[argCount] : null;
   if (isBlank(pureProxyId)) {
-    throw new BaseException(`Unsupported number of argument for pure functions: ${argCount}`);
+    throw new Error(`Unsupported number of argument for pure functions: ${argCount}`);
   }
   view.createMethod.addStmt(
       o.THIS_EXPR.prop(pureProxyProp.name).set(o.importExpr(pureProxyId).callFn([fn])).toStmt());
