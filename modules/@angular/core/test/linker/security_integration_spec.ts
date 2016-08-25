@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '@angular/core';
 import {Component} from '@angular/core/src/metadata';
 import {TestBed, getTestBed} from '@angular/core/testing';
-import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
@@ -39,19 +40,37 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
     afterEach(() => { getDOM().log = originalLog; });
 
+    describe('events', () => {
+      it('should disallow binding to attr.on*', () => {
+        const template = `<div [attr.onclick]="ctxProp"></div>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+        try {
+          TestBed.createComponent(SecuredComponent);
+          throw 'Should throw';
+        } catch (e) {
+          expect(e.message).toContain(
+              `Template parse errors:\n` +
+              `Binding to event attribute 'onclick' is disallowed ` +
+              `for security reasons, please use (click)=... `);
+        }
+      });
 
-    it('should disallow binding on*', () => {
-      const template = `<div [attr.onclick]="ctxProp"></div>`;
-      TestBed.overrideComponent(SecuredComponent, {set: {template}});
-      try {
-        TestBed.createComponent(SecuredComponent);
-        throw 'Should throw';
-      } catch (e) {
-        expect(e.message).toContain(
-            `Template parse errors:\n` +
-            `Binding to event attribute 'onclick' is disallowed ` +
-            `for security reasons, please use (click)=... `);
-      }
+      it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
+        const template = `<div [onclick]="ctxProp"></div>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
+          schemas: [NO_ERRORS_SCHEMA]
+        });
+        ;
+        try {
+          TestBed.createComponent(SecuredComponent);
+          throw 'Should throw';
+        } catch (e) {
+          expect(e.message).toContain(
+              `Template parse errors:\n` +
+              `Binding to event attribute 'onclick' is disallowed ` +
+              `for security reasons, please use (click)=... `);
+        }
+      });
     });
 
     describe('safe HTML values', function() {

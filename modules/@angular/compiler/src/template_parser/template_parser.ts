@@ -854,6 +854,7 @@ class TemplateParseVisitor implements html.Visitor {
         boundPropertyName = this._schemaRegistry.getMappedPropName(partValue);
         securityContext = this._schemaRegistry.securityContext(elementName, boundPropertyName);
         bindingType = PropertyBindingType.Property;
+        this._assertNoEventBinding(boundPropertyName, sourceSpan);
         if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName, this._schemas)) {
           let errorMsg =
               `Can't bind to '${boundPropertyName}' since it isn't a known property of '${elementName}'.`;
@@ -868,12 +869,7 @@ class TemplateParseVisitor implements html.Visitor {
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
-        if (boundPropertyName.toLowerCase().startsWith('on')) {
-          this._reportError(
-              `Binding to event attribute '${boundPropertyName}' is disallowed ` +
-                  `for security reasons, please use (${boundPropertyName.slice(2)})=...`,
-              sourceSpan);
-        }
+        this._assertNoEventBinding(boundPropertyName, sourceSpan);
         // NB: For security purposes, use the mapped property name, not the attribute name.
         const mapPropName = this._schemaRegistry.getMappedPropName(boundPropertyName);
         securityContext = this._schemaRegistry.securityContext(elementName, mapPropName);
@@ -906,6 +902,14 @@ class TemplateParseVisitor implements html.Visitor {
         boundPropertyName, bindingType, securityContext, ast, unit, sourceSpan);
   }
 
+  private _assertNoEventBinding(propName: string, sourceSpan: ParseSourceSpan): void {
+    if (propName.toLowerCase().startsWith('on')) {
+      this._reportError(
+          `Binding to event attribute '${propName}' is disallowed ` +
+              `for security reasons, please use (${propName.slice(2)})=...`,
+          sourceSpan, ParseErrorLevel.FATAL);
+    }
+  }
 
   private _findComponentDirectiveNames(directives: DirectiveAst[]): string[] {
     const componentTypeNames: string[] = [];
