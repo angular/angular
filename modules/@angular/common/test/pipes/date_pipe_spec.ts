@@ -20,7 +20,7 @@ export function main() {
 
     beforeEach(() => {
       date = DateWrapper.create(2015, 6, 15, 9, 3, 1);
-      pipe = new DatePipe();
+      pipe = new DatePipe('en-US');
     });
 
     it('should be marked as pure',
