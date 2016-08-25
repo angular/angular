@@ -11,7 +11,7 @@ describe('MdTooltip', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTooltipModule],
+      imports: [MdTooltipModule.forRoot()],
       declarations: [BasicTooltipDemo],
       providers: [
         {provide: OverlayContainer, useFactory: () => {

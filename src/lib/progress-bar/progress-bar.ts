@@ -86,12 +86,10 @@ function clamp(v: number, min = 0, max = 100) {
   return Math.max(min, Math.min(max, v));
 }
 
-/** @deprecated */
-export const MD_PROGRESS_BAR_DIRECTIVES = [MdProgressBar];
 
 @NgModule({
   imports: [CommonModule],
-  exports: MD_PROGRESS_BAR_DIRECTIVES,
-  declarations: MD_PROGRESS_BAR_DIRECTIVES,
+  exports: [MdProgressBar],
+  declarations: [MdProgressBar],
 })
 export class MdProgressBarModule { }

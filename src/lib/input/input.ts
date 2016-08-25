@@ -307,13 +307,10 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   }
 }
 
-/** @deprecated */
-export const MD_INPUT_DIRECTIVES = [MdPlaceholder, MdInput, MdHint];
-
 
 @NgModule({
-  declarations: MD_INPUT_DIRECTIVES,
+  declarations: [MdPlaceholder, MdInput, MdHint],
   imports: [CommonModule, FormsModule],
-  exports: MD_INPUT_DIRECTIVES,
+  exports: [MdPlaceholder, MdInput, MdHint],
 })
 export class MdInputModule { }

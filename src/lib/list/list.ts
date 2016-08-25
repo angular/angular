@@ -70,13 +70,10 @@ export class MdListItem implements AfterContentInit {
   }
 }
 
-/** @deprecated */
-export const MD_LIST_DIRECTIVES = [MdList, MdListDivider, MdListItem, MdListAvatar];
-
 
 @NgModule({
   imports: [MdLineModule],
-  exports: [MD_LIST_DIRECTIVES, MdLineModule],
-  declarations: MD_LIST_DIRECTIVES,
+  exports: [MdList, MdListItem, MdListDivider, MdListAvatar, MdLineModule],
+  declarations: [MdList, MdListItem, MdListDivider, MdListAvatar],
 })
 export class MdListModule { }

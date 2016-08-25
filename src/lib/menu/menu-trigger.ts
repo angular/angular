@@ -15,7 +15,6 @@ import {
     Overlay,
     OverlayState,
     OverlayRef,
-    OVERLAY_PROVIDERS,
     TemplatePortal
 } from '@angular2-material/core/core';
 import {
@@ -33,7 +32,6 @@ import {
 @Directive({
   selector: '[md-menu-trigger-for]',
   host: {'aria-haspopup': 'true'},
-  providers: [OVERLAY_PROVIDERS],
   exportAs: 'mdMenuTrigger'
 })
 export class MdMenuTrigger implements AfterViewInit, OnDestroy {

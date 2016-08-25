@@ -1,5 +1,6 @@
 import {
     NgModule,
+    ModuleWithProviders,
     Component,
     Directive,
     Input,
@@ -15,6 +16,7 @@ import {
   ComponentPortal,
   OverlayConnectionPosition,
   OriginConnectionPosition,
+  OVERLAY_PROVIDERS,
 } from '@angular2-material/core/core';
 
 export type TooltipPosition = 'before' | 'after' | 'above' | 'below';
@@ -188,14 +190,18 @@ export class TooltipComponent {
   message: string;
 }
 
-/** @deprecated */
-export const MD_TOOLTIP_DIRECTIVES = [MdTooltip];
-
 
 @NgModule({
   imports: [OverlayModule],
-  exports: [MD_TOOLTIP_DIRECTIVES, TooltipComponent],
-  declarations: [MD_TOOLTIP_DIRECTIVES, TooltipComponent],
+  exports: [MdTooltip, TooltipComponent],
+  declarations: [MdTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
 })
-export class MdTooltipModule { }
+export class MdTooltipModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdTooltipModule,
+      providers: OVERLAY_PROVIDERS,
+    };
+  }
+}

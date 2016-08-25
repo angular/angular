@@ -13,6 +13,7 @@ import {
   ViewEncapsulation,
   forwardRef,
   NgModule,
+  ModuleWithProviders,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -420,14 +421,16 @@ export class MdRadioButton implements OnInit {
   }
 }
 
-/** @deprecated */
-export const MD_RADIO_DIRECTIVES = [MdRadioGroup, MdRadioButton];
-
 
 @NgModule({
-  exports: MD_RADIO_DIRECTIVES,
-  declarations: MD_RADIO_DIRECTIVES,
-  providers: [MdUniqueSelectionDispatcher]
+  exports: [MdRadioGroup, MdRadioButton],
+  declarations: [MdRadioGroup, MdRadioButton],
 })
 export class MdRadioModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdRadioModule,
+      providers: [MdUniqueSelectionDispatcher],
+    };
+  }
 }

@@ -152,13 +152,9 @@ export class MdGridList implements OnInit, AfterContentChecked {
 }
 
 
-/** @deprecated */
-export const MD_GRID_LIST_DIRECTIVES: any[] = [MdGridList, MdGridTile, MdGridTileText];
-
-
 @NgModule({
   imports: [MdLineModule],
-  exports: [MD_GRID_LIST_DIRECTIVES, MdLineModule],
-  declarations: MD_GRID_LIST_DIRECTIVES,
+  exports: [MdGridList, MdGridTile, MdGridTileText, MdLineModule],
+  declarations: [MdGridList, MdGridTile, MdGridTileText],
 })
 export class MdGridListModule { }

@@ -1,5 +1,6 @@
 import {
     NgModule,
+    ModuleWithProviders,
     Component,
     ContentChildren,
     Directive,
@@ -385,18 +386,17 @@ export class MdButtonToggle implements OnInit {
   }
 }
 
-/** @deprecated */
-export const MD_BUTTON_TOGGLE_DIRECTIVES = [
-  MdButtonToggleGroup,
-  MdButtonToggleGroupMultiple,
-  MdButtonToggle
-];
-
 
 @NgModule({
   imports: [FormsModule],
-  exports: MD_BUTTON_TOGGLE_DIRECTIVES,
-  declarations: MD_BUTTON_TOGGLE_DIRECTIVES,
-  providers: [MdUniqueSelectionDispatcher],
+  exports: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
+  declarations: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
 })
-export class MdButtonToggleModule { }
+export class MdButtonToggleModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdButtonToggleModule,
+      providers: [MdUniqueSelectionDispatcher]
+    };
+  }
+}

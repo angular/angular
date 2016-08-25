@@ -10,7 +10,6 @@ import {
     Overlay,
     OverlayState,
     OverlayOrigin,
-    OVERLAY_PROVIDERS,
     ComponentPortal,
     Portal,
     TemplatePortalDirective,
@@ -22,7 +21,6 @@ import {
   selector: 'overlay-demo',
   templateUrl: 'overlay-demo.html',
   styleUrls: ['overlay-demo.css'],
-  providers: [OVERLAY_PROVIDERS],
   encapsulation: ViewEncapsulation.None,
 })
 export class OverlayDemo {

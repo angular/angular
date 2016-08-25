@@ -51,12 +51,9 @@ export class MdToolbar {
 
 }
 
-/** @deprecated */
-export const MD_TOOLBAR_DIRECTIVES = [MdToolbar, MdToolbarRow];
-
 
 @NgModule({
-  exports: MD_TOOLBAR_DIRECTIVES,
-  declarations: MD_TOOLBAR_DIRECTIVES,
+  exports: [MdToolbar, MdToolbarRow],
+  declarations: [MdToolbar, MdToolbarRow],
 })
 export class MdToolbarModule { }

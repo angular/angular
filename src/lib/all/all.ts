@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {NgModule, ModuleWithProviders} from '@angular/core';
 import {MdButtonToggleModule} from '@angular2-material/button-toggle/button-toggle';
 import {MdButtonModule} from '@angular2-material/button/button';
 import {MdCheckboxModule} from '@angular2-material/checkbox/checkbox';
@@ -52,8 +52,45 @@ const MATERIAL_MODULES = [
 ];
 
 @NgModule({
-  imports: MATERIAL_MODULES,
+  imports: [
+    MdButtonModule,
+    MdCardModule,
+    MdCheckboxModule,
+    MdGridListModule,
+    MdInputModule,
+    MdListModule,
+    MdProgressBarModule,
+    MdProgressCircleModule,
+    MdRippleModule,
+    MdSidenavModule,
+    MdSliderModule,
+    MdSlideToggleModule,
+    MdTabsModule,
+    MdToolbarModule,
+    PortalModule,
+    RtlModule,
+
+    // These modules include providers.
+    MdButtonToggleModule.forRoot(),
+    MdDialogModule.forRoot(),
+    MdIconModule.forRoot(),
+    MdMenuModule.forRoot(),
+    MdRadioModule.forRoot(),
+    MdTooltipModule.forRoot(),
+    OverlayModule.forRoot(),
+  ],
   exports: MATERIAL_MODULES,
   providers: [MdLiveAnnouncer]
 })
-export class MaterialModule { }
+export class MaterialRootModule { }
+
+
+@NgModule({
+  imports: MATERIAL_MODULES,
+  exports: MATERIAL_MODULES,
+})
+export class MaterialModule {
+  static forRoot(): ModuleWithProviders {
+    return {ngModule: MaterialRootModule};
+  }
+}

@@ -7,7 +7,7 @@ describe('MdMenu', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdMenuModule],
+      imports: [MdMenuModule.forRoot()],
       declarations: [TestMenu],
     });
 

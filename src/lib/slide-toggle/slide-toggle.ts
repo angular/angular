@@ -9,6 +9,7 @@ import {
   EventEmitter,
   AfterContentInit,
   NgModule,
+  ModuleWithProviders,
 } from '@angular/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {
@@ -298,16 +299,17 @@ class SlideToggleRenderer {
 
 }
 
-/** @deprecated */
-export const MD_SLIDE_TOGGLE_DIRECTIVES = [MdSlideToggle];
-
 
 @NgModule({
   imports: [FormsModule],
-  exports: MD_SLIDE_TOGGLE_DIRECTIVES,
-  declarations: MD_SLIDE_TOGGLE_DIRECTIVES,
-  providers: [
-    {provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig},
-  ],
+  exports: [MdSlideToggle],
+  declarations: [MdSlideToggle],
 })
-export class MdSlideToggleModule { }
+export class MdSlideToggleModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdSlideToggleModule,
+      providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig}]
+    };
+  }
+}

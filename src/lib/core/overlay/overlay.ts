@@ -82,7 +82,6 @@ export class Overlay {
   }
 }
 
-
 /** Providers for Overlay and its related injectables. */
 export const OVERLAY_PROVIDERS = [
   ViewportRuler,
@@ -90,4 +89,3 @@ export const OVERLAY_PROVIDERS = [
   Overlay,
   OverlayContainer,
 ];
-

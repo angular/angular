@@ -1,4 +1,4 @@
-import {NgModule, Injector, ComponentRef, Injectable} from '@angular/core';
+import {NgModule, ModuleWithProviders, Injector, ComponentRef, Injectable} from '@angular/core';
 import {
   Overlay,
   OverlayModule,
@@ -6,6 +6,7 @@ import {
   OverlayRef,
   OverlayState,
   ComponentPortal,
+  OVERLAY_PROVIDERS,
 } from '@angular2-material/core/core';
 import {ComponentType} from '@angular2-material/core/overlay/generic-component-type';
 import {MdDialogConfig} from './dialog-config';
@@ -122,6 +123,12 @@ export class MdDialog {
   exports: [MdDialogContainer],
   declarations: [MdDialogContainer],
   entryComponents: [MdDialogContainer],
-  providers: [MdDialog],
 })
-export class MdDialogModule { }
+export class MdDialogModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdDialogModule,
+      providers: [MdDialog, OVERLAY_PROVIDERS],
+    };
+  }
+}

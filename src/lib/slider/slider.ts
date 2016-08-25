@@ -1,5 +1,6 @@
 import {
   NgModule,
+  ModuleWithProviders,
   Component,
   ElementRef,
   HostBinding,
@@ -449,16 +450,20 @@ export class SliderRenderer {
   }
 }
 
-/** @deprecated */
-export const MD_SLIDER_DIRECTIVES = [MdSlider];
-
 
 @NgModule({
   imports: [FormsModule],
-  exports: MD_SLIDER_DIRECTIVES,
-  declarations: MD_SLIDER_DIRECTIVES,
+  exports: [MdSlider],
+  declarations: [MdSlider],
   providers: [
     {provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig},
   ],
 })
-export class MdSliderModule { }
+export class MdSliderModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdSliderModule,
+      providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig}]
+    };
+  }
+}

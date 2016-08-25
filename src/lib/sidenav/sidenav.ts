@@ -387,13 +387,9 @@ export class MdSidenavLayout implements AfterContentInit {
 }
 
 
-/** @deprecated */
-export const MD_SIDENAV_DIRECTIVES = [MdSidenavLayout, MdSidenav];
-
-
 @NgModule({
   imports: [CommonModule],
-  exports: MD_SIDENAV_DIRECTIVES,
-  declarations: MD_SIDENAV_DIRECTIVES,
+  exports: [MdSidenavLayout, MdSidenav],
+  declarations: [MdSidenavLayout, MdSidenav],
 })
 export class MdSidenavModule { }

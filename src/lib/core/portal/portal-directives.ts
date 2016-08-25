@@ -102,11 +102,9 @@ export class PortalHostDirective extends BasePortalHost {
   }
 }
 
-export const PORTAL_DIRECTIVES = [TemplatePortalDirective, PortalHostDirective];
-
 
 @NgModule({
-  exports: PORTAL_DIRECTIVES,
-  declarations: PORTAL_DIRECTIVES,
+  exports: [TemplatePortalDirective, PortalHostDirective],
+  declarations: [TemplatePortalDirective, PortalHostDirective],
 })
 export class PortalModule { }

@@ -304,12 +304,9 @@ export class MdCheckbox implements ControlValueAccessor {
   }
 }
 
-/** @deprecated */
-export const MD_CHECKBOX_DIRECTIVES = [MdCheckbox];
-
 
 @NgModule({
-  exports: MD_CHECKBOX_DIRECTIVES,
-  declarations: MD_CHECKBOX_DIRECTIVES,
+  exports: [MdCheckbox],
+  declarations: [MdCheckbox],
 })
 export class MdCheckboxModule { }

@@ -168,12 +168,9 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
   // TODO: Reactivate the background div if the user drags out and back in.
 }
 
-/** @deprecated */
-export const MD_RIPPLE_DIRECTIVES = [MdRipple];
-
 
 @NgModule({
-  exports: MD_RIPPLE_DIRECTIVES,
-  declarations: MD_RIPPLE_DIRECTIVES,
+  exports: [MdRipple],
+  declarations: [MdRipple],
 })
 export class MdRippleModule { }

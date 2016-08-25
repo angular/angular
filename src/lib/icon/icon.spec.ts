@@ -39,7 +39,7 @@ describe('MdIcon', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdIconModule],
+      imports: [MdIconModule.forRoot()],
       declarations: [
         MdIconLigatureTestApp,
         MdIconLigatureWithAriaBindingTestApp,

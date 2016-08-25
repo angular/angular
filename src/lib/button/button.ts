@@ -156,13 +156,9 @@ export class MdAnchor extends MdButton {
 }
 
 
-/** @deprecated */
-export const MD_BUTTON_DIRECTIVES: any[] = [MdButton, MdAnchor];
-
-
 @NgModule({
   imports: [CommonModule, MdRippleModule],
-  exports: MD_BUTTON_DIRECTIVES,
-  declarations: MD_BUTTON_DIRECTIVES,
+  exports: [MdButton, MdAnchor],
+  declarations: [MdButton, MdAnchor],
 })
 export class MdButtonModule { }

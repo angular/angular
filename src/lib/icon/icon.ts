@@ -1,5 +1,6 @@
 import {
     NgModule,
+    ModuleWithProviders,
     ChangeDetectionStrategy,
     Component,
     ElementRef,
@@ -225,14 +226,17 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
   }
 }
 
-/** @deprecated */
-export const MD_ICON_DIRECTIVES = [MdIcon];
-
 
 @NgModule({
   imports: [HttpModule],
-  exports: MD_ICON_DIRECTIVES,
-  declarations: MD_ICON_DIRECTIVES,
-  providers: [MdIconRegistry],
+  exports: [MdIcon],
+  declarations: [MdIcon],
 })
-export class MdIconModule { }
+export class MdIconModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdIconModule,
+      providers: [MdIconRegistry],
+    };
+  }
+}

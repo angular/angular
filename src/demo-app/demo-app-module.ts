@@ -39,8 +39,8 @@ import {TabsDemo} from './tabs/tab-group-demo';
     BrowserModule,
     FormsModule,
     HttpModule,
-    MaterialModule,
-    RouterModule.forRoot(DEMO_APP_ROUTES)
+    RouterModule.forRoot(DEMO_APP_ROUTES),
+    MaterialModule.forRoot(),
   ],
   declarations: [
     BaselineDemo,

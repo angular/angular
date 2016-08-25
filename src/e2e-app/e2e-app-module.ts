@@ -13,8 +13,8 @@ import {E2E_APP_ROUTES} from './e2e-app/routes';
 @NgModule({
   imports: [
     BrowserModule,
-    MaterialModule,
     RouterModule.forRoot(E2E_APP_ROUTES),
+    MaterialModule.forRoot(),
   ],
   declarations: [
     E2EApp,
