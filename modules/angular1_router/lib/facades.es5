@@ -286,8 +286,6 @@ var StringWrapper = {
 // I think it's too heavy to ask 1.x users to bring in Rx for the router...
 function EventEmitter() {}
 
-var BaseException = Error;
-
 var ObservableWrapper = {
   callNext: function(ob, val) {
     ob.fn(val);

@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {FormErrorExamples as Examples} from './error_examples';
 
 export class ReactiveErrors {
   static controlParentException(): void {
-    throw new BaseException(
+    throw new Error(
         `formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
        directive and pass it an existing FormGroup instance (you can create one in your class).
 
@@ -22,7 +21,7 @@ export class ReactiveErrors {
   }
 
   static ngModelGroupException(): void {
-    throw new BaseException(
+    throw new Error(
         `formControlName cannot be used with an ngModelGroup parent. It is only compatible with parents
        that also have a "form" prefix: formGroupName, formArrayName, or formGroup.
 
@@ -35,7 +34,7 @@ export class ReactiveErrors {
         ${Examples.ngModelGroup}`);
   }
   static missingFormException(): void {
-    throw new BaseException(`formGroup expects a FormGroup instance. Please pass one in.
+    throw new Error(`formGroup expects a FormGroup instance. Please pass one in.
 
        Example:
 
@@ -43,7 +42,7 @@ export class ReactiveErrors {
   }
 
   static groupParentException(): void {
-    throw new BaseException(
+    throw new Error(
         `formGroupName must be used with a parent formGroup directive.  You'll want to add a formGroup
       directive and pass it an existing FormGroup instance (you can create one in your class).
 
@@ -53,7 +52,7 @@ export class ReactiveErrors {
   }
 
   static arrayParentException(): void {
-    throw new BaseException(
+    throw new Error(
         `formArrayName must be used with a parent formGroup directive.  You'll want to add a formGroup
        directive and pass it an existing FormGroup instance (you can create one in your class).
 

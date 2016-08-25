@@ -8,7 +8,6 @@
 
 // ATTENTION: This file will be overwritten with generated code by main()
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
-import {BaseException} from '@angular/core';
 
 import {print} from '../../src/facade/lang';
 import {assetUrl} from '../../src/util';
@@ -16,7 +15,7 @@ import {assetUrl} from '../../src/util';
 import {SimpleJsImportGenerator, codegenExportsVars, codegenStmts} from './output_emitter_util';
 
 export function getExpressions(): any {
-  throw new BaseException('unimplemented');
+  throw new Error('unimplemented');
 }
 
 // Generator

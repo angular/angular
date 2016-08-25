@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
@@ -39,7 +38,7 @@ class _ValueOutputAstTransformer implements ValueTransformer {
     } else if (value instanceof o.Expression) {
       return value;
     } else {
-      throw new BaseException(`Illegal state: Don't now how to compile value ${value}`);
+      throw new Error(`Illegal state: Don't now how to compile value ${value}`);
     }
   }
 }

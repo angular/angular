@@ -6,8 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit,} from '@angular/core/testing/testing_internal';
-import {BaseException, WrappedException, ExceptionHandler} from '../src/exceptions';
+import {WrappedError} from '@angular/core/src/facade/errors';
+import {DebugContext} from '@angular/core/src/linker/debug_context';
+import {ViewWrappedError} from '@angular/core/src/linker/errors';
+
+import {ErrorHandler} from '../src/error_handler';
+
+class MockConsole {
+  res: any[] = [];
+  error(s: any): void { this.res.push(s); }
+}
 
 class _CustomException {
   context = 'some context';
@@ -15,74 +23,78 @@ class _CustomException {
 }
 
 export function main() {
-  describe('ExceptionHandler', () => {
+  function errorToString(error: any) {
+    var logger = new MockConsole();
+    var errorHandler = new ErrorHandler(false);
+    errorHandler._console = logger as any;
+    errorHandler.handleError(error);
+    return logger.res.join('\n');
+  }
+
+  function getStack(error: Error): string {
+    try {
+      throw error;
+    } catch (e) {
+      return e.stack;
+    }
+  }
+
+  describe('ErrorHandler', () => {
     it('should output exception', () => {
-      var e = ExceptionHandler.exceptionToString(new BaseException('message!'));
+      var e = errorToString(new Error('message!'));
       expect(e).toContain('message!');
     });
 
     it('should output stackTrace', () => {
-      var e = ExceptionHandler.exceptionToString(new BaseException('message!'), 'stack!');
-      expect(e).toContain('stack!');
-    });
-
-    it('should join a long stackTrace', () => {
-      var e =
-          ExceptionHandler.exceptionToString(new BaseException('message!'), ['stack1', 'stack2']);
-      expect(e).toContain('stack1');
-      expect(e).toContain('stack2');
-    });
-
-    it('should output reason when present', () => {
-      var e = ExceptionHandler.exceptionToString(new BaseException('message!'), null, 'reason!');
-      expect(e).toContain('reason!');
+      var error = new Error('message!');
+      var stack = getStack(error);
+      var e = errorToString(error);
+      expect(e).toContain(stack);
     });
 
     describe('context', () => {
-      it('should print context', () => {
-        var e = ExceptionHandler.exceptionToString(
-            new WrappedException('message!', null, null, 'context!'));
-        expect(e).toContain('context!');
-      });
-
       it('should print nested context', () => {
-        var original = new WrappedException('message!', null, null, 'context!');
-        var e = ExceptionHandler.exceptionToString(new WrappedException('message', original));
-        expect(e).toContain('context!');
-      });
-
-      it('should not print context when the passed-in exception is not a BaseException', () => {
-        var e = ExceptionHandler.exceptionToString(new _CustomException());
-        expect(e).not.toContain('context');
+        var cause = new Error('message!');
+        var stack = getStack(cause);
+        var context = {
+          source: 'context!',
+          toString() { return 'Context'; }
+        } as any as DebugContext;
+        var original = new ViewWrappedError(cause, context);
+        var e = errorToString(new WrappedError('message', original));
+        expect(e).toEqual(`EXCEPTION: message caused by: Error in context! caused by: message!
+ORIGINAL EXCEPTION: message!
+ORIGINAL STACKTRACE:
+${stack}
+ERROR CONTEXT:
+Context`);
       });
     });
 
     describe('original exception', () => {
-      it('should print original exception message if available (original is BaseException)', () => {
-        var realOriginal = new BaseException('inner');
-        var original = new WrappedException('wrapped', realOriginal);
-        var e =
-            ExceptionHandler.exceptionToString(new WrappedException('wrappedwrapped', original));
-        expect(e).toContain('inner');
+      it('should print original exception message if available (original is Error)', () => {
+        var realOriginal = new Error('inner');
+        var stack = getStack(realOriginal);
+        var original = new WrappedError('wrapped', realOriginal);
+        var e = errorToString(new WrappedError('wrappedwrapped', original));
+        expect(e).toContain(stack);
       });
 
-      it('should print original exception message if available (original is not BaseException)',
-         () => {
-           var realOriginal = new _CustomException();
-           var original = new WrappedException('wrapped', realOriginal);
-           var e =
-               ExceptionHandler.exceptionToString(new WrappedException('wrappedwrapped', original));
-           expect(e).toContain('custom');
-         });
+      it('should print original exception message if available (original is not Error)', () => {
+        var realOriginal = new _CustomException();
+        var original = new WrappedError('wrapped', realOriginal);
+        var e = errorToString(new WrappedError('wrappedwrapped', original));
+        expect(e).toContain('custom');
+      });
     });
 
     describe('original stack', () => {
       it('should print original stack if available', () => {
-        var realOriginal = new BaseException('inner');
-        var original = new WrappedException('wrapped', realOriginal, 'originalStack');
-        var e = ExceptionHandler.exceptionToString(
-            new WrappedException('wrappedwrapped', original, 'wrappedStack'));
-        expect(e).toContain('originalStack');
+        var realOriginal = new Error('inner');
+        var stack = getStack(realOriginal);
+        var original = new WrappedError('wrapped', realOriginal);
+        var e = errorToString(new WrappedError('wrappedwrapped', original));
+        expect(e).toContain(stack);
       });
     });
   });

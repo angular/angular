@@ -11,7 +11,6 @@ var parse5 = require('parse5/index');
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from '../platform_browser_private';
 import {isPresent, isBlank, global, setValueOnPath, DateWrapper} from '../src/facade/lang';
-import {BaseException} from '../src/facade/exceptions';
 import {SelectorMatcher, CssSelector} from '../compiler_private';
 import {Type} from '@angular/core';
 import {ResourceLoader} from '@angular/compiler';
@@ -31,7 +30,7 @@ var defDoc: any /** TODO #9100 */ = null;
 var mapProps = ['attribs', 'x-attribsNamespace', 'x-attribsPrefix'];
 
 function _notImplemented(methodName: any /** TODO #9100 */) {
-  return new BaseException('This method is not implemented in Parse5DomAdapter: ' + methodName);
+  return new Error('This method is not implemented in Parse5DomAdapter: ' + methodName);
 }
 
 /* tslint:disable:requireParameterType */

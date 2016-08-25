@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Inject, Injectable, Optional} from '@angular/core';
+import {Inject, Injectable, Optional} from '@angular/core';
 
 import {isBlank} from '../facade/lang';
 
@@ -53,7 +53,7 @@ export class PathLocationStrategy extends LocationStrategy {
     }
 
     if (isBlank(href)) {
-      throw new BaseException(
+      throw new Error(
           `No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.`);
     }
 

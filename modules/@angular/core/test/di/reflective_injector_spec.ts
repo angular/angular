@@ -12,7 +12,6 @@ import {ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, Ref
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {BaseException} from '../../src/facade/exceptions';
 import {isBlank, isPresent, stringify} from '../../src/facade/lang';
 
 class CustomDependencyMetadata extends DependencyMetadata {}
@@ -20,7 +19,7 @@ class CustomDependencyMetadata extends DependencyMetadata {}
 class Engine {}
 
 class BrokenEngine {
-  constructor() { throw new BaseException('Broken Engine'); }
+  constructor() { throw new Error('Broken Engine'); }
 }
 
 class DashboardSoftware {}
@@ -332,7 +331,7 @@ export function main() {
         } catch (e) {
           expect(e.message).toContain(
               `Error during instantiation of Engine! (${stringify(Car)} -> Engine)`);
-          expect(e.originalException instanceof BaseException).toBeTruthy();
+          expect(e.originalError instanceof Error).toBeTruthy();
           expect(e.causeKey.token).toEqual(Engine);
         }
       });
@@ -364,7 +363,8 @@ export function main() {
           {provide: Engine, useFactory: (() => isBroken ? new BrokenEngine() : new Engine())}
         ]);
 
-        expect(() => injector.get(Car)).toThrowError(new RegExp('Error'));
+        expect(() => injector.get(Car))
+            .toThrowError('Broken Engine: Error during instantiation of Engine! (Car -> Engine).');
 
         isBroken = false;
 

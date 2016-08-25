@@ -7,7 +7,6 @@
  */
 
 import {StringMapWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {isJsObject, looseIdentical, stringify} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -76,7 +75,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     if (!map) {
       map = new Map();
     } else if (!(map instanceof Map || isJsObject(map))) {
-      throw new BaseException(`Error trying to diff '${map}'`);
+      throw new Error(`Error trying to diff '${map}'`);
     }
 
     return this.check(map) ? this : null;

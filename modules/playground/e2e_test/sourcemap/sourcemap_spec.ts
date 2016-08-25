@@ -52,7 +52,7 @@ describe('sourcemaps', function() {
                                 encoding: 'UTF-8'
                               }).split('\n');
       expect(sourceCodeLines[originalPosition.line - 1])
-          .toMatch(/throw new BaseException\(\'Sourcemap test\'\)/);
+          .toMatch(/throw new Error\(\'Sourcemap test\'\)/);
     });
   });
 });

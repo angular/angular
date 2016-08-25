@@ -8,7 +8,6 @@
 
 import {OptionalMetadata, Provider, SkipSelfMetadata} from '../../di';
 import {ListWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {getTypeNameForDebugging, isBlank, isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -87,7 +86,7 @@ export class IterableDiffers {
           // Typically would occur when calling IterableDiffers.extend inside of dependencies passed
           // to
           // bootstrap(), which would override default pipes instead of extending them.
-          throw new BaseException('Cannot extend IterableDiffers without a parent injector');
+          throw new Error('Cannot extend IterableDiffers without a parent injector');
         }
         return IterableDiffers.create(factories, parent);
       },
@@ -101,7 +100,7 @@ export class IterableDiffers {
     if (isPresent(factory)) {
       return factory;
     } else {
-      throw new BaseException(
+      throw new Error(
           `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(iterable)}'`);
     }
   }

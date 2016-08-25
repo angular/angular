@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE, BaseException} from '@angular/core';
+import {AUTO_STYLE} from '@angular/core';
 
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
@@ -86,8 +86,7 @@ function _resolveStyleUnit(
     if (isNumber(val)) {
       unit = 'px';
     } else if (_findDimensionalSuffix(val.toString()).length == 0) {
-      throw new BaseException(
-          'Please provide a CSS unit value for ' + userProvidedProp + ':' + val);
+      throw new Error('Please provide a CSS unit value for ' + userProvidedProp + ':' + val);
     }
   }
   return unit;

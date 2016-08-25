@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 import {MeasureValues} from './measure_values';
 
 /**
@@ -17,9 +16,9 @@ export abstract class Reporter {
     return [{provide: Reporter, useFactory: (delegate) => delegate, deps: [delegateToken]}];
   }
 
-  reportMeasureValues(values: MeasureValues): Promise<any> { throw new BaseException('NYI'); }
+  reportMeasureValues(values: MeasureValues): Promise<any> { throw new Error('NYI'); }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any> {
-    throw new BaseException('NYI');
+    throw new Error('NYI');
   }
 }

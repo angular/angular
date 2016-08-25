@@ -8,7 +8,6 @@
 
 import {OptionalMetadata, Provider, SkipSelfMetadata} from '../../di';
 import {ListWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {isBlank, isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -77,7 +76,7 @@ export class KeyValueDiffers {
           // Typically would occur when calling KeyValueDiffers.extend inside of dependencies passed
           // to
           // bootstrap(), which would override default pipes instead of extending them.
-          throw new BaseException('Cannot extend KeyValueDiffers without a parent injector');
+          throw new Error('Cannot extend KeyValueDiffers without a parent injector');
         }
         return KeyValueDiffers.create(factories, parent);
       },
@@ -91,7 +90,7 @@ export class KeyValueDiffers {
     if (isPresent(factory)) {
       return factory;
     } else {
-      throw new BaseException(`Cannot find a differ supporting object '${kv}'`);
+      throw new Error(`Cannot find a differ supporting object '${kv}'`);
     }
   }
 }

@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE, BaseException} from '@angular/core';
-
 import {ANY_STATE, AnimationOutput, DEFAULT_STATE, EMPTY_STATE} from '../../core_private';
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
@@ -72,7 +70,7 @@ export class AnimationCompiler {
       var errorMessageStr =
           `Animation parsing for ${component.type.name} has failed due to the following errors:`;
       groupedErrors.forEach(error => errorMessageStr += `\n- ${error}`);
-      throw new BaseException(errorMessageStr);
+      throw new Error(errorMessageStr);
     }
 
     animationCompilationCache.set(component, compiledAnimations);

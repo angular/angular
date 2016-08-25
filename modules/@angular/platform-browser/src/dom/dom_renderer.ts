@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Inject, Injectable, OpaqueToken, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {Inject, Injectable, OpaqueToken, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
@@ -79,7 +79,7 @@ export class DomRenderer implements Renderer {
     if (isString(selectorOrNode)) {
       el = getDOM().querySelector(this._rootRenderer.document, selectorOrNode);
       if (isBlank(el)) {
-        throw new BaseException(`The selector "${selectorOrNode}" did not match any elements`);
+        throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
       }
     } else {
       el = selectorOrNode;

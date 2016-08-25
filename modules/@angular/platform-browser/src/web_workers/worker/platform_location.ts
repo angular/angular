@@ -7,7 +7,7 @@
  */
 
 import {LocationChangeListener, PlatformLocation} from '@angular/common';
-import {BaseException, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
@@ -67,11 +67,11 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
               this._location = val;
               return true;
             },
-        (err): boolean => { throw new BaseException(err); });
+        (err): boolean => { throw new Error(err); });
   }
 
   getBaseHrefFromDOM(): string {
-    throw new BaseException(
+    throw new Error(
         'Attempt to get base href from DOM from WebWorker. You must either provide a value for the APP_BASE_HREF token through DI or use the hash location strategy.');
   }
 
@@ -105,7 +105,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
   set pathname(newPath: string) {
     if (this._location === null) {
-      throw new BaseException('Attempt to set pathname before value is obtained from UI');
+      throw new Error('Attempt to set pathname before value is obtained from UI');
     }
 
     this._location.pathname = newPath;

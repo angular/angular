@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityContext} from '@angular/core';
+import {Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityContext} from '@angular/core';
 
 import {Console, MAX_INTERPOLATION_VALUES} from '../../core_private';
 import {CompileDirectiveMetadata, CompilePipeMetadata, CompileTokenMetadata, removeIdentifierDuplicates} from '../compile_metadata';
@@ -107,7 +107,7 @@ export class TemplateParser {
     }
     if (errors.length > 0) {
       const errorString = errors.join('\n');
-      throw new BaseException(`Template parse errors:\n${errorString}`);
+      throw new Error(`Template parse errors:\n${errorString}`);
     }
 
     return result.templateAst;
@@ -236,8 +236,7 @@ class TemplateParseVisitor implements html.Visitor {
       this._checkPipes(ast, sourceSpan);
       if (isPresent(ast) &&
           (<Interpolation>ast.ast).expressions.length > MAX_INTERPOLATION_VALUES) {
-        throw new BaseException(
-            `Only support at most ${MAX_INTERPOLATION_VALUES} interpolation values!`);
+        throw new Error(`Only support at most ${MAX_INTERPOLATION_VALUES} interpolation values!`);
       }
       return ast;
     } catch (e) {

@@ -7,7 +7,7 @@
  */
 
 import {OpaqueToken} from '../di';
-import {BaseException} from '../facade/exceptions';
+import {BaseError} from '../facade/errors';
 import {stringify} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata';
 import {Type} from '../type';
@@ -22,7 +22,7 @@ import {NgModuleFactory} from './ng_module_factory';
  *
  * @stable
  */
-export class ComponentStillLoadingError extends BaseException {
+export class ComponentStillLoadingError extends BaseError {
   constructor(public compType: Type<any>) {
     super(`Can't compile synchronously as ${stringify(compType)} is still being loaded!`);
   }
@@ -41,7 +41,7 @@ export class ModuleWithComponentFactories<T> {
 
 
 function _throwError() {
-  throw new BaseException(`Runtime compiler is not loaded`);
+  throw new Error(`Runtime compiler is not loaded`);
 }
 
 /**

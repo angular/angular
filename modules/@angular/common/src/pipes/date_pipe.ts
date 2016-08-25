@@ -11,8 +11,7 @@ import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {StringMapWrapper} from '../facade/collection';
 import {DateFormatter} from '../facade/intl';
 import {DateWrapper, NumberWrapper, isBlank, isDate, isString} from '../facade/lang';
-
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 
 /**
@@ -102,7 +101,7 @@ export class DatePipe implements PipeTransform {
     if (isBlank(value)) return null;
 
     if (!this.supports(value)) {
-      throw new InvalidPipeArgumentException(DatePipe, value);
+      throw new InvalidPipeArgumentError(DatePipe, value);
     }
 
     if (NumberWrapper.isNumeric(value)) {

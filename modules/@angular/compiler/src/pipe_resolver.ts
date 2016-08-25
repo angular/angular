@@ -10,7 +10,6 @@ import {Injectable, PipeMetadata, Type, resolveForwardRef} from '@angular/core';
 
 import {ReflectorReader, reflector} from '../core_private';
 
-import {BaseException} from './facade/exceptions';
 import {isPresent, stringify} from './facade/lang';
 
 function _isPipeMetadata(type: any): boolean {
@@ -40,7 +39,7 @@ export class PipeResolver {
       }
     }
     if (throwIfNotFound) {
-      throw new BaseException(`No Pipe decorator found on ${stringify(type)}`);
+      throw new Error(`No Pipe decorator found on ${stringify(type)}`);
     }
     return null;
   }

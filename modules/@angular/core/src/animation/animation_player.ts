@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
 import {scheduleMicroTask} from '../facade/lang';
 
 
@@ -26,10 +25,8 @@ export abstract class AnimationPlayer {
   abstract reset(): void;
   abstract setPosition(p: any /** TODO #9100 */): void;
   abstract getPosition(): number;
-  get parentPlayer(): AnimationPlayer { throw new BaseException('NOT IMPLEMENTED: Base Class'); }
-  set parentPlayer(player: AnimationPlayer) {
-    throw new BaseException('NOT IMPLEMENTED: Base Class');
-  }
+  get parentPlayer(): AnimationPlayer { throw new Error('NOT IMPLEMENTED: Base Class'); }
+  set parentPlayer(player: AnimationPlayer) { throw new Error('NOT IMPLEMENTED: Base Class'); }
 }
 
 export class NoOpAnimationPlayer implements AnimationPlayer {

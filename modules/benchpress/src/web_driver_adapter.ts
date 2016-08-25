@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Map} from '@angular/facade/src/collection';
-import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 
 
 /**
@@ -20,9 +18,9 @@ export abstract class WebDriverAdapter {
     return [{provide: WebDriverAdapter, useFactory: (delegate) => delegate, deps: [delegateToken]}];
   }
 
-  waitFor(callback: Function): Promise<any> { throw new BaseException('NYI'); }
-  executeScript(script: string): Promise<any> { throw new BaseException('NYI'); }
-  executeAsyncScript(script: string): Promise<any> { throw new BaseException('NYI'); }
-  capabilities(): Promise<Map<string, any>> { throw new BaseException('NYI'); }
-  logs(type: string): Promise<any[]> { throw new BaseException('NYI'); }
+  waitFor(callback: Function): Promise<any> { throw new Error('NYI'); }
+  executeScript(script: string): Promise<any> { throw new Error('NYI'); }
+  executeAsyncScript(script: string): Promise<any> { throw new Error('NYI'); }
+  capabilities(): Promise<Map<string, any>> { throw new Error('NYI'); }
+  logs(type: string): Promise<any[]> { throw new Error('NYI'); }
 }

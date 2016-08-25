@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 import {discardPeriodicTasks, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {Log, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -93,16 +92,14 @@ export function main() {
       it('should complain if the test throws an exception during async calls', () => {
         expect(() => {
           fakeAsync(() => {
-            resolvedPromise.then((_) => { throw new BaseException('async'); });
+            resolvedPromise.then((_) => { throw new Error('async'); });
             flushMicrotasks();
           })();
-        }).toThrowError('Uncaught (in promise): async');
+        }).toThrowError('Uncaught (in promise): Error: async');
       });
 
       it('should complain if a test throws an exception', () => {
-        expect(() => {
-          fakeAsync(() => { throw new BaseException('sync'); })();
-        }).toThrowError('sync');
+        expect(() => { fakeAsync(() => { throw new Error('sync'); })(); }).toThrowError('sync');
       });
 
     });

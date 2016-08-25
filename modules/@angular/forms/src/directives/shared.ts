@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {hasConstructor, isBlank, isPresent, looseIdentical} from '../facade/lang';
@@ -93,7 +92,7 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
   } else {
     messageEnd = 'unspecified name attribute';
   }
-  throw new BaseException(`${message} ${messageEnd}`);
+  throw new Error(`${message} ${messageEnd}`);
 }
 
 export function composeValidators(validators: /* Array<Validator|Function> */ any[]): ValidatorFn {

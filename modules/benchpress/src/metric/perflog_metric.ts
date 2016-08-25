@@ -8,7 +8,6 @@
 
 import {OpaqueToken} from '@angular/core/src/di';
 import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
-import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 import {Math, NumberWrapper, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from '../common_options';
@@ -157,7 +156,7 @@ export class PerflogMetric extends Metric {
   /** @internal */
   private _readUntilEndMark(markName: string, loopCount: number = 0, startEvent = null) {
     if (loopCount > _MAX_RETRY_COUNT) {
-      throw new BaseException(`Tried too often to get the ending mark: ${loopCount}`);
+      throw new Error(`Tried too often to get the ending mark: ${loopCount}`);
     }
     return this._driverExtension.readPerfLog().then((events) => {
       this._addEvents(events);
@@ -276,17 +275,17 @@ export class PerflogMetric extends Metric {
           event['pid'] === markStartEvent['pid']) {
         if (StringWrapper.equals(ph, 'b') && StringWrapper.equals(name, _MARK_NAME_FRAME_CAPUTRE)) {
           if (isPresent(frameCaptureStartEvent)) {
-            throw new BaseException('can capture frames only once per benchmark run');
+            throw new Error('can capture frames only once per benchmark run');
           }
           if (!this._captureFrames) {
-            throw new BaseException(
+            throw new Error(
                 'found start event for frame capture, but frame capture was not requested in benchpress');
           }
           frameCaptureStartEvent = event;
         } else if (
             StringWrapper.equals(ph, 'e') && StringWrapper.equals(name, _MARK_NAME_FRAME_CAPUTRE)) {
           if (isBlank(frameCaptureStartEvent)) {
-            throw new BaseException('missing start event for frame capture');
+            throw new Error('missing start event for frame capture');
           }
           frameCaptureEndEvent = event;
         }
@@ -351,11 +350,10 @@ export class PerflogMetric extends Metric {
 
     if (isPresent(markEndEvent) && isPresent(frameCaptureStartEvent) &&
         isBlank(frameCaptureEndEvent)) {
-      throw new BaseException('missing end event for frame capture');
+      throw new Error('missing end event for frame capture');
     }
     if (this._captureFrames && isBlank(frameCaptureStartEvent)) {
-      throw new BaseException(
-          'frame capture requested in benchpress, but no start event was found');
+      throw new Error('frame capture requested in benchpress, but no start event was found');
     }
     if (frameTimes.length > 0) {
       this._addFrameMetrics(result, frameTimes);

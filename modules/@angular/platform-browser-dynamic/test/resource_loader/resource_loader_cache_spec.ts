@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader, UrlResolver} from '@angular/compiler';
-import {BaseException, Component} from '@angular/core';
+import {Component} from '@angular/core';
 import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -51,7 +51,7 @@ export function main() {
     it('should reject the Promise on failure', async(() => {
          resourceLoader = new CachedResourceLoader();
          resourceLoader.get('unknown.html')
-             .then((text) => { throw new BaseException('Not expected to succeed.'); })
+             .then((text) => { throw new Error('Not expected to succeed.'); })
              .catch((error) => {/** success */});
        }));
 

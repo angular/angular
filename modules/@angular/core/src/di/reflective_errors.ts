@@ -7,9 +7,10 @@
  */
 
 import {ListWrapper} from '../facade/collection';
-import {BaseException, WrappedException} from '../facade/exceptions';
+import {BaseError, WrappedError} from '../facade/errors';
 import {isBlank, stringify} from '../facade/lang';
 import {Type} from '../type';
+
 import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';
 
@@ -40,7 +41,7 @@ function constructResolvingPath(keys: any[]): string {
  * Base class for all errors arising from misconfigured providers.
  * @stable
  */
-export class AbstractProviderError extends BaseException {
+export class AbstractProviderError extends BaseError {
   /** @internal */
   message: string;
 
@@ -55,7 +56,7 @@ export class AbstractProviderError extends BaseException {
 
   constructor(
       injector: ReflectiveInjector, key: ReflectiveKey, constructResolvingMessage: Function) {
-    super('DI Exception');
+    super('DI Error');
     this.keys = [key];
     this.injectors = [injector];
     this.constructResolvingMessage = constructResolvingMessage;
@@ -147,7 +148,7 @@ export class CyclicDependencyError extends AbstractProviderError {
  * ```
  * @stable
  */
-export class InstantiationError extends WrappedException {
+export class InstantiationError extends WrappedError {
   /** @internal */
   keys: ReflectiveKey[];
 
@@ -157,7 +158,7 @@ export class InstantiationError extends WrappedException {
   constructor(
       injector: ReflectiveInjector, originalException: any, originalStack: any,
       key: ReflectiveKey) {
-    super('DI Exception', originalException, originalStack, null);
+    super('DI Error', originalException);
     this.keys = [key];
     this.injectors = [injector];
   }
@@ -167,9 +168,9 @@ export class InstantiationError extends WrappedException {
     this.keys.push(key);
   }
 
-  get wrapperMessage(): string {
+  get message(): string {
     var first = stringify(ListWrapper.first(this.keys).token);
-    return `Error during instantiation of ${first}!${constructResolvingPath(this.keys)}.`;
+    return `${this.originalError.message}: Error during instantiation of ${first}!${constructResolvingPath(this.keys)}.`;
   }
 
   get causeKey(): ReflectiveKey { return this.keys[0]; }
@@ -188,7 +189,7 @@ export class InstantiationError extends WrappedException {
  * ```
  * @stable
  */
-export class InvalidProviderError extends BaseException {
+export class InvalidProviderError extends BaseError {
   constructor(provider: any) {
     super(`Invalid provider - only instances of Provider and Type are allowed, got: ${provider}`);
   }
@@ -223,7 +224,7 @@ export class InvalidProviderError extends BaseException {
  * ```
  * @stable
  */
-export class NoAnnotationError extends BaseException {
+export class NoAnnotationError extends BaseError {
   constructor(typeOrFunc: Type<any>|Function, params: any[][]) {
     super(NoAnnotationError._genMessage(typeOrFunc, params));
   }
@@ -259,7 +260,7 @@ export class NoAnnotationError extends BaseException {
  * ```
  * @stable
  */
-export class OutOfBoundsError extends BaseException {
+export class OutOfBoundsError extends BaseError {
   constructor(index: number) { super(`Index ${index} is out-of-bounds.`); }
 }
 
@@ -276,7 +277,7 @@ export class OutOfBoundsError extends BaseException {
  * ])).toThrowError();
  * ```
  */
-export class MixingMultiProvidersWithRegularProvidersError extends BaseException {
+export class MixingMultiProvidersWithRegularProvidersError extends BaseError {
   constructor(provider1: any, provider2: any) {
     super(
         'Cannot mix multi providers and regular providers, got: ' + provider1.toString() + ' ' +

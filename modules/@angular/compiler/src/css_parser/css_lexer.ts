@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import * as chars from '../chars';
+import {BaseError} from '../facade/errors';
 import {StringWrapper, isPresent, resolveEnumToken} from '../facade/lang';
 
 export enum CssTokenType {
@@ -86,7 +86,7 @@ export class CssLexer {
   }
 }
 
-export class CssScannerError extends BaseException {
+export class CssScannerError extends BaseError {
   public rawMessage: string;
   public message: string;
 
