@@ -520,6 +520,14 @@ export class FormControl extends AbstractControl {
   registerOnChange(fn: Function): void { this._onChange.push(fn); }
 
   /**
+   * @internal
+   */
+  _clearChangeFns(): void {
+    this._onChange = [];
+    this._onDisabledChange = null;
+  }
+
+  /**
    * Register a listener for disabled events.
    */
   registerOnDisabledChange(fn: (isDisabled: boolean) => void): void { this._onDisabledChange = fn; }

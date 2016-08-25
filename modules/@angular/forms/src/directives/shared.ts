@@ -67,11 +67,21 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
 }
 
+export function cleanUpControl(control: FormControl, dir: NgControl) {
+  dir.valueAccessor.registerOnChange(() => _noControlError(dir));
+  dir.valueAccessor.registerOnTouched(() => _noControlError(dir));
+  if (control) control._clearChangeFns();
+}
+
 export function setUpFormContainer(
     control: FormGroup | FormArray, dir: AbstractFormGroupDirective | FormArrayName) {
   if (isBlank(control)) _throwError(dir, 'Cannot find control with');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
+}
+
+function _noControlError(dir: NgControl) {
+  return _throwError(dir, 'There is no FormControl instance attached to form control element with');
 }
 
 function _throwError(dir: AbstractControlDirective, message: string): void {
