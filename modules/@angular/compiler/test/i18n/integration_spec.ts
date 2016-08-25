@@ -30,8 +30,6 @@ export function main() {
       });
 
       TestBed.configureTestingModule({declarations: [I18nComponent]});
-
-      TestBed.compileComponents();
     }));
 
 

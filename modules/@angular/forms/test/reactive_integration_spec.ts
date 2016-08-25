@@ -31,7 +31,6 @@ export function main() {
           NestedFormGroupComp
         ]
       });
-      TestBed.compileComponents();
     });
 
     describe('basic functionality', () => {

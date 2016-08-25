@@ -31,7 +31,6 @@ function declareTests({useJit}: {useJit: boolean}) {
       TestBed.configureCompiler(
           {useJit: useJit, providers: [{provide: Console, useValue: console}]});
       TestBed.configureTestingModule({declarations: [MainComp, ChildComp, NestedChildComp]});
-      TestBed.compileComponents();
     });
 
     it('should resolve ComponentFactories from the same component', () => {
