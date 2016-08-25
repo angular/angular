@@ -15,18 +15,18 @@ import {BaseException} from '../facade/exceptions';
 import {isBlank, isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
-import {SanitizationService} from '../security';
+import {Sanitizer} from '../security';
 import {AppElement} from './element';
 import {ExpressionChangedAfterItHasBeenCheckedException} from './exceptions';
 
 @Injectable()
 export class ViewUtils {
-  sanitizer: SanitizationService;
+  sanitizer: Sanitizer;
   private _nextCompTypeId: number = 0;
 
   constructor(
       private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string,
-      sanitizer: SanitizationService) {
+      sanitizer: Sanitizer) {
     this.sanitizer = sanitizer;
   }
 
