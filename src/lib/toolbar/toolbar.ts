@@ -3,10 +3,16 @@ import {
   Component,
   ChangeDetectionStrategy,
   Input,
-  ViewEncapsulation
+  ViewEncapsulation,
+  Directive
 } from '@angular/core';
 import {Renderer} from '@angular/core';
 import {ElementRef} from '@angular/core';
+
+@Directive({
+  selector: 'md-toolbar-row'
+})
+export class MdToolbarRow {}
 
 @Component({
   moduleId: module.id,
@@ -46,7 +52,7 @@ export class MdToolbar {
 }
 
 /** @deprecated */
-export const MD_TOOLBAR_DIRECTIVES = [MdToolbar];
+export const MD_TOOLBAR_DIRECTIVES = [MdToolbar, MdToolbarRow];
 
 
 @NgModule({

@@ -1,4 +1,43 @@
-import {NgModule, Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
+import {
+  NgModule,
+  Component,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+  Directive
+} from '@angular/core';
+
+
+/**
+ * Content of a card, needed as it's used as a selector in the API.
+ */
+@Directive({
+  selector: 'md-card-content'
+})
+export class MdCardContent {}
+
+/**
+ * Title of a card, needed as it's used as a selector in the API.
+ */
+@Directive({
+  selector: 'md-card-title'
+})
+export class MdCardTitle {}
+
+/**
+ * Sub-title of a card, needed as it's used as a selector in the API.
+ */
+@Directive({
+  selector: 'md-card-subtitle'
+})
+export class MdCardSubtitle {}
+
+/**
+ * Action section of a card, needed as it's used as a selector in the API.
+ */
+@Directive({
+  selector: 'md-card-actions'
+})
+export class MdCardActions {}
 
 
 /*
@@ -75,7 +114,10 @@ TODO(kara): update link to demo site when it exists
 export class MdCardTitleGroup {}
 
 /** @deprecated */
-export const MD_CARD_DIRECTIVES: any[] = [MdCard, MdCardHeader, MdCardTitleGroup];
+export const MD_CARD_DIRECTIVES: any[] = [
+  MdCard, MdCardContent, MdCardHeader, MdCardTitleGroup, MdCardTitle, MdCardSubtitle,
+  MdCardActions
+];
 
 
 @NgModule({
