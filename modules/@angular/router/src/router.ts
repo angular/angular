@@ -202,6 +202,21 @@ export type Event =
     NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
 /**
+ * Error handler that is invoked when a navigation errors.
+ *
+ * If the handler retuns a value, the navigation promise will be resolved with this value.
+ * If the handler throws an exception, the navigation promise will be rejected with
+ * the exception.
+ *
+ * @stable
+ */
+export type ErrorHandler = (error: any) => any;
+
+function defaultErrorHandler(error: any): any {
+  throw error;
+}
+
+/**
  * The `Router` is responsible for mapping URLs to components.
  *
  * See {@link Routes} for more details and examples.
@@ -215,6 +230,8 @@ export class Router {
   private routerEvents: Subject<Event>;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
+
+  errorHandler: ErrorHandler = defaultErrorHandler;
 
   /**
    * Indicates if at least one navigation happened.
@@ -533,7 +550,11 @@ export class Router {
                   resolvePromise(false);
                 } else {
                   this.routerEvents.next(new NavigationError(id, this.serializeUrl(url), e));
-                  rejectPromise(e);
+                  try {
+                    resolvePromise(this.errorHandler(e));
+                  } catch (ee) {
+                    rejectPromise(ee);
+                  }
                 }
                 this.currentRouterState = storedState;
                 this.currentUrlTree = storedUrl;

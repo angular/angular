@@ -72,6 +72,7 @@ export declare type Event = NavigationStart | NavigationEnd | NavigationCancel |
 /** @stable */
 export interface ExtraOptions {
     enableTracing?: boolean;
+    errorHandler?: ErrorHandler;
     useHash?: boolean;
 }
 
@@ -168,6 +169,7 @@ export interface Route {
 /** @stable */
 export declare class Router {
     config: Routes;
+    errorHandler: ErrorHandler;
     events: Observable<Event>;
     /** @experimental */ navigated: boolean;
     routerState: RouterState;
