@@ -143,7 +143,11 @@ export class CodeGenerator {
     const transFile = cliOptions.i18nFile;
     const locale = cliOptions.locale;
     let transContent: string = '';
-    if (transFile && locale) {
+    if (transFile) {
+      if (!locale) {
+        throw new Error(
+            `The translation file (${transFile}) locale must be provided. Use the --locale option.`);
+      }
       transContent = nodeFs.readFileSync(transFile, 'utf8');
     }
 
