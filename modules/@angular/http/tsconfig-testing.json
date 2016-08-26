@@ -20,8 +20,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "testing.ts",
-    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+    "testing.ts"
   ],
   "angularCompilerOptions": {
     "strictMetadataEmit": true

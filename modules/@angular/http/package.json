@@ -3,8 +3,8 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "",
   "main": "index.js",
-  "jsnext:main": "http.js",
-  "typings": "http.d.ts",
+  "module": "nghttp.js",
+  "typings": "nghttp.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

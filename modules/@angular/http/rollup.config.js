@@ -1,6 +1,6 @@
 
 export default {
-  entry: '../../../dist/packages-dist/http/http.js',
+  entry: '../../../dist/packages-dist/http/nghttp.js',
   dest: '../../../dist/packages-dist/http/index.js',
   format: 'umd',
   moduleName: 'ng.http',
