@@ -313,6 +313,30 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
              expect(console.warnings.length).toEqual(0);
            });
 
+        it('should throw descriptive error when a host binding is not a string expression', () => {
+          var dirA = CompileDirectiveMetadata.create({
+            selector: 'broken',
+            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            host: {'[class.foo]': null}
+          });
+
+          expect(() => { parse('<broken></broken>', [dirA]); })
+              .toThrowError(
+                  `Template parse errors:\nValue of the host property binding "class.foo" needs to be a string representing an expression but got "null" (object) ("[ERROR ->]<broken></broken>"): TestComp@0:0, Directive DirA`);
+        });
+
+        it('should throw descriptive error when a host event is not a string expression', () => {
+          var dirA = CompileDirectiveMetadata.create({
+            selector: 'broken',
+            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            host: {'(click)': null}
+          });
+
+          expect(() => { parse('<broken></broken>', [dirA]); })
+              .toThrowError(
+                  `Template parse errors:\nValue of the host listener "click" needs to be a string representing an expression but got "null" (object) ("[ERROR ->]<broken></broken>"): TestComp@0:0, Directive DirA`);
+        });
+
         it('should not issue a warning when an animation property is bound without an expression',
            () => {
              humanizeTplAst(parse('<div @something>', []));

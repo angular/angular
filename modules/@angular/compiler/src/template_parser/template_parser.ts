@@ -13,7 +13,7 @@ import {CompileDirectiveMetadata, CompilePipeMetadata, CompileTokenMetadata, rem
 import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
-import {isBlank, isPresent} from '../facade/lang';
+import {isBlank, isPresent, isString} from '../facade/lang';
 import {HtmlParser} from '../i18n/html_parser';
 import {Identifiers, identifierToken} from '../identifiers';
 import * as html from '../ml_parser/ast';
@@ -746,9 +746,15 @@ class TemplateParseVisitor implements html.Visitor {
       targetPropertyAsts: BoundElementPropertyAst[]) {
     if (isPresent(hostProps)) {
       StringMapWrapper.forEach(hostProps, (expression: string, propName: string) => {
-        const exprAst = this._parseBinding(expression, sourceSpan);
-        targetPropertyAsts.push(
-            this._createElementPropertyAst(elementName, propName, exprAst, sourceSpan));
+        if (isString(expression)) {
+          const exprAst = this._parseBinding(expression, sourceSpan);
+          targetPropertyAsts.push(
+              this._createElementPropertyAst(elementName, propName, exprAst, sourceSpan));
+        } else {
+          this._reportError(
+              `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+              sourceSpan);
+        }
       });
     }
   }
@@ -758,7 +764,13 @@ class TemplateParseVisitor implements html.Visitor {
       targetEventAsts: BoundEventAst[]) {
     if (isPresent(hostListeners)) {
       StringMapWrapper.forEach(hostListeners, (expression: string, propName: string) => {
-        this._parseEvent(propName, expression, sourceSpan, [], targetEventAsts);
+        if (isString(expression)) {
+          this._parseEvent(propName, expression, sourceSpan, [], targetEventAsts);
+        } else {
+          this._reportError(
+              `Value of the host listener "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+              sourceSpan);
+        }
       });
     }
   }
