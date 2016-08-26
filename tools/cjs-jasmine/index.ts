@@ -5,7 +5,7 @@ require('zone.js/dist/zone-node.js');
 var JasmineRunner = require('jasmine');
 var path = require('path');
 require('source-map-support').install();
-// require('es6-shim/es6-shim.js');
+// require('core-js');
 require('zone.js/dist/long-stack-trace-zone.js');
 require('zone.js/dist/proxy.js');
 require('zone.js/dist/sync-test.js');

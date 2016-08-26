@@ -10,7 +10,7 @@ module.exports = function(config) {
 
     files: [
       // Polyfills.
-      'node_modules/es6-shim/es6-shim.js',
+      'node_modules/core-js/client/core.js',
       'node_modules/reflect-metadata/Reflect.js',
       'shims_for_IE.js',
 
