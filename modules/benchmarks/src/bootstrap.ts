@@ -93,9 +93,9 @@
     while (match = regex.exec(search)) {
       var name = match[1];
       var value = match[2];
-      var els = document.querySelectorAll('input[name="'+name+'"]');
+      var els = document.querySelectorAll('input[name="' + name + '"]');
       var el: any;
-      for (var i=0; i<els.length; i++) {
+      for (var i = 0; i < els.length; i++) {
         el = els[i];
         if (el.type === 'radio' || el.type === 'checkbox') {
           el.checked = el.value === value;

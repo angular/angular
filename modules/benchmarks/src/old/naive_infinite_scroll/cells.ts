@@ -1,8 +1,8 @@
-import {ListWrapper, Map} from '@angular/facade/src/collection';
-import {Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST} from './common';
 import {NgFor} from '@angular/common';
-
 import {Component, Directive} from '@angular/core';
+import {ListWrapper, Map} from '@angular/facade/src/collection';
+
+import {Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common';
 
 export class HasStyle {
   cellWidth: number;

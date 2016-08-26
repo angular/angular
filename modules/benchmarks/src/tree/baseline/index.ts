@@ -1,19 +1,16 @@
-import {
-  bindAction
-} from '@angular/platform-browser/testing/benchmark_util';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
+import {bindAction} from '@angular/platform-browser/testing/benchmark_util';
+
+import {TreeNode, buildTree, emptyTree, profile} from '../app/util';
 
 import {BaseLineTreeComponent} from './app/tree';
-import {TreeNode, buildTree, emptyTree, profile} from '../app/util';
-import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
 export function main() {
   var app: BaseLineTreeComponent;
 
   function destroyDom() { app.update(emptyTree()); }
 
-  function createDom() {
-    app.update(buildTree());
-  }
+  function createDom() { app.update(buildTree()); }
 
   function noop() {}
 
@@ -27,8 +24,7 @@ export function main() {
     bindAction('#createDom', createDom);
 
     bindAction('#updateDomProfile', profile(createDom, noop, 'baseline-update'));
-    bindAction('#createDomProfile',
-               profile(createDom, destroyDom, 'baseline-create'));
+    bindAction('#createDomProfile', profile(createDom, destroyDom, 'baseline-create'));
   }
 
   init();

@@ -3,9 +3,10 @@ import {TreeNode} from '../../app/util';
 
 // http://jsperf.com/nextsibling-vs-childnodes
 
-const BASELINE_TREE_TEMPLATE =document.createElement('template');
-BASELINE_TREE_TEMPLATE.innerHTML = '<span>_<template class="ng-provider"></template><template class="ng-provider"></template></span>';
-const BASELINE_IF_TEMPLATE =document.createElement('template');
+const BASELINE_TREE_TEMPLATE = document.createElement('template');
+BASELINE_TREE_TEMPLATE.innerHTML =
+    '<span>_<template class="ng-provider"></template><template class="ng-provider"></template></span>';
+const BASELINE_IF_TEMPLATE = document.createElement('template');
 BASELINE_IF_TEMPLATE.innerHTML = '<span template="if"><tree></tree></span>';
 
 export class BaseLineTreeComponent {
@@ -32,9 +33,7 @@ export class BaseLineTreeComponent {
 
 export class BaseLineInterpolation {
   value: string;
-  constructor(public textNode: Node) {
-    this.value = null;
-  }
+  constructor(public textNode: Node) { this.value = null; }
   update(value: string) {
     if (this.value !== value) {
       this.value = value;

@@ -1,11 +1,11 @@
-import {bootstrap} from '@angular/platform-browser';
+import {NgFor, NgIf} from '@angular/common';
 import {Component, Directive, DynamicComponentLoader, ViewContainerRef} from '@angular/core';
-import {NgIf, NgFor} from '@angular/common';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {ListWrapper} from '@angular/facade/src/lang';
-import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
+import {bootstrap} from '@angular/platform-browser';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';
 
 var testList = null;
 
@@ -13,35 +13,34 @@ export function main() {
   var size = getIntParameter('size');
   testList = ListWrapper.createFixedSize(size);
 
-  platformBrowserDynamic().bootstrapModule(AppModule)
-      .then((ref) => {
-        var injector = ref.injector;
-        var app: AppComponent = ref.instance;
-        var appRef = injector.get(ApplicationRef);
+  platformBrowserDynamic().bootstrapModule(AppModule).then((ref) => {
+    var injector = ref.injector;
+    var app: AppComponent = ref.instance;
+    var appRef = injector.get(ApplicationRef);
 
-        bindAction('#reset', function() {
-          app.reset();
-          appRef.tick();
-        });
+    bindAction('#reset', function() {
+      app.reset();
+      appRef.tick();
+    });
 
-        // Baseline (plain components)
-        bindAction('#createPlainComponents', function() {
-          app.createPlainComponents();
-          appRef.tick();
-        });
+    // Baseline (plain components)
+    bindAction('#createPlainComponents', function() {
+      app.createPlainComponents();
+      appRef.tick();
+    });
 
-        // Components with decorators
-        bindAction('#createComponentsWithDirectives', function() {
-          app.createComponentsWithDirectives();
-          appRef.tick();
-        });
+    // Components with decorators
+    bindAction('#createComponentsWithDirectives', function() {
+      app.createComponentsWithDirectives();
+      appRef.tick();
+    });
 
-        // Components with decorators
-        bindAction('#createDynamicComponents', function() {
-          app.createDynamicComponents();
-          appRef.tick();
-        });
-      });
+    // Components with decorators
+    bindAction('#createDynamicComponents', function() {
+      app.createDynamicComponents();
+      appRef.tick();
+    });
+  });
 }
 
 
@@ -110,9 +109,6 @@ class AppComponent {
 
 
 
-@NgModule({
-  imports: [BrowserModule],
-  bootstrap: [AppComponent]
-})
+@NgModule({imports: [BrowserModule], bootstrap: [AppComponent]})
 class AppModule {
 }

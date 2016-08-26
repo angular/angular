@@ -1,8 +1,8 @@
 import {Injectable, ReflectiveInjector, ReflectiveKey} from '@angular/core';
 import {reflector} from '@angular/core/src/reflection/reflection';
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
-import {getIntParameter, bindAction, microBenchmark} from '@angular/testing/src/benchmark_util';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
+import {bindAction, getIntParameter, microBenchmark} from '@angular/testing/src/benchmark_util';
 
 var count = 0;
 
@@ -81,8 +81,9 @@ export function main() {
   bindAction('#getChild', () => microBenchmark('injectAvg', iterations, getChild));
   bindAction('#instantiate', () => microBenchmark('injectAvg', iterations, instantiate));
   bindAction('#createVariety', () => microBenchmark('injectAvg', iterations, createVariety));
-  bindAction('#createVarietyResolved',
-             () => microBenchmark('injectAvg', iterations, createVarietyResolved));
+  bindAction(
+      '#createVarietyResolved',
+      () => microBenchmark('injectAvg', iterations, createVarietyResolved));
 }
 
 

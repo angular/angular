@@ -1,6 +1,6 @@
-import {Math} from '@angular/facade/src/math';
-import {StringWrapper} from '@angular/facade/src/lang';
 import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
+import {StringWrapper} from '@angular/facade/src/lang';
+import {Math} from '@angular/facade/src/math';
 
 export var ITEMS = 1000;
 export var ITEM_HEIGHT = 40;
@@ -21,9 +21,8 @@ export var DUE_DATE_WIDTH = 100;
 export var END_DATE_WIDTH = 100;
 export var AAT_STATUS_WIDTH = 100;
 export var ROW_WIDTH = COMPANY_NAME_WIDTH + OPPORTUNITY_NAME_WIDTH + OFFERING_NAME_WIDTH +
-                       ACCOUNT_CELL_WIDTH + BASE_POINTS_WIDTH + KICKER_POINTS_WIDTH +
-                       STAGE_BUTTONS_WIDTH + BUNDLES_WIDTH + DUE_DATE_WIDTH + END_DATE_WIDTH +
-                       AAT_STATUS_WIDTH;
+    ACCOUNT_CELL_WIDTH + BASE_POINTS_WIDTH + KICKER_POINTS_WIDTH + STAGE_BUTTONS_WIDTH +
+    BUNDLES_WIDTH + DUE_DATE_WIDTH + END_DATE_WIDTH + AAT_STATUS_WIDTH;
 
 export var STATUS_LIST = ['Planned', 'Pitched', 'Won', 'Lost'];
 
