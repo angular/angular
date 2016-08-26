@@ -316,16 +316,18 @@ export declare class FormsModule {
 }
 
 /** @stable */
-export declare class MaxLengthValidator implements Validator {
-    constructor(maxLength: string);
+export declare class MaxLengthValidator implements Validator, OnChanges {
+    maxlength: string;
+    ngOnChanges(changes: SimpleChanges): void;
     validate(c: AbstractControl): {
         [key: string]: any;
     };
 }
 
 /** @stable */
-export declare class MinLengthValidator implements Validator {
-    constructor(minLength: string);
+export declare class MinLengthValidator implements Validator, OnChanges {
+    minlength: string;
+    ngOnChanges(changes: SimpleChanges): void;
     validate(c: AbstractControl): {
         [key: string]: any;
     };
@@ -424,8 +426,9 @@ export declare class NgSelectOption implements OnDestroy {
 }
 
 /** @stable */
-export declare class PatternValidator implements Validator {
-    constructor(pattern: string);
+export declare class PatternValidator implements Validator, OnChanges {
+    pattern: string;
+    ngOnChanges(changes: SimpleChanges): void;
     validate(c: AbstractControl): {
         [key: string]: any;
     };
@@ -436,7 +439,11 @@ export declare class ReactiveFormsModule {
 }
 
 /** @stable */
-export declare class RequiredValidator {
+export declare class RequiredValidator implements Validator {
+    required: boolean;
+    validate(c: AbstractControl): {
+        [key: string]: any;
+    };
 }
 
 /** @stable */
