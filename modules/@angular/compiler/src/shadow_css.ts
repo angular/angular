@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from './facade/collection';
 import {StringWrapper, isBlank, isPresent} from './facade/lang';
 
 /**
@@ -52,7 +51,7 @@ import {StringWrapper, isBlank, isPresent} from './facade/lang';
       background: red;
     }
 
-  * encapsultion: Styles defined within ShadowDOM, apply only to
+  * encapsulation: Styles defined within ShadowDOM, apply only to
   dom inside the ShadowDOM. Polymer uses one of two techniques to implement
   this feature.
 
@@ -345,13 +344,13 @@ export class ShadowCss {
   private _scopeSelector(
       selector: string, scopeSelector: string, hostSelector: string, strict: boolean): string {
     return selector.split(',')
-        .map((part) => { return StringWrapper.split(part.trim(), _shadowDeepSelectors); })
+        .map(part => part.trim().split(_shadowDeepSelectors))
         .map((deepParts) => {
           const [shallowPart, ...otherParts] = deepParts;
           const applyScope = (shallowPart: string) => {
             if (this._selectorNeedsScoping(shallowPart, scopeSelector)) {
-              return strict && !StringWrapper.contains(shallowPart, _polyfillHostNoCombinator) ?
-                  this._applyStrictSelectorScope(shallowPart, scopeSelector) :
+              return strict ?
+                  this._applyStrictSelectorScope(shallowPart, scopeSelector, hostSelector) :
                   this._applySelectorScope(shallowPart, scopeSelector, hostSelector);
             } else {
               return shallowPart;
@@ -377,7 +376,7 @@ export class ShadowCss {
 
   private _applySelectorScope(selector: string, scopeSelector: string, hostSelector: string):
       string {
-    // Difference from webcomponentsjs: scopeSelector could not be an array
+    // Difference from webcomponents.js: scopeSelector could not be an array
     return this._applySimpleSelectorScope(selector, scopeSelector, hostSelector);
   }
 
@@ -395,38 +394,58 @@ export class ShadowCss {
 
   // return a selector with [name] suffix on each simple selector
   // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]  /** @internal */
-  private _applyStrictSelectorScope(selector: string, scopeSelector: string): string {
+  private _applyStrictSelectorScope(selector: string, scopeSelector: string, hostSelector: string):
+      string {
     const isRe = /\[is=([^\]]*)\]/g;
-    scopeSelector =
-        StringWrapper.replaceAllMapped(scopeSelector, isRe, (m: any /** TODO #9100 */) => m[1]);
-    const splits = [' ', '>', '+', '~'];
-    let scoped = selector;
+    scopeSelector = scopeSelector.replace(isRe, (_: string, ...parts: string[]) => parts[0]);
+
     const attrName = '[' + scopeSelector + ']';
-    for (let i = 0; i < splits.length; i++) {
-      const sep = splits[i];
-      const parts = scoped.split(sep);
-      scoped = parts
-                   .map(p => {
-                     // remove :host since it should be unnecessary
-                     const t = StringWrapper.replaceAll(p.trim(), _polyfillHostRe, '');
-                     if (t.length > 0 && !ListWrapper.contains(splits, t) &&
-                         !StringWrapper.contains(t, attrName)) {
-                       const m = t.match(/([^:]*)(:*)(.*)/);
-                       if (m !== null) {
-                         p = m[1] + attrName + m[2] + m[3];
-                       }
-                     }
-                     return p;
-                   })
-                   .join(sep);
+
+    const _scopeSelectorPart = (p: string) => {
+      var scopedP = p.trim();
+
+      if (scopedP.length == 0) {
+        return '';
+      }
+
+      if (p.indexOf(_polyfillHostNoCombinator) > -1) {
+        scopedP = this._applySimpleSelectorScope(p, scopeSelector, hostSelector);
+      } else {
+        // remove :host since it should be unnecessary
+        var t = p.replace(_polyfillHostRe, '');
+        if (t.length > 0) {
+          const matches = t.match(/([^:]*)(:*)(.*)/);
+          if (matches !== null) {
+            scopedP = matches[1] + attrName + matches[2] + matches[3];
+          }
+        }
+      }
+
+      return scopedP;
+    };
+
+    const sep = /( |>|\+|~)\s*/g;
+    const scopeAfter = selector.indexOf(_polyfillHostNoCombinator);
+
+    let scoped = '';
+    let startIndex = 0;
+    let res: RegExpExecArray;
+
+    while ((res = sep.exec(selector)) !== null) {
+      const separator = res[1];
+      const part = selector.slice(startIndex, res.index).trim();
+      // if a selector appears before :host-context it should not be shimmed as it
+      // matches on ancestor elements and not on elements in the host's shadow
+      const scopedPart = startIndex >= scopeAfter ? _scopeSelectorPart(part) : part;
+      scoped += `${scopedPart} ${separator} `;
+      startIndex = sep.lastIndex;
     }
-    return scoped;
+    return scoped + _scopeSelectorPart(selector.substring(startIndex));
   }
 
   private _insertPolyfillHostInCssText(selector: string): string {
-    selector = StringWrapper.replaceAll(selector, _colonHostContextRe, _polyfillHostContext);
-    selector = StringWrapper.replaceAll(selector, _colonHostRe, _polyfillHost);
-    return selector;
+    return selector.replace(_colonHostContextRe, _polyfillHostContext)
+        .replace(_colonHostRe, _polyfillHost);
   }
 }
 const _cssContentNextSelectorRe =
@@ -444,30 +463,28 @@ const _cssColonHostRe = new RegExp('(' + _polyfillHost + _parenSuffix, 'gim');
 const _cssColonHostContextRe = new RegExp('(' + _polyfillHostContext + _parenSuffix, 'gim');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 const _shadowDOMSelectorsRe = [
-  /::shadow/g, /::content/g,
+  /::shadow/g,
+  /::content/g,
   // Deprecated selectors
-  // TODO(vicb): see https://github.com/angular/clang-format/issues/16
-  // clang-format off
-  /\/shadow-deep\//g,  // former /deep/
-  /\/shadow\//g,       // former ::shadow
-  // clanf-format on
+  /\/shadow-deep\//g,
+  /\/shadow\//g,
 ];
 const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)/g;
 const _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
-const _polyfillHostRe = new RegExp(_polyfillHost, 'im');
+const _polyfillHostRe = /-shadowcsshost/gim;
 const _colonHostRe = /:host/gim;
 const _colonHostContextRe = /:host-context/gim;
 
 const _commentRe = /\/\*\s*[\s\S]*?\*\//g;
 
-function stripComments(input:string):string {
+function stripComments(input: string): string {
   return StringWrapper.replaceAllMapped(input, _commentRe, (_: any /** TODO #9100 */) => '');
 }
 
 // all comments except inline source mapping ("/* #sourceMappingURL= ... */")
 const _sourceMappingUrlRe = /[\s\S]*(\/\*\s*#\s*sourceMappingURL=[\s\S]+?\*\/)\s*$/;
 
-function extractSourceMappingUrl(input:string):string {
+function extractSourceMappingUrl(input: string): string {
   const matcher = input.match(_sourceMappingUrlRe);
   return matcher ? matcher[1] : '';
 }
@@ -479,38 +496,39 @@ const CLOSE_CURLY = '}';
 const BLOCK_PLACEHOLDER = '%BLOCK%';
 
 export class CssRule {
-  constructor(public selector:string, public content:string) {}
+  constructor(public selector: string, public content: string) {}
 }
 
-export function processRules(input:string, ruleCallback:Function):string {
+export function processRules(input: string, ruleCallback: Function): string {
   const inputWithEscapedBlocks = escapeBlocks(input);
   let nextBlockIndex = 0;
-  return StringWrapper.replaceAllMapped(inputWithEscapedBlocks.escapedString, _ruleRe, function(m: any /** TODO #9100 */) {
-    const selector = m[2];
-    let content = '';
-    let suffix = m[4];
-    let contentPrefix = '';
-    if (isPresent(m[4]) && m[4].startsWith('{'+BLOCK_PLACEHOLDER)) {
-      content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
-      suffix = m[4].substring(BLOCK_PLACEHOLDER.length+1);
-      contentPrefix = '{';
-    }
-    const rule = ruleCallback(new CssRule(selector, content));
-    return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
-  });
+  return StringWrapper.replaceAllMapped(
+      inputWithEscapedBlocks.escapedString, _ruleRe, function(m: any /** TODO #9100 */) {
+        const selector = m[2];
+        let content = '';
+        let suffix = m[4];
+        let contentPrefix = '';
+        if (isPresent(m[4]) && m[4].startsWith('{' + BLOCK_PLACEHOLDER)) {
+          content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
+          suffix = m[4].substring(BLOCK_PLACEHOLDER.length + 1);
+          contentPrefix = '{';
+        }
+        const rule = ruleCallback(new CssRule(selector, content));
+        return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
+      });
 }
 
 class StringWithEscapedBlocks {
-  constructor(public escapedString:string, public blocks:string[]) {}
+  constructor(public escapedString: string, public blocks: string[]) {}
 }
 
-function escapeBlocks(input:string):StringWithEscapedBlocks {
+function escapeBlocks(input: string): StringWithEscapedBlocks {
   const inputParts = StringWrapper.split(input, _curlyRe);
   const resultParts: any[] /** TODO #9100 */ = [];
   const escapedBlocks: any[] /** TODO #9100 */ = [];
   let bracketCount = 0;
   let currentBlockParts: any[] /** TODO #9100 */ = [];
-  for (let partIndex = 0; partIndex<inputParts.length; partIndex++) {
+  for (let partIndex = 0; partIndex < inputParts.length; partIndex++) {
     const part = inputParts[partIndex];
     if (part == CLOSE_CURLY) {
       bracketCount--;
