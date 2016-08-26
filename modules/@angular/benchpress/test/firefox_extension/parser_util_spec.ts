@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {convertPerfProfileToEvents} from 'benchpress/src/firefox_extension/lib/parser_util';
+import {convertPerfProfileToEvents} from '../../src/firefox_extension/lib/parser_util';
 
-function assertEventsEqual(actualEvents, expectedEvents) {
+function assertEventsEqual(actualEvents: any[], expectedEvents: any[]) {
   expect(actualEvents.length == expectedEvents.length);
   for (var i = 0; i < actualEvents.length; ++i) {
     var actualEvent = actualEvents[i];

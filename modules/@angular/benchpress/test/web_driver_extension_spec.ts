@@ -7,17 +7,19 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {StringWrapper, isPresent} from '@angular/facade/src/lang';
-import {Options, ReflectiveInjector, WebDriverExtension} from 'benchpress/common';
+
+import {Options, ReflectiveInjector, WebDriverExtension} from '../index';
+import {StringWrapper, isPresent} from '../src/facade/lang';
 
 export function main() {
-  function createExtension(ids: any[], caps) {
+  function createExtension(ids: any[], caps: any) {
     return new Promise<any>((res, rej) => {
       try {
         res(ReflectiveInjector
                 .resolveAndCreate([
                   ids.map((id) => { return {provide: id, useValue: new MockExtension(id)}; }),
-                  {provide: Options.CAPABILITIES, useValue: caps}, WebDriverExtension.bindTo(ids)
+                  {provide: Options.CAPABILITIES, useValue: caps},
+                  WebDriverExtension.provideFirstSupported(ids)
                 ])
                 .get(WebDriverExtension));
       } catch (e) {
@@ -26,17 +28,18 @@ export function main() {
     });
   }
 
-  describe('WebDriverExtension.bindTo', () => {
+  describe('WebDriverExtension.provideFirstSupported', () => {
 
-    it('should bind the extension that matches the capabilities',
-       inject([AsyncTestCompleter], (async) => {
+    it('should provide the extension that matches the capabilities',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createExtension(['m1', 'm2', 'm3'], {'browser': 'm2'}).then((m) => {
            expect(m.id).toEqual('m2');
            async.done();
          });
        }));
 
-    it('should throw if there is no match', inject([AsyncTestCompleter], (async) => {
+    it('should throw if there is no match',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createExtension(['m1'], {'browser': 'm2'}).catch((err) => {
            expect(isPresent(err)).toBe(true);
            async.done();
@@ -46,12 +49,7 @@ export function main() {
 }
 
 class MockExtension extends WebDriverExtension {
-  id: string;
-
-  constructor(id) {
-    super();
-    this.id = id;
-  }
+  constructor(public id: string) { super(); }
 
   supports(capabilities: {[key: string]: any}): boolean {
     return StringWrapper.equals(capabilities['browser'], this.id);

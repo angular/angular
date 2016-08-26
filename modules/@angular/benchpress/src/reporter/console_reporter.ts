@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '@angular/core/src/di';
-import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
-import {NumberWrapper, isBlank, isPresent, print} from '@angular/facade/src/lang';
-import {Math} from '@angular/facade/src/math';
+import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {NumberWrapper, isBlank, isPresent, print} from '../facade/lang';
+import {Math} from '../facade/math';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
@@ -20,17 +20,16 @@ import {Statistic} from '../statistic';
 /**
  * A reporter for the console
  */
+@Injectable()
 export class ConsoleReporter extends Reporter {
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get PRINT(): OpaqueToken { return _PRINT; }
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get COLUMN_WIDTH(): OpaqueToken { return _COLUMN_WIDTH; }
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): any[] { return _PROVIDERS; }
+  static PRINT = new OpaqueToken('ConsoleReporter.print');
+  static COLUMN_WIDTH = new OpaqueToken('ConsoleReporter.columnWidth');
+  static PROVIDERS = [
+    ConsoleReporter, {provide: ConsoleReporter.COLUMN_WIDTH, useValue: 18},
+    {provide: ConsoleReporter.PRINT, useValue: print}
+  ];
 
-
-  /** @internal */
-  private static _lpad(value, columnWidth, fill = ' ') {
+  private static _lpad(value: string, columnWidth: number, fill = ' ') {
     var result = '';
     for (var i = 0; i < columnWidth - value.length; i++) {
       result += fill;
@@ -38,28 +37,27 @@ export class ConsoleReporter extends Reporter {
     return result + value;
   }
 
-  /** @internal */
-  private static _formatNum(n) { return NumberWrapper.toFixed(n, 2); }
+  private static _formatNum(n: number) { return NumberWrapper.toFixed(n, 2); }
 
-  /** @internal */
-  private static _sortedProps(obj) {
-    var props = [];
+  private static _sortedProps(obj: {[key: string]: any}) {
+    var props: string[] = [];
     StringMapWrapper.forEach(obj, (value, prop) => props.push(prop));
     props.sort();
     return props;
   }
 
-  /** @internal */
   private _metricNames: string[];
 
-  constructor(private _columnWidth: number, sampleDescription, private _print: Function) {
+  constructor(
+      @Inject(ConsoleReporter.COLUMN_WIDTH) private _columnWidth: number,
+      sampleDescription: SampleDescription,
+      @Inject(ConsoleReporter.PRINT) private _print: Function) {
     super();
     this._metricNames = ConsoleReporter._sortedProps(sampleDescription.metrics);
     this._printDescription(sampleDescription);
   }
 
-  /** @internal */
-  private _printDescription(sampleDescription) {
+  private _printDescription(sampleDescription: SampleDescription) {
     this._print(`BENCHMARK ${sampleDescription.id}`);
     this._print('Description:');
     var props = ConsoleReporter._sortedProps(sampleDescription.description);
@@ -96,21 +94,8 @@ export class ConsoleReporter extends Reporter {
     return Promise.resolve(null);
   }
 
-  /** @internal */
   private _printStringRow(parts: any[], fill = ' ') {
     this._print(
         parts.map(part => ConsoleReporter._lpad(part, this._columnWidth, fill)).join(' | '));
   }
 }
-
-var _PRINT = new OpaqueToken('ConsoleReporter.print');
-var _COLUMN_WIDTH = new OpaqueToken('ConsoleReporter.columnWidth');
-var _PROVIDERS = [
-  {
-    provide: ConsoleReporter,
-    useFactory: (columnWidth, sampleDescription, print) =>
-                    new ConsoleReporter(columnWidth, sampleDescription, print),
-    deps: [_COLUMN_WIDTH, SampleDescription, _PRINT]
-  },
-  {provide: _COLUMN_WIDTH, useValue: 18}, {provide: _PRINT, useValue: print}
-];

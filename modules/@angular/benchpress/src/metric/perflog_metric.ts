@@ -6,31 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '@angular/core/src/di';
-import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
-import {Math, NumberWrapper, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
+import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
 import {Options} from '../common_options';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {Math, NumberWrapper, StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {Metric} from '../metric';
-import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
+import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
 
 /**
  * A metric that reads out the performance log
  */
+@Injectable()
 export class PerflogMetric extends Metric {
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): any[] { return _PROVIDERS; }
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get SET_TIMEOUT(): OpaqueToken { return _SET_TIMEOUT; }
+  static SET_TIMEOUT = new OpaqueToken('PerflogMetric.setTimeout');
+  static PROVIDERS = [
+    PerflogMetric, {
+      provide: PerflogMetric.SET_TIMEOUT,
+      useValue: (fn: Function, millis: number) => <any>setTimeout(fn, millis)
+    }
+  ];
 
-  /** @internal */
-  private _remainingEvents: Array<{[key: string]: any}>;
-  /** @internal */
+  private _remainingEvents: PerfLogEvent[];
   private _measureCount: number;
-  /** @internal */
   private _perfLogFeatures: PerfLogFeatures;
-
 
   /**
    * @param driverExtension
@@ -38,20 +38,13 @@ export class PerflogMetric extends Metric {
    * @param microMetrics Name and description of metrics provided via console.time / console.timeEnd
    **/
   constructor(
-      /** @internal */
       private _driverExtension: WebDriverExtension,
-      /** @internal */
-      private _setTimeout: Function,
-      /** @internal */
-      private _microMetrics: {[key: string]: any},
-      /** @internal */
-      private _forceGc: boolean,
-      /** @internal */
-      private _captureFrames: boolean,
-      /** @internal */
-      private _receivedData: boolean,
-      /** @internal */
-      private _requestCount: boolean) {
+      @Inject(PerflogMetric.SET_TIMEOUT) private _setTimeout: Function,
+      @Inject(Options.MICRO_METRICS) private _microMetrics: {[key: string]: string},
+      @Inject(Options.FORCE_GC) private _forceGc: boolean,
+      @Inject(Options.CAPTURE_FRAMES) private _captureFrames: boolean,
+      @Inject(Options.RECEIVED_DATA) private _receivedData: boolean,
+      @Inject(Options.REQUEST_COUNT) private _requestCount: boolean) {
     super();
 
     this._remainingEvents = [];
@@ -64,8 +57,8 @@ export class PerflogMetric extends Metric {
     }
   }
 
-  describe(): {[key: string]: any} {
-    var res = {
+  describe(): {[key: string]: string} {
+    var res: {[key: string]: any} = {
       'scriptTime': 'script execution time in ms, including gc and render',
       'pureScriptTime': 'script execution time in ms, without gc nor render'
     };
@@ -115,7 +108,7 @@ export class PerflogMetric extends Metric {
     return resultPromise.then((_) => this._beginMeasure());
   }
 
-  endMeasure(restart: boolean): Promise<{[key: string]: any}> {
+  endMeasure(restart: boolean): Promise<{[key: string]: number}> {
     if (this._forceGc) {
       return this._endPlainMeasureAndMeasureForceGc(restart);
     } else {
@@ -140,21 +133,19 @@ export class PerflogMetric extends Metric {
     });
   }
 
-  /** @internal */
   private _beginMeasure(): Promise<any> {
     return this._driverExtension.timeBegin(this._markName(this._measureCount++));
   }
 
-  /** @internal */
-  private _endMeasure(restart: boolean): Promise<{[key: string]: any}> {
+  private _endMeasure(restart: boolean): Promise<{[key: string]: number}> {
     var markName = this._markName(this._measureCount - 1);
     var nextMarkName = restart ? this._markName(this._measureCount++) : null;
     return this._driverExtension.timeEnd(markName, nextMarkName)
         .then((_) => this._readUntilEndMark(markName));
   }
 
-  /** @internal */
-  private _readUntilEndMark(markName: string, loopCount: number = 0, startEvent = null) {
+  private _readUntilEndMark(
+      markName: string, loopCount: number = 0, startEvent: PerfLogEvent = null) {
     if (loopCount > _MAX_RETRY_COUNT) {
       throw new Error(`Tried too often to get the ending mark: ${loopCount}`);
     }
@@ -172,17 +163,16 @@ export class PerflogMetric extends Metric {
     });
   }
 
-  /** @internal */
-  private _addEvents(events: {[key: string]: string}[]) {
+  private _addEvents(events: PerfLogEvent[]) {
     var needSort = false;
     events.forEach(event => {
       if (StringWrapper.equals(event['ph'], 'X')) {
         needSort = true;
-        var startEvent = {};
-        var endEvent = {};
+        var startEvent: PerfLogEvent = {};
+        var endEvent: PerfLogEvent = {};
         StringMapWrapper.forEach(event, (value, prop) => {
-          startEvent[prop] = value;
-          endEvent[prop] = value;
+          (<any>startEvent)[prop] = value;
+          (<any>endEvent)[prop] = value;
         });
         startEvent['ph'] = 'B';
         endEvent['ph'] = 'E';
@@ -202,9 +192,8 @@ export class PerflogMetric extends Metric {
     }
   }
 
-  /** @internal */
-  private _aggregateEvents(events: Array<{[key: string]: any}>, markName): {[key: string]: any} {
-    var result = {'scriptTime': 0, 'pureScriptTime': 0};
+  private _aggregateEvents(events: PerfLogEvent[], markName: string): {[key: string]: number} {
+    var result: {[key: string]: number} = {'scriptTime': 0, 'pureScriptTime': 0};
     if (this._perfLogFeatures.gc) {
       result['gcTime'] = 0;
       result['majorGcTime'] = 0;
@@ -227,17 +216,17 @@ export class PerflogMetric extends Metric {
       result['requestCount'] = 0;
     }
 
-    var markStartEvent = null;
-    var markEndEvent = null;
+    var markStartEvent: PerfLogEvent = null;
+    var markEndEvent: PerfLogEvent = null;
     var gcTimeInScript = 0;
     var renderTimeInScript = 0;
 
-    var frameTimestamps = [];
-    var frameTimes = [];
-    var frameCaptureStartEvent = null;
-    var frameCaptureEndEvent = null;
+    var frameTimestamps: number[] = [];
+    var frameTimes: number[] = [];
+    var frameCaptureStartEvent: PerfLogEvent = null;
+    var frameCaptureEndEvent: PerfLogEvent = null;
 
-    var intervalStarts: {[key: string]: any} = {};
+    var intervalStarts: {[key: string]: PerfLogEvent} = {};
     var intervalStartCount: {[key: string]: number} = {};
     events.forEach((event) => {
       var ph = event['ph'];
@@ -337,7 +326,7 @@ export class PerflogMetric extends Metric {
             } else if (StringWrapper.equals(name, 'script')) {
               result['scriptTime'] += duration;
             } else if (isPresent(this._microMetrics[name])) {
-              result[name] += duration / microIterations;
+              (<any>result)[name] += duration / microIterations;
             }
           }
         }
@@ -362,8 +351,7 @@ export class PerflogMetric extends Metric {
     return result;
   }
 
-  /** @internal */
-  private _addFrameMetrics(result: {[key: string]: any}, frameTimes: any[]) {
+  private _addFrameMetrics(result: {[key: string]: number}, frameTimes: any[]) {
     result['frameTime.mean'] = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
     var firstFrame = frameTimes[0];
     result['frameTime.worst'] = frameTimes.reduce((a, b) => a > b ? a : b, firstFrame);
@@ -372,32 +360,14 @@ export class PerflogMetric extends Metric {
         frameTimes.filter(t => t < _FRAME_TIME_SMOOTH_THRESHOLD).length / frameTimes.length;
   }
 
-  /** @internal */
-  private _markName(index) { return `${_MARK_NAME_PREFIX}${index}`; }
+  private _markName(index: number) { return `${_MARK_NAME_PREFIX}${index}`; }
 }
 
 var _MICRO_ITERATIONS_REGEX = /(.+)\*(\d+)$/;
 
 var _MAX_RETRY_COUNT = 20;
 var _MARK_NAME_PREFIX = 'benchpress';
-var _SET_TIMEOUT = new OpaqueToken('PerflogMetric.setTimeout');
 
 var _MARK_NAME_FRAME_CAPUTRE = 'frameCapture';
 // using 17ms as a somewhat looser threshold, instead of 16.6666ms
 var _FRAME_TIME_SMOOTH_THRESHOLD = 17;
-
-var _PROVIDERS = [
-  {
-    provide: PerflogMetric,
-    useFactory: (driverExtension, setTimeout, microMetrics, forceGc, captureFrames, receivedData,
-                 requestCount) =>
-                    new PerflogMetric(
-                        driverExtension, setTimeout, microMetrics, forceGc, captureFrames,
-                        receivedData, requestCount),
-    deps: [
-      WebDriverExtension, _SET_TIMEOUT, Options.MICRO_METRICS, Options.FORCE_GC,
-      Options.CAPTURE_FRAMES, Options.RECEIVED_DATA, Options.REQUEST_COUNT
-    ]
-  },
-  {provide: _SET_TIMEOUT, useValue: (fn, millis) => <any>setTimeout(fn, millis)}
-];

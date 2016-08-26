@@ -6,20 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, OpaqueToken} from '@angular/core/src/di';
-import {StringMapWrapper} from '@angular/facade/src/collection';
+import {Injector, OpaqueToken} from '@angular/core';
+import {StringMapWrapper} from '../facade/collection';
 
 import {Metric} from '../metric';
 
 export class MultiMetric extends Metric {
-  static createBindings(childTokens: any[]): any[] {
+  static provideWith(childTokens: any[]): any[] {
     return [
       {
         provide: _CHILDREN,
         useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
         deps: [Injector]
       },
-      {provide: MultiMetric, useFactory: children => new MultiMetric(children), deps: [_CHILDREN]}
+      {
+        provide: MultiMetric,
+        useFactory: (children: Metric[]) => new MultiMetric(children),
+        deps: [_CHILDREN]
+      }
     ];
   }
 
@@ -52,7 +56,7 @@ export class MultiMetric extends Metric {
 }
 
 function mergeStringMaps(maps: {[key: string]: string}[]): {[key: string]: string} {
-  var result = {};
+  var result: {[key: string]: string} = {};
   maps.forEach(
       map => { StringMapWrapper.forEach(map, (value, prop) => { result[prop] = value; }); });
   return result;

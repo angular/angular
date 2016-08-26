@@ -7,22 +7,23 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {isBlank} from '@angular/facade/src/lang';
-import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from 'benchpress/common';
+
+import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from '../index';
+import {isBlank} from '../src/facade/lang';
 
 export function main() {
   describe('runner', () => {
     var injector: ReflectiveInjector;
-    var runner;
+    var runner: Runner;
 
-    function createRunner(defaultBindings = null): Runner {
-      if (isBlank(defaultBindings)) {
-        defaultBindings = [];
+    function createRunner(defaultProviders: any[] = null): Runner {
+      if (isBlank(defaultProviders)) {
+        defaultProviders = [];
       }
       runner = new Runner([
-        defaultBindings, {
+        defaultProviders, {
           provide: Sampler,
-          useFactory: (_injector) => {
+          useFactory: (_injector: ReflectiveInjector) => {
             injector = _injector;
             return new MockSampler();
           },
@@ -35,7 +36,8 @@ export function main() {
       return runner;
     }
 
-    it('should set SampleDescription.id', inject([AsyncTestCompleter], (async) => {
+    it('should set SampleDescription.id',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createRunner()
              .sample({id: 'someId'})
              .then((_) => injector.get(SampleDescription))
@@ -45,7 +47,8 @@ export function main() {
              });
        }));
 
-    it('should merge SampleDescription.description', inject([AsyncTestCompleter], (async) => {
+    it('should merge SampleDescription.description',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
              .sample({
                id: 'someId',
@@ -61,7 +64,7 @@ export function main() {
        }));
 
     it('should fill SampleDescription.metrics from the Metric',
-       inject([AsyncTestCompleter], (async) => {
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createRunner()
              .sample({id: 'someId'})
              .then((_) => injector.get(SampleDescription))
@@ -72,7 +75,8 @@ export function main() {
              });
        }));
 
-    it('should bind Options.EXECUTE', inject([AsyncTestCompleter], (async) => {
+    it('should provide Options.EXECUTE',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var execute = () => {};
          createRunner().sample({id: 'someId', execute: execute}).then((_) => {
            expect(injector.get(Options.EXECUTE)).toEqual(execute);
@@ -80,7 +84,8 @@ export function main() {
          });
        }));
 
-    it('should bind Options.PREPARE', inject([AsyncTestCompleter], (async) => {
+    it('should provide Options.PREPARE',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var prepare = () => {};
          createRunner().sample({id: 'someId', prepare: prepare}).then((_) => {
            expect(injector.get(Options.PREPARE)).toEqual(prepare);
@@ -88,14 +93,16 @@ export function main() {
          });
        }));
 
-    it('should bind Options.MICRO_METRICS', inject([AsyncTestCompleter], (async) => {
+    it('should provide Options.MICRO_METRICS',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createRunner().sample({id: 'someId', microMetrics: {'a': 'b'}}).then((_) => {
            expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
            async.done();
          });
        }));
 
-    it('should overwrite bindings per sample call', inject([AsyncTestCompleter], (async) => {
+    it('should overwrite providers per sample call',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
              .sample({
                id: 'someId',
@@ -114,8 +121,8 @@ export function main() {
 }
 
 class MockWebDriverAdapter extends WebDriverAdapter {
-  executeScript(script): Promise<string> { return Promise.resolve('someUserAgent'); }
-  capabilities() { return null; }
+  executeScript(script: string): Promise<string> { return Promise.resolve('someUserAgent'); }
+  capabilities(): Promise<Map<string, any>> { return null; }
 }
 
 class MockValidator extends Validator {
@@ -129,6 +136,6 @@ class MockMetric extends Metric {
 }
 
 class MockSampler extends Sampler {
-  constructor() { super(); }
+  constructor() { super(null, null, null, null, null, null, null); }
   sample(): Promise<SampleState> { return Promise.resolve(new SampleState([], [])); }
 }

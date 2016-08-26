@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
-import {Json, NumberWrapper, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
+import {Inject, Injectable} from '@angular/core';
 
 import {Options} from '../common_options';
+import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {NumberWrapper, StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
-import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
+import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
+
 
 
 /**
@@ -21,13 +23,13 @@ import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
  * In order to collect the frame rate related metrics, add 'benchmark'
  * to the list above.
  */
+@Injectable()
 export class ChromeDriverExtension extends WebDriverExtension {
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): any[] { return _PROVIDERS; }
+  static PROVIDERS = [ChromeDriverExtension];
 
   private _majorChromeVersion: number;
 
-  constructor(private _driver: WebDriverAdapter, userAgent: string) {
+  constructor(private _driver: WebDriverAdapter, @Inject(Options.USER_AGENT) userAgent: string) {
     super();
     this._majorChromeVersion = this._parseChromeVersion(userAgent);
   }
@@ -63,15 +65,15 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   // See [Chrome Trace Event
   // Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
-  readPerfLog(): Promise<any> {
+  readPerfLog(): Promise<PerfLogEvent[]> {
     // TODO(tbosch): Chromedriver bug https://code.google.com/p/chromedriver/issues/detail?id=1098
     // Need to execute at least one command so that the browser logs can be read out!
     return this._driver.executeScript('1+1')
         .then((_) => this._driver.logs('performance'))
         .then((entries) => {
-          var events = [];
+          var events: PerfLogEvent[] = [];
           entries.forEach(entry => {
-            var message = Json.parse(entry['message'])['message'];
+            var message = JSON.parse(entry['message'])['message'];
             if (StringWrapper.equals(message['method'], 'Tracing.dataCollected')) {
               events.push(message['params']);
             }
@@ -84,8 +86,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   private _convertPerfRecordsToEvents(
-      chromeEvents: Array<{[key: string]: any}>,
-      normalizedEvents: Array<{[key: string]: any}> = null) {
+      chromeEvents: Array<{[key: string]: any}>, normalizedEvents: PerfLogEvent[] = null) {
     if (isBlank(normalizedEvents)) {
       normalizedEvents = [];
     }
@@ -128,7 +129,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return normalizedEvents;
   }
 
-  private _processAsPreChrome45Event(event, categories, majorGCPids) {
+  private _processAsPreChrome45Event(
+      event: {[key: string]: any}, categories: string[], majorGCPids: {[key: string]: any}) {
     var name = event['name'];
     var args = event['args'];
     var pid = event['pid'];
@@ -148,7 +150,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
       return normalizeEvent(event, {'name': 'render'});
     } else if (this._isEvent(
                    categories, name, ['disabled-by-default-devtools.timeline'], 'GCEvent')) {
-      var normArgs = {
+      var normArgs: {[key: string]: any} = {
         'usedHeapSize': isPresent(args['usedHeapSizeAfter']) ? args['usedHeapSizeAfter'] :
                                                                args['usedHeapSizeBefore']
       };
@@ -164,7 +166,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return null;  // nothing useful in this event
   }
 
-  private _processAsPostChrome44Event(event, categories) {
+  private _processAsPostChrome44Event(event: {[key: string]: any}, categories: string[]) {
     var name = event['name'];
     var args = event['args'];
     if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MajorGC')) {
@@ -230,14 +232,14 @@ export class ChromeDriverExtension extends WebDriverExtension {
 }
 
 function normalizeEvent(
-    chromeEvent: {[key: string]: any}, data: {[key: string]: any}): {[key: string]: any} {
+    chromeEvent: {[key: string]: any}, data: {[key: string]: any}): PerfLogEvent {
   var ph = chromeEvent['ph'];
   if (StringWrapper.equals(ph, 'S')) {
     ph = 'b';
   } else if (StringWrapper.equals(ph, 'F')) {
     ph = 'e';
   }
-  var result =
+  var result: {[key: string]: any} =
       {'pid': chromeEvent['pid'], 'ph': ph, 'cat': 'timeline', 'ts': chromeEvent['ts'] / 1000};
   if (chromeEvent['ph'] === 'X') {
     var dur = chromeEvent['dur'];
@@ -249,9 +251,3 @@ function normalizeEvent(
   StringMapWrapper.forEach(data, (value, prop) => { result[prop] = value; });
   return result;
 }
-
-var _PROVIDERS = [{
-  provide: ChromeDriverExtension,
-  useFactory: (driver, userAgent) => new ChromeDriverExtension(driver, userAgent),
-  deps: [WebDriverAdapter, Options.USER_AGENT]
-}];

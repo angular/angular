@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Math} from '@angular/facade/src/math';
+import {Math} from './facade/math';
 
 export class Statistic {
-  static calculateCoefficientOfVariation(sample, mean) {
+  static calculateCoefficientOfVariation(sample: number[], mean: number) {
     return Statistic.calculateStandardDeviation(sample, mean) / mean * 100;
   }
 
@@ -20,7 +20,7 @@ export class Statistic {
     return total / samples.length;
   }
 
-  static calculateStandardDeviation(samples: number[], mean) {
+  static calculateStandardDeviation(samples: number[], mean: number) {
     var deviation = 0;
     // TODO: use reduce
     samples.forEach(x => deviation += Math.pow(x - mean, 2));

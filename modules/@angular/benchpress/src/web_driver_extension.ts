@@ -6,11 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, OpaqueToken} from '@angular/core/src/di';
-import {isBlank, isPresent} from '@angular/facade/src/lang';
+import {Injector, OpaqueToken} from '@angular/core';
 
 import {Options} from './common_options';
+import {isBlank, isPresent} from './facade/lang';
 
+export type PerfLogEvent = {
+  cat?: string,
+  ph?: 'X' | 'B' | 'E' | 'b' | 'e',
+  ts?: number,
+  dur?: number,
+  name?: string,
+  pid?: string,
+  args?: {encodedDataLength?: number, usedHeapSize?: number, majorGc?: number}
+};
 
 /**
  * A WebDriverExtension implements extended commands of the webdriver protocol
@@ -18,7 +27,7 @@ import {Options} from './common_options';
  * Needs one implementation for every supported Browser.
  */
 export abstract class WebDriverExtension {
-  static bindTo(childTokens: any[]): any[] {
+  static provideFirstSupported(childTokens: any[]): any[] {
     var res = [
       {
         provide: _CHILDREN,
@@ -27,8 +36,8 @@ export abstract class WebDriverExtension {
       },
       {
         provide: WebDriverExtension,
-        useFactory: (children: WebDriverExtension[], capabilities) => {
-          var delegate;
+        useFactory: (children: WebDriverExtension[], capabilities: any) => {
+          var delegate: WebDriverExtension;
           children.forEach(extension => {
             if (extension.supports(capabilities)) {
               delegate = extension;
@@ -64,7 +73,7 @@ export abstract class WebDriverExtension {
    * Based on [Chrome Trace Event
    *Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
    **/
-  readPerfLog(): Promise<any[]> { throw new Error('NYI'); }
+  readPerfLog(): Promise<PerfLogEvent[]> { throw new Error('NYI'); }
 
   perfLogFeatures(): PerfLogFeatures { throw new Error('NYI'); }
 

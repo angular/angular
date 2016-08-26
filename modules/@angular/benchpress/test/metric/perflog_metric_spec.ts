@@ -8,10 +8,10 @@
 
 import {Provider} from '@angular/core';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {StringMapWrapper} from '@angular/facade/src/collection';
-import {isBlank, isPresent} from '@angular/facade/src/lang';
-import {Metric, Options, PerfLogFeatures, PerflogMetric, ReflectiveInjector, WebDriverExtension} from 'benchpress/common';
 
+import {Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, ReflectiveInjector, WebDriverExtension} from '../../index';
+import {StringMapWrapper} from '../../src/facade/collection';
+import {isBlank, isPresent} from '../../src/facade/lang';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
@@ -19,7 +19,7 @@ export function main() {
   var eventFactory = new TraceEventFactory('timeline', 'pid0');
 
   function createMetric(
-      perfLogs, perfLogFeatures,
+      perfLogs: PerfLogEvent[], perfLogFeatures: PerfLogFeatures,
       {microMetrics, forceGc, captureFrames, receivedData, requestCount}: {
         microMetrics?: {[key: string]: string},
         forceGc?: boolean,
@@ -39,7 +39,7 @@ export function main() {
       Options.DEFAULT_PROVIDERS, PerflogMetric.PROVIDERS,
       {provide: Options.MICRO_METRICS, useValue: microMetrics}, {
         provide: PerflogMetric.SET_TIMEOUT,
-        useValue: (fn, millis) => {
+        useValue: (fn: Function, millis: number) => {
           commandLog.push(['setTimeout', millis]);
           fn();
         },
@@ -66,8 +66,8 @@ export function main() {
 
   describe('perflog metric', () => {
 
-    function sortedKeys(stringMap) {
-      var res = [];
+    function sortedKeys(stringMap: {[key: string]: any}) {
+      var res: string[] = [];
       StringMapWrapper.forEach(stringMap, (_, key) => { res.push(key); });
       res.sort();
       return res;
@@ -130,7 +130,8 @@ export function main() {
 
     describe('beginMeasure', () => {
 
-      it('should not force gc and mark the timeline', inject([AsyncTestCompleter], (async) => {
+      it('should not force gc and mark the timeline',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var metric = createMetric([[]], null);
            metric.beginMeasure().then((_) => {
              expect(commandLog).toEqual([['timeBegin', 'benchpress0']]);
@@ -139,7 +140,8 @@ export function main() {
            });
          }));
 
-      it('should force gc and mark the timeline', inject([AsyncTestCompleter], (async) => {
+      it('should force gc and mark the timeline',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var metric = createMetric([[]], null, {forceGc: true});
            metric.beginMeasure().then((_) => {
              expect(commandLog).toEqual([['gc'], ['timeBegin', 'benchpress0']]);
@@ -153,7 +155,7 @@ export function main() {
     describe('endMeasure', () => {
 
       it('should mark and aggregate events in between the marks',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var events = [[
              eventFactory.markStart('benchpress0', 0), eventFactory.start('script', 4),
              eventFactory.end('script', 6), eventFactory.markEnd('benchpress0', 10)
@@ -169,7 +171,7 @@ export function main() {
            });
          }));
 
-      it('should restart timing', inject([AsyncTestCompleter], (async) => {
+      it('should restart timing', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var events = [
              [
                eventFactory.markStart('benchpress0', 0),
@@ -193,7 +195,7 @@ export function main() {
          }));
 
       it('should loop and aggregate until the end mark is present',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var events = [
              [eventFactory.markStart('benchpress0', 0), eventFactory.start('script', 1)],
              [eventFactory.end('script', 2)],
@@ -215,7 +217,7 @@ export function main() {
          }));
 
       it('should store events after the end mark for the next call',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var events = [
              [
                eventFactory.markStart('benchpress0', 0), eventFactory.markEnd('benchpress0', 1),
@@ -246,7 +248,7 @@ export function main() {
          }));
 
       describe('with forced gc', () => {
-        var events;
+        var events: PerfLogEvent[][];
         beforeEach(() => {
           events = [[
             eventFactory.markStart('benchpress0', 0), eventFactory.start('script', 4),
@@ -258,7 +260,7 @@ export function main() {
           ]];
         });
 
-        it('should measure forced gc', inject([AsyncTestCompleter], (async) => {
+        it('should measure forced gc', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              var metric = createMetric(events, null, {forceGc: true});
              metric.beginMeasure().then((_) => metric.endMeasure(false)).then((data) => {
                expect(commandLog).toEqual([
@@ -272,7 +274,8 @@ export function main() {
              });
            }));
 
-        it('should restart after the forced gc if needed', inject([AsyncTestCompleter], (async) => {
+        it('should restart after the forced gc if needed',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              var metric = createMetric(events, null, {forceGc: true});
              metric.beginMeasure().then((_) => metric.endMeasure(true)).then((data) => {
                expect(commandLog[5]).toEqual(['timeEnd', 'benchpress1', 'benchpress2']);
@@ -305,7 +308,8 @@ export function main() {
       }
 
       describe('frame metrics', () => {
-        it('should calculate mean frame time', inject([AsyncTestCompleter], (async) => {
+        it('should calculate mean frame time',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate(
                  [
                    eventFactory.markStart('frameCapture', 0), eventFactory.instant('frame', 1),
@@ -319,7 +323,8 @@ export function main() {
                  });
            }));
 
-        it('should throw if no start event', inject([AsyncTestCompleter], (async) => {
+        it('should throw if no start event',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
              aggregate(
                  [eventFactory.instant('frame', 4), eventFactory.markEnd('frameCapture', 5)],
@@ -332,7 +337,8 @@ export function main() {
                  });
            }));
 
-        it('should throw if no end event', inject([AsyncTestCompleter], (async) => {
+        it('should throw if no end event',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
              aggregate(
                  [eventFactory.markStart('frameCapture', 3), eventFactory.instant('frame', 4)],
@@ -343,7 +349,8 @@ export function main() {
                  });
            }));
 
-        it('should throw if trying to capture twice', inject([AsyncTestCompleter], (async) => {
+        it('should throw if trying to capture twice',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
              aggregate(
                  [
@@ -360,7 +367,7 @@ export function main() {
            }));
 
         it('should throw if trying to capture when frame capture is disabled',
-           inject([AsyncTestCompleter], (async) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate([eventFactory.markStart('frameCapture', 3)]).catch((err) => {
                expect(() => { throw err; })
                    .toThrowError(
@@ -371,7 +378,7 @@ export function main() {
            }));
 
         it('should throw if frame capture is enabled, but nothing is captured',
-           inject([AsyncTestCompleter], (async) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate([], {captureFrames: true}).catch((err): any => {
                expect(() => { throw err; })
                    .toThrowError(
@@ -380,7 +387,8 @@ export function main() {
              });
            }));
 
-        it('should calculate best and worst frame time', inject([AsyncTestCompleter], (async) => {
+        it('should calculate best and worst frame time',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate(
                  [
                    eventFactory.markStart('frameCapture', 0), eventFactory.instant('frame', 1),
@@ -397,7 +405,7 @@ export function main() {
            }));
 
         it('should calculate percentage of smoothness to be good',
-           inject([AsyncTestCompleter], (async) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate(
                  [
                    eventFactory.markStart('frameCapture', 0), eventFactory.instant('frame', 1),
@@ -412,7 +420,7 @@ export function main() {
            }));
 
         it('should calculate percentage of smoothness to be bad',
-           inject([AsyncTestCompleter], (async) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate(
                  [
                    eventFactory.markStart('frameCapture', 0), eventFactory.instant('frame', 1),
@@ -429,7 +437,8 @@ export function main() {
 
       });
 
-      it('should report a single interval', inject([AsyncTestCompleter], (async) => {
+      it('should report a single interval',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([
              eventFactory.start('script', 0), eventFactory.end('script', 5)
            ]).then((data) => {
@@ -438,7 +447,8 @@ export function main() {
            });
          }));
 
-      it('should sum up multiple intervals', inject([AsyncTestCompleter], (async) => {
+      it('should sum up multiple intervals',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([
              eventFactory.start('script', 0), eventFactory.end('script', 5),
              eventFactory.start('script', 10), eventFactory.end('script', 17)
@@ -448,21 +458,24 @@ export function main() {
            });
          }));
 
-      it('should ignore not started intervals', inject([AsyncTestCompleter], (async) => {
+      it('should ignore not started intervals',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([eventFactory.end('script', 10)]).then((data) => {
              expect(data['scriptTime']).toBe(0);
              async.done();
            });
          }));
 
-      it('should ignore not ended intervals', inject([AsyncTestCompleter], (async) => {
+      it('should ignore not ended intervals',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([eventFactory.start('script', 10)]).then((data) => {
              expect(data['scriptTime']).toBe(0);
              async.done();
            });
          }));
 
-      it('should ignore nested intervals', inject([AsyncTestCompleter], (async) => {
+      it('should ignore nested intervals',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([
              eventFactory.start('script', 0), eventFactory.start('script', 5),
              eventFactory.end('script', 10), eventFactory.end('script', 17)
@@ -473,7 +486,7 @@ export function main() {
          }));
 
       it('should ignore events from different processed as the start mark',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var otherProcessEventFactory = new TraceEventFactory('timeline', 'pid1');
            var metric = createMetric(
                [[
@@ -490,7 +503,8 @@ export function main() {
            });
          }));
 
-      it('should support scriptTime metric', inject([AsyncTestCompleter], (async) => {
+      it('should support scriptTime metric',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([
              eventFactory.start('script', 0), eventFactory.end('script', 5)
            ]).then((data) => {
@@ -499,7 +513,8 @@ export function main() {
            });
          }));
 
-      it('should support renderTime metric', inject([AsyncTestCompleter], (async) => {
+      it('should support renderTime metric',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([
              eventFactory.start('render', 0), eventFactory.end('render', 5)
            ]).then((data) => {
@@ -508,7 +523,8 @@ export function main() {
            });
          }));
 
-      it('should support gcTime/gcAmount metric', inject([AsyncTestCompleter], (async) => {
+      it('should support gcTime/gcAmount metric',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([
              eventFactory.start('gc', 0, {'usedHeapSize': 2500}),
              eventFactory.end('gc', 5, {'usedHeapSize': 1000})
@@ -520,7 +536,8 @@ export function main() {
            });
          }));
 
-      it('should support majorGcTime metric', inject([AsyncTestCompleter], (async) => {
+      it('should support majorGcTime metric',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([
              eventFactory.start('gc', 0, {'usedHeapSize': 2500}),
              eventFactory.end('gc', 5, {'usedHeapSize': 1000, 'majorGc': true})
@@ -532,7 +549,7 @@ export function main() {
          }));
 
       it('should support pureScriptTime = scriptTime-gcTime-renderTime',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([
              eventFactory.start('script', 0), eventFactory.start('gc', 1, {'usedHeapSize': 1000}),
              eventFactory.end('gc', 4, {'usedHeapSize': 0}), eventFactory.start('render', 4),
@@ -546,7 +563,7 @@ export function main() {
 
       describe('receivedData', () => {
         it('should report received data since last navigationStart',
-           inject([AsyncTestCompleter], (async) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate(
                  [
                    eventFactory.instant('receivedData', 0, {'encodedDataLength': 1}),
@@ -566,7 +583,7 @@ export function main() {
 
       describe('requestCount', () => {
         it('should report count of requests sent since last navigationStart',
-           inject([AsyncTestCompleter], (async) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate(
                  [
                    eventFactory.instant('sendRequest', 0),
@@ -585,7 +602,8 @@ export function main() {
 
       describe('microMetrics', () => {
 
-        it('should report micro metrics', inject([AsyncTestCompleter], (async) => {
+        it('should report micro metrics',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate(
                  [
                    eventFactory.markStart('mm1', 0),
@@ -599,7 +617,7 @@ export function main() {
            }));
 
         it('should ignore micro metrics that were not specified',
-           inject([AsyncTestCompleter], (async) => {
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate([
                eventFactory.markStart('mm1', 0),
                eventFactory.markEnd('mm1', 5),
@@ -609,7 +627,8 @@ export function main() {
              });
            }));
 
-        it('should report micro metric averages', inject([AsyncTestCompleter], (async) => {
+        it('should report micro metric averages',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate(
                  [
                    eventFactory.markStart('mm1*20', 0),
@@ -636,12 +655,12 @@ class MockDriverExtension extends WebDriverExtension {
     super();
   }
 
-  timeBegin(name): Promise<any> {
+  timeBegin(name: string): Promise<any> {
     this._commandLog.push(['timeBegin', name]);
     return Promise.resolve(null);
   }
 
-  timeEnd(name, restartName): Promise<any> {
+  timeEnd(name: string, restartName: string): Promise<any> {
     this._commandLog.push(['timeEnd', name, restartName]);
     return Promise.resolve(null);
   }

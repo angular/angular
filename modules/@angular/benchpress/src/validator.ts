@@ -14,10 +14,6 @@ import {MeasureValues} from './measure_values';
  * in the correct way.
  */
 export abstract class Validator {
-  static bindTo(delegateToken): any[] {
-    return [{provide: Validator, useFactory: (delegate) => delegate, deps: [delegateToken]}];
-  }
-
   /**
    * Calculates a valid sample out of the complete sample
    */

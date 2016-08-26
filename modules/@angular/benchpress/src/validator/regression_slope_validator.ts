@@ -6,35 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '@angular/core/src/di';
-import {ListWrapper} from '@angular/facade/src/collection';
+import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
+import {ListWrapper} from '../facade/collection';
 import {MeasureValues} from '../measure_values';
 import {Statistic} from '../statistic';
 import {Validator} from '../validator';
+
 
 
 /**
  * A validator that checks the regression slope of a specific metric.
  * Waits for the regression slope to be >=0.
  */
+@Injectable()
 export class RegressionSlopeValidator extends Validator {
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get SAMPLE_SIZE(): OpaqueToken { return _SAMPLE_SIZE; }
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get METRIC(): OpaqueToken { return _METRIC; }
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): any[] { return _PROVIDERS; }
+  static SAMPLE_SIZE = new OpaqueToken('RegressionSlopeValidator.sampleSize');
+  static METRIC = new OpaqueToken('RegressionSlopeValidator.metric');
+  static PROVIDERS = [
+    RegressionSlopeValidator, {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: 10},
+    {provide: RegressionSlopeValidator.METRIC, useValue: 'scriptTime'}
+  ];
 
-  /** @internal */
-  private _sampleSize: number;
-  /** @internal */
-  private _metric: string;
-
-  constructor(sampleSize, metric) {
+  constructor(
+      @Inject(RegressionSlopeValidator.SAMPLE_SIZE) private _sampleSize: number,
+      @Inject(RegressionSlopeValidator.METRIC) private _metric: string) {
     super();
-    this._sampleSize = sampleSize;
-    this._metric = metric;
   }
 
   describe(): {[key: string]: any} {
@@ -45,8 +42,8 @@ export class RegressionSlopeValidator extends Validator {
     if (completeSample.length >= this._sampleSize) {
       var latestSample = ListWrapper.slice(
           completeSample, completeSample.length - this._sampleSize, completeSample.length);
-      var xValues = [];
-      var yValues = [];
+      var xValues: number[] = [];
+      var yValues: number[] = [];
       for (var i = 0; i < latestSample.length; i++) {
         // For now, we only use the array index as x value.
         // TODO(tbosch): think about whether we should use time here instead
@@ -61,14 +58,3 @@ export class RegressionSlopeValidator extends Validator {
     }
   }
 }
-
-var _SAMPLE_SIZE = new OpaqueToken('RegressionSlopeValidator.sampleSize');
-var _METRIC = new OpaqueToken('RegressionSlopeValidator.metric');
-var _PROVIDERS = [
-  {
-    provide: RegressionSlopeValidator,
-    useFactory: (sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
-    deps: [_SAMPLE_SIZE, _METRIC]
-  },
-  {provide: _SAMPLE_SIZE, useValue: 10}, {provide: _METRIC, useValue: 'scriptTime'}
-];

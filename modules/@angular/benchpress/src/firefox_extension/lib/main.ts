@@ -11,13 +11,13 @@ var os = Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService)
 var ParserUtil = require('./parser_util');
 
 class Profiler {
-  private _profiler;
+  private _profiler: any;
   private _markerEvents: any[];
   private _profilerStartTime: number;
 
   constructor() { this._profiler = Cc['@mozilla.org/tools/profiler;1'].getService(Ci.nsIProfiler); }
 
-  start(entries, interval, features, timeStarted) {
+  start(entries: any, interval: any, features: any, timeStarted: any) {
     this._profiler.StartProfiler(entries, interval, features, features.length);
     this._profilerStartTime = timeStarted;
     this._markerEvents = [];
@@ -29,7 +29,9 @@ class Profiler {
     var profileData = this._profiler.getProfileData();
     var perfEvents = ParserUtil.convertPerfProfileToEvents(profileData);
     perfEvents = this._mergeMarkerEvents(perfEvents);
-    perfEvents.sort(function(event1, event2) { return event1.ts - event2.ts; });  // Sort by ts
+    perfEvents.sort(function(event1: any, event2: any) {
+      return event1.ts - event2.ts;
+    });  // Sort by ts
     return perfEvents;
   }
 
@@ -59,16 +61,18 @@ var profiler = new Profiler();
 mod.PageMod({
   include: ['*'],
   contentScriptFile: data.url('installed_script.js'),
-  onAttach: worker => {
+  onAttach: (worker: any) => {
     worker.port.on(
         'startProfiler',
-        (timeStarted) => profiler.start(
+        (timeStarted: any) => profiler.start(
             /* = profiler memory */ 3000000, 0.1, ['leaf', 'js', 'stackwalk', 'gc'], timeStarted));
     worker.port.on('stopProfiler', () => profiler.stop());
     worker.port.on(
         'getProfile', () => worker.port.emit('perfProfile', profiler.getProfilePerfEvents()));
     worker.port.on('forceGC', forceGC);
-    worker.port.on('markStart', (name, timeStarted) => profiler.addStartEvent(name, timeStarted));
-    worker.port.on('markEnd', (name, timeEnded) => profiler.addEndEvent(name, timeEnded));
+    worker.port.on(
+        'markStart', (name: string, timeStarted: any) => profiler.addStartEvent(name, timeStarted));
+    worker.port.on(
+        'markEnd', (name: string, timeEnded: any) => profiler.addEndEvent(name, timeEnded));
   }
 });

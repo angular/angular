@@ -7,16 +7,21 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {DateWrapper, Json, isPresent} from '@angular/facade/src/lang';
-import {MeasureValues, Options, ReflectiveInjector, SampleDescription} from 'benchpress/common';
-import {JsonFileReporter} from 'benchpress/src/reporter/json_file_reporter';
+
+import {JsonFileReporter, MeasureValues, Options, ReflectiveInjector, SampleDescription} from '../../index';
+import {DateWrapper, Json, isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('file reporter', () => {
-    var loggedFile;
+    var loggedFile: any;
 
-    function createReporter({sampleId, descriptions, metrics, path}) {
-      var bindings = [
+    function createReporter({sampleId, descriptions, metrics, path}: {
+      sampleId: string,
+      descriptions: {[key: string]: any}[],
+      metrics: {[key: string]: string},
+      path: string
+    }) {
+      var providers = [
         JsonFileReporter.PROVIDERS, {
           provide: SampleDescription,
           useValue: new SampleDescription(sampleId, descriptions, metrics)
@@ -24,16 +29,17 @@ export function main() {
         {provide: JsonFileReporter.PATH, useValue: path},
         {provide: Options.NOW, useValue: () => DateWrapper.fromMillis(1234)}, {
           provide: Options.WRITE_FILE,
-          useValue: (filename, content) => {
+          useValue: (filename: string, content: string) => {
             loggedFile = {'filename': filename, 'content': content};
             return Promise.resolve(null);
           }
         }
       ];
-      return ReflectiveInjector.resolveAndCreate(bindings).get(JsonFileReporter);
+      return ReflectiveInjector.resolveAndCreate(providers).get(JsonFileReporter);
     }
 
-    it('should write all data into a file', inject([AsyncTestCompleter], (async) => {
+    it('should write all data into a file',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createReporter({
            sampleId: 'someId',
            descriptions: [{'a': 2}],
@@ -66,6 +72,6 @@ export function main() {
   });
 }
 
-function mv(runIndex, time, values) {
+function mv(runIndex: number, time: number, values: {[key: string]: number}) {
   return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
 }

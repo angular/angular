@@ -8,15 +8,16 @@
 
 import {Provider, ReflectiveInjector} from '@angular/core';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {StringMapWrapper} from '@angular/facade/src/collection';
-import {Json, isBlank, isPresent} from '@angular/facade/src/lang';
-import {Injector, Metric, MultiMetric, Options, PerfLogFeatures, PerflogMetric, UserMetric, WebDriverAdapter, WebDriverExtension} from 'benchpress/common';
+
+import {Injector, Metric, MultiMetric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, UserMetric, WebDriverAdapter, WebDriverExtension} from '../../index';
+import {StringMapWrapper} from '../../src/facade/collection';
+import {Json, isBlank, isPresent} from '../../src/facade/lang';
 
 export function main() {
   var wdAdapter: MockDriverAdapter;
 
   function createMetric(
-      perfLogs, perfLogFeatures,
+      perfLogs: PerfLogEvent[], perfLogFeatures: PerfLogFeatures,
       {userMetrics}: {userMetrics?: {[key: string]: string}} = {}): UserMetric {
     if (isBlank(perfLogFeatures)) {
       perfLogFeatures =
@@ -26,12 +27,12 @@ export function main() {
       userMetrics = StringMapWrapper.create();
     }
     wdAdapter = new MockDriverAdapter();
-    var bindings: Provider[] = [
+    var providers: Provider[] = [
       Options.DEFAULT_PROVIDERS, UserMetric.PROVIDERS,
       {provide: Options.USER_METRICS, useValue: userMetrics},
       {provide: WebDriverAdapter, useValue: wdAdapter}
     ];
-    return ReflectiveInjector.resolveAndCreate(bindings).get(UserMetric);
+    return ReflectiveInjector.resolveAndCreate(providers).get(UserMetric);
   }
 
   describe('user metric', () => {
@@ -45,7 +46,7 @@ export function main() {
 
     describe('endMeasure', () => {
       it('should stop measuring when all properties have numeric values',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            let metric = createMetric(
                [[]], new PerfLogFeatures(),
                {userMetrics: {'loadTime': 'time to load', 'content': 'time to see content'}});

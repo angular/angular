@@ -13,7 +13,7 @@ var pathUtil = require('path');
 
 var PERF_ADDON_PACKAGE_JSON_DIR = '..';
 
-exports.getAbsolutePath = function(path) {
+exports.getAbsolutePath = function(path: string) {
   var normalizedPath = pathUtil.normalize(path);
   if (pathUtil.resolve(normalizedPath) == normalizedPath) {
     // Already absolute path
@@ -23,12 +23,12 @@ exports.getAbsolutePath = function(path) {
   }
 };
 
-exports.getFirefoxProfile = function(extensionPath) {
+exports.getFirefoxProfile = function(extensionPath: string) {
   var deferred = q.defer();
 
   var firefoxProfile = new FirefoxProfile();
   firefoxProfile.addExtensions([extensionPath], () => {
-    firefoxProfile.encoded(encodedProfile => {
+    firefoxProfile.encoded((encodedProfile: any) => {
       var multiCapabilities = [{browserName: 'firefox', firefox_profile: encodedProfile}];
       deferred.resolve(multiCapabilities);
     });
@@ -44,7 +44,7 @@ exports.getFirefoxProfileWithExtension = function() {
   var savedCwd = process.cwd();
   process.chdir(absPackageJsonDir);
 
-  return jpm(packageJson).then(xpiPath => {
+  return jpm(packageJson).then((xpiPath: string) => {
     process.chdir(savedCwd);
     return exports.getFirefoxProfile(xpiPath);
   });

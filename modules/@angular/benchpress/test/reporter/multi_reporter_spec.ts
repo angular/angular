@@ -7,15 +7,16 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {DateWrapper} from '@angular/facade/src/lang';
-import {MeasureValues, MultiReporter, ReflectiveInjector, Reporter} from 'benchpress/common';
+
+import {MeasureValues, MultiReporter, ReflectiveInjector, Reporter} from '../../index';
+import {DateWrapper} from '../../src/facade/lang';
 
 export function main() {
   function createReporters(ids: any[]) {
     var r = ReflectiveInjector
                 .resolveAndCreate([
                   ids.map(id => { return {provide: id, useValue: new MockReporter(id)}; }),
-                  MultiReporter.createBindings(ids)
+                  MultiReporter.provideWith(ids)
                 ])
                 .get(MultiReporter);
     return Promise.resolve(r);
@@ -23,7 +24,8 @@ export function main() {
 
   describe('multi reporter', () => {
 
-    it('should reportMeasureValues to all', inject([AsyncTestCompleter], (async) => {
+    it('should reportMeasureValues to all',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var mv = new MeasureValues(0, DateWrapper.now(), {});
          createReporters(['m1', 'm2']).then((r) => r.reportMeasureValues(mv)).then((values) => {
 
@@ -32,7 +34,7 @@ export function main() {
          });
        }));
 
-    it('should reportSample to call', inject([AsyncTestCompleter], (async) => {
+    it('should reportSample to call', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var completeSample = [
            new MeasureValues(0, DateWrapper.now(), {}), new MeasureValues(1, DateWrapper.now(), {})
          ];

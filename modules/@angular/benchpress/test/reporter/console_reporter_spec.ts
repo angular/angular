@@ -6,17 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Provider} from '@angular/core';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {Date, DateWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
-import {ConsoleReporter, MeasureValues, ReflectiveInjector, Reporter, SampleDescription, SampleState} from 'benchpress/common';
+
+import {ConsoleReporter, MeasureValues, ReflectiveInjector, Reporter, SampleDescription, SampleState} from '../../index';
+import {Date, DateWrapper, isBlank, isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('console reporter', () => {
-    var reporter;
+    var reporter: ConsoleReporter;
     var log: string[];
 
-    function createReporter({columnWidth = null, sampleId = null, descriptions = null,
-                             metrics = null}: {columnWidth?, sampleId?, descriptions?, metrics?}) {
+    function createReporter(
+        {columnWidth = null, sampleId = null, descriptions = null, metrics = null}: {
+          columnWidth?: number,
+          sampleId?: string,
+          descriptions?: {[key: string]: any}[],
+          metrics?: {[key: string]: any}
+        }) {
       log = [];
       if (isBlank(descriptions)) {
         descriptions = [];
@@ -24,17 +31,17 @@ export function main() {
       if (isBlank(sampleId)) {
         sampleId = 'null';
       }
-      var bindings = [
+      var providers: Provider[] = [
         ConsoleReporter.PROVIDERS, {
           provide: SampleDescription,
           useValue: new SampleDescription(sampleId, descriptions, metrics)
         },
-        {provide: ConsoleReporter.PRINT, useValue: (line) => log.push(line)}
+        {provide: ConsoleReporter.PRINT, useValue: (line: string) => log.push(line)}
       ];
       if (isPresent(columnWidth)) {
-        bindings.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue: columnWidth});
+        providers.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue: columnWidth});
       }
-      reporter = ReflectiveInjector.resolveAndCreate(bindings).get(ConsoleReporter);
+      reporter = ReflectiveInjector.resolveAndCreate(providers).get(ConsoleReporter);
     }
 
     it('should print the sample id, description and table header', () => {
@@ -82,6 +89,6 @@ export function main() {
   });
 }
 
-function mv(runIndex, time, values) {
+function mv(runIndex: number, time: number, values: {[key: string]: number}) {
   return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
 }

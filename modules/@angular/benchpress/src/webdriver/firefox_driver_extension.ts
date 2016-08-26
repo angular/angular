@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringWrapper, isPresent} from '@angular/facade/src/lang';
+import {Injectable} from '@angular/core';
 
+import {StringWrapper, isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
-import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
+import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
+@Injectable()
 export class FirefoxDriverExtension extends WebDriverExtension {
-  static get PROVIDERS(): any[] { return _PROVIDERS; }
+  static PROVIDERS = [FirefoxDriverExtension];
 
   private _profilerStarted: boolean;
 
@@ -39,7 +41,7 @@ export class FirefoxDriverExtension extends WebDriverExtension {
     return this._driver.executeScript(script);
   }
 
-  readPerfLog(): Promise<any> {
+  readPerfLog(): Promise<PerfLogEvent> {
     return this._driver.executeAsyncScript('var cb = arguments[0]; window.getProfile(cb);');
   }
 
@@ -49,9 +51,3 @@ export class FirefoxDriverExtension extends WebDriverExtension {
     return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'firefox');
   }
 }
-
-var _PROVIDERS = [{
-  provide: FirefoxDriverExtension,
-  useFactory: (driver) => new FirefoxDriverExtension(driver),
-  deps: [WebDriverAdapter]
-}];

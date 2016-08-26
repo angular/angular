@@ -7,7 +7,7 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {Statistic} from 'benchpress/src/statistic';
+import {Statistic} from '../src/statistic';
 
 export function main() {
   describe('statistic', () => {

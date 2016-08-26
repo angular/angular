@@ -6,19 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken, Provider} from '@angular/core';
-import {StringMapWrapper} from '@angular/facade/src/collection';
-import {isNumber} from '@angular/facade/src/lang';
+import {Inject, Injectable, OpaqueToken, Provider} from '@angular/core';
 
 import {Options} from '../common_options';
+import {StringMapWrapper} from '../facade/collection';
+import {isNumber} from '../facade/lang';
 import {Metric} from '../metric';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
+@Injectable()
 export class UserMetric extends Metric {
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): Provider[] { return _PROVIDERS; }
+  static PROVIDERS = [UserMetric];
 
-  constructor(private _userMetrics: {[key: string]: string}, private _wdAdapter: WebDriverAdapter) {
+  constructor(
+      @Inject(Options.USER_METRICS) private _userMetrics: {[key: string]: string},
+      private _wdAdapter: WebDriverAdapter) {
     super();
   }
 
@@ -67,9 +69,3 @@ export class UserMetric extends Metric {
    */
   describe(): {[key: string]: any} { return this._userMetrics; }
 }
-
-var _PROVIDERS: Provider[] = [{
-  provide: UserMetric,
-  useFactory: (userMetrics, wdAdapter) => new UserMetric(userMetrics, wdAdapter),
-  deps: [Options.USER_METRICS, WebDriverAdapter]
-}];

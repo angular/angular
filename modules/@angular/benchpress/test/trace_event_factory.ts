@@ -6,36 +6,34 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent} from '@angular/facade/src/lang';
+import {PerfLogEvent} from '../index';
+import {isPresent} from '../src/facade/lang';
 
 export class TraceEventFactory {
-  private _cat: string;
-  private _pid;
+  constructor(private _cat: string, private _pid: string) {}
 
-  constructor(cat, pid) {
-    this._cat = cat;
-    this._pid = pid;
-  }
-
-  create(ph, name, time, args = null) {
-    var res = {'name': name, 'cat': this._cat, 'ph': ph, 'ts': time, 'pid': this._pid};
+  create(ph: any, name: string, time: number, args: any = null) {
+    var res:
+        PerfLogEvent = {'name': name, 'cat': this._cat, 'ph': ph, 'ts': time, 'pid': this._pid};
     if (isPresent(args)) {
       res['args'] = args;
     }
     return res;
   }
 
-  markStart(name, time) { return this.create('b', name, time); }
+  markStart(name: string, time: number) { return this.create('b', name, time); }
 
-  markEnd(name, time) { return this.create('e', name, time); }
+  markEnd(name: string, time: number) { return this.create('e', name, time); }
 
-  start(name, time, args = null) { return this.create('B', name, time, args); }
+  start(name: string, time: number, args: any = null) { return this.create('B', name, time, args); }
 
-  end(name, time, args = null) { return this.create('E', name, time, args); }
+  end(name: string, time: number, args: any = null) { return this.create('E', name, time, args); }
 
-  instant(name, time, args = null) { return this.create('i', name, time, args); }
+  instant(name: string, time: number, args: any = null) {
+    return this.create('i', name, time, args);
+  }
 
-  complete(name, time, duration, args = null) {
+  complete(name: string, time: number, duration: number, args: any = null) {
     var res = this.create('X', name, time, args);
     res['dur'] = duration;
     return res;

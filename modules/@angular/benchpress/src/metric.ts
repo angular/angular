@@ -11,10 +11,6 @@
  * A metric is measures values
  */
 export abstract class Metric {
-  static bindTo(delegateToken): any[] {
-    return [{provide: Metric, useFactory: (delegate) => delegate, deps: [delegateToken]}];
-  }
-
   /**
    * Starts measuring
    */
@@ -31,5 +27,5 @@ export abstract class Metric {
    * Describes the metrics provided by this metric implementation.
    * (e.g. units, ...)
    */
-  describe(): {[key: string]: any} { throw new Error('NYI'); }
+  describe(): {[key: string]: string} { throw new Error('NYI'); }
 }

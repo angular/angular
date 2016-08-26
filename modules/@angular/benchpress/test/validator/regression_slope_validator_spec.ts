@@ -7,15 +7,16 @@
  */
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {ListWrapper} from '@angular/facade/src/collection';
-import {Date, DateWrapper} from '@angular/facade/src/lang';
-import {MeasureValues, ReflectiveInjector, RegressionSlopeValidator} from 'benchpress/common';
+
+import {MeasureValues, ReflectiveInjector, RegressionSlopeValidator} from '../../index';
+import {ListWrapper} from '../../src/facade/collection';
+import {Date, DateWrapper} from '../../src/facade/lang';
 
 export function main() {
   describe('regression slope validator', () => {
-    var validator;
+    var validator: RegressionSlopeValidator;
 
-    function createValidator({size, metric}) {
+    function createValidator({size, metric}: {size: number, metric: string}) {
       validator = ReflectiveInjector
                       .resolveAndCreate([
                         RegressionSlopeValidator.PROVIDERS,
@@ -60,6 +61,6 @@ export function main() {
   });
 }
 
-function mv(runIndex, time, values) {
+function mv(runIndex: number, time: number, values: {[key: string]: number}) {
   return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
 }

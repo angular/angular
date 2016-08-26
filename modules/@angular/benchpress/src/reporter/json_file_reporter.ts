@@ -6,39 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '@angular/core/src/di';
-import {DateWrapper, Json, isBlank, isPresent} from '@angular/facade/src/lang';
+import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
 import {Options} from '../common_options';
+import {DateWrapper, Json, isBlank, isPresent} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
 
 
+
 /**
  * A reporter that writes results into a json file.
  */
+@Injectable()
 export class JsonFileReporter extends Reporter {
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get PATH(): OpaqueToken { return _PATH; }
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): any[] { return _PROVIDERS; }
+  static PATH = new OpaqueToken('JsonFileReporter.path');
+  static PROVIDERS = [JsonFileReporter, {provide: JsonFileReporter.PATH, useValue: '.'}];
 
-  /** @internal */
-  private _writeFile: Function;
-  /** @internal */
-  private _path: string;
-  /** @internal */
-  private _description: SampleDescription;
-  /** @internal */
-  private _now: Function;
-
-  constructor(sampleDescription, path, writeFile, now) {
+  constructor(
+      private _description: SampleDescription, @Inject(JsonFileReporter.PATH) private _path: string,
+      @Inject(Options.WRITE_FILE) private _writeFile: Function,
+      @Inject(Options.NOW) private _now: Function) {
     super();
-    this._description = sampleDescription;
-    this._path = path;
-    this._writeFile = writeFile;
-    this._now = now;
   }
 
   reportMeasureValues(measureValues: MeasureValues): Promise<any> { return Promise.resolve(null); }
@@ -54,14 +44,3 @@ export class JsonFileReporter extends Reporter {
     return this._writeFile(filePath, content);
   }
 }
-
-var _PATH = new OpaqueToken('JsonFileReporter.path');
-var _PROVIDERS = [
-  {
-    provide: JsonFileReporter,
-    useFactory: (sampleDescription, path, writeFile, now) =>
-                    new JsonFileReporter(sampleDescription, path, writeFile, now),
-    deps: [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]
-  },
-  {provide: _PATH, useValue: '.'}
-];

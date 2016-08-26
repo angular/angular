@@ -3,6 +3,10 @@
 Benchpress is a framework for e2e performance tests.
 See [here for an example project](https://github.com/angular/benchpress-tree).
 
+The sources for this package are in the main [Angular2](https://github.com/angular/angular) repo. Please file issues and pull requests against that repo.
+
+License: Apache MIT 2.0
+
 # Why?
 
 There are so called "micro benchmarks" that essentially use a stop watch in the browser to measure time
@@ -158,7 +162,7 @@ runner.sample({
 ````
 
 When looking into the DevTools Timeline, we see a marker as well:
-![Marked Timeline](marked_timeline.png)
+![Marked Timeline](docs/marked_timeline.png)
 
 ### Custom Metrics Without Using `console.time`
 
@@ -185,8 +189,8 @@ describe('home page load', function() {
       userMetrics: {
         timeToBootstrap: 'The time in milliseconds to bootstrap'
       },
-      bindings: [
-        bind(RegressionSlopeValidator.METRIC).toValue('timeToBootstrap')
+      providers: [
+        {provide: RegressionSlopeValidator.METRIC, useValue: 'timeToBootstrap'}
       ]
     }).then(done);
   });
@@ -208,9 +212,9 @@ Benchpress can also measure the "smoothness" of scrolling and animations. In ord
 
 To collect these metrics, you need to execute `console.time('frameCapture')` and `console.timeEnd('frameCapture')` either in your benchmark application or in you benchmark driver via webdriver. The metrics mentioned above will only be collected between those two calls and it is recommended to wrap the time/timeEnd calls as closely as possible around the action you want to evaluate to get accurate measurements.
 
-In addition to that, one extra binding needs to be passed to benchpress in tests that want to collect these metrics:
+In addition to that, one extra provider needs to be passed to benchpress in tests that want to collect these metrics:
 
-    benchpress.sample(providers: [bp.bind(bp.Options.CAPTURE_FRAMES).toValue(true)], ... )
+    benchpress.sample(providers: [{provide: bp.Options.CAPTURE_FRAMES, useValue: true}], ... )
 
 # Requests Metrics
 
@@ -222,8 +226,8 @@ Benchpress can also record the number of requests sent and count the received "e
 To collect these metrics, you need the following corresponding extra providers:
 
     benchpress.sample(providers: [
-      bp.bind(bp.Options.RECEIVED_DATA).toValue(true),
-      bp.bind(bp.Options.REQUEST_COUNT).toValue(true)
+      {provide: bp.Options.RECEIVED_DATA, useValue: true},
+      {provide: bp.Options.REQUEST_COUNT, useValue: true}
     ], ... )
 
 # Best practices
@@ -256,7 +260,7 @@ To collect these metrics, you need the following corresponding extra providers:
 
 # Detailed overview
 
-![Overview](overview.png)
+![Overview](docs/overview.png)
 
 Definitions:
 

@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Json, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
+import {Injectable} from '@angular/core';
 
+import {StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
-import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
+import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
+@Injectable()
 export class IOsDriverExtension extends WebDriverExtension {
-  // TODO(tbosch): use static values when our transpiler supports them
-  static get PROVIDERS(): any[] { return _PROVIDERS; }
+  static PROVIDERS = [IOsDriverExtension];
 
   constructor(private _driver: WebDriverAdapter) { super(); }
 
@@ -38,9 +39,9 @@ export class IOsDriverExtension extends WebDriverExtension {
     return this._driver.executeScript('1+1')
         .then((_) => this._driver.logs('performance'))
         .then((entries) => {
-          var records = [];
+          var records: any[] = [];
           entries.forEach(entry => {
-            var message = Json.parse(entry['message'])['message'];
+            var message = JSON.parse(entry['message'])['message'];
             if (StringWrapper.equals(message['method'], 'Timeline.eventRecorded')) {
               records.push(message['params']['record']);
             }
@@ -50,12 +51,12 @@ export class IOsDriverExtension extends WebDriverExtension {
   }
 
   /** @internal */
-  private _convertPerfRecordsToEvents(records: any[], events: any[] = null) {
+  private _convertPerfRecordsToEvents(records: any[], events: PerfLogEvent[] = null) {
     if (isBlank(events)) {
       events = [];
     }
     records.forEach((record) => {
-      var endEvent = null;
+      var endEvent: PerfLogEvent = null;
       var type = record['type'];
       var data = record['data'];
       var startTime = record['startTime'];
@@ -95,8 +96,9 @@ export class IOsDriverExtension extends WebDriverExtension {
   }
 }
 
-function createEvent(ph, name, time, args = null) {
-  var result = {
+function createEvent(
+    ph: 'X' | 'B' | 'E' | 'b' | 'e', name: string, time: number, args: any = null) {
+  var result: PerfLogEvent = {
     'cat': 'timeline',
     'name': name,
     'ts': time,
@@ -111,24 +113,18 @@ function createEvent(ph, name, time, args = null) {
   return result;
 }
 
-function createStartEvent(name, time, args = null) {
+function createStartEvent(name: string, time: number, args: any = null) {
   return createEvent('B', name, time, args);
 }
 
-function createEndEvent(name, time, args = null) {
+function createEndEvent(name: string, time: number, args: any = null) {
   return createEvent('E', name, time, args);
 }
 
-function createMarkStartEvent(name, time) {
+function createMarkStartEvent(name: string, time: number) {
   return createEvent('b', name, time);
 }
 
-function createMarkEndEvent(name, time) {
+function createMarkEndEvent(name: string, time: number) {
   return createEvent('e', name, time);
 }
-
-var _PROVIDERS = [{
-  provide: IOsDriverExtension,
-  useFactory: (driver) => new IOsDriverExtension(driver),
-  deps: [WebDriverAdapter]
-}];

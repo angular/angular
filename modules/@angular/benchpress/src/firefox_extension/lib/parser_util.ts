@@ -12,11 +12,11 @@
  *     within the perf profile.
  */
 export function convertPerfProfileToEvents(perfProfile: any): any[] {
-  var inProgressEvents = new Map();  // map from event name to start time
-  var finishedEvents = [];           // Event[] finished events
-  var addFinishedEvent = function(eventName, startTime, endTime) {
+  var inProgressEvents = new Map();                 // map from event name to start time
+  var finishedEvents: {[key: string]: any}[] = [];  // Event[] finished events
+  var addFinishedEvent = function(eventName: string, startTime: number, endTime: number) {
     var categorizedEventName = categorizeEvent(eventName);
-    var args = undefined;
+    var args: {[key: string]: any} = undefined;
     if (categorizedEventName == 'gc') {
       // TODO: We cannot measure heap size at the moment
       args = {usedHeapSize: 0};
@@ -42,7 +42,9 @@ export function convertPerfProfileToEvents(perfProfile: any): any[] {
     // Add all the frames into a set so it's easier/faster to find the set
     // differences
     var sampleFrames = new Set();
-    sample.frames.forEach(function(frame) { sampleFrames.add(frame.location); });
+    sample.frames.forEach(function(frame: {[key: string]: any}) {
+      sampleFrames.add(frame['location']);
+    });
 
     // If an event is in the inProgressEvents map, but not in the current sample,
     // then it must have just finished. We add this event to the finishedEvents
@@ -73,7 +75,7 @@ export function convertPerfProfileToEvents(perfProfile: any): any[] {
   });
 
   // Remove all the unknown categories.
-  return finishedEvents.filter(function(event) { return event.name != 'unknown'; });
+  return finishedEvents.filter(function(event) { return event['name'] != 'unknown'; });
 }
 
 // TODO: this is most likely not exhaustive.

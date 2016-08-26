@@ -10,18 +10,19 @@ import * as webdriver from 'selenium-webdriver';
 
 import {WebDriverAdapter} from '../web_driver_adapter';
 
-
-
 /**
  * Adapter for the selenium-webdriver.
  */
 export class SeleniumWebDriverAdapter extends WebDriverAdapter {
-  static get PROTRACTOR_BINDINGS(): any[] { return _PROTRACTOR_BINDINGS; }
+  static PROTRACTOR_PROVIDERS = [{
+    provide: WebDriverAdapter,
+    useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser)
+  }];
 
   constructor(private _driver: any) { super(); }
 
   /** @internal */
-  private _convertPromise(thenable) {
+  private _convertPromise(thenable: PromiseLike<any>) {
     var resolve: (result: any) => void;
     var reject: (error: any) => void;
     var promise = new Promise((res, rej) => {
@@ -31,12 +32,11 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     thenable.then(
         // selenium-webdriver uses an own Node.js context,
         // so we need to convert data into objects of this context.
-        // Previously needed for rtts_asserts.
-        (data) => resolve(convertToLocalProcess(data)), reject);
+        (data: any) => resolve(convertToLocalProcess(data)), reject);
     return promise;
   }
 
-  waitFor(callback): Promise<any> {
+  waitFor(callback: () => any): Promise<any> {
     return this._convertPromise(this._driver.controlFlow().execute(callback));
   }
 
@@ -50,7 +50,7 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
 
   capabilities(): Promise<any> {
     return this._convertPromise(
-        this._driver.getCapabilities().then((capsObject) => capsObject.serialize()));
+        this._driver.getCapabilities().then((capsObject: any) => capsObject.serialize()));
   }
 
   logs(type: string): Promise<any> {
@@ -62,16 +62,10 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
   }
 }
 
-function convertToLocalProcess(data): Object {
+function convertToLocalProcess(data: any): Object {
   var serialized = JSON.stringify(data);
   if ('' + serialized === 'undefined') {
     return undefined;
   }
   return JSON.parse(serialized);
 }
-
-var _PROTRACTOR_BINDINGS = [{
-  provide: WebDriverAdapter,
-  useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser),
-  deps: []
-}];

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, OpaqueToken} from '@angular/core/src/di';
+import {Injector, OpaqueToken} from '@angular/core';
 
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 
 export class MultiReporter extends Reporter {
-  static createBindings(childTokens: any[]): any[] {
+  static provideWith(childTokens: any[]): any[] {
     return [
       {
         provide: _CHILDREN,
@@ -21,19 +21,13 @@ export class MultiReporter extends Reporter {
       },
       {
         provide: MultiReporter,
-        useFactory: children => new MultiReporter(children),
+        useFactory: (children: Reporter[]) => new MultiReporter(children),
         deps: [_CHILDREN]
       }
     ];
   }
 
-  /** @internal */
-  private _reporters: Reporter[];
-
-  constructor(reporters) {
-    super();
-    this._reporters = reporters;
-  }
+  constructor(private _reporters: Reporter[]) { super(); }
 
   reportMeasureValues(values: MeasureValues): Promise<any[]> {
     return Promise.all(this._reporters.map(reporter => reporter.reportMeasureValues(values)));

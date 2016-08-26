@@ -7,9 +7,9 @@
  */
 
 import {Provider, ReflectiveInjector} from '@angular/core';
-import {isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from './common_options';
+import {isBlank, isPresent} from './facade/lang';
 import {Metric} from './metric';
 import {MultiMetric} from './metric/multi_metric';
 import {PerflogMetric} from './metric/perflog_metric';
@@ -29,28 +29,23 @@ import {FirefoxDriverExtension} from './webdriver/firefox_driver_extension';
 import {IOsDriverExtension} from './webdriver/ios_driver_extension';
 
 
+
 /**
  * The Runner is the main entry point for executing a sample run.
  * It provides defaults, creates the injector and calls the sampler.
  */
 export class Runner {
-  private _defaultProviders: Provider[];
-  constructor(defaultProviders: Provider[] = null) {
-    if (isBlank(defaultProviders)) {
-      defaultProviders = [];
-    }
-    this._defaultProviders = defaultProviders;
-  }
+  constructor(private _defaultProviders: Provider[] = []) {}
 
   sample({id, execute, prepare, microMetrics, providers, userMetrics}: {
     id: string,
-    execute?: any,
-    prepare?: any,
-    microMetrics?: any,
-    providers?: any,
-    userMetrics?: any
+    execute?: Function,
+    prepare?: Function,
+    microMetrics?: {[key: string]: string},
+    providers?: Provider[],
+    userMetrics?: {[key: string]: string}
   }): Promise<SampleState> {
-    var sampleProviders = [
+    var sampleProviders: Provider[] = [
       _DEFAULT_PROVIDERS, this._defaultProviders, {provide: Options.SAMPLE_ID, useValue: id},
       {provide: Options.EXECUTE, useValue: execute}
     ];
@@ -105,10 +100,11 @@ var _DEFAULT_PROVIDERS = [
   PerflogMetric.PROVIDERS,
   UserMetric.PROVIDERS,
   SampleDescription.PROVIDERS,
-  MultiReporter.createBindings([ConsoleReporter]),
-  MultiMetric.createBindings([PerflogMetric, UserMetric]),
-  Reporter.bindTo(MultiReporter),
-  Validator.bindTo(RegressionSlopeValidator),
-  WebDriverExtension.bindTo([ChromeDriverExtension, FirefoxDriverExtension, IOsDriverExtension]),
-  Metric.bindTo(MultiMetric),
+  MultiReporter.provideWith([ConsoleReporter]),
+  MultiMetric.provideWith([PerflogMetric, UserMetric]),
+  {provide: Reporter, useExisting: MultiReporter},
+  {provide: Validator, useExisting: RegressionSlopeValidator},
+  WebDriverExtension.provideFirstSupported(
+      [ChromeDriverExtension, FirefoxDriverExtension, IOsDriverExtension]),
+  {provide: Metric, useExisting: MultiMetric},
 ];

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var assertEventsContainsName = function(events, eventName) {
+var assertEventsContainsName = function(events: any[], eventName: string) {
   var found = false;
   for (var i = 0; i < events.length; ++i) {
     if (events[i].name == eventName) {
@@ -33,7 +33,7 @@ describe('firefox extension', function() {
     browser.executeScript('window.forceGC()');
 
     browser.executeAsyncScript('var cb = arguments[0]; window.getProfile(cb);')
-        .then(function(profile) {
+        .then(function(profile: any) {
           assertEventsContainsName(profile, 'gc');
           assertEventsContainsName(profile, 'script');
         });

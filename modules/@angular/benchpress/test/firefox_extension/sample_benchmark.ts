@@ -9,7 +9,7 @@
 var benchpress = require('../../index.js');
 var runner = new benchpress.Runner([
   // use protractor as Webdriver client
-  benchpress.SeleniumWebDriverAdapter.PROTRACTOR_BINDINGS,
+  benchpress.SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
   // use RegressionSlopeValidator to validate samples
   benchpress.Validator.bindTo(benchpress.RegressionSlopeValidator),
   // use 10 samples to calculate slope regression

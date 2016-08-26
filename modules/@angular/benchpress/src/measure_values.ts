@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Map} from '@angular/facade/src/collection';
-import {Date, DateWrapper} from '@angular/facade/src/lang';
+import {Map} from './facade/collection';
+import {Date, DateWrapper} from './facade/lang';
 
 export class MeasureValues {
   constructor(

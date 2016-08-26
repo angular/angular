@@ -14,10 +14,6 @@
  * Needs one implementation for every supported WebDriver client.
  */
 export abstract class WebDriverAdapter {
-  static bindTo(delegateToken): any[] {
-    return [{provide: WebDriverAdapter, useFactory: (delegate) => delegate, deps: [delegateToken]}];
-  }
-
   waitFor(callback: Function): Promise<any> { throw new Error('NYI'); }
   executeScript(script: string): Promise<any> { throw new Error('NYI'); }
   executeAsyncScript(script: string): Promise<any> { throw new Error('NYI'); }
