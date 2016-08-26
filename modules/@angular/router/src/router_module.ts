@@ -25,7 +25,7 @@ import {flatten} from './utils/collection';
 /**
  * @stable
  */
-export const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
+const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
 
 /**
  * @stable
