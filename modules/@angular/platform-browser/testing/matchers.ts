@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getDOM} from '../src/dom/dom_adapter';
-import {StringMapWrapper} from '../src/facade/collection';
-import {global, isString} from '../src/facade/lang';
+import {__platform_browser_private__} from '@angular/platform-browser';
+import {StringMapWrapper} from './facade/collection';
+import {global, isString} from './facade/lang';
 
+const {getDOM} = __platform_browser_private__;
 /**
  * Jasmine matchers that check Angular specific conditions.
  */

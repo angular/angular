@@ -18,7 +18,8 @@
         "rootDir": ".",
         "sourceRoot": ".",
         "outDir": "../../../dist/packages-dist/compiler-cli",
-        "declaration": true
+        "declaration": true,
+        "skipLibCheck": true
     },
     "exclude": ["integrationtest"],
     "files": [

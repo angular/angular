@@ -8,9 +8,9 @@
 
 import {BaseException} from '@angular/core';
 
-import {BrowserDomAdapter} from '../src/browser/browser_adapter';
-import {document, window} from '../src/facade/browser';
-import {NumberWrapper, isBlank} from '../src/facade/lang';
+import {document, window} from './facade/browser';
+import {NumberWrapper, isBlank} from './facade/lang';
+import {BrowserDomAdapter} from './platform_browser_private';
 
 var DOM = new BrowserDomAdapter();
 

@@ -1,6 +1,6 @@
 export default {
-  entry: '../../../dist/packages-dist/platform-browser-dynamic/esm/index.js',
-  dest: '../../../dist/packages-dist/platform-browser-dynamic/esm/platform-browser-dynamic.umd.js',
+  entry: '../../../dist/packages-dist/platform-browser-dynamic/platform-browser-dynamic.js',
+  dest: '../../../dist/packages-dist/platform-browser-dynamic/index.js',
   format: 'umd',
   moduleName: 'ng.platformBrowserDynamic',
   globals: {

@@ -9,16 +9,17 @@
     "outDir": "../../../dist/packages-dist/compiler/",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/core/testing": ["../../../dist/packages-dist/core/testing"]
+      "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
+      "@angular/compiler": ["../../../dist/packages-dist/compiler"]
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
     "lib": ["es6", "dom"],
-    "target": "es5"
+    "target": "es5",
+    "skipLibCheck": true
   },
   "files": [
-    "index.ts",
     "testing.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ]

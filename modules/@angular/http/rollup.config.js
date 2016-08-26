@@ -1,7 +1,7 @@
 
 export default {
-  entry: '../../../dist/packages-dist/http/esm/index.js',
-  dest: '../../../dist/packages-dist/http/esm/http.umd.js',
+  entry: '../../../dist/packages-dist/http/http.js',
+  dest: '../../../dist/packages-dist/http/index.js',
   format: 'umd',
   moduleName: 'ng.http',
   globals: {

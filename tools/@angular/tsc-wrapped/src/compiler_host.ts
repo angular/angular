@@ -31,6 +31,7 @@ export abstract class DelegatingHost implements ts.CompilerHost {
   readFile = (fileName: string) => this.delegate.readFile(fileName);
   trace = (s: string) => this.delegate.trace(s);
   directoryExists = (directoryName: string) => this.delegate.directoryExists(directoryName);
+  getDirectories = (path: string) => this.delegate.getDirectories(path);
 }
 
 export class TsickleHost extends DelegatingHost {

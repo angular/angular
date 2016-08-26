@@ -5,15 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {APP_ID, ClassProvider, ExistingProvider, FactoryProvider, NgModule, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
-
-import {BrowserModule} from '../src/browser';
-import {BrowserDomAdapter} from '../src/browser/browser_adapter';
-import {AnimationDriver} from '../src/dom/animation_driver';
-import {ELEMENT_PROBE_PROVIDERS} from '../src/dom/debug/ng_probe';
+import {AnimationDriver, BrowserModule} from '@angular/platform-browser';
 
 import {BrowserDetection, createNgZone} from './browser_util';
+import {BrowserDomAdapter, ELEMENT_PROBE_PROVIDERS} from './platform_browser_private';
 
 function initBrowserTests() {
   BrowserDomAdapter.makeCurrent();

@@ -6,18 +6,19 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/common/esm",
+    "outDir": "../../../dist/packages-dist/common",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"]
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es2015"
+    "target": "es5",
+    "skipLibCheck": true,
+    "lib": [ "es2015", "dom" ]
   },
   "files": [
     "index.ts",
-    "testing.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {

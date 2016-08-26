@@ -6,18 +6,18 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/upgrade/esm",
+    "outDir": "../../../dist/packages-dist/http",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
       "@angular/common": ["../../../dist/packages-dist/common"],
-      "@angular/compiler": ["../../../dist/packages-dist/compiler"],
-      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
-      "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"]
+      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"]
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es2015"
+    "target": "es5",
+    "skipLibCheck": true,
+    "lib": ["es2015", "dom"]
   },
   "files": [
     "index.ts",

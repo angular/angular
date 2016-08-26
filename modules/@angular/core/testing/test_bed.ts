@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, ComponentMetadataType, ComponentStillLoadingError, DirectiveMetadataType, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleMetadataType, NgModuleRef, NgZone, OpaqueToken, PipeMetadataType, PlatformRef, Provider, SchemaMetadata} from '../index';
-import {ListWrapper} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
-import {FunctionWrapper, stringify} from '../src/facade/lang';
-import {Type} from '../src/type';
-
+import {CompilerOptions, ComponentMetadataType, ComponentStillLoadingError, DirectiveMetadataType, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleMetadataType, NgModuleRef, NgZone, OpaqueToken, PipeMetadataType, PlatformRef, Provider, SchemaMetadata, Type} from '@angular/core';
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
+import {ListWrapper} from './facade/collection';
+import {BaseException} from './facade/exceptions';
+import {FunctionWrapper, stringify} from './facade/lang';
 import {MetadataOverride} from './metadata_override';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 

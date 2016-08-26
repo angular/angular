@@ -9,15 +9,19 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
+import {Route, Router, RouterModule, RouterOutletMap, Routes, UrlSerializer, provideRoutes} from '@angular/router';
 
-import {Route, Router, RouterOutletMap, UrlSerializer} from '../index';
-import {Routes} from '../src/config';
-import {ROUTES} from '../src/router_config_loader';
-import {ROUTER_PROVIDERS, RouterModule, provideRoutes} from '../src/router_module';
-import {flatten} from '../src/utils/collection';
+import {ROUTER_PROVIDERS, ROUTES} from './router_private';
 
-
-
+export function flatten<T>(a: T[][]): T[] {
+  const target: T[] = [];
+  for (let i = 0; i < a.length; ++i) {
+    for (let j = 0; j < a[i].length; ++j) {
+      target.push(a[i][j]);
+    }
+  }
+  return target;
+}
 /**
  * A spy for {@link NgModuleFactoryLoader} that allows tests to simulate the loading of ng module
  * factories.

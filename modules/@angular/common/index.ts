@@ -6,8 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/pipes';
-export * from './src/directives';
-export * from './src/location';
-export {NgLocalization} from './src/localization';
-export {CommonModule} from './src/common_module';
+export * from './common'

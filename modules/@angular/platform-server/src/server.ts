@@ -32,6 +32,9 @@ class ServerPlatformLocation extends PlatformLocation {
   back(): void { notSupported('back'); };
 }
 
+/**
+ * @experimental
+ */
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
   {provide: PLATFORM_INITIALIZER, useValue: initParse5Adapter, multi: true},
   {provide: PlatformLocation, useClass: ServerPlatformLocation},

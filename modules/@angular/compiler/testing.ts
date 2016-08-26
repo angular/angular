@@ -14,7 +14,7 @@ export * from './testing/pipe_resolver_mock';
 import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, ComponentFactory, NgModuleFactory, Injector, NgModuleMetadata, NgModuleMetadataType, ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, PipeMetadata, PipeMetadataType, Type, PlatformRef} from '@angular/core';
 import {MetadataOverride} from '@angular/core/testing';
 import {TestingCompilerFactory, TestingCompiler} from './core_private_testing';
-import {platformCoreDynamic, RuntimeCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from './index';
+import {platformCoreDynamic, RuntimeCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from '@angular/compiler';
 import {MockDirectiveResolver} from './testing/directive_resolver_mock';
 import {MockNgModuleResolver} from './testing/ng_module_resolver_mock';
 import {MockPipeResolver} from './testing/pipe_resolver_mock';

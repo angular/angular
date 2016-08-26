@@ -4,9 +4,9 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
-    "module": "es2015",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/platform-server/esm",
+    "outDir": "../../../dist/packages-dist/platform-server/",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core/"],
       "@angular/core/testing": ["../../../dist/packages-dist/core/testing"],
@@ -17,15 +17,17 @@
       "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser/"],
       "@angular/platform-browser/testing": ["../../../dist/packages-dist/platform-browser/testing"],
       "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"],
-      "@angular/platform-browser-dynamic/testing": ["../../../dist/packages-dist/platform-browser-dynamic/testing"]
+      "@angular/platform-browser-dynamic/testing": ["../../../dist/packages-dist/platform-browser-dynamic/testing"],
+      "@angular/platform-server": ["../../../dist/packages-dist/platform-server"]
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es2015"
+    "lib": ["es6", "dom"],
+    "target": "es5",
+    "skipLibCheck": true
   },
   "files": [
-    "index.ts",
     "testing.ts",
     "../../../node_modules/@types/jasmine/index.d.ts",
     "../../../node_modules/@types/node/index.d.ts",

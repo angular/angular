@@ -10,7 +10,7 @@ import {Inject, Injectable} from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
 import {DOCUMENT} from '@angular/platform-browser';
 
-import {getDOM} from '../platform_browser_private';
+import {INTERNAL_BROWSER_PLATFORM_PROVIDERS, getDOM} from './platform_browser_testing_private';
 
 
 

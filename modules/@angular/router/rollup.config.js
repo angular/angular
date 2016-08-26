@@ -1,6 +1,6 @@
 export default {
-  entry: '../../../dist/packages-dist/router/esm/index.js',
-  dest: '../../../dist/packages-dist/router/esm/router.umd.js',
+  entry: '../../../dist/packages-dist/router/router.js',
+  dest: '../../../dist/packages-dist/router/index.js',
   format: 'umd',
   moduleName: 'ng.router',
   globals: {
