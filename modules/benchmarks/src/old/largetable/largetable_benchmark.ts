@@ -26,7 +26,7 @@ function _createBindings() {
   return [
     {provide: BENCHMARK_TYPE, useValue: getStringParameter('benchmarkType')},
     {provide: LARGETABLE_ROWS, useValue: getIntParameter('rows')},
-    {provide: LARGETABLE_COLS, {useValue: getIntParameter('columns')},
+    {provide: LARGETABLE_COLS, useValue: getIntParameter('columns')},
   ];
 }
 

@@ -31,6 +31,21 @@ ln -s ../../../../node_modules/rxjs .
 ln -s ../../../../node_modules/angular/angular.js .
 cd -
 
+echo "====== Copying files needed for benchmarks ====="
+cp -r ./modules/benchmarks ./dist/all/
+cp -r ./modules/benchmarks/favicon.ico ./dist/
+mkdir ./dist/all/benchmarks/vendor
+cd ./dist/all/benchmarks/vendor
+ln -s ../../../../node_modules/core-js/client/core.js .
+ln -s ../../../../node_modules/zone.js/dist/zone.js .
+ln -s ../../../../node_modules/zone.js/dist/long-stack-trace-zone.js .
+ln -s ../../../../node_modules/systemjs/dist/system.src.js .
+ln -s ../../../../node_modules/base64-js/lib/b64.js .
+ln -s ../../../../node_modules/reflect-metadata/Reflect.js .
+ln -s ../../../../node_modules/rxjs .
+ln -s ../../../../node_modules/angular/angular.js .
+ln -s ../../../../bower_components/polymer .
+cd -
 
 TSCONFIG=./modules/tsconfig.json
 echo "====== (all)COMPILING: \$(npm bin)/tsc -p ${TSCONFIG} ====="
