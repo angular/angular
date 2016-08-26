@@ -12,8 +12,6 @@ import {ReplaySubject} from 'rxjs/ReplaySubject';
 import {Subject} from 'rxjs/Subject';
 import {take} from 'rxjs/operator/take';
 
-import {isPresent} from './facade/lang';
-
 
 /**
  *
@@ -228,7 +226,7 @@ export class MockBackend implements ConnectionBackend {
    * against the framework itself, not by end-users.
    */
   createConnection(req: Request): MockConnection {
-    if (!isPresent(req) || !(req instanceof Request)) {
+    if (!req || !(req instanceof Request)) {
       throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
     }
     let connection = new MockConnection(req);

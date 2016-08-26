@@ -6,12 +6,11 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages-dist/http/",
+    "outDir": "../../../dist/packages-dist/http",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
-      "@angular/common": ["../../../dist/packages-dist/common"],
       "@angular/http": ["../../../dist/packages-dist/http"],
-      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"]
+      "rxjs/*": ["../../../node_modules/rxjs/*"]
     },
     "rootDir": ".",
     "sourceMap": true,
