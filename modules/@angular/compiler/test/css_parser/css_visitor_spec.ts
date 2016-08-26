@@ -7,10 +7,10 @@
  */
 
 
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
-import {CssAst, CssAstVisitor, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssUnknownRuleAst, CssUnknownTokenListAst} from '../../src/css_parser/css_ast';
-import {BlockType, CssParseError, CssParser, CssToken} from '../../src/css_parser/css_parser';
-import {isPresent} from '../../src/facade/lang';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {CssAst, CssAstVisitor, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssUnknownRuleAst, CssUnknownTokenListAst} from '@angular/compiler/src/css_parser/css_ast';
+import {BlockType, CssParseError, CssParser, CssToken} from '@angular/compiler/src/css_parser/css_parser';
+import {isPresent} from '@angular/facade/src/lang';
 
 function _assertTokens(tokens: CssToken[], valuesArr: string[]): void {
   expect(tokens.length).toEqual(valuesArr.length);
@@ -320,3 +320,5 @@ export function main() {
     });
   });
 }
+
+main();

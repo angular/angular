@@ -84,3 +84,5 @@ class LifecycleCmp implements OnChanges,
 @Component({selector: 'my-comp'})
 class MyComp5 {
 }
+
+main();

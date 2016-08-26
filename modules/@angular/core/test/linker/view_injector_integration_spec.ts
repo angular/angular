@@ -729,3 +729,5 @@ export function main() {
 class TestValue {
   constructor(public value: string) {}
 }
+
+main();

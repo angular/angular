@@ -12,7 +12,7 @@ import {ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, Ref
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {isBlank, isPresent, stringify} from '../../src/facade/lang';
+import {isBlank, isPresent, stringify} from '@angular/facade/src/lang';
 
 class CustomDependencyMetadata extends DependencyMetadata {}
 
@@ -588,3 +588,5 @@ export function main() {
     });
   });
 }
+
+main();

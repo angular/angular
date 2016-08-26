@@ -419,3 +419,5 @@ class TestObjWith21Args {
     ];
   }
 }
+
+main();

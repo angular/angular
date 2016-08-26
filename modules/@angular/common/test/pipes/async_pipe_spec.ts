@@ -12,8 +12,8 @@ import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, 
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
-import {EventEmitter} from '../../src/facade/async';
-import {isBlank} from '../../src/facade/lang';
+import {EventEmitter} from '@angular/facade/src/async';
+import {isBlank} from '@angular/facade/src/lang';
 import {SpyChangeDetectorRef} from '../spies';
 
 export function main() {
@@ -216,3 +216,5 @@ export function main() {
     });
   });
 }
+
+main();

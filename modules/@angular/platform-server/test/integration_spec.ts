@@ -44,3 +44,5 @@ export function main() {
        }));
   });
 }
+
+main();

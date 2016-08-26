@@ -9,11 +9,11 @@
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
-import {ViewAnimationMap} from '../../src/animation/view_animation_map';
-import {isPresent} from '../../src/facade/lang';
-import {fakeAsync, flushMicrotasks} from '../../testing';
-import {MockAnimationPlayer} from '../../testing/mock_animation_player';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
+import {ViewAnimationMap} from '@angular/core/src/animation/view_animation_map';
+import {isPresent} from '@angular/facade/src/lang';
+import {fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {MockAnimationPlayer} from '@angular/core/testing/mock_animation_player';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('ActiveAnimationsPlayersMap', function() {
@@ -72,3 +72,5 @@ export function main() {
     });
   });
 }
+
+main();

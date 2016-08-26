@@ -10,7 +10,7 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {isPresent, stringify} from '../../src/facade/lang';
+import {isPresent, stringify} from '@angular/facade/src/lang';
 
 export function main() {
   describe('Query API', () => {
@@ -890,3 +890,5 @@ class MyComp0 {
 @Component({selector: 'my-comp', template: ''})
 class MyCompBroken0 {
 }
+
+main();

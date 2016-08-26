@@ -158,3 +158,5 @@ export function main() {
        }), 10000);
   });
 }
+
+main();

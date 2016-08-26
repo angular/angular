@@ -66,3 +66,5 @@ export function main() {
 class TestLocalization extends NgLocalization {
   getPluralCategory(value: number): string { return value > 1 && value < 6 ? 'many' : 'other'; }
 }
+
+main();

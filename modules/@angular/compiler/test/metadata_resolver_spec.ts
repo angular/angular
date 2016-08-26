@@ -11,8 +11,8 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {TestBed, inject} from '@angular/core/testing';
 
-import {stringify} from '../src/facade/lang';
-import {CompileMetadataResolver} from '../src/metadata_resolver';
+import {stringify} from '@angular/facade/src/lang';
+import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
 
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 
@@ -247,3 +247,5 @@ class ComponentWithInvalidInterpolation4 {
 @Component({selector: 'someSelector', template: '', interpolation: ['&lbrace;', '}}']})
 class ComponentWithInvalidInterpolation5 {
 }
+
+main();

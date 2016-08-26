@@ -8,8 +8,8 @@
 
 import * as t from '@angular/core/testing/testing_internal';
 
-import {getDOM} from '../../src/dom/dom_adapter';
-import {sanitizeStyle} from '../../src/security/style_sanitizer';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {sanitizeStyle} from '@angular/platform-browser/src/security/style_sanitizer';
 
 export function main() {
   t.describe('Style sanitizer', () => {
@@ -54,3 +54,5 @@ export function main() {
     });
   });
 }
+
+main();

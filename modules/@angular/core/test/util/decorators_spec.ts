@@ -11,7 +11,7 @@ import {reflector} from '@angular/core/src/reflection/reflection';
 import {Class, makeDecorator, makeParamDecorator} from '@angular/core/src/util/decorators';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {global} from '../../src/facade/lang';
+import {global} from '@angular/facade/src/lang';
 
 class TestAnnotation {
   constructor(public arg: any) {}
@@ -140,3 +140,5 @@ export function main() {
     });
   });
 }
+
+main();

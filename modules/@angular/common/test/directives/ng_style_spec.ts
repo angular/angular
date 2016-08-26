@@ -153,3 +153,5 @@ export function main() {
 class TestComponent {
   expr: any;
 }
+
+main();

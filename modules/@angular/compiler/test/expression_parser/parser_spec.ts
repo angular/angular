@@ -11,7 +11,7 @@ import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser, TemplateBindingParseResult} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {isBlank, isPresent} from '../../src/facade/lang';
+import {isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {unparse} from './unparser';
 import {validate} from './validator';
@@ -541,3 +541,5 @@ export function main() {
     });
   });
 }
+
+main();

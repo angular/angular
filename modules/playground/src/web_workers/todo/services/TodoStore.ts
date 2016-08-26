@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {ListWrapper, Predicate} from '@angular/core/src/facade/collection';
+import {ListWrapper, Predicate} from '@angular/facade/src/collection';
 
 // base model for RecordStore
 export class KeyModel {

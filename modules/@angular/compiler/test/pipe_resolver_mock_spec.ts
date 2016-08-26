@@ -9,8 +9,8 @@
 import {Injector, Pipe, PipeMetadata} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
-import {isBlank, stringify} from '../src/facade/lang';
-import {MockPipeResolver} from '../testing';
+import {isBlank, stringify} from '@angular/facade/src/lang';
+import {MockPipeResolver} from '@angular/compiler/testing';
 
 export function main() {
   describe('MockPipeResolver', () => {
@@ -37,3 +37,5 @@ export function main() {
 @Pipe({name: 'somePipe'})
 class SomePipe {
 }
+
+main();

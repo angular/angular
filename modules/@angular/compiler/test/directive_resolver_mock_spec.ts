@@ -9,8 +9,8 @@
 import {Component, ComponentMetadata, Directive, Injector} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 
-import {ViewMetadata} from '../core_private';
-import {MockDirectiveResolver} from '../testing';
+import {ViewMetadata} from '@angular/compiler/core_private';
+import {MockDirectiveResolver} from '@angular/compiler/testing';
 
 export function main() {
   describe('MockDirectiveResolver', () => {
@@ -95,3 +95,5 @@ class SomeComponent {
 @Directive({selector: 'some-other-directive'})
 class SomeOtherDirective {
 }
+
+main();

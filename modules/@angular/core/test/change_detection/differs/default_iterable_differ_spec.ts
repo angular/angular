@@ -9,8 +9,8 @@
 import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '@angular/core/src/change_detection/differs/default_iterable_differ';
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 
-import {ListWrapper} from '../../../src/facade/collection';
-import {NumberWrapper} from '../../../src/facade/lang';
+import {ListWrapper} from '@angular/facade/src/collection';
+import {NumberWrapper} from '@angular/facade/src/lang';
 import {TestIterable} from '../../change_detection/iterable';
 import {iterableChangesAsString} from '../../change_detection/util';
 
@@ -595,3 +595,5 @@ export function main() {
 
   });
 }
+
+main();

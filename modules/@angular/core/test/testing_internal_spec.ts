@@ -8,7 +8,7 @@
 
 import {SpyObject} from '@angular/core/testing/testing_internal';
 
-import {MapWrapper} from '../../platform-browser/src/facade/collection';
+import {MapWrapper} from '@angular/platform-browser/src/facade/collection';
 
 class TestObj {
   prop: any;
@@ -115,3 +115,5 @@ export function main() {
 
   });
 }
+
+main();

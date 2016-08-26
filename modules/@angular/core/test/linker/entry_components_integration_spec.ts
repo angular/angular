@@ -10,7 +10,7 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, forwa
 import {NoComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
 import {TestBed} from '@angular/core/testing';
 
-import {Console} from '../../src/console';
+import {Console} from '@angular/core/src/console';
 
 
 export function main() {
@@ -116,3 +116,5 @@ class MainComp {
 })
 class CompWithAnalyzeEntryComponentsProvider {
 }
+
+main();

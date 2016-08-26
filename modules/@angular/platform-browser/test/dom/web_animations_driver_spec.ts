@@ -9,12 +9,12 @@
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
-import {AnimationKeyframe, AnimationStyles} from '../../core_private';
-import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
-import {WebAnimationsDriver} from '../../src/dom/web_animations_driver';
-import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
-import {StringMapWrapper} from '../../src/facade/collection';
-import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
+import {AnimationKeyframe, AnimationStyles} from '@angular/platform-browser/core_private';
+import {DomAnimatePlayer} from '@angular/platform-browser/src/dom/dom_animate_player';
+import {WebAnimationsDriver} from '@angular/platform-browser/src/dom/web_animations_driver';
+import {WebAnimationsPlayer} from '@angular/platform-browser/src/dom/web_animations_player';
+import {StringMapWrapper} from '@angular/facade/src/collection';
+import {MockDomAnimatePlayer} from '@angular/platform-browser/testing/mock_dom_animate_player';
 
 class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
   public log: {[key: string]: any}[] = [];
@@ -122,3 +122,5 @@ export function main() {
 function _formatOptions(player: WebAnimationsPlayer): {[key: string]: any} {
   return {'element': player.element, 'keyframes': player.keyframes, 'options': player.options};
 }
+
+main();

@@ -12,8 +12,8 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 
-import {ListWrapper, Map} from '../../../src/facade/collection';
-import {el} from '../../../testing/browser_util';
+import {ListWrapper, Map} from '@angular/facade/src/collection';
+import {el} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   var domEventPlugin: any /** TODO #9100 */;
@@ -110,3 +110,5 @@ class FakeNgZone extends NgZone {
 
   runOutsideAngular(fn: any /** TODO #9100 */) { return fn(); }
 }
+
+main();

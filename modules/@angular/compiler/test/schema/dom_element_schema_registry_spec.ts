@@ -11,8 +11,8 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angula
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
-import {Element} from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
+import {Element} from '@angular/compiler/src/ml_parser/ast';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 
 import {extractSchema} from './schema_extractor';
 
@@ -115,3 +115,5 @@ export function main() {
 
   });
 }
+
+main();

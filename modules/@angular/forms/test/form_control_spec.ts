@@ -10,9 +10,9 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {EventEmitter} from '../src/facade/async';
-import {isPresent} from '../src/facade/lang';
-import {FormArray} from '../src/model';
+import {EventEmitter} from '@angular/facade/src/async';
+import {isPresent} from '@angular/facade/src/lang';
+import {FormArray} from '@angular/forms/src/model';
 
 export function main() {
   function asyncValidator(expected: any /** TODO #9100 */, timeouts = {}) {
@@ -919,3 +919,5 @@ export function main() {
     });
   });
 }
+
+main();

@@ -23,3 +23,5 @@ export function main() {
        () => { callNgProfilerTimeChangeDetection({'record': true}); });
   });
 }
+
+main();

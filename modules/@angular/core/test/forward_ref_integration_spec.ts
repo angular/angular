@@ -64,3 +64,5 @@ class ModuleFrame {
 class Lock {
   name: string = 'lock';
 }
+
+main();

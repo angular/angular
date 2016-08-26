@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from '../src/router_state';
-import {TreeNode} from '../src/utils/tree';
+import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from '@angular/router/src/router_state';
+import {TreeNode} from '@angular/router/src/utils/tree';
 
 describe('RouterState & Snapshot', () => {
   describe('RouterStateSnapshot', () => {

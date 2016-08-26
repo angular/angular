@@ -31,3 +31,5 @@ export function main() {
 
   });
 }
+
+main();

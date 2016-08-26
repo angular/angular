@@ -13,3 +13,5 @@ export function main() {
     it('is enabled in our tests by default', () => { expect(isDevMode()).toBe(true); });
   });
 }
+
+main();

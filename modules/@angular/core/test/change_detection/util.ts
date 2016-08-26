@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank} from '../../src/facade/lang';
+import {isBlank} from '@angular/facade/src/lang';
 
 export function iterableChangesAsString(
     {collection = [] as any, previous = [] as any, additions = [] as any, moves = [] as any,

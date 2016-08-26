@@ -989,3 +989,5 @@ function html(html: string): Element {
     return <Element>body.firstChild;
   return body;
 }
+
+main();

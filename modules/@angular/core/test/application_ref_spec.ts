@@ -15,7 +15,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {TestBed, async, inject, withModule} from '../testing';
+import {TestBed, async, inject, withModule} from '@angular/core/testing';
 
 import {SpyChangeDetectorRef} from './spies';
 
@@ -270,3 +270,5 @@ class MockConsole {
   log(s: any): void { this.res.push(s); }
   error(s: any): void { this.res.push(s); }
 }
+
+main();

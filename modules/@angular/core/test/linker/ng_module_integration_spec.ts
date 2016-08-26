@@ -11,8 +11,8 @@ import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {stringify} from '../../src/facade/lang';
-import {NgModuleInjector} from '../../src/linker/ng_module_factory';
+import {stringify} from '@angular/facade/src/lang';
+import {NgModuleInjector} from '@angular/core/src/linker/ng_module_factory';
 
 class Engine {}
 
@@ -1127,3 +1127,5 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
   });
 }
+
+main();

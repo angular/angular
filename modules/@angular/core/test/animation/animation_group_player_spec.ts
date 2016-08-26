@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationGroupPlayer} from '../../src/animation/animation_group_player';
-import {fakeAsync, flushMicrotasks} from '../../testing';
-import {MockAnimationPlayer} from '../../testing/mock_animation_player';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
+import {AnimationGroupPlayer} from '@angular/core/src/animation/animation_group_player';
+import {fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {MockAnimationPlayer} from '@angular/core/testing/mock_animation_player';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('AnimationGroupPlayer', function() {
@@ -195,3 +195,5 @@ export function main() {
        }));
   });
 }
+
+main();

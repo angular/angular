@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, expect, iit, it} from '../../../core/testing/testing_internal';
-import * as html from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {ExpansionResult, expandNodes} from '../../src/ml_parser/icu_ast_expander';
-import {ParseError} from '../../src/parse_util';
+import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
+import * as html from '@angular/compiler/src/ml_parser/ast';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {ExpansionResult, expandNodes} from '@angular/compiler/src/ml_parser/icu_ast_expander';
+import {ParseError} from '@angular/compiler/src/parse_util';
 
 import {humanizeNodes} from './ast_spec_utils';
 
@@ -106,3 +106,5 @@ export function main() {
 function humanizeErrors(errors: ParseError[]): string[] {
   return errors.map(error => error.msg);
 }
+
+main();

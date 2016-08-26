@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {Observable} from '../../src/facade/async';
+import {Observable} from '@angular/facade/src/async';
 
 export function main() {
   describe('Observable', () => {
@@ -62,3 +62,5 @@ export function main() {
     });
   });
 }
+
+main();

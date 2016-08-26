@@ -7,7 +7,7 @@
  */
 
 import {expect} from '@angular/platform-browser/testing/matchers';
-import {MetadataOverrider} from '../testing/metadata_overrider';
+import {MetadataOverrider} from '@angular/compiler/testing/metadata_overrider';
 
 interface SomeMetadataType {
   plainProp?: string;
@@ -150,3 +150,5 @@ export function main() {
     });
   });
 }
+
+main();

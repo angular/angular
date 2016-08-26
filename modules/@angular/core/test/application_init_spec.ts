@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {APP_INITIALIZER, ApplicationInitStatus} from '../src/application_init';
-import {TestBed, async, inject, withModule} from '../testing';
+import {APP_INITIALIZER, ApplicationInitStatus} from '@angular/core/src/application_init';
+import {TestBed, async, inject, withModule} from '@angular/core/testing';
 
 export function main() {
   describe('ApplicationInitStatus', () => {
@@ -49,3 +49,5 @@ export function main() {
     });
   });
 }
+
+main();

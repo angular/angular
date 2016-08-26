@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
-import {CssLexer, CssLexerMode, CssScannerError, CssToken, CssTokenType} from '../../src/css_parser/css_lexer';
-import {isPresent} from '../../src/facade/lang';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {CssLexer, CssLexerMode, CssScannerError, CssToken, CssTokenType} from '@angular/compiler/src/css_parser/css_lexer';
+import {isPresent} from '@angular/facade/src/lang';
 
 export function main() {
   function tokenize(
@@ -375,3 +375,5 @@ export function main() {
         });
   });
 }
+
+main();

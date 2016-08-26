@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedError} from '@angular/core/src/facade/errors';
+import {WrappedError} from '@angular/facade/src/errors';
 import {DebugContext} from '@angular/core/src/linker/debug_context';
 import {ViewWrappedError} from '@angular/core/src/linker/errors';
 
-import {ErrorHandler} from '../src/error_handler';
+import {ErrorHandler} from '@angular/core/src/error_handler';
 
 class MockConsole {
   res: any[] = [];
@@ -99,3 +99,5 @@ Context`);
     });
   });
 }
+
+main();

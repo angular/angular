@@ -8,7 +8,7 @@
 
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {sha1} from '../../src/i18n/digest';
+import {sha1} from '@angular/compiler/src/i18n/digest';
 
 export function main(): void {
   describe('sha1', () => {
@@ -56,3 +56,5 @@ export function main(): void {
     });
   });
 }
+
+main();

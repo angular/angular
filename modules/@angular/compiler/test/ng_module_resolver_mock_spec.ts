@@ -9,8 +9,8 @@
 import {Injector, NgModule, NgModuleMetadata} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
-import {isBlank, stringify} from '../src/facade/lang';
-import {MockNgModuleResolver} from '../testing';
+import {isBlank, stringify} from '@angular/facade/src/lang';
+import {MockNgModuleResolver} from '@angular/compiler/testing';
 
 export function main() {
   describe('MockNgModuleResolver', () => {
@@ -44,3 +44,5 @@ class SomeOtherDirective {}
 @NgModule({declarations: [SomeDirective]})
 class SomeNgModule {
 }
+
+main();

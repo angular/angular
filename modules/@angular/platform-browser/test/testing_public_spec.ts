@@ -11,7 +11,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, Injectable, Input, NgModul
 import {TestBed, async, fakeAsync, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {stringify} from '../src/facade/lang';
+import {stringify} from '@angular/facade/src/lang';
 
 // Services, and components for the tests.
 
@@ -608,3 +608,5 @@ export function main() {
     });
   });
 }
+
+main();

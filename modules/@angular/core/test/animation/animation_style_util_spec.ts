@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FILL_STYLE_FLAG} from '../../src/animation/animation_constants';
-import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
-import * as animationUtils from '../../src/animation/animation_style_util';
-import {AnimationStyles} from '../../src/animation/animation_styles';
-import {AUTO_STYLE} from '../../src/animation/metadata';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
+import {FILL_STYLE_FLAG} from '@angular/core/src/animation/animation_constants';
+import {AnimationKeyframe} from '@angular/core/src/animation/animation_keyframe';
+import * as animationUtils from '@angular/core/src/animation/animation_style_util';
+import {AnimationStyles} from '@angular/core/src/animation/animation_styles';
+import {AUTO_STYLE} from '@angular/core/src/animation/metadata';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('Animation Style Utils', function() {
@@ -145,3 +145,5 @@ export function main() {
     });
   });
 }
+
+main();

@@ -8,10 +8,10 @@
 
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {RequestOptions} from '../src/base_request_options';
-import {ContentType} from '../src/enums';
-import {Headers} from '../src/headers';
-import {Request} from '../src/static_request';
+import {RequestOptions} from '@angular/http/src/base_request_options';
+import {ContentType} from '@angular/http/src/enums';
+import {Headers} from '@angular/http/src/headers';
+import {Request} from '@angular/http/src/static_request';
 
 export function main() {
   describe('Request', () => {
@@ -90,3 +90,5 @@ export function main() {
     });
   });
 }
+
+main();

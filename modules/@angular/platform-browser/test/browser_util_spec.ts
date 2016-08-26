@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../src/facade/collection';
-import {BrowserDetection} from '../testing/browser_util';
+import {StringMapWrapper} from '@angular/facade/src/collection';
+import {BrowserDetection} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('BrowserDetection', () => {
@@ -222,3 +222,5 @@ export function main() {
     });
   });
 }
+
+main();

@@ -11,7 +11,7 @@ import {Component} from '@angular/core';
 import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {CachedResourceLoader} from '../../src/resource_loader/resource_loader_cache';
+import {CachedResourceLoader} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_cache';
 
 import {setTemplateCache} from './resource_loader_cache_setter';
 
@@ -82,3 +82,5 @@ class TestUrlResolver extends UrlResolver {
     return url;
   }
 }
+
+main();

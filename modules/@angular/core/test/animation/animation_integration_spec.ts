@@ -11,16 +11,16 @@ import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_drive
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
 
-import {Component} from '../../index';
-import {DEFAULT_STATE} from '../../src/animation/animation_constants';
-import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
-import {AnimationPlayer} from '../../src/animation/animation_player';
-import {AnimationStyles} from '../../src/animation/animation_styles';
-import {AnimationTransitionEvent} from '../../src/animation/animation_transition_event';
-import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
-import {isPresent} from '../../src/facade/lang';
-import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
-import {MockAnimationPlayer} from '../../testing/mock_animation_player';
+import {Component} from '@angular/core/index';
+import {DEFAULT_STATE} from '@angular/core/src/animation/animation_constants';
+import {AnimationKeyframe} from '@angular/core/src/animation/animation_keyframe';
+import {AnimationPlayer} from '@angular/core/src/animation/animation_player';
+import {AnimationStyles} from '@angular/core/src/animation/animation_styles';
+import {AnimationTransitionEvent} from '@angular/core/src/animation/animation_transition_event';
+import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core/src/animation/metadata';
+import {isPresent} from '@angular/facade/src/lang';
+import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {MockAnimationPlayer} from '@angular/core/testing/mock_animation_player';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });
@@ -1716,3 +1716,5 @@ class BrokenDummyLoadingCmp {
   exp = false;
   callback = () => {};
 }
+
+main();

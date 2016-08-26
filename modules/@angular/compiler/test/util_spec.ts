@@ -9,7 +9,7 @@
 import {fakeAsync} from '@angular/core/testing/fake_async';
 import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {SyncAsyncResult, splitAtColon} from '../src/util';
+import {SyncAsyncResult, splitAtColon} from '@angular/compiler/src/util';
 
 export function main() {
   describe('util', () => {
@@ -38,3 +38,5 @@ export function main() {
     });
   });
 }
+
+main();

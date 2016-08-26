@@ -8,8 +8,8 @@
 
 import * as t from '@angular/core/testing/testing_internal';
 
-import {getDOM} from '../../src/dom/dom_adapter';
-import {sanitizeSrcset, sanitizeUrl} from '../../src/security/url_sanitizer';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {sanitizeSrcset, sanitizeUrl} from '@angular/platform-browser/src/security/url_sanitizer';
 
 export function main() {
   t.describe('URL sanitizer', () => {
@@ -116,3 +116,5 @@ export function main() {
 
   });
 }
+
+main();

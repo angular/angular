@@ -11,7 +11,7 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportGenerator} from '@angular/compiler/src/output/path_util';
 import {assetUrl} from '@angular/compiler/src/util';
 import {EventEmitter} from '@angular/core';
-import {BaseError} from '@angular/core/src/facade/errors';
+import {BaseError} from '@angular/facade/src/errors';
 import {ViewType} from '@angular/core/src/linker/view_type';
 
 export class ExternalClass {

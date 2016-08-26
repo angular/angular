@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {validateConfig} from '../src/config';
+import {validateConfig} from '@angular/router/src/config';
 
 describe('config', () => {
   describe('validateConfig', () => {

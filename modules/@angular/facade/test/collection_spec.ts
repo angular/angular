@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper, MapWrapper, StringMapWrapper} from '../src/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from '@angular/facade/src/collection';
 
 export function main() {
   describe('ListWrapper', () => {
@@ -163,3 +163,5 @@ export function main() {
     });
   });
 }
+
+main();

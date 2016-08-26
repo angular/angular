@@ -101,3 +101,5 @@ export function main() {
 
   });
 }
+
+main();

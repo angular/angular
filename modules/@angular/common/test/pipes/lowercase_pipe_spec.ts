@@ -40,3 +40,5 @@ export function main() {
 
   });
 }
+
+main();

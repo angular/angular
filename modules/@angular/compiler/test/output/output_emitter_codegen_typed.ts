@@ -10,8 +10,8 @@
 import * as o from '@angular/compiler/src/output/output_ast';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 
-import {print} from '../../src/facade/lang';
-import {assetUrl} from '../../src/util';
+import {print} from '@angular/facade/src/lang';
+import {assetUrl} from '@angular/compiler/src/util';
 
 function unimplemented(): any {
   throw new Error('unimplemented');

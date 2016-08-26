@@ -10,7 +10,7 @@ import {CssRule, ShadowCss, processRules} from '@angular/compiler/src/shadow_css
 import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import {normalizeCSS} from '@angular/platform-browser/testing/browser_util';
 
-import {StringWrapper, isPresent} from '../src/facade/lang';
+import {StringWrapper, isPresent} from '@angular/facade/src/lang';
 
 export function main() {
   describe('ShadowCss', function() {
@@ -241,3 +241,5 @@ export function main() {
     });
   });
 }
+
+main();
