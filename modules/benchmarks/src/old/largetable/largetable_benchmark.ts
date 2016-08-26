@@ -1,22 +1,14 @@
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {window, document, gc} from '@angular/facade/src/browser';
-import {
-  getIntParameter,
-  getStringParameter,
-  bindAction,
-  windowProfile,
-  windowProfileEnd
-} from '@angular/testing/src/benchmark_util';
-import {bootstrap} from '@angular/platform-browser';
-import {Component} from '@angular/core';
 import {NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
+import {Component} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
-import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
-
-import {ListWrapper} from '@angular/facade/src/collection';
-
 import {Inject} from '@angular/core/src/di/decorators';
 import {reflector} from '@angular/core/src/reflection/reflection';
+import {document, gc, window} from '@angular/facade/src/browser';
+import {ListWrapper} from '@angular/facade/src/collection';
+import {bootstrap} from '@angular/platform-browser';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {bindAction, getIntParameter, getStringParameter, windowProfile, windowProfileEnd} from '@angular/testing/src/benchmark_util';
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';
@@ -110,16 +102,15 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, _createBindings())
-        .then((ref) => {
-          var injector = ref.injector;
-          app = ref.instance;
-          appRef = injector.get(ApplicationRef);
-          bindAction('#ng2DestroyDom', ng2DestroyDom);
-          bindAction('#ng2CreateDom', ng2CreateDom);
-          bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
-          bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
-        });
+    bootstrap(AppComponent, _createBindings()).then((ref) => {
+      var injector = ref.injector;
+      app = ref.instance;
+      appRef = injector.get(ApplicationRef);
+      bindAction('#ng2DestroyDom', ng2DestroyDom);
+      bindAction('#ng2CreateDom', ng2CreateDom);
+      bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
+      bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
+    });
     setupReflector();
   }
 
@@ -138,8 +129,9 @@ export function main() {
     bindAction('#baselineCreateDom', baselineCreateDom);
 
     bindAction('#baselineUpdateDomProfile', profile(baselineCreateDom, noop, 'baseline-update'));
-    bindAction('#baselineCreateDomProfile',
-               profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
+    bindAction(
+        '#baselineCreateDomProfile',
+        profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
   }
 
   initNg2();
@@ -248,8 +240,9 @@ class LargetableComponent {
   benchmarkType: string;
   rows: number;
   columns: number;
-  constructor(@Inject(BENCHMARK_TYPE) benchmarkType, @Inject(LARGETABLE_ROWS) rows,
-              @Inject(LARGETABLE_COLS) columns) {
+  constructor(
+      @Inject(BENCHMARK_TYPE) benchmarkType, @Inject(LARGETABLE_ROWS) rows,
+      @Inject(LARGETABLE_COLS) columns) {
     this.benchmarkType = benchmarkType;
     this.rows = rows;
     this.columns = columns;

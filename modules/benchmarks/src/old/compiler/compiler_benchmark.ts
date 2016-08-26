@@ -1,16 +1,11 @@
+import {PromiseWrapper} from '@angular/facade/src/async';
+import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
+import {DateWrapper, Type, isPresent, print} from '@angular/facade/src/lang';
 import {bootstrap} from '@angular/platform-browser';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {PromiseWrapper} from '@angular/facade/src/async';
-import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
-import {DateWrapper, Type, print, isPresent} from '@angular/facade/src/lang';
 
-import {
-  ComponentResolver,
-  Component,
-  Directive,
-  ViewContainerRef,
-} from '@angular/core';
+import {ComponentResolver, Component, Directive, ViewContainerRef,} from '@angular/core';
 
 import {ViewMetadata} from '@angular/core/src/metadata/view';
 
@@ -23,27 +18,28 @@ function _createBindings(): any[] {
   return [
     {
       provide: DirectiveResolver,
-      useFactory: () => new MultiplyDirectiveResolver(
-                              multiplyTemplatesBy,
-                              [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
+      useFactory:
+          () => new MultiplyDirectiveResolver(
+              multiplyTemplatesBy, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
       deps: []
     },
     // Use interpretative mode as Dart does not support JIT and
     // we want to be able to compare the numbers between JS and Dart
-    {provide: CompilerConfig, useValue: new CompilerConfig({genDebugInfo: false, useJit: false, logBindingUpdate: false})}
+    {
+      provide: CompilerConfig,
+      useValue: new CompilerConfig({genDebugInfo: false, useJit: false, logBindingUpdate: false})
+    }
   ];
 }
 
 export function main() {
   BrowserDomAdapter.makeCurrent();
-  bootstrap(CompilerAppComponent, _createBindings())
-      .then((ref) => {
-        var app = ref.instance;
-        bindAction('#compileNoBindings',
-                   measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
-        bindAction('#compileWithBindings',
-                   measureWrapper(() => app.compileWithBindings(), 'With Bindings'));
-      });
+  bootstrap(CompilerAppComponent, _createBindings()).then((ref) => {
+    var app = ref.instance;
+    bindAction('#compileNoBindings', measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
+    bindAction(
+        '#compileWithBindings', measureWrapper(() => app.compileWithBindings(), 'With Bindings'));
+  });
 }
 
 function measureWrapper(func, desc) {

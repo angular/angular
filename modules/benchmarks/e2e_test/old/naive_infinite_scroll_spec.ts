@@ -16,8 +16,9 @@ describe('ng2 naive infinite scroll benchmark', function() {
     var stageButtons = `${ allScrollItems } .row stage-buttons button`;
 
     var count = function(selector) {
-      return browser.executeScript(`return ` +
-                                   `document.querySelectorAll("${ selector }").length;`);
+      return browser.executeScript(
+          `return ` +
+          `document.querySelectorAll("${ selector }").length;`);
     };
 
     var clickFirstOf = function(selector) {
@@ -25,8 +26,9 @@ describe('ng2 naive infinite scroll benchmark', function() {
     };
 
     var firstTextOf = function(selector) {
-      return browser.executeScript(`return ` +
-                                   `document.querySelector("${ selector }").innerText;`);
+      return browser.executeScript(
+          `return ` +
+          `document.querySelector("${ selector }").innerText;`);
     };
 
     // Make sure rows are rendered
@@ -36,18 +38,17 @@ describe('ng2 naive infinite scroll benchmark', function() {
     count(cells).then(function(c) { expect(c).toEqual(expectedRowCount * expectedCellsPerRow); });
 
     // Click on first enabled button and verify stage changes
-    firstTextOf(`${ stageButtons }:enabled`)
-        .then(function(text) {
-          expect(text).toEqual('Pitched');
-          clickFirstOf(`${ stageButtons }:enabled`)
-              .then(function() {
-                firstTextOf(`${ stageButtons }:enabled`)
-                    .then(function(text) { expect(text).toEqual('Won'); })
-              });
-        });
+    firstTextOf(`${ stageButtons }:enabled`).then(function(text) {
+      expect(text).toEqual('Pitched');
+      clickFirstOf(`${ stageButtons }:enabled`).then(function() {
+        firstTextOf(`${ stageButtons }:enabled`).then(function(text) {
+          expect(text).toEqual('Won');
+        })
+      });
+    });
 
-    $("#reset-btn").click();
-    $("#run-btn").click();
+    $('#reset-btn').click();
+    $('#run-btn').click();
     browser.wait(() => {
       return $('#done').getText().then(function() { return true; }, function() { return false; });
     }, 10000);

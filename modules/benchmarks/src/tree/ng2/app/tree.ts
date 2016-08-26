@@ -1,7 +1,4 @@
-import {
-  Component,
-  NgModule
-} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {TreeNode, emptyTree} from '../../app/util';
@@ -16,13 +13,10 @@ class TreeComponent {
   data: TreeNode;
 }
 
-@Component(
-    {selector: 'app', template: `<tree [data]='initData'></tree>`})
+@Component({selector: 'app', template: `<tree [data]='initData'></tree>`})
 export class AppComponent {
   initData: TreeNode;
-  constructor() {
-    this.initData = emptyTree();
-  }
+  constructor() { this.initData = emptyTree(); }
 }
 
 @NgModule({
@@ -30,4 +24,5 @@ export class AppComponent {
   bootstrap: [AppComponent],
   declarations: [TreeComponent, AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+}

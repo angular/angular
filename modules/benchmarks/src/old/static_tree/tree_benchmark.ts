@@ -3,18 +3,12 @@ import {Component, NgModule} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {reflector} from '@angular/core/src/reflection/reflection';
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
-import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {window, document, gc} from '@angular/facade/src/browser';
-import {
-  getIntParameter,
-  getStringParameter,
-  bindAction,
-  windowProfile,
-  windowProfileEnd
-} from '@angular/testing/src/benchmark_util';
-import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {document, gc, window} from '@angular/facade/src/browser';
 import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {bindAction, getIntParameter, getStringParameter, windowProfile, windowProfileEnd} from '@angular/testing/src/benchmark_util';
 
 function createBindings(): any[] {
   return [];
@@ -92,17 +86,16 @@ export function main() {
   }
 
   function initNg2() {
-    platformBrowserDynamic().bootstrapModule(AppModule)
-        .then((ref) => {
-          var injector = ref.injector;
-          appRef = injector.get(ApplicationRef);
+    platformBrowserDynamic().bootstrapModule(AppModule).then((ref) => {
+      var injector = ref.injector;
+      appRef = injector.get(ApplicationRef);
 
-          app = ref.instance;
-          bindAction('#ng2DestroyDom', ng2DestroyDom);
-          bindAction('#ng2CreateDom', ng2CreateDom);
-          bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
-          bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
-        });
+      app = ref.instance;
+      bindAction('#ng2DestroyDom', ng2DestroyDom);
+      bindAction('#ng2CreateDom', ng2CreateDom);
+      bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
+      bindAction('#ng2CreateDomProfile', profile(ng2CreateDom, ng2DestroyDom, 'ng2-create'));
+    });
   }
 
   function baselineDestroyDom() { baselineRootTreeComponent.update(null); }
@@ -118,8 +111,9 @@ export function main() {
     bindAction('#baselineCreateDom', baselineCreateDom);
 
     bindAction('#baselineUpdateDomProfile', profile(baselineCreateDom, noop, 'baseline-update'));
-    bindAction('#baselineCreateDomProfile',
-               profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
+    bindAction(
+        '#baselineCreateDomProfile',
+        profile(baselineCreateDom, baselineDestroyDom, 'baseline-create'));
   }
 
   initNg2();
@@ -139,8 +133,9 @@ class TreeNode {
 
 function buildTree(maxDepth, values, curDepth) {
   if (maxDepth === curDepth) return new TreeNode('', null, null);
-  return new TreeNode(values[curDepth], buildTree(maxDepth, values, curDepth + 1),
-                      buildTree(maxDepth, values, curDepth + 1));
+  return new TreeNode(
+      values[curDepth], buildTree(maxDepth, values, curDepth + 1),
+      buildTree(maxDepth, values, curDepth + 1));
 }
 
 // http://jsperf.com/nextsibling-vs-childnodes
@@ -233,7 +228,8 @@ class StaticTreeComponent0 extends StaticTreeComponentBase {
   selector: 'tree',
   inputs: ['data'],
   directives: [StaticTreeComponent0],
-  template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
+  template:
+      `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent1 extends StaticTreeComponentBase {
 }
@@ -242,7 +238,8 @@ class StaticTreeComponent1 extends StaticTreeComponentBase {
   selector: 'tree',
   inputs: ['data'],
   directives: [StaticTreeComponent1],
-  template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
+  template:
+      `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent2 extends StaticTreeComponentBase {
   data: TreeNode;
@@ -252,7 +249,8 @@ class StaticTreeComponent2 extends StaticTreeComponentBase {
   selector: 'tree',
   inputs: ['data'],
   directives: [StaticTreeComponent2],
-  template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
+  template:
+      `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent3 extends StaticTreeComponentBase {
 }
@@ -261,7 +259,8 @@ class StaticTreeComponent3 extends StaticTreeComponentBase {
   selector: 'tree',
   inputs: ['data'],
   directives: [StaticTreeComponent3],
-  template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
+  template:
+      `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent4 extends StaticTreeComponentBase {
 }
@@ -270,7 +269,8 @@ class StaticTreeComponent4 extends StaticTreeComponentBase {
   selector: 'tree',
   inputs: ['data'],
   directives: [StaticTreeComponent4],
-  template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
+  template:
+      `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent5 extends StaticTreeComponentBase {
 }
@@ -279,7 +279,8 @@ class StaticTreeComponent5 extends StaticTreeComponentBase {
   selector: 'tree',
   inputs: ['data'],
   directives: [StaticTreeComponent5],
-  template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
+  template:
+      `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent6 extends StaticTreeComponentBase {
 }
@@ -288,7 +289,8 @@ class StaticTreeComponent6 extends StaticTreeComponentBase {
   selector: 'tree',
   inputs: ['data'],
   directives: [StaticTreeComponent6],
-  template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
+  template:
+      `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent7 extends StaticTreeComponentBase {
 }
@@ -297,7 +299,8 @@ class StaticTreeComponent7 extends StaticTreeComponentBase {
   selector: 'tree',
   inputs: ['data'],
   directives: [StaticTreeComponent7],
-  template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
+  template:
+      `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent8 extends StaticTreeComponentBase {
 }
@@ -306,7 +309,8 @@ class StaticTreeComponent8 extends StaticTreeComponentBase {
   selector: 'tree',
   inputs: ['data'],
   directives: [StaticTreeComponent8],
-  template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
+  template:
+      `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent9 extends StaticTreeComponentBase {
 }

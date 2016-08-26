@@ -1,13 +1,6 @@
 import {StringWrapper} from '@angular/facade/src/lang';
-import {
-  CustomDate,
-  Offering,
-  Company,
-  Opportunity,
-  Account,
-  STATUS_LIST,
-  AAT_STATUS_LIST
-} from './common';
+
+import {AAT_STATUS_LIST, Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common';
 
 export function generateOfferings(count: number): Offering[] {
   var res = [];
@@ -52,18 +45,7 @@ export function generateAccount(seed: number): Account {
 }
 
 var names = [
-  'Foo',
-  'Bar',
-  'Baz',
-  'Qux',
-  'Quux',
-  'Garply',
-  'Waldo',
-  'Fred',
-  'Plugh',
-  'Xyzzy',
-  'Thud',
-  'Cruft',
+  'Foo', 'Bar', 'Baz', 'Qux', 'Quux', 'Garply', 'Waldo', 'Fred', 'Plugh', 'Xyzzy', 'Thud', 'Cruft',
   'Stuff'
 ];
 

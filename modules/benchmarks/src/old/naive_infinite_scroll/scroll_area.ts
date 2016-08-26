@@ -1,20 +1,11 @@
+import {NgFor} from '@angular/common';
+import {Component, Directive} from '@angular/core';
 import {ListWrapper} from '@angular/facade/src/collection';
 import {Math} from '@angular/facade/src/math';
 
-import {Component, Directive} from '@angular/core';
-
-import {
-  Offering,
-  ITEMS,
-  ITEM_HEIGHT,
-  VISIBLE_ITEMS,
-  VIEW_PORT_HEIGHT,
-  ROW_WIDTH,
-  HEIGHT
-} from './common';
+import {HEIGHT, ITEMS, ITEM_HEIGHT, Offering, ROW_WIDTH, VIEW_PORT_HEIGHT, VISIBLE_ITEMS} from './common';
 import {generateOfferings} from './random_data';
 import {ScrollItemComponent} from './scroll_item';
-import {NgFor} from '@angular/common';
 
 @Component({
   selector: 'scroll-area',

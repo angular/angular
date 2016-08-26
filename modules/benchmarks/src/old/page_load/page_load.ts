@@ -1,6 +1,6 @@
-import {Component, NgModule} from 'angular2/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {Component, NgModule} from 'angular2/core';
 
 @Component({selector: 'app', template: '<h1>Page Load Time</h1>'})
 class App {
