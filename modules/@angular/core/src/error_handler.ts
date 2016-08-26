@@ -38,7 +38,12 @@ export class ErrorHandler {
    */
   _console: Console = console;
 
-  constructor(private rethrowError: boolean = true) {}
+  /**
+   * @internal
+   */
+  rethrowError: boolean;
+
+  constructor(rethrowError: boolean = true) { this.rethrowError = rethrowError; }
 
   handleError(error: any): void {
     var originalError = this._findOriginalError(error);
