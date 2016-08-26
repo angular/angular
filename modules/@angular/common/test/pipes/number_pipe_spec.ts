@@ -19,7 +19,7 @@ export function main() {
       describe('DecimalPipe', () => {
         var pipe: DecimalPipe;
 
-        beforeEach(() => { pipe = new DecimalPipe(); });
+        beforeEach(() => { pipe = new DecimalPipe('en-US'); });
 
         describe('transform', () => {
           it('should return correct value for numbers', () => {
@@ -50,7 +50,7 @@ export function main() {
       describe('PercentPipe', () => {
         var pipe: PercentPipe;
 
-        beforeEach(() => { pipe = new PercentPipe(); });
+        beforeEach(() => { pipe = new PercentPipe('en-US'); });
 
         describe('transform', () => {
           it('should return correct value for numbers', () => {
@@ -66,7 +66,7 @@ export function main() {
       describe('CurrencyPipe', () => {
         var pipe: CurrencyPipe;
 
-        beforeEach(() => { pipe = new CurrencyPipe(); });
+        beforeEach(() => { pipe = new CurrencyPipe('en-US'); });
 
         describe('transform', () => {
           it('should return correct value for numbers', () => {

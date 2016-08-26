@@ -14,16 +14,19 @@ export declare class CommonModule {
 
 /** @stable */
 export declare class CurrencyPipe implements PipeTransform {
+    constructor(_locale: string);
     transform(value: any, currencyCode?: string, symbolDisplay?: boolean, digits?: string): string;
 }
 
 /** @stable */
 export declare class DatePipe implements PipeTransform {
+    constructor(_locale: string);
     transform(value: any, pattern?: string): string;
 }
 
 /** @stable */
 export declare class DecimalPipe implements PipeTransform {
+    constructor(_locale: string);
     transform(value: any, digits?: string): string;
 }
 
@@ -196,6 +199,7 @@ export declare class PathLocationStrategy extends LocationStrategy {
 
 /** @stable */
 export declare class PercentPipe implements PipeTransform {
+    constructor(_locale: string);
     transform(value: any, digits?: string): string;
 }
 
