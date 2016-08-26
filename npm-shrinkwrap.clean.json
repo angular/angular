@@ -1616,6 +1616,9 @@
     "buffers": {
       "version": "0.1.1"
     },
+    "bufferutil": {
+      "version": "1.2.1"
+    },
     "builtin-modules": {
       "version": "1.1.1"
     },
@@ -2147,6 +2150,9 @@
     },
     "es6-module-loader": {
       "version": "0.17.9"
+    },
+    "es6-promise": {
+      "version": "3.2.1"
     },
     "es6-symbol": {
       "version": "3.0.2"

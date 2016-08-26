@@ -2526,6 +2526,11 @@
       "from": "buffers@>=0.1.1 <0.2.0",
       "resolved": "https://registry.npmjs.org/buffers/-/buffers-0.1.1.tgz"
     },
+    "bufferutil": {
+      "version": "1.2.1",
+      "from": "bufferutil@>=1.2.0 <1.3.0",
+      "resolved": "https://registry.npmjs.org/bufferutil/-/bufferutil-1.2.1.tgz"
+    },
     "builtin-modules": {
       "version": "1.1.1",
       "from": "builtin-modules@>=1.0.0 <2.0.0",
@@ -3385,6 +3390,11 @@
       "version": "0.17.9",
       "from": "es6-module-loader@>=0.17.4 <0.18.0",
       "resolved": "https://registry.npmjs.org/es6-module-loader/-/es6-module-loader-0.17.9.tgz"
+    },
+    "es6-promise": {
+      "version": "3.2.1",
+      "from": "es6-promise@>=3.1.2 <4.0.0",
+      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.2.1.tgz"
     },
     "es6-symbol": {
       "version": "3.0.2",
@@ -9326,7 +9336,8 @@
     },
     "zone.js": {
       "version": "0.6.17",
-      "from": "zone.js@0.6.17"
+      "from": "zone.js@0.6.17",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.17.tgz"
     }
   }
 }
