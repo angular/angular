@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {__core_private_DebugAppView__, __core_private_TemplateRef__, __core_private__ as r, __core_private_types__ as types} from '@angular/core';
-import {__core_private_testing__ as c, __core_private_testing_types__ as t} from '@angular/core/testing';
 
-export declare let _compiler_core_private_types: types;
-export declare let _compiler_core_testing_types: t;
+import {__core_private__ as r} from '@angular/core';
 
-export type TestingCompiler = typeof _compiler_core_testing_types.TestingCompiler;
-export var TestingCompiler: typeof c.TestingCompiler = c.TestingCompiler;
-
-export type TestingCompilerFactory = typeof _compiler_core_testing_types.TestingCompilerFactory;
-export var TestingCompilerFactory: typeof c.TestingCompilerFactory = c.TestingCompilerFactory;
-
-export type ViewMetadata = typeof _compiler_core_private_types.ViewMetadata;
+export type ViewMetadata = typeof r._ViewMetadata;
 export var ViewMetadata: typeof r.ViewMetadata = r.ViewMetadata;
+
+
+
+import {__core_private_testing__ as r2} from '@angular/core/testing';
+
+export type TestingCompiler = typeof r2._TestingCompiler;
+export var TestingCompiler: typeof r2.TestingCompiler = r2.TestingCompiler;
+
+export type TestingCompilerFactory = typeof r2._TestingCompilerFactory;
+export var TestingCompilerFactory: typeof r2.TestingCompilerFactory = r2.TestingCompilerFactory;

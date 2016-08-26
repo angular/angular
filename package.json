@@ -111,7 +111,7 @@
     "ts2dart": "^0.9.10",
     "tsickle": "^0.1.4",
     "tslint": "^3.10.0-dev.2",
-    "typescript": "^2.0.0",
+    "typescript": "^2.1.0-dev.20160826",
     "universal-analytics": "^0.3.9",
     "webpack": "^1.12.6",
     "which": "~1",

@@ -77,20 +77,13 @@ export function createPlatform(injector: Injector): PlatformRef {
 }
 
 /**
- * Factory for a platform.
- *
- * @experimental
- */
-export type PlatformFactory = (extraProviders?: Provider[]) => PlatformRef;
-
-/**
  * Creates a factory for a platform
  *
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatformFactory(
-    parentPlaformFactory: PlatformFactory, name: string,
-    providers: Provider[] = []): PlatformFactory {
+    parentPlaformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string,
+    providers: Provider[] = []): (extraProviders?: Provider[]) => PlatformRef {
   const marker = new OpaqueToken(`Platform: ${name}`);
   return (extraProviders: Provider[] = []) => {
     if (!getPlatform()) {

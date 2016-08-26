@@ -18,7 +18,6 @@ import * as change_detection_util from './src/change_detection/change_detection_
 import * as constants from './src/change_detection/constants';
 import * as console from './src/console';
 import * as debug from './src/debug/debug_renderer';
-import * as provider from './src/di/provider';
 import * as reflective_provider from './src/di/reflective_provider';
 import * as component_factory_resolver from './src/linker/component_factory_resolver';
 import * as debug_context from './src/linker/debug_context';
@@ -36,83 +35,106 @@ import * as reflection from './src/reflection/reflection';
 import {Reflector} from './src/reflection/reflection'; // tslint:disable-line
 import * as reflection_capabilities from './src/reflection/reflection_capabilities';
 import * as reflector_reader from './src/reflection/reflector_reader';
+import * as reflection_types from './src/reflection/types';
 import * as api from './src/render/api';
-import * as security from './src/security';
 import * as decorators from './src/util/decorators';
 
-// These generic types can't be exported within the __core_private_types__
-// interface because the generic type info will be lost. So just exporting
-// them separately.
-export type __core_private_DebugAppView__<T> = view.DebugAppView<T>;
-export type __core_private_TemplateRef__<C> = template_ref.TemplateRef_<C>;
-
-export interface __core_private_types__ {
-  isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy;
-  ChangeDetectorStatus: constants.ChangeDetectorStatus;
-  CHANGE_DETECTION_STRATEGY_VALUES: typeof constants.CHANGE_DETECTION_STRATEGY_VALUES;
-  constructDependencies: typeof reflective_provider.constructDependencies;
-  LifecycleHooks: lifecycle_hooks.LifecycleHooks;
-  LIFECYCLE_HOOKS_VALUES: typeof lifecycle_hooks.LIFECYCLE_HOOKS_VALUES;
-  ReflectorReader: reflector_reader.ReflectorReader;
-  CodegenComponentFactoryResolver:
-      typeof component_factory_resolver.CodegenComponentFactoryResolver;
-  AppElement: element.AppElement;
-  AppView: typeof view.AppView;
-  NgModuleInjector: typeof ng_module_factory.NgModuleInjector;
-  ViewType: view_type.ViewType;
-  MAX_INTERPOLATION_VALUES: typeof view_utils.MAX_INTERPOLATION_VALUES;
-  checkBinding: typeof view_utils.checkBinding;
-  flattenNestedViewRenderNodes: typeof view_utils.flattenNestedViewRenderNodes;
-  interpolate: typeof view_utils.interpolate;
-  ViewUtils: typeof view_utils.ViewUtils;
-  VIEW_ENCAPSULATION_VALUES: typeof metadata_view.VIEW_ENCAPSULATION_VALUES;
-  ViewMetadata: metadata_view.ViewMetadata;
-  DebugContext: typeof debug_context.DebugContext;
-  StaticNodeDebugInfo: typeof debug_context.StaticNodeDebugInfo;
-  devModeEqual: typeof change_detection_util.devModeEqual;
-  UNINITIALIZED: typeof change_detection_util.UNINITIALIZED;
-  ValueUnwrapper: typeof change_detection_util.ValueUnwrapper;
-  RenderDebugInfo: api.RenderDebugInfo;
-  wtfInit: typeof wtf_init.wtfInit;
-  ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities;
-  makeDecorator: typeof decorators.makeDecorator;
-  DebugDomRootRenderer: debug.DebugDomRootRenderer;
-  EMPTY_ARRAY: typeof view_utils.EMPTY_ARRAY;
-  EMPTY_MAP: typeof view_utils.EMPTY_MAP;
-  pureProxy1: typeof view_utils.pureProxy1;
-  pureProxy2: typeof view_utils.pureProxy2;
-  pureProxy3: typeof view_utils.pureProxy3;
-  pureProxy4: typeof view_utils.pureProxy4;
-  pureProxy5: typeof view_utils.pureProxy5;
-  pureProxy6: typeof view_utils.pureProxy6;
-  pureProxy7: typeof view_utils.pureProxy7;
-  pureProxy8: typeof view_utils.pureProxy8;
-  pureProxy9: typeof view_utils.pureProxy9;
-  pureProxy10: typeof view_utils.pureProxy10;
-  castByValue: typeof view_utils.castByValue;
-  Console: console.Console;
-  reflector: typeof reflection.reflector;
-  Reflector: reflection.Reflector;
-  NoOpAnimationPlayer: NoOpAnimationPlayer_;
-  AnimationPlayer: AnimationPlayer_;
-  AnimationSequencePlayer: AnimationSequencePlayer_;
-  AnimationGroupPlayer: AnimationGroupPlayer_;
-  AnimationKeyframe: AnimationKeyframe_;
-  prepareFinalAnimationStyles: typeof animationUtils.prepareFinalAnimationStyles;
-  balanceAnimationKeyframes: typeof animationUtils.balanceAnimationKeyframes;
-  flattenStyles: typeof animationUtils.flattenStyles;
-  clearStyles: typeof animationUtils.clearStyles;
-  renderStyles: typeof animationUtils.renderStyles;
-  collectAndResolveStyles: typeof animationUtils.collectAndResolveStyles;
-  AnimationStyles: AnimationStyles_;
-  AnimationOutput: AnimationOutput_;
-  ANY_STATE: typeof ANY_STATE_;
-  DEFAULT_STATE: typeof DEFAULT_STATE_;
-  EMPTY_STATE: typeof EMPTY_STATE_;
-  FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_;
-}
-
-export var __core_private__ = {
+export var __core_private__ : {
+  isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy,
+  ChangeDetectorStatus: typeof constants.ChangeDetectorStatus,
+  _ChangeDetectorStatus?: constants.ChangeDetectorStatus,
+  CHANGE_DETECTION_STRATEGY_VALUES: typeof constants.CHANGE_DETECTION_STRATEGY_VALUES,
+  constructDependencies: typeof reflective_provider.constructDependencies,
+  LifecycleHooks: typeof lifecycle_hooks.LifecycleHooks,
+  _LifecycleHooks?: lifecycle_hooks.LifecycleHooks,
+  LIFECYCLE_HOOKS_VALUES: typeof lifecycle_hooks.LIFECYCLE_HOOKS_VALUES,
+  ReflectorReader: typeof reflector_reader.ReflectorReader,
+  _ReflectorReader?: reflector_reader.ReflectorReader,
+  _SetterFn?: reflection_types.SetterFn;
+  _GetterFn?: reflection_types.GetterFn;
+  _MethodFn?: reflection_types.MethodFn;
+  CodegenComponentFactoryResolver: typeof component_factory_resolver.CodegenComponentFactoryResolver,
+  _CodegenComponentFactoryResolver?: component_factory_resolver.CodegenComponentFactoryResolver,
+  AppElement: typeof element.AppElement,
+  _AppElement?: element.AppElement,
+  AppView: typeof view.AppView,
+  _AppView?: view.AppView<any>,
+  DebugAppView: typeof view.DebugAppView,
+  _DebugAppView?: view.DebugAppView<any>,
+  NgModuleInjector: typeof ng_module_factory.NgModuleInjector,
+  _NgModuleInjector?: ng_module_factory.NgModuleInjector<any>,
+  ViewType: typeof view_type.ViewType,
+  _ViewType?: view_type.ViewType,
+  MAX_INTERPOLATION_VALUES: typeof view_utils.MAX_INTERPOLATION_VALUES,
+  checkBinding: typeof view_utils.checkBinding,
+  flattenNestedViewRenderNodes: typeof view_utils.flattenNestedViewRenderNodes,
+  interpolate: typeof view_utils.interpolate,
+  ViewUtils: typeof view_utils.ViewUtils,
+  _ViewUtils?: view_utils.ViewUtils,
+  VIEW_ENCAPSULATION_VALUES: typeof metadata_view.VIEW_ENCAPSULATION_VALUES,
+  ViewMetadata: typeof metadata_view.ViewMetadata,
+  _ViewMetadata?: metadata_view.ViewMetadata,
+  DebugContext: typeof debug_context.DebugContext,
+  _DebugContext?: debug_context.DebugContext,
+  StaticNodeDebugInfo: typeof debug_context.StaticNodeDebugInfo,
+  _StaticNodeDebugInfo?: debug_context.StaticNodeDebugInfo,
+  devModeEqual: typeof change_detection_util.devModeEqual,
+  UNINITIALIZED: typeof change_detection_util.UNINITIALIZED,
+  ValueUnwrapper: typeof change_detection_util.ValueUnwrapper,
+  _ValueUnwrapper?: change_detection_util.ValueUnwrapper,
+  RenderDebugInfo: typeof api.RenderDebugInfo,
+  _RenderDebugInfo?: api.RenderDebugInfo,
+  TemplateRef_: typeof template_ref.TemplateRef_,
+  _TemplateRef_?: template_ref.TemplateRef_<any>,
+  wtfInit: typeof wtf_init.wtfInit,
+  ReflectionCapabilities: typeof reflection_capabilities.ReflectionCapabilities,
+  _ReflectionCapabilities?: reflection_capabilities.ReflectionCapabilities,
+  makeDecorator: typeof decorators.makeDecorator,
+  DebugDomRootRenderer: typeof debug.DebugDomRootRenderer,
+  _DebugDomRootRenderer?: debug.DebugDomRootRenderer,
+  EMPTY_ARRAY: typeof view_utils.EMPTY_ARRAY,
+  EMPTY_MAP: typeof view_utils.EMPTY_MAP,
+  pureProxy1: typeof view_utils.pureProxy1,
+  pureProxy2: typeof view_utils.pureProxy2,
+  pureProxy3: typeof view_utils.pureProxy3,
+  pureProxy4: typeof view_utils.pureProxy4,
+  pureProxy5: typeof view_utils.pureProxy5,
+  pureProxy6: typeof view_utils.pureProxy6,
+  pureProxy7: typeof view_utils.pureProxy7,
+  pureProxy8: typeof view_utils.pureProxy8,
+  pureProxy9: typeof view_utils.pureProxy9,
+  pureProxy10: typeof view_utils.pureProxy10,
+  castByValue: typeof view_utils.castByValue,
+  Console: typeof console.Console,
+  _Console?: console.Console,
+  reflector: typeof reflection.reflector,
+  Reflector: typeof reflection.Reflector,
+  _Reflector?: reflection.Reflector,
+  NoOpAnimationPlayer: typeof NoOpAnimationPlayer_,
+  _NoOpAnimationPlayer?: NoOpAnimationPlayer_,
+  AnimationPlayer: typeof AnimationPlayer_,
+  _AnimationPlayer?: AnimationPlayer_,
+  AnimationSequencePlayer: typeof AnimationSequencePlayer_,
+  _AnimationSequencePlayer?: AnimationSequencePlayer_,
+  AnimationGroupPlayer: typeof AnimationGroupPlayer_,
+  _AnimationGroupPlayer?: AnimationGroupPlayer_,
+  AnimationKeyframe: typeof AnimationKeyframe_,
+  _AnimationKeyframe?: AnimationKeyframe_,
+  prepareFinalAnimationStyles: typeof animationUtils.prepareFinalAnimationStyles,
+  balanceAnimationKeyframes: typeof animationUtils.balanceAnimationKeyframes,
+  flattenStyles: typeof animationUtils.flattenStyles,
+  clearStyles: typeof animationUtils.clearStyles,
+  renderStyles: typeof animationUtils.renderStyles,
+  collectAndResolveStyles: typeof animationUtils.collectAndResolveStyles,
+  AnimationStyles: typeof AnimationStyles_,
+  _AnimationStyles?: AnimationStyles_,
+  AnimationOutput: typeof AnimationOutput_,
+  _AnimationOutput?: AnimationOutput_,
+  ANY_STATE: typeof ANY_STATE_,
+  DEFAULT_STATE: typeof DEFAULT_STATE_,
+  EMPTY_STATE: typeof EMPTY_STATE_,
+  FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_
+  } = {
   isDefaultChangeDetectionStrategy: constants.isDefaultChangeDetectionStrategy,
   ChangeDetectorStatus: constants.ChangeDetectorStatus,
   CHANGE_DETECTION_STRATEGY_VALUES: constants.CHANGE_DETECTION_STRATEGY_VALUES,

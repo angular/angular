@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ClassProvider, ExistingProvider, FactoryProvider, TypeProvider, ValueProvider} from '@angular/core';
+import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from '@angular/core';
 import {OpaqueToken} from '@angular/core'
 
 import {ROUTES} from './src/router_config_loader';

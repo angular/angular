@@ -332,7 +332,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
   hasShadowRoot(node: any /** TODO #9100 */): boolean {
-    return node instanceof HTMLElement && isPresent(node.shadowRoot);
+    return isPresent(node.shadowRoot) && node instanceof HTMLElement;
   }
   isShadowRoot(node: any /** TODO #9100 */): boolean { return node instanceof DocumentFragment; }
   importIntoDoc(node: Node): any {

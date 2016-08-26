@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ClassProvider, ExceptionHandler, ExistingProvider, FactoryProvider, NgModule, NgZone, PlatformRef, RootRenderer, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_INITIALIZER, ApplicationModule, ClassProvider, ExceptionHandler, ExistingProvider, FactoryProvider, NgModule, NgZone, PlatformRef, Provider, RootRenderer, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
 
 import {BROWSER_SANITIZATION_PROVIDERS} from './browser';
 import {print} from './facade/lang';

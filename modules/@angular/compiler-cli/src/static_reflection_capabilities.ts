@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectionCapabilities, reflector} from './core_private';
+import {ReflectionCapabilities, SetterFn, GetterFn, MethodFn, reflector} from './core_private';
 import {StaticReflector} from './static_reflector';
 
 export class StaticAndDynamicReflectionCapabilities {
@@ -38,9 +38,9 @@ export class StaticAndDynamicReflectionCapabilities {
     return isStaticType(typeOrFunc) ? this.staticDelegate.propMetadata(typeOrFunc) :
                                       this.dynamicDelegate.propMetadata(typeOrFunc);
   }
-  getter(name: string) { return this.dynamicDelegate.getter(name); }
-  setter(name: string) { return this.dynamicDelegate.setter(name); }
-  method(name: string) { return this.dynamicDelegate.method(name); }
+  getter(name: string): GetterFn { return this.dynamicDelegate.getter(name); }
+  setter(name: string): SetterFn { return this.dynamicDelegate.setter(name); }
+  method(name: string): MethodFn { return this.dynamicDelegate.method(name); }
   importUri(type: any): string { return this.staticDelegate.importUri(type); }
 }
 

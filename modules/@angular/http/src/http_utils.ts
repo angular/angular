@@ -18,7 +18,7 @@ export function normalizeMethodName(method: string | RequestMethod): RequestMeth
                  .replace(
                      /(\w)(\w*)/g,
                      (g0: string, g1: string, g2: string) => g1.toUpperCase() + g2.toLowerCase());
-    method = <number>(<{[key: string]: any}>RequestMethod)[method];
+    method = <RequestMethod>(<{[key: string]: any}>RequestMethod)[method];
     if (typeof method !== 'number')
       throw makeTypeError(
           `Invalid request method. The method "${originalMethod}" is not supported.`);
