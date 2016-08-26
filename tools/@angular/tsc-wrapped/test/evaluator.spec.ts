@@ -79,7 +79,7 @@ describe('Evaluator', () => {
     expect(evaluator.evaluateNode(findVar(expressions, 'four').initializer)).toBe(4);
     symbols.define('four', 4);
     expect(evaluator.evaluateNode(findVar(expressions, 'obj').initializer))
-        .toEqual({one: 1, two: 2, three: 3, four: 4});
+        .toEqual({one: 1, two: 2, three: 3, '\'four\'': 4});
     expect(evaluator.evaluateNode(findVar(expressions, 'arr').initializer)).toEqual([1, 2, 3, 4]);
     expect(evaluator.evaluateNode(findVar(expressions, 'bTrue').initializer)).toEqual(true);
     expect(evaluator.evaluateNode(findVar(expressions, 'bFalse').initializer)).toEqual(false);
@@ -152,7 +152,7 @@ describe('Evaluator', () => {
     });
   });
 
-  it('should support referene to a declared module type', () => {
+  it('should support reference to a declared module type', () => {
     const declared = program.getSourceFile('declared.ts');
     const aDecl = findVar(declared, 'a');
     expect(evaluator.evaluateNode(aDecl.type)).toEqual({
@@ -237,7 +237,7 @@ const FILES: Directory = {
 
     export var three = one + two;
     export var four = two * two;
-    export var obj = { one: one, two: two, three: three, four: four };
+    export var obj = { one: one, two: two, three: three, 'four': four };
     export var arr = [one, two, three, four];
     export var bTrue = someBool;
     export var bFalse = !someBool;

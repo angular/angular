@@ -292,11 +292,11 @@ export class MetadataCollector {
                     __symbolic: 'select',
                     expression: recordEntry({__symbolic: 'reference', name: enumName}, node), name
                   }
-                }
+                };
               } else {
                 nextDefaultValue =
                     recordEntry(errorSym('Unsuppported enum member name', member.name), node);
-              };
+              }
             }
             if (writtenMembers) {
               if (!metadata) metadata = {};
@@ -509,7 +509,7 @@ function validateMetadata(
     const entry = metadata[name];
     try {
       if (isClassMetadata(entry)) {
-        validateClass(entry)
+        validateClass(entry);
       }
     } catch (e) {
       const node = nodeMap.get(entry);

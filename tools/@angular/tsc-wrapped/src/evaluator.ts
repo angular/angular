@@ -220,10 +220,14 @@ export class Evaluator {
             case ts.SyntaxKind.ShorthandPropertyAssignment:
             case ts.SyntaxKind.PropertyAssignment:
               const assignment = <ts.PropertyAssignment|ts.ShorthandPropertyAssignment>child;
-              const propertyName = this.nameOf(assignment.name);
+              let propertyName = this.nameOf(assignment.name);
               if (isMetadataError(propertyName)) {
                 error = propertyName;
                 return true;
+              }
+              if (assignment.name.kind == ts.SyntaxKind.Identifier &&
+                  /^['"]/.test(assignment.name.getText())) {
+                propertyName = `'${propertyName}'`;
               }
               const propertyValue = isPropertyAssignment(assignment) ?
                   this.evaluateNode(assignment.initializer) :
