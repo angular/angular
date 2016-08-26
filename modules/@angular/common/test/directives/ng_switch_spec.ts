@@ -158,3 +158,5 @@ class TestComponent {
     this.when2 = null;
   }
 }
+
+main();

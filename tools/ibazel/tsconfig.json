@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "inlineSourceMap": true,
+    "lib": ["es6", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "rootDir": ".",
+    "skipDefaultLibCheck": true,
+    "target": "es5",
+    "types": ["node", "jasmine"],
+    "paths": {
+        "ibazel": ["."],
+        "ibazel/*": ["./*"]
+    }
+  }
+}

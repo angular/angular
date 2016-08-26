@@ -91,3 +91,5 @@ export function main() {
     it('should send replaceState to render thread', () => { testPushOrReplaceState(false); });
   });
 }
+
+main();

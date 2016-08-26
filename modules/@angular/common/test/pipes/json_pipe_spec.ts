@@ -11,7 +11,7 @@ import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {Json, StringWrapper} from '../../src/facade/lang';
+import {Json, StringWrapper} from '@angular/facade/src/lang';
 
 export function main() {
   describe('JsonPipe', () => {
@@ -79,3 +79,5 @@ export function main() {
     });
   });
 }
+
+main();

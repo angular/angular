@@ -232,3 +232,5 @@ export function main() {
     });
   });
 }
+
+main();

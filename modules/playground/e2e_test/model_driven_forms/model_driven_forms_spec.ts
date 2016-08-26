@@ -12,7 +12,7 @@ describe('Model-Driven Forms', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'all/playground/src/model_driven_forms/index.html';
+  var URL = 'modules/playground/src/model_driven_forms/index.html';
 
   it('should display errors', function() {
     browser.get(URL);

@@ -13,7 +13,7 @@ describe('Zippy Component', function() {
   afterEach(verifyNoBrowserErrors);
 
   describe('zippy', function() {
-    var URL = 'all/playground/src/zippy_component/index.html';
+    var URL = 'modules/playground/src/zippy_component/index.html';
 
     beforeEach(function() { browser.get(URL); });
 

@@ -143,3 +143,5 @@ class TestLocalization extends NgLocalization {
 class TestComponent {
   switchValue: number = null;
 }
+
+main();

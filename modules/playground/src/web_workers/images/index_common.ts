@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {EventListener} from '@angular/core/src/facade/browser';
+import {EventListener} from '@angular/facade/src/browser';
 
 import {FileReader, Uint8ArrayWrapper} from './file_api';
 import {BitmapService} from './services/bitmap';

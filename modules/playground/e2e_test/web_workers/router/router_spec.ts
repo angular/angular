@@ -8,7 +8,7 @@
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
-describe('WebWorker Router', () => {
+describe("WebWorker Router", () => {
   beforeEach(() => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
@@ -22,7 +22,7 @@ describe('WebWorker Router', () => {
 
   let contentSelector = 'app main h1';
   let navSelector = 'app nav ul';
-  var baseUrl = 'all/playground/src/web_workers/router/index.html';
+  var baseUrl = 'modules/playground/src/web_workers/router/index.html';
 
   it('should route on click', () => {
     browser.get(baseUrl);

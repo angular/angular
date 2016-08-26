@@ -10,18 +10,18 @@ import {Injectable} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {__platform_browser_private__} from '@angular/platform-browser';
 
-import {BrowserXhr} from '../../src/backends/browser_xhr';
-import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/xhr_backend';
-import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
-import {ResponseContentType, ResponseType} from '../../src/enums';
-import {Map} from '../../src/facade/collection';
-import {Json} from '../../src/facade/lang';
-import {Headers} from '../../src/headers';
-import {XSRFStrategy} from '../../src/interfaces';
-import {Request} from '../../src/static_request';
-import {Response} from '../../src/static_response';
-import {URLSearchParams} from '../../src/url_search_params';
+import {BrowserXhr} from '@angular/http/src/backends/browser_xhr';
+import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '@angular/http/src/backends/xhr_backend';
+import {BaseRequestOptions, RequestOptions} from '@angular/http/src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '@angular/http/src/base_response_options';
+import {ResponseContentType, ResponseType} from '@angular/http/src/enums';
+import {Map} from '@angular/facade/src/collection';
+import {Json} from '@angular/facade/src/lang';
+import {Headers} from '@angular/http/src/headers';
+import {XSRFStrategy} from '@angular/http/src/interfaces';
+import {Request} from '@angular/http/src/static_request';
+import {Response} from '@angular/http/src/static_response';
+import {URLSearchParams} from '@angular/http/src/url_search_params';
 
 var abortSpy: any;
 var sendSpy: any;
@@ -692,3 +692,5 @@ Connection: keep-alive`;
     });
   });
 }
+
+main();

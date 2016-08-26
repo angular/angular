@@ -9,7 +9,7 @@
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 describe('Order Management CRUD', function() {
-  var URL = 'all/playground/src/order_management/index.html';
+  var URL = 'modules/playground/src/order_management/index.html';
 
   it('should work', function() {
     browser.get(URL);

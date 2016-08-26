@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
 set -ex -o pipefail
 
-# These ones can be `npm link`ed for fast development
+[[ "${TEST_SRCDIR}/angular" == "$(pwd)" ]] && [[ -n "${TEST_TMPDIR}" ]] \
+    || { echo "Please run from \"bazel test\"." >&2; exit 1; }
+
+
 # Note that compiler-cli does not support TS 1.8 because tsc-wrapped uses 1.9 features
-LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,core,compiler,http,router,upgrade,platform-{browser,browser-dynamic,server}}
+LOCAL_PKGS=(
+  "$(pwd)"/{common,core,compiler,forms,http,platform-{browser,browser-dynamic,server},router,upgrade}_package.tar
 )
 
-TMPDIR=${TMPDIR:-/tmp/angular-build/}
-readonly TMP=$TMPDIR/typings-test.$(date +%s)
-mkdir -p $TMP
-cp -R -v tools/typings-test/* $TMP
+cp -R -v tools/typings-test/* "${TEST_TMPDIR}"
 
 # run in subshell to avoid polluting cwd
 (
-  cd $TMP
+  set -ex -o pipefail
+  cd "${TEST_TMPDIR}"
   # create package.json so that npm install doesn't pollute any parent node_modules's directory
   npm init --yes
-  npm install ${LINKABLE_PKGS[*]}
+  npm install "${LOCAL_PKGS[@]}"
   npm install @types/es6-promise @types/es6-collections @types/jasmine rxjs@5.0.0-beta.11
   npm install typescript@1.8.10
   $(npm bin)/tsc --version

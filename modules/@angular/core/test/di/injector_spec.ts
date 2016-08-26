@@ -25,3 +25,5 @@ export function main() {
        () => { expect(Injector.NULL.get('someToken', 'notFound')).toEqual('notFound'); });
   });
 }
+
+main();

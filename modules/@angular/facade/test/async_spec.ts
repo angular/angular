@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
-import {EventEmitter, Observable, Subject} from '../src/async';
+import {EventEmitter, Observable, Subject} from '@angular/facade/src/async';
 
 export function main() {
   describe('EventEmitter', () => {
@@ -132,3 +132,5 @@ export function main() {
     // should call dispose on the subscription on return
   });
 }
+
+main();

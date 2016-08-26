@@ -14,7 +14,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {EventEmitter} from '../../src/facade/async';
+import {EventEmitter} from '@angular/facade/src/async';
 
 @Injectable()
 class Logger {
@@ -358,3 +358,5 @@ export function main() {
     });
   });
 }
+
+main();

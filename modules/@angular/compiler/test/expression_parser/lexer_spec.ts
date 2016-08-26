@@ -246,3 +246,5 @@ export function main() {
     });
   });
 }
+
+main();

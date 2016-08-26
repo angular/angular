@@ -7,7 +7,7 @@
  */
 
 import {Component, EventEmitter, Injectable, Input, NgModule, Output} from '@angular/core';
-import {ListWrapper} from '@angular/core/src/facade/collection';
+import {ListWrapper} from '@angular/facade/src/collection';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';

@@ -7,7 +7,7 @@
  */
 
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {URLSearchParams} from '../src/url_search_params';
+import {URLSearchParams} from '@angular/http/src/url_search_params';
 
 export function main() {
   describe('URLSearchParams', () => {
@@ -151,3 +151,5 @@ export function main() {
 
   });
 }
+
+main();

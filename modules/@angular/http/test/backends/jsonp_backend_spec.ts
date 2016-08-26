@@ -10,15 +10,15 @@ import {ReflectiveInjector} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {BrowserJsonp} from '../../src/backends/browser_jsonp';
-import {JSONPBackend, JSONPBackend_, JSONPConnection, JSONPConnection_} from '../../src/backends/jsonp_backend';
-import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
-import {ReadyState, RequestMethod, ResponseType} from '../../src/enums';
-import {Map} from '../../src/facade/collection';
-import {isPresent} from '../../src/facade/lang';
-import {Request} from '../../src/static_request';
-import {Response} from '../../src/static_response';
+import {BrowserJsonp} from '@angular/http/src/backends/browser_jsonp';
+import {JSONPBackend, JSONPBackend_, JSONPConnection, JSONPConnection_} from '@angular/http/src/backends/jsonp_backend';
+import {BaseRequestOptions, RequestOptions} from '@angular/http/src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '@angular/http/src/base_response_options';
+import {ReadyState, RequestMethod, ResponseType} from '@angular/http/src/enums';
+import {Map} from '@angular/facade/src/collection';
+import {isPresent} from '@angular/facade/src/lang';
+import {Request} from '@angular/http/src/static_request';
+import {Response} from '@angular/http/src/static_response';
 
 var existingScripts: MockBrowserJsonp[] = [];
 var unused: Response;
@@ -177,3 +177,5 @@ export function main() {
     });
   });
 }
+
+main();

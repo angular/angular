@@ -69,3 +69,5 @@ export function main() {
     });
   });
 }
+
+main();

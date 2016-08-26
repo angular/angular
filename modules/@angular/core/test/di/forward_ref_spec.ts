@@ -19,3 +19,5 @@ export function main() {
     });
   });
 }
+
+main();

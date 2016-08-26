@@ -114,3 +114,5 @@ class FakeUrlResolver extends UrlResolver {
 
   resolve(baseUrl: string, url: string): string { return 'fake_resolved_url'; }
 }
+
+main();

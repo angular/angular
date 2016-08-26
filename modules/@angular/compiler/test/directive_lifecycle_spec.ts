@@ -141,3 +141,5 @@ class DirectiveWithAfterViewInitMethod {
 class DirectiveWithAfterViewCheckedMethod {
   ngAfterViewChecked() {}
 }
+
+main();

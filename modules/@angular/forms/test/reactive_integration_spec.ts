@@ -14,8 +14,8 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 
-import {ListWrapper} from '../src/facade/collection';
-import {AbstractControl} from '../src/model';
+import {ListWrapper} from '@angular/facade/src/collection';
+import {AbstractControl} from '@angular/forms/src/model';
 
 export function main() {
   describe('reactive forms integration tests', () => {
@@ -1503,3 +1503,5 @@ class LoginIsEmptyWrapper {
 class UniqLoginWrapper {
   form: FormGroup;
 }
+
+main();

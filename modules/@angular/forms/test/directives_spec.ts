@@ -573,3 +573,5 @@ export function main() {
     });
   });
 }
+
+main();

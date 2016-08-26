@@ -67,6 +67,8 @@ interface DecoratorInvocation {
 
 const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
 
+const emptyMetadata = JSON.stringify({__symbolic: 'module', version: 1, metadata: {}});
+
 export class MetadataWriterHost extends DelegatingHost {
   private metadataCollector = new MetadataCollector();
   constructor(
@@ -74,17 +76,17 @@ export class MetadataWriterHost extends DelegatingHost {
     super(delegate);
   }
 
-  private writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
+  private writeMetadata(
+      emitFilePath: string, sourceFile: ts.SourceFile, writeByteOrderMark: boolean,
+      onError?: (message: string) => void) {
     // TODO: replace with DTS filePath when https://github.com/Microsoft/TypeScript/pull/8412 is
     // released
     if (/*DTS*/ /\.js$/.test(emitFilePath)) {
       const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
       const metadata =
           this.metadataCollector.getMetadata(sourceFile, !!this.ngOptions.strictMetadataEmit);
-      if (metadata && metadata.metadata) {
-        const metadataText = JSON.stringify(metadata);
-        writeFileSync(path, metadataText, {encoding: 'utf-8'});
-      }
+      const metadataText = metadata && metadata.metadata ? JSON.stringify(metadata) : emptyMetadata;
+      this.delegate.writeFile(path, metadataText, writeByteOrderMark, onError);
     }
   }
 
@@ -113,6 +115,6 @@ export class MetadataWriterHost extends DelegatingHost {
         if (sourceFiles.length > 1) {
           throw new Error('Bundled emit with --out is not supported');
         }
-        this.writeMetadata(fileName, sourceFiles[0]);
+        this.writeMetadata(fileName, sourceFiles[0], writeByteOrderMark, onError);
       };
 }

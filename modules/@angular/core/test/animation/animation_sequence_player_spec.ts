@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationSequencePlayer} from '../../src/animation/animation_sequence_player';
-import {isPresent} from '../../src/facade/lang';
-import {fakeAsync, flushMicrotasks} from '../../testing';
-import {MockAnimationPlayer} from '../../testing/mock_animation_player';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
+import {AnimationSequencePlayer} from '@angular/core/src/animation/animation_sequence_player';
+import {isPresent} from '@angular/facade/src/lang';
+import {fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {MockAnimationPlayer} from '@angular/core/testing/mock_animation_player';
+import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('AnimationSequencePlayer', function() {
@@ -218,3 +218,5 @@ export function main() {
        }));
   });
 }
+
+main();

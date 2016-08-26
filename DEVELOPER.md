@@ -27,7 +27,9 @@ following products on your development machine:
   source or as a pre-packaged bundle.
 
 * [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
-  to execute the selenium standalone server for e2e testing.
+  to run Bazel and execute the selenium standalone server for e2e testing. JDK version 8 is required.
+
+* [Bazel](https://bazel.io) is used to build and test Angular packages.
 
 ## Getting the Sources
 
@@ -59,21 +61,6 @@ Next, install the JavaScript modules needed to build and test Angular:
 npm install
 ```
 
-**Optional**: In this document, we make use of project local `npm` package scripts and binaries
-(stored under `./node_modules/.bin`) by prefixing these command invocations with `$(npm bin)`; in
-particular `gulp` and `protractor` commands. If you prefer, you can drop this path prefix by either:
-
-*Option 1*: globally installing these two packages as follows:
-
-* `npm install -g gulp` (you might need to prefix this command with `sudo`)
-* `npm install -g protractor` (you might need to prefix this command with `sudo`)
-
-Since global installs can become stale, and required versions can vary by project, we avoid their
-use in these instructions.
-
-*Option 2*: defining a bash alias like `alias nbin='PATH=$(npm bin):$PATH'` as detailed in this
-[Stackoverflow answer](http://stackoverflow.com/questions/9679932/how-to-use-package-installed-locally-in-node-modules/15157360#15157360) and used like this: e.g., `nbin gulp build`.
-
 ## Windows only
 
 In order to create the right symlinks, run **as administrator**:
@@ -91,26 +78,34 @@ Before submitting a PR, do not forget to remove them:
 To build Angular run:
 
 ```shell
-./build.sh
+bazel build :all_packages
 ```
 
-* Results are put in the dist folder.
+To build individual modules, use `:<package_name>_package`, e.g.
+`:core_package`.
+
+* The npm build artifacts are put in the bazel-bin/ folder as tarballs.
 
 ## Running Tests Locally
 
 To run tests:
 
 ```shell
-$ ./test.sh node             # Run all angular tests on node
+$ bazel test :jasmine_tests                  # Run all angular tests on node
 
-$ ./test.sh browser          # Run all angular tests in browser
-$ ./test.sh browserNoRouter  # Optionally run all angular tests without router in browser
+$ bazel test :karma_test                     # Run all angular tests except router in browser
+$ bazel test :router_karma_test              # Run angular router tests in browser
 
-$ ./test.sh tools            # Run angular tooling (not framework) tests
+
+# If you are on Linux, you will need to add `--test_env=DISPLAY` at the end of the Bazel command so that
+# Chrome will be able to launch successfully. For example:
+$ bazel test :karma_test --test_env=DISPLAY
+
+# Alternatively, use `bazel run` instead:
+$ bazel run :karma_test
 ```
 
-You should execute the 3 test suites before submitting a PR to github.
-
+You should execute the 2 test suites before submitting a PR to github.
 All the tests are executed on our Continuous Integration infrastructure and a PR could only be merged once the tests pass.
 
 - CircleCI fails if your code is not formatted properly,
@@ -121,10 +116,10 @@ All the tests are executed on our Continuous Integration infrastructure and a PR
 If you happen to modify the public API of Angular, API golden files must be updated using:
 
 ``` shell
-$ gulp public-api:update
+$ bazel run :public_api
 ```
 
-Note: The command `./test.sh tools` fails when the API doesn't match the golden files.
+Note: The command `bazel test :public_api_test` fails when the API doesn't match the golden files.
 
 ## Formatting your source code
 
@@ -137,4 +132,30 @@ You can automatically format your code by running:
 $ gulp format
 ```
 
+## Incremental development
 
+To watch files and automatically rebuild, use `./ibazel` instead of the `bazel` command. For example:
+
+``` shell
+$ ./ibazel build :core                      # Automatically recompiles core in ES5
+
+$ ./ibazel build :jasmine_tests             # Automatically reruns all tests on node
+```
+
+To debug tests:
+
+``` shell
+$ ./bazel-run.sh run :core_test --node_options=debug
+                                            # Runs the core test suite in `node debug`
+$ ./ibazel run :karma_test_local            # Runs karma in watch mode
+$ ./ibazel run :router_karma_test_local
+
+$ ./ibazel run :playground_test -- --serve-only
+                                            # Runs the development server for e2e tests
+```
+
+* `./bazel-run.sh` is a variant of `bazel run` that connects stdin, and can be used for running
+  node in debug mode.
+
+See [Bazel README](https://github.com/angular/angular/blob/master/build_defs/README.md) for inner workings
+of the build system.

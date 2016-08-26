@@ -33,7 +33,7 @@ var createErrorFormatter = function (basePath, emitter, SourceMapConsumer) {
             line: line,
             column: column
           });
-          return process.cwd() + "/modules/" + original.source + ":" + original.line + ":" + original.column;
+          return "modules/" + original.source + ":" + original.line + ":" + original.column;
         } catch (e) {
           console.warn('SourceMap position not found for trace: %s', msg);
         }

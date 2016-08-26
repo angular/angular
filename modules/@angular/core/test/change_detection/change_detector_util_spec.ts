@@ -55,3 +55,5 @@ export function main() {
     });
   });
 }
+
+main();

@@ -183,3 +183,5 @@ class TestComponent {
     this.functionCondition = function(s: any, n: any): boolean { return s == 'foo' && n == 1; };
   }
 }
+
+main();

@@ -18,7 +18,7 @@ describe('relative assets relative-app', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'all/playground/src/relative_assets/';
+  var URL = 'modules/playground/src/relative_assets/';
 
   it('should load in the templateUrl relative to the my-cmp component', () => {
     browser.get(URL);

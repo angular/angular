@@ -18,7 +18,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {stringify} from '../../src/facade/lang';
+import {stringify} from '@angular/facade/src/lang';
 
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
@@ -335,3 +335,5 @@ export function main() {
 
   });
 }
+
+main();

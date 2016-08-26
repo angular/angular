@@ -12,7 +12,7 @@ var fs = require('fs');
 var sourceMap = require('source-map');
 
 describe('sourcemaps', function() {
-  var URL = 'all/playground/src/sourcemap/index.html';
+  var URL = 'modules/playground/src/sourcemap/index.html';
 
   it('should map sources', function() {
     browser.get(URL);
@@ -38,7 +38,7 @@ describe('sourcemaps', function() {
 
 
       const content =
-          fs.readFileSync('dist/all/playground/src/sourcemap/index.js').toString('utf8');
+          fs.readFileSync('modules/playground/src/sourcemap/index.js').toString('utf8');
       const marker = '//# sourceMappingURL=data:application/json;base64,';
       const index = content.indexOf(marker);
       const sourceMapData =

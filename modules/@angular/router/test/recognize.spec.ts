@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Routes} from '../src/config';
-import {recognize} from '../src/recognize';
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
-import {PRIMARY_OUTLET, Params} from '../src/shared';
-import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
+import {Routes} from '@angular/router/src/config';
+import {recognize} from '@angular/router/src/recognize';
+import {ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router/src/router_state';
+import {PRIMARY_OUTLET, Params} from '@angular/router/src/shared';
+import {DefaultUrlSerializer, UrlTree} from '@angular/router/src/url_tree';
 
 describe('recognize', () => {
   it('should work', () => {

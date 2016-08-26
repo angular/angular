@@ -10,7 +10,7 @@ import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 describe('SVG', function() {
 
-  var URL = 'all/playground/src/svg/index.html';
+  var URL = 'modules/playground/src/svg/index.html';
 
   afterEach(verifyNoBrowserErrors);
   beforeEach(() => { browser.get(URL); });

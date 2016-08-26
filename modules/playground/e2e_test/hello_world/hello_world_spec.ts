@@ -13,7 +13,7 @@ describe('hello world', function() {
   afterEach(verifyNoBrowserErrors);
 
   describe('hello world app', function() {
-    var URL = 'all/playground/src/hello_world/index.html';
+    var URL = 'modules/playground/src/hello_world/index.html';
 
     it('should greet', function() {
       browser.get(URL);

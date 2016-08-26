@@ -9,10 +9,10 @@
 import {AnimationMetadata, animate, group, sequence, style, transition, trigger} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {StringMapWrapper} from '../../../platform-browser-dynamic/src/facade/collection';
-import {AnimationCompiler, CompiledAnimationTriggerResult} from '../../src/animation/animation_compiler';
-import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';
-import {CompileMetadataResolver} from '../../src/metadata_resolver';
+import {StringMapWrapper} from '@angular/platform-browser-dynamic/src/facade/collection';
+import {AnimationCompiler, CompiledAnimationTriggerResult} from '@angular/compiler/src/animation/animation_compiler';
+import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
+import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
 
 export function main() {
   describe('RuntimeAnimationCompiler', () => {
@@ -77,3 +77,5 @@ export function main() {
     });
   });
 }
+
+main();

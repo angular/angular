@@ -9,8 +9,8 @@
 import * as t from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
-import {getDOM} from '../../src/dom/dom_adapter';
-import {sanitizeHtml} from '../../src/security/html_sanitizer';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {sanitizeHtml} from '@angular/platform-browser/src/security/html_sanitizer';
 
 export function main() {
   t.describe('HTML sanitizer', () => {
@@ -105,3 +105,5 @@ export function main() {
     }
   });
 }
+
+main();

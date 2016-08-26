@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../../core/testing/testing_internal';
-import {Element} from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {PreparsedElement, PreparsedElementType, preparseElement} from '../../src/template_parser/template_preparser';
+import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {Element} from '@angular/compiler/src/ml_parser/ast';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {PreparsedElement, PreparsedElementType, preparseElement} from '@angular/compiler/src/template_parser/template_preparser';
 
 export function main() {
   describe('preparseElement', () => {
@@ -50,3 +50,5 @@ export function main() {
     });
   });
 }
+
+main();

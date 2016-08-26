@@ -25,3 +25,5 @@ export function main() {
 function identity(a: any /** TODO #9100 */) {
   return a;
 }
+
+main();

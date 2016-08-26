@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
-import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags';
-import {InterpolationConfig} from '../../src/ml_parser/interpolation_config';
-import * as lex from '../../src/ml_parser/lexer';
-import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
+import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {getHtmlTagDefinition} from '@angular/compiler/src/ml_parser/html_tags';
+import {InterpolationConfig} from '@angular/compiler/src/ml_parser/interpolation_config';
+import * as lex from '@angular/compiler/src/ml_parser/lexer';
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
 
 export function main() {
   describe('HtmlLexer', () => {
@@ -801,3 +801,5 @@ function tokenizeAndHumanizeErrors(input: string, tokenizeExpansionForms: boolea
   return lex.tokenize(input, 'someUrl', getHtmlTagDefinition, tokenizeExpansionForms)
       .errors.map(e => [<any>e.tokenType, e.msg, humanizeLineColumn(e.span.start)]);
 }
+
+main();

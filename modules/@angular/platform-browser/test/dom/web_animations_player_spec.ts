@@ -9,9 +9,9 @@
 import {AsyncTestCompleter, MockAnimationPlayer, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
-import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
-import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
-import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
+import {DomAnimatePlayer} from '@angular/platform-browser/src/dom/dom_animate_player';
+import {WebAnimationsPlayer} from '@angular/platform-browser/src/dom/web_animations_player';
+import {MockDomAnimatePlayer} from '@angular/platform-browser/testing/mock_dom_animate_player';
 
 class ExtendedWebAnimationsPlayer extends WebAnimationsPlayer {
   public domPlayer = new MockDomAnimatePlayer();
@@ -141,3 +141,5 @@ export function main() {
     });
   });
 }
+
+main();

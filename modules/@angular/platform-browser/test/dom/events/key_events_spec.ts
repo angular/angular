@@ -60,3 +60,5 @@ export function main() {
 
   });
 }
+
+main();

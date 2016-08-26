@@ -7,8 +7,8 @@
  */
 
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {BaseRequestOptions, RequestOptions} from '../src/base_request_options';
-import {RequestMethod} from '../src/enums';
+import {BaseRequestOptions, RequestOptions} from '@angular/http/src/base_request_options';
+import {RequestMethod} from '@angular/http/src/enums';
 
 export function main() {
   describe('BaseRequestOptions', () => {
@@ -26,3 +26,5 @@ export function main() {
     });
   });
 }
+
+main();

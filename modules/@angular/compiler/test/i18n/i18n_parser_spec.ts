@@ -10,9 +10,9 @@ import {extractMessages} from '@angular/compiler/src/i18n/extractor_merger';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 
-import {serializeNodes} from '../../src/i18n/digest';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
+import {serializeNodes} from '@angular/compiler/src/i18n/digest';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 
 export function main() {
   describe('I18nParser', () => {
@@ -332,3 +332,5 @@ function _extractMessages(
              parseResult.rootNodes, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs)
       .messages;
 }
+
+main();

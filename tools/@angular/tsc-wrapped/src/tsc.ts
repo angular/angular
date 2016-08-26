@@ -1,3 +1,4 @@
+import {existsSync} from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -17,6 +18,12 @@ export interface CompilerInterface {
 }
 
 const DEBUG = false;
+
+const baseTime = Date.now();
+
+function tick() {
+  return '+' + (Date.now() - baseTime) + 'ms';
+}
 
 function debug(msg: string, ...o: any[]) {
   if (DEBUG) console.log(msg, ...o);
@@ -66,8 +73,13 @@ export class Tsc implements CompilerInterface {
     const {config, error} = ts.readConfigFile(project, this.readFile);
     check([error]);
 
-    this.parsed =
-        ts.parseJsonConfigFileContent(config, {readDirectory: this.readDirectory}, basePath);
+    this.parsed = ts.parseJsonConfigFileContent(
+        config, {
+          useCaseSensitiveFileNames: true,
+          fileExists: existsSync,
+          readDirectory: this.readDirectory
+        },
+        basePath);
 
     check(this.parsed.errors);
 
@@ -82,11 +94,11 @@ export class Tsc implements CompilerInterface {
   }
 
   typeCheck(compilerHost: ts.CompilerHost, program: ts.Program): void {
-    debug('Checking global diagnostics...');
+    debug('Checking global diagnostics...', tick());
     check(program.getGlobalDiagnostics());
 
     let diagnostics: ts.Diagnostic[] = [];
-    debug('Type checking...');
+    debug('Type checking...', tick());
 
     for (let sf of program.getSourceFiles()) {
       diagnostics.push(...ts.getPreEmitDiagnostics(program, sf));
@@ -97,7 +109,7 @@ export class Tsc implements CompilerInterface {
   emit(compilerHost: TsickleHost, oldProgram: ts.Program): number {
     // Create a new program since the host may be different from the old program.
     const program = ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost);
-    debug('Emitting outputs...');
+    debug('Emitting outputs...', tick());
     const emitResult = program.emit();
     let diagnostics: ts.Diagnostic[] = [];
     diagnostics.push(...emitResult.diagnostics);

@@ -11,8 +11,8 @@ import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '
 import {AbstractControl, FormControl, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 
-import {normalizeAsyncValidator} from '../src/directives/normalize_validator';
-import {EventEmitter} from '../src/facade/async';
+import {normalizeAsyncValidator} from '@angular/forms/src/directives/normalize_validator';
+import {EventEmitter} from '@angular/facade/src/async';
 
 export function main() {
   function validator(key: string, error: any) {
@@ -194,3 +194,5 @@ export function main() {
     });
   });
 }
+
+main();

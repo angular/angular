@@ -8,7 +8,7 @@
 
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import * as xml from '../../../src/i18n/serializers/xml_helper';
+import * as xml from '@angular/compiler/src/i18n/serializers/xml_helper';
 
 export function main(): void {
   describe('XML helper', () => {
@@ -47,3 +47,4 @@ export function main(): void {
 
   });
 }
+main();

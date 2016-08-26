@@ -14,8 +14,7 @@ function isSpecFile(path) {
 }
 
 function isBuiltFile(path) {
-  var builtPath = '/base/dist/';
-  return isJsFile(path) && (path.substr(0, builtPath.length) == builtPath);
+  return isJsFile(path);
 }
 
 var allSpecFiles = Object.keys(window.__karma__.files)
@@ -31,7 +30,7 @@ System.config(
   {
     map: {
       'rxjs': 'node_modules/rxjs',
-      '@angular': 'dist/all/@angular'
+      '@angular': 'modules/@angular'
     },
     packages: {
       '@angular/core': {

@@ -1,0 +1,12 @@
+build --distinct_host_configuration=false
+
+build --verbose_failures --show_timestamps --curses=no
+test --test_output=errors --keep_going
+
+# Travis container is unprivileged and does not work with sandboxing
+build --spawn_strategy=standalone --genrule_strategy=standalone
+test --spawn_strategy=standalone --genrule_strategy=standalone
+
+# Tune the amount of parallelism
+# Important for test timeout
+build --jobs=3

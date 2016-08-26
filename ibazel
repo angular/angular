@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+ibazel_path=$(dirname "${0}")/bazel-bin/tools/ibazel/ibazel_bin
+
+if ! [[ -x "${ibazel_path}" ]]; then
+  echo "Building ibazel..."
+  bazel build tools/ibazel:ibazel_bin
+fi
+
+"${ibazel_path}" "$@"

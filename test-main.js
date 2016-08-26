@@ -11,13 +11,11 @@ System.config({
   baseURL: '/base',
   defaultJSExtensions: true,
   map: {
-    'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
-    '@angular': 'dist/all/@angular',
+    // 'benchpress/*': 'modules/benchpress/*.js',
+    '@angular': 'modules/@angular',
     'rxjs': 'node_modules/rxjs',
-    'parse5/index': 'dist/all/empty.js',
-    '@angular/platform-server/src/parse5_adapter': 'dist/all/empty.js',
-    'angular2/*': 'dist/all/angular2/*.js',
-    'angular2/src/alt_router/router_testing_providers': 'dist/all/angular2/src/alt_router/router_testing_providers.js'
+    'parse5/index': 'modules/empty.js',
+    '@angular/platform-server/src/parse5_adapter': 'modules/empty.js'
   },
   packages: {
     '@angular/core': {
@@ -41,7 +39,7 @@ System.config({
       main: 'index.js',
       defaultExtension: 'js'
     },
-    '@angular/router': {
+    '@angular/router-deprecated': {
       main: 'index.js',
       defaultExtension: 'js'
     },
@@ -65,7 +63,8 @@ System.config({
       main: 'index.js',
       defaultExtension: 'js'
     }
-  }
+  },
+  transpiler: null,
 });
 
 
@@ -84,14 +83,9 @@ System.import('@angular/core/testing')
   return Promise.all(
     Object.keys(window.__karma__.files) // All files served by Karma.
     .filter(onlySpecFiles)
-    .map(window.file2moduleName)        // Normalize paths to module names.
+    // .map(window.file2moduleName)        // Normalize paths to module names.
     .map(function(path) {
       return System.import(path).then(function(module) {
-        if (module.hasOwnProperty('main')) {
-          module.main();
-        } else {
-          throw new Error('Module ' + path + ' does not implement main() method.');
-        }
       });
     }));
 })

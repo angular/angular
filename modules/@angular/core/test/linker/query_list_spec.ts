@@ -11,8 +11,8 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {iterateListLike} from '../../src/facade/collection';
-import {StringWrapper} from '../../src/facade/lang';
+import {iterateListLike} from '@angular/facade/src/collection';
+import {StringWrapper} from '@angular/facade/src/lang';
 
 interface _JsQueryList {
   filter(c: any): any;
@@ -151,3 +151,5 @@ export function main() {
     }
   });
 }
+
+main();

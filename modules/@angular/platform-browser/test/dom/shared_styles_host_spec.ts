@@ -48,3 +48,5 @@ export function main() {
     });
   });
 }
+
+main();

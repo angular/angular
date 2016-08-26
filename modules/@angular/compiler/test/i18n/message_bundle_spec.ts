@@ -10,10 +10,10 @@ import * as i18n from '@angular/compiler/src/i18n/i18n_ast';
 import {Serializer} from '@angular/compiler/src/i18n/serializers/serializer';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {serializeNodes} from '../../src/i18n/digest';
-import {MessageBundle} from '../../src/i18n/message_bundle';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
+import {serializeNodes} from '@angular/compiler/src/i18n/digest';
+import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 
 export function main(): void {
   describe('MessageBundle', () => {
@@ -56,3 +56,4 @@ class _TestSerializer implements Serializer {
 function humanizeMessages(catalog: MessageBundle): string[] {
   return catalog.write(new _TestSerializer()).split('//');
 }
+main();

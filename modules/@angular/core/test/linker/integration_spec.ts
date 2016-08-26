@@ -22,8 +22,8 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {EventEmitter} from '../../src/facade/async';
-import {isBlank, isPresent, stringify} from '../../src/facade/lang';
+import {EventEmitter} from '@angular/facade/src/async';
+import {isBlank, isPresent, stringify} from '@angular/facade/src/lang';
 
 const ANCHOR_ELEMENT = new OpaqueToken('AnchorElement');
 
@@ -2119,3 +2119,5 @@ class DirectiveWithPropDecorators {
 class SomeCmp {
   value: any;
 }
+
+main();

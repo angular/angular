@@ -322,3 +322,5 @@ export function main() {
 
   });
 }
+
+main();

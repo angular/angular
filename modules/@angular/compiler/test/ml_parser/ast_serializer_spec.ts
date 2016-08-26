@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, it} from '../../../core/testing/testing_internal';
-import * as html from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
+import {beforeEach, ddescribe, describe, expect, it} from '@angular/core/testing/testing_internal';
+import * as html from '@angular/compiler/src/ml_parser/ast';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 
 export function main() {
   describe('Node serializer', () => {
@@ -94,3 +94,5 @@ const serializerVisitor = new _SerializerVisitor();
 export function serializeNodes(nodes: html.Node[]): string[] {
   return nodes.map(node => node.visit(serializerVisitor, null));
 }
+
+main();

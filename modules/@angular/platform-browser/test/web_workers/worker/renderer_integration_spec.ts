@@ -22,7 +22,7 @@ import {WebWorkerRootRenderer} from '@angular/platform-browser/src/web_workers/w
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
+import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
 
 export function main() {
@@ -218,3 +218,5 @@ class MyComp2 {
 
   throwError() { throw 'boom'; }
 }
+
+main();

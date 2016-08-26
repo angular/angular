@@ -1,7 +1,6 @@
+import {isMetadataGlobalReferenceExpression} from '@angular/tsc-wrapped/src/schema';
+import {Symbols} from '@angular/tsc-wrapped/src/symbols';
 import * as ts from 'typescript';
-
-import {isMetadataGlobalReferenceExpression} from '../src/schema';
-import {Symbols} from '../src/symbols';
 
 import {Directory, Host, expectNoDiagnostics} from './typescript.mocks';
 

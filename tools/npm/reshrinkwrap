@@ -4,12 +4,21 @@
 
 let childProcess = require('child_process');
 
-childProcess.spawn('npm', ['shrinkwrap', '--dev'], {stdio: 'inherit'}).on('exit', (exitCode) => {
-  if (exitCode !== 0) return;
+let result = childProcess.spawnSync('npm', ['shrinkwrap', '--dev'], {stdio: 'inherit'});
+if (result.status !== 0) process.exit(result.status);
 
-  childProcess.fork('./tools/npm/clean-shrinkwrap.js').on('exit', (exitCode) => {
-    if (exitCode !== 0) return;
+result = childProcess.spawnSync(
+    process.execPath, ['./tools/npm/clean-shrinkwrap.js'], {stdio: 'inherit'});
+if (result.status !== 0) process.exit(result.status);
 
-    childProcess.fork('./tools/npm/copy-npm-shrinkwrap');
-  });
-});
+
+result = childProcess.spawnSync(
+    process.execPath, ['./tools/npm/copy-npm-shrinkwrap'], {stdio: 'inherit'});
+if (result.status !== 0) process.exit(result.status);
+
+result = childProcess.spawnSync(
+    process.execPath,
+    ['./build_defs/node_modules_indexer.js', '.', 'build_defs/node_modules_index.bzl'],
+    {stdio: 'inherit'});
+if (result.status !== 0) process.exit(result.status);
+console.log('updated build_defs/node_modules_index.bzl');

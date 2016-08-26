@@ -201,3 +201,5 @@ const XMB = `
 </msg>
   <msg id="93a30c67d4e6c9b37aecfe2ac0f2b5d366d7b520">it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
 </messagebundle>`;
+
+main();

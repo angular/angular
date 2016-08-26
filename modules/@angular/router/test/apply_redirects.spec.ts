@@ -9,10 +9,10 @@
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 
-import {applyRedirects} from '../src/apply_redirects';
-import {Routes} from '../src/config';
-import {LoadedRouterConfig} from '../src/router_config_loader';
-import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree, equalSegments} from '../src/url_tree';
+import {applyRedirects} from '@angular/router/src/apply_redirects';
+import {Routes} from '@angular/router/src/config';
+import {LoadedRouterConfig} from '@angular/router/src/router_config_loader';
+import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree, equalSegments} from '@angular/router/src/url_tree';
 
 describe('applyRedirects', () => {
 

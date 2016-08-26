@@ -69,3 +69,5 @@ class AttributeNameComponent {
 }
 
 class NoAnnotationComponent {}
+
+main();

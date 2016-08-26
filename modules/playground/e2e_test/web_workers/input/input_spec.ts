@@ -14,7 +14,7 @@ describe('WebWorkers Input', function() {
     browser.ignoreSynchronization = false;
   });
   const selector = 'input-app';
-  const URL = 'all/playground/src/web_workers/input/index.html';
+  const URL = 'modules/playground/src/web_workers/input/index.html';
   const VALUE = 'test val';
 
   it('should bootstrap', () => {

@@ -11,7 +11,7 @@ import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {ListWrapper, StringMapWrapper} from '../../src/facade/collection';
+import {ListWrapper, StringMapWrapper} from '@angular/facade/src/collection';
 
 function detectChangesAndCheck(fixture: ComponentFixture<any>, classes: string) {
   fixture.detectChanges();
@@ -389,3 +389,5 @@ class TestComponent {
 
   constructor() { this.setExpr.add('foo'); }
 }
+
+main();

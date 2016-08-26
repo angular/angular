@@ -10,11 +10,11 @@ import {AnimationAnimateMetadata, AnimationGroupMetadata, AnimationMetadata, Ani
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {FILL_STYLE_FLAG, flattenStyles} from '../../core_private';
-import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from '../../src/animation/animation_ast';
-import {parseAnimationEntry} from '../../src/animation/animation_parser';
-import {StringMapWrapper} from '../../src/facade/collection';
-import {CompileMetadataResolver} from '../../src/metadata_resolver';
+import {FILL_STYLE_FLAG, flattenStyles} from '@angular/compiler/core_private';
+import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from '@angular/compiler/src/animation/animation_ast';
+import {parseAnimationEntry} from '@angular/compiler/src/animation/animation_parser';
+import {StringMapWrapper} from '@angular/facade/src/collection';
+import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
 
 export function main() {
   describe('parseAnimationEntry', () => {
@@ -416,3 +416,5 @@ export function main() {
     });
   });
 }
+
+main();

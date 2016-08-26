@@ -47,3 +47,7 @@ npm-debug.log
 
 # rollup-test output
 /modules/rollup-test/dist/
+
+# bazel runtime folders
+/bazel-*
+!bazel-run.sh

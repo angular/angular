@@ -82,3 +82,5 @@ export function main() {
     }
   });
 }
+
+main();

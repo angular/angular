@@ -10,7 +10,7 @@ import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 describe('key_events', function() {
 
-  var URL = 'all/playground/src/key_events/index.html?bundles=false';
+  var URL = 'modules/playground/src/key_events/index.html?bundles=false';
 
   afterEach(verifyNoBrowserErrors);
   beforeEach(() => { browser.get(URL); });

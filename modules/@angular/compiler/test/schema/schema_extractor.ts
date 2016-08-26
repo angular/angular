@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent, isString} from '../../src/facade/lang';
+import {isPresent, isString} from '@angular/facade/src/lang';
 
 const SVG_PREFIX = ':svg:';
 

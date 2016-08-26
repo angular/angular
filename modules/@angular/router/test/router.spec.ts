@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PreActivation} from '../src/router';
-import {RouterOutletMap} from '../src/router_outlet_map';
-import {ActivatedRouteSnapshot, InheritedResolve, RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
-import {DefaultUrlSerializer} from '../src/url_tree';
-import {TreeNode} from '../src/utils/tree';
+import {PreActivation} from '@angular/router/src/router';
+import {RouterOutletMap} from '@angular/router/src/router_outlet_map';
+import {ActivatedRouteSnapshot, InheritedResolve, RouterStateSnapshot, createEmptyStateSnapshot} from '@angular/router/src/router_state';
+import {DefaultUrlSerializer} from '@angular/router/src/url_tree';
+import {TreeNode} from '@angular/router/src/utils/tree';
 
 describe('Router', () => {
   describe('PreActivation', () => {

@@ -12,7 +12,7 @@ describe('Template-Driven Forms', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'all/playground/src/template_driven_forms/index.html';
+  var URL = 'modules/playground/src/template_driven_forms/index.html';
 
   it('should display errors', function() {
     browser.get(URL);

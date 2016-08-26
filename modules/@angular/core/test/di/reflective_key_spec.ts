@@ -25,3 +25,5 @@ export function main() {
 
   });
 }
+
+main();

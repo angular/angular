@@ -13,10 +13,10 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {zip} from 'rxjs/observable/zip';
 
-import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
-import {Json} from '../src/facade/lang';
-import {stringToArrayBuffer} from '../src/http_utils';
-import {MockBackend, MockConnection} from '../testing/mock_backend';
+import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '@angular/http/index';
+import {Json} from '@angular/facade/src/lang';
+import {stringToArrayBuffer} from '@angular/http/src/http_utils';
+import {MockBackend, MockConnection} from '@angular/http/testing/mock_backend';
 
 export function main() {
   describe('injectables', () => {
@@ -512,3 +512,5 @@ export function main() {
     });
   });
 }
+
+main();

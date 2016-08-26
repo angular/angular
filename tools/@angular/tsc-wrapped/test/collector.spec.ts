@@ -1,7 +1,6 @@
+import {MetadataCollector} from '@angular/tsc-wrapped/src/collector';
+import {ClassMetadata, ConstructorMetadata, ModuleMetadata} from '@angular/tsc-wrapped/src/schema';
 import * as ts from 'typescript';
-
-import {MetadataCollector} from '../src/collector';
-import {ClassMetadata, ConstructorMetadata, ModuleMetadata} from '../src/schema';
 
 import {Directory, Host, expectValidSources} from './typescript.mocks';
 

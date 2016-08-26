@@ -8,7 +8,7 @@
 
 import {NgModuleResolver} from '@angular/compiler/src/ng_module_resolver';
 import {NgModule, NgModuleMetadata} from '@angular/core/src/metadata';
-import {stringify} from '../src/facade/lang';
+import {stringify} from '@angular/facade/src/lang';
 
 class SomeClass1 {}
 class SomeClass2 {}
@@ -51,3 +51,5 @@ export function main() {
     });
   });
 }
+
+main();

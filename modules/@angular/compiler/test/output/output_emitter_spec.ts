@@ -15,8 +15,8 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import * as typed from './output_emitter_codegen_typed';
-import * as untyped from './output_emitter_codegen_untyped';
+import * as typed from './output_emitter_generated_typed';
+import * as untyped from './output_emitter_generated_untyped';
 import {ExternalClass, codegenStmts} from './output_emitter_util';
 
 export function main() {
@@ -192,3 +192,5 @@ export function main() {
     });
   });
 }
+
+main();

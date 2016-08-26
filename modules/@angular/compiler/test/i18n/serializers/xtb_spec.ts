@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {escapeRegExp} from '@angular/core/src/facade/lang';
+import {escapeRegExp} from '@angular/facade/src/lang';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-import {MessageBundle} from '../../../src/i18n/message_bundle';
-import {Xtb} from '../../../src/i18n/serializers/xtb';
-import {HtmlParser} from '../../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
+import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
+import {Xtb} from '@angular/compiler/src/i18n/serializers/xtb';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 import {serializeNodes} from '../../ml_parser/ast_serializer_spec';
 
 export function main(): void {
@@ -192,3 +192,4 @@ export function main(): void {
        () => { expect(() => { serializer.write({}); }).toThrowError(/Unsupported/); });
   });
 }
+main();

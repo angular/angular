@@ -9,7 +9,7 @@
 import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import * as ts from 'typescript';
 
-import {ReflectorHost} from '../src/reflector_host';
+import {ReflectorHost} from '@angular/compiler-cli/src/reflector_host';
 
 import {Directory, Entry, MockCompilerHost, MockContext} from './mocks';
 

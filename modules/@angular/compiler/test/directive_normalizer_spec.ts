@@ -444,3 +444,5 @@ function programResourceLoaderSpy(spy: SpyResourceLoader, results: {[key: string
     }
   });
 }
+
+main();
