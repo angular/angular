@@ -2,7 +2,6 @@ package(default_visibility=["//visibility:public"])
 
 load("//build_defs:nodejs.bzl", "nodejs_binary", "nodejs_test")
 load("//build_defs:typescript.bzl", "ts_library", "ts_ext_library")
-load("//build_defs:ts_compat.bzl", "ts_compat")
 load("//build_defs:jasmine.bzl", "jasmine_node_test")
 load("//build_defs:karma.bzl", "karma_test")
 load("//build_defs:bundle.bzl", "js_bundle")
@@ -731,7 +730,7 @@ ALL_PACKAGES = ESM_PACKAGES + NON_ESM_PACKAGES + ["tsc-wrapped"]
     js_bundle(
         name = pkg + "_bundle",
         srcs = [":" + pkg],
-        output = "modules/@angular/{}/{}.umd.js".format(pkg, pkg),
+        output = "modules/@angular/{}/dist/index.js".format(pkg, pkg),
         entry_point = "modules/@angular/{}/esm/index.js".format(pkg),
         rollup_config = "modules/@angular/{}/rollup.config.js".format(pkg),
         banner = "modules/@angular/license-banner.txt",
@@ -744,25 +743,20 @@ ts_npm_package(
     srcs = [":tsc-wrapped"],
     manifest = "tools/@angular/tsc-wrapped/package.json",
     module_name = "@angular/tsc-wrapped",
-    strip_prefix = "/tools/@angular/tsc-wrapped",
+    strip_prefix = "/tools/@angular/tsc-wrapped/dist",
     esm = False,
 )
 
 [
-    (
-        ts_compat(
-            name = pkg + "_compat",
-            srcs = [":" + pkg],
-        ),
-        ts_npm_package(
-            name = pkg + "_package",
-            srcs = [":{}_compat".format(pkg)],
-            manifest = "modules/@angular/{}/package.json".format(pkg),
-            module_name = "@angular/" + pkg,
-            # Prefix / avoids bug https://github.com/bazelbuild/bazel/issues/1604
-            strip_prefix = "/modules/@angular/{}/compat".format(pkg),
-            esm = pkg in ESM_PACKAGES,
-        ),
+    ts_npm_package(
+        name = pkg + "_package",
+        srcs = [":{}".format(pkg)],
+        data = [":{}_bundle".format(pkg)] if pkg in ESM_PACKAGES else [],
+        manifest = "modules/@angular/{}/package.json".format(pkg),
+        module_name = "@angular/" + pkg,
+        # Prefix / avoids bug https://github.com/bazelbuild/bazel/issues/1604
+        strip_prefix = "/modules/@angular/{}/dist".format(pkg),
+        esm = pkg in ESM_PACKAGES,
     )
     for pkg in ESM_PACKAGES + NON_ESM_PACKAGES
 ]

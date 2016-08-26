@@ -22,9 +22,8 @@ def _js_bundle_impl(ctx):
   output = (ctx.attr.output or ctx.label.name + ".js")
   output_base = output[:output.rfind(".")]
 
-  # gen_esm_js is ES6 code with UMD module.
-  gen_esm_js = ctx.new_file(output_base + ".esm.js")
-  gen_esm_js_map = ctx.new_file(output_base + ".esm.js.map")
+  # gen_esm_js = ctx.new_file(output_base + ".esm.js")
+  # gen_esm_js_map = ctx.new_file(output_base + ".esm.js.map")
   gen_js = ctx.new_file(output_base + ".js")
   gen_js_map = ctx.new_file(output_base + ".js.map")
   gen_min_js = ctx.new_file(output_base + ".min.js")
@@ -53,7 +52,7 @@ def _js_bundle_impl(ctx):
           "{{prefixes}}": "\"\", \"{}\", \"{}\"".format(
               ctx.configuration.bin_dir.path, ctx.configuration.genfiles_dir.path),
           "{{entry}}": "./" + entry_point.path,
-          "{{dest}}": gen_esm_js.path,
+          "{{dest}}": gen_js.path,
           "{{banner}}": (ctx.file.banner.path if ctx.attr.banner else ""),
       },
  )
@@ -61,20 +60,20 @@ def _js_bundle_impl(ctx):
   ctx.action(
       progress_message = "Tree shaking %s" % ctx,
       inputs = esm_inputs + ctx.files.rollup_config + ctx.files.banner + [config_file],
-      outputs = [gen_esm_js, gen_esm_js_map],
+      outputs = [gen_js, gen_js_map],
       executable = ctx.executable._rollup,
       arguments = ["-c", config_file.path],
   )
 
-  tsc_cmd = [ctx.executable._tsc.path, "--noResolve", "--target", "es5", "--allowJs", "--typeRoots",
-             "[]", "--sourceMap", "--inlineSources", "--outFile", gen_js.path, gen_esm_js.path]
-  ctx.action(
-      progress_message = "Compiling ES6 %s" % ctx,
-      inputs = [gen_esm_js, gen_esm_js_map] + list(ctx.attr._tsc.default_runfiles.files),
-      outputs = [gen_js, gen_js_map],
-      executable = ctx.executable._flatten_sourcemap,
-      arguments = [gen_js.path, "--"] + tsc_cmd,
-  )
+  # tsc_cmd = [ctx.executable._tsc.path, "--noResolve", "--target", "es5", "--allowJs", "--typeRoots",
+  #            "[]", "--sourceMap", "--inlineSources", "--outFile", gen_js.path, gen_esm_js.path]
+  # ctx.action(
+  #     progress_message = "Compiling ES6 %s" % ctx,
+  #     inputs = [gen_esm_js, gen_esm_js_map] + list(ctx.attr._tsc.default_runfiles.files),
+  #     outputs = [gen_js, gen_js_map],
+  #     executable = ctx.executable._flatten_sourcemap,
+  #     arguments = [gen_js.path, "--"] + tsc_cmd,
+  # )
 
   ctx.action(
       progress_message = "Minifying bundle of %s" % ctx,

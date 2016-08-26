@@ -178,7 +178,6 @@ def _ts_library_impl(ctx):
       input_tsconfig = ctx.file.tsconfig,
       mixin_tsconfig = _tsconfig_with(base_tsconfig, {
           "module": "es2015",
-          "target": "es2015",
           "outDir": join_paths(out_dir, "esm"),
       }),
   )
@@ -222,6 +221,7 @@ def _ts_library_impl(ctx):
           collect_data = True,
       ),
       typescript = struct(
+          files = gen_js,
           module_name = module_name,
           # The rootDir relative to the current package.
           package_dir = out_dir,
@@ -260,7 +260,7 @@ def _ts_library_impl(ctx):
               declarations = gen_d_ts_esm,
               metadata = gen_meta_esm,
               module_name = module_name,
-              package_dir = out_dir,
+              package_dir = join_paths(out_dir, "esm"),
           ),
           is_leaf = is_leaf,
       ),
@@ -275,7 +275,7 @@ def _ts_library_impl(ctx):
           files = gen_js_esm,
           source_maps = gen_js_map_esm,
           module_name = module_name,
-          package_dir = out_dir,
+          package_dir = join_paths(out_dir, "esm"),
       ),
   )
 
