@@ -19,6 +19,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Even
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 
+
 describe('Integration', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -89,21 +90,36 @@ describe('Integration', () => {
        expect(recordedError.message).toEqual('Cannot find primary outlet to load \'BlankCmp\'');
      }));
 
-  it('should update location when navigating',
-     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+  it('should update location when navigating', fakeAsync(() => {
+       @Component({template: `record`})
+       class RecordLocationCmp {
+         private storedPath: string;
+         constructor(loc: Location) { this.storedPath = loc.path(); }
+       }
+
+       @NgModule({declarations: [RecordLocationCmp], entryComponents: [RecordLocationCmp]})
+       class TestModule {
+       }
+
+       TestBed.configureTestingModule({imports: [TestModule]});
+
+       const router = TestBed.get(Router);
+       const location = TestBed.get(Location);
        const fixture = createRoot(router, RootCmp);
 
-       router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+       router.resetConfig([{path: 'record/:id', component: RecordLocationCmp}]);
 
-       router.navigateByUrl('/team/22');
-       advance(fixture);
-       expect(location.path()).toEqual('/team/22');
-
-       router.navigateByUrl('/team/33');
+       router.navigateByUrl('/record/22');
        advance(fixture);
 
-       expect(location.path()).toEqual('/team/33');
-     })));
+       const c = fixture.debugElement.children[1].componentInstance;
+       expect(location.path()).toEqual('/record/22');
+       expect(c.storedPath).toEqual('/record/22');
+
+       router.navigateByUrl('/record/33');
+       advance(fixture);
+       expect(location.path()).toEqual('/record/33');
+     }));
 
   it('should skip location update when using NavigationExtras.skipLocationChange with navigateByUrl',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -409,6 +425,23 @@ describe('Integration', () => {
          [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
          [NavigationEnd, '/user/fedor']
        ]);
+     })));
+
+  it('should support custom error handlers', fakeAsync(inject([Router], (router: Router) => {
+       router.errorHandler = (error) => 'resolvedValue';
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+
+       const recordedEvents: any[] = [];
+       router.events.forEach(e => recordedEvents.push(e));
+
+       let e: any;
+       router.navigateByUrl('/invalid').then(_ => e = _);
+       advance(fixture);
+       expect(e).toEqual('resolvedValue');
+
+       expectEvents(recordedEvents, [[NavigationStart, '/invalid'], [NavigationError, '/invalid']]);
      })));
 
   it('should replace state when path is equal to current path',
@@ -1255,6 +1288,65 @@ describe('Integration', () => {
                  ]);
                })));
       });
+    });
+
+    describe('order', () => {
+
+      class Logger {
+        logs: string[] = [];
+        add(thing: string) { this.logs.push(thing); }
+      }
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [
+            Logger, {
+              provide: 'canActivateChild_parent',
+              useFactory: (logger: Logger) => () => (logger.add('canActivateChild_parent'), true),
+              deps: [Logger]
+            },
+            {
+              provide: 'canActivate_team',
+              useFactory: (logger: Logger) => () => (logger.add('canActivate_team'), true),
+              deps: [Logger]
+            },
+            {
+              provide: 'canDeactivate_team',
+              useFactory: (logger: Logger) => () => (logger.add('canDeactivate_team'), true),
+              deps: [Logger]
+            }
+          ]
+        });
+      });
+
+      it('should call guards in the right order',
+         fakeAsync(inject(
+             [Router, Location, Logger], (router: Router, location: Location, logger: Logger) => {
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([{
+                 path: '',
+                 canActivateChild: ['canActivateChild_parent'],
+                 children: [{
+                   path: 'team/:id',
+                   canActivate: ['canActivate_team'],
+                   canDeactivate: ['canDeactivate_team'],
+                   component: TeamCmp
+                 }]
+               }]);
+
+               router.navigateByUrl('/team/22');
+               advance(fixture);
+
+               router.navigateByUrl('/team/33');
+               advance(fixture);
+
+               expect(logger.logs).toEqual([
+                 'canActivateChild_parent', 'canActivate_team',
+
+                 'canDeactivate_team', 'canActivateChild_parent', 'canActivate_team'
+               ]);
+             })));
     });
   });
 

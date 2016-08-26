@@ -202,6 +202,21 @@ export type Event =
     NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
 /**
+ * Error handler that is invoked when a navigation errors.
+ *
+ * If the handler retuns a value, the navigation promise will be resolved with this value.
+ * If the handler throws an exception, the navigation promise will be rejected with
+ * the exception.
+ *
+ * @stable
+ */
+export type ErrorHandler = (error: any) => any;
+
+function defaultErrorHandler(error: any): any {
+  throw error;
+}
+
+/**
  * The `Router` is responsible for mapping URLs to components.
  *
  * See {@link Routes} for more details and examples.
@@ -215,6 +230,8 @@ export class Router {
   private routerEvents: Subject<Event>;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
+
+  errorHandler: ErrorHandler = defaultErrorHandler;
 
   /**
    * Indicates if at least one navigation happened.
@@ -243,6 +260,22 @@ export class Router {
   initialNavigation(): void {
     this.setUpLocationChangeListener();
     this.navigateByUrl(this.location.path(true), {replaceUrl: true});
+  }
+
+  /**
+   * Sets up the location change listener
+   */
+  setUpLocationChangeListener(): void {
+    // Zone.current.wrap is needed because of the issue with RxJS scheduler,
+    // which does not work properly with zone.js in IE and Safari
+    this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
+      const tree = this.urlSerializer.parse(change['url']);
+      // we fire multiple events for a single URL change
+      // we should navigate only once
+      return this.currentUrlTree.toString() !== tree.toString() ?
+          this.scheduleNavigation(tree, {skipLocationChange: change['pop'], replaceUrl: true}) :
+          null;
+    }));
   }
 
   /**
@@ -422,19 +455,6 @@ export class Router {
         (_) => this.runNavigate(url, extras.skipLocationChange, extras.replaceUrl, id));
   }
 
-  private setUpLocationChangeListener(): void {
-    // Zone.current.wrap is needed because of the issue with RxJS scheduler,
-    // which does not work properly with zone.js in IE and Safari
-    this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
-      const tree = this.urlSerializer.parse(change['url']);
-      // we fire multiple events for a single URL change
-      // we should navigate only once
-      return this.currentUrlTree.toString() !== tree.toString() ?
-          this.scheduleNavigation(tree, {skipLocationChange: change['pop'], replaceUrl: true}) :
-          null;
-    }));
-  }
-
   private runNavigate(
       url: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
       id: number): Promise<boolean> {
@@ -500,8 +520,6 @@ export class Router {
             this.currentUrlTree = appliedUrl;
             this.currentRouterState = state;
 
-            new ActivateRoutes(state, storedState).activate(this.outletMap);
-
             if (!shouldPreventPushState) {
               let path = this.urlSerializer.serialize(appliedUrl);
               if (this.location.isCurrentPathEqualTo(path) || shouldReplaceUrl) {
@@ -510,6 +528,9 @@ export class Router {
                 this.location.go(path);
               }
             }
+
+            new ActivateRoutes(state, storedState).activate(this.outletMap);
+
             navigationIsSuccessful = true;
           })
           .then(
@@ -532,10 +553,15 @@ export class Router {
                   resolvePromise(false);
                 } else {
                   this.routerEvents.next(new NavigationError(id, this.serializeUrl(url), e));
-                  rejectPromise(e);
+                  try {
+                    resolvePromise(this.errorHandler(e));
+                  } catch (ee) {
+                    rejectPromise(ee);
+                  }
                 }
                 this.currentRouterState = storedState;
                 this.currentUrlTree = storedUrl;
+                this.location.replaceState(this.serializeUrl(storedUrl));
               });
     });
   }
@@ -570,7 +596,7 @@ export class PreActivation {
         .map(s => {
           if (s instanceof CanActivate) {
             return andObservables(
-                from([this.runCanActivate(s.route), this.runCanActivateChild(s.path)]));
+                from([this.runCanActivateChild(s.path), this.runCanActivate(s.route)]));
           } else if (s instanceof CanDeactivate) {
             // workaround https://github.com/Microsoft/TypeScript/issues/7271
             const s2 = s as CanDeactivate;

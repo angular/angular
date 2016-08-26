@@ -13,7 +13,7 @@ import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
-import {Router} from './router';
+import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute} from './router_state';
@@ -137,11 +137,19 @@ export function provideRoutes(routes: Routes): any {
 
 
 /**
+ * Extra options used to configure the router.
+ *
+ * Set `enableTracing` to log router events to the console.
+ * Set 'useHash' to true to enable HashLocationStrategy.
+ * Set `errorHandler` to enable a custom ErrorHandler.
+ *
  * @stable
  */
 export interface ExtraOptions {
   enableTracing?: boolean;
   useHash?: boolean;
+  initialNavigation?: boolean;
+  errorHandler?: ErrorHandler;
 }
 
 export function setupRouter(
@@ -155,6 +163,10 @@ export function setupRouter(
   const r = new Router(
       componentType, urlSerializer, outletMap, location, injector, loader, compiler,
       flatten(config));
+
+  if (opts.errorHandler) {
+    r.errorHandler = opts.errorHandler;
+  }
 
   if (opts.enableTracing) {
     r.events.subscribe(e => {
@@ -172,8 +184,14 @@ export function rootRoute(router: Router): ActivatedRoute {
   return router.routerState.root;
 }
 
-export function initialRouterNavigation(router: Router) {
-  return () => { router.initialNavigation(); };
+export function initialRouterNavigation(router: Router, opts: ExtraOptions) {
+  return () => {
+    if (opts.initialNavigation === false) {
+      router.setUpLocationChangeListener();
+    } else {
+      router.initialNavigation();
+    }
+  };
 }
 
 export function provideRouterInitializer() {
@@ -181,6 +199,6 @@ export function provideRouterInitializer() {
     provide: APP_BOOTSTRAP_LISTENER,
     multi: true,
     useFactory: initialRouterNavigation,
-    deps: [Router]
+    deps: [Router, ROUTER_CONFIGURATION]
   };
 }
