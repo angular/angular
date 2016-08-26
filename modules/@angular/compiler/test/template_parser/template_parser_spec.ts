@@ -1220,8 +1220,9 @@ Can't have multiple template bindings on one element. Use only one attribute nam
       });
 
       it('should report when mix of template and *attrs are used on the same element', () => {
-        expect(() => parse('<div template="ngIf" *ngFor>', [])).toThrowError(`Template parse errors:
-Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<div template="ngIf" [ERROR ->]*ngFor>"): TestComp@0:21`);
+        expect(() => parse('<span template="ngIf" *ngFor>', []))
+            .toThrowError(`Template parse errors:
+Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<span template="ngIf" [ERROR ->]*ngFor>"): TestComp@0:22`);
       });
 
       it('should report invalid property names', () => {
