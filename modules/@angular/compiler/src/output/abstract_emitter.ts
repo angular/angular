@@ -368,7 +368,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(`{`, useNewLine);
     ctx.incIndent();
     this.visitAllObjects((entry: any /** TODO #9100 */) => {
-      ctx.print(`${escapeSingleQuoteString(entry[0], this._escapeDollarInStrings)}: `);
+      const prop = /^'.*'$/.test(entry[0]) ? entry[0] : escapeSingleQuoteString(
+                                                            entry[0], this._escapeDollarInStrings);
+      ctx.print(`${prop}: `);
       entry[1].visitExpression(this, ctx);
     }, ast.entries, ctx, ',', useNewLine);
     ctx.decIndent();
