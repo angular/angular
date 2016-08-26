@@ -10,7 +10,11 @@ if [ $# -eq 0 ]
     echo
 else
   cd `dirname $0`
-  export NODE_PATH=$NODE_PATH:$(pwd)/dist/all:$(pwd)/dist/tools
+  if [ -z ${NODE_PATH+x} ]; then
+    export NODE_PATH=$(pwd)/dist/all:$(pwd)/dist/tools
+  else
+    export NODE_PATH=$NODE_PATH:$(pwd)/dist/all/:$(pwd)/dist/tools/
+  fi
   $(npm bin)/tsc -p tools
   node dist/tools/tsc-watch/ $1 watch
 fi
