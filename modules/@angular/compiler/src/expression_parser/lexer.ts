@@ -57,10 +57,6 @@ export class Token {
 
   isKeyword(): boolean { return this.type == TokenType.Keyword; }
 
-  isKeywordDeprecatedVar(): boolean {
-    return this.type == TokenType.Keyword && this.strValue == 'var';
-  }
-
   isKeywordLet(): boolean { return this.type == TokenType.Keyword && this.strValue == 'let'; }
 
   isKeywordNull(): boolean { return this.type == TokenType.Keyword && this.strValue == 'null'; }

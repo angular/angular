@@ -821,12 +821,6 @@ class TemplateParseVisitor implements html.Visitor {
         boundPropertyName = partValue.substr(1);
         bindingType = PropertyBindingType.Animation;
         securityContext = SecurityContext.NONE;
-        if (boundPropertyName[0] == '@') {
-          this._reportError(
-              `Assigning animation triggers within host data as attributes such as "@prop": "exp" is invalid. Use host bindings (e.g. "[@prop]": "exp") instead.`,
-              sourceSpan, ParseErrorLevel.FATAL);
-          boundPropertyName = boundPropertyName.substr(1);
-        }
       } else {
         boundPropertyName = this._schemaRegistry.getMappedPropName(partValue);
         securityContext = this._schemaRegistry.securityContext(elementName, boundPropertyName);

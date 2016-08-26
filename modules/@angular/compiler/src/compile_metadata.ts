@@ -442,8 +442,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
           hostProperties[matches[1]] = value;
         } else if (isPresent(matches[2])) {
           hostListeners[matches[2]] = value;
-        } else if (isPresent(matches[3])) {  // DEPRECATED: remove this if statement post RC5
-          hostProperties['@' + matches[3]] = value;
         }
       });
     }
