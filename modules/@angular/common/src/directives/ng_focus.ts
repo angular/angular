@@ -34,16 +34,19 @@ import {Directive, ElementRef, Inject, Input, Renderer} from '@angular/core';
  */
 @Directive({selector: '[ngFocus]'})
 export class NgFocus {
+  _focus: boolean;
+
   @Input()
-  focus: boolean;
-
-  constructor(public renderer: Renderer, public elementRef: ElementRef) {}
-
-  protected ngOnChanges() {
-    if (this.focus) {
+  set focus(val: boolean) {
+    this._focus = val;
+    if (val) {
       this.renderer.invokeElementMethod(this.elementRef.nativeElement, 'focus', []);
     } else {
       this.renderer.invokeElementMethod(this.elementRef.nativeElement, 'blur', []);
     }
   }
+  get focus() { return this._focus; }
+
+
+  constructor(public renderer: Renderer, public elementRef: ElementRef) {}
 }

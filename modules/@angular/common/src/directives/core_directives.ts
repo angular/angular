@@ -61,6 +61,7 @@ import {NgTemplateOutlet} from './ng_template_outlet';
  */
 export const CORE_DIRECTIVES: Type<any>[] = [
   NgClass,
+  NgFocus,
   NgFor,
   NgIf,
   NgTemplateOutlet,

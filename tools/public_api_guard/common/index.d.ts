@@ -1,6 +1,3 @@
-import {Renderer} from '../../../modules/@angular/core/src/render/api';
-import {ElementRef} from '../core/index';
-
 /** @stable */
 export declare const APP_BASE_HREF: OpaqueToken;
 
@@ -109,13 +106,6 @@ export declare class NgClass implements DoCheck {
       _renderer: Renderer);
   ngDoCheck(): void;
 }
-
-/** @stable */
-export declare class NgFocus {
-  ngFocus: boolean;
-  constructor(public renderer: Renderer, public elementRef: ElementRef);
-}
-
 
 /** @stable */
 export declare class NgFor implements DoCheck, OnChanges {

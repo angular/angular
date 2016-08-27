@@ -10,14 +10,13 @@ import {NgFocus} from '@angular/common/src/directives/ng_focus';
 import {Component, NgModule} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {CommonModule} from '../../../../../tools/public_api_guard/common/index';
 
 
 export function main() {
   describe('Focus Directive', () => {
     beforeEach(() => {
-      TestBed.configureTestingModule({
-        declarations: [TestComponent],
-      });
+      TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
     });
 
     it('Should set focus when the directive get truthy boolean', async(() => {
@@ -55,7 +54,6 @@ export function main() {
 }
 
 
-@NgModule({declarations: [NgFocus], exports: [NgFocus]})
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   inFocus: boolean;
