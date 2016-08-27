@@ -34,6 +34,8 @@ import {Directive, ElementRef, Inject, Input, Renderer} from '@angular/core';
  */
 @Directive({selector: '[ngFocus]'})
 export class NgFocus {
+
+  /** @internal */
   _focus: boolean;
 
   @Input()
