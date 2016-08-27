@@ -14,7 +14,6 @@ import {StringMapWrapper} from '../src/facade/collection';
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {DirectiveResolver} from './directive_resolver';
-import {BaseException} from './facade/exceptions';
 import {isArray, isBlank, isPresent, isString, stringify} from './facade/lang';
 import {Identifiers, identifierToken} from './identifiers';
 import {hasLifecycleHook} from './lifecycle_reflector';
@@ -146,8 +145,8 @@ export class CompileMetadataResolver {
         changeDetectionStrategy = cmpMeta.changeDetection;
         if (isPresent(dirMeta.viewProviders)) {
           viewProviders = this.getProvidersMetadata(
-              verifyNonBlankProviders(directiveType, dirMeta.viewProviders, 'viewProviders'),
-              entryComponentMetadata);
+              dirMeta.viewProviders, entryComponentMetadata,
+              `viewProviders for "${stringify(directiveType)}"`);
         }
         moduleUrl = componentModuleUrl(this._reflector, directiveType, cmpMeta);
         if (cmpMeta.entryComponents) {
@@ -161,16 +160,15 @@ export class CompileMetadataResolver {
         }
       } else {
         if (!selector) {
-          throw new BaseException(
-              `Directive ${stringify(directiveType)} has no selector, please add it!`);
+          throw new Error(`Directive ${stringify(directiveType)} has no selector, please add it!`);
         }
       }
 
       var providers: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
       if (isPresent(dirMeta.providers)) {
         providers = this.getProvidersMetadata(
-            verifyNonBlankProviders(directiveType, dirMeta.providers, 'providers'),
-            entryComponentMetadata);
+            dirMeta.providers, entryComponentMetadata,
+            `providers for "${stringify(directiveType)}"`);
       }
       var queries: cpl.CompileQueryMetadata[] = [];
       var viewQueries: cpl.CompileQueryMetadata[] = [];
@@ -227,19 +225,20 @@ export class CompileMetadataResolver {
             const moduleWithProviders: ModuleWithProviders = importedType;
             importedModuleType = moduleWithProviders.ngModule;
             if (moduleWithProviders.providers) {
-              providers.push(
-                  ...this.getProvidersMetadata(moduleWithProviders.providers, entryComponents));
+              providers.push(...this.getProvidersMetadata(
+                  moduleWithProviders.providers, entryComponents,
+                  `provider for the NgModule '${stringify(importedModuleType)}'`));
             }
           }
           if (importedModuleType) {
             let importedMeta = this.getNgModuleMetadata(importedModuleType, false);
             if (importedMeta === null) {
-              throw new BaseException(
+              throw new Error(
                   `Unexpected ${this._getTypeDescriptor(importedType)} '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`);
             }
             importedModules.push(importedMeta);
           } else {
-            throw new BaseException(
+            throw new Error(
                 `Unexpected value '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`);
           }
         });
@@ -248,7 +247,7 @@ export class CompileMetadataResolver {
       if (meta.exports) {
         flattenArray(meta.exports).forEach((exportedType) => {
           if (!isValidType(exportedType)) {
-            throw new BaseException(
+            throw new Error(
                 `Unexpected value '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`);
           }
           let exportedDirMeta: cpl.CompileDirectiveMetadata;
@@ -261,7 +260,7 @@ export class CompileMetadataResolver {
           } else if (exportedModuleMeta = this.getNgModuleMetadata(exportedType, false)) {
             exportedModules.push(exportedModuleMeta);
           } else {
-            throw new BaseException(
+            throw new Error(
                 `Unexpected ${this._getTypeDescriptor(exportedType)} '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`);
           }
         });
@@ -274,7 +273,7 @@ export class CompileMetadataResolver {
       if (meta.declarations) {
         flattenArray(meta.declarations).forEach((declaredType) => {
           if (!isValidType(declaredType)) {
-            throw new BaseException(
+            throw new Error(
                 `Unexpected value '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`);
           }
           let declaredDirMeta: cpl.CompileDirectiveMetadata;
@@ -286,7 +285,7 @@ export class CompileMetadataResolver {
             this._addPipeToModule(
                 declaredPipeMeta, moduleType, transitiveModule, declaredPipes, true);
           } else {
-            throw new BaseException(
+            throw new Error(
                 `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`);
           }
         });
@@ -295,7 +294,9 @@ export class CompileMetadataResolver {
       // The providers of the module have to go last
       // so that they overwrite any other provider we already added.
       if (meta.providers) {
-        providers.push(...this.getProvidersMetadata(meta.providers, entryComponents));
+        providers.push(...this.getProvidersMetadata(
+            meta.providers, entryComponents,
+            `provider for the NgModule '${stringify(moduleType)}'`));
       }
       if (meta.entryComponents) {
         entryComponents.push(
@@ -340,13 +341,13 @@ export class CompileMetadataResolver {
   private _verifyModule(moduleMeta: cpl.CompileNgModuleMetadata) {
     moduleMeta.exportedDirectives.forEach((dirMeta) => {
       if (!moduleMeta.transitiveModule.directivesSet.has(dirMeta.type.runtime)) {
-        throw new BaseException(
+        throw new Error(
             `Can't export directive ${stringify(dirMeta.type.runtime)} from ${stringify(moduleMeta.type.runtime)} as it was neither declared nor imported!`);
       }
     });
     moduleMeta.exportedPipes.forEach((pipeMeta) => {
       if (!moduleMeta.transitiveModule.pipesSet.has(pipeMeta.type.runtime)) {
-        throw new BaseException(
+        throw new Error(
             `Can't export pipe ${stringify(pipeMeta.type.runtime)} from ${stringify(moduleMeta.type.runtime)} as it was neither declared nor imported!`);
       }
     });
@@ -369,7 +370,7 @@ export class CompileMetadataResolver {
   private _addTypeToModule(type: Type<any>, moduleType: Type<any>) {
     const oldModule = this._ngModuleOfTypes.get(type);
     if (oldModule && oldModule !== moduleType) {
-      throw new BaseException(
+      throw new Error(
           `Type ${stringify(type)} is part of the declarations of 2 modules: ${stringify(oldModule)} and ${stringify(moduleType)}!`);
     }
     this._ngModuleOfTypes.set(type, moduleType);
@@ -526,7 +527,7 @@ export class CompileMetadataResolver {
       let depsTokens =
           dependenciesMetadata.map((dep) => { return dep ? stringify(dep.token) : '?'; })
               .join(', ');
-      throw new BaseException(
+      throw new Error(
           `Can't resolve all parameters for ${stringify(typeOrFunc)}: (${depsTokens}).`);
     }
 
@@ -550,17 +551,18 @@ export class CompileMetadataResolver {
     return compileToken;
   }
 
-  getProvidersMetadata(providers: Provider[], targetEntryComponents: cpl.CompileTypeMetadata[]):
-      Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> {
+  getProvidersMetadata(
+      providers: Provider[], targetEntryComponents: cpl.CompileTypeMetadata[],
+      debugInfo?: string): Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> {
     const compileProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
-    providers.forEach((provider: any) => {
+    providers.forEach((provider: any, providerIdx: number) => {
       provider = resolveForwardRef(provider);
       if (provider && typeof provider == 'object' && provider.hasOwnProperty('provide')) {
         provider = new cpl.ProviderMeta(provider.provide, provider);
       }
       let compileProvider: cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[];
       if (isArray(provider)) {
-        compileProvider = this.getProvidersMetadata(provider, targetEntryComponents);
+        compileProvider = this.getProvidersMetadata(provider, targetEntryComponents, debugInfo);
       } else if (provider instanceof cpl.ProviderMeta) {
         let tokenMeta = this.getTokenMetadata(provider.token);
         if (tokenMeta.equalsTo(identifierToken(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS))) {
@@ -571,8 +573,22 @@ export class CompileMetadataResolver {
       } else if (isValidType(provider)) {
         compileProvider = this.getTypeMetadata(provider, staticTypeModuleUrl(provider));
       } else {
-        throw new BaseException(
-            `Invalid provider - only instances of Provider and Type are allowed, got: ${stringify(provider)}`);
+        let providersInfo = (<string[]>providers.reduce(
+                                 (soFar: string[], seenProvider: any, seenProviderIdx: number) => {
+                                   if (seenProviderIdx < providerIdx) {
+                                     soFar.push(`${stringify(seenProvider)}`);
+                                   } else if (seenProviderIdx == providerIdx) {
+                                     soFar.push(`?${stringify(seenProvider)}?`);
+                                   } else if (seenProviderIdx == providerIdx + 1) {
+                                     soFar.push('...');
+                                   }
+                                   return soFar;
+                                 },
+                                 []))
+                                .join(', ');
+
+        throw new Error(
+            `Invalid ${debugInfo ? debugInfo : 'provider'} - only instances of Provider and Type are allowed, got: [${providersInfo}]`);
       }
       if (compileProvider) {
         compileProviders.push(compileProvider);
@@ -585,11 +601,10 @@ export class CompileMetadataResolver {
     let components: cpl.CompileTypeMetadata[] = [];
     let collectedIdentifiers: cpl.CompileIdentifierMetadata[] = [];
     if (provider.useFactory || provider.useExisting || provider.useClass) {
-      throw new BaseException(`The ANALYZE_FOR_ENTRY_COMPONENTS token only supports useValue!`);
+      throw new Error(`The ANALYZE_FOR_ENTRY_COMPONENTS token only supports useValue!`);
     }
     if (!provider.multi) {
-      throw new BaseException(
-          `The ANALYZE_FOR_ENTRY_COMPONENTS token only supports 'multi = true'!`);
+      throw new Error(`The ANALYZE_FOR_ENTRY_COMPONENTS token only supports 'multi = true'!`);
     }
     convertToCompileValue(provider.useValue, collectedIdentifiers);
     collectedIdentifiers.forEach((identifier) => {
@@ -647,7 +662,7 @@ export class CompileMetadataResolver {
       selectors = q.varBindings.map(varName => this.getTokenMetadata(varName));
     } else {
       if (!isPresent(q.selector)) {
-        throw new BaseException(
+        throw new Error(
             `Can't construct a query for the property "${propertyName}" of "${stringify(typeOrFunc)}" since the query selector wasn't defined.`);
       }
       selectors = [this.getTokenMetadata(q.selector)];
@@ -694,23 +709,6 @@ function flattenArray(tree: any[], out: Array<any> = []): Array<any> {
     }
   }
   return out;
-}
-
-function verifyNonBlankProviders(
-    directiveType: Type<any>, providersTree: any[], providersType: string): any[] {
-  var flat: any[] = [];
-  var errMsg: string;
-
-  flattenArray(providersTree, flat);
-  for (var i = 0; i < flat.length; i++) {
-    if (isBlank(flat[i])) {
-      errMsg = flat.map(provider => isBlank(provider) ? '?' : stringify(provider)).join(', ');
-      throw new BaseException(
-          `One or more of ${providersType} for "${stringify(directiveType)}" were not defined: [${errMsg}].`);
-    }
-  }
-
-  return providersTree;
 }
 
 function isValidType(value: any): boolean {

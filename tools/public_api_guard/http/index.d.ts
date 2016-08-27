@@ -1,7 +1,4 @@
 /** @experimental */
-export declare function _createDefaultCookieXSRFStrategy(): CookieXSRFStrategy;
-
-/** @experimental */
 export declare class BaseRequestOptions extends RequestOptions {
     constructor();
 }
@@ -72,9 +69,6 @@ export declare class Http {
 }
 
 /** @experimental */
-export declare function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions): Http;
-
-/** @experimental */
 export declare class HttpModule {
 }
 
@@ -95,9 +89,6 @@ export declare abstract class JSONPConnection implements Connection {
     response: Observable<Response>;
     abstract finished(data?: any): void;
 }
-
-/** @experimental */
-export declare function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: RequestOptions): Jsonp;
 
 /** @experimental */
 export declare class JsonpModule {

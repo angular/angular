@@ -20,6 +20,7 @@ import * as console from './src/console';
 import * as debug from './src/debug/debug_renderer';
 import * as provider from './src/di/provider';
 import * as reflective_provider from './src/di/reflective_provider';
+import {ComponentStillLoadingError} from './src/linker/compiler';
 import * as component_factory_resolver from './src/linker/component_factory_resolver';
 import * as debug_context from './src/linker/debug_context';
 import * as element from './src/linker/element';
@@ -40,92 +41,78 @@ import * as api from './src/render/api';
 import * as security from './src/security';
 import * as decorators from './src/util/decorators';
 
-export declare namespace __core_private_types__ {
-  export var isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy;
-  export type ChangeDetectorStatus = constants.ChangeDetectorStatus;
-  export var ChangeDetectorStatus: typeof constants.ChangeDetectorStatus;
-  export var CHANGE_DETECTION_STRATEGY_VALUES: typeof constants.CHANGE_DETECTION_STRATEGY_VALUES;
-  export var constructDependencies: typeof reflective_provider.constructDependencies;
-  export type LifecycleHooks = lifecycle_hooks.LifecycleHooks;
-  export var LifecycleHooks: typeof lifecycle_hooks.LifecycleHooks;
-  export var LIFECYCLE_HOOKS_VALUES: typeof lifecycle_hooks.LIFECYCLE_HOOKS_VALUES;
-  export type ReflectorReader = reflector_reader.ReflectorReader;
-  export var ReflectorReader: typeof reflector_reader.ReflectorReader;
-  export var CodegenComponentFactoryResolver:
+
+// These generic types can't be exported within the __core_private_types__
+// interface because the generic type info will be lost. So just exporting
+// them separately.
+export type __core_private_DebugAppView__<T> = view.DebugAppView<T>;
+export type __core_private_TemplateRef__<C> = template_ref.TemplateRef_<C>;
+
+export interface __core_private_types__ {
+  isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy;
+  ChangeDetectorStatus: constants.ChangeDetectorStatus;
+  CHANGE_DETECTION_STRATEGY_VALUES: typeof constants.CHANGE_DETECTION_STRATEGY_VALUES;
+  constructDependencies: typeof reflective_provider.constructDependencies;
+  LifecycleHooks: lifecycle_hooks.LifecycleHooks;
+  LIFECYCLE_HOOKS_VALUES: typeof lifecycle_hooks.LIFECYCLE_HOOKS_VALUES;
+  ReflectorReader: reflector_reader.ReflectorReader;
+  CodegenComponentFactoryResolver:
       typeof component_factory_resolver.CodegenComponentFactoryResolver;
-  export type AppElement = element.AppElement;
-  export var AppElement: typeof element.AppElement;
-  export var AppView: typeof view.AppView;
-  export var NgModuleInjector: typeof ng_module_factory.NgModuleInjector;
-  export type DebugAppView<T> = view.DebugAppView<T>;
-  export var DebugAppView: typeof view.DebugAppView;
-  export type ViewType = view_type.ViewType;
-  export var ViewType: typeof view_type.ViewType;
-  export var MAX_INTERPOLATION_VALUES: typeof view_utils.MAX_INTERPOLATION_VALUES;
-  export var checkBinding: typeof view_utils.checkBinding;
-  export var flattenNestedViewRenderNodes: typeof view_utils.flattenNestedViewRenderNodes;
-  export var interpolate: typeof view_utils.interpolate;
-  export var ViewUtils: typeof view_utils.ViewUtils;
-  export var VIEW_ENCAPSULATION_VALUES: typeof metadata_view.VIEW_ENCAPSULATION_VALUES;
-  export type ViewMetadata = metadata_view.ViewMetadata;
-  export var ViewMetadata: typeof metadata_view.ViewMetadata;
-  export var DebugContext: typeof debug_context.DebugContext;
-  export var StaticNodeDebugInfo: typeof debug_context.StaticNodeDebugInfo;
-  export var devModeEqual: typeof change_detection_util.devModeEqual;
-  export var UNINITIALIZED: typeof change_detection_util.UNINITIALIZED;
-  export var ValueUnwrapper: typeof change_detection_util.ValueUnwrapper;
-  export type RenderDebugInfo = api.RenderDebugInfo;
-  export var RenderDebugInfo: typeof api.RenderDebugInfo;
-  export type TemplateRef_<C> = template_ref.TemplateRef_<C>;
-  export var TemplateRef_: typeof template_ref.TemplateRef_;
-  export var wtfInit: typeof wtf_init.wtfInit;
-  export type ReflectionCapabilities = reflection_capabilities.ReflectionCapabilities;
-  export var ReflectionCapabilities: typeof reflection_capabilities.ReflectionCapabilities;
-  export var makeDecorator: typeof decorators.makeDecorator;
-  export type DebugDomRootRenderer = debug.DebugDomRootRenderer;
-  export var DebugDomRootRenderer: typeof debug.DebugDomRootRenderer;
-  export var EMPTY_ARRAY: typeof view_utils.EMPTY_ARRAY;
-  export var EMPTY_MAP: typeof view_utils.EMPTY_MAP;
-  export var pureProxy1: typeof view_utils.pureProxy1;
-  export var pureProxy2: typeof view_utils.pureProxy2;
-  export var pureProxy3: typeof view_utils.pureProxy3;
-  export var pureProxy4: typeof view_utils.pureProxy4;
-  export var pureProxy5: typeof view_utils.pureProxy5;
-  export var pureProxy6: typeof view_utils.pureProxy6;
-  export var pureProxy7: typeof view_utils.pureProxy7;
-  export var pureProxy8: typeof view_utils.pureProxy8;
-  export var pureProxy9: typeof view_utils.pureProxy9;
-  export var pureProxy10: typeof view_utils.pureProxy10;
-  export var castByValue: typeof view_utils.castByValue;
-  export type Console = console.Console;
-  export var Console: typeof console.Console;
-  export var reflector: typeof reflection.reflector;
-  export type Reflector = reflection.Reflector;
-  export var Reflector: typeof reflection.Reflector;
-  export type NoOpAnimationPlayer = NoOpAnimationPlayer_;
-  export var NoOpAnimationPlayer: typeof NoOpAnimationPlayer_;
-  export type AnimationPlayer = AnimationPlayer_;
-  export var AnimationPlayer: typeof AnimationPlayer_;
-  export type AnimationSequencePlayer = AnimationSequencePlayer_;
-  export var AnimationSequencePlayer: typeof AnimationSequencePlayer_;
-  export type AnimationGroupPlayer = AnimationGroupPlayer_;
-  export var AnimationGroupPlayer: typeof AnimationGroupPlayer_;
-  export type AnimationKeyframe = AnimationKeyframe_;
-  export var AnimationKeyframe: typeof AnimationKeyframe_;
-  export var prepareFinalAnimationStyles: typeof animationUtils.prepareFinalAnimationStyles;
-  export var balanceAnimationKeyframes: typeof animationUtils.balanceAnimationKeyframes;
-  export var flattenStyles: typeof animationUtils.flattenStyles;
-  export var clearStyles: typeof animationUtils.clearStyles;
-  export var renderStyles: typeof animationUtils.renderStyles;
-  export var collectAndResolveStyles: typeof animationUtils.collectAndResolveStyles;
-  export type AnimationStyles = AnimationStyles_;
-  export var AnimationStyles: typeof AnimationStyles_;
-  export type AnimationOutput = AnimationOutput_;
-  export var AnimationOutput: typeof AnimationOutput_;
-  export var ANY_STATE: typeof ANY_STATE_;
-  export var DEFAULT_STATE: typeof DEFAULT_STATE_;
-  export var EMPTY_STATE: typeof EMPTY_STATE_;
-  export var FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_;
+  AppElement: element.AppElement;
+  AppView: typeof view.AppView;
+  NgModuleInjector: typeof ng_module_factory.NgModuleInjector;
+  ViewType: view_type.ViewType;
+  MAX_INTERPOLATION_VALUES: typeof view_utils.MAX_INTERPOLATION_VALUES;
+  checkBinding: typeof view_utils.checkBinding;
+  flattenNestedViewRenderNodes: typeof view_utils.flattenNestedViewRenderNodes;
+  interpolate: typeof view_utils.interpolate;
+  ViewUtils: typeof view_utils.ViewUtils;
+  VIEW_ENCAPSULATION_VALUES: typeof metadata_view.VIEW_ENCAPSULATION_VALUES;
+  ViewMetadata: metadata_view.ViewMetadata;
+  DebugContext: typeof debug_context.DebugContext;
+  StaticNodeDebugInfo: typeof debug_context.StaticNodeDebugInfo;
+  devModeEqual: typeof change_detection_util.devModeEqual;
+  UNINITIALIZED: typeof change_detection_util.UNINITIALIZED;
+  ValueUnwrapper: typeof change_detection_util.ValueUnwrapper;
+  RenderDebugInfo: api.RenderDebugInfo;
+  wtfInit: typeof wtf_init.wtfInit;
+  ReflectionCapabilities: reflection_capabilities.ReflectionCapabilities;
+  makeDecorator: typeof decorators.makeDecorator;
+  DebugDomRootRenderer: debug.DebugDomRootRenderer;
+  EMPTY_ARRAY: typeof view_utils.EMPTY_ARRAY;
+  EMPTY_MAP: typeof view_utils.EMPTY_MAP;
+  pureProxy1: typeof view_utils.pureProxy1;
+  pureProxy2: typeof view_utils.pureProxy2;
+  pureProxy3: typeof view_utils.pureProxy3;
+  pureProxy4: typeof view_utils.pureProxy4;
+  pureProxy5: typeof view_utils.pureProxy5;
+  pureProxy6: typeof view_utils.pureProxy6;
+  pureProxy7: typeof view_utils.pureProxy7;
+  pureProxy8: typeof view_utils.pureProxy8;
+  pureProxy9: typeof view_utils.pureProxy9;
+  pureProxy10: typeof view_utils.pureProxy10;
+  castByValue: typeof view_utils.castByValue;
+  Console: console.Console;
+  reflector: typeof reflection.reflector;
+  Reflector: reflection.Reflector;
+  NoOpAnimationPlayer: NoOpAnimationPlayer_;
+  AnimationPlayer: AnimationPlayer_;
+  AnimationSequencePlayer: AnimationSequencePlayer_;
+  AnimationGroupPlayer: AnimationGroupPlayer_;
+  AnimationKeyframe: AnimationKeyframe_;
+  prepareFinalAnimationStyles: typeof animationUtils.prepareFinalAnimationStyles;
+  balanceAnimationKeyframes: typeof animationUtils.balanceAnimationKeyframes;
+  flattenStyles: typeof animationUtils.flattenStyles;
+  clearStyles: typeof animationUtils.clearStyles;
+  renderStyles: typeof animationUtils.renderStyles;
+  collectAndResolveStyles: typeof animationUtils.collectAndResolveStyles;
+  AnimationStyles: AnimationStyles_;
+  AnimationOutput: AnimationOutput_;
+  ANY_STATE: typeof ANY_STATE_;
+  DEFAULT_STATE: typeof DEFAULT_STATE_;
+  EMPTY_STATE: typeof EMPTY_STATE_;
+  FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_;
+  ComponentStillLoadingError: typeof ComponentStillLoadingError;
 }
 
 export var __core_private__ = {
@@ -192,5 +179,6 @@ export var __core_private__ = {
   ANY_STATE: ANY_STATE_,
   DEFAULT_STATE: DEFAULT_STATE_,
   EMPTY_STATE: EMPTY_STATE_,
-  FILL_STYLE_FLAG: FILL_STYLE_FLAG_
+  FILL_STYLE_FLAG: FILL_STYLE_FLAG_,
+  ComponentStillLoadingError: ComponentStillLoadingError
 };

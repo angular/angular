@@ -43,4 +43,8 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
   }
   registerOnChange(fn: (_: any) => {}): void { this.onChange = fn; }
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
+
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
 }

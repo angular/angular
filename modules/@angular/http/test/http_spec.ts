@@ -13,7 +13,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {zip} from 'rxjs/observable/zip';
 
-import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../http';
+import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
 import {Json} from '../src/facade/lang';
 import {stringToArrayBuffer} from '../src/http_utils';
 import {MockBackend, MockConnection} from '../testing/mock_backend';

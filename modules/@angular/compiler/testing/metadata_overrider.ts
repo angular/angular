@@ -7,7 +7,6 @@
  */
 
 import {MetadataOverride} from '@angular/core/testing';
-import {BaseException} from '../src/facade/exceptions';
 import {stringify} from '../src/facade/lang';
 
 type StringMap = {
@@ -31,8 +30,7 @@ export class MetadataOverrider {
 
     if (override.set) {
       if (override.remove || override.add) {
-        throw new BaseException(
-            `Cannot set and add/remove ${stringify(metadataClass)} at the same time!`);
+        throw new Error(`Cannot set and add/remove ${stringify(metadataClass)} at the same time!`);
       }
       setMetadata(props, override.set);
     }

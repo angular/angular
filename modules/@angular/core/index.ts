@@ -30,10 +30,11 @@ export {wtfCreateScope, wtfLeave, wtfStartTimeRange, wtfEndTimeRange, WtfScopeFn
 
 export {Type} from './src/type';
 export {EventEmitter} from './src/facade/async';
-export {ExceptionHandler, WrappedException, BaseException} from './src/facade/exceptions';
+export {ErrorHandler} from './src/error_handler';
 export * from './private_export';
 
 export * from './src/animation/metadata';
+export {AnimationTransitionEvent} from './src/animation/animation_transition_event';
 export {AnimationPlayer} from './src/animation/animation_player';
 
-export {SanitizationService, SecurityContext} from './src/security';
+export {Sanitizer, SecurityContext} from './src/security';

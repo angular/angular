@@ -1,11 +1,4 @@
 /** @stable */
-export declare class AbstractProviderError extends BaseException {
-    context: any;
-    constructor(injector: ReflectiveInjector, key: ReflectiveKey, constructResolvingMessage: Function);
-    addKey(injector: ReflectiveInjector, key: ReflectiveKey): void;
-}
-
-/** @stable */
 export declare abstract class AfterContentChecked {
     abstract ngAfterContentChecked(): void;
 }
@@ -114,6 +107,18 @@ export declare class AnimationStyleMetadata extends AnimationMetadata {
 }
 
 /** @experimental */
+export declare class AnimationTransitionEvent {
+    fromState: string;
+    toState: string;
+    totalTime: number;
+    constructor({fromState, toState, totalTime}: {
+        fromState: string;
+        toState: string;
+        totalTime: number;
+    });
+}
+
+/** @experimental */
 export declare abstract class AnimationWithStepsMetadata extends AnimationMetadata {
     steps: AnimationMetadata[];
     constructor();
@@ -139,7 +144,7 @@ export declare class ApplicationInitStatus {
 export declare class ApplicationModule {
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class ApplicationRef {
     componentTypes: Type<any>[];
     components: ComponentRef<any>[];
@@ -172,14 +177,6 @@ export interface AttributeMetadataFactory {
 
 /** @experimental */
 export declare const AUTO_STYLE: string;
-
-/** @stable */
-export declare class BaseException extends Error {
-    message: string;
-    stack: any;
-    constructor(message?: string);
-    toString(): string;
-}
 
 /** @stable */
 export declare enum ChangeDetectionStrategy {
@@ -282,7 +279,7 @@ export declare class ComponentMetadata extends DirectiveMetadata implements Comp
     styles: string[];
     template: string;
     templateUrl: string;
-    viewProviders: any[];
+    viewProviders: Provider[];
     constructor({selector, inputs, outputs, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, encapsulation, interpolation, entryComponents}?: ComponentMetadataType);
 }
 
@@ -292,7 +289,7 @@ export interface ComponentMetadataFactory {
     new (obj: ComponentMetadataType): ComponentMetadata;
 }
 
-/** @experimental */
+/** @stable */
 export interface ComponentMetadataType extends DirectiveMetadataType {
     animations?: AnimationEntryMetadata[];
     changeDetection?: ChangeDetectionStrategy;
@@ -317,12 +314,6 @@ export declare abstract class ComponentRef<C> {
     location: ElementRef;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): void;
-}
-
-/** @stable */
-export declare class ComponentStillLoadingError extends BaseException {
-    compType: Type<any>;
-    constructor(compType: Type<any>);
 }
 
 /** @stable */
@@ -372,15 +363,10 @@ export interface ContentChildrenMetadataFactory {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlaformFactory: PlatformFactory, name: string, providers?: any[]): PlatformFactory;
-
-/** @experimental */
-export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
+export declare function createPlatformFactory(parentPlaformFactory: PlatformFactory, name: string, providers?: Provider[]): PlatformFactory;
 
 /** @stable */
-export declare class CyclicDependencyError extends AbstractProviderError {
-    constructor(injector: ReflectiveInjector, key: ReflectiveKey);
-}
+export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
 /** @experimental */
 export declare class DebugElement extends DebugNode {
@@ -463,7 +449,7 @@ export declare class DirectiveMetadata extends InjectableMetadata implements Dir
     };
     inputs: string[];
     outputs: string[];
-    providers: any[];
+    providers: Provider[];
     queries: {
         [key: string]: any;
     };
@@ -477,7 +463,7 @@ export interface DirectiveMetadataFactory {
     new (obj: DirectiveMetadataType): DirectiveMetadata;
 }
 
-/** @experimental */
+/** @stable */
 export interface DirectiveMetadataType {
     exportAs?: string;
     host?: {
@@ -510,8 +496,14 @@ export declare abstract class EmbeddedViewRef<C> extends ViewRef {
     abstract destroy(): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare function enableProdMode(): void;
+
+/** @stable */
+export declare class ErrorHandler {
+    constructor(rethrowError?: boolean);
+    handleError(error: any): void;
+}
 
 /** @stable */
 export declare class EventEmitter<T> extends Subject<T> {
@@ -522,13 +514,6 @@ export declare class EventEmitter<T> extends Subject<T> {
 }
 
 /** @stable */
-export declare class ExceptionHandler {
-    constructor(_logger: any, _rethrowException?: boolean);
-    call(exception: any, stackTrace?: any, reason?: string): void;
-    static exceptionToString(exception: any, stackTrace?: any, reason?: string): string;
-}
-
-/** @stable */
 export interface ExistingProvider {
     multi?: boolean;
     provide: any;
@@ -536,13 +521,8 @@ export interface ExistingProvider {
 }
 
 /** @stable */
-export declare class ExpressionChangedAfterItHasBeenCheckedException extends BaseException {
-    constructor(oldValue: any, currValue: any, context: any);
-}
-
-/** @stable */
 export interface FactoryProvider {
-    deps: any[];
+    deps?: any[];
     multi?: boolean;
     provide: any;
     useFactory: Function;
@@ -669,20 +649,6 @@ export interface InputMetadataFactory {
     new (bindingPropertyName?: string): any;
 }
 
-/** @stable */
-export declare class InstantiationError extends WrappedException {
-    causeKey: ReflectiveKey;
-    context: any;
-    wrapperMessage: string;
-    constructor(injector: ReflectiveInjector, originalException: any, originalStack: any, key: ReflectiveKey);
-    addKey(injector: ReflectiveInjector, key: ReflectiveKey): void;
-}
-
-/** @stable */
-export declare class InvalidProviderError extends BaseException {
-    constructor(provider: any);
-}
-
 /** @experimental */
 export declare function isDevMode(): boolean;
 
@@ -750,13 +716,13 @@ export declare class ModuleWithComponentFactories<T> {
     constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
 }
 
-/** @experimental */
+/** @stable */
 export interface ModuleWithProviders {
     ngModule: Type<any>;
-    providers?: any[];
+    providers?: Provider[];
 }
 
-/** @experimental */
+/** @stable */
 export declare var NgModule: NgModuleMetadataFactory;
 
 /** @stable */
@@ -772,41 +738,41 @@ export declare class NgModuleFactory<T> {
     create(parentInjector: Injector): NgModuleRef<T>;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class NgModuleFactoryLoader {
     abstract load(path: string): Promise<NgModuleFactory<any>>;
 }
 
-/** @experimental */
+/** @stable */
 export declare class NgModuleMetadata extends InjectableMetadata implements NgModuleMetadataType {
     bootstrap: Array<Type<any> | any[]>;
     declarations: Array<Type<any> | any[]>;
     entryComponents: Array<Type<any> | any[]>;
     exports: Array<Type<any> | any[]>;
     imports: Array<Type<any> | ModuleWithProviders | any[]>;
-    providers: any[];
+    providers: Provider[];
     schemas: Array<SchemaMetadata | any[]>;
     constructor(options?: NgModuleMetadataType);
 }
 
-/** @experimental */
+/** @stable */
 export interface NgModuleMetadataFactory {
     (obj?: NgModuleMetadataType): NgModuleDecorator;
     new (obj?: NgModuleMetadataType): NgModuleMetadata;
 }
 
-/** @experimental */
+/** @stable */
 export interface NgModuleMetadataType {
     bootstrap?: Array<Type<any> | any[]>;
     declarations?: Array<Type<any> | any[]>;
     entryComponents?: Array<Type<any> | any[]>;
     exports?: Array<Type<any> | any[]>;
     imports?: Array<Type<any> | ModuleWithProviders | any[]>;
-    providers?: any[];
+    providers?: Provider[];
     schemas?: Array<SchemaMetadata | any[]>;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class NgModuleRef<T> {
     componentFactoryResolver: ComponentFactoryResolver;
     injector: Injector;
@@ -837,22 +803,6 @@ export declare class NgZone {
 
 /** @experimental */
 export declare const NO_ERRORS_SCHEMA: SchemaMetadata;
-
-/** @stable */
-export declare class NoAnnotationError extends BaseException {
-    constructor(typeOrFunc: Type<any> | Function, params: any[][]);
-}
-
-/** @stable */
-export declare class NoComponentFactoryError extends BaseException {
-    component: Function;
-    constructor(component: Function);
-}
-
-/** @stable */
-export declare class NoProviderError extends AbstractProviderError {
-    constructor(injector: ReflectiveInjector, key: ReflectiveKey);
-}
 
 /** @stable */
 export declare abstract class OnChanges {
@@ -890,11 +840,6 @@ export interface OptionalMetadataFactory {
 }
 
 /** @stable */
-export declare class OutOfBoundsError extends BaseException {
-    constructor(index: number);
-}
-
-/** @stable */
 export declare var Output: OutputMetadataFactory;
 
 /** @stable */
@@ -928,7 +873,7 @@ export interface PipeMetadataFactory {
     new (obj: PipeMetadataType): any;
 }
 
-/** @experimental */
+/** @stable */
 export interface PipeMetadataType {
     name: string;
     pure?: boolean;
@@ -943,9 +888,9 @@ export interface PipeTransform {
 export declare const PLATFORM_INITIALIZER: any;
 
 /** @experimental */
-export declare const platformCore: (extraProviders?: any[]) => PlatformRef;
+export declare const platformCore: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
 
-/** @experimental */
+/** @stable */
 export declare abstract class PlatformRef {
     destroyed: boolean;
     injector: Injector;
@@ -1080,7 +1025,7 @@ export declare abstract class RootRenderer {
 }
 
 /** @stable */
-export declare abstract class SanitizationService {
+export declare abstract class Sanitizer {
     abstract sanitize(context: SecurityContext, value: string): string;
 }
 
@@ -1158,8 +1103,14 @@ export declare function style(tokens: string | {
 
 /** @experimental */
 export declare class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
-    constructor(_compiler: Compiler);
+    constructor(_compiler: Compiler, config?: SystemJsNgModuleLoaderConfig);
     load(path: string): Promise<NgModuleFactory<any>>;
+}
+
+/** @experimental */
+export declare abstract class SystemJsNgModuleLoaderConfig {
+    factoryPathPrefix: string;
+    factoryPathSuffix: string;
 }
 
 /** @stable */
@@ -1308,18 +1259,6 @@ export declare class ViewQueryMetadata extends QueryMetadata {
 export declare abstract class ViewRef {
     destroyed: boolean;
     abstract onDestroy(callback: Function): any;
-}
-
-/** @stable */
-export declare class WrappedException extends BaseWrappedException {
-    context: any;
-    message: string;
-    originalException: any;
-    originalStack: any;
-    wrapperMessage: string;
-    wrapperStack: any;
-    constructor(_wrapperMessage: string, _originalException: any, _originalStack?: any, _context?: any);
-    toString(): string;
 }
 
 /** @stable */

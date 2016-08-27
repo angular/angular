@@ -67,11 +67,16 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 }
 
 /** @stable */
+export declare type ErrorHandler = (error: any) => any;
+
+/** @stable */
 export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
 /** @stable */
 export interface ExtraOptions {
     enableTracing?: boolean;
+    errorHandler?: ErrorHandler;
+    initialNavigation?: boolean;
     useHash?: boolean;
 }
 
@@ -84,8 +89,9 @@ export declare type LoadChildrenCallback = () => Type<any> | Promise<Type<any>> 
 /** @stable */
 export declare class NavigationCancel {
     id: number;
+    reason: string;
     url: string;
-    constructor(id: number, url: string);
+    constructor(id: number, url: string, reason: string);
     toString(): string;
 }
 
@@ -167,6 +173,7 @@ export interface Route {
 /** @stable */
 export declare class Router {
     config: Routes;
+    errorHandler: ErrorHandler;
     events: Observable<Event>;
     /** @experimental */ navigated: boolean;
     routerState: RouterState;
@@ -182,10 +189,8 @@ export declare class Router {
     parseUrl(url: string): UrlTree;
     resetConfig(config: Routes): void;
     serializeUrl(url: UrlTree): string;
+    setUpLocationChangeListener(): void;
 }
-
-/** @stable */
-export declare const ROUTER_DIRECTIVES: (typeof RouterOutlet | typeof RouterLink | typeof RouterLinkWithHref | typeof RouterLinkActive)[];
 
 /** @stable */
 export declare class RouterLink {

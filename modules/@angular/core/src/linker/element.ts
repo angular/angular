@@ -8,7 +8,6 @@
 
 import {Injector} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
-import {BaseException} from '../facade/exceptions';
 import {isPresent} from '../facade/lang';
 
 import {ElementRef} from './element_ref';
@@ -63,7 +62,7 @@ export class AppElement {
   moveView(view: AppView<any>, currentIndex: number) {
     var previousIndex = this.nestedViews.indexOf(view);
     if (view.type === ViewType.COMPONENT) {
-      throw new BaseException(`Component views can't be moved!`);
+      throw new Error(`Component views can't be moved!`);
     }
     var nestedViews = this.nestedViews;
     if (nestedViews == null) {
@@ -87,7 +86,7 @@ export class AppElement {
 
   attachView(view: AppView<any>, viewIndex: number) {
     if (view.type === ViewType.COMPONENT) {
-      throw new BaseException(`Component views can't be moved!`);
+      throw new Error(`Component views can't be moved!`);
     }
     var nestedViews = this.nestedViews;
     if (nestedViews == null) {
@@ -111,7 +110,7 @@ export class AppElement {
   detachView(viewIndex: number): AppView<any> {
     var view = ListWrapper.removeAt(this.nestedViews, viewIndex);
     if (view.type === ViewType.COMPONENT) {
-      throw new BaseException(`Component views can't be moved!`);
+      throw new Error(`Component views can't be moved!`);
     }
     view.detach();
 

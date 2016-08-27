@@ -10,7 +10,8 @@ import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata'
 import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportGenerator} from '@angular/compiler/src/output/path_util';
 import {assetUrl} from '@angular/compiler/src/util';
-import {BaseException, EventEmitter} from '@angular/core';
+import {EventEmitter} from '@angular/core';
+import {BaseError} from '@angular/core/src/facade/errors';
 import {ViewType} from '@angular/core/src/linker/view_type';
 
 export class ExternalClass {
@@ -34,8 +35,8 @@ var enumIdentifier = new CompileIdentifierMetadata({
   runtime: ViewType.HOST
 });
 
-var baseExceptionIdentifier = new CompileIdentifierMetadata(
-    {name: 'BaseException', moduleUrl: assetUrl('core'), runtime: BaseException});
+var baseErrorIdentifier = new CompileIdentifierMetadata(
+    {name: 'BaseError', moduleUrl: assetUrl('core', 'facade/errors'), runtime: BaseError});
 
 export var codegenExportsVars = [
   'getExpressions',
@@ -68,8 +69,8 @@ var _getExpressionsStmts: o.Statement[] = [
       .toDeclStmt(),
 
   o.variable('throwError')
-      .set(o.fn([], [new o.ThrowStmt(o.importExpr(baseExceptionIdentifier).instantiate([o.literal(
-                        'someError')]))]))
+      .set(o.fn([], [new o.ThrowStmt(
+                        o.importExpr(baseErrorIdentifier).instantiate([o.literal('someError')]))]))
       .toDeclStmt(),
 
   o.variable('catchError')

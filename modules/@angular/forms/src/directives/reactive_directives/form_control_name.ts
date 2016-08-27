@@ -105,58 +105,62 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   // TODO(kara):  Replace ngModel with reactive API
   @Input('ngModel') model: any;
   @Output('ngModelChange') update = new EventEmitter();
+  @Input('disabled')
+  set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
-  constructor(@Optional() @Host() @SkipSelf() private _parent: ControlContainer,
-              @Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
-                  /* Array<Validator|Function> */ any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
-                  /* Array<Validator|Function> */ any[],
-              @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
-              valueAccessors: ControlValueAccessor[]) {
-                super();
-                this.valueAccessor = selectValueAccessor(this, valueAccessors);
-              }
+  constructor(
+      @Optional() @Host() @SkipSelf() private _parent: ControlContainer,
+      @Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
+          /* Array<Validator|Function> */ any[],
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
+          /* Array<Validator|Function> */ any[],
+      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
+    super();
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
+  }
 
-              ngOnChanges(changes: SimpleChanges) {
-                if (!this._added) {
-                  this._checkParentType();
-                  this.formDirective.addControl(this);
-                  this._added = true;
-                }
-                if (isPropertyUpdated(changes, this.viewModel)) {
-                  this.viewModel = this.model;
-                  this.formDirective.updateModel(this, this.model);
-                }
-              }
+  ngOnChanges(changes: SimpleChanges) {
+    if (!this._added) {
+      this._checkParentType();
+      this.formDirective.addControl(this);
+      if (this.control.disabled) this.valueAccessor.setDisabledState(true);
+      this._added = true;
+    }
+    if (isPropertyUpdated(changes, this.viewModel)) {
+      this.viewModel = this.model;
+      this.formDirective.updateModel(this, this.model);
+    }
+  }
 
-              ngOnDestroy(): void { this.formDirective.removeControl(this); }
+  ngOnDestroy(): void {
+    if (this.formDirective) {
+      this.formDirective.removeControl(this);
+    }
+  }
 
-              viewToModelUpdate(newValue: any): void {
-                this.viewModel = newValue;
-                this.update.emit(newValue);
-              }
+  viewToModelUpdate(newValue: any): void {
+    this.viewModel = newValue;
+    this.update.emit(newValue);
+  }
 
-              get path(): string[] { return controlPath(this.name, this._parent); }
+  get path(): string[] { return controlPath(this.name, this._parent); }
 
-              get formDirective(): any { return this._parent.formDirective; }
+  get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
-              get validator(): ValidatorFn { return composeValidators(this._validators); }
+  get validator(): ValidatorFn { return composeValidators(this._validators); }
 
-              get asyncValidator(): AsyncValidatorFn {
-                return composeAsyncValidators(this._asyncValidators);
-              }
+  get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
 
-              get control(): FormControl { return this.formDirective.getControl(this); }
+  get control(): FormControl { return this.formDirective.getControl(this); }
 
-              private _checkParentType(): void {
-                if (!(this._parent instanceof FormGroupName) &&
-                    this._parent instanceof AbstractFormGroupDirective) {
-                  ReactiveErrors.ngModelGroupException();
-                } else if (
-                    !(this._parent instanceof FormGroupName) &&
-                    !(this._parent instanceof FormGroupDirective) &&
-                    !(this._parent instanceof FormArrayName)) {
-                  ReactiveErrors.controlParentException();
-                }
-              }
+  private _checkParentType(): void {
+    if (!(this._parent instanceof FormGroupName) &&
+        this._parent instanceof AbstractFormGroupDirective) {
+      ReactiveErrors.ngModelGroupException();
+    } else if (
+        !(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective) &&
+        !(this._parent instanceof FormArrayName)) {
+      ReactiveErrors.controlParentException();
+    }
+  }
 }

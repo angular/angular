@@ -8,7 +8,7 @@
 
 import {interpretStatements} from '@angular/compiler/src/output/output_interpreter';
 import {jitStatements} from '@angular/compiler/src/output/output_jit';
-import {BaseException, EventEmitter} from '@angular/core';
+import {EventEmitter} from '@angular/core';
 import {ViewType} from '@angular/core/src/linker/view_type';
 import {beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -179,7 +179,7 @@ export function main() {
            () => { expect(expressions['throwError']).toThrowError('someError'); });
 
         it('should support catching errors', () => {
-          function someOperation() { throw new BaseException('Boom!'); }
+          function someOperation() { throw new Error('Boom!'); }
 
           var errorAndStack = expressions['catchError'](someOperation);
           expect(errorAndStack[0].message).toEqual('Boom!');

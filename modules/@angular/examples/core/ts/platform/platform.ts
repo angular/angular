@@ -10,8 +10,6 @@ import {Component, ReflectiveInjector, createPlatformFactory} from '@angular/cor
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-var appProviders: any[] = [];
-
 // #docregion longform
 @Component({selector: 'my-app', template: 'Hello World'})
 class MyApp {

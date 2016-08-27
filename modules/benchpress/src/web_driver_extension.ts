@@ -7,7 +7,6 @@
  */
 
 import {Injector, OpaqueToken} from '@angular/core/src/di';
-import {BaseException, WrappedException} from '@angular/facade/src/exceptions';
 import {isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from './common_options';
@@ -36,7 +35,7 @@ export abstract class WebDriverExtension {
             }
           });
           if (isBlank(delegate)) {
-            throw new BaseException('Could not find a delegate for given capabilities!');
+            throw new Error('Could not find a delegate for given capabilities!');
           }
           return delegate;
         },
@@ -46,11 +45,11 @@ export abstract class WebDriverExtension {
     return res;
   }
 
-  gc(): Promise<any> { throw new BaseException('NYI'); }
+  gc(): Promise<any> { throw new Error('NYI'); }
 
-  timeBegin(name: string): Promise<any> { throw new BaseException('NYI'); }
+  timeBegin(name: string): Promise<any> { throw new Error('NYI'); }
 
-  timeEnd(name: string, restartName: string): Promise<any> { throw new BaseException('NYI'); }
+  timeEnd(name: string, restartName: string): Promise<any> { throw new Error('NYI'); }
 
   /**
    * Format:
@@ -65,9 +64,9 @@ export abstract class WebDriverExtension {
    * Based on [Chrome Trace Event
    *Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
    **/
-  readPerfLog(): Promise<any[]> { throw new BaseException('NYI'); }
+  readPerfLog(): Promise<any[]> { throw new Error('NYI'); }
 
-  perfLogFeatures(): PerfLogFeatures { throw new BaseException('NYI'); }
+  perfLogFeatures(): PerfLogFeatures { throw new Error('NYI'); }
 
   supports(capabilities: {[key: string]: any}): boolean { return true; }
 }

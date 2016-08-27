@@ -6,19 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, SelfMetadata, Type, forwardRef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, SelfMetadata, Type, forwardRef} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {BaseException} from '../../src/facade/exceptions';
 import {stringify} from '../../src/facade/lang';
 import {NgModuleInjector} from '../../src/linker/ng_module_factory';
 
 class Engine {}
 
 class BrokenEngine {
-  constructor() { throw new BaseException('Broken Engine'); }
+  constructor() { throw new Error('Broken Engine'); }
 }
 
 class DashboardSoftware {}
@@ -567,7 +566,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       let moduleType: any = null;
 
 
-      function createInjector(providers: any[], parent: Injector = null): Injector {
+      function createInjector(providers: Provider[], parent: Injector = null): Injector {
         @NgModule({providers: providers})
         class SomeModule {
         }
@@ -732,7 +731,13 @@ function declareTests({useJit}: {useJit: boolean}) {
       it('should throw when given invalid providers', () => {
         expect(() => createInjector(<any>['blah']))
             .toThrowError(
-                'Invalid provider - only instances of Provider and Type are allowed, got: blah');
+                `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?blah?]`);
+      });
+
+      it('should throw when given blank providers', () => {
+        expect(() => createInjector(<any>[null, {provide: 'token', useValue: 'value'}]))
+            .toThrowError(
+                `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?null?, ...]`);
       });
 
       it('should provide itself', () => {
@@ -1104,6 +1109,20 @@ function declareTests({useJit}: {useJit: boolean}) {
              const injector = createModule(SomeModule).injector;
              expect(injector.get('token1')).toBe('imported2');
            });
+
+        it('should throw when given invalid providers in an imported ModuleWithProviders', () => {
+          @NgModule()
+          class ImportedModule1 {
+          }
+
+          @NgModule({imports: [{ngModule: ImportedModule1, providers: [<any>'broken']}]})
+          class SomeModule {
+          }
+
+          expect(() => createModule(SomeModule).injector)
+              .toThrowError(
+                  `Invalid provider for the NgModule 'ImportedModule1' - only instances of Provider and Type are allowed, got: [?broken?]`);
+        });
       });
     });
   });

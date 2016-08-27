@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UrlChangeListener} from '@angular/common';
+import {LocationChangeListener} from '@angular/common';
 import {Injectable} from '@angular/core';
 
 import {BrowserPlatformLocation} from '../../browser/location/browser_platform_location';
@@ -28,9 +28,9 @@ export class MessageBasedPlatformLocation {
       private _platformLocation: BrowserPlatformLocation, bus: MessageBus,
       private _serializer: Serializer) {
     this._platformLocation.onPopState(
-        <UrlChangeListener>FunctionWrapper.bind(this._sendUrlChangeEvent, this));
+        <LocationChangeListener>FunctionWrapper.bind(this._sendUrlChangeEvent, this));
     this._platformLocation.onHashChange(
-        <UrlChangeListener>FunctionWrapper.bind(this._sendUrlChangeEvent, this));
+        <LocationChangeListener>FunctionWrapper.bind(this._sendUrlChangeEvent, this));
     this._broker = this._brokerFactory.createMessageBroker(ROUTER_CHANNEL);
     this._channelSink = bus.to(ROUTER_CHANNEL);
   }

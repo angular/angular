@@ -7,7 +7,6 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {BaseException} from '@angular/core';
 import {global} from '../facade/lang';
 
 /**
@@ -24,8 +23,7 @@ export class CachedResourceLoader extends ResourceLoader {
     super();
     this._cache = (<any>global).$templateCache;
     if (this._cache == null) {
-      throw new BaseException(
-          'CachedResourceLoader: Template cache was not found in $templateCache.');
+      throw new Error('CachedResourceLoader: Template cache was not found in $templateCache.');
     }
   }
 

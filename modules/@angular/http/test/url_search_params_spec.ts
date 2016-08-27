@@ -68,11 +68,11 @@ export function main() {
        **/
 
       let params = new URLSearchParams();
-      '! $ \' ( ) * + , ; A 9 - . _ ~ ? /'.split(' ').forEach(
+      '! $ \' ( ) * + , ; A 9 - . _ ~ ? / ='.split(' ').forEach(
           (char, idx) => { params.set(`a${idx}`, char); });
       expect(params.toString())
           .toBe(
-              `a0=!&a1=$&a2=\'&a3=(&a4=)&a5=*&a6=+&a7=,&a8=;&a9=A&a10=9&a11=-&a12=.&a13=_&a14=~&a15=?&a16=/`
+              `a0=!&a1=$&a2=\'&a3=(&a4=)&a5=*&a6=+&a7=,&a8=;&a9=A&a10=9&a11=-&a12=.&a13=_&a14=~&a15=?&a16=/&a17==`
                   .replace(/\s/g, ''));
 
 

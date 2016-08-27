@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {BROWSER_SANITIZATION_PROVIDERS, BrowserModule, platformBrowser} from './src/browser';
+export {BrowserModule, platformBrowser} from './src/browser';
 export {BrowserPlatformLocation} from './src/browser/location/browser_platform_location';
 export {Title} from './src/browser/title';
 export {disableDebugTools, enableDebugTools} from './src/browser/tools/tools';
@@ -15,7 +15,7 @@ export {By} from './src/dom/debug/by';
 export {DOCUMENT} from './src/dom/dom_tokens';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './src/dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './src/dom/events/hammer_gestures';
-export {DomSanitizationService, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl} from './src/security/dom_sanitization_service';
+export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl} from './src/security/dom_sanitization_service';
 // Web Workers
 export {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from './src/web_workers/shared/client_message_broker';
 export {PRIMITIVE} from './src/web_workers/shared/serializer';
@@ -26,6 +26,6 @@ export {WORKER_APP_LOCATION_PROVIDERS} from './src/web_workers/worker/location_p
 export {WORKER_UI_LOCATION_PROVIDERS} from './src/web_workers/ui/location_providers';
 
 export {NgProbeToken} from './src/dom/debug/ng_probe';
-export * from './src/worker_render';
+export {platformWorkerUi, WebWorkerInstance, WORKER_SCRIPT, WORKER_UI_STARTABLE_MESSAGING_SERVICE} from './src/worker_render';
 export {platformWorkerApp, WorkerAppModule} from './src/worker_app';
 export * from './private_export';

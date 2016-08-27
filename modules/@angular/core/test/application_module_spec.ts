@@ -11,7 +11,7 @@ import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, injec
 
 export function main() {
   describe('Application module', () => {
-    it('should set the default locale to "en_US"',
-       inject([LOCALE_ID], (defaultLocale: string) => { expect(defaultLocale).toEqual('en_US'); }));
+    it('should set the default locale to "en-US"',
+       inject([LOCALE_ID], (defaultLocale: string) => { expect(defaultLocale).toEqual('en-US'); }));
   });
 }

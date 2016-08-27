@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {EventEmitter} from '../facade/async';
 import {FormControl} from '../model';
@@ -64,9 +64,11 @@ export class NgModel extends NgControl implements OnChanges,
   _registered = false;
   viewModel: any;
 
-  @Input('ngModel') model: any;
   @Input() name: string;
+  @Input('disabled') isDisabled: boolean;
+  @Input('ngModel') model: any;
   @Input('ngModelOptions') options: {name?: string, standalone?: boolean};
+
   @Output('ngModelChange') update = new EventEmitter();
 
   constructor(@Optional() @Host() private _parent: ControlContainer,
@@ -81,6 +83,9 @@ export class NgModel extends NgControl implements OnChanges,
               ngOnChanges(changes: SimpleChanges) {
                 this._checkForErrors();
                 if (!this._registered) this._setUpControl();
+                if ('isDisabled' in changes) {
+                  this._updateDisabled(changes);
+                }
 
                 if (isPropertyUpdated(changes, this.viewModel)) {
                   this._updateValue(this.model);
@@ -152,5 +157,18 @@ export class NgModel extends NgControl implements OnChanges,
               private _updateValue(value: any): void {
                 resolvedPromise.then(
                     () => { this.control.setValue(value, {emitViewToModelChange: false}); });
+              }
+
+              private _updateDisabled(changes: SimpleChanges) {
+                const disabledValue = changes['isDisabled'].currentValue;
+                const isDisabled = disabledValue != null && disabledValue != false;
+
+                resolvedPromise.then(() => {
+                  if (isDisabled && !this.control.disabled) {
+                    this.control.disable();
+                  } else if (!isDisabled && this.control.disabled) {
+                    this.control.enable();
+                  }
+                });
               }
 }

@@ -104,8 +104,8 @@ export class NgForm extends ControlContainer implements Form {
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
-    this.form = new FormGroup(
-        {}, null, composeValidators(validators), composeAsyncValidators(asyncValidators));
+    this.form =
+        new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
   }
 
   get submitted(): boolean { return this._submitted; }

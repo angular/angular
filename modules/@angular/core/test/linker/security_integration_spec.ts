@@ -10,7 +10,7 @@ import {Component} from '@angular/core/src/metadata';
 import {TestBed, getTestBed} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {DomSanitizationService} from '@angular/platform-browser/src/security/dom_sanitization_service';
+import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });
@@ -59,7 +59,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const template = `<a [href]="ctxProp">Link Title</a>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
-        const sanitizer: DomSanitizationService = getTestBed().get(DomSanitizationService);
+        const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
 
         let e = fixture.debugElement.children[0].nativeElement;
         let ci = fixture.debugElement.componentInstance;
@@ -73,7 +73,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const template = `<a [href]="ctxProp">Link Title</a>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
-        const sanitizer: DomSanitizationService = getTestBed().get(DomSanitizationService);
+        const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
 
         let trusted = sanitizer.bypassSecurityTrustScript('javascript:alert(1)');
         let ci = fixture.debugElement.componentInstance;
@@ -85,7 +85,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const template = `<a href="/foo/{{ctxProp}}">Link Title</a>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
-        const sanitizer: DomSanitizationService = getTestBed().get(DomSanitizationService);
+        const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
 
         let e = fixture.debugElement.children[0].nativeElement;
         let trusted = sanitizer.bypassSecurityTrustUrl('bar/baz');

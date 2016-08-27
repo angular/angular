@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableMetadata} from '../di/metadata';
+import {InjectableMetadata, Provider} from '../di';
 import {Type} from '../type';
 
 /**
  * A wrapper around a module that also includes the providers.
  *
- * @experimental
+ * @stable
  */
 export interface ModuleWithProviders {
   ngModule: Type<any>;
-  providers?: any[];
+  providers?: Provider[];
 }
 
 /**
@@ -30,7 +30,7 @@ export interface SchemaMetadata { name: string; }
  * Defines a schema that will allow any property on elements with a `-` in their name,
  * which is the common rule for custom elements.
  *
- * @experimental
+ * @stable
  */
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
   name: 'custom-elements'
@@ -47,10 +47,10 @@ export const NO_ERRORS_SCHEMA: SchemaMetadata = {
 
 /**
  * Interface for creating {@link NgModuleMetadata}
- * @experimental
+ * @stable
  */
 export interface NgModuleMetadataType {
-  providers?: any[];
+  providers?: Provider[];
   declarations?: Array<Type<any>|any[]>;
   imports?: Array<Type<any>|ModuleWithProviders|any[]>;
   exports?: Array<Type<any>|any[]>;
@@ -61,7 +61,7 @@ export interface NgModuleMetadataType {
 
 /**
  * Declares an Angular Module.
- * @experimental
+ * @stable
  */
 export class NgModuleMetadata extends InjectableMetadata implements NgModuleMetadataType {
   /**
@@ -93,8 +93,8 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * }
    * ```
    */
-  get providers(): any[] { return this._providers; }
-  private _providers: any[];
+  get providers(): Provider[] { return this._providers; }
+  private _providers: Provider[];
 
 
   /**

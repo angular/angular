@@ -23,7 +23,6 @@ import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util'
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {EventEmitter} from '../../src/facade/async';
-import {BaseException} from '../../src/facade/exceptions';
 import {isBlank, isPresent, stringify} from '../../src/facade/lang';
 
 const ANCHOR_ELEMENT = new OpaqueToken('AnchorElement');
@@ -894,7 +893,6 @@ function declareTests({useJit}: {useJit: boolean}) {
           TestBed.configureTestingModule({imports: [MyModule]});
           TestBed.overrideComponent(
               MyComp, {add: {template: '<div><dynamic-vp #dynamic></dynamic-vp></div>'}});
-          return TestBed.compileComponents();
         });
 
 
@@ -2092,7 +2090,7 @@ class OtherDuplicateDir {
 
 @Directive({selector: 'directive-throwing-error'})
 class DirectiveThrowingAnError {
-  constructor() { throw new BaseException('BOOM'); }
+  constructor() { throw new Error('BOOM'); }
 }
 
 @Component({

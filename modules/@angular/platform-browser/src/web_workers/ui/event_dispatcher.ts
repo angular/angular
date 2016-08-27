@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
 import {RenderStoreObject, Serializer} from '../shared/serializer';
@@ -97,7 +96,7 @@ export class EventDispatcher {
         serializedEvent = serializeTransitionEvent(event);
         break;
       default:
-        throw new BaseException(eventName + ' not supported on WebWorkers');
+        throw new Error(eventName + ' not supported on WebWorkers');
     }
     this._sink.emit({
       'element': this._serializer.serialize(element, RenderStoreObject),

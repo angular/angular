@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, NoComponentFactoryError, forwardRef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, forwardRef} from '@angular/core';
+import {NoComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
 import {TestBed} from '@angular/core/testing';
+
 import {Console} from '../../src/console';
 
 
@@ -31,7 +33,6 @@ function declareTests({useJit}: {useJit: boolean}) {
       TestBed.configureCompiler(
           {useJit: useJit, providers: [{provide: Console, useValue: console}]});
       TestBed.configureTestingModule({declarations: [MainComp, ChildComp, NestedChildComp]});
-      TestBed.compileComponents();
     });
 
     it('should resolve ComponentFactories from the same component', () => {

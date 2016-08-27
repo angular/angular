@@ -1,16 +1,10 @@
 /** @experimental */
-export declare const _WORKER_UI_PLATFORM_PROVIDERS: Provider[];
-
-/** @experimental */
 export declare abstract class AnimationDriver {
     abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
     static NOOP: AnimationDriver;
 }
 
-/** @experimental */
-export declare const BROWSER_SANITIZATION_PROVIDERS: Array<any>;
-
-/** @experimental */
+/** @stable */
 export declare class BrowserModule {
     constructor(parentModule: BrowserModule);
 }
@@ -24,8 +18,8 @@ export declare class BrowserPlatformLocation extends PlatformLocation {
     back(): void;
     forward(): void;
     getBaseHrefFromDOM(): string;
-    onHashChange(fn: UrlChangeListener): void;
-    onPopState(fn: UrlChangeListener): void;
+    onHashChange(fn: LocationChangeListener): void;
+    onPopState(fn: LocationChangeListener): void;
     pushState(state: any, title: string, url: string): void;
     replaceState(state: any, title: string, url: string): void;
 }
@@ -54,7 +48,7 @@ export declare function disableDebugTools(): void;
 export declare const DOCUMENT: OpaqueToken;
 
 /** @stable */
-export declare abstract class DomSanitizationService implements SanitizationService {
+export declare abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
     abstract bypassSecurityTrustScript(value: string): SafeScript;
@@ -123,14 +117,14 @@ export declare class NgProbeToken {
     constructor(name: string, token: any);
 }
 
-/** @experimental */
-export declare const platformBrowser: (extraProviders?: any[]) => PlatformRef;
+/** @stable */
+export declare const platformBrowser: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
 
 /** @experimental */
-export declare const platformWorkerApp: (extraProviders?: any[]) => PlatformRef;
+export declare const platformWorkerApp: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
 
 /** @experimental */
-export declare const platformWorkerUi: (extraProviders?: any[]) => PlatformRef;
+export declare const platformWorkerUi: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
 
 /** @experimental */
 export declare const PRIMITIVE: Type<any>;

@@ -9,7 +9,7 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {ListWrapper} from '../facade/collection';
 import {StringWrapper, isArray, isBlank, isString} from '../facade/lang';
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  * Creates a new List or String containing only a subset (slice) of the
@@ -72,7 +72,7 @@ export class SlicePipe implements PipeTransform {
   transform(value: any, start: number, end: number = null): any {
     if (isBlank(value)) return value;
     if (!this.supports(value)) {
-      throw new InvalidPipeArgumentException(SlicePipe, value);
+      throw new InvalidPipeArgumentError(SlicePipe, value);
     }
     if (isString(value)) {
       return StringWrapper.slice(value, start, end);

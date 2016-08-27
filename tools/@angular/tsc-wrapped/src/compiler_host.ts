@@ -22,6 +22,8 @@ export abstract class DelegatingHost implements ts.CompilerHost {
   getDefaultLibLocation = () => this.delegate.getDefaultLibLocation();
   writeFile: ts.WriteFileCallback = this.delegate.writeFile;
   getCurrentDirectory = () => this.delegate.getCurrentDirectory();
+  getDirectories = (path: string): string[] =>
+      (this.delegate as any).getDirectories?(this.delegate as any).getDirectories(path): [];
   getCanonicalFileName = (fileName: string) => this.delegate.getCanonicalFileName(fileName);
   useCaseSensitiveFileNames = () => this.delegate.useCaseSensitiveFileNames();
   getNewLine = () => this.delegate.getNewLine();

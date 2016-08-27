@@ -12,7 +12,7 @@ import {isPresent} from '../facade/lang';
 
 import {Location} from './location';
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
-import {PlatformLocation, UrlChangeListener} from './platform_location';
+import {LocationChangeListener, PlatformLocation} from './platform_location';
 
 
 
@@ -54,7 +54,7 @@ export class HashLocationStrategy extends LocationStrategy {
     }
   }
 
-  onPopState(fn: UrlChangeListener): void {
+  onPopState(fn: LocationChangeListener): void {
     this._platformLocation.onPopState(fn);
     this._platformLocation.onHashChange(fn);
   }

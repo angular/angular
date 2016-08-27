@@ -18,7 +18,6 @@ import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 
 import {EventEmitter} from '../../src/facade/async';
 import {StringMapWrapper} from '../../src/facade/collection';
-import {BaseException} from '../../src/facade/exceptions';
 import {NumberWrapper, isBlank} from '../../src/facade/lang';
 
 export function main() {
@@ -724,7 +723,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new BaseException('Second detectChanges() should not have run detection.');
+               throw new Error('Second detectChanges() should not have run detection.');
              }
              expect(directiveLog.filter(['ngOnInit'])).toEqual([]);
            }));
@@ -821,7 +820,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new BaseException('Second detectChanges() should not have run detection.');
+               throw new Error('Second detectChanges() should not have run detection.');
              }
              expect(directiveLog.filter(['ngAfterContentInit'])).toEqual([]);
            }));
@@ -935,7 +934,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new BaseException('Second detectChanges() should not have run detection.');
+               throw new Error('Second detectChanges() should not have run detection.');
              }
              expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
            }));
@@ -1342,7 +1341,7 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
   ngOnInit() {
     this.log.add(this.name, 'ngOnInit');
     if (this.throwOn == 'ngOnInit') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
@@ -1352,42 +1351,42 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
     StringMapWrapper.forEach(changes, (c: SimpleChange, key: string) => r[key] = c.currentValue);
     this.changes = r;
     if (this.throwOn == 'ngOnChanges') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngAfterContentInit() {
     this.log.add(this.name, 'ngAfterContentInit');
     if (this.throwOn == 'ngAfterContentInit') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngAfterContentChecked() {
     this.log.add(this.name, 'ngAfterContentChecked');
     if (this.throwOn == 'ngAfterContentChecked') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngAfterViewInit() {
     this.log.add(this.name, 'ngAfterViewInit');
     if (this.throwOn == 'ngAfterViewInit') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngAfterViewChecked() {
     this.log.add(this.name, 'ngAfterViewChecked');
     if (this.throwOn == 'ngAfterViewChecked') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngOnDestroy() {
     this.log.add(this.name, 'ngOnDestroy');
     if (this.throwOn == 'ngOnDestroy') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 }

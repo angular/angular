@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 import {Observable} from '../facade/async';
 import {isPresent} from '../facade/lang';
 import {AbstractControl} from '../model';
@@ -19,7 +18,7 @@ import {AbstractControl} from '../model';
  * @stable
  */
 export abstract class AbstractControlDirective {
-  get control(): AbstractControl { throw new BaseException('unimplemented'); }
+  get control(): AbstractControl { throw new Error('unimplemented'); }
 
   get value(): any { return isPresent(this.control) ? this.control.value : null; }
 
@@ -40,6 +39,10 @@ export abstract class AbstractControlDirective {
   get touched(): boolean { return isPresent(this.control) ? this.control.touched : null; }
 
   get untouched(): boolean { return isPresent(this.control) ? this.control.untouched : null; }
+
+  get disabled(): boolean { return isPresent(this.control) ? this.control.disabled : null; }
+
+  get enabled(): boolean { return isPresent(this.control) ? this.control.enabled : null; }
 
   get statusChanges(): Observable<any> {
     return isPresent(this.control) ? this.control.statusChanges : null;

@@ -74,7 +74,7 @@ export function main() {
         });
 
         it('should return select multiple accessor when provided', () => {
-          const selectMultipleAccessor = new SelectMultipleControlValueAccessor();
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null, null);
           expect(selectValueAccessor(dir, [
             defaultAccessor, selectMultipleAccessor
           ])).toEqual(selectMultipleAccessor);
@@ -95,7 +95,7 @@ export function main() {
 
         it('should return custom accessor when provided with select multiple', () => {
           const customAccessor = new SpyValueAccessor();
-          const selectMultipleAccessor = new SelectMultipleControlValueAccessor();
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null, null);
           expect(selectValueAccessor(
                      dir, <any>[defaultAccessor, customAccessor, selectMultipleAccessor]))
               .toEqual(customAccessor);
@@ -124,9 +124,9 @@ export function main() {
     });
 
     describe('formGroup', () => {
-      var form: any /** TODO #9100 */;
-      var formModel: FormGroup;
-      var loginControlDir: any /** TODO #9100 */;
+      let form: FormGroupDirective;
+      let formModel: FormGroup;
+      let loginControlDir: FormControlName;
 
       beforeEach(() => {
         form = new FormGroupDirective([], []);
@@ -160,7 +160,7 @@ export function main() {
 
       describe('addControl', () => {
         it('should throw when no control found', () => {
-          var dir = new FormControlName(form, null, null, [defaultAccessor]);
+          const dir = new FormControlName(form, null, null, [defaultAccessor]);
           dir.name = 'invalidName';
 
           expect(() => form.addControl(dir))
@@ -325,6 +325,8 @@ export function main() {
         expect(form.untouched).toBe(formModel.untouched);
         expect(form.statusChanges).toBe(formModel.statusChanges);
         expect(form.valueChanges).toBe(formModel.valueChanges);
+        expect(form.disabled).toBe(formModel.disabled);
+        expect(form.enabled).toBe(formModel.enabled);
       });
 
       describe('addControl & addFormGroup', () => {
@@ -401,6 +403,8 @@ export function main() {
         expect(controlGroupDir.untouched).toBe(formModel.untouched);
         expect(controlGroupDir.statusChanges).toBe(formModel.statusChanges);
         expect(controlGroupDir.valueChanges).toBe(formModel.valueChanges);
+        expect(controlGroupDir.disabled).toBe(formModel.disabled);
+        expect(controlGroupDir.enabled).toBe(formModel.enabled);
       });
     });
 
@@ -427,6 +431,8 @@ export function main() {
         expect(formArrayDir.dirty).toBe(formModel.dirty);
         expect(formArrayDir.touched).toBe(formModel.touched);
         expect(formArrayDir.untouched).toBe(formModel.untouched);
+        expect(formArrayDir.disabled).toBe(formModel.disabled);
+        expect(formArrayDir.enabled).toBe(formModel.enabled);
       });
     });
 
@@ -446,6 +452,8 @@ export function main() {
         expect(controlDir.untouched).toBe(control.untouched);
         expect(controlDir.statusChanges).toBe(control.statusChanges);
         expect(controlDir.valueChanges).toBe(control.valueChanges);
+        expect(controlDir.disabled).toBe(control.disabled);
+        expect(controlDir.enabled).toBe(control.enabled);
       };
 
       beforeEach(() => {
@@ -499,6 +507,8 @@ export function main() {
         expect(ngModel.untouched).toBe(control.untouched);
         expect(ngModel.statusChanges).toBe(control.statusChanges);
         expect(ngModel.valueChanges).toBe(control.valueChanges);
+        expect(ngModel.disabled).toBe(control.disabled);
+        expect(ngModel.enabled).toBe(control.enabled);
       });
 
       it('should throw when no value accessor with named control', () => {
@@ -557,6 +567,8 @@ export function main() {
         expect(controlNameDir.untouched).toBe(formModel.untouched);
         expect(controlNameDir.statusChanges).toBe(formModel.statusChanges);
         expect(controlNameDir.valueChanges).toBe(formModel.valueChanges);
+        expect(controlNameDir.disabled).toBe(formModel.disabled);
+        expect(controlNameDir.enabled).toBe(formModel.enabled);
       });
     });
   });

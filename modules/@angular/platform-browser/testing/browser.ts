@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, NgModule, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_ID, ClassProvider, ExistingProvider, FactoryProvider, NgModule, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
 
 import {BrowserModule} from '../src/browser';
 import {BrowserDomAdapter} from '../src/browser/browser_adapter';
@@ -26,7 +26,7 @@ const _TEST_BROWSER_PLATFORM_PROVIDERS: Provider[] =
 /**
  * Platform for testing
  *
- * @experimental API related to bootstrapping are still under review.
+ * @stable
  */
 export const platformBrowserTesting =
     createPlatformFactory(platformCore, 'browserTesting', _TEST_BROWSER_PLATFORM_PROVIDERS);
@@ -34,7 +34,7 @@ export const platformBrowserTesting =
 /**
  * NgModule for testing.
  *
- * @experimental
+ * @stable
  */
 @NgModule({
   exports: [BrowserModule],

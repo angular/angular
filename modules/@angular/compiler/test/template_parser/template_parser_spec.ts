@@ -301,21 +301,6 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
                      /Assigning animation triggers via @prop="exp" attributes with an expression is invalid. Use property bindings \(e.g. \[@prop\]="exp"\) or use an attribute without a value \(e.g. @prop\) instead. \("<div \[ERROR ->\]@something="value2">"\): TestComp@0:5/);
            });
 
-        it('should throw an error when host attributes contain a non property-bound animation trigger',
-           () => {
-             expect(() => {
-               var dirA = CompileDirectiveMetadata.create({
-                 selector: 'div',
-                 type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
-                 host: {'@prop': 'expr'}
-               });
-
-               humanizeTplAst(parse('<div></div>', [dirA]));
-             })
-                 .toThrowError(
-                     /Assigning animation triggers within host data as attributes such as "@prop": "exp" is invalid. Use host bindings \(e.g. "\[@prop\]": "exp"\) instead. \("\[ERROR ->\]<div><\/div>"\): TestComp@0:0, Directive DirA/);
-           });
-
         it('should not issue a warning when host attributes contain a valid property-bound animation trigger',
            () => {
              var dirA = CompileDirectiveMetadata.create({
@@ -327,6 +312,30 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
              humanizeTplAst(parse('<div></div>', [dirA]));
              expect(console.warnings.length).toEqual(0);
            });
+
+        it('should throw descriptive error when a host binding is not a string expression', () => {
+          var dirA = CompileDirectiveMetadata.create({
+            selector: 'broken',
+            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            host: {'[class.foo]': null}
+          });
+
+          expect(() => { parse('<broken></broken>', [dirA]); })
+              .toThrowError(
+                  `Template parse errors:\nValue of the host property binding "class.foo" needs to be a string representing an expression but got "null" (object) ("[ERROR ->]<broken></broken>"): TestComp@0:0, Directive DirA`);
+        });
+
+        it('should throw descriptive error when a host event is not a string expression', () => {
+          var dirA = CompileDirectiveMetadata.create({
+            selector: 'broken',
+            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            host: {'(click)': null}
+          });
+
+          expect(() => { parse('<broken></broken>', [dirA]); })
+              .toThrowError(
+                  `Template parse errors:\nValue of the host listener "click" needs to be a string representing an expression but got "null" (object) ("[ERROR ->]<broken></broken>"): TestComp@0:0, Directive DirA`);
+        });
 
         it('should not issue a warning when an animation property is bound without an expression',
            () => {
@@ -838,15 +847,6 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
           ]))).toEqual([[ElementAst, 'div'], [ReferenceAst, 'a', null]]);
         });
 
-        it('should parse references via var-... and report them as deprecated', () => {
-          expect(humanizeTplAst(parse('<div var-a>', [
-          ]))).toEqual([[ElementAst, 'div'], [ReferenceAst, 'a', null]]);
-          expect(console.warnings).toEqual([[
-            'Template parse warnings:',
-            '"var-" on non <template> elements is deprecated. Use "ref-" instead! ("<div [ERROR ->]var-a>"): TestComp@0:5'
-          ].join('\n')]);
-        });
-
         it('should parse camel case references', () => {
           expect(humanizeTplAst(parse('<div ref-someA>', [
           ]))).toEqual([[ElementAst, 'div'], [ReferenceAst, 'someA', null]]);
@@ -960,15 +960,6 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           ]))).toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b']]);
         });
 
-        it('should parse variables via var-... and report them as deprecated', () => {
-          expect(humanizeTplAst(parse('<template var-a="b">', [
-          ]))).toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b']]);
-          expect(console.warnings).toEqual([[
-            'Template parse warnings:',
-            '"var-" on <template> elements is deprecated. Use "let-" instead! ("<template [ERROR ->]var-a="b">"): TestComp@0:10'
-          ].join('\n')]);
-        });
-
         it('should not locate directives in variables', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: '[a]',
@@ -1000,22 +991,9 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           ]);
         });
 
-        it('should parse variables via #... and report them as deprecated', () => {
-          expect(humanizeTplAst(parse('<div *ngIf="#a=b">', [
-          ]))).toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']]);
-          expect(console.warnings).toEqual([[
-            'Template parse warnings:',
-            '"#" inside of expressions is deprecated. Use "let" instead! ("<div [ERROR ->]*ngIf="#a=b">"): TestComp@0:5'
-          ].join('\n')]);
-        });
-
-        it('should parse variables via var ... and report them as deprecated', () => {
-          expect(humanizeTplAst(parse('<div *ngIf="var a=b">', [
-          ]))).toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']]);
-          expect(console.warnings).toEqual([[
-            'Template parse warnings:',
-            '"var" inside of expressions is deprecated. Use "let" instead! ("<div [ERROR ->]*ngIf="var a=b">"): TestComp@0:5'
-          ].join('\n')]);
+        it('should report an error on variables declared with #', () => {
+          expect(() => humanizeTplAst(parse('<div *ngIf="#a=b">', [])))
+              .toThrowError(/Parser Error: Unexpected token # at column 6/);
         });
 
         it('should parse variables via let ...', () => {
@@ -1251,8 +1229,9 @@ Can't have multiple template bindings on one element. Use only one attribute nam
       });
 
       it('should report when mix of template and *attrs are used on the same element', () => {
-        expect(() => parse('<div template="ngIf" *ngFor>', [])).toThrowError(`Template parse errors:
-Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<div template="ngIf" [ERROR ->]*ngFor>"): TestComp@0:21`);
+        expect(() => parse('<span template="ngIf" *ngFor>', []))
+            .toThrowError(`Template parse errors:
+Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<span template="ngIf" [ERROR ->]*ngFor>"): TestComp@0:22`);
       });
 
       it('should report invalid property names', () => {

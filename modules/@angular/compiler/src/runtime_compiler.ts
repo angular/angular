@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, ComponentStillLoadingError, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, OptionalMetadata, Provider, SchemaMetadata, SkipSelfMetadata, Type} from '@angular/core';
-
-import {Console} from '../core_private';
-
+import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, OptionalMetadata, Provider, SchemaMetadata, SkipSelfMetadata, Type} from '@angular/core';
+import {ComponentStillLoadingError} from '../core_private';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
-import {BaseException} from './facade/exceptions';
 import {isBlank, stringify} from './facade/lang';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {NgModuleCompiler} from './ng_module_compiler';
@@ -223,10 +220,10 @@ export class RuntimeCompiler implements Compiler {
                                       this._compiledTemplateCache.get(compType);
     if (!compiledTemplate) {
       if (isHost) {
-        throw new BaseException(
+        throw new Error(
             `Illegal state: Compiled view for component ${stringify(compType)} does not exist!`);
       } else {
-        throw new BaseException(
+        throw new Error(
             `Component ${stringify(compType)} is not part of any NgModule or the module has not been imported into your module.`);
       }
     }
@@ -236,7 +233,7 @@ export class RuntimeCompiler implements Compiler {
   private _assertComponentLoaded(compType: any, isHost: boolean): CompiledTemplate {
     const compiledTemplate = this._assertComponentKnown(compType, isHost);
     if (compiledTemplate.loading) {
-      throw new BaseException(
+      throw new Error(
           `Illegal state: CompiledTemplate for ${stringify(compType)} (isHost: ${isHost}) is still loading!`);
     }
     return compiledTemplate;
@@ -335,7 +332,7 @@ class CompiledTemplate {
     });
     this.proxyViewFactory = (...args: any[]) => {
       if (!this._viewFactory) {
-        throw new BaseException(
+        throw new Error(
             `Illegal state: CompiledTemplate for ${stringify(this.compType)} is not compiled yet!`);
       }
       return this._viewFactory.apply(null, args);
@@ -355,7 +352,7 @@ class CompiledTemplate {
 
   get normalizedCompMeta(): CompileDirectiveMetadata {
     if (this.loading) {
-      throw new BaseException(`Template is still loading for ${this.compType.name}!`);
+      throw new Error(`Template is still loading for ${this.compType.name}!`);
     }
     return this._normalizedCompMeta;
   }
@@ -370,7 +367,7 @@ class CompiledTemplate {
 
 function assertComponent(meta: CompileDirectiveMetadata) {
   if (!meta.isComponent) {
-    throw new BaseException(`Could not compile '${meta.type.name}' because it is not a component.`);
+    throw new Error(`Could not compile '${meta.type.name}' because it is not a component.`);
   }
 }
 

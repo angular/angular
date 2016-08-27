@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Injectable, NgZone} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
@@ -35,7 +35,7 @@ export class PostMessageBusSink implements MessageBusSink {
 
   initChannel(channel: string, runInZone: boolean = true): void {
     if (StringMapWrapper.contains(this._channels, channel)) {
-      throw new BaseException(`${channel} has already been initialized`);
+      throw new Error(`${channel} has already been initialized`);
     }
 
     var emitter = new EventEmitter(false);
@@ -55,7 +55,7 @@ export class PostMessageBusSink implements MessageBusSink {
     if (StringMapWrapper.contains(this._channels, channel)) {
       return this._channels[channel].emitter;
     } else {
-      throw new BaseException(`${channel} is not set up. Did you forget to call initChannel?`);
+      throw new Error(`${channel} is not set up. Did you forget to call initChannel?`);
     }
   }
 
@@ -87,7 +87,7 @@ export class PostMessageBusSource implements MessageBusSource {
 
   initChannel(channel: string, runInZone: boolean = true) {
     if (StringMapWrapper.contains(this._channels, channel)) {
-      throw new BaseException(`${channel} has already been initialized`);
+      throw new Error(`${channel} has already been initialized`);
     }
 
     var emitter = new EventEmitter(false);
@@ -99,7 +99,7 @@ export class PostMessageBusSource implements MessageBusSource {
     if (StringMapWrapper.contains(this._channels, channel)) {
       return this._channels[channel].emitter;
     } else {
-      throw new BaseException(`${channel} is not set up. Did you forget to call initChannel?`);
+      throw new Error(`${channel} is not set up. Did you forget to call initChannel?`);
     }
   }
 

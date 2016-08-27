@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Component, Inject, Injectable, OptionalMetadata, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, ClassProvider, Compiler, CompilerFactory, CompilerOptions, Component, ExistingProvider, FactoryProvider, Inject, Injectable, OptionalMetadata, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, TypeProvider, ValueProvider, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 export * from './template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser/template_parser';
@@ -21,8 +21,6 @@ export {DirectiveResolver} from './directive_resolver';
 export {PipeResolver} from './pipe_resolver';
 export {NgModuleResolver} from './ng_module_resolver';
 
-import {stringify} from './facade/lang';
-import {ListWrapper} from './facade/collection';
 import {TemplateParser} from './template_parser/template_parser';
 import {HtmlParser} from './ml_parser/html_parser';
 import {DirectiveNormalizer} from './directive_normalizer';
@@ -90,44 +88,6 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   NgModuleResolver
 ];
 
-export function analyzeAppProvidersForDeprecatedConfiguration(appProviders: any[] = []): {
-  compilerOptions: CompilerOptions,
-  moduleDeclarations: Type<any>[],
-  deprecationMessages: string[]
-} {
-  let compilerProviders: any[] = [];
-  let useDebug: boolean;
-  let useJit: boolean;
-  let defaultEncapsulation: ViewEncapsulation;
-  const deprecationMessages: string[] = [];
-
-  // Note: This is a hack to still support the old way
-  // of configuring platform directives / pipes and the compiler resource loader.
-  // This will soon be deprecated!
-  const tempInj = ReflectiveInjector.resolveAndCreate(appProviders);
-  const compilerConfig: CompilerConfig = tempInj.get(CompilerConfig, null);
-  if (compilerConfig) {
-    useJit = compilerConfig.useJit;
-    useDebug = compilerConfig.genDebugInfo;
-    defaultEncapsulation = compilerConfig.defaultEncapsulation;
-    deprecationMessages.push(
-        `Passing CompilerConfig as a regular provider is deprecated. Use "compilerOptions" use a custom "CompilerFactory" platform provider instead.`);
-  }
-  const resourceLoader = tempInj.get(ResourceLoader, null);
-  if (resourceLoader) {
-    compilerProviders.push([{provide: ResourceLoader, useValue: resourceLoader}]);
-    deprecationMessages.push(
-        `Passing ResourceLoader as regular provider is deprecated. Pass the provider via "compilerOptions" instead.`);
-  }
-  const compilerOptions: CompilerOptions = {
-    useJit: useJit,
-    useDebug: useDebug,
-    defaultEncapsulation: defaultEncapsulation,
-    providers: compilerProviders
-  };
-
-  return {compilerOptions, moduleDeclarations: [], deprecationMessages: deprecationMessages};
-}
 
 @Injectable()
 export class RuntimeCompilerFactory implements CompilerFactory {

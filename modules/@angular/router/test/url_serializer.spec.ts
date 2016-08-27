@@ -113,9 +113,9 @@ describe('url serializer', () => {
   it('should parse key only matrix params', () => {
     const tree = url.parse('/one;a');
 
-    expectSegment(tree.root.children[PRIMARY_OUTLET], 'one;a=true');
+    expectSegment(tree.root.children[PRIMARY_OUTLET], 'one;a=');
 
-    expect(url.serialize(tree)).toEqual('/one;a=true');
+    expect(url.serialize(tree)).toEqual('/one;a=');
   });
 
   it('should parse query params (root)', () => {
@@ -207,10 +207,10 @@ describe('url serializer', () => {
     });
 
     it('should encode/decode fragment', () => {
-      const u = `/one#${encode("one two")}`;
+      const u = `/one#${encodeURI("one two=three four")}`;
       const tree = url.parse(u);
 
-      expect(tree.fragment).toEqual('one two');
+      expect(tree.fragment).toEqual('one two=three four');
       expect(url.serialize(tree)).toEqual(u);
     });
   });

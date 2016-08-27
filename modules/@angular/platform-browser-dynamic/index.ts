@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ResourceLoader, analyzeAppProvidersForDeprecatedConfiguration, platformCoreDynamic} from '@angular/compiler';
-import {ApplicationRef, COMPILER_OPTIONS, CUSTOM_ELEMENTS_SCHEMA, CompilerFactory, CompilerOptions, ComponentRef, NgModule, PlatformRef, Provider, Type, createPlatformFactory} from '@angular/core';
-import {BrowserModule, WORKER_SCRIPT, WorkerAppModule, platformWorkerUi} from '@angular/platform-browser';
+import {ResourceLoader, platformCoreDynamic} from '@angular/compiler';
+import {COMPILER_OPTIONS, ClassProvider, ExistingProvider, FactoryProvider, PlatformRef, Provider, TypeProvider, ValueProvider, createPlatformFactory} from '@angular/core';
+import {WORKER_SCRIPT, platformWorkerUi} from '@angular/platform-browser';
 
-import {Console} from './core_private';
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './src/platform_providers';
 import {CachedResourceLoader} from './src/resource_loader/resource_loader_cache';
 import {ResourceLoaderImpl} from './src/resource_loader/resource_loader_impl';
@@ -24,7 +23,7 @@ export const RESOURCE_CACHE_PROVIDER: Provider[] =
     [{provide: ResourceLoader, useClass: CachedResourceLoader}];
 
 /**
- * @experimental API related to bootstrapping are still under review.
+ * @stable
  */
 export const platformBrowserDynamic = createPlatformFactory(
     platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
@@ -32,7 +31,7 @@ export const platformBrowserDynamic = createPlatformFactory(
 /**
  * Bootstraps the worker ui.
  *
- * @experimental
+ * @experimental WebWorker support is currently experimental
  */
 export function bootstrapWorkerUi(
     workerScriptUri: string, customProviders: Provider[] = []): Promise<PlatformRef> {
@@ -45,7 +44,7 @@ export function bootstrapWorkerUi(
 }
 
 /**
- * @experimental API related to bootstrapping are still under review.
+ * @experimental WebWorker support is currently experimental
  */
 export const platformWorkerAppDynamic = createPlatformFactory(
     platformCoreDynamic, 'workerAppDynamic', [{

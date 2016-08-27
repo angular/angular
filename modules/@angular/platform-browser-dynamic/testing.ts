@@ -7,7 +7,7 @@
  */
 
 import {platformCoreDynamicTesting} from '@angular/compiler/testing';
-import {NgModule, PlatformRef, createPlatformFactory} from '@angular/core';
+import {ClassProvider, ExistingProvider, FactoryProvider, NgModule, PlatformRef, TypeProvider, ValueProvider, createPlatformFactory} from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 
@@ -17,7 +17,7 @@ import {DOMTestComponentRenderer} from './testing/dom_test_component_renderer';
 export * from './private_export_testing'
 
 /**
- * @experimental API related to bootstrapping are still under review.
+ * @stable
  */
 export const platformBrowserDynamicTesting = createPlatformFactory(
     platformCoreDynamicTesting, 'browserDynamicTesting',

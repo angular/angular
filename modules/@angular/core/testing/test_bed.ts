@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, ComponentMetadataType, ComponentStillLoadingError, DirectiveMetadataType, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleMetadataType, NgModuleRef, NgZone, OpaqueToken, PipeMetadataType, PlatformRef, Provider, SchemaMetadata} from '../index';
+import {CompilerOptions, ComponentMetadataType, DirectiveMetadataType, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleMetadataType, NgModuleRef, NgZone, OpaqueToken, PipeMetadataType, PlatformRef, Provider, SchemaMetadata} from '../index';
 import {ListWrapper} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
 import {FunctionWrapper, stringify} from '../src/facade/lang';
 import {Type} from '../src/type';
+
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -155,6 +155,7 @@ export class TestBed implements Injector {
   private _declarations: Array<Type<any>|any[]|any> = [];
   private _imports: Array<Type<any>|any[]|any> = [];
   private _schemas: Array<SchemaMetadata|any[]> = [];
+  private _activeFixtures: ComponentFixture<any>[] = [];
 
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
@@ -171,7 +172,7 @@ export class TestBed implements Injector {
    */
   initTestEnvironment(ngModule: Type<any>, platform: PlatformRef) {
     if (this.platform || this.ngModule) {
-      throw new BaseException('Cannot set base providers because it has already been called');
+      throw new Error('Cannot set base providers because it has already been called');
     }
     this.platform = platform;
     this.ngModule = ngModule;
@@ -203,6 +204,8 @@ export class TestBed implements Injector {
     this._imports = [];
     this._schemas = [];
     this._instantiated = false;
+    this._activeFixtures.forEach((fixture) => fixture.destroy());
+    this._activeFixtures = [];
   }
 
   platform: PlatformRef = null;
@@ -252,7 +255,7 @@ export class TestBed implements Injector {
         this._moduleWithComponentFactories =
             this._compiler.compileModuleAndAllComponentsSync(moduleType);
       } catch (e) {
-        if (e instanceof ComponentStillLoadingError) {
+        if (e.compType) {
           throw new Error(
               `This test module uses the component ${stringify(e.compType)} which is using a "templateUrl", but they were never compiled. ` +
               `Please call "TestBed.compileComponents" before your test.`);
@@ -292,7 +295,7 @@ export class TestBed implements Injector {
 
   private _assertNotInstantiated(methodName: string, methodDescription: string) {
     if (this._instantiated) {
-      throw new BaseException(
+      throw new Error(
           `Cannot ${methodDescription} when the test module has already been instantiated. ` +
           `Make sure you are not using \`inject\` before \`${methodName}\`.`);
     }
@@ -340,7 +343,7 @@ export class TestBed implements Injector {
     const componentFactory = this._moduleWithComponentFactories.componentFactories.find(
         (compFactory) => compFactory.componentType === component);
     if (!componentFactory) {
-      throw new BaseException(
+      throw new Error(
           `Cannot create the component ${stringify(component)} as it was not imported into the testing module!`);
     }
     const noNgZone = this.get(ComponentFixtureNoNgZone, false);
@@ -355,7 +358,9 @@ export class TestBed implements Injector {
       return new ComponentFixture<T>(componentRef, ngZone, autoDetect);
     };
 
-    return ngZone == null ? initComponent() : ngZone.run(initComponent);
+    const fixture = ngZone == null ? initComponent() : ngZone.run(initComponent);
+    this._activeFixtures.push(fixture);
+    return fixture;
   }
 }
 

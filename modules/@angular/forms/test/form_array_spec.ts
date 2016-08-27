@@ -8,9 +8,10 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms';
 
 import {isPresent} from '../src/facade/lang';
+import {Validators} from '../src/validators';
 
 export function main() {
   function asyncValidator(expected: any /** TODO #9100 */, timeouts = {}) {
@@ -34,8 +35,8 @@ export function main() {
 
   describe('FormArray', () => {
     describe('adding/removing', () => {
-      var a: FormArray;
-      var c1: any /** TODO #9100 */, c2: any /** TODO #9100 */, c3: any /** TODO #9100 */;
+      let a: FormArray;
+      let c1: FormControl, c2: FormControl, c3: FormControl;
 
       beforeEach(() => {
         a = new FormArray([]);
@@ -72,12 +73,12 @@ export function main() {
 
     describe('value', () => {
       it('should be the reduced value of the child controls', () => {
-        var a = new FormArray([new FormControl(1), new FormControl(2)]);
+        const a = new FormArray([new FormControl(1), new FormControl(2)]);
         expect(a.value).toEqual([1, 2]);
       });
 
       it('should be an empty array when there are no child controls', () => {
-        var a = new FormArray([]);
+        const a = new FormArray([]);
         expect(a.value).toEqual([]);
       });
     });
@@ -102,6 +103,22 @@ export function main() {
         expect(c2.value).toEqual('two');
       });
 
+      it('should set values for disabled child controls', () => {
+        c2.disable();
+        a.setValue(['one', 'two']);
+        expect(c2.value).toEqual('two');
+        expect(a.value).toEqual(['one']);
+        expect(a.getRawValue()).toEqual(['one', 'two']);
+      });
+
+      it('should set value for disabled arrays', () => {
+        a.disable();
+        a.setValue(['one', 'two']);
+        expect(c.value).toEqual('one');
+        expect(c2.value).toEqual('two');
+        expect(a.value).toEqual(['one', 'two']);
+      });
+
       it('should set parent values', () => {
         const form = new FormGroup({'parent': a});
         a.setValue(['one', 'two']);
@@ -117,6 +134,12 @@ export function main() {
         expect(() => a.setValue([
           'one', 'two', 'three'
         ])).toThrowError(new RegExp(`Cannot find form control at index 2`));
+      });
+
+      it('should throw if a value is not provided for a disabled control', () => {
+        c2.disable();
+        expect(() => a.setValue(['one']))
+            .toThrowError(new RegExp(`Must supply a value for form control at index: 1`));
       });
 
       it('should throw if no controls are set yet', () => {
@@ -174,6 +197,22 @@ export function main() {
         a.patchValue(['one', 'two']);
         expect(c.value).toEqual('one');
         expect(c2.value).toEqual('two');
+      });
+
+      it('should patch disabled control values', () => {
+        c2.disable();
+        a.patchValue(['one', 'two']);
+        expect(c2.value).toEqual('two');
+        expect(a.value).toEqual(['one']);
+        expect(a.getRawValue()).toEqual(['one', 'two']);
+      });
+
+      it('should patch disabled control arrays', () => {
+        a.disable();
+        a.patchValue(['one', 'two']);
+        expect(c.value).toEqual('one');
+        expect(c2.value).toEqual('two');
+        expect(a.value).toEqual(['one', 'two']);
       });
 
       it('should set parent values', () => {
@@ -254,6 +293,12 @@ export function main() {
         expect(a.value).toEqual(['initial value', '']);
       });
 
+      it('should set its own value if boxed value passed', () => {
+        a.setValue(['new value', 'new value']);
+
+        a.reset([{value: 'initial value', disabled: false}, '']);
+        expect(a.value).toEqual(['initial value', '']);
+      });
 
       it('should clear its own value if no value passed', () => {
         a.setValue(['new value', 'new value']);
@@ -378,6 +423,22 @@ export function main() {
         expect(form.untouched).toBe(false);
       });
 
+      it('should retain previous disabled state', () => {
+        a.disable();
+        a.reset();
+
+        expect(a.disabled).toBe(true);
+      });
+
+      it('should set child disabled state if boxed value passed', () => {
+        a.disable();
+        a.reset([{value: '', disabled: false}, '']);
+
+        expect(c.disabled).toBe(false);
+        expect(a.disabled).toBe(false);
+      });
+
+
       describe('reset() events', () => {
         let form: FormGroup, c3: FormControl, logger: any[];
 
@@ -413,7 +474,7 @@ export function main() {
 
     describe('errors', () => {
       it('should run the validator when the value changes', () => {
-        var simpleValidator = (c: any /** TODO #9100 */) =>
+        const simpleValidator = (c: FormArray) =>
             c.controls[0].value != 'correct' ? {'broken': true} : null;
 
         var c = new FormControl(null);
@@ -433,8 +494,8 @@ export function main() {
 
 
     describe('dirty', () => {
-      var c: FormControl;
-      var a: FormArray;
+      let c: FormControl;
+      let a: FormArray;
 
       beforeEach(() => {
         c = new FormControl('value');
@@ -451,8 +512,8 @@ export function main() {
     });
 
     describe('touched', () => {
-      var c: FormControl;
-      var a: FormArray;
+      let c: FormControl;
+      let a: FormArray;
 
       beforeEach(() => {
         c = new FormControl('value');
@@ -470,8 +531,8 @@ export function main() {
 
 
     describe('pending', () => {
-      var c: FormControl;
-      var a: FormArray;
+      let c: FormControl;
+      let a: FormArray;
 
       beforeEach(() => {
         c = new FormControl('value');
@@ -499,8 +560,8 @@ export function main() {
     });
 
     describe('valueChanges', () => {
-      var a: FormArray;
-      var c1: any /** TODO #9100 */, c2: any /** TODO #9100 */;
+      let a: FormArray;
+      let c1: any /** TODO #9100 */, c2: any /** TODO #9100 */;
 
       beforeEach(() => {
         c1 = new FormControl('old1');
@@ -566,22 +627,22 @@ export function main() {
 
     describe('get', () => {
       it('should return null when path is null', () => {
-        var g = new FormGroup({});
+        const g = new FormGroup({});
         expect(g.get(null)).toEqual(null);
       });
 
       it('should return null when path is empty', () => {
-        var g = new FormGroup({});
+        const g = new FormGroup({});
         expect(g.get([])).toEqual(null);
       });
 
       it('should return null when path is invalid', () => {
-        var g = new FormGroup({});
+        const g = new FormGroup({});
         expect(g.get('invalid')).toEqual(null);
       });
 
       it('should return a child of a control group', () => {
-        var g = new FormGroup({
+        const g = new FormGroup({
           'one': new FormControl('111'),
           'nested': new FormGroup({'two': new FormControl('222')})
         });
@@ -593,7 +654,7 @@ export function main() {
       });
 
       it('should return an element of an array', () => {
-        var g = new FormGroup({'array': new FormArray([new FormControl('111')])});
+        const g = new FormGroup({'array': new FormArray([new FormControl('111')])});
 
         expect(g.get(['array', 0]).value).toEqual('111');
       });
@@ -601,8 +662,8 @@ export function main() {
 
     describe('asyncValidator', () => {
       it('should run the async validator', fakeAsync(() => {
-           var c = new FormControl('value');
-           var g = new FormArray([c], null, asyncValidator('expected'));
+           const c = new FormControl('value');
+           const g = new FormArray([c], null, asyncValidator('expected'));
 
            expect(g.pending).toEqual(true);
 
@@ -611,6 +672,140 @@ export function main() {
            expect(g.errors).toEqual({'async': true});
            expect(g.pending).toEqual(false);
          }));
+    });
+
+    describe('disable() & enable()', () => {
+      let a: FormArray;
+      let c: FormControl;
+      let c2: FormControl;
+
+      beforeEach(() => {
+        c = new FormControl(null);
+        c2 = new FormControl(null);
+        a = new FormArray([c, c2]);
+      });
+
+      it('should mark the array as disabled', () => {
+        expect(a.disabled).toBe(false);
+        expect(a.valid).toBe(true);
+
+        a.disable();
+        expect(a.disabled).toBe(true);
+        expect(a.valid).toBe(false);
+
+        a.enable();
+        expect(a.disabled).toBe(false);
+        expect(a.valid).toBe(true);
+      });
+
+      it('should set the array status as disabled', () => {
+        expect(a.status).toBe('VALID');
+
+        a.disable();
+        expect(a.status).toBe('DISABLED');
+
+        a.enable();
+        expect(a.status).toBe('VALID');
+      });
+
+      it('should mark children of the array as disabled', () => {
+        expect(c.disabled).toBe(false);
+        expect(c2.disabled).toBe(false);
+
+        a.disable();
+        expect(c.disabled).toBe(true);
+        expect(c2.disabled).toBe(true);
+
+        a.enable();
+        expect(c.disabled).toBe(false);
+        expect(c2.disabled).toBe(false);
+      });
+
+      it('should ignore disabled controls in validation', () => {
+        const g = new FormGroup({
+          nested: new FormArray([new FormControl(null, Validators.required)]),
+          two: new FormControl('two')
+        });
+        expect(g.valid).toBe(false);
+
+        g.get('nested').disable();
+        expect(g.valid).toBe(true);
+
+        g.get('nested').enable();
+        expect(g.valid).toBe(false);
+      });
+
+      it('should ignore disabled controls when serializing value', () => {
+        const g = new FormGroup(
+            {nested: new FormArray([new FormControl('one')]), two: new FormControl('two')});
+        expect(g.value).toEqual({'nested': ['one'], 'two': 'two'});
+
+        g.get('nested').disable();
+        expect(g.value).toEqual({'two': 'two'});
+
+        g.get('nested').enable();
+        expect(g.value).toEqual({'nested': ['one'], 'two': 'two'});
+      });
+
+      it('should ignore disabled controls when determining dirtiness', () => {
+        const g = new FormGroup({nested: a, two: new FormControl('two')});
+        g.get(['nested', 0]).markAsDirty();
+        expect(g.dirty).toBe(true);
+
+        g.get('nested').disable();
+        expect(g.get('nested').dirty).toBe(true);
+        expect(g.dirty).toEqual(false);
+
+        g.get('nested').enable();
+        expect(g.dirty).toEqual(true);
+      });
+
+      it('should ignore disabled controls when determining touched state', () => {
+        const g = new FormGroup({nested: a, two: new FormControl('two')});
+        g.get(['nested', 0]).markAsTouched();
+        expect(g.touched).toBe(true);
+
+        g.get('nested').disable();
+        expect(g.get('nested').touched).toBe(true);
+        expect(g.touched).toEqual(false);
+
+        g.get('nested').enable();
+        expect(g.touched).toEqual(true);
+      });
+
+      describe('disabled events', () => {
+        let logger: string[];
+        let c: FormControl;
+        let a: FormArray;
+        let form: FormGroup;
+
+        beforeEach(() => {
+          logger = [];
+          c = new FormControl('', Validators.required);
+          a = new FormArray([c]);
+          form = new FormGroup({a: a});
+        });
+
+        it('should emit value change events in the right order', () => {
+          c.valueChanges.subscribe(() => logger.push('control'));
+          a.valueChanges.subscribe(() => logger.push('array'));
+          form.valueChanges.subscribe(() => logger.push('form'));
+
+          a.disable();
+          expect(logger).toEqual(['control', 'array', 'form']);
+        });
+
+        it('should emit status change events in the right order', () => {
+          c.statusChanges.subscribe(() => logger.push('control'));
+          a.statusChanges.subscribe(() => logger.push('array'));
+          form.statusChanges.subscribe(() => logger.push('form'));
+
+          a.disable();
+          expect(logger).toEqual(['control', 'array', 'form']);
+        });
+
+      });
+
     });
   });
 }

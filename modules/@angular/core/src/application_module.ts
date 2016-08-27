@@ -40,7 +40,7 @@ export function _keyValueDiffersFactory() {
     ViewUtils,
     {provide: IterableDiffers, useFactory: _iterableDiffersFactory},
     {provide: KeyValueDiffers, useFactory: _keyValueDiffersFactory},
-    {provide: LOCALE_ID, useValue: 'en_US'},
+    {provide: LOCALE_ID, useValue: 'en-US'},
   ]
 })
 export class ApplicationModule {

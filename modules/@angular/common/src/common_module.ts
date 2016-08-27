@@ -10,14 +10,14 @@ import {NgModule} from '@angular/core';
 
 import {COMMON_DIRECTIVES} from './common_directives';
 import {NgLocaleLocalization, NgLocalization} from './localization';
-import {COMMON_PIPES} from './pipes';
+import {COMMON_PIPES} from './pipes/common_pipes';
 
 // Note: This does not contain the location providers,
 // as they need some platform specific implementations to work.
 /**
  * The module that includes all the basic Angular directives like {@link NgIf}, ${link NgFor}, ...
  *
- * @experimental
+ * @stable
  */
 @NgModule({
   declarations: [COMMON_DIRECTIVES, COMMON_PIPES],

@@ -2,15 +2,21 @@
 NgModules
 @cheatsheetIndex 1
 @description
-{@target ts js}`import { NgModule } from '@angular/core';`{@endtarget}
+{@target ts}`import { NgModule } from '@angular/core';`{@endtarget}
+{@target js}Available from the `ng.core` namespace{@endtarget}
 
 @cheatsheetItem
-syntax(ts js):
-`@NgModule({ declarations: ... , imports: ..., exports: ..., bootstrap: ...})
+syntax(ts):
+`@NgModule({ declarations: ..., imports: ..., exports: ..., bootstrap: ...})
 class MyModule {}`|`NgModule`
 description:
 Defines a module that contains components, directives, pipes and providers.
 
+syntax(js):
+`ng.core.NgModule({declarations: ..., imports: ..., exports: ..., bootstrap: ...}).
+class({ constructor: function() {}})`
+description:
+Defines a module that contains components, directives, pipes and providers.
 
 @cheatsheetItem
 syntax(ts js):
@@ -19,8 +25,14 @@ description:
 List of components, directives and pipes that belong to this module.
 
 @cheatsheetItem
-syntax(ts js):
+syntax(ts):
 `imports: [BrowserModule, SomeOtherModule]`|`imports:`
+description:
+List of modules that are being imported into this module. Everything from the imported modules will
+be available to `declarations` of this module.
+
+syntax(js):
+`imports: [ng.platformBrowser.BrowserModule, SomeOtherModule]`|`imports:`
 description:
 List of modules that are being imported into this module. Everything from the imported modules will
 be available to `declarations` of this module.

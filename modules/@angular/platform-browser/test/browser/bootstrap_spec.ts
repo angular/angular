@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ResourceLoader} from '@angular/compiler';
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ExceptionHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, createPlatformFactory} from '@angular/core';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, Provider, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -95,12 +94,9 @@ class HelloCmpUsingPlatformDirectiveAndPipe {
 class HelloCmpUsingCustomElement {
 }
 
-class _ArrayLogger {
+class MockConsole {
   res: any[] = [];
-  log(s: any): void { this.res.push(s); }
-  logError(s: any): void { this.res.push(s); }
-  logGroup(s: any): void { this.res.push(s); }
-  logGroupEnd(){};
+  error(s: any): void { this.res.push(s); }
 }
 
 
@@ -113,7 +109,7 @@ class DummyConsole implements Console {
 
 
 class TestModule {}
-function bootstrap(cmpType: any, providers: any = []): Promise<any> {
+function bootstrap(cmpType: any, providers: Provider[] = []): Promise<any> {
   @NgModule({
     imports: [BrowserModule],
     declarations: [cmpType],
@@ -128,7 +124,7 @@ function bootstrap(cmpType: any, providers: any = []): Promise<any> {
 
 export function main() {
   var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, el2: any /** TODO #9100 */,
-      testProviders: any /** TODO #9100 */, lightDom: any /** TODO #9100 */;
+      testProviders: Provider[], lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
     let compilerConsole: DummyConsole;
@@ -161,10 +157,11 @@ export function main() {
 
     it('should throw if no element is found',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var logger = new _ArrayLogger();
-         var exceptionHandler = new ExceptionHandler(logger, false);
+         var logger = new MockConsole();
+         var errorHandler = new ErrorHandler(false);
+         errorHandler._console = logger as any;
          bootstrap(HelloRootCmp, [
-           {provide: ExceptionHandler, useValue: exceptionHandler}
+           {provide: ErrorHandler, useValue: errorHandler}
          ]).then(null, (reason) => {
            expect(reason.message).toContain('The selector "hello-app" did not match any elements');
            async.done();
@@ -175,11 +172,12 @@ export function main() {
     if (getDOM().supportsDOMEvents()) {
       it('should forward the error to promise when bootstrap fails',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var logger = new _ArrayLogger();
-           var exceptionHandler = new ExceptionHandler(logger, false);
+           var logger = new MockConsole();
+           var errorHandler = new ErrorHandler(false);
+           errorHandler._console = logger as any;
 
            var refPromise =
-               bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
+               bootstrap(HelloRootCmp, [{provide: ErrorHandler, useValue: errorHandler}]);
            refPromise.then(null, (reason: any) => {
              expect(reason.message)
                  .toContain('The selector "hello-app" did not match any elements');
@@ -189,11 +187,12 @@ export function main() {
 
       it('should invoke the default exception handler when bootstrap fails',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var logger = new _ArrayLogger();
-           var exceptionHandler = new ExceptionHandler(logger, false);
+           var logger = new MockConsole();
+           var errorHandler = new ErrorHandler(false);
+           errorHandler._console = logger as any;
 
            var refPromise =
-               bootstrap(HelloRootCmp, [{provide: ExceptionHandler, useValue: exceptionHandler}]);
+               bootstrap(HelloRootCmp, [{provide: ErrorHandler, useValue: errorHandler}]);
            refPromise.then(null, (reason) => {
              expect(logger.res.join(''))
                  .toContain('The selector "hello-app" did not match any elements');

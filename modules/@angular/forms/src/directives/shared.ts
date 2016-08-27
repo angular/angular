@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {hasConstructor, isBlank, isPresent, looseIdentical} from '../facade/lang';
@@ -58,8 +57,19 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
     if (emitModelEvent) dir.viewToModelUpdate(newValue);
   });
 
+  if (dir.valueAccessor.setDisabledState) {
+    control.registerOnDisabledChange(
+        (isDisabled: boolean) => { dir.valueAccessor.setDisabledState(isDisabled); });
+  }
+
   // touched
   dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
+}
+
+export function cleanUpControl(control: FormControl, dir: NgControl) {
+  dir.valueAccessor.registerOnChange(() => _noControlError(dir));
+  dir.valueAccessor.registerOnTouched(() => _noControlError(dir));
+  if (control) control._clearChangeFns();
 }
 
 export function setUpFormContainer(
@@ -67,6 +77,10 @@ export function setUpFormContainer(
   if (isBlank(control)) _throwError(dir, 'Cannot find control with');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
+}
+
+function _noControlError(dir: NgControl) {
+  return _throwError(dir, 'There is no FormControl instance attached to form control element with');
 }
 
 function _throwError(dir: AbstractControlDirective, message: string): void {
@@ -78,7 +92,7 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
   } else {
     messageEnd = 'unspecified name attribute';
   }
-  throw new BaseException(`${message} ${messageEnd}`);
+  throw new Error(`${message} ${messageEnd}`);
 }
 
 export function composeValidators(validators: /* Array<Validator|Function> */ any[]): ValidatorFn {
@@ -99,6 +113,15 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
   return !looseIdentical(viewModel, change.currentValue);
 }
 
+export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean {
+  return (
+      hasConstructor(valueAccessor, CheckboxControlValueAccessor) ||
+      hasConstructor(valueAccessor, NumberValueAccessor) ||
+      hasConstructor(valueAccessor, SelectControlValueAccessor) ||
+      hasConstructor(valueAccessor, SelectMultipleControlValueAccessor) ||
+      hasConstructor(valueAccessor, RadioControlValueAccessor));
+}
+
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
     dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
@@ -111,11 +134,7 @@ export function selectValueAccessor(
     if (hasConstructor(v, DefaultValueAccessor)) {
       defaultAccessor = v;
 
-    } else if (
-        hasConstructor(v, CheckboxControlValueAccessor) || hasConstructor(v, NumberValueAccessor) ||
-        hasConstructor(v, SelectControlValueAccessor) ||
-        hasConstructor(v, SelectMultipleControlValueAccessor) ||
-        hasConstructor(v, RadioControlValueAccessor)) {
+    } else if (isBuiltInAccessor(v)) {
       if (isPresent(builtinAccessor))
         _throwError(dir, 'More than one built-in value accessor matches form control with');
       builtinAccessor = v;

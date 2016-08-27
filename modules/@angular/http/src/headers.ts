@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {ListWrapper, Map, MapWrapper, StringMapWrapper, isListLikeIterable, iterateListLike} from '../src/facade/collection';
 import {isBlank} from '../src/facade/lang';
@@ -163,7 +162,7 @@ export class Headers {
   /**
    * This method is not implemented.
    */
-  entries() { throw new BaseException('"entries" method is not implemented on Headers class'); }
+  entries() { throw new Error('"entries" method is not implemented on Headers class'); }
 }
 
 // "HTTP character sets are identified by case-insensitive tokens"

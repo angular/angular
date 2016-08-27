@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer, forwardRef} from '@angular/core';
 
 import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
@@ -127,6 +127,10 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
 
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
 
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
+
   private _checkName(): void {
     if (this.name && this.formControlName && this.name !== this.formControlName) {
       this._throwNameError();
@@ -135,7 +139,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   }
 
   private _throwNameError(): void {
-    throw new BaseException(`
+    throw new Error(`
       If you define both a name and a formControlName attribute on your radio button, their values
       must match. Ex: <input type="radio" formControlName="food" name="food">
     `);

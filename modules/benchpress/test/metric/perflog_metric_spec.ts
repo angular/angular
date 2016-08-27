@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Provider} from '@angular/core';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {StringMapWrapper} from '@angular/facade/src/collection';
 import {isBlank, isPresent} from '@angular/facade/src/lang';
@@ -34,7 +35,7 @@ export function main() {
     if (isBlank(microMetrics)) {
       microMetrics = StringMapWrapper.create();
     }
-    var providers: any[] = [
+    var providers: Provider[] = [
       Options.DEFAULT_PROVIDERS, PerflogMetric.PROVIDERS,
       {provide: Options.MICRO_METRICS, useValue: microMetrics}, {
         provide: PerflogMetric.SET_TIMEOUT,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
 import {LifecycleHooks, reflector} from '../core_private';
 
@@ -17,7 +17,7 @@ import {getUrlScheme} from './url_resolver';
 import {sanitizeIdentifier, splitAtColon} from './util';
 
 function unimplemented(): any {
-  throw new BaseException('unimplemented');
+  throw new Error('unimplemented');
 }
 
 // group 0: "[prop] or (event) or @trigger"
@@ -269,7 +269,7 @@ export class CompileIdentifierMap<KEY extends CompileMetadataWithIdentifier, VAL
   add(token: KEY, value: VALUE) {
     var existing = this.get(token);
     if (isPresent(existing)) {
-      throw new BaseException(
+      throw new Error(
           `Cannot overwrite in a CompileIdentifierMap! Token: ${token.identifier.name}`);
     }
     this._tokens.push(token);
@@ -398,7 +398,7 @@ export class CompileTemplateMetadata {
     this.animations = isPresent(animations) ? ListWrapper.flatten(animations) : [];
     this.ngContentSelectors = isPresent(ngContentSelectors) ? ngContentSelectors : [];
     if (isPresent(interpolation) && interpolation.length != 2) {
-      throw new BaseException(`'interpolation' should have a start and an end symbol.`);
+      throw new Error(`'interpolation' should have a start and an end symbol.`);
     }
     this.interpolation = interpolation;
   }
@@ -442,8 +442,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
           hostProperties[matches[1]] = value;
         } else if (isPresent(matches[2])) {
           hostListeners[matches[2]] = value;
-        } else if (isPresent(matches[3])) {  // DEPRECATED: remove this if statement post RC5
-          hostProperties['@' + matches[3]] = value;
         }
       });
     }

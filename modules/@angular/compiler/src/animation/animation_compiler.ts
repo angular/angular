@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE, BaseException} from '@angular/core';
-
 import {ANY_STATE, AnimationOutput, DEFAULT_STATE, EMPTY_STATE} from '../../core_private';
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
@@ -72,7 +70,7 @@ export class AnimationCompiler {
       var errorMessageStr =
           `Animation parsing for ${component.type.name} has failed due to the following errors:`;
       groupedErrors.forEach(error => errorMessageStr += `\n- ${error}`);
-      throw new BaseException(errorMessageStr);
+      throw new Error(errorMessageStr);
     }
 
     animationCompilationCache.set(component, compiledAnimations);
@@ -87,6 +85,7 @@ var _ANIMATION_FACTORY_RENDERER_VAR = _ANIMATION_FACTORY_VIEW_VAR.prop('renderer
 var _ANIMATION_CURRENT_STATE_VAR = o.variable('currentState');
 var _ANIMATION_NEXT_STATE_VAR = o.variable('nextState');
 var _ANIMATION_PLAYER_VAR = o.variable('player');
+var _ANIMATION_TIME_VAR = o.variable('totalTime');
 var _ANIMATION_START_STATE_STYLES_VAR = o.variable('startStateStyles');
 var _ANIMATION_END_STATE_STYLES_VAR = o.variable('endStateStyles');
 var _ANIMATION_COLLECTED_STYLES = o.variable('collectedStyles');
@@ -137,7 +136,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
     var startingStylesExpr = ast.startingStyles.visit(this, context);
     var keyframeExpressions =
         ast.keyframes.map(keyframeEntry => keyframeEntry.visit(this, context));
-    return this._callAnimateMethod(ast, startingStylesExpr, o.literalArr(keyframeExpressions));
+    return this._callAnimateMethod(
+        ast, startingStylesExpr, o.literalArr(keyframeExpressions), context);
   }
 
   /** @internal */
@@ -149,11 +149,14 @@ class _AnimationBuilder implements AnimationAstVisitor {
       o.literalArr(keyframeExpressions)
     ]);
 
-    return this._callAnimateMethod(ast, startingStylesExpr, keyframesExpr);
+    return this._callAnimateMethod(ast, startingStylesExpr, keyframesExpr, context);
   }
 
   /** @internal */
-  _callAnimateMethod(ast: AnimationStepAst, startingStylesExpr: any, keyframesExpr: any) {
+  _callAnimateMethod(
+      ast: AnimationStepAst, startingStylesExpr: any, keyframesExpr: any,
+      context: _AnimationBuilderContext) {
+    context.totalTransitionTime += ast.duration + ast.delay;
     return _ANIMATION_FACTORY_RENDERER_VAR.callMethod('animate', [
       _ANIMATION_FACTORY_ELEMENT_VAR, startingStylesExpr, keyframesExpr, o.literal(ast.duration),
       o.literal(ast.delay), o.literal(ast.easing)
@@ -189,6 +192,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
       context.endStateAnimateStep = <AnimationStepAst>lastStep;
     }
 
+    context.totalTransitionTime = 0;
     context.isExpectingFirstStyleStep = true;
 
     var stateChangePreconditions: o.Expression[] = [];
@@ -213,7 +217,10 @@ class _AnimationBuilder implements AnimationAstVisitor {
     var precondition =
         _ANIMATION_PLAYER_VAR.equals(o.NULL_EXPR).and(reducedStateChangesPrecondition);
 
-    return new o.IfStmt(precondition, [_ANIMATION_PLAYER_VAR.set(animationPlayerExpr).toStmt()]);
+    var animationStmt = _ANIMATION_PLAYER_VAR.set(animationPlayerExpr).toStmt();
+    var totalTimeStmt = _ANIMATION_TIME_VAR.set(o.literal(context.totalTransitionTime)).toStmt();
+
+    return new o.IfStmt(precondition, [animationStmt, totalTimeStmt]);
   }
 
   visitAnimationEntry(ast: AnimationEntryAst, context: _AnimationBuilderContext): any {
@@ -236,6 +243,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
     statements.push(_ANIMATION_COLLECTED_STYLES.set(EMPTY_MAP).toDeclStmt());
     statements.push(_ANIMATION_PLAYER_VAR.set(o.NULL_EXPR).toDeclStmt());
+    statements.push(_ANIMATION_TIME_VAR.set(o.literal(0)).toDeclStmt());
 
     statements.push(
         _ANIMATION_DEFAULT_STATE_VAR.set(this._statesMapVar.key(o.literal(DEFAULT_STATE)))
@@ -297,15 +305,15 @@ class _AnimationBuilder implements AnimationAstVisitor {
                              .toStmt()])])
             .toStmt());
 
-    statements.push(
-        _ANIMATION_FACTORY_VIEW_VAR
-            .callMethod(
-                'queueAnimation',
-                [
-                  _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
-                  _ANIMATION_PLAYER_VAR, _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR
-                ])
-            .toStmt());
+    statements.push(_ANIMATION_FACTORY_VIEW_VAR
+                        .callMethod(
+                            'queueAnimation',
+                            [
+                              _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
+                              _ANIMATION_PLAYER_VAR, _ANIMATION_TIME_VAR,
+                              _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR
+                            ])
+                        .toStmt());
 
     return o.fn(
         [
@@ -348,6 +356,7 @@ class _AnimationBuilderContext {
   stateMap = new _AnimationBuilderStateMap();
   endStateAnimateStep: AnimationStepAst = null;
   isExpectingFirstStyleStep = false;
+  totalTransitionTime = 0;
 }
 
 class _AnimationBuilderStateMap {

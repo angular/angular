@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
 import {BrowserDomAdapter} from '../src/browser/browser_adapter';
 import {document, window} from '../src/facade/browser';
@@ -33,7 +32,7 @@ export function getStringParameter(name: string) {
   }
 
   if (isBlank(value)) {
-    throw new BaseException(`Could not find and input field with name ${name}`);
+    throw new Error(`Could not find and input field with name ${name}`);
   }
 
   return value;

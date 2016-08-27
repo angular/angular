@@ -52,11 +52,11 @@ function routerFactory($q, $location, $browser, $rootScope, $injector, $routerRo
     if ($injector.has(serviceName)) {
       var definitions = $injector.get(serviceName);
       if (definitions.length > 1) {
-        throw new BaseException('too many directives named "' + name + '"');
+        throw new Error('too many directives named "' + name + '"');
       }
       return definitions[0].controller;
     } else {
-      throw new BaseException('directive "' + name + '" is not registered');
+      throw new Error('directive "' + name + '" is not registered');
     }
   }
 

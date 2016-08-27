@@ -1,4 +1,4 @@
-/** @experimental */
+/** @stable */
 export declare class UpgradeAdapter {
     constructor(ng2AppModule: Type<any>);
     bootstrap(element: Element, modules?: any[], config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef;
@@ -10,7 +10,7 @@ export declare class UpgradeAdapter {
     }): void;
 }
 
-/** @experimental */
+/** @stable */
 export declare class UpgradeAdapterRef {
     ng1Injector: angular.IInjectorService;
     ng1RootScope: angular.IRootScopeService;

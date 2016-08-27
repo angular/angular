@@ -10,7 +10,7 @@ import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {Injector} from '../di/injector';
-import {unimplemented} from '../facade/exceptions';
+import {unimplemented} from '../facade/errors';
 import {ViewEncapsulation} from '../metadata/view';
 
 /**

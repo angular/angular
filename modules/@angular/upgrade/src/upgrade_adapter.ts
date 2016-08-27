@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException, Compiler, ComponentFactory, ComponentFactoryResolver, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentFactoryResolver, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from './angular_js';
@@ -95,7 +95,7 @@ var upgradeCount: number = 0;
  *
  * ```
  *
- * @experimental
+ * @stable
  */
 export class UpgradeAdapter {
   /* @internal */
@@ -114,11 +114,9 @@ export class UpgradeAdapter {
   /* @internal */
   private providers: Provider[] = [];
 
-  // the ng2AppModule param should be required once the deprecated @Component.directives prop is
-  // removed
   constructor(private ng2AppModule: Type<any>) {
     if (!ng2AppModule) {
-      throw new BaseException(
+      throw new Error(
           'UpgradeAdapter cannot be instantiated without an NgModule of the Angular 2 app.');
     }
   }
@@ -566,7 +564,7 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
 /**
  * Use `UpgradeAdapterRef` to control a hybrid AngularJS v1 / Angular v2 application.
  *
- * @experimental
+ * @stable
  */
 export class UpgradeAdapterRef {
   /* @internal */

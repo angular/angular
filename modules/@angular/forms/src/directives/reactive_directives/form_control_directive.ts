@@ -12,9 +12,9 @@ import {EventEmitter} from '../../facade/async';
 import {StringMapWrapper} from '../../facade/collection';
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
-
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
+import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
 import {AsyncValidatorFn, ValidatorFn} from '../validators';
 
@@ -81,6 +81,9 @@ export class FormControlDirective extends NgControl implements OnChanges {
   @Input('ngModel') model: any;
   @Output('ngModelChange') update = new EventEmitter();
 
+  @Input('disabled')
+  set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
+
   constructor(@Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
                   /* Array<Validator|Function> */ any[],
               @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
@@ -94,6 +97,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
               ngOnChanges(changes: SimpleChanges): void {
                 if (this._isControlChanged(changes)) {
                   setUpControl(this.form, this);
+                  if (this.control.disabled) this.valueAccessor.setDisabledState(true);
                   this.form.updateValueAndValidity({emitEvent: false});
                 }
                 if (isPropertyUpdated(changes, this.viewModel)) {

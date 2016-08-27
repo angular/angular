@@ -71,6 +71,10 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
+
   /** @internal */
   _registerOption(): string { return (this._idCounter++).toString(); }
 

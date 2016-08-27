@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../index';
 
 
 const FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
@@ -53,13 +52,13 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
   return function(...args: any[]) {
     const proxyZoneSpec = ProxyZoneSpec.assertPresent();
     if (_inFakeAsyncCall) {
-      throw new BaseException('fakeAsync() calls can not be nested');
+      throw new Error('fakeAsync() calls can not be nested');
     }
     _inFakeAsyncCall = true;
     try {
       if (!_fakeAsyncTestZoneSpec) {
         if (proxyZoneSpec.getDelegate() instanceof FakeAsyncTestZoneSpec) {
-          throw new BaseException('fakeAsync() calls can not be nested');
+          throw new Error('fakeAsync() calls can not be nested');
         }
 
         _fakeAsyncTestZoneSpec = new FakeAsyncTestZoneSpec();
@@ -76,13 +75,13 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
       }
 
       if (_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
-        throw new BaseException(
+        throw new Error(
             `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
             `periodic timer(s) still in the queue.`);
       }
 
       if (_fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
-        throw new BaseException(
+        throw new Error(
             `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`);
       }
       return res;

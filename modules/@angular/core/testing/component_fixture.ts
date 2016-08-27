@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, getDebugNode} from '../index';
-import {BaseException} from '../src/facade/exceptions';
 import {scheduleMicroTask} from '../src/facade/lang';
 
 import {tick} from './fake_async';
@@ -57,6 +56,7 @@ export class ComponentFixture<T> {
   private _autoDetect: boolean;
 
   private _isStable: boolean = true;
+  private _isDestroyed: boolean = false;
   private _resolve: (result: any) => void;
   private _promise: Promise<any> = null;
   private _onUnstableSubscription: any /** TODO #9100 */ = null;
@@ -145,7 +145,7 @@ export class ComponentFixture<T> {
    */
   autoDetectChanges(autoDetect: boolean = true) {
     if (this.ngZone == null) {
-      throw new BaseException('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set');
+      throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set');
     }
     this._autoDetect = autoDetect;
     this.detectChanges();
@@ -178,22 +178,25 @@ export class ComponentFixture<T> {
    * Trigger component destruction.
    */
   destroy(): void {
-    this.componentRef.destroy();
-    if (this._onUnstableSubscription != null) {
-      this._onUnstableSubscription.unsubscribe();
-      this._onUnstableSubscription = null;
-    }
-    if (this._onStableSubscription != null) {
-      this._onStableSubscription.unsubscribe();
-      this._onStableSubscription = null;
-    }
-    if (this._onMicrotaskEmptySubscription != null) {
-      this._onMicrotaskEmptySubscription.unsubscribe();
-      this._onMicrotaskEmptySubscription = null;
-    }
-    if (this._onErrorSubscription != null) {
-      this._onErrorSubscription.unsubscribe();
-      this._onErrorSubscription = null;
+    if (!this._isDestroyed) {
+      this.componentRef.destroy();
+      if (this._onUnstableSubscription != null) {
+        this._onUnstableSubscription.unsubscribe();
+        this._onUnstableSubscription = null;
+      }
+      if (this._onStableSubscription != null) {
+        this._onStableSubscription.unsubscribe();
+        this._onStableSubscription = null;
+      }
+      if (this._onMicrotaskEmptySubscription != null) {
+        this._onMicrotaskEmptySubscription.unsubscribe();
+        this._onMicrotaskEmptySubscription = null;
+      }
+      if (this._onErrorSubscription != null) {
+        this._onErrorSubscription.unsubscribe();
+        this._onErrorSubscription = null;
+      }
+      this._isDestroyed = true;
     }
   }
 }

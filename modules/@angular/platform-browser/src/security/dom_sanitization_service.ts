@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, SanitizationService, SecurityContext} from '@angular/core';
+import {Injectable, Sanitizer, SecurityContext} from '@angular/core';
 
 import {sanitizeHtml} from './html_sanitizer';
 import {sanitizeStyle} from './style_sanitizer';
@@ -58,7 +58,7 @@ export interface SafeUrl extends SafeValue {}
 export interface SafeResourceUrl extends SafeValue {}
 
 /**
- * DomSanitizationService helps preventing Cross Site Scripting Security bugs (XSS) by sanitizing
+ * DomSanitizer helps preventing Cross Site Scripting Security bugs (XSS) by sanitizing
  * values to be safe to use in the different DOM contexts.
  *
  * For example, when binding a URL in an `<a [href]="someValue">` hyperlink, `someValue` will be
@@ -88,7 +88,7 @@ export interface SafeResourceUrl extends SafeValue {}
  *
  * @stable
  */
-export abstract class DomSanitizationService implements SanitizationService {
+export abstract class DomSanitizer implements Sanitizer {
   /**
    * Sanitizes a value for use in the given SecurityContext.
    *
@@ -146,7 +146,7 @@ export abstract class DomSanitizationService implements SanitizationService {
 
 
 @Injectable()
-export class DomSanitizationServiceImpl extends DomSanitizationService {
+export class DomSanitizerImpl extends DomSanitizer {
   sanitize(ctx: SecurityContext, value: any): string {
     if (value == null) return null;
     switch (ctx) {
