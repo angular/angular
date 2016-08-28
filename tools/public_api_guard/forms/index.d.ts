@@ -465,14 +465,14 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
 
 /** @stable */
 export interface Validator {
-    validate(c: AbstractControl): {
+    validate(c: AbstractControl): null | {
         [key: string]: any;
     };
 }
 
 /** @stable */
 export interface ValidatorFn {
-    (c: AbstractControl): {
+    (c: AbstractControl): null | {
         [key: string]: any;
     };
 }

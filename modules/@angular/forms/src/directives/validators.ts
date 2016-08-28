@@ -33,7 +33,7 @@ import {NG_VALIDATORS, Validators} from '../validators';
  *
  * @stable
  */
-export interface Validator { validate(c: AbstractControl): {[key: string]: any}; }
+export interface Validator { validate(c: AbstractControl): null|{[key: string]: any}; }
 
 export const REQUIRED = Validators.required;
 
@@ -65,7 +65,7 @@ export class RequiredValidator {
 /**
  * @stable
  */
-export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
+export interface ValidatorFn { (c: AbstractControl): null|{[key: string]: any}; }
 
 /**
  * @stable
