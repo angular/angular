@@ -43,7 +43,7 @@ export class OfflineCompiler {
       const ngModuleMeta = this._metadataResolver.getNgModuleMetadata(<any>ngModule);
       ngModuleMeta.declaredDirectives.forEach((dirMeta) => {
         if (dirMeta.isComponent) {
-          ngModuleByComponent.set(dirMeta.type.runtime, ngModuleMeta);
+          ngModuleByComponent.set(dirMeta.type.reference, ngModuleMeta);
         }
       });
     });

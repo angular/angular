@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '
 
 import {LifecycleHooks, reflector} from '../core_private';
 
-import {ListWrapper, StringMapWrapper} from './facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper} from './facade/collection';
 import {isBlank, isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
 import {CssSelector} from './selector';
 import {getUrlScheme} from './url_resolver';
@@ -29,10 +29,6 @@ const UNDEFINED = new Object();
 
 export abstract class CompileMetadataWithIdentifier {
   get identifier(): CompileIdentifierMetadata { return <CompileIdentifierMetadata>unimplemented(); }
-
-  get runtimeCacheKey(): any { return unimplemented(); }
-
-  equalsTo(id2: CompileMetadataWithIdentifier): boolean { return unimplemented(); }
 }
 
 export class CompileAnimationEntryMetadata {
@@ -86,16 +82,16 @@ export class CompileAnimationGroupMetadata extends CompileAnimationWithStepsMeta
 }
 
 export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier {
-  runtime: any;
+  reference: any;
   name: string;
   prefix: string;
   moduleUrl: string;
   value: any;
 
   constructor(
-      {runtime, name, moduleUrl, prefix, value}:
-          {runtime?: any, name?: string, moduleUrl?: string, prefix?: string, value?: any} = {}) {
-    this.runtime = runtime;
+      {reference, name, moduleUrl, prefix, value}:
+          {reference?: any, name?: string, moduleUrl?: string, prefix?: string, value?: any} = {}) {
+    this.reference = reference;
     this.name = name;
     this.prefix = prefix;
     this.moduleUrl = moduleUrl;
@@ -103,13 +99,6 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
   }
 
   get identifier(): CompileIdentifierMetadata { return this; }
-
-  get runtimeCacheKey(): any { return this.identifier.runtime; }
-
-  equalsTo(id2: CompileIdentifierMetadata): boolean {
-    var rk = this.runtimeCacheKey;
-    return isPresent(rk) && rk == id2.runtimeCacheKey;
-  }
 }
 
 export class CompileDiDependencyMetadata {
@@ -182,15 +171,15 @@ export class CompileProviderMetadata {
 export class CompileFactoryMetadata extends CompileIdentifierMetadata {
   diDeps: CompileDiDependencyMetadata[];
 
-  constructor({runtime, name, moduleUrl, prefix, diDeps, value}: {
-    runtime?: Function,
+  constructor({reference, name, moduleUrl, prefix, diDeps, value}: {
+    reference?: Function,
     name?: string,
     prefix?: string,
     moduleUrl?: string,
     value?: boolean,
     diDeps?: CompileDiDependencyMetadata[]
   }) {
-    super({runtime: runtime, name: name, prefix: prefix, moduleUrl: moduleUrl, value: value});
+    super({reference: reference, name: name, prefix: prefix, moduleUrl: moduleUrl, value: value});
     this.diDeps = _normalizeArray(diDeps);
   }
 }
@@ -208,62 +197,17 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
     this.identifierIsInstance = normalizeBool(identifierIsInstance);
   }
 
-  get runtimeCacheKey(): any {
+  get reference(): any {
     if (isPresent(this.identifier)) {
-      return this.identifier.runtimeCacheKey;
+      return this.identifier.reference;
     } else {
       return this.value;
     }
   }
 
-  equalsTo(token2: CompileTokenMetadata): boolean {
-    var rk = this.runtimeCacheKey;
-    return isPresent(rk) && rk == token2.runtimeCacheKey;
-  }
-
   get name(): string {
     return isPresent(this.value) ? sanitizeIdentifier(this.value) : this.identifier.name;
   }
-}
-
-/**
- * Note: We only need this in places where we need to support identifiers that
- * don't have a `runtime` value given by the `StaticReflector`. E.g. see the `identifiers`
- * file where we have some identifiers hard coded by name/module path.
- *
- * TODO(tbosch): Eventually, all of these places should go through the static reflector
- * as well, providing them with a valid `StaticSymbol` that is again a singleton.
- */
-export class CompileIdentifierMap<KEY extends CompileMetadataWithIdentifier, VALUE> {
-  private _valueMap = new Map<any, VALUE>();
-  private _values: VALUE[] = [];
-  private _tokens: KEY[] = [];
-
-  add(token: KEY, value: VALUE) {
-    var existing = this.get(token);
-    if (isPresent(existing)) {
-      throw new Error(
-          `Cannot overwrite in a CompileIdentifierMap! Token: ${token.identifier.name}`);
-    }
-    this._tokens.push(token);
-    this._values.push(value);
-    var rk = token.runtimeCacheKey;
-    if (!isPresent(rk)) {
-      throw new Error(`Cannot find a key for Token: ${token.identifier.name}`);
-    }
-    this._valueMap.set(rk, value);
-  }
-  get(token: KEY): VALUE {
-    var rk = token.runtimeCacheKey;
-    var result: VALUE;
-    if (isPresent(rk)) {
-      result = this._valueMap.get(rk);
-    }
-    return result;
-  }
-  keys(): KEY[] { return this._tokens; }
-  values(): VALUE[] { return this._values; }
-  get size(): number { return this._values.length; }
 }
 
 /**
@@ -274,8 +218,8 @@ export class CompileTypeMetadata extends CompileIdentifierMetadata {
   diDeps: CompileDiDependencyMetadata[];
   lifecycleHooks: LifecycleHooks[];
 
-  constructor({runtime, name, moduleUrl, prefix, isHost, value, diDeps, lifecycleHooks}: {
-    runtime?: Type<any>,
+  constructor({reference, name, moduleUrl, prefix, isHost, value, diDeps, lifecycleHooks}: {
+    reference?: Type<any>,
     name?: string,
     moduleUrl?: string,
     prefix?: string,
@@ -284,7 +228,7 @@ export class CompileTypeMetadata extends CompileIdentifierMetadata {
     diDeps?: CompileDiDependencyMetadata[],
     lifecycleHooks?: LifecycleHooks[];
   } = {}) {
-    super({runtime: runtime, name: name, moduleUrl: moduleUrl, prefix: prefix, value: value});
+    super({reference: reference, name: name, moduleUrl: moduleUrl, prefix: prefix, value: value});
     this.isHost = normalizeBool(isHost);
     this.diDeps = _normalizeArray(diDeps);
     this.lifecycleHooks = _normalizeArray(lifecycleHooks);
@@ -510,12 +454,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   }
 
   get identifier(): CompileIdentifierMetadata { return this.type; }
-
-  get runtimeCacheKey(): any { return this.type.runtimeCacheKey; }
-
-  equalsTo(other: CompileMetadataWithIdentifier): boolean {
-    return this.type.equalsTo(other.identifier);
-  }
 }
 
 /**
@@ -526,7 +464,7 @@ export function createHostComponentMeta(compMeta: CompileDirectiveMetadata):
   var template = CssSelector.parse(compMeta.selector)[0].getMatchingElementTemplate();
   return CompileDirectiveMetadata.create({
     type: new CompileTypeMetadata({
-      runtime: Object,
+      reference: Object,
       name: `${compMeta.type.name}_Host`,
       moduleUrl: compMeta.type.moduleUrl,
       isHost: true
@@ -569,11 +507,6 @@ export class CompilePipeMetadata implements CompileMetadataWithIdentifier {
     this.pure = normalizeBool(pure);
   }
   get identifier(): CompileIdentifierMetadata { return this.type; }
-  get runtimeCacheKey(): any { return this.type.runtimeCacheKey; }
-
-  equalsTo(other: CompileMetadataWithIdentifier): boolean {
-    return this.type.equalsTo(other.identifier);
-  }
 }
 
 /**
@@ -629,11 +562,6 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
   }
 
   get identifier(): CompileIdentifierMetadata { return this.type; }
-  get runtimeCacheKey(): any { return this.type.runtimeCacheKey; }
-
-  equalsTo(other: CompileMetadataWithIdentifier): boolean {
-    return this.type.equalsTo(other.identifier);
-  }
 }
 
 export class TransitiveCompileNgModuleMetadata {
@@ -643,20 +571,20 @@ export class TransitiveCompileNgModuleMetadata {
       public modules: CompileNgModuleMetadata[], public providers: CompileProviderMetadata[],
       public entryComponents: CompileTypeMetadata[], public directives: CompileDirectiveMetadata[],
       public pipes: CompilePipeMetadata[]) {
-    directives.forEach(dir => this.directivesSet.add(dir.type.runtime));
-    pipes.forEach(pipe => this.pipesSet.add(pipe.type.runtime));
+    directives.forEach(dir => this.directivesSet.add(dir.type.reference));
+    pipes.forEach(pipe => this.pipesSet.add(pipe.type.reference));
   }
 }
 
 export function removeIdentifierDuplicates<T extends CompileMetadataWithIdentifier>(items: T[]):
     T[] {
-  const map = new CompileIdentifierMap<T, T>();
+  const map = new Map<any, T>();
   items.forEach((item) => {
-    if (!map.get(item)) {
-      map.add(item, item);
+    if (!map.get(item.identifier.reference)) {
+      map.set(item.identifier.reference, item);
     }
   });
-  return map.keys();
+  return MapWrapper.values(map);
 }
 
 function _normalizeArray(obj: any[]): any[] {

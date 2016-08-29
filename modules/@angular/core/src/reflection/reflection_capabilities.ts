@@ -173,8 +173,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return `./${stringify(type)}`;
   }
 
-  resolveType(name: string, moduleUrl: string): any { return null; }
-  resolveEnum(enumType: any, name: string): any { return null; }
+  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any { return runtime; }
+  resolveEnum(enumIdentifier: any, name: string): any { return enumIdentifier[name]; }
 }
 
 function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[] {

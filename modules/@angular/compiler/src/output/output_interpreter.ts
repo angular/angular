@@ -220,7 +220,9 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return new clazz(...args);
   }
   visitLiteralExpr(ast: o.LiteralExpr, ctx: _ExecutionContext): any { return ast.value; }
-  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any { return ast.value.runtime; }
+  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any {
+    return ast.value.reference;
+  }
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: _ExecutionContext): any {
     if (ast.condition.visitExpression(this, ctx)) {
       return ast.trueCase.visitExpression(this, ctx);

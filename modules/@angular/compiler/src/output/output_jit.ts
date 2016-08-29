@@ -34,7 +34,7 @@ class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   }
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
-    var value = ast.value.runtime;
+    var value = ast.value.reference;
     var id = this._evalArgValues.indexOf(value);
     if (id === -1) {
       id = this._evalArgValues.length;

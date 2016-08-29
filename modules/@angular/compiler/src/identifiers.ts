@@ -8,7 +8,7 @@
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ElementRef, Injector, LOCALE_ID as LOCALE_ID_, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT as TRANSLATIONS_FORMAT_, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 
-import {AnimationGroupPlayer as AnimationGroupPlayer_, AnimationKeyframe as AnimationKeyframe_, AnimationOutput as AnimationOutput_, AnimationSequencePlayer as AnimationSequencePlayer_, AnimationStyles as AnimationStyles_, AppElement, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, DebugAppView, DebugContext, EMPTY_ARRAY, EMPTY_MAP, NgModuleInjector, NoOpAnimationPlayer as NoOpAnimationPlayer_, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewType, ViewUtils, balanceAnimationKeyframes as impBalanceAnimationKeyframes, castByValue, checkBinding, clearStyles as impClearStyles, collectAndResolveStyles as impCollectAndResolveStyles, devModeEqual, flattenNestedViewRenderNodes, interpolate, prepareFinalAnimationStyles as impBalanceAnimationStyles, pureProxy1, pureProxy10, pureProxy2, pureProxy3, pureProxy4, pureProxy5, pureProxy6, pureProxy7, pureProxy8, pureProxy9, reflector, renderStyles as impRenderStyles} from '../core_private';
+import {AnimationGroupPlayer, AnimationKeyframe, AnimationOutput, AnimationSequencePlayer, AnimationStyles, AppElement, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, DebugAppView, DebugContext, EMPTY_ARRAY, EMPTY_MAP, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewType, ViewUtils, balanceAnimationKeyframes, castByValue, checkBinding, clearStyles, collectAndResolveStyles, devModeEqual, flattenNestedViewRenderNodes, interpolate, prepareFinalAnimationStyles, pureProxy1, pureProxy10, pureProxy2, pureProxy3, pureProxy4, pureProxy5, pureProxy6, pureProxy7, pureProxy8, pureProxy9, reflector, renderStyles} from '../core_private';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 import {assetUrl} from './util';
@@ -16,45 +16,6 @@ import {assetUrl} from './util';
 var APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
 var VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
 var CD_MODULE_URL = assetUrl('core', 'change_detection/change_detection');
-
-// Reassign the imports to different variables so we can
-// define static variables with the name of the import.
-// (only needed for Dart).
-var impViewUtils = ViewUtils;
-var impAppView = AppView;
-var impDebugAppView = DebugAppView;
-var impDebugContext = DebugContext;
-var impAppElement = AppElement;
-var impElementRef = ElementRef;
-var impViewContainerRef = ViewContainerRef;
-var impChangeDetectorRef = ChangeDetectorRef;
-var impRenderComponentType = RenderComponentType;
-var impQueryList = QueryList;
-var impTemplateRef = TemplateRef;
-var impTemplateRef_ = TemplateRef_;
-var impValueUnwrapper = ValueUnwrapper;
-var impInjector = Injector;
-var impViewEncapsulation = ViewEncapsulation;
-var impViewType = ViewType;
-var impChangeDetectionStrategy = ChangeDetectionStrategy;
-var impStaticNodeDebugInfo = StaticNodeDebugInfo;
-var impRenderer = Renderer;
-var impSimpleChange = SimpleChange;
-var impUNINITIALIZED = UNINITIALIZED;
-var impChangeDetectorStatus = ChangeDetectorStatus;
-var impFlattenNestedViewRenderNodes = flattenNestedViewRenderNodes;
-var impDevModeEqual = devModeEqual;
-var impInterpolate = interpolate;
-var impCheckBinding = checkBinding;
-var impCastByValue = castByValue;
-var impEMPTY_ARRAY = EMPTY_ARRAY;
-var impEMPTY_MAP = EMPTY_MAP;
-var impAnimationGroupPlayer = AnimationGroupPlayer_;
-var impAnimationSequencePlayer = AnimationSequencePlayer_;
-var impAnimationKeyframe = AnimationKeyframe_;
-var impAnimationStyles = AnimationStyles_;
-var impNoOpAnimationPlayer = NoOpAnimationPlayer_;
-var impAnimationOutput = AnimationOutput_;
 
 var ANIMATION_STYLE_UTIL_ASSET_URL = assetUrl('core', 'animation/animation_style_util');
 
@@ -73,54 +34,54 @@ export class Identifiers {
   static ViewUtils: IdentifierSpec = {
     name: 'ViewUtils',
     moduleUrl: assetUrl('core', 'linker/view_utils'),
-    runtime: impViewUtils
+    runtime: ViewUtils
   };
   static AppView:
-      IdentifierSpec = {name: 'AppView', moduleUrl: APP_VIEW_MODULE_URL, runtime: impAppView};
+      IdentifierSpec = {name: 'AppView', moduleUrl: APP_VIEW_MODULE_URL, runtime: AppView};
   static DebugAppView: IdentifierSpec = {
     name: 'DebugAppView',
     moduleUrl: APP_VIEW_MODULE_URL,
-    runtime: impDebugAppView
+    runtime: DebugAppView
   };
   static AppElement: IdentifierSpec = {
     name: 'AppElement',
     moduleUrl: assetUrl('core', 'linker/element'),
-    runtime: impAppElement
+    runtime: AppElement
   };
   static ElementRef: IdentifierSpec = {
     name: 'ElementRef',
     moduleUrl: assetUrl('core', 'linker/element_ref'),
-    runtime: impElementRef
+    runtime: ElementRef
   };
   static ViewContainerRef: IdentifierSpec = {
     name: 'ViewContainerRef',
     moduleUrl: assetUrl('core', 'linker/view_container_ref'),
-    runtime: impViewContainerRef
+    runtime: ViewContainerRef
   };
   static ChangeDetectorRef: IdentifierSpec = {
     name: 'ChangeDetectorRef',
     moduleUrl: assetUrl('core', 'change_detection/change_detector_ref'),
-    runtime: impChangeDetectorRef
+    runtime: ChangeDetectorRef
   };
   static RenderComponentType: IdentifierSpec = {
     name: 'RenderComponentType',
     moduleUrl: assetUrl('core', 'render/api'),
-    runtime: impRenderComponentType
+    runtime: RenderComponentType
   };
   static QueryList: IdentifierSpec = {
     name: 'QueryList',
     moduleUrl: assetUrl('core', 'linker/query_list'),
-    runtime: impQueryList
+    runtime: QueryList
   };
   static TemplateRef: IdentifierSpec = {
     name: 'TemplateRef',
     moduleUrl: assetUrl('core', 'linker/template_ref'),
-    runtime: impTemplateRef
+    runtime: TemplateRef
   };
   static TemplateRef_: IdentifierSpec = {
     name: 'TemplateRef_',
     moduleUrl: assetUrl('core', 'linker/template_ref'),
-    runtime: impTemplateRef_
+    runtime: TemplateRef_
   };
   static CodegenComponentFactoryResolver: IdentifierSpec = {
     name: 'CodegenComponentFactoryResolver',
@@ -147,84 +108,81 @@ export class Identifiers {
     runtime: NgModuleInjector,
     moduleUrl: assetUrl('core', 'linker/ng_module_factory')
   };
-  static ValueUnwrapper: IdentifierSpec = {
-    name: 'ValueUnwrapper',
-    moduleUrl: CD_MODULE_URL,
-    runtime: impValueUnwrapper
-  };
+  static ValueUnwrapper:
+      IdentifierSpec = {name: 'ValueUnwrapper', moduleUrl: CD_MODULE_URL, runtime: ValueUnwrapper};
   static Injector: IdentifierSpec = {
     name: 'Injector',
     moduleUrl: assetUrl('core', 'di/injector'),
-    runtime: impInjector
+    runtime: Injector
   };
   static ViewEncapsulation: IdentifierSpec = {
     name: 'ViewEncapsulation',
     moduleUrl: assetUrl('core', 'metadata/view'),
-    runtime: impViewEncapsulation
+    runtime: ViewEncapsulation
   };
   static ViewType: IdentifierSpec = {
     name: 'ViewType',
     moduleUrl: assetUrl('core', 'linker/view_type'),
-    runtime: impViewType
+    runtime: ViewType
   };
   static ChangeDetectionStrategy: IdentifierSpec = {
     name: 'ChangeDetectionStrategy',
     moduleUrl: CD_MODULE_URL,
-    runtime: impChangeDetectionStrategy
+    runtime: ChangeDetectionStrategy
   };
   static StaticNodeDebugInfo: IdentifierSpec = {
     name: 'StaticNodeDebugInfo',
     moduleUrl: assetUrl('core', 'linker/debug_context'),
-    runtime: impStaticNodeDebugInfo
+    runtime: StaticNodeDebugInfo
   };
   static DebugContext: IdentifierSpec = {
     name: 'DebugContext',
     moduleUrl: assetUrl('core', 'linker/debug_context'),
-    runtime: impDebugContext
+    runtime: DebugContext
   };
   static Renderer: IdentifierSpec = {
     name: 'Renderer',
     moduleUrl: assetUrl('core', 'render/api'),
-    runtime: impRenderer
+    runtime: Renderer
   };
   static SimpleChange:
-      IdentifierSpec = {name: 'SimpleChange', moduleUrl: CD_MODULE_URL, runtime: impSimpleChange};
+      IdentifierSpec = {name: 'SimpleChange', moduleUrl: CD_MODULE_URL, runtime: SimpleChange};
   static UNINITIALIZED:
-      IdentifierSpec = {name: 'UNINITIALIZED', moduleUrl: CD_MODULE_URL, runtime: impUNINITIALIZED};
+      IdentifierSpec = {name: 'UNINITIALIZED', moduleUrl: CD_MODULE_URL, runtime: UNINITIALIZED};
   static ChangeDetectorStatus: IdentifierSpec = {
     name: 'ChangeDetectorStatus',
     moduleUrl: CD_MODULE_URL,
-    runtime: impChangeDetectorStatus
+    runtime: ChangeDetectorStatus
   };
   static checkBinding: IdentifierSpec = {
     name: 'checkBinding',
     moduleUrl: VIEW_UTILS_MODULE_URL,
-    runtime: impCheckBinding
+    runtime: checkBinding
   };
   static flattenNestedViewRenderNodes: IdentifierSpec = {
     name: 'flattenNestedViewRenderNodes',
     moduleUrl: VIEW_UTILS_MODULE_URL,
-    runtime: impFlattenNestedViewRenderNodes
+    runtime: flattenNestedViewRenderNodes
   };
   static devModeEqual:
-      IdentifierSpec = {name: 'devModeEqual', moduleUrl: CD_MODULE_URL, runtime: impDevModeEqual};
+      IdentifierSpec = {name: 'devModeEqual', moduleUrl: CD_MODULE_URL, runtime: devModeEqual};
   static interpolate: IdentifierSpec = {
     name: 'interpolate',
     moduleUrl: VIEW_UTILS_MODULE_URL,
-    runtime: impInterpolate
+    runtime: interpolate
   };
   static castByValue: IdentifierSpec = {
     name: 'castByValue',
     moduleUrl: VIEW_UTILS_MODULE_URL,
-    runtime: impCastByValue
+    runtime: castByValue
   };
   static EMPTY_ARRAY: IdentifierSpec = {
     name: 'EMPTY_ARRAY',
     moduleUrl: VIEW_UTILS_MODULE_URL,
-    runtime: impEMPTY_ARRAY
+    runtime: EMPTY_ARRAY
   };
   static EMPTY_MAP:
-      IdentifierSpec = {name: 'EMPTY_MAP', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: impEMPTY_MAP};
+      IdentifierSpec = {name: 'EMPTY_MAP', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: EMPTY_MAP};
 
   static pureProxies = [
     null,
@@ -247,52 +205,52 @@ export class Identifiers {
   static AnimationKeyframe: IdentifierSpec = {
     name: 'AnimationKeyframe',
     moduleUrl: assetUrl('core', 'animation/animation_keyframe'),
-    runtime: impAnimationKeyframe
+    runtime: AnimationKeyframe
   };
   static AnimationStyles: IdentifierSpec = {
     name: 'AnimationStyles',
     moduleUrl: assetUrl('core', 'animation/animation_styles'),
-    runtime: impAnimationStyles
+    runtime: AnimationStyles
   };
   static NoOpAnimationPlayer: IdentifierSpec = {
     name: 'NoOpAnimationPlayer',
     moduleUrl: assetUrl('core', 'animation/animation_player'),
-    runtime: impNoOpAnimationPlayer
+    runtime: NoOpAnimationPlayer
   };
   static AnimationGroupPlayer: IdentifierSpec = {
     name: 'AnimationGroupPlayer',
     moduleUrl: assetUrl('core', 'animation/animation_group_player'),
-    runtime: impAnimationGroupPlayer
+    runtime: AnimationGroupPlayer
   };
   static AnimationSequencePlayer: IdentifierSpec = {
     name: 'AnimationSequencePlayer',
     moduleUrl: assetUrl('core', 'animation/animation_sequence_player'),
-    runtime: impAnimationSequencePlayer
+    runtime: AnimationSequencePlayer
   };
   static prepareFinalAnimationStyles: IdentifierSpec = {
     name: 'prepareFinalAnimationStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: impBalanceAnimationStyles
+    runtime: prepareFinalAnimationStyles
   };
   static balanceAnimationKeyframes: IdentifierSpec = {
     name: 'balanceAnimationKeyframes',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: impBalanceAnimationKeyframes
+    runtime: balanceAnimationKeyframes
   };
   static clearStyles: IdentifierSpec = {
     name: 'clearStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: impClearStyles
+    runtime: clearStyles
   };
   static renderStyles: IdentifierSpec = {
     name: 'renderStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: impRenderStyles
+    runtime: renderStyles
   };
   static collectAndResolveStyles: IdentifierSpec = {
     name: 'collectAndResolveStyles',
     moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
-    runtime: impCollectAndResolveStyles
+    runtime: collectAndResolveStyles
   };
   static LOCALE_ID: IdentifierSpec = {
     name: 'LOCALE_ID',
@@ -307,7 +265,7 @@ export class Identifiers {
   static AnimationOutput: IdentifierSpec = {
     name: 'AnimationOutput',
     moduleUrl: assetUrl('core', 'animation/animation_output'),
-    runtime: impAnimationOutput
+    runtime: AnimationOutput
   };
 }
 
@@ -315,7 +273,8 @@ export function resolveIdentifier(identifier: IdentifierSpec) {
   return new CompileIdentifierMetadata({
     name: identifier.name,
     moduleUrl: identifier.moduleUrl,
-    runtime: reflector.resolveType(identifier.name, identifier.moduleUrl) || identifier.runtime
+    reference:
+        reflector.resolveIdentifier(identifier.name, identifier.moduleUrl, identifier.runtime)
   });
 }
 
@@ -329,15 +288,7 @@ export function resolveIdentifierToken(identifier: IdentifierSpec): CompileToken
 
 export function resolveEnumIdentifier(
     enumType: CompileIdentifierMetadata, name: string): CompileIdentifierMetadata {
-  const resolvedEnum = reflector.resolveEnum(enumType, name);
-  if (resolvedEnum) {
-    return new CompileIdentifierMetadata(
-        {name: enumType.name, moduleUrl: enumType.moduleUrl, runtime: resolvedEnum});
-  } else {
-    return new CompileIdentifierMetadata({
-      name: `${enumType.name}.${name}`,
-      moduleUrl: enumType.moduleUrl,
-      runtime: enumType.runtime[name]
-    });
-  }
+  const resolvedEnum = reflector.resolveEnum(enumType.reference, name);
+  return new CompileIdentifierMetadata(
+      {name: `${enumType.name}.${name}`, moduleUrl: enumType.moduleUrl, reference: resolvedEnum});
 }

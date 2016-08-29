@@ -74,13 +74,13 @@ export class StaticReflector implements ReflectorReader {
     return staticSymbol ? staticSymbol.filePath : null;
   }
 
-  resolveType(name: string, moduleUrl: string): any {
+  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
     const result = this.host.findDeclaration(moduleUrl, name, '');
     return result;
   }
 
-  resolveEnum(enumType: any, name: string): any {
-    const staticSymbol: StaticSymbol = enumType;
+  resolveEnum(enumIdentifier: any, name: string): any {
+    const staticSymbol: StaticSymbol = enumIdentifier;
     return this.host.getStaticSymbol(staticSymbol.filePath, staticSymbol.name, [name]);
   }
 
