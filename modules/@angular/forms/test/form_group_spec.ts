@@ -809,5 +809,39 @@ export function main() {
       });
 
     });
+
+    describe('updateTreeValidity()', () => {
+      let c: FormControl, c2: FormControl, c3: FormControl;
+      let nested: FormGroup, form: FormGroup;
+      let logger: string[];
+
+      beforeEach(() => {
+        c = new FormControl('one');
+        c2 = new FormControl('two');
+        c3 = new FormControl('three');
+        nested = new FormGroup({one: c, two: c2});
+        form = new FormGroup({nested: nested, three: c3});
+        logger = [];
+
+        c.statusChanges.subscribe(() => logger.push('one'));
+        c2.statusChanges.subscribe(() => logger.push('two'));
+        c3.statusChanges.subscribe(() => logger.push('three'));
+        nested.statusChanges.subscribe(() => logger.push('nested'));
+        form.statusChanges.subscribe(() => logger.push('form'));
+      });
+
+      it('should update tree validity', () => {
+        form._updateTreeValidity();
+        expect(logger).toEqual(['one', 'two', 'nested', 'three', 'form']);
+      });
+
+      it('should not emit events when turned off', () => {
+        form._updateTreeValidity({emitEvent: false});
+        expect(logger).toEqual([]);
+      });
+
+    });
+
+
   });
 }

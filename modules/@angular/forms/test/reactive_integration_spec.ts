@@ -160,6 +160,30 @@ export function main() {
         expect(inputs[0].nativeElement.value).toEqual('Bess');
       });
 
+      it('should pick up dir validators from form controls', () => {
+        const fixture = TestBed.createComponent(LoginIsEmptyWrapper);
+        const form = new FormGroup({
+          'login': new FormControl(''),
+          'min': new FormControl(''),
+          'max': new FormControl(''),
+          'pattern': new FormControl('')
+        });
+        fixture.debugElement.componentInstance.form = form;
+        fixture.detectChanges();
+        expect(form.get('login').errors).toEqual({required: true});
+
+        const newForm = new FormGroup({
+          'login': new FormControl(''),
+          'min': new FormControl(''),
+          'max': new FormControl(''),
+          'pattern': new FormControl('')
+        });
+        fixture.debugElement.componentInstance.form = newForm;
+        fixture.detectChanges();
+
+        expect(newForm.get('login').errors).toEqual({required: true});
+      });
+
       it('should pick up dir validators from nested form groups', () => {
         const fixture = TestBed.createComponent(NestedFormGroupComp);
         const form = new FormGroup({
@@ -1024,7 +1048,7 @@ export function main() {
         expect(form.valid).toEqual(true);
       });
 
-      it('changes on binded properties should change the validation state of the form', () => {
+      it('changes on bound properties should change the validation state of the form', () => {
         const fixture = TestBed.createComponent(ValidationBindingsForm);
         const form = new FormGroup({
           'login': new FormControl(''),
@@ -1087,11 +1111,6 @@ export function main() {
         fixture.debugElement.componentInstance.pattern = null;
         fixture.detectChanges();
 
-        dispatchEvent(required.nativeElement, 'input');
-        dispatchEvent(minLength.nativeElement, 'input');
-        dispatchEvent(maxLength.nativeElement, 'input');
-        dispatchEvent(pattern.nativeElement, 'input');
-
         expect(form.hasError('required', ['login'])).toEqual(false);
         expect(form.hasError('minlength', ['min'])).toEqual(false);
         expect(form.hasError('maxlength', ['max'])).toEqual(false);
@@ -1102,6 +1121,43 @@ export function main() {
         expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
         expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
         expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
+      });
+
+      it('should support rebound controls with rebound validators', () => {
+        const fixture = TestBed.createComponent(ValidationBindingsForm);
+        const form = new FormGroup({
+          'login': new FormControl(''),
+          'min': new FormControl(''),
+          'max': new FormControl(''),
+          'pattern': new FormControl('')
+        });
+        fixture.debugElement.componentInstance.form = form;
+        fixture.debugElement.componentInstance.required = true;
+        fixture.debugElement.componentInstance.minLen = 3;
+        fixture.debugElement.componentInstance.maxLen = 3;
+        fixture.debugElement.componentInstance.pattern = '.{3,}';
+        fixture.detectChanges();
+
+        const newForm = new FormGroup({
+          'login': new FormControl(''),
+          'min': new FormControl(''),
+          'max': new FormControl(''),
+          'pattern': new FormControl('')
+        });
+        fixture.debugElement.componentInstance.form = newForm;
+        fixture.detectChanges();
+
+        fixture.debugElement.componentInstance.required = false;
+        fixture.debugElement.componentInstance.minLen = null;
+        fixture.debugElement.componentInstance.maxLen = null;
+        fixture.debugElement.componentInstance.pattern = null;
+        fixture.detectChanges();
+
+        expect(newForm.hasError('required', ['login'])).toEqual(false);
+        expect(newForm.hasError('minlength', ['min'])).toEqual(false);
+        expect(newForm.hasError('maxlength', ['max'])).toEqual(false);
+        expect(newForm.hasError('pattern', ['pattern'])).toEqual(false);
+        expect(newForm.valid).toEqual(true);
       });
 
       it('should use async validators defined in the html', fakeAsync(() => {

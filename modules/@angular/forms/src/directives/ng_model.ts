@@ -20,7 +20,7 @@ import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
 import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
 import {TemplateDrivenErrors} from './template_driven_errors';
-import {AsyncValidatorFn, ValidatorFn} from './validators';
+import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formControlBinding: any = {
   provide: NgControl,
@@ -72,11 +72,13 @@ export class NgModel extends NgControl implements OnChanges,
   @Output('ngModelChange') update = new EventEmitter();
 
   constructor(@Optional() @Host() private _parent: ControlContainer,
-              @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[],
+              @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<Validator|AsyncValidatorFn>,
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
                 super();
+                this._rawValidators = validators || [];
+                this._rawAsyncValidators = asyncValidators || [];
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);
               }
 
@@ -103,10 +105,10 @@ export class NgModel extends NgControl implements OnChanges,
 
               get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
-              get validator(): ValidatorFn { return composeValidators(this._validators); }
+              get validator(): ValidatorFn { return composeValidators(this._rawValidators); }
 
               get asyncValidator(): AsyncValidatorFn {
-                return composeAsyncValidators(this._asyncValidators);
+                return composeAsyncValidators(this._rawAsyncValidators);
               }
 
               viewToModelUpdate(newValue: any): void {

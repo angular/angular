@@ -254,6 +254,12 @@ export abstract class AbstractControl {
     }
   }
 
+  /** @internal */
+  _updateTreeValidity({emitEvent}: {emitEvent?: boolean} = {emitEvent: true}) {
+    this._forEachChild((ctrl: AbstractControl) => ctrl._updateTreeValidity({emitEvent}));
+    this.updateValueAndValidity({onlySelf: true, emitEvent});
+  }
+
   private _runValidator(): {[key: string]: any} {
     return isPresent(this.validator) ? this.validator(this) : null;
   }

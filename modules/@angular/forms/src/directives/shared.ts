@@ -26,7 +26,7 @@ import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {FormArrayName} from './reactive_directives/form_group_name';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
-import {AsyncValidatorFn, ValidatorFn} from './validators';
+import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {
@@ -50,6 +50,9 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
     control.setValue(newValue, {emitModelToViewChange: false});
   });
 
+  // touched
+  dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
+
   control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
     // control -> view
     dir.valueAccessor.writeValue(newValue);
@@ -63,13 +66,23 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
         (isDisabled: boolean) => { dir.valueAccessor.setDisabledState(isDisabled); });
   }
 
-  // touched
-  dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
+  // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
+  dir._rawValidators.forEach((validator: Validator | ValidatorFn) => {
+    if ((<Validator>validator).registerOnChange)
+      (<Validator>validator).registerOnChange(() => control.updateValueAndValidity());
+  });
+
+  dir._rawAsyncValidators.forEach((validator: Validator | ValidatorFn) => {
+    if ((<Validator>validator).registerOnChange)
+      (<Validator>validator).registerOnChange(() => control.updateValueAndValidity());
+  });
 }
 
 export function cleanUpControl(control: FormControl, dir: NgControl) {
   dir.valueAccessor.registerOnChange(() => _noControlError(dir));
   dir.valueAccessor.registerOnTouched(() => _noControlError(dir));
+  dir._rawValidators.forEach((validator: Validator) => validator.registerOnChange(null));
+  dir._rawAsyncValidators.forEach((validator: Validator) => validator.registerOnChange(null));
   if (control) control._clearChangeFns();
 }
 

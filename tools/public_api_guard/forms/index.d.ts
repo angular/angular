@@ -229,7 +229,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     update: EventEmitter<{}>;
     validator: ValidatorFn;
     viewModel: any;
-    constructor(_validators: any[], _asyncValidators: any[], valueAccessors: ControlValueAccessor[]);
+    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<Validator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     viewToModelUpdate(newValue: any): void;
 }
@@ -245,7 +245,7 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     path: string[];
     update: EventEmitter<{}>;
     validator: ValidatorFn;
-    constructor(_parent: ControlContainer, _validators: any[], _asyncValidators: any[], valueAccessors: ControlValueAccessor[]);
+    constructor(_parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<Validator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -319,6 +319,7 @@ export declare class FormsModule {
 export declare class MaxLengthValidator implements Validator, OnChanges {
     maxlength: string;
     ngOnChanges(changes: SimpleChanges): void;
+    registerOnChange(fn: () => void): void;
     validate(c: AbstractControl): {
         [key: string]: any;
     };
@@ -328,6 +329,7 @@ export declare class MaxLengthValidator implements Validator, OnChanges {
 export declare class MinLengthValidator implements Validator, OnChanges {
     minlength: string;
     ngOnChanges(changes: SimpleChanges): void;
+    registerOnChange(fn: () => void): void;
     validate(c: AbstractControl): {
         [key: string]: any;
     };
@@ -404,7 +406,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     update: EventEmitter<{}>;
     validator: ValidatorFn;
     viewModel: any;
-    constructor(_parent: ControlContainer, _validators: any[], _asyncValidators: any[], valueAccessors: ControlValueAccessor[]);
+    constructor(_parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<Validator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -429,6 +431,7 @@ export declare class NgSelectOption implements OnDestroy {
 export declare class PatternValidator implements Validator, OnChanges {
     pattern: string;
     ngOnChanges(changes: SimpleChanges): void;
+    registerOnChange(fn: () => void): void;
     validate(c: AbstractControl): {
         [key: string]: any;
     };
@@ -441,6 +444,7 @@ export declare class ReactiveFormsModule {
 /** @stable */
 export declare class RequiredValidator implements Validator {
     required: boolean;
+    registerOnChange(fn: () => void): void;
     validate(c: AbstractControl): {
         [key: string]: any;
     };
@@ -472,6 +476,7 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
 
 /** @stable */
 export interface Validator {
+    registerOnChange?(fn: () => void): void;
     validate(c: AbstractControl): {
         [key: string]: any;
     };

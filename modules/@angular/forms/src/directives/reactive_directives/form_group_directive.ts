@@ -124,7 +124,6 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
       var async = composeAsyncValidators(this._asyncValidators);
       this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator, async]);
-      this.form.updateValueAndValidity({onlySelf: true, emitEvent: false});
       this._updateDomValue(changes);
     }
   }
@@ -189,6 +188,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   /** @internal */
   _updateDomValue(changes: SimpleChanges) {
     const oldForm = changes['form'].previousValue;
+
     this.directives.forEach(dir => {
       const newCtrl: any = this.form.get(dir.path);
       const oldCtrl = oldForm.get(dir.path);
@@ -197,6 +197,8 @@ export class FormGroupDirective extends ControlContainer implements Form,
         if (newCtrl) setUpControl(newCtrl, dir);
       }
     });
+
+    this.form._updateTreeValidity({emitEvent: false});
   }
 
   private _checkFormPresent() {
