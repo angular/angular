@@ -71,12 +71,13 @@ export class NgModel extends NgControl implements OnChanges,
 
   @Output('ngModelChange') update = new EventEmitter();
 
-  constructor(@Optional() @Host() private _parent: ControlContainer,
+  constructor(@Optional() @Host() parent: ControlContainer,
               @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
               @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<Validator|AsyncValidatorFn>,
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
                 super();
+                this._parent = parent;
                 this._rawValidators = validators || [];
                 this._rawAsyncValidators = asyncValidators || [];
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);

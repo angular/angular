@@ -856,6 +856,49 @@ export function main() {
           expect(form.value).toEqual({drink: 'sprite'});
         });
 
+        it('should differentiate controls on different levels with the same name', () => {
+          TestBed.overrideComponent(FormControlRadioButtons, {
+            set: {
+              template: `
+              <div [formGroup]="form">
+                <input type="radio" formControlName="food" value="chicken">
+                <input type="radio" formControlName="food" value="fish">
+                <div formGroupName="nested">
+                  <input type="radio" formControlName="food" value="chicken">
+                  <input type="radio" formControlName="food" value="fish">
+                </div>
+              </div>
+              `
+            }
+          });
+          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const form = new FormGroup({
+            food: new FormControl('fish'),
+            nested: new FormGroup({food: new FormControl('fish')})
+          });
+          fixture.debugElement.componentInstance.form = form;
+          fixture.detectChanges();
+
+          // model -> view
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.checked).toEqual(false);
+          expect(inputs[1].nativeElement.checked).toEqual(true);
+          expect(inputs[2].nativeElement.checked).toEqual(false);
+          expect(inputs[3].nativeElement.checked).toEqual(true);
+
+          dispatchEvent(inputs[0].nativeElement, 'change');
+          fixture.detectChanges();
+
+          // view -> model
+          expect(form.get('food').value).toEqual('chicken');
+          expect(form.get('nested.food').value).toEqual('fish');
+
+          expect(inputs[1].nativeElement.checked).toEqual(false);
+          expect(inputs[2].nativeElement.checked).toEqual(false);
+          expect(inputs[3].nativeElement.checked).toEqual(true);
+
+        });
+
       });
 
       describe('custom value accessors', () => {
