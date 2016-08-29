@@ -42,12 +42,12 @@ export class StaticAndDynamicReflectionCapabilities {
   setter(name: string) { return this.dynamicDelegate.setter(name); }
   method(name: string) { return this.dynamicDelegate.method(name); }
   importUri(type: any): string { return this.staticDelegate.importUri(type); }
-  resolveType(name: string, moduleUrl: string) {
-    return this.staticDelegate.resolveType(name, moduleUrl);
+  resolveIdentifier(name: string, moduleUrl: string, runtime: any) {
+    return this.staticDelegate.resolveIdentifier(name, moduleUrl, runtime);
   }
-  resolveEnum(enumType: any, name: string): any {
-    if (isStaticType(enumType)) {
-      return this.staticDelegate.resolveEnum(enumType, name);
+  resolveEnum(enumIdentifier: any, name: string): any {
+    if (isStaticType(enumIdentifier)) {
+      return this.staticDelegate.resolveEnum(enumIdentifier, name);
     } else {
       return null;
     }

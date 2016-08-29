@@ -311,16 +311,18 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       }
       ctx.print(`${prefix}.`);
     }
-    ctx.print(value.name);
+    if (value.reference && value.reference.members) {
+      ctx.print(value.reference.name);
+      ctx.print('.');
+      ctx.print(value.reference.members.join('.'));
+    } else {
+      ctx.print(value.name);
+    }
     if (isPresent(typeParams) && typeParams.length > 0) {
       ctx.print(`<`);
       this.visitAllObjects(
           (type: any /** TODO #9100 */) => type.visitType(this, ctx), typeParams, ctx, ',');
       ctx.print(`>`);
-    }
-    if (value.runtime && value.runtime.members) {
-      ctx.print('.');
-      ctx.print(value.runtime.members.join('.'));
     }
   }
 }

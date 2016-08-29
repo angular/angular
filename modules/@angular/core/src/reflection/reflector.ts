@@ -177,11 +177,11 @@ export class Reflector extends ReflectorReader {
 
   importUri(type: any): string { return this.reflectionCapabilities.importUri(type); }
 
-  resolveType(name: string, moduleUrl: string): any {
-    return this.reflectionCapabilities.resolveType(name, moduleUrl);
+  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
+    return this.reflectionCapabilities.resolveIdentifier(name, moduleUrl, runtime);
   }
-  resolveEnum(type: any, name: string): any {
-    return this.reflectionCapabilities.resolveEnum(type, name);
+  resolveEnum(identifier: any, name: string): any {
+    return this.reflectionCapabilities.resolveEnum(identifier, name);
   }
 }
 

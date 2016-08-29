@@ -165,7 +165,7 @@ export function collectEventListeners(
   });
   dirs.forEach((directiveAst) => {
     var directiveInstance =
-        compileElement.instances.get(identifierToken(directiveAst.directive.type));
+        compileElement.instances.get(identifierToken(directiveAst.directive.type).reference);
     directiveAst.hostEvents.forEach((hostEvent) => {
       compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
       var listener = CompileEventListener.getOrCreate(

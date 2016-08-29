@@ -42,7 +42,8 @@ export class CompilePipe {
   constructor(public view: CompileView, public meta: CompilePipeMetadata) {
     this.instance = o.THIS_EXPR.prop(`_pipe_${meta.name}_${view.pipeCount++}`);
     var deps = this.meta.type.diDeps.map((diDep) => {
-      if (diDep.token.equalsTo(resolveIdentifierToken(Identifiers.ChangeDetectorRef))) {
+      if (diDep.token.reference ===
+          resolveIdentifierToken(Identifiers.ChangeDetectorRef).reference) {
         return getPropertyInView(o.THIS_EXPR.prop('ref'), this.view, this.view.componentView);
       }
       return injectFromViewParentInjector(diDep.token, false);
