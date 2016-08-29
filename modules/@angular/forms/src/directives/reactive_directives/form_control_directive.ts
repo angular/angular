@@ -16,7 +16,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
-import {AsyncValidatorFn, ValidatorFn} from '../validators';
+import {AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 export const formControlBinding: any = {
   provide: NgControl,
@@ -84,13 +84,13 @@ export class FormControlDirective extends NgControl implements OnChanges {
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
-  constructor(@Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
-                  /* Array<Validator|Function> */ any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
-                  /* Array<Validator|Function> */ any[],
+  constructor(@Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<Validator|AsyncValidatorFn>,
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
                 super();
+                this._rawValidators = validators || [];
+                this._rawAsyncValidators = asyncValidators || [];
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);
               }
 
@@ -108,10 +108,10 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
               get path(): string[] { return []; }
 
-              get validator(): ValidatorFn { return composeValidators(this._validators); }
+              get validator(): ValidatorFn { return composeValidators(this._rawValidators); }
 
               get asyncValidator(): AsyncValidatorFn {
-                return composeAsyncValidators(this._asyncValidators);
+                return composeAsyncValidators(this._rawAsyncValidators);
               }
 
               get control(): FormControl { return this.form; }

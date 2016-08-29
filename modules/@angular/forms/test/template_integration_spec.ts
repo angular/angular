@@ -9,7 +9,6 @@
 import {NgFor, NgIf} from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -25,7 +24,8 @@ export function main() {
         declarations: [
           StandaloneNgModel, NgModelForm, NgModelGroupForm, NgModelValidBinding, NgModelNgIfForm,
           NgModelRadioForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
-          NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper
+          NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
+          NgModelValidationBindings
         ],
         imports: [FormsModule]
       });
@@ -574,6 +574,125 @@ export function main() {
 
     });
 
+    describe('validation directives', () => {
+
+      it('should support dir validators using bindings', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelValidationBindings);
+           fixture.debugElement.componentInstance.required = true;
+           fixture.debugElement.componentInstance.minLen = 3;
+           fixture.debugElement.componentInstance.maxLen = 3;
+           fixture.debugElement.componentInstance.pattern = '.{3,}';
+           fixture.detectChanges();
+           tick();
+
+           const required = fixture.debugElement.query(By.css('[name=required]'));
+           const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
+           const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
+           const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+
+           required.nativeElement.value = '';
+           minLength.nativeElement.value = '1';
+           maxLength.nativeElement.value = '1234';
+           pattern.nativeElement.value = '12';
+
+           dispatchEvent(required.nativeElement, 'input');
+           dispatchEvent(minLength.nativeElement, 'input');
+           dispatchEvent(maxLength.nativeElement, 'input');
+           dispatchEvent(pattern.nativeElement, 'input');
+           fixture.detectChanges();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.control.hasError('required', ['required'])).toEqual(true);
+           expect(form.control.hasError('minlength', ['minlength'])).toEqual(true);
+           expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(true);
+           expect(form.control.hasError('pattern', ['pattern'])).toEqual(true);
+
+           required.nativeElement.value = '1';
+           minLength.nativeElement.value = '123';
+           maxLength.nativeElement.value = '123';
+           pattern.nativeElement.value = '123';
+
+           dispatchEvent(required.nativeElement, 'input');
+           dispatchEvent(minLength.nativeElement, 'input');
+           dispatchEvent(maxLength.nativeElement, 'input');
+           dispatchEvent(pattern.nativeElement, 'input');
+
+           expect(form.valid).toEqual(true);
+         }));
+
+      it('changes on bound properties should change the validation state of the form',
+         fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelValidationBindings);
+           fixture.detectChanges();
+           tick();
+
+           const required = fixture.debugElement.query(By.css('[name=required]'));
+           const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
+           const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
+           const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+
+           required.nativeElement.value = '';
+           minLength.nativeElement.value = '1';
+           maxLength.nativeElement.value = '1234';
+           pattern.nativeElement.value = '12';
+
+           dispatchEvent(required.nativeElement, 'input');
+           dispatchEvent(minLength.nativeElement, 'input');
+           dispatchEvent(maxLength.nativeElement, 'input');
+           dispatchEvent(pattern.nativeElement, 'input');
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.control.hasError('required', ['required'])).toEqual(false);
+           expect(form.control.hasError('minlength', ['minlength'])).toEqual(false);
+           expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(false);
+           expect(form.control.hasError('pattern', ['pattern'])).toEqual(false);
+           expect(form.valid).toEqual(true);
+
+           fixture.debugElement.componentInstance.required = true;
+           fixture.debugElement.componentInstance.minLen = 3;
+           fixture.debugElement.componentInstance.maxLen = 3;
+           fixture.debugElement.componentInstance.pattern = '.{3,}';
+           fixture.detectChanges();
+
+           dispatchEvent(required.nativeElement, 'input');
+           dispatchEvent(minLength.nativeElement, 'input');
+           dispatchEvent(maxLength.nativeElement, 'input');
+           dispatchEvent(pattern.nativeElement, 'input');
+
+           expect(form.control.hasError('required', ['required'])).toEqual(true);
+           expect(form.control.hasError('minlength', ['minlength'])).toEqual(true);
+           expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(true);
+           expect(form.control.hasError('pattern', ['pattern'])).toEqual(true);
+           expect(form.valid).toEqual(false);
+
+           expect(required.nativeElement.getAttribute('required')).toEqual('');
+           expect(fixture.debugElement.componentInstance.minLen.toString())
+               .toEqual(minLength.nativeElement.getAttribute('minlength'));
+           expect(fixture.debugElement.componentInstance.maxLen.toString())
+               .toEqual(maxLength.nativeElement.getAttribute('maxlength'));
+           expect(fixture.debugElement.componentInstance.pattern.toString())
+               .toEqual(pattern.nativeElement.getAttribute('pattern'));
+
+           fixture.debugElement.componentInstance.required = false;
+           fixture.debugElement.componentInstance.minLen = null;
+           fixture.debugElement.componentInstance.maxLen = null;
+           fixture.debugElement.componentInstance.pattern = null;
+           fixture.detectChanges();
+
+           expect(form.control.hasError('required', ['required'])).toEqual(false);
+           expect(form.control.hasError('minlength', ['minlength'])).toEqual(false);
+           expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(false);
+           expect(form.control.hasError('pattern', ['pattern'])).toEqual(false);
+           expect(form.valid).toEqual(true);
+
+           expect(required.nativeElement.getAttribute('required')).toEqual(null);
+           expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
+           expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
+           expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
+         }));
+
+    });
+
     describe('ngModel corner cases', () => {
       it('should update the view when the model is set back to what used to be in the view',
          fakeAsync(() => {
@@ -789,6 +908,24 @@ class NgModelCustomComp implements ControlValueAccessor {
 class NgModelCustomWrapper {
   name: string;
   isDisabled = false;
+}
+
+@Component({
+  selector: 'ng-model-validation-bindings',
+  template: `
+    <form>
+      <input name="required" ngModel  [required]="required">
+      <input name="minlength" ngModel  [minlength]="minLen">
+      <input name="maxlength" ngModel [maxlength]="maxLen">
+      <input name="pattern" ngModel  [pattern]="pattern">
+    </form>
+  `
+})
+class NgModelValidationBindings {
+  required: boolean;
+  minLen: number;
+  maxLen: number;
+  pattern: string;
 }
 
 function sortedClassList(el: HTMLElement) {
