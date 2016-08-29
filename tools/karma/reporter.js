@@ -35,7 +35,7 @@ var createErrorFormatter = function (basePath, emitter, SourceMapConsumer) {
           });
           return process.cwd() + "/modules/" + original.source + ":" + original.line + ":" + original.column;
         } catch (e) {
-          log.warn('SourceMap position not found for trace: %s', msg);
+          console.warn('SourceMap position not found for trace: %s', msg);
         }
       }
       return path + ':' + line + ':' + column;
@@ -52,7 +52,7 @@ var createErrorFormatter = function (basePath, emitter, SourceMapConsumer) {
 
 var InternalAngularReporter = function (config, emitter) {
   var formatter = createErrorFormatter(config.basePath, emitter, SourceMapConsumer);
-  DotsReporter.call(this, formatter, false)
+  DotsReporter.call(this, formatter, false, config.colors)
 }
 InternalAngularReporter.$inject = ['config', 'emitter']
 

@@ -1,9 +1,18 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {Validator} from '../validator';
-import {Statistic} from '../statistic';
+import {OpaqueToken} from '@angular/core/src/di';
+import {ListWrapper} from '@angular/facade/src/collection';
+
 import {MeasureValues} from '../measure_values';
+import {Statistic} from '../statistic';
+import {Validator} from '../validator';
+
 
 /**
  * A validator that checks the regression slope of a specific metric.
@@ -15,10 +24,12 @@ export class RegressionSlopeValidator extends Validator {
   // TODO(tbosch): use static values when our transpiler supports them
   static get METRIC(): OpaqueToken { return _METRIC; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
 
-  _sampleSize: number;
-  _metric: string;
+  /** @internal */
+  private _sampleSize: number;
+  /** @internal */
+  private _metric: string;
 
   constructor(sampleSize, metric) {
     super();
@@ -32,8 +43,8 @@ export class RegressionSlopeValidator extends Validator {
 
   validate(completeSample: MeasureValues[]): MeasureValues[] {
     if (completeSample.length >= this._sampleSize) {
-      var latestSample = ListWrapper.slice(completeSample, completeSample.length - this._sampleSize,
-                                           completeSample.length);
+      var latestSample = ListWrapper.slice(
+          completeSample, completeSample.length - this._sampleSize, completeSample.length);
       var xValues = [];
       var yValues = [];
       for (var i = 0; i < latestSample.length; i++) {
@@ -54,9 +65,10 @@ export class RegressionSlopeValidator extends Validator {
 var _SAMPLE_SIZE = new OpaqueToken('RegressionSlopeValidator.sampleSize');
 var _METRIC = new OpaqueToken('RegressionSlopeValidator.metric');
 var _PROVIDERS = [
-  bind(RegressionSlopeValidator)
-      .toFactory((sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
-                 [_SAMPLE_SIZE, _METRIC]),
-  provide(_SAMPLE_SIZE, {useValue: 10}),
-  provide(_METRIC, {useValue: 'scriptTime'})
+  {
+    provide: RegressionSlopeValidator,
+    useFactory: (sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
+    deps: [_SAMPLE_SIZE, _METRIC]
+  },
+  {provide: _SAMPLE_SIZE, useValue: 10}, {provide: _METRIC, useValue: 'scriptTime'}
 ];

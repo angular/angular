@@ -1,5 +1,10 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {MeasureValues} from './measure_values';
 
@@ -9,18 +14,18 @@ import {MeasureValues} from './measure_values';
  * in the correct way.
  */
 export abstract class Validator {
-  static bindTo(delegateToken): Provider[] {
-    return [bind(Validator).toFactory((delegate) => delegate, [delegateToken])];
+  static bindTo(delegateToken): any[] {
+    return [{provide: Validator, useFactory: (delegate) => delegate, deps: [delegateToken]}];
   }
 
   /**
    * Calculates a valid sample out of the complete sample
    */
-  validate(completeSample: MeasureValues[]): MeasureValues[] { throw new BaseException('NYI'); }
+  validate(completeSample: MeasureValues[]): MeasureValues[] { throw new Error('NYI'); }
 
   /**
    * Returns a Map that describes the properties of the validator
    * (e.g. sample size, ...)
    */
-  describe(): {[key: string]: any} { throw new BaseException('NYI'); }
+  describe(): {[key: string]: any} { throw new Error('NYI'); }
 }

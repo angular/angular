@@ -1,4 +1,4 @@
-/** @license Copyright 2014-2015 Google, Inc. http://github.com/angular/angular/LICENSE */
+/** @license Copyright 2014-2016 Google, Inc. http://github.com/angular/angular/LICENSE */
 (function () {
 
   'use strict';
@@ -24,12 +24,12 @@
     .directive('a', anchorLinkDirective)
 
     // Connects the legacy $routeProvider config shim to Component Router's config.
-    .run(['$route', '$router', function ($route, $router) {
+    .run(['$route', '$rootRouter', function ($route, $rootRouter) {
       $route.$$subscribe(function (routeDefinition) {
         if (!angular.isArray(routeDefinition)) {
           routeDefinition = [routeDefinition];
         }
-        $router.config(routeDefinition);
+        $rootRouter.config(routeDefinition);
       });
     }]);
 
@@ -116,53 +116,41 @@
           console.warn('Route for "' + path + '" should use "controllerAs".');
         }
 
-        var directiveName = routeObjToRouteName(routeCopy, path);
+        var componentName = routeObjToRouteName(routeCopy, path);
 
-        if (!directiveName) {
+        if (!componentName) {
           throw new Error('Could not determine a name for route "' + path + '".');
         }
 
-        routeDefinition.component = directiveName;
-        routeDefinition.name = route.name || upperCase(directiveName);
+        routeDefinition.component = componentName;
+        routeDefinition.name = route.name || upperCase(componentName);
 
         var directiveController = routeCopy.controller;
 
-        var directiveDefinition = {
-          scope: false,
+        var componentDefinition = {
           controller: directiveController,
-          controllerAs: routeCopy.controllerAs,
-          templateUrl: routeCopy.templateUrl,
-          template: routeCopy.template
-        };
+          controllerAs: routeCopy.controllerAs
 
-        var directiveFactory = function () {
-          return directiveDefinition;
         };
+        if (routeCopy.templateUrl) componentDefinition.templateUrl = routeCopy.templateUrl;
+        if (routeCopy.template) componentDefinition.template = routeCopy.template;
+
 
         // if we have route resolve options, prepare a wrapper controller
         if (directiveController && routeCopy.resolve) {
           var originalController = directiveController;
           var resolvedLocals = {};
 
-          directiveDefinition.controller = ['$injector', '$scope', function ($injector, $scope) {
+          componentDefinition.controller = ['$injector', '$scope', function ($injector, $scope) {
             var locals = angular.extend({
               $scope: $scope
             }, resolvedLocals);
 
-            var ctrl = $injector.instantiate(originalController, locals);
-
-            if (routeCopy.controllerAs) {
-              locals.$scope[routeCopy.controllerAs] = ctrl;
-            }
-
-            return ctrl;
+            return $injector.instantiate(originalController, locals);
           }];
 
-          // we take care of controllerAs in the directive controller wrapper
-          delete directiveDefinition.controllerAs;
-
           // we resolve the locals in a canActivate block
-          directiveFactory.$canActivate = function() {
+          componentDefinition.controller.$canActivate = function() {
             var locals = angular.extend({}, routeCopy.resolve);
 
             angular.forEach(locals, function(value, key) {
@@ -179,7 +167,7 @@
         }
 
         // register the dynamically created directive
-        $compileProvider.directive(directiveName, directiveFactory);
+        $compileProvider.component(componentName, componentDefinition);
       }
       if (subscriptionFn) {
         subscriptionFn(routeDefinition);
@@ -253,12 +241,12 @@
 
   }
 
-  function $routeParamsFactory($router, $rootScope) {
+  function $routeParamsFactory($rootRouter, $rootScope) {
     // the identity of this object cannot change
     var paramsObj = {};
 
     $rootScope.$on('$routeChangeSuccess', function () {
-      var newParams = $router._currentInstruction && $router._currentInstruction.component.params;
+      var newParams = $rootRouter.currentInstruction && $rootRouter.currentInstruction.component.params;
 
       angular.forEach(paramsObj, function (val, name) {
         delete paramsObj[name];
@@ -274,7 +262,7 @@
   /**
    * Allows normal anchor links to kick off routing.
    */
-  function anchorLinkDirective($router) {
+  function anchorLinkDirective($rootRouter) {
     return {
       restrict: 'E',
       link: function (scope, element) {
@@ -293,8 +281,11 @@
           }
 
           var href = element.attr(hrefAttrName);
-          if (href && $router.recognize(href)) {
-            $router.navigateByUrl(href);
+          var target = element.attr('target');
+          var isExternal = (['_blank', '_parent', '_self', '_top'].indexOf(target) > -1);          
+          
+          if (href && $rootRouter.recognize(href) && !isExternal) {
+            $rootRouter.navigateByUrl(href);
             event.preventDefault();
           }
         });

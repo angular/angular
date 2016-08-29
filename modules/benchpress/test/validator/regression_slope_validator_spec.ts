@@ -1,35 +1,27 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from 'angular2/testing_internal';
-import {Date, DateWrapper} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {
-  Validator,
-  RegressionSlopeValidator,
-  Injector,
-  bind,
-  provide,
-  MeasureValues
-} from 'benchpress/common';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {ListWrapper} from '@angular/facade/src/collection';
+import {Date, DateWrapper} from '@angular/facade/src/lang';
+import {MeasureValues, ReflectiveInjector, RegressionSlopeValidator} from 'benchpress/common';
 
 export function main() {
   describe('regression slope validator', () => {
     var validator;
 
     function createValidator({size, metric}) {
-      validator = Injector.resolveAndCreate([
-                            RegressionSlopeValidator.BINDINGS,
-                            bind(RegressionSlopeValidator.METRIC).toValue(metric),
-                            bind(RegressionSlopeValidator.SAMPLE_SIZE).toValue(size)
-                          ])
+      validator = ReflectiveInjector
+                      .resolveAndCreate([
+                        RegressionSlopeValidator.PROVIDERS,
+                        {provide: RegressionSlopeValidator.METRIC, useValue: metric},
+                        {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: size}
+                      ])
                       .get(RegressionSlopeValidator);
     }
 

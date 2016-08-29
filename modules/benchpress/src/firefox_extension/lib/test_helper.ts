@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 var q = require('q');
 var FirefoxProfile = require('firefox-profile');
 var jpm = require('jpm/lib/xpi');
@@ -36,9 +44,8 @@ exports.getFirefoxProfileWithExtension = function() {
   var savedCwd = process.cwd();
   process.chdir(absPackageJsonDir);
 
-  return jpm(packageJson)
-      .then(xpiPath => {
-        process.chdir(savedCwd);
-        return exports.getFirefoxProfile(xpiPath);
-      });
+  return jpm(packageJson).then(xpiPath => {
+    process.chdir(savedCwd);
+    return exports.getFirefoxProfile(xpiPath);
+  });
 };

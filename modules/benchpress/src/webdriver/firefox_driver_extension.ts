@@ -1,11 +1,18 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
-import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
-import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {StringWrapper, isPresent} from '@angular/facade/src/lang';
+
 import {WebDriverAdapter} from '../web_driver_adapter';
-import {Promise} from 'angular2/src/facade/async';
+import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
 export class FirefoxDriverExtension extends WebDriverExtension {
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
 
   private _profilerStarted: boolean;
 
@@ -43,7 +50,8 @@ export class FirefoxDriverExtension extends WebDriverExtension {
   }
 }
 
-var _PROVIDERS = [
-  bind(FirefoxDriverExtension)
-      .toFactory((driver) => new FirefoxDriverExtension(driver), [WebDriverAdapter])
-];
+var _PROVIDERS = [{
+  provide: FirefoxDriverExtension,
+  useFactory: (driver) => new FirefoxDriverExtension(driver),
+  deps: [WebDriverAdapter]
+}];

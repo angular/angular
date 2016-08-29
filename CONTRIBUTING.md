@@ -21,7 +21,7 @@ If you have questions about how to *use* Angular, please direct them to the [Goo
 discussion list or [StackOverflow][stackoverflow]. Please note that Angular 2 is still in early developer preview, and the core team's capacity to answer usage questions is limited. We are also available on [Gitter][gitter].
 
 ## <a name="issue"></a> Found an Issue?
-If you find a bug in the source code or a mistake in the documentation, you can help us by
+If you find a bug in the source code, you can help us by
 [submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
 [submit a Pull Request](#submit-pr) with a fix.
 
@@ -95,7 +95,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 * In GitHub, send a pull request to `angular:master`.
 * If we suggest changes then:
   * Make the required updates.
-  * Re-run the Angular 2 test suites for JS and Dart to ensure tests are still passing.
+  * Re-run the Angular 2 test suites to ensure tests are still passing.
   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
 
     ```shell
@@ -166,6 +166,19 @@ The **header** is mandatory and the **scope** of the header is optional.
 Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
 to read on GitHub as well as in various git tools.
 
+Footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
+
+Samples: (even more [samples](https://github.com/angular/angular/commits/master))
+
+```
+docs(changelog): update change log to beta.5
+```
+```
+fix(release): need to depend on latest rxjs and zone.js
+
+The version in our package.json gets copied to the one we publish, and users need the latest of these.
+```
+
 ### Revert
 If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
 
@@ -180,7 +193,8 @@ Must be one of the following:
 * **refactor**: A code change that neither fixes a bug nor adds a feature
 * **perf**: A code change that improves performance
 * **test**: Adding missing tests or correcting existing tests
-* **build** Changes that affect the build system, CI configuration or external dependencies (example scopes: gulp, broccoli, npm)
+* **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+* **ci**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
 * **chore**: Other changes that don't modify `src` or `test` files
 
 ### Scope
@@ -224,8 +238,8 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 [github]: https://github.com/angular/angular
 [gitter]: https://gitter.im/angular/angular
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
-[js-style-guide]: http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
-[jsfiddle]: http://jsfiddle.net/
+[js-style-guide]: https://google.github.io/styleguide/javascriptguide.xml
+[jsfiddle]: http://jsfiddle.net
 [plunker]: http://plnkr.co/edit
-[runnable]: http://runnable.com/
+[runnable]: http://runnable.com
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angular

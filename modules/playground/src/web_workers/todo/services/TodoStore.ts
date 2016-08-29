@@ -1,5 +1,13 @@
-import {Injectable} from 'angular2/core';
-import {ListWrapper, Predicate} from 'angular2/src/facade/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Injectable} from '@angular/core';
+import {ListWrapper, Predicate} from '@angular/core/src/facade/collection';
 
 // base model for RecordStore
 export class KeyModel {

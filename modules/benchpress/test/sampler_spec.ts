@@ -1,37 +1,20 @@
-import {
-  afterEach,
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from 'angular2/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {isBlank, isPresent, stringify, Date, DateWrapper} from 'angular2/src/facade/lang';
-import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
-
-import {
-  Sampler,
-  WebDriverAdapter,
-  Validator,
-  Metric,
-  Reporter,
-  bind,
-  provide,
-  Injector,
-  Options,
-  MeasureValues
-} from 'benchpress/common';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {Date, DateWrapper, isBlank, isPresent, stringify} from '@angular/facade/src/lang';
+import {MeasureValues, Metric, Options, ReflectiveInjector, Reporter, Sampler, Validator, WebDriverAdapter} from 'benchpress/common';
 
 export function main() {
   var EMPTY_EXECUTE = () => {};
 
   describe('sampler', () => {
-    var sampler;
+    var sampler: Sampler;
 
     function createSampler({driver, metric, reporter, validator, prepare, execute}: {
       driver?: any,
@@ -51,21 +34,17 @@ export function main() {
       if (isBlank(driver)) {
         driver = new MockDriverAdapter([]);
       }
-      var bindings = [
-        Options.DEFAULT_PROVIDERS,
-        Sampler.BINDINGS,
-        provide(Metric, {useValue: metric}),
-        provide(Reporter, {useValue: reporter}),
-        provide(WebDriverAdapter, {useValue: driver}),
-        bind(Options.EXECUTE).toValue(execute),
-        provide(Validator, {useValue: validator}),
-        bind(Options.NOW).toValue(() => DateWrapper.fromMillis(time++))
+      var providers = [
+        Options.DEFAULT_PROVIDERS, Sampler.PROVIDERS, {provide: Metric, useValue: metric},
+        {provide: Reporter, useValue: reporter}, {provide: WebDriverAdapter, useValue: driver},
+        {provide: Options.EXECUTE, useValue: execute}, {provide: Validator, useValue: validator},
+        {provide: Options.NOW, useValue: () => DateWrapper.fromMillis(time++)}
       ];
       if (isPresent(prepare)) {
-        bindings.push(bind(Options.PREPARE).toValue(prepare));
+        providers.push({provide: Options.PREPARE, useValue: prepare});
       }
 
-      sampler = Injector.resolveAndCreate(bindings).get(Sampler);
+      sampler = ReflectiveInjector.resolveAndCreate(providers).get(Sampler);
     }
 
     it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor',
@@ -75,7 +54,7 @@ export function main() {
          var driver = new MockDriverAdapter([], (callback) => {
            var result = callback();
            log.push(result);
-           return PromiseWrapper.resolve(result);
+           return Promise.resolve(result);
          });
          createSampler({
            driver: driver,
@@ -144,12 +123,13 @@ export function main() {
          var iterationCount = 1;
          createSampler({
            validator: createCountingValidator(2),
-           metric: new MockMetric([],
-                                  () => {
-                                    var result = PromiseWrapper.resolve({'script': scriptTime});
-                                    scriptTime = 0;
-                                    return result;
-                                  }),
+           metric: new MockMetric(
+               [],
+               () => {
+                 var result = Promise.resolve({'script': scriptTime});
+                 scriptTime = 0;
+                 return result;
+               }),
            prepare: () => { scriptTime = 1 * iterationCount; },
            execute: () => {
              scriptTime = 10 * iterationCount;
@@ -211,9 +191,7 @@ export function main() {
            expect(log[0]).toEqual(['reportMeasureValues', mv(0, 1000, {'script': 0})]);
            expect(log[1]).toEqual(['reportMeasureValues', mv(1, 1001, {'script': 1})]);
            expect(log[2]).toEqual([
-             'reportSample',
-             [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})],
-             validSample
+             'reportSample', [mv(0, 1000, {'script': 0}), mv(1, 1001, {'script': 1})], validSample
            ]);
 
            async.done();
@@ -244,6 +222,7 @@ function createCountingMetric(log = null) {
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
+  /** @internal */
   private _log: any[];
   private _waitFor: Function;
   constructor(log = null, waitFor = null) {
@@ -258,13 +237,14 @@ class MockDriverAdapter extends WebDriverAdapter {
     if (isPresent(this._waitFor)) {
       return this._waitFor(callback);
     } else {
-      return PromiseWrapper.resolve(callback());
+      return Promise.resolve(callback());
     }
   }
 }
 
 
 class MockValidator extends Validator {
+  /** @internal */
   private _log: any[];
   constructor(log = null, private _validate: Function = null) {
     super();
@@ -281,6 +261,7 @@ class MockValidator extends Validator {
 }
 
 class MockMetric extends Metric {
+  /** @internal */
   private _log: any[];
   constructor(log = null, private _endMeasure: Function = null) {
     super();
@@ -291,17 +272,18 @@ class MockMetric extends Metric {
   }
   beginMeasure() {
     this._log.push(['beginMeasure']);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
   endMeasure(restart) {
     var measureValues = isPresent(this._endMeasure) ? this._endMeasure() : {};
     this._log.push(['endMeasure', restart, measureValues]);
-    return PromiseWrapper.resolve(measureValues);
+    return Promise.resolve(measureValues);
   }
 }
 
 class MockReporter extends Reporter {
-  _log: any[];
+  /** @internal */
+  private _log: any[];
   constructor(log = null) {
     super();
     if (isBlank(log)) {
@@ -311,10 +293,10 @@ class MockReporter extends Reporter {
   }
   reportMeasureValues(values): Promise<any> {
     this._log.push(['reportMeasureValues', values]);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
   reportSample(completeSample, validSample): Promise<any> {
     this._log.push(['reportSample', completeSample, validSample]);
-    return PromiseWrapper.resolve(null);
+    return Promise.resolve(null);
   }
 }

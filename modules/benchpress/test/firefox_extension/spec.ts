@@ -1,6 +1,10 @@
-/// <reference path="../../../angular2/typings/node/node.d.ts" />
-/// <reference path="../../../angular2/typings/angular-protractor/angular-protractor.d.ts" />
-/// <reference path="../../../angular2/typings/jasmine/jasmine.d.ts" />
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 var assertEventsContainsName = function(events, eventName) {
   var found = false;
@@ -21,8 +25,9 @@ describe('firefox extension', function() {
 
     browser.driver.get(TEST_URL);
 
-    browser.executeScript('window.startProfiler()')
-        .then(function() { console.log('started measuring perf'); });
+    browser.executeScript('window.startProfiler()').then(function() {
+      console.log('started measuring perf');
+    });
 
     browser.executeAsyncScript('setTimeout(arguments[0], 1000);');
     browser.executeScript('window.forceGC()');
@@ -32,5 +37,5 @@ describe('firefox extension', function() {
           assertEventsContainsName(profile, 'gc');
           assertEventsContainsName(profile, 'script');
         });
-  })
+  });
 });

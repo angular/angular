@@ -1,26 +1,14 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from 'angular2/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {isBlank, isPresent, Date, DateWrapper} from 'angular2/src/facade/lang';
-
-import {
-  SampleState,
-  Reporter,
-  bind,
-  provide,
-  Injector,
-  ConsoleReporter,
-  SampleDescription,
-  MeasureValues
-} from 'benchpress/common';
+import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {Date, DateWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
+import {ConsoleReporter, MeasureValues, ReflectiveInjector, Reporter, SampleDescription, SampleState} from 'benchpress/common';
 
 export function main() {
   describe('console reporter', () => {
@@ -37,15 +25,16 @@ export function main() {
         sampleId = 'null';
       }
       var bindings = [
-        ConsoleReporter.BINDINGS,
-        provide(SampleDescription,
-                {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
-        bind(ConsoleReporter.PRINT).toValue((line) => log.push(line))
+        ConsoleReporter.PROVIDERS, {
+          provide: SampleDescription,
+          useValue: new SampleDescription(sampleId, descriptions, metrics)
+        },
+        {provide: ConsoleReporter.PRINT, useValue: (line) => log.push(line)}
       ];
       if (isPresent(columnWidth)) {
-        bindings.push(bind(ConsoleReporter.COLUMN_WIDTH).toValue(columnWidth));
+        bindings.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue: columnWidth});
       }
-      reporter = Injector.resolveAndCreate(bindings).get(ConsoleReporter);
+      reporter = ReflectiveInjector.resolveAndCreate(bindings).get(ConsoleReporter);
     }
 
     it('should print the sample id, description and table header', () => {

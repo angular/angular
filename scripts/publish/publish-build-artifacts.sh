@@ -1,30 +1,15 @@
 #!/bin/bash
 set -e -x
 
-DART_BUILD_ARTIFACTS_DIR="dist/pub/angular2"
-JS_BUILD_ARTIFACTS_DIR="dist/npm/angular2"
-
-DART_BUILD_BRANCH="builds-dart"
-JS_BUILD_BRANCH="builds-js"
-
-REPO_URL="https://github.com/angular/angular.git"
-# Use the below URL for testing when using SSH authentication
-# REPO_URL="git@github.com:angular/angular.git"
-
-SHA=`git rev-parse HEAD`
-SHORT_SHA=`git rev-parse --short HEAD`
-COMMIT_MSG=`git log --oneline | head -n1`
-COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
-COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
 
 function publishRepo {
-  LANG=$1
+  COMPONENT=$1
   ARTIFACTS_DIR=$2
 
-  BUILD_BRANCH="builds-${LANG}"
-  REPO_DIR="tmp/${BUILD_BRANCH}"
+  BUILD_REPO="${COMPONENT}-builds"
+  REPO_DIR="tmp/${BUILD_REPO}"
 
-  echo "Pushing build artifacts to angular/$BUILD_BRANCH"
+  echo "Pushing build artifacts to angular/${BUILD_REPO}"
 
   # create local repo folder and clone build repo into it
   rm -rf $REPO_DIR
@@ -33,15 +18,27 @@ function publishRepo {
     cd $REPO_DIR && \
     git init && \
     git remote add origin $REPO_URL && \
-    git fetch origin $BUILD_BRANCH && \
-    git checkout origin/$BUILD_BRANCH && \
-    git checkout -b $BUILD_BRANCH
+    git fetch origin master && \
+    git checkout origin/master && \
+    git checkout -b master
   )
 
   # copy over build artifacts into the repo directory
   rm -rf $REPO_DIR/*
   cp -R $ARTIFACTS_DIR/* $REPO_DIR/
-  cp .gitignore $REPO_DIR/
+
+  # Replace $$ANGULAR_VESION$$ with the build version.
+  BUILD_VER="2.0.0-${SHORT_SHA}"
+  if [[ ${TRAVIS} ]]; then
+    find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
+    UMD=$(find $REPO_DIR/ -type f -name "*umd.js" -print0)
+    if [[ ${UMD} ]]; then
+      sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g" ${UMD}
+    fi
+  else
+    find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i '' "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
+    find $REPO_DIR/ -type f -name "*umd.js" -print0 | xargs -0 sed -i '' "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
+  fi
   echo `date` > $REPO_DIR/BUILD_INFO
   echo $SHA >> $REPO_DIR/BUILD_INFO
 
@@ -53,17 +50,38 @@ function publishRepo {
     git config user.email "${COMMITTER_USER_EMAIL}" && \
     git add --all && \
     git commit -m "${COMMIT_MSG}" && \
-    git push origin $BUILD_BRANCH && \
-    git tag "2.0.0-build.${SHORT_SHA}.${LANG}" && \
-    git push origin --tags
+    git push origin master && \
+    git tag "${BUILD_VER}" && \
+    git push origin --tags --force
   )
 }
 
-if [[ "$TRAVIS_REPO_SLUG" = "angular/angular" && "$MODE" == "build_only" ]]; then
-  scripts/publish/npm_prepare.sh angular2
-  publishRepo "js" "${JS_BUILD_ARTIFACTS_DIR}"
+# Publish all individual packages from packages-dist.
+if [[ "$TRAVIS_REPO_SLUG" == "angular/angular" && \
+      "$TRAVIS_PULL_REQUEST" == "false" && \
+      "$CI_MODE" == "e2e" ]]; then
+  for dir in dist/packages-dist/*/ dist/tools/@angular/tsc-wrapped
+  do
+    COMPONENT="$(basename ${dir})"
 
-  scripts/publish/pub_prepare.sh angular2
-  publishRepo "dart" "${DART_BUILD_ARTIFACTS_DIR}"
+    # Replace _ with - in component name.
+    COMPONENT="${COMPONENT//_/-}"
+    JS_BUILD_ARTIFACTS_DIR="${dir}"
+
+    REPO_URL="https://github.com/angular/${COMPONENT}-builds.git"
+    # Use the below URL for testing when using SSH authentication
+    # REPO_URL="git@github.com:angular/${COMPONENT}-builds.git"
+
+    SHA=`git rev-parse HEAD`
+    SHORT_SHA=`git rev-parse --short HEAD`
+    COMMIT_MSG=`git log --oneline | head -n1`
+    COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
+    COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
+
+    publishRepo "${COMPONENT}" "${JS_BUILD_ARTIFACTS_DIR}"
+  done
+
   echo "Finished publishing build artifacts"
+else
+  echo "Not building the upstream/master branch, build artifacts won't be published."
 fi

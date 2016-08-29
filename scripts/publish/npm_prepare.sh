@@ -15,7 +15,6 @@ cd $ROOT_DIR
 
 NPM_DIR=$ROOT_DIR/dist/npm
 FILES='!(test|e2e_test|docs)'
-DTS_FILES='*.d.ts'
 
 PUBLISH_DIR=$NPM_DIR/$NAME
 rm -fr $PUBLISH_DIR
@@ -29,14 +28,9 @@ mkdir -p $PUBLISH_DIR/ts
 cp -r $ROOT_DIR/modules/$NAME/$FILES $PUBLISH_DIR/ts
 
 if [ $NAME = "angular2" ]; then
-  # Publish bundles and typings
-  mkdir -p $PUBLISH_DIR/bundles/typings/es6-shim
-  mkdir -p $PUBLISH_DIR/bundles/typings/jasmine
   # Copy Bundles
+  mkdir -p $PUBLISH_DIR/bundles
   cp -r $ROOT_DIR/dist/js/bundle/$FILES $PUBLISH_DIR/bundles
-  # Copy Typings
-  cp -r $ROOT_DIR/modules/angular2/typings/es6-shim/$DTS_FILES $PUBLISH_DIR/bundles/typings/es6-shim
-  cp -r $ROOT_DIR/modules/angular2/typings/jasmine/$DTS_FILES $PUBLISH_DIR/bundles/typings/jasmine
 fi
 
 if [ $NAME = "benchpress" ]; then

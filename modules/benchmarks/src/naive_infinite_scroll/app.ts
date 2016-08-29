@@ -1,16 +1,16 @@
-import {isPresent} from 'angular2/src/facade/lang';
-import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
-import {TimerWrapper} from 'angular2/src/facade/async';
+import {isPresent} from '@angular/facade/src/lang';
+import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
+import {TimerWrapper} from '@angular/facade/src/async';
 import {ScrollAreaComponent} from './scroll_area';
-import {NgIf, NgFor} from 'angular2/common';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {document} from 'angular2/src/facade/browser';
+import {NgIf, NgFor} from '@angular/common';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {document} from '@angular/facade/src/browser';
 
-import {Component, Directive, View} from 'angular2/core';
+import {Component, Directive} from '@angular/core';
 
 
-@Component({selector: 'scroll-app'})
-@View({
+@Component({
+  selector: 'scroll-app',
   directives: [ScrollAreaComponent, NgIf, NgFor],
   template: `
   <div>
@@ -19,7 +19,7 @@ import {Component, Directive, View} from 'angular2/core';
     </div>
     <div template="ngIf scrollAreas.length > 0">
       <p>Following tables are only here to add weight to the UI:</p>
-      <scroll-area template="ngFor #scrollArea of scrollAreas"></scroll-area>
+      <scroll-area template="ngFor let scrollArea of scrollAreas"></scroll-area>
     </div>
   </div>`
 })

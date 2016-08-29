@@ -4,35 +4,47 @@ var fs = require('fs');
 var ts = require('typescript');
 
 var files = [
-  'lifecycle_annotations_impl.ts',
+  'utils.ts',
   'url_parser.ts',
-  'route_recognizer.ts',
-  'route_config_impl.ts',
-  'async_route_handler.ts',
-  'sync_route_handler.ts',
-  'component_recognizer.ts',
+  'lifecycle/lifecycle_annotations_impl.ts',
+  'lifecycle/route_lifecycle_reflector.ts',
+  'route_config/route_config_impl.ts',
+  'route_config/route_config_normalizer.ts',
+  'rules/route_handlers/async_route_handler.ts',
+  'rules/route_handlers/sync_route_handler.ts',
+  'rules/rules.ts',
+  'rules/rule_set.ts',
+  'rules/route_paths/route_path.ts',
+  'rules/route_paths/param_route_path.ts',
+  'rules/route_paths/regex_route_path.ts',
   'instruction.ts',
-  'path_recognizer.ts',
-  'route_config_nomalizer.ts',
-  'route_lifecycle_reflector.ts',
   'route_registry.ts',
   'router.ts'
 ];
 
 var PRELUDE = '(function(){\n';
 var POSTLUDE = '\n}());\n';
-var FACADES = fs.readFileSync(__dirname + '/lib/facades.es5', 'utf8');
-var DIRECTIVES = fs.readFileSync(__dirname + '/src/ng_outlet.ts', 'utf8');
-var moduleTemplate = fs.readFileSync(__dirname + '/src/module_template.js', 'utf8');
 
-function main() {
-  var dir = __dirname + '/../angular2/src/router/';
+function main(modulesDirectory) {
+  var angular1RouterModuleDirectory = modulesDirectory + '/angular1_router';
+
+  var facades = fs.readFileSync(
+      angular1RouterModuleDirectory + '/lib/facades.es5', 'utf8');
+  var directives = fs.readFileSync(
+      angular1RouterModuleDirectory + '/src/ng_outlet.ts', 'utf8');
+  var moduleTemplate = fs.readFileSync(
+      angular1RouterModuleDirectory + '/src/module_template.js', 'utf8');
+
+  var dir = modulesDirectory + '/angular2/src/router/';
   var sharedCode = files.reduce(function (prev, file) {
     return prev + transform(fs.readFileSync(dir + file, 'utf8'));
   }, '');
 
-  var out = moduleTemplate.replace('//{{FACADES}}', FACADES).replace('//{{SHARED_CODE}}', sharedCode);
-  return PRELUDE + transform(DIRECTIVES) + out + POSTLUDE;
+  // we have to use a function callback for replace to prevent it from interpreting `$`
+  // as a replacement command character
+  var out = moduleTemplate.replace('//{{FACADES}}', function() { return facades; })
+                .replace('//{{SHARED_CODE}}', function() { return sharedCode; });
+  return PRELUDE + transform(directives) + out + POSTLUDE;
 }
 
 /*
@@ -41,9 +53,10 @@ function main() {
  */
 var IMPORT_RE = new RegExp("import \\{?([\\w\\n_, ]+)\\}? from '(.+)';?", 'g');
 var INJECT_RE = new RegExp("@Inject\\(ROUTER_PRIMARY_COMPONENT\\)", 'g');
-var IMJECTABLE_RE = new RegExp("@Injectable\\(\\)", 'g');
+var INJECTABLE_RE = new RegExp("@Injectable\\(\\)", 'g');
+var REQUIRE_RE = new RegExp("require\\('(.*?)'\\);", 'g');
 function transform(contents) {
-  contents = contents.replace(INJECT_RE, '').replace(IMJECTABLE_RE, '');
+  contents = contents.replace(INJECT_RE, '').replace(INJECTABLE_RE, '');
   contents = contents.replace(IMPORT_RE, function (match, imports, includePath) {
     //TODO: remove special-case
     if (isFacadeModule(includePath) || includePath === './router_outlet') {
@@ -51,10 +64,15 @@ function transform(contents) {
     }
     return match;
   });
-  return ts.transpile(contents, {
+  contents = ts.transpile(contents, {
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.CommonJS
   });
+
+  // Rename require functions from transpiled imports
+  contents = contents.replace(REQUIRE_RE, 'routerRequire(\'$1\');');
+
+  return contents;
 }
 
 function isFacadeModule(modulePath) {
@@ -62,10 +80,29 @@ function isFacadeModule(modulePath) {
     modulePath === 'angular2/src/core/reflection/reflection';
 }
 
-module.exports = function () {
-  var dist = __dirname + '/../../dist';
-  if (!fs.existsSync(dist)) {
-    fs.mkdirSync(dist);
+module.exports = function(modulesDirectory, outputDirectory) {
+  if (!fs.existsSync(outputDirectory)) {
+    fs.mkdirSync(outputDirectory);
   }
-  fs.writeFileSync(dist + '/angular_1_router.js', main());
+  fs.writeFileSync(
+      outputDirectory + '/angular_1_router.js', main(modulesDirectory));
 };
+
+// CLI entry point
+if (require.main === module) {
+  try {
+    var args = process.argv;
+    args.shift();  // node
+    args.shift();  // scriptfile.js
+    if (args.length < 2) {
+      console.log("usage: $0 outFile path/to/modules");
+      process.exit(1);
+    }
+    var outfile = args.shift();
+    var directory = args.shift();
+    fs.writeFileSync(outfile, main(directory));
+  } catch (e) {
+    console.log(e.message);
+    process.exit(1);
+  }
+}

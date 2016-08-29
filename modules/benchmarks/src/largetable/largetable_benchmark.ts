@@ -1,22 +1,22 @@
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {window, document, gc} from 'angular2/src/facade/browser';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {window, document, gc} from '@angular/facade/src/browser';
 import {
   getIntParameter,
   getStringParameter,
   bindAction,
   windowProfile,
   windowProfileEnd
-} from 'angular2/src/testing/benchmark_util';
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, View, bind, provide} from 'angular2/core';
-import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
-import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
+} from '@angular/testing/src/benchmark_util';
+import {bootstrap} from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
+import {ApplicationRef} from '@angular/core/src/application_ref';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
-import {ListWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper} from '@angular/facade/src/collection';
 
-import {Inject} from 'angular2/src/core/di/decorators';
-import {reflector} from 'angular2/src/core/reflection/reflection';
+import {Inject} from '@angular/core/src/di/decorators';
+import {reflector} from '@angular/core/src/reflection/reflection';
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';
@@ -24,9 +24,9 @@ export const LARGETABLE_COLS = 'LargetableComponent.cols';
 
 function _createBindings() {
   return [
-    provide(BENCHMARK_TYPE, {useValue: getStringParameter('benchmarkType')}),
-    provide(LARGETABLE_ROWS, {useValue: getIntParameter('rows')}),
-    provide(LARGETABLE_COLS, {useValue: getIntParameter('columns')})
+    {provide: BENCHMARK_TYPE, useValue: getStringParameter('benchmarkType')},
+    {provide: LARGETABLE_ROWS, useValue: getIntParameter('rows')},
+    {provide: LARGETABLE_COLS, {useValue: getIntParameter('columns')},
   ];
 }
 
@@ -37,12 +37,12 @@ function setupReflector() {
   reflector.registerGetters({
     'benchmarktype': (o) => o.benchmarktype,
     'switch': (o) => null,
-    'switchWhen': (o) => o.switchWhen
+    'switchCase': (o) => o.switchCase
   });
   reflector.registerSetters({
     'benchmarktype': (o, v) => o.benchmarktype = v,
     'switch': (o, v) => null,
-    'switchWhen': (o, v) => o.switchWhen = v
+    'switchCase': (o, v) => o.switchCase = v
   });
 }
 
@@ -113,7 +113,7 @@ export function main() {
     bootstrap(AppComponent, _createBindings())
         .then((ref) => {
           var injector = ref.injector;
-          app = ref.hostComponent;
+          app = ref.instance;
           appRef = injector.get(ApplicationRef);
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);
@@ -207,28 +207,29 @@ class CellData {
   iFn() { return this.i; }
 }
 
-@Component({selector: 'largetable', inputs: ['data', 'benchmarkType']})
-@View({
-  directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
+@Component({
+  selector: 'largetable',
+  inputs: ['data', 'benchmarkType'],
+  directives: [NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault],
   template: `
       <table [ngSwitch]="benchmarkType">
-        <tbody template="ngSwitchWhen 'interpolation'">
-          <tr template="ngFor #row of data">
-            <td template="ngFor #column of row">
+        <tbody template="ngSwitchCase 'interpolation'">
+          <tr template="ngFor let row of data">
+            <td template="ngFor let column of row">
               {{column.i}}:{{column.j}}|
             </td>
           </tr>
         </tbody>
-        <tbody template="ngSwitchWhen 'interpolationAttr'">
-          <tr template="ngFor #row of data">
-            <td template="ngFor #column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
+        <tbody template="ngSwitchCase 'interpolationAttr'">
+          <tr template="ngFor let row of data">
+            <td template="ngFor let column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
               i,j attrs
             </td>
           </tr>
         </tbody>
-        <tbody template="ngSwitchWhen 'interpolationFn'">
-          <tr template="ngFor #row of data">
-            <td template="ngFor #column of row">
+        <tbody template="ngSwitchCase 'interpolationFn'">
+          <tr template="ngFor let row of data">
+            <td template="ngFor let column of row">
               {{column.iFn()}}:{{column.jFn()}}|
             </td>
           </tr>
@@ -255,8 +256,8 @@ class LargetableComponent {
   }
 }
 
-@Component({selector: 'app'})
-@View({
+@Component({
+  selector: 'app',
   directives: [LargetableComponent],
   template: `<largetable [data]='data' [benchmarkType]='benchmarkType'></largetable>`
 })

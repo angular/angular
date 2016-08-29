@@ -1,4 +1,12 @@
-import {isPresent} from 'angular2/src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {isPresent} from '@angular/facade/src/lang';
 
 export class TraceEventFactory {
   private _cat: string;

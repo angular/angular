@@ -1,4 +1,5 @@
-import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
+import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
+import {runClickBenchmark} from '@angular/testing/src/perf_util';
 
 describe('ng2 naive infinite scroll benchmark', function() {
 

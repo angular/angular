@@ -1,59 +1,76 @@
-import {Injector, bind, provide, Provider} from 'angular2/src/core/di';
-import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {Sampler, SampleState} from './sampler';
+import {Provider, ReflectiveInjector} from '@angular/core';
+import {isBlank, isPresent} from '@angular/facade/src/lang';
+
+import {Options} from './common_options';
+import {Metric} from './metric';
+import {MultiMetric} from './metric/multi_metric';
+import {PerflogMetric} from './metric/perflog_metric';
+import {UserMetric} from './metric/user_metric';
+import {Reporter} from './reporter';
 import {ConsoleReporter} from './reporter/console_reporter';
 import {MultiReporter} from './reporter/multi_reporter';
+import {SampleDescription} from './sample_description';
+import {SampleState, Sampler} from './sampler';
+import {Validator} from './validator';
 import {RegressionSlopeValidator} from './validator/regression_slope_validator';
 import {SizeValidator} from './validator/size_validator';
-import {Validator} from './validator';
-import {PerflogMetric} from './metric/perflog_metric';
-import {MultiMetric} from './metric/multi_metric';
+import {WebDriverAdapter} from './web_driver_adapter';
+import {WebDriverExtension} from './web_driver_extension';
 import {ChromeDriverExtension} from './webdriver/chrome_driver_extension';
 import {FirefoxDriverExtension} from './webdriver/firefox_driver_extension';
 import {IOsDriverExtension} from './webdriver/ios_driver_extension';
-import {WebDriverExtension} from './web_driver_extension';
-import {SampleDescription} from './sample_description';
-import {WebDriverAdapter} from './web_driver_adapter';
-import {Reporter} from './reporter';
-import {Metric} from './metric';
-import {Options} from './common_options';
+
 
 /**
  * The Runner is the main entry point for executing a sample run.
  * It provides defaults, creates the injector and calls the sampler.
  */
 export class Runner {
-  private _defaultBindings: Provider[];
-  constructor(defaultBindings: Provider[] = null) {
-    if (isBlank(defaultBindings)) {
-      defaultBindings = [];
+  private _defaultProviders: Provider[];
+  constructor(defaultProviders: Provider[] = null) {
+    if (isBlank(defaultProviders)) {
+      defaultProviders = [];
     }
-    this._defaultBindings = defaultBindings;
+    this._defaultProviders = defaultProviders;
   }
 
-  sample({id, execute, prepare, microMetrics, bindings}): Promise<SampleState> {
-    var sampleBindings = [
-      _DEFAULT_PROVIDERS,
-      this._defaultBindings,
-      bind(Options.SAMPLE_ID).toValue(id),
-      bind(Options.EXECUTE).toValue(execute)
+  sample({id, execute, prepare, microMetrics, providers, userMetrics}: {
+    id: string,
+    execute?: any,
+    prepare?: any,
+    microMetrics?: any,
+    providers?: any,
+    userMetrics?: any
+  }): Promise<SampleState> {
+    var sampleProviders = [
+      _DEFAULT_PROVIDERS, this._defaultProviders, {provide: Options.SAMPLE_ID, useValue: id},
+      {provide: Options.EXECUTE, useValue: execute}
     ];
     if (isPresent(prepare)) {
-      sampleBindings.push(bind(Options.PREPARE).toValue(prepare));
+      sampleProviders.push({provide: Options.PREPARE, useValue: prepare});
     }
     if (isPresent(microMetrics)) {
-      sampleBindings.push(bind(Options.MICRO_METRICS).toValue(microMetrics));
+      sampleProviders.push({provide: Options.MICRO_METRICS, useValue: microMetrics});
     }
-    if (isPresent(bindings)) {
-      sampleBindings.push(bindings);
+    if (isPresent(userMetrics)) {
+      sampleProviders.push({provide: Options.USER_METRICS, useValue: userMetrics});
+    }
+    if (isPresent(providers)) {
+      sampleProviders.push(providers);
     }
 
-    var inj = Injector.resolveAndCreate(sampleBindings);
+    var inj = ReflectiveInjector.resolveAndCreate(sampleProviders);
     var adapter = inj.get(WebDriverAdapter);
 
-    return PromiseWrapper
+    return Promise
         .all([adapter.capabilities(), adapter.executeScript('return window.navigator.userAgent;')])
         .then((args) => {
           var capabilities = args[0];
@@ -64,11 +81,10 @@ export class Runner {
           // Only WebDriverAdapter is reused.
           // TODO vsavkin consider changing it when toAsyncFactory is added back or when child
           // injectors are handled better.
-          var injector = Injector.resolveAndCreate([
-            sampleBindings,
-            bind(Options.CAPABILITIES).toValue(capabilities),
-            bind(Options.USER_AGENT).toValue(userAgent),
-            provide(WebDriverAdapter, {useValue: adapter})
+          var injector = ReflectiveInjector.resolveAndCreate([
+            sampleProviders, {provide: Options.CAPABILITIES, useValue: capabilities},
+            {provide: Options.USER_AGENT, useValue: userAgent},
+            {provide: WebDriverAdapter, useValue: adapter}
           ]);
 
           var sampler = injector.get(Sampler);
@@ -79,18 +95,18 @@ export class Runner {
 
 var _DEFAULT_PROVIDERS = [
   Options.DEFAULT_PROVIDERS,
-  Sampler.BINDINGS,
-  ConsoleReporter.BINDINGS,
-  RegressionSlopeValidator.BINDINGS,
-  SizeValidator.BINDINGS,
-  ChromeDriverExtension.BINDINGS,
-  FirefoxDriverExtension.BINDINGS,
-  IOsDriverExtension.BINDINGS,
-  PerflogMetric.BINDINGS,
-  SampleDescription.BINDINGS,
+  Sampler.PROVIDERS,
+  ConsoleReporter.PROVIDERS,
+  RegressionSlopeValidator.PROVIDERS,
+  SizeValidator.PROVIDERS,
+  ChromeDriverExtension.PROVIDERS,
+  FirefoxDriverExtension.PROVIDERS,
+  IOsDriverExtension.PROVIDERS,
+  PerflogMetric.PROVIDERS,
+  UserMetric.PROVIDERS,
+  SampleDescription.PROVIDERS,
   MultiReporter.createBindings([ConsoleReporter]),
-  MultiMetric.createBindings([PerflogMetric]),
-
+  MultiMetric.createBindings([PerflogMetric, UserMetric]),
   Reporter.bindTo(MultiReporter),
   Validator.bindTo(RegressionSlopeValidator),
   WebDriverExtension.bindTo([ChromeDriverExtension, FirefoxDriverExtension, IOsDriverExtension]),

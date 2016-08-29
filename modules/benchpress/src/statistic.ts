@@ -1,4 +1,12 @@
-import {Math} from 'angular2/src/facade/math';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Math} from '@angular/facade/src/math';
 
 export class Statistic {
   static calculateCoefficientOfVariation(sample, mean) {
@@ -21,8 +29,8 @@ export class Statistic {
     return deviation;
   }
 
-  static calculateRegressionSlope(xValues: number[], xMean: number, yValues: number[],
-                                  yMean: number) {
+  static calculateRegressionSlope(
+      xValues: number[], xMean: number, yValues: number[], yMean: number) {
     // See http://en.wikipedia.org/wiki/Simple_linear_regression
     var dividendSum = 0;
     var divisorSum = 0;

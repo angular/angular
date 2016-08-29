@@ -27,12 +27,12 @@ function cleanModule(moduleRecord, name) {
 }
 
 
-console.log('Reading npm-shrinkwrap.json');
+//console.log('Reading npm-shrinkwrap.json');
 var shrinkwrap = require('../../npm-shrinkwrap.json');
 
-console.log('Cleaning shrinkwrap object');
+//console.log('Cleaning shrinkwrap object');
 cleanModule(shrinkwrap, shrinkwrap.name);
 
 var cleanShrinkwrapPath = path.join(__dirname, '..', '..', 'npm-shrinkwrap.clean.json');
-console.log('Writing cleaned to', cleanShrinkwrapPath);
+console.log('writing npm-shrinkwrap.clean.json');
 fs.writeFileSync(cleanShrinkwrapPath, JSON.stringify(sorted(shrinkwrap), null, 2) + "\n");

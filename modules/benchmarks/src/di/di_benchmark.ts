@@ -1,8 +1,8 @@
-import {Injectable, Injector, Key, bind, provide} from "angular2/core";
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
-import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/testing/benchmark_util';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
+import {Injectable, ReflectiveInjector, ReflectiveKey} from '@angular/core';
+import {reflector} from '@angular/core/src/reflection/reflection';
+import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
+import {getIntParameter, bindAction, microBenchmark} from '@angular/testing/src/benchmark_util';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 
 var count = 0;
 
@@ -17,19 +17,19 @@ export function main() {
   // This benchmark does not use bootstrap and needs to create a reflector
   setupReflector();
   var bindings = [A, B, C, D, E];
-  var injector = Injector.resolveAndCreate(bindings);
+  var injector = ReflectiveInjector.resolveAndCreate(bindings);
 
-  var D_KEY = Key.get(D);
-  var E_KEY = Key.get(E);
+  var D_KEY = ReflectiveKey.get(D);
+  var E_KEY = ReflectiveKey.get(E);
   var childInjector = injector.resolveAndCreateChild([])
                           .resolveAndCreateChild([])
                           .resolveAndCreateChild([])
                           .resolveAndCreateChild([])
                           .resolveAndCreateChild([]);
 
-  var variousProviders = [A, provide(B, {useClass: C}), [D, [E]], provide(F, {useValue: 6})];
+  var variousProviders = [A, {provide: B, useClass: C}, [D, [E]], {provide: F, useValue: 6}];
 
-  var variousProvidersResolved = Injector.resolve(variousProviders);
+  var variousProvidersResolved = ReflectiveInjector.resolve(variousProviders);
 
   function getByToken() {
     for (var i = 0; i < iterations; ++i) {
@@ -63,7 +63,7 @@ export function main() {
    */
   function createVariety() {
     for (var i = 0; i < iterations; ++i) {
-      Injector.resolveAndCreate(variousProviders);
+      ReflectiveInjector.resolveAndCreate(variousProviders);
     }
   }
 
@@ -72,7 +72,7 @@ export function main() {
    */
   function createVarietyResolved() {
     for (var i = 0; i < iterations; ++i) {
-      Injector.fromResolvedProviders(variousProvidersResolved);
+      ReflectiveInjector.fromResolvedProviders(variousProvidersResolved);
     }
   }
 

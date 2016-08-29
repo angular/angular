@@ -1,18 +1,23 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
-import {Json, isPresent, isBlank, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
+import {Json, StringWrapper, isBlank, isPresent} from '@angular/facade/src/lang';
+
 import {WebDriverAdapter} from '../web_driver_adapter';
-import {Promise} from 'angular2/src/facade/async';
+import {PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
 export class IOsDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
 
   constructor(private _driver: WebDriverAdapter) { super(); }
 
-  gc(): Promise<any> { throw new BaseException('Force GC is not supported on iOS'); }
+  gc(): Promise<any> { throw new Error('Force GC is not supported on iOS'); }
 
   timeBegin(name: string): Promise<any> {
     return this._driver.executeScript(`console.time('${name}');`);
@@ -21,7 +26,7 @@ export class IOsDriverExtension extends WebDriverExtension {
   timeEnd(name: string, restartName: string = null): Promise<any> {
     var script = `console.timeEnd('${name}');`;
     if (isPresent(restartName)) {
-      script += `console.time('${restartName}');`
+      script += `console.time('${restartName}');`;
     }
     return this._driver.executeScript(script);
   }
@@ -44,7 +49,8 @@ export class IOsDriverExtension extends WebDriverExtension {
         });
   }
 
-  _convertPerfRecordsToEvents(records: any[], events: any[] = null) {
+  /** @internal */
+  private _convertPerfRecordsToEvents(records: any[], events: any[] = null) {
     if (isBlank(events)) {
       events = [];
     }
@@ -63,11 +69,11 @@ export class IOsDriverExtension extends WebDriverExtension {
         events.push(createMarkStartEvent(data['message'], startTime));
       } else if (StringWrapper.equals(type, 'TimeEnd')) {
         events.push(createMarkEndEvent(data['message'], startTime));
-      } else if (StringWrapper.equals(type, 'RecalculateStyles') ||
-                 StringWrapper.equals(type, 'Layout') ||
-                 StringWrapper.equals(type, 'UpdateLayerTree') ||
-                 StringWrapper.equals(type, 'Paint') || StringWrapper.equals(type, 'Rasterize') ||
-                 StringWrapper.equals(type, 'CompositeLayers')) {
+      } else if (
+          StringWrapper.equals(type, 'RecalculateStyles') || StringWrapper.equals(type, 'Layout') ||
+          StringWrapper.equals(type, 'UpdateLayerTree') || StringWrapper.equals(type, 'Paint') ||
+          StringWrapper.equals(type, 'Rasterize') ||
+          StringWrapper.equals(type, 'CompositeLayers')) {
         events.push(createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
       }
@@ -121,7 +127,8 @@ function createMarkEndEvent(name, time) {
   return createEvent('e', name, time);
 }
 
-var _PROVIDERS = [
-  bind(IOsDriverExtension)
-      .toFactory((driver) => new IOsDriverExtension(driver), [WebDriverAdapter])
-];
+var _PROVIDERS = [{
+  provide: IOsDriverExtension,
+  useFactory: (driver) => new IOsDriverExtension(driver),
+  deps: [WebDriverAdapter]
+}];

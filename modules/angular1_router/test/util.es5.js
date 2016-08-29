@@ -22,7 +22,7 @@ function provideHelpers(fn, preInject) {
     var elt,
         $compile,
         $rootScope,
-        $router,
+        $rootRouter,
         $templateCache,
         $controllerProvider;
 
@@ -32,10 +32,10 @@ function provideHelpers(fn, preInject) {
       $controllerProvider = _$controllerProvider_;
     });
 
-    inject(function(_$compile_, _$rootScope_, _$router_, _$templateCache_) {
+    inject(function(_$compile_, _$rootScope_, _$rootRouter_, _$templateCache_) {
       $compile = _$compile_;
       $rootScope = _$rootScope_;
-      $router = _$router_;
+      $rootRouter = _$rootRouter_;
       $templateCache = _$templateCache_;
     });
 
@@ -72,7 +72,7 @@ function provideHelpers(fn, preInject) {
 
     fn({
       registerComponent: registerComponent,
-      $router: $router,
+      $rootRouter: $rootRouter,
       put: put,
       compile: compile
     })

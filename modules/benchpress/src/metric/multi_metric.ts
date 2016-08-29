@@ -1,16 +1,25 @@
-import {bind, provide, Binding, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Injector, OpaqueToken} from '@angular/core/src/di';
+import {StringMapWrapper} from '@angular/facade/src/collection';
 
 import {Metric} from '../metric';
 
 export class MultiMetric extends Metric {
-  static createBindings(childTokens: any[]): Provider[] {
+  static createBindings(childTokens: any[]): any[] {
     return [
-      bind(_CHILDREN)
-          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
-                     [Injector]),
-      bind(MultiMetric).toFactory(children => new MultiMetric(children), [_CHILDREN])
+      {
+        provide: _CHILDREN,
+        useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
+        deps: [Injector]
+      },
+      {provide: MultiMetric, useFactory: children => new MultiMetric(children), deps: [_CHILDREN]}
     ];
   }
 
@@ -20,7 +29,7 @@ export class MultiMetric extends Metric {
    * Starts measuring
    */
   beginMeasure(): Promise<any> {
-    return PromiseWrapper.all(this._metrics.map(metric => metric.beginMeasure()));
+    return Promise.all(this._metrics.map(metric => metric.beginMeasure()));
   }
 
   /**
@@ -29,8 +38,8 @@ export class MultiMetric extends Metric {
    * @param restart: Whether to restart right after this.
    */
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
-    return PromiseWrapper.all(this._metrics.map(metric => metric.endMeasure(restart)))
-        .then(values => mergeStringMaps(values));
+    return Promise.all(this._metrics.map(metric => metric.endMeasure(restart)))
+        .then(values => mergeStringMaps(<any>values));
   }
 
   /**
@@ -42,7 +51,7 @@ export class MultiMetric extends Metric {
   }
 }
 
-function mergeStringMaps(maps: { [key: string]: string }[]): Object {
+function mergeStringMaps(maps: {[key: string]: string}[]): {[key: string]: string} {
   var result = {};
   maps.forEach(
       map => { StringMapWrapper.forEach(map, (value, prop) => { result[prop] = value; }); });

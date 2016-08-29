@@ -1,9 +1,16 @@
-import {View, Component} from 'angular2/core';
-import {NgFor, FORM_DIRECTIVES} from 'angular2/common';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Component} from '@angular/core';
+
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
-@Component({selector: 'todo-app', viewProviders: [Store, TodoFactory]})
-@View({templateUrl: 'todo.html', directives: [NgFor, FORM_DIRECTIVES]})
+@Component({selector: 'todo-app', viewProviders: [Store, TodoFactory], templateUrl: 'todo.html'})
 export class TodoApp {
   todoEdit: Todo = null;
   inputValue: string;
@@ -15,10 +22,10 @@ export class TodoApp {
 
   enterTodo(): void {
     this.addTodo(this.inputValue);
-    this.inputValue = "";
+    this.inputValue = '';
   }
 
-  doneEditing($event, todo: Todo): void {
+  doneEditing($event: any /** TODO #9100 */, todo: Todo): void {
     var which = $event.keyCode;
     if (which === 13) {
       todo.title = todo.editTitle;
@@ -52,7 +59,7 @@ export class TodoApp {
 
   deleteMe(todo: Todo): void { this.todoStore.remove(todo); }
 
-  toggleAll($event): void {
+  toggleAll($event: any /** TODO #9100 */): void {
     this.isComplete = !this.isComplete;
     this.todoStore.list.forEach((todo: Todo) => { todo.completed = this.isComplete; });
   }

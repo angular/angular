@@ -19,3 +19,5 @@ scripts/publish/npm_prepare.sh benchpress
 
 npm publish $NPM_DIR/angular2
 npm publish $NPM_DIR/benchpress
+
+npm logout

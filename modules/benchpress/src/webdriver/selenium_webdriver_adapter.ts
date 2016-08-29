@@ -1,29 +1,42 @@
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {bind, provide, Provider} from 'angular2/src/core/di';
-import {WebDriverAdapter} from '../web_driver_adapter';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import * as webdriver from 'selenium-webdriver';
+
+import {WebDriverAdapter} from '../web_driver_adapter';
+
+
 
 /**
  * Adapter for the selenium-webdriver.
  */
 export class SeleniumWebDriverAdapter extends WebDriverAdapter {
-  static get PROTRACTOR_BINDINGS(): Provider[] { return _PROTRACTOR_BINDINGS; }
+  static get PROTRACTOR_BINDINGS(): any[] { return _PROTRACTOR_BINDINGS; }
 
   constructor(private _driver: any) { super(); }
 
-  _convertPromise(thenable) {
-    var completer = PromiseWrapper.completer();
+  /** @internal */
+  private _convertPromise(thenable) {
+    var resolve: (result: any) => void;
+    var reject: (error: any) => void;
+    var promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
     thenable.then(
         // selenium-webdriver uses an own Node.js context,
         // so we need to convert data into objects of this context.
         // Previously needed for rtts_asserts.
-        (data) => completer.resolve(convertToLocalProcess(data)), completer.reject);
-    return completer.promise;
+        (data) => resolve(convertToLocalProcess(data)), reject);
+    return promise;
   }
-  b
 
-      waitFor(callback): Promise<any> {
+  waitFor(callback): Promise<any> {
     return this._convertPromise(this._driver.controlFlow().execute(callback));
   }
 
@@ -57,7 +70,8 @@ function convertToLocalProcess(data): Object {
   return JSON.parse(serialized);
 }
 
-var _PROTRACTOR_BINDINGS = [
-  bind(WebDriverAdapter)
-      .toFactory(() => new SeleniumWebDriverAdapter((<any>global).browser), [])
-];
+var _PROTRACTOR_BINDINGS = [{
+  provide: WebDriverAdapter,
+  useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser),
+  deps: []
+}];

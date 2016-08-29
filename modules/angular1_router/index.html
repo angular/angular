@@ -12,9 +12,9 @@
 <script src="../../dist/angular_1_router.js"></script>
 <script>
   angular.module('myApp', ['ngComponentRouter'])
-    .controller('MyCtrl', ['$router', function ($router) {
-      console.log($router);
-      $router.navigateByUrl('/')
+    .controller('MyCtrl', ['$rootRouter', function ($rootRouter) {
+      console.log($rootRouter);
+      $rootRouter.navigateByUrl('/')
         .then(console.log.bind(console, 'resolve'), console.log.bind(console, 'reject'));
     }]);
 </script>

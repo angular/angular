@@ -4,14 +4,16 @@
 var CIconfiguration = {
   'Chrome':       { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox':      { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'ChromeBeta':   { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'FirefoxBeta':  { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  // FirefoxBeta and ChromeBeta should be target:'BS' or target:'SL', and required:true
+  // Currently deactivated due to https://github.com/angular/angular/issues/7560
+  'ChromeBeta':   { unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
+  'FirefoxBeta':  { unitTest: {target: null, required: false}, e2e: {target: null, required: false}},
   'ChromeDev':    { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'FirefoxDev':   { unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'IE9':          { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'IE10':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'IE11':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Edge':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Edge':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Android4.1':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.2':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.3':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
@@ -22,8 +24,7 @@ var CIconfiguration = {
   'Safari9':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'iOS7':         { unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
   'iOS8':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  // TODO(mlaval): iOS9 deactivated as not reliable, reactivate after https://github.com/angular/angular/issues/5408
-  'iOS9':         { unitTest: {target: null, required: false}, e2e: {target: null, required: true}},
+  'iOS9':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'WindowsPhone': { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}}
 };
 
@@ -37,7 +38,7 @@ var customLaunchers = {
   'SL_CHROME': {
     base: 'SauceLabs',
     browserName: 'chrome',
-    version: '46'
+    version: '52'
   },
   'SL_CHROMEBETA': {
     base: 'SauceLabs',
@@ -52,7 +53,7 @@ var customLaunchers = {
   'SL_FIREFOX': {
     base: 'SauceLabs',
     browserName: 'firefox',
-    version: '42'
+    version: '46'
   },
   'SL_FIREFOXBETA': {
     base: 'SauceLabs',
@@ -68,13 +69,13 @@ var customLaunchers = {
     base: 'SauceLabs',
     browserName: 'safari',
     platform: 'OS X 10.9',
-    version: '7'
+    version: '7.0'
   },
   'SL_SAFARI8': {
     base: 'SauceLabs',
     browserName: 'safari',
     platform: 'OS X 10.10',
-    version: '8'
+    version: '8.0'
   },
   'SL_SAFARI9': {
     base: 'SauceLabs',
@@ -98,7 +99,7 @@ var customLaunchers = {
     base: 'SauceLabs',
     browserName: 'iphone',
     platform: 'OS X 10.10',
-    version: '9.1'
+    version: '9.3'
   },
   'SL_IE9': {
     base: 'SauceLabs',
@@ -120,9 +121,9 @@ var customLaunchers = {
   },
   'SL_EDGE': {
     base: 'SauceLabs',
-    browserName: 'microsoftedge',
+    browserName: 'MicrosoftEdge',
     platform: 'Windows 10',
-    version: '20.10240'
+    version: '13.10586'
   },
   'SL_ANDROID4.1': {
     base: 'SauceLabs',
@@ -201,7 +202,7 @@ var customLaunchers = {
     base: 'BrowserStack',
     device: 'iPhone 6S',
     os: 'ios',
-    os_version: '9.0'
+    os_version: '9.1'
   },
   'BS_IE9': {
     base: 'BrowserStack',
@@ -298,12 +299,7 @@ module.exports = {
   customLaunchers: customLaunchers,
   sauceAliases: sauceAliases,
   browserstackAliases: browserstackAliases
-}
-
-if (process.env.TRAVIS) {
-  process.env.SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY.split('').reverse().join('');
-  process.env.BROWSER_STACK_ACCESS_KEY = process.env.BROWSER_STACK_ACCESS_KEY.split('').reverse().join('');
-}
+};
 
 function buildConfiguration(type, target, required) {
   return Object.keys(CIconfiguration)

@@ -1,19 +1,29 @@
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {Validator} from '../validator';
+import {OpaqueToken} from '@angular/core/src/di';
+import {ListWrapper} from '@angular/facade/src/collection';
+
 import {MeasureValues} from '../measure_values';
+import {Validator} from '../validator';
+
 
 /**
  * A validator that waits for the sample to have a certain size.
  */
 export class SizeValidator extends Validator {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Provider[] { return _PROVIDERS; }
+  static get PROVIDERS(): any[] { return _PROVIDERS; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get SAMPLE_SIZE() { return _SAMPLE_SIZE; }
 
-  _sampleSize: number;
+  /** @internal */
+  private _sampleSize: number;
 
   constructor(size) {
     super();
@@ -24,8 +34,8 @@ export class SizeValidator extends Validator {
 
   validate(completeSample: MeasureValues[]): MeasureValues[] {
     if (completeSample.length >= this._sampleSize) {
-      return ListWrapper.slice(completeSample, completeSample.length - this._sampleSize,
-                               completeSample.length);
+      return ListWrapper.slice(
+          completeSample, completeSample.length - this._sampleSize, completeSample.length);
     } else {
       return null;
     }
@@ -34,7 +44,6 @@ export class SizeValidator extends Validator {
 
 var _SAMPLE_SIZE = new OpaqueToken('SizeValidator.sampleSize');
 var _PROVIDERS = [
-  bind(SizeValidator)
-      .toFactory((size) => new SizeValidator(size), [_SAMPLE_SIZE]),
-  provide(_SAMPLE_SIZE, {useValue: 10})
+  {provide: SizeValidator, useFactory: (size) => new SizeValidator(size), deps: [_SAMPLE_SIZE]},
+  {provide: _SAMPLE_SIZE, useValue: 10}
 ];

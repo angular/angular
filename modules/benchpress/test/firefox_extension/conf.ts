@@ -1,5 +1,12 @@
-/// <reference path="../../../angular2/typings/node/node.d.ts" />
-require('es6-shim/es6-shim.js');
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+require('core-js');
 require('reflect-metadata');
 var testHelper = require('../../src/firefox_extension/lib/test_helper.js');
 

@@ -1,10 +1,16 @@
-import {bind, provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {isBlank, isPresent} from 'angular2/src/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {Injector, OpaqueToken} from '@angular/core/src/di';
+import {isBlank, isPresent} from '@angular/facade/src/lang';
 
 import {Options} from './common_options';
+
 
 /**
  * A WebDriverExtension implements extended commands of the webdriver protocol
@@ -12,35 +18,38 @@ import {Options} from './common_options';
  * Needs one implementation for every supported Browser.
  */
 export abstract class WebDriverExtension {
-  static bindTo(childTokens: any[]): Provider[] {
+  static bindTo(childTokens: any[]): any[] {
     var res = [
-      bind(_CHILDREN)
-          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
-                     [Injector]),
-      bind(WebDriverExtension)
-          .toFactory(
-              (children: WebDriverExtension[], capabilities) => {
-                var delegate;
-                children.forEach(extension => {
-                  if (extension.supports(capabilities)) {
-                    delegate = extension;
-                  }
-                });
-                if (isBlank(delegate)) {
-                  throw new BaseException('Could not find a delegate for given capabilities!');
-                }
-                return delegate;
-              },
-              [_CHILDREN, Options.CAPABILITIES])
+      {
+        provide: _CHILDREN,
+        useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
+        deps: [Injector]
+      },
+      {
+        provide: WebDriverExtension,
+        useFactory: (children: WebDriverExtension[], capabilities) => {
+          var delegate;
+          children.forEach(extension => {
+            if (extension.supports(capabilities)) {
+              delegate = extension;
+            }
+          });
+          if (isBlank(delegate)) {
+            throw new Error('Could not find a delegate for given capabilities!');
+          }
+          return delegate;
+        },
+        deps: [_CHILDREN, Options.CAPABILITIES]
+      }
     ];
     return res;
   }
 
-  gc(): Promise<any> { throw new BaseException('NYI'); }
+  gc(): Promise<any> { throw new Error('NYI'); }
 
-  timeBegin(name: string): Promise<any> { throw new BaseException('NYI'); }
+  timeBegin(name: string): Promise<any> { throw new Error('NYI'); }
 
-  timeEnd(name: string, restartName: string): Promise<any> { throw new BaseException('NYI'); }
+  timeEnd(name: string, restartName: string): Promise<any> { throw new Error('NYI'); }
 
   /**
    * Format:
@@ -55,9 +64,9 @@ export abstract class WebDriverExtension {
    * Based on [Chrome Trace Event
    *Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
    **/
-  readPerfLog(): Promise<any[]> { throw new BaseException('NYI'); }
+  readPerfLog(): Promise<any[]> { throw new Error('NYI'); }
 
-  perfLogFeatures(): PerfLogFeatures { throw new BaseException('NYI'); }
+  perfLogFeatures(): PerfLogFeatures { throw new Error('NYI'); }
 
   supports(capabilities: {[key: string]: any}): boolean { return true; }
 }

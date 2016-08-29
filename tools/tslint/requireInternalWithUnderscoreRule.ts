@@ -1,7 +1,7 @@
+import {RuleWalker} from 'tslint/lib/language/walker';
 import {RuleFailure} from 'tslint/lib/lint';
 import {AbstractRule} from 'tslint/lib/rules';
-import {RuleWalker} from 'tslint/lib/language/walker';
-import * as ts from 'tslint/node_modules/typescript';
+import * as ts from 'typescript';
 
 export class Rule extends AbstractRule {
   public apply(sourceFile: ts.SourceFile): RuleFailure[] {
@@ -24,7 +24,7 @@ class TypedefWalker extends RuleWalker {
   private hasInternalAnnotation(range: ts.CommentRange): boolean {
     let text = this.getSourceFile().text;
     let comment = text.substring(range.pos, range.end);
-    return comment.indexOf("@internal") >= 0;
+    return comment.indexOf('@internal') >= 0;
   }
 
   private assertInternalAnnotationPresent(node: ts.Declaration) {

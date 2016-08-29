@@ -1,30 +1,35 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 
 /**
  * A metric is measures values
  */
 export abstract class Metric {
-  static bindTo(delegateToken): Provider[] {
-    return [bind(Metric).toFactory((delegate) => delegate, [delegateToken])];
+  static bindTo(delegateToken): any[] {
+    return [{provide: Metric, useFactory: (delegate) => delegate, deps: [delegateToken]}];
   }
 
   /**
    * Starts measuring
    */
-  beginMeasure(): Promise<any> { throw new BaseException('NYI'); }
+  beginMeasure(): Promise<any> { throw new Error('NYI'); }
 
   /**
    * Ends measuring and reports the data
    * since the begin call.
    * @param restart: Whether to restart right after this.
    */
-  endMeasure(restart: boolean): Promise<{[key: string]: any}> { throw new BaseException('NYI'); }
+  endMeasure(restart: boolean): Promise<{[key: string]: any}> { throw new Error('NYI'); }
 
   /**
    * Describes the metrics provided by this metric implementation.
    * (e.g. units, ...)
    */
-  describe(): {[key: string]: any} { throw new BaseException('NYI'); }
+  describe(): {[key: string]: any} { throw new Error('NYI'); }
 }

@@ -1,31 +1,22 @@
-import {bootstrap} from 'angular2/bootstrap';
-import {NgIf} from 'angular2/common';
-import {
-  Compiler,
-  Component,
-  Directive,
-  View,
-  ViewContainerRef,
-  bind,
-  provide,
-  Provider
-} from 'angular2/core';
-import {ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
-import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {window, document, gc} from 'angular2/src/facade/browser';
+import {NgIf} from '@angular/common';
+import {Component, NgModule} from '@angular/core';
+import {ApplicationRef} from '@angular/core/src/application_ref';
+import {reflector} from '@angular/core/src/reflection/reflection';
+import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
+import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {window, document, gc} from '@angular/facade/src/browser';
 import {
   getIntParameter,
   getStringParameter,
   bindAction,
   windowProfile,
   windowProfileEnd
-} from 'angular2/src/testing/benchmark_util';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
+} from '@angular/testing/src/benchmark_util';
+import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule} from '@angular/platform-browser';
 
-function createBindings(): Provider[] {
+function createBindings(): any[] {
   return [];
 }
 
@@ -92,13 +83,21 @@ export function main() {
     appRef.tick();
   }
 
+  @NgModule({
+    imports: [BrowserModule],
+    bootstrap: [AppComponentWithStaticTree],
+    providers: createBindings()
+  })
+  class AppModule {
+  }
+
   function initNg2() {
-    bootstrap(AppComponentWithStaticTree, createBindings())
+    platformBrowserDynamic().bootstrapModule(AppModule)
         .then((ref) => {
-          var injector = (<ComponentRef_>ref).injector;
+          var injector = ref.injector;
           appRef = injector.get(ApplicationRef);
 
-          app = (<ComponentRef_>ref).hostComponent;
+          app = ref.instance;
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);
           bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
@@ -225,21 +224,23 @@ class StaticTreeComponentBase {
   get data() { return this._value; }
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({directives: [], template: '<span>{{data.value}} </span>'})
+@Component(
+    {selector: 'tree', inputs: ['data'], directives: [], template: '<span>{{data.value}} </span>'})
 class StaticTreeComponent0 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent0],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent1 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent1],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
@@ -247,64 +248,71 @@ class StaticTreeComponent2 extends StaticTreeComponentBase {
   data: TreeNode;
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent2],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent3 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent3],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent4 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent4],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent5 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent5],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent6 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent6],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent7 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent7],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent8 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', inputs: ['data']})
-@View({
+@Component({
+  selector: 'tree',
+  inputs: ['data'],
   directives: [StaticTreeComponent8],
   template: `<span> {{data.value}} <tree [data]='data.right'></tree><tree [data]='data.left'></tree></span>`
 })
 class StaticTreeComponent9 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'app'})
-@View({
+@Component({
+  selector: 'app',
   directives: [StaticTreeComponent9, NgIf],
   template: `<tree *ngIf="initData != null" [data]='initData'></tree>`
 })

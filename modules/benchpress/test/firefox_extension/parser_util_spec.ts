@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {convertPerfProfileToEvents} from 'benchpress/src/firefox_extension/lib/parser_util';
 
 function assertEventsEqual(actualEvents, expectedEvents) {
@@ -25,56 +33,48 @@ export function main() {
 
     it('should convert single non-instantaneous event', function() {
       var profileData = {
-        threads: [
-          {
-            samples: [
-              {time: 1, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
-              {time: 2, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
-              {time: 100, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]}
-            ]
-          }
-        ]
+        threads: [{
+          samples: [
+            {time: 1, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
+            {time: 2, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
+            {time: 100, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]}
+          ]
+        }]
       };
       var perfEvents = convertPerfProfileToEvents(profileData);
-      assertEventsEqual(perfEvents,
-                        [{ph: 'B', ts: 1, name: 'script'}, {ph: 'E', ts: 100, name: 'script'}]);
+      assertEventsEqual(
+          perfEvents, [{ph: 'B', ts: 1, name: 'script'}, {ph: 'E', ts: 100, name: 'script'}]);
     });
 
     it('should convert multiple instantaneous events', function() {
       var profileData = {
-        threads: [
-          {
-            samples: [
-              {time: 1, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
-              {time: 2, frames: [{location: 'PresShell::Paint'}]}
-            ]
-          }
-        ]
+        threads: [{
+          samples: [
+            {time: 1, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
+            {time: 2, frames: [{location: 'PresShell::Paint'}]}
+          ]
+        }]
       };
       var perfEvents = convertPerfProfileToEvents(profileData);
-      assertEventsEqual(perfEvents,
-                        [{ph: 'X', ts: 1, name: 'script'}, {ph: 'X', ts: 2, name: 'render'}]);
+      assertEventsEqual(
+          perfEvents, [{ph: 'X', ts: 1, name: 'script'}, {ph: 'X', ts: 2, name: 'render'}]);
     });
 
     it('should convert multiple mixed events', function() {
       var profileData = {
-        threads: [
-          {
-            samples: [
-              {time: 1, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
-              {time: 2, frames: [{location: 'PresShell::Paint'}]},
-              {time: 5, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
-              {time: 10, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]}
-            ]
-          }
-        ]
+        threads: [{
+          samples: [
+            {time: 1, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
+            {time: 2, frames: [{location: 'PresShell::Paint'}]},
+            {time: 5, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
+            {time: 10, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]}
+          ]
+        }]
       };
       var perfEvents = convertPerfProfileToEvents(profileData);
       assertEventsEqual(perfEvents, [
-        {ph: 'X', ts: 1, name: 'script'},
-        {ph: 'X', ts: 2, name: 'render'},
-        {ph: 'B', ts: 5, name: 'script'},
-        {ph: 'E', ts: 10, name: 'script'}
+        {ph: 'X', ts: 1, name: 'script'}, {ph: 'X', ts: 2, name: 'render'},
+        {ph: 'B', ts: 5, name: 'script'}, {ph: 'E', ts: 10, name: 'script'}
       ]);
     });
 
@@ -86,14 +86,12 @@ export function main() {
 
     it('should skip unknown events', function() {
       var profileData = {
-        threads: [
-          {
-            samples: [
-              {time: 1, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
-              {time: 2, frames: [{location: 'foo'}]}
-            ]
-          }
-        ]
+        threads: [{
+          samples: [
+            {time: 1, frames: [{location: 'FirefoxDriver.prototype.executeScript'}]},
+            {time: 2, frames: [{location: 'foo'}]}
+          ]
+        }]
       };
       var perfEvents = convertPerfProfileToEvents(profileData);
       assertEventsEqual(perfEvents, [{ph: 'X', ts: 1, name: 'script'}]);

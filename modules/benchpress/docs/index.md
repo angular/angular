@@ -160,6 +160,43 @@ runner.sample({
 When looking into the DevTools Timeline, we see a marker as well:
 ![Marked Timeline](marked_timeline.png)
 
+### Custom Metrics Without Using `console.time`
+
+It's also possible to measure any "user metric" within the browser
+by setting a numeric value on the `window` object. For example:
+
+```js
+bootstrap(App)
+  .then(() => {
+    window.timeToBootstrap = Date.now() - performance.timing.navigationStart;
+  });
+```
+
+A test driver for this user metric could be written as follows:
+
+```js
+
+describe('home page load', function() {
+  it('should log load time for a 2G connection', done => {
+    runner.sample({
+      execute: () => {
+        browser.get(`http://localhost:8080`);
+      },
+      userMetrics: {
+        timeToBootstrap: 'The time in milliseconds to bootstrap'
+      },
+      bindings: [
+        bind(RegressionSlopeValidator.METRIC).toValue('timeToBootstrap')
+      ]
+    }).then(done);
+  });
+});
+```
+
+Using this strategy, benchpress will wait until the specified property name,
+`timeToBootstrap` in this case, is defined as a number on the `window` object
+inside the application under test.
+
 # Smoothness Metrics
 
 Benchpress can also measure the "smoothness" of scrolling and animations. In order to do that, the following set of metrics can be collected by benchpress:
@@ -173,7 +210,7 @@ To collect these metrics, you need to execute `console.time('frameCapture')` and
 
 In addition to that, one extra binding needs to be passed to benchpress in tests that want to collect these metrics:
 
-    benchpress.sample(bindings: [bp.bind(bp.Options.CAPTURE_FRAMES).toValue(true)], ... )
+    benchpress.sample(providers: [bp.bind(bp.Options.CAPTURE_FRAMES).toValue(true)], ... )
 
 # Requests Metrics
 
@@ -182,9 +219,9 @@ Benchpress can also record the number of requests sent and count the received "e
 - `receivedData`: number of bytes received since the last navigation start
 - `requestCount`: number of requests sent since the last navigation start
 
-To collect these metrics, you need the following corresponding extra bindings:
+To collect these metrics, you need the following corresponding extra providers:
 
-    benchpress.sample(bindings: [
+    benchpress.sample(providers: [
       bp.bind(bp.Options.RECEIVED_DATA).toValue(true),
       bp.bind(bp.Options.REQUEST_COUNT).toValue(true)
     ], ... )

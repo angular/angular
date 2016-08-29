@@ -1,19 +1,24 @@
-import {bind, provide, Provider} from 'angular2/src/core/di';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {MeasureValues} from './measure_values';
 
 /**
  * A reporter reports measure values and the valid sample.
  */
 export abstract class Reporter {
-  static bindTo(delegateToken): Provider[] {
-    return [bind(Reporter).toFactory((delegate) => delegate, [delegateToken])];
+  static bindTo(delegateToken): any[] {
+    return [{provide: Reporter, useFactory: (delegate) => delegate, deps: [delegateToken]}];
   }
 
-  reportMeasureValues(values: MeasureValues): Promise<any> { throw new BaseException('NYI'); }
+  reportMeasureValues(values: MeasureValues): Promise<any> { throw new Error('NYI'); }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any> {
-    throw new BaseException('NYI');
+    throw new Error('NYI');
   }
 }

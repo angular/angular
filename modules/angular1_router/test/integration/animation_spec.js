@@ -5,7 +5,7 @@ describe('ngOutlet animations', function () {
     $animate,
     $compile,
     $rootScope,
-    $router,
+    $rootRouter,
     $compileProvider;
 
   beforeEach(function () {
@@ -17,15 +17,18 @@ describe('ngOutlet animations', function () {
       $compileProvider = _$compileProvider_;
     });
 
-    inject(function (_$animate_, _$compile_, _$rootScope_, _$router_) {
+    inject(function (_$animate_, _$compile_, _$rootScope_, _$rootRouter_) {
       $animate = _$animate_;
       $compile = _$compile_;
       $rootScope = _$rootScope_;
-      $router = _$router_;
+      $rootRouter = _$rootRouter_;
     });
 
     registerComponent('userCmp', {
-      template: '<div>hello {{userCmp.$routeParams.name}}</div>'
+      template: '<div>hello {{userCmp.$routeParams.name}}</div>',
+      $routerOnActivate: function(next) {
+        this.$routeParams = next.params;
+      }
     });
   });
 
@@ -38,11 +41,11 @@ describe('ngOutlet animations', function () {
 
     compile('<div ng-outlet></div>');
 
-    $router.config([
+    $rootRouter.config([
       { path: '/user/:name', component: 'userCmp' }
     ]);
 
-    $router.navigateByUrl('/user/brian');
+    $rootRouter.navigateByUrl('/user/brian');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello brian');
 
@@ -51,7 +54,7 @@ describe('ngOutlet animations', function () {
     expect(item.event).toBe('enter');
 
     // navigate to pete
-    $router.navigateByUrl('/user/pete');
+    $rootRouter.navigateByUrl('/user/pete');
     $rootScope.$digest();
     expect(elt.text()).toBe('hello pete');
 
