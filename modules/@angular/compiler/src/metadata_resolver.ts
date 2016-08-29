@@ -15,7 +15,7 @@ import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {DirectiveResolver} from './directive_resolver';
 import {isArray, isBlank, isPresent, isString, stringify} from './facade/lang';
-import {Identifiers, identifierToken} from './identifiers';
+import {Identifiers, resolveIdentifierToken} from './identifiers';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
@@ -565,7 +565,7 @@ export class CompileMetadataResolver {
         compileProvider = this.getProvidersMetadata(provider, targetEntryComponents, debugInfo);
       } else if (provider instanceof cpl.ProviderMeta) {
         let tokenMeta = this.getTokenMetadata(provider.token);
-        if (tokenMeta.equalsTo(identifierToken(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS))) {
+        if (tokenMeta.equalsTo(resolveIdentifierToken(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS))) {
           targetEntryComponents.push(...this._getEntryComponentsFromProvider(provider));
         } else {
           compileProvider = this.getProviderMetadata(provider);

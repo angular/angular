@@ -15,7 +15,7 @@ import {Parser} from '../expression_parser/parser';
 import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent, isString} from '../facade/lang';
 import {HtmlParser} from '../i18n/html_parser';
-import {Identifiers, identifierToken} from '../identifiers';
+import {Identifiers, identifierToken, resolveIdentifierToken} from '../identifiers';
 import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
@@ -732,7 +732,7 @@ class TemplateParseVisitor implements html.Visitor {
       } else if (isBlank(component)) {
         let refToken: CompileTokenMetadata = null;
         if (isTemplateElement) {
-          refToken = identifierToken(Identifiers.TemplateRef);
+          refToken = resolveIdentifierToken(Identifiers.TemplateRef);
         }
         targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
       }
