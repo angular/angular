@@ -48,8 +48,10 @@ export function main() {
     it('should output stackTrace', () => {
       var error = new Error('message!');
       var stack = getStack(error);
-      var e = errorToString(error);
-      expect(e).toContain(stack);
+      if (stack) {
+        var e = errorToString(error);
+        expect(e).toContain(stack);
+      }
     });
 
     describe('context', () => {
@@ -62,10 +64,15 @@ export function main() {
         } as any as DebugContext;
         var original = new ViewWrappedError(cause, context);
         var e = errorToString(new WrappedError('message', original));
-        expect(e).toEqual(`EXCEPTION: message caused by: Error in context! caused by: message!
+        expect(e).toEqual(
+            stack ? `EXCEPTION: message caused by: Error in context! caused by: message!
 ORIGINAL EXCEPTION: message!
 ORIGINAL STACKTRACE:
 ${stack}
+ERROR CONTEXT:
+Context` :
+                    `EXCEPTION: message caused by: Error in context! caused by: message!
+ORIGINAL EXCEPTION: message!
 ERROR CONTEXT:
 Context`);
       });
@@ -74,10 +81,9 @@ Context`);
     describe('original exception', () => {
       it('should print original exception message if available (original is Error)', () => {
         var realOriginal = new Error('inner');
-        var stack = getStack(realOriginal);
         var original = new WrappedError('wrapped', realOriginal);
         var e = errorToString(new WrappedError('wrappedwrapped', original));
-        expect(e).toContain(stack);
+        expect(e).toContain('inner');
       });
 
       it('should print original exception message if available (original is not Error)', () => {
@@ -92,9 +98,11 @@ Context`);
       it('should print original stack if available', () => {
         var realOriginal = new Error('inner');
         var stack = getStack(realOriginal);
-        var original = new WrappedError('wrapped', realOriginal);
-        var e = errorToString(new WrappedError('wrappedwrapped', original));
-        expect(e).toContain(stack);
+        if (stack) {
+          var original = new WrappedError('wrapped', realOriginal);
+          var e = errorToString(new WrappedError('wrappedwrapped', original));
+          expect(e).toContain(stack);
+        }
       });
     });
   });
