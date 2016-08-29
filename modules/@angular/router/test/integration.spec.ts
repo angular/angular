@@ -1227,7 +1227,14 @@ describe('Integration', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
             providers: [
-              {provide: 'alwaysFalse', useValue: (a: any) => false},
+              {provide: 'alwaysFalse', useValue: (a: any) => false}, {
+                provide: 'returnFalseAndNavigate',
+                useFactory: (router: any) => (a: any) => {
+                  router.navigate(['blank']);
+                  return false;
+                },
+                deps: [Router]
+              },
               {provide: 'alwaysTrue', useValue: (a: any) => true}
             ]
           });
@@ -1275,7 +1282,6 @@ describe('Integration', () => {
 
                  recordedEvents.splice(0);
 
-
                  // successful navigation
                  router.navigateByUrl('/lazyTrue/loaded');
                  advance(fixture);
@@ -1287,6 +1293,32 @@ describe('Integration', () => {
                    [NavigationEnd, '/lazyTrue/loaded']
                  ]);
                })));
+
+        it('should support navigating from within the guard',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([
+               {path: 'lazyFalse', canLoad: ['returnFalseAndNavigate'], loadChildren: 'lazyFalse'},
+               {path: 'blank', component: BlankCmp}
+             ]);
+
+             const recordedEvents: any[] = [];
+             router.events.forEach(e => recordedEvents.push(e));
+
+
+             router.navigateByUrl('/lazyFalse/loaded');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/blank');
+
+             expectEvents(recordedEvents, [
+               [NavigationStart, '/lazyFalse/loaded'], [NavigationStart, '/blank'],
+               [RoutesRecognized, '/blank'], [NavigationCancel, '/lazyFalse/loaded'],
+               [NavigationEnd, '/blank']
+             ]);
+           })));
       });
     });
 
