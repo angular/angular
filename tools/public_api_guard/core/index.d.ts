@@ -1120,7 +1120,7 @@ export declare abstract class TemplateRef<C> {
 }
 
 /** @experimental */
-export declare class Testability {
+export declare class Testability implements PublicTestability {
     constructor(_ngZone: NgZone);
     decreasePendingRequestCount(): number;
     findBindings(using: any, provider: string, exactMatch: boolean): any[];
