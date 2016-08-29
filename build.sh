@@ -17,6 +17,7 @@ PACKAGES=(core
   upgrade
   router
   compiler-cli
+  language-service
   benchpress)
 BUILD_ALL=true
 BUNDLE=true
@@ -183,7 +184,6 @@ do
       cat ${UMD_ES5_PATH} >> ${UMD_ES5_PATH}.tmp
       mv ${UMD_ES5_PATH}.tmp ${UMD_ES5_PATH}
       $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_ES5_MIN_PATH} ${UMD_ES5_PATH}
-
 
       if [[ -e rollup-testing.config.js ]]; then
         echo "======         Rollup ${PACKAGE} testing"
