@@ -110,7 +110,7 @@ export declare class NavigationError {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export interface NavigationExtras {
     fragment?: string;
     preserveFragment?: boolean;
@@ -172,7 +172,7 @@ export declare class Router {
     config: Routes;
     errorHandler: ErrorHandler;
     events: Observable<Event>;
-    /** @experimental */ navigated: boolean;
+    /** @stable */ navigated: boolean;
     routerState: RouterState;
     url: string;
     constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);

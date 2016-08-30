@@ -36,7 +36,7 @@ import {TreeNode} from './utils/tree';
 declare var Zone: any;
 
 /**
- * @experimental
+ * @stable
  */
 export interface NavigationExtras {
   /**
@@ -235,7 +235,7 @@ export class Router {
   /**
    * Indicates if at least one navigation happened.
    *
-   * @experimental
+   * @stable
    */
   navigated: boolean = false;
 
