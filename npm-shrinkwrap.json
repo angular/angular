@@ -8638,9 +8638,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "typescript": {
-      "version": "2.1.0-dev.20160827",
-      "from": "typescript@next",
-      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.1.0-dev.20160827.tgz"
+      "version": "2.0.2",
+      "from": "typescript@rc",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.0.2.tgz"
     },
     "ua-parser-js": {
       "version": "0.7.10",
@@ -9232,7 +9232,8 @@
     },
     "zone.js": {
       "version": "0.6.17",
-      "from": "zone.js@0.6.17"
+      "from": "zone.js@0.6.17",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.17.tgz"
     }
   }
 }
