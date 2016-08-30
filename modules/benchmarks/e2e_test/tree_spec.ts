@@ -10,11 +10,11 @@ import {openBrowser, verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 const useBundles = false;
 
-describe('tree benchmark', function() {
+describe('tree benchmark', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should work for the baseline', function() {
+  it('should work for the baseline', () => {
     openBrowser({
       url: 'all/benchmarks/src/tree/baseline/index.html',
       ignoreBrowserSynchronization: true,
@@ -23,7 +23,7 @@ describe('tree benchmark', function() {
     expect($('baseline').getText()).toContain('0');
   });
 
-  it('should work for ng2', function() {
+  it('should work for ng2', () => {
     openBrowser({
       url: 'all/benchmarks/src/tree/ng2/index.html',
     });
@@ -31,9 +31,18 @@ describe('tree benchmark', function() {
     expect($('app').getText()).toContain('0');
   });
 
-  it('should work for polymer', function() {
+  it('should work for polymer binary tree', () => {
     openBrowser({
       url: 'all/benchmarks/src/tree/polymer/index.html',
+      ignoreBrowserSynchronization: true,
+    });
+    $('#createDom').click();
+    expect($('#app').getText()).toContain('0');
+  });
+
+  it('should work for polymer leaves', () => {
+    openBrowser({
+      url: 'all/benchmarks/src/tree/polymer_leaves/index.html',
       ignoreBrowserSynchronization: true,
     });
     $('#createDom').click();
