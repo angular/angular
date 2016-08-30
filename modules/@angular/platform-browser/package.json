@@ -9,8 +9,7 @@
   "license": "MIT",
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
-    "@angular/common": "0.0.0-PLACEHOLDER",
-    "@angular/compiler": "0.0.0-PLACEHOLDER"
+    "@angular/common": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",

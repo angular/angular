@@ -16,6 +16,8 @@ System.config({
     '@angular/common': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/platform-webworker': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/platform-webworker-dynamic': {main: 'index.js', defaultExtension: 'js'},
     'rxjs': {
       defaultExtension: 'js'
     }

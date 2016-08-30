@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {Component, NgModule} from '@angular/core';
-import {WORKER_APP_LOCATION_PROVIDERS, WorkerAppModule} from '@angular/platform-browser';
-import {Router, RouterModule, provideRoutes} from '@angular/router';
+import {WORKER_APP_LOCATION_PROVIDERS, WorkerAppModule} from '@angular/platform-webworker';
+import {RouterModule} from '@angular/router';
 
 import {About} from './components/about';
 import {Contact} from './components/contact';

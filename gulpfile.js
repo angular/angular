@@ -42,6 +42,8 @@ const entrypoints = [
   'dist/packages-dist/platform-browser/testing/index.d.ts',
   'dist/packages-dist/platform-browser-dynamic/index.d.ts',
   'dist/packages-dist/platform-browser-dynamic/testing/index.d.ts',
+  'dist/packages-dist/platform-webworker/index.d.ts',
+  'dist/packages-dist/platform-webworker-dynamic/index.d.ts',
   'dist/packages-dist/platform-server/index.d.ts',
   'dist/packages-dist/platform-server/testing/index.d.ts',
   'dist/packages-dist/http/index.d.ts',
