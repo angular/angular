@@ -198,8 +198,6 @@ export class WorkerDomAdapter extends DomAdapter {
   getComputedStyle(element: any /** TODO #9100 */): any { throw 'not implemented'; }
   getData(element: any /** TODO #9100 */, name: string): string { throw 'not implemented'; }
   setGlobalVar(name: string, value: any) { throw 'not implemented'; }
-  requestAnimationFrame(callback: any /** TODO #9100 */): number { throw 'not implemented'; }
-  cancelAnimationFrame(id: any /** TODO #9100 */) { throw 'not implemented'; }
   performanceNow(): number { throw 'not implemented'; }
   getAnimationPrefix(): string { throw 'not implemented'; }
   getTransitionEnd(): string { throw 'not implemented'; }
