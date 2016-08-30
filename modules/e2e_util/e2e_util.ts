@@ -40,6 +40,9 @@ export function openBrowser(config: {
   params.forEach((param) => { urlParams.push(param.name + '=' + param.value); });
   var url = encodeURI(config.url + '?' + urlParams.join('&'));
   browser.get(url);
+  if (config.ignoreBrowserSynchronization) {
+    browser.sleep(500);
+  }
 }
 
 /**

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-(function(global: any /** TODO #9100 */) {
+(function(global: any) {
 
   writeScriptTag('/all/benchmarks/vendor/core.js');
   writeScriptTag('/all/benchmarks/vendor/zone.js');
@@ -18,13 +17,12 @@
   (<any>global).benchmarksBootstrap = benchmarksBootstrap;
 
   function benchmarksBootstrap() {
-    urlParamsToForm();
     // check query param
     var useBundles = location.search.indexOf('bundles=false') == -1;
     if (useBundles) {
       System.config({
+        defaultJSExtensions: true,
         map: {
-          'index': 'index.js',
           '@angular/core': '/packages-dist/core/bundles/core.umd.js',
           '@angular/common': '/packages-dist/common/bundles/common.umd.js',
           '@angular/forms': '/packages-dist/forms/bundles/forms.umd.js',
@@ -40,8 +38,6 @@
           'rxjs': '/all/benchmarks/vendor/rxjs'
         },
         packages: {
-          'app': {defaultExtension: 'js'},
-          '../app': {defaultExtension: 'js'},
           '@angular/core/src/facade': {defaultExtension: 'js'},
           'rxjs': {defaultExtension: 'js'}
         }
@@ -51,14 +47,9 @@
           'Not using the Angular bundles. Don\'t use this configuration for e2e/performance tests!');
 
       System.config({
-        map: {
-          'index': 'index.js',
-          '@angular': '/all/@angular',
-          'rxjs': '/all/benchmarks/vendor/rxjs'
-        },
+        defaultJSExtensions: true,
+        map: {'@angular': '/all/@angular', 'rxjs': '/all/benchmarks/vendor/rxjs'},
         packages: {
-          'app': {defaultExtension: 'js'},
-          '../app': {defaultExtension: 'js'},
           '@angular/core': {main: 'index.js', defaultExtension: 'js'},
           '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
           '@angular/router': {main: 'index.js', defaultExtension: 'js'},
@@ -72,37 +63,11 @@
       });
     }
 
-
     // BOOTSTRAP the app!
-    System.import('index').then(function(m: any /** TODO #9100 */) {
-      m.main();
-    }, console.error.bind(console));
+    System.import('index').then(function(m: any) { m.main(); }, console.error.bind(console));
   }
 
-
-  function writeScriptTag(scriptUrl: any /** TODO #9100 */, onload?: any /** TODO #9100 */) {
+  function writeScriptTag(scriptUrl: string, onload?: string) {
     document.write(`<script src="${scriptUrl}" onload="${onload}"></script>`);
-  }
-
-  // helper script that will read out the url parameters
-  // and store them in appropriate form fields on the page
-  function urlParamsToForm() {
-    var regex = /(\w+)=(\w+)/g;
-    var search = decodeURIComponent(location.search);
-    var match: any[];
-    while (match = regex.exec(search)) {
-      var name = match[1];
-      var value = match[2];
-      var els = document.querySelectorAll('input[name="' + name + '"]');
-      var el: any;
-      for (var i = 0; i < els.length; i++) {
-        el = els[i];
-        if (el.type === 'radio' || el.type === 'checkbox') {
-          el.checked = el.value === value;
-        } else {
-          el.value = value;
-        }
-      }
-    }
   }
 }(window));

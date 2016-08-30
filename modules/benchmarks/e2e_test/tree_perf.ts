@@ -8,58 +8,52 @@
 
 import {runBenchmark, verifyNoBrowserErrors} from 'e2e_util/perf_util';
 
-describe('tree benchmark', () => {
+describe('tree benchmark perf', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should work for the baseline', (done) => {
-    runBenchmark({
+  it('should run for ng2', (done) => {
+    runTreeBenchmark({
+      id: 'deepTree.ng2',
+      url: 'all/benchmarks/src/tree/ng2/index.html',
+    }).then(done, done.fail);
+  });
+
+  it('should run for the baseline', (done) => {
+    runTreeBenchmark({
       id: 'deepTree.baseline',
       url: 'all/benchmarks/src/tree/baseline/index.html',
       ignoreBrowserSynchronization: true,
-      params: [{name: 'depth', value: 9}],
-      work: () => {
-        $('#createDom').click();
-        $('#destroyDom').click();
-      }
     }).then(done, done.fail);
   });
 
-  it('should work for ng2', (done) => {
-    runBenchmark({
-      id: 'deepTree.ng2',
-      url: 'all/benchmarks/src/tree/ng2/index.html',
-      params: [{name: 'depth', value: 9}],
-      work: () => {
-        $('#createDom').click();
-        $('#destroyDom').click();
-      }
-    }).then(done, done.fail);
-  });
-
-  it('should work for polymer binary tree', (done) => {
-    runBenchmark({
+  it('should run for polymer binary tree', (done) => {
+    runTreeBenchmark({
       id: 'deepTree.polymer',
       url: 'all/benchmarks/src/tree/polymer/index.html',
       ignoreBrowserSynchronization: true,
-      params: [{name: 'depth', value: 9}],
-      work: () => {
-        $('#createDom').click();
-        $('#destroyDom').click();
-      }
     }).then(done, done.fail);
   });
 
-  it('should work for polymer leaves', (done) => {
-    runBenchmark({
+  it('should run for polymer leaves', (done) => {
+    runTreeBenchmark({
       id: 'deepTree.polymerLeaves',
       url: 'all/benchmarks/src/tree/polymer_leaves/index.html',
       ignoreBrowserSynchronization: true,
+    }).then(done, done.fail);
+  });
+
+  function runTreeBenchmark(
+      config: {id: string, url: string, ignoreBrowserSynchronization?: boolean}) {
+    return runBenchmark({
+      id: config.id,
+      url: config.url,
+      ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
       params: [{name: 'depth', value: 9}],
       work: () => {
         $('#createDom').click();
         $('#destroyDom').click();
       }
-    }).then(done, done.fail);
-  });
+    });
+  }
 });

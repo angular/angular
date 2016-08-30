@@ -8,45 +8,42 @@
 
 import {openBrowser, verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
-const useBundles = false;
-
-describe('tree benchmark', () => {
+describe('tree benchmark spec', () => {
 
   afterEach(verifyNoBrowserErrors);
 
+  it('should work for ng2', () => {
+    testTreeBenchmark({
+      url: 'all/benchmarks/src/tree/ng2/index.html',
+    });
+  });
+
   it('should work for the baseline', () => {
-    openBrowser({
+    testTreeBenchmark({
       url: 'all/benchmarks/src/tree/baseline/index.html',
       ignoreBrowserSynchronization: true,
     });
-    $('#createDom').click();
-    expect($('baseline').getText()).toContain('0');
-  });
-
-  it('should work for ng2', () => {
-    openBrowser({
-      url: 'all/benchmarks/src/tree/ng2/index.html',
-    });
-    $('#createDom').click();
-    expect($('app').getText()).toContain('0');
   });
 
   it('should work for polymer binary tree', () => {
-    openBrowser({
+    testTreeBenchmark({
       url: 'all/benchmarks/src/tree/polymer/index.html',
       ignoreBrowserSynchronization: true,
     });
-    $('#createDom').click();
-    expect($('#app').getText()).toContain('0');
   });
 
   it('should work for polymer leaves', () => {
-    openBrowser({
+    testTreeBenchmark({
       url: 'all/benchmarks/src/tree/polymer_leaves/index.html',
       ignoreBrowserSynchronization: true,
     });
-    $('#createDom').click();
-    expect($('#app').getText()).toContain('0');
   });
 
+  function testTreeBenchmark(openConfig: {url: string, ignoreBrowserSynchronization?: boolean}) {
+    openBrowser(openConfig);
+    $('#createDom').click();
+    expect($('#root').getText()).toContain('0');
+    $('#destroyDom').click();
+    expect($('#root').getText()).toEqual('');
+  }
 });

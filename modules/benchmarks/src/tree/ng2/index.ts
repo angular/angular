@@ -1,23 +1,22 @@
-import {NgModule, enableProdMode} from '@angular/core';
-import {ApplicationRef} from '@angular/core/src/application_ref';
+import {ApplicationRef, NgModule, enableProdMode} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {bindAction, windowProfile, windowProfileEnd} from '@angular/platform-browser/testing/benchmark_util';
 
-import {TreeNode, buildTree, emptyTree, profile} from '../app/util';
+import {bindAction, profile} from '../../util';
+import {TreeNode, buildTree, emptyTree} from '../util';
 
-import {AppComponent, AppModule} from './app/tree';
+import {AppModule, TreeComponent} from './tree';
 
 export function main() {
-  var app: AppComponent;
+  var tree: TreeComponent;
   var appRef: ApplicationRef;
 
   function destroyDom() {
-    app.initData = emptyTree();
+    tree.data = emptyTree;
     appRef.tick();
   }
 
   function createDom() {
-    app.initData = buildTree();
+    tree.data = buildTree();
     appRef.tick();
   }
 
@@ -29,7 +28,7 @@ export function main() {
       var injector = ref.injector;
       appRef = injector.get(ApplicationRef);
 
-      app = appRef.components[0].instance;
+      tree = appRef.components[0].instance;
       bindAction('#destroyDom', destroyDom);
       bindAction('#createDom', createDom);
       bindAction('#updateDomProfile', profile(createDom, noop, 'ng2-update'));

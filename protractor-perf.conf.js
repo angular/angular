@@ -3,7 +3,7 @@
 require('./dist/all/e2e_util/perf_util').readCommandLine();
 
 var CHROME_OPTIONS = {
-  'args': ['--js-flags=--expose-gc'],
+  'args': ['--js-flags=--expose-gc', '--no-sandbox'],
   'perfLoggingPrefs': {
     'traceCategories': 'v8,blink.console,devtools.timeline,disabled-by-default-devtools.timeline'
   }
@@ -21,7 +21,6 @@ var BROWSER_CAPS = {
   ChromeOnTravis: {
     browserName: 'chrome',
     chromeOptions: mergeInto(CHROME_OPTIONS, {
-      'args': ['--no-sandbox'],
       'binary': process.env.CHROME_BIN
     }),
     loggingPrefs: {
@@ -32,6 +31,11 @@ var BROWSER_CAPS = {
 };
 
 exports.config = {
+  onPrepare: function() {
+    beforeEach(function() {
+      browser.ignoreSynchronization = false;
+    });
+  },
   restartBrowserBetweenTests: true,
   allScriptsTimeout: 11000,
   specs: [

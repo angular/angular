@@ -1,13 +1,12 @@
-import {bindAction} from '@angular/platform-browser/testing/benchmark_util';
-
-import {TreeNode, buildTree, emptyTree} from '../app/util';
+import {bindAction} from '../../util';
+import {TreeNode, buildTree, emptyTree} from '../util';
 
 declare var Polymer: any;
 
 export function main() {
   const rootEl: any = document.querySelector('binary-tree');
 
-  rootEl.data = emptyTree();
+  rootEl.data = emptyTree;
 
   function destroyDom() {
     while (rootEl.firstChild) rootEl.removeChild(rootEl.firstChild);

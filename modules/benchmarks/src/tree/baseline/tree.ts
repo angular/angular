@@ -1,7 +1,11 @@
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {TreeNode} from '../../app/util';
+import {__platform_browser_private__} from '@angular/platform-browser';
+import {TreeNode} from '../util';
 
-// http://jsperf.com/nextsibling-vs-childnodes
+// Note: We are using the DomAdapter also in the Baseline
+// so that Ng2 can actually reach the baseline. Once Ng2 is able to generate
+// code that does not use the DomAdapter any more, we should remove this.
+__platform_browser_private__.initDomAdapter();
+const getDOM = __platform_browser_private__.getDOM;
 
 const BASELINE_TREE_TEMPLATE = document.createElement('template');
 BASELINE_TREE_TEMPLATE.innerHTML =
