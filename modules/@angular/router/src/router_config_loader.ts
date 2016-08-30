@@ -10,6 +10,8 @@ import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactory, NgModuleF
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
+import {map} from 'rxjs/operator/map';
+import {mergeMap} from 'rxjs/operator/mergeMap';
 
 import {LoadChildren, Route} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
@@ -27,7 +29,7 @@ export class RouterConfigLoader {
   constructor(private loader: NgModuleFactoryLoader, private compiler: Compiler) {}
 
   load(parentInjector: Injector, loadChildren: LoadChildren): Observable<LoadedRouterConfig> {
-    return this.loadModuleFactory(loadChildren).map(r => {
+    return map.call(this.loadModuleFactory(loadChildren), (r: any) => {
       const ref = r.create(parentInjector);
       return new LoadedRouterConfig(
           flatten(ref.injector.get(ROUTES)), ref.injector, ref.componentFactoryResolver);
@@ -39,9 +41,9 @@ export class RouterConfigLoader {
       return fromPromise(this.loader.load(loadChildren));
     } else {
       const offlineMode = this.compiler instanceof Compiler;
-      return wrapIntoObservable(loadChildren())
-          .mergeMap(
-              t => offlineMode ? of (<any>t) : fromPromise(this.compiler.compileModuleAsync(t)));
+      return mergeMap.call(
+          wrapIntoObservable(loadChildren()),
+          (t: any) => offlineMode ? of (<any>t) : fromPromise(this.compiler.compileModuleAsync(t)));
     }
   }
 }

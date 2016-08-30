@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'rxjs/add/operator/map';
-
 import {CommonModule, Location} from '@angular/common';
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
+import {map} from 'rxjs/operator/map';
 
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized} from '../index';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -1791,7 +1790,7 @@ class TeamCmp {
   recordedParams: Params[] = [];
 
   constructor(public route: ActivatedRoute) {
-    this.id = route.params.map(p => p['id']);
+    this.id = map.call(route.params, (p: any) => p['id']);
     route.params.forEach(_ => this.recordedParams.push(_));
   }
 }
@@ -1802,7 +1801,7 @@ class UserCmp {
   recordedParams: Params[] = [];
 
   constructor(route: ActivatedRoute) {
-    this.name = route.params.map(p => p['name']);
+    this.name = map.call(route.params, (p: any) => p['name']);
     route.params.forEach(_ => this.recordedParams.push(_));
   }
 }
@@ -1818,7 +1817,7 @@ class QueryParamsAndFragmentCmp {
   fragment: Observable<string>;
 
   constructor(route: ActivatedRoute) {
-    this.name = route.queryParams.map(p => p['name']);
+    this.name = map.call(route.queryParams, (p: any) => p['name']);
     this.fragment = route.fragment;
   }
 }
