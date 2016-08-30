@@ -559,9 +559,12 @@ export class Router {
                     rejectPromise(ee);
                   }
                 }
-                this.currentRouterState = storedState;
-                this.currentUrlTree = storedUrl;
-                this.location.replaceState(this.serializeUrl(storedUrl));
+
+                if (id === this.navigationId) {
+                  this.currentRouterState = storedState;
+                  this.currentUrlTree = storedUrl;
+                  this.location.replaceState(this.serializeUrl(storedUrl));
+                }
               });
     });
   }
