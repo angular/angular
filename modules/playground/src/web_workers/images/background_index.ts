@@ -7,8 +7,8 @@
  */
 
 import {NgModule} from '@angular/core';
-import {WorkerAppModule} from '@angular/platform-browser';
-import {platformWorkerAppDynamic} from '@angular/platform-browser-dynamic';
+import {WorkerAppModule} from '@angular/platform-webworker';
+import {platformWorkerAppDynamic} from '@angular/platform-webworker-dynamic';
 
 import {ImageDemo} from './index_common';
 

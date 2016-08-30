@@ -64,6 +64,8 @@ for PACKAGE in \
   platform-browser \
   platform-browser-dynamic \
   platform-server \
+  platform-webworker \
+  platform-webworker-dynamic \
   http \
   router \
   upgrade \
