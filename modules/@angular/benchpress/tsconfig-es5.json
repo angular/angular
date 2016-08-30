@@ -7,7 +7,8 @@
         "sourceMap": true,
         "baseUrl": ".",
         "paths": {
-          "@angular/core": ["../../../dist/packages-dist/core"]
+          "@angular/core": ["../../../dist/packages-dist/core"],
+          "selenium-webdriver": ["../../../node_modules/@types/selenium-webdriver/index.d.ts"]
         },
         "experimentalDecorators": true,
         "rootDir": ".",
@@ -20,7 +21,7 @@
         "index.ts",
         "../../../node_modules/@types/node/index.d.ts",
         "../../../node_modules/@types/jasmine/index.d.ts",
-        "../../node_modules/@types/protractor/index.d.ts",
-        "../../node_modules/@types/selenium-webdriver/index.d.ts"
+        "../../../node_modules/@types/protractor/index.d.ts",
+        "../../../node_modules/zone.js/dist/zone.js.d.ts"
     ]
 }

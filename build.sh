@@ -69,7 +69,8 @@ for PACKAGE in \
   http \
   router \
   upgrade \
-  compiler-cli
+  compiler-cli \
+  benchpress
 do
   PWD=`pwd`
   SRCDIR=${PWD}/modules/@angular/${PACKAGE}
@@ -101,7 +102,7 @@ do
     find ${DESTDIR} -type f -name '*.d.ts' -print0 | xargs -0 sed -i -E 's/^( +)abstract ([[:alnum:]]+\:)/\1\2/g'
   fi
 
-  if [[ ${PACKAGE} != compiler-cli ]]; then
+  if [[ ${PACKAGE} != compiler-cli && ${PACKAGE} != benchpress ]]; then
 
     echo "======      BUNDLING: ${SRCDIR} ====="
     mkdir ${DESTDIR}/bundles
@@ -128,6 +129,3 @@ do
 
   fi
 done
-
-echo "======      COMPILING: \$(npm bin)/tsc -p benchpress/tsconfig.json ====="
-$(npm bin)/tsc -p ./modules/benchpress/tsconfig.json

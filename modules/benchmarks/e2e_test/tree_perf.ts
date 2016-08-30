@@ -6,32 +6,47 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {runBenchmark, verifyNoBrowserErrors} from 'e2e_util/perf_util';
 
-const useBundles = false;
-
-describe('tree benchmark', function() {
+describe('tree benchmark', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should work for the baseline', function() {
-    browser.ignoreSynchronization = true;
-    browser.get(`all/benchmarks/src/tree/baseline/index.html?bundles=${useBundles}`);
-    $('#createDom').click();
-    expect($('baseline').getText()).toContain('0');
+  it('should work for the baseline', function(done) {
+    runBenchmark({
+      id: 'deepTree.baseline',
+      url: 'all/benchmarks/src/tree/baseline/index.html',
+      ignoreBrowserSynchronization: true,
+      params: [{name: 'depth', value: 9}],
+      work: () => {
+        $('#createDom').click();
+        $('#destroyDom').click();
+      }
+    }).then(done, done.fail);
   });
 
-  it('should work for ng2', function() {
-    browser.get(`all/benchmarks/src/tree/ng2/index.html?bundles=${useBundles}`);
-    $('#createDom').click();
-    expect($('app').getText()).toContain('0');
+  it('should work for ng2', function(done) {
+    runBenchmark({
+      id: 'deepTree.ng2',
+      url: 'all/benchmarks/src/tree/ng2/index.html',
+      params: [{name: 'depth', value: 9}],
+      work: () => {
+        $('#createDom').click();
+        $('#destroyDom').click();
+      }
+    }).then(done, done.fail)
   });
 
-  it('should work for polymer', function() {
-    browser.ignoreSynchronization = true;
-    browser.get(`all/benchmarks/src/tree/polymer/index.html?bundles=${useBundles}`);
-    $('#createDom').click();
-    expect($('#app').getText()).toContain('0');
+  it('should work for polymer', function(done) {
+    runBenchmark({
+      id: 'deepTree.polymer',
+      url: 'all/benchmarks/src/tree/polymer/index.html',
+      ignoreBrowserSynchronization: true,
+      params: [{name: 'depth', value: 9}],
+      work: () => {
+        $('#createDom').click();
+        $('#destroyDom').click();
+      }
+    }).then(done, done.fail)
   });
-
 });

@@ -1,3 +1,7 @@
+// Make sure that the command line is read as the first thing
+// as this could exit node if the help script should be printed.
+require('./dist/all/e2e_util/e2e_util').readCommandLine();
+
 var BROWSER_OPTIONS = {
   LocalChrome: {
     'browserName': 'chrome'
@@ -10,8 +14,6 @@ var BROWSER_OPTIONS = {
     }
   }
 };
-
-
 
 exports.config = {
   allScriptsTimeout: 11000,

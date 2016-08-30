@@ -16,6 +16,5 @@ node dist/tools/@angular/tsc-wrapped/src/main -p modules
 node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/core
 node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/common
 node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/router
-$(npm bin)/tsc -p modules/benchpress
 
 echo 'travis_fold:end:BUILD'

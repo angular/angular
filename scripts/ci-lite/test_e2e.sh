@@ -35,7 +35,8 @@ cd ..
 if [[ ${TRAVIS} ]]; then
   sh -e /etc/init.d/xvfb start
 fi
-NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-e2e.conf.js
+NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-e2e.conf.js --bundles=true
+NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-perf.conf.js --bundles=true --dryrun
 echo 'travis_fold:end:test.e2e.localChrome'
 
 echo 'travis_fold:end:test.js'

@@ -12,7 +12,7 @@ const os = require('os');
 
 const srcsToFmt =
     ['tools/**/*.ts', 'modules/@angular/**/*.ts', '!tools/public_api_guard/**/*.d.ts',
-    'modules/benchpress/**/*.ts', 'modules/playground/**/*.ts', 'modules/benchmarks/**/*.ts'];
+    'modules/playground/**/*.ts', 'modules/benchmarks/**/*.ts', 'modules/e2e_util/**/*.ts'];
 
 gulp.task('format:enforce', () => {
   const format = require('gulp-clang-format');
