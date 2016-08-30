@@ -184,7 +184,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
       };
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
     } else if (
-        this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'FunctionCall') &&
+        this._isEvent(categories, name, ['devtools.timeline'], 'FunctionCall') &&
         (isBlank(args) || isBlank(args['data']) ||
          (!StringWrapper.equals(args['data']['scriptName'], 'InjectedScript') &&
           !StringWrapper.equals(args['data']['scriptName'], '')))) {
