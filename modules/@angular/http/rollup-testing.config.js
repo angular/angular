@@ -9,11 +9,9 @@ export default {
     '@angular/compiler': 'ng.compiler',
     '@angular/platform-browser': 'ng.platformBrowser',
     '@angular/http': 'ng.http',
-    'rxjs/Subject': 'Rx',
-    'rxjs/ReplaySubject': 'Rx',
     'rxjs/Observable': 'Rx',
-    'rxjs/observable/PromiseObservable': 'Rx', // this is wrong, but this stuff has changed in rxjs b.6 so we need to fix it when we update.
-    'rxjs/operator/toPromise': 'Rx.Observable.prototype',
-    'rxjs/operator/take': 'Rx.Observable.prototype',
+    'rxjs/ReplaySubject': 'Rx',
+    'rxjs/Subject': 'Rx',
+    'rxjs/operator/take': 'Rx.Observable.prototype'
   }
 }

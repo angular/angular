@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PromiseObservable} from 'rxjs/observable/PromiseObservable';
+import {fromPromise} from 'rxjs/observable/fromPromise';
 
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
@@ -63,7 +63,7 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
 }
 
 function toObservable(r: any): Observable<any> {
-  return isPromise(r) ? PromiseObservable.create(r) : r;
+  return isPromise(r) ? fromPromise(r) : r;
 }
 
 function coerceToValidator(validator: ValidatorFn | ValidatorFn[]): ValidatorFn {
